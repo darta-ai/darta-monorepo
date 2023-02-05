@@ -24,7 +24,7 @@ export default StyleSheet.create({
     backgroundColor: WHITE,
     borderRadius: 8,
     alignItems: "center",
-    margin: 10,
+    margin: 2,
     elevation: 1,
     shadowOpacity: 0.05,
     shadowRadius: 10,

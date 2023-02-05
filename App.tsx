@@ -3,6 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Home, Matches, Profile} from './screens';
+import { View, Image, Dimensions } from 'react-native';
 import {PRIMARY_COLOR, DARK_GRAY, BLACK, WHITE} from './assets/styles';
 import TabBarIcon from './components/TabBarIcon';
 
@@ -10,8 +11,12 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function App() {
+  const fullWidth = Dimensions.get('window').width;
+  const fullHeight = Dimensions.get('window').height;
+  console.log('in App', {fullWidth, fullHeight})
   return (
     <NavigationContainer>
+      
       <Stack.Navigator>
         <Stack.Screen
           name="Tab"
