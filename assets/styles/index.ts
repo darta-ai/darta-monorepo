@@ -1,29 +1,29 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions } from 'react-native';
 
-export const PRIMARY_COLOR = "#7444C0";
-export const SECONDARY_COLOR = "#5636B8";
-export const WHITE = "#FFFFFF";
-export const GRAY = "#757E90";
-export const DARK_GRAY = "#363636";
-export const BLACK = "#000000";
+export const PRIMARY_COLOR = '#7444C0';
+export const SECONDARY_COLOR = '#5636B8';
+export const WHITE = '#FFFFFF';
+export const GRAY = '#757E90';
+export const DARK_GRAY = '#363636';
+export const BLACK = '#000000';
 
-export const ONLINE_STATUS = "#46A575";
-export const OFFLINE_STATUS = "#D04949";
+export const ONLINE_STATUS = '#46A575';
+export const OFFLINE_STATUS = '#D04949';
 
-export const STAR_ACTIONS = "#FFA200";
-export const LIKE_ACTIONS = "#B644B2";
-export const DISLIKE_ACTIONS = "#363636";
-export const FLASH_ACTIONS = "#5028D7";
+export const STAR_ACTIONS = '#FFA200';
+export const LIKE_ACTIONS = '#B644B2';
+export const DISLIKE_ACTIONS = '#363636';
+export const FLASH_ACTIONS = '#5028D7';
 
-export const DIMENSION_WIDTH = Dimensions.get("window").width;
-export const DIMENSION_HEIGHT = Dimensions.get("window").height;
+export const DIMENSION_WIDTH = Dimensions.get('window').width;
+export const DIMENSION_HEIGHT = Dimensions.get('window').height;
 
 export default StyleSheet.create({
   // COMPONENT - CARD ITEM
   containerCardItem: {
     backgroundColor: WHITE,
     borderRadius: 8,
-    alignItems: "center",
+    alignItems: 'center',
     margin: 2,
     elevation: 1,
     shadowOpacity: 0.05,
@@ -43,12 +43,12 @@ export default StyleSheet.create({
   },
   descriptionCardItem: {
     color: GRAY,
-    textAlign: "center",
+    textAlign: 'center',
   },
   status: {
     paddingBottom: 10,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   statusText: {
     color: GRAY,
@@ -69,8 +69,8 @@ export default StyleSheet.create({
     marginRight: 4,
   },
   actionsCardItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 30,
   },
   button: {
@@ -79,8 +79,8 @@ export default StyleSheet.create({
     borderRadius: 30,
     backgroundColor: WHITE,
     marginHorizontal: 7,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     elevation: 1,
     shadowOpacity: 0.15,
     shadowRadius: 20,
@@ -93,8 +93,8 @@ export default StyleSheet.create({
     borderRadius: 30,
     backgroundColor: WHITE,
     marginHorizontal: 7,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     elevation: 1,
     shadowOpacity: 0.15,
     shadowRadius: 20,
@@ -117,15 +117,15 @@ export default StyleSheet.create({
   cityText: {
     color: DARK_GRAY,
     fontSize: 13,
-    textAlign: "center",
+    textAlign: 'center',
   },
 
   // COMPONENT - MESSAGE
   containerMessage: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    flexDirection: "row",
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
     paddingHorizontal: 10,
     width: DIMENSION_WIDTH - 100,
   },
@@ -163,29 +163,29 @@ export default StyleSheet.create({
     paddingVertical: 7,
     paddingHorizontal: 20,
     borderRadius: 20,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   matchesTextProfileItem: {
     color: WHITE,
-    textAlign: "center",
+    textAlign: 'center',
   },
   name: {
     paddingTop: 25,
     paddingBottom: 5,
     color: DARK_GRAY,
     fontSize: 15,
-    textAlign: "center",
+    textAlign: 'center',
   },
   descriptionProfileItem: {
     color: GRAY,
-    textAlign: "center",
+    textAlign: 'center',
     paddingBottom: 20,
     fontSize: 13,
   },
   info: {
     paddingVertical: 8,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   iconProfile: {
     fontSize: 12,
@@ -200,16 +200,15 @@ export default StyleSheet.create({
   // CONTAINER - GENERAL
   bg: {
     flex: 1,
-    resizeMode: "cover",
     width: DIMENSION_WIDTH,
     height: DIMENSION_HEIGHT,
   },
   top: {
     paddingTop: 50,
     marginHorizontal: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: { paddingBottom: 10, fontSize: 22, color: DARK_GRAY },
 
@@ -220,14 +219,14 @@ export default StyleSheet.create({
 
   // CONTAINER - MATCHES
   containerMatches: {
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
     flex: 1,
     paddingHorizontal: 10,
   },
 
   // CONTAINER - MESSAGES
   containerMessages: {
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
     flex: 1,
     paddingHorizontal: 10,
   },
@@ -245,9 +244,9 @@ export default StyleSheet.create({
     paddingRight: 20,
   },
   actionsProfile: {
-    justifyContent: "center",
-    flexDirection: "row",
-    alignItems: "center",
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   textButton: {
     fontSize: 15,
@@ -259,14 +258,14 @@ export default StyleSheet.create({
     height: 50,
     borderRadius: 25,
     backgroundColor: PRIMARY_COLOR,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 10,
   },
   roundedButton: {
-    justifyContent: "center",
-    flexDirection: "row",
-    alignItems: "center",
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
     marginLeft: 10,
     height: 50,
     borderRadius: 25,
@@ -276,9 +275,9 @@ export default StyleSheet.create({
 
   // MENU
   tabButtonText: {
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
   },
   iconMenu: {
-    alignItems: "center",
+    alignItems: 'center',
   },
 });

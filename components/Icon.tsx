@@ -1,14 +1,11 @@
 import React from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { Icon } from 'react-native-elements';
+import { IconButton } from 'react-native-paper';
 import { IconT } from '../types';
 
 function IconElement({
-  color, name, size, style, type,
+  iconColor, icon, size, style,
 }: IconT) {
-  return (
-    <Icon />
-  );
+  return <IconButton icon={icon} size={size} iconColor={iconColor} style={style} />;
 }
 
 export default IconElement;

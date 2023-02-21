@@ -1,80 +1,94 @@
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Home, Matches, Profile} from './screens';
-import { View, Image, Dimensions } from 'react-native';
-import {PRIMARY_COLOR, DARK_GRAY, BLACK, WHITE} from './assets/styles';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {
+  View, Image, Dimensions, LogBox,
+} from 'react-native';
+import { Provider as PaperProvider } from 'react-native-paper';
+import { Home, Matches, Profile } from './screens';
+import {
+  PRIMARY_COLOR, DARK_GRAY, BLACK, WHITE,
+} from './assets/styles';
 import TabBarIcon from './components/TabBarIcon';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function App() {
-  const fullWidth = Dimensions.get('window').width;
-  const fullHeight = Dimensions.get('window').height;
-  console.log('in App', {fullWidth, fullHeight})
   return (
-    <NavigationContainer>
-      
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Tab"
-          options={{headerShown: false, animationEnabled: false}}>
-          {() => (
-            <Tab.Navigator
-              screenOptions={{
-                showLabel: false,
-                activeTintColor: PRIMARY_COLOR,
-                inactiveTintColor: DARK_GRAY,
-                labelStyle: {
-                  fontSize: 14,
-                  textTransform: 'uppercase',
-                  paddingTop: 10,
-                },
-                style: {
-                  backgroundColor: WHITE,
-                  borderTopWidth: 0,
-                  marginBottom: 0,
-                  shadowOpacity: 0.05,
-                  shadowRadius: 10,
-                  shadowColor: BLACK,
-                  shadowOffset: {height: 0, width: 0},
-                },
-              }}>
-              <Tab.Screen
-                name="My Opening"
-                component={Home}
-                options={{
-                  tabBarIcon: ({focused}) => (
-                    <TabBarIcon focused={focused} emoji="🎨" text="Opening" />
-                  ),
+    <PaperProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Tab"
+            options={{ headerShown: false, animationEnabled: false }}
+          >
+            {() => (
+              <Tab.Navigator
+                screenOptions={{
+                  showLabel: true,
+                  activeTintColor: PRIMARY_COLOR,
+                  inactiveTintColor: DARK_GRAY,
+                  labelStyle: {
+                    fontSize: 14,
+                    textTransform: 'uppercase',
+                    paddingTop: 10,
+                  },
+                  style: {
+                    backgroundColor: WHITE,
+                    borderTopWidth: 0,
+                    marginBottom: 0,
+                    shadowOpacity: 0.05,
+                    shadowRadius: 10,
+                    shadowColor: BLACK,
+                    shadowOffset: { height: 0, width: 0 },
+                  },
                 }}
-              />
+              >
+                <Tab.Screen
+                  name="Openings"
+                  component={Home}
+                  options={{
+                    tabBarIcon: ({ focused }) => (
+                      <TabBarIcon
+                        focused={focused}
+                        icon="brush"
+                      />
+                    ),
+                  }}
+                />
 
-              <Tab.Screen
-                name="Saved Art"
-                component={Matches}
-                options={{
-                  tabBarIcon: ({focused}) => (
-                    <TabBarIcon focused={focused} emoji="💛" text="Saved" />
-                  ),
-                }}
-              />
-              <Tab.Screen
-                name="Profile"
-                component={Profile}
-                options={{
-                  tabBarIcon: ({focused}) => (
-                    <TabBarIcon focused={focused} emoji="⚙️" text="Profile" />
-                  ),
-                }}
-              />
-            </Tab.Navigator>
-          )}
-        </Stack.Screen>
-      </Stack.Navigator>
-    </NavigationContainer>
+                <Tab.Screen
+                  name="Saved"
+                  component={Matches}
+                  options={{
+                    tabBarIcon: ({ focused }) => (
+                      <TabBarIcon
+                        focused={focused}
+                        icon="heart"
+                      />
+                    ),
+                  }}
+                />
+                <Tab.Screen
+                  name="Profile"
+                  component={Profile}
+                  options={{
+                    tabBarIcon: ({ focused }) => (
+                      <TabBarIcon
+                        focused={focused}
+                        icon="account-circle"
+                      />
+                    ),
+                  }}
+                />
+              </Tab.Navigator>
+            )}
+          </Stack.Screen>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </PaperProvider>
   );
 }
 

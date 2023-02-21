@@ -1,107 +1,94 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, useWindowDimensions} from 'react-native';
-import {calculateHeightFromDistanceHorizontal, calculateDistanceFromHeightHorizontal}from '../functions/distanceCalculator'
-// import galleryWall from '../backgrounds/galleryWall.png';
-import kitchen2 from '../backgrounds/kitchen2.png'
-// import galleryWallRaw from '../backgrounds/galleryWallRaw.png'
-import data from '../assets/data/demo'
-// import GalleryWall2Vertical from '../backgrounds/Gallery1WallVertical.png'
+import {
+  ScrollView,
+  Dimensions,
+  View,
+} from 'react-native';
+import { galleryStyles } from './Gallery/galleryStyles';
+import ArtOnDisplay from './Gallery/ArtOnDisplay';
+import NavigateArt from './Gallery/NavigateArt';
+import InteractionButtons from './Gallery/InteractionButtons';
 
-import {Slider} from 'react-native-slider';
+// import kitchen2 from '../backgrounds/kitchen2.png';
+// import HannahWall from '../backgrounds/HannahWall.png';
+// import galleryWallRaw from '../backgrounds/galleryWallRaw.png';
+import WallHorizontal from '../backgrounds/WallHorizontal.png';
+import RotateScreenButton from './Gallery/RotateScreenButton';
+import { DataT } from '../types';
 
-// eslint-disable-next-line import/extensions, import/no-unresolved
-import styles from '../assets/styles';
+function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
+  const [fullGallery] = useState<DataT[]>(galleryImages);
+  const [artDisplayIndex, setArtDisplayIndex] = useState<number>(0);
+  const [artOnDisplay, setArtOnDisplay] = useState(galleryImages[0]);
+  const [backgroundImage] = useState(WallHorizontal);
 
-function Gallery() {
-  // Custom styling
-  const fullWidth = useWindowDimensions().width;
-  const fullHeight = useWindowDimensions().height;
+  const [isPortrait, setIsPortrait] = useState(true);
 
-  const [artOnDisplay] = useState(data[0]);
+  useEffect(() => {
+    Dimensions.addEventListener('change', ({ window: { width: fullWidthPixels, height: fullHeightPixels } }) => {
+      if (fullWidthPixels < fullHeightPixels) {
+        setIsPortrait(true);
+      } else {
+        setIsPortrait(false);
+      }
+    });
+  }, []);
 
-  const [perspectiveDistance] = useState(9)
+  const wallHeight = 96;
 
-  const [backgroundHeight, setBackgroundHeight] = useState(120);
+  const flipOrientation = () => {
+    setIsPortrait(!isPortrait);
+  };
 
-  const wallHeight = calculateHeightFromDistanceHorizontal(6)
-  const userDistance = calculateDistanceFromHeightHorizontal(8)
-  console.log({newDistance : wallHeight, userDistance})
+  const toggleArtForward = () => {
+    const numberOfArtworks = fullGallery.length;
+    const currentDisplayIndex = artDisplayIndex;
+    if (currentDisplayIndex + 1 >= numberOfArtworks) {
+      setArtDisplayIndex(0);
+    } else {
+      setArtDisplayIndex(currentDisplayIndex + 1);
+    }
+  };
+  const toggleArtBackward = () => {
+    const numberOfArtworks = fullGallery.length;
+    const currentDisplayIndex = artDisplayIndex;
+    if (currentDisplayIndex === 0) {
+      setArtDisplayIndex(numberOfArtworks - 1);
+    } else {
+      setArtDisplayIndex(currentDisplayIndex - 1);
+    }
+  };
 
-  const [zoom, setZoom] = useState(1)
-
-  console.log(fullWidth * 0.9)
-
-  const [backgroundImage] = useState(kitchen2);
-  const [backgroundImageDimensions] = useState({height : fullHeight * (backgroundHeight / 150), width : (backgroundHeight * (3 * zoom))})
-
-  const [screenRatio, setScreenRatio] = useState(backgroundImageDimensions.height / backgroundImageDimensions.width);
-
-  const [artworkDimensions, setArtworkDimensions] = useState({height: "", width: ""});
-  const [artworkDisplayLocation, setArtworkDisplayLocation] = useState({top: 40, left: 40})
-  const [artworkWidth, setArtworkWidth] = useState()
-
-  // 10 feet
-
-  const convertArtworkDimensions = () => {
-    const artworkHeight = (artOnDisplay.dimensionsInches.height / backgroundHeight) * 100;
-
-    const artworkRatio = artOnDisplay.dimensionsInches.height / artOnDisplay.dimensionsInches.width;
-    console.log('artworkRatio', artworkRatio, screenRatio)
-
-    const artworkWidth = (artworkHeight * screenRatio) 
-    console.log({width: `${artworkWidth}`, height: `${artworkHeight}%`})
-    setArtworkDimensions({width: `${artworkWidth}`, height: `${artworkHeight}%`});
-  }
-
-  useEffect(()=>{
-    convertArtworkDimensions()
-  }, [backgroundHeight])
-
-
-  const backgroundStyle = [
-    {
-      width: backgroundImageDimensions.width,
-      height: backgroundImageDimensions.height,
-      position: "relative",
-      margin: 0,
-      top: 0,
-      left: 0,
-    }, 
-  ];
-
-  const artStyle = [
-    {
-      position: "absolute",
-      top: `${artworkDisplayLocation.top}%`,
-      left: `${artworkDisplayLocation.left}}%`,
-      width: `${artworkDimensions.width}%`,
-      height: `${artworkDimensions.height}%`
-    }, 
-  ];
-
-
-  // const nameStyle = [
-  //   {
-  //     paddingTop: 15,
-  //     paddingBottom: 7,
-  //     color: '#363636',
-  //     fontSize: 30,
-  //   },
-  // ];
+  useEffect(() => {
+    setArtOnDisplay(fullGallery.at(artDisplayIndex));
+  }, [artDisplayIndex]);
 
   return (
-    <View style={styles.containerCardItem}>
-      <Image
-        source={backgroundImage}
-        style={backgroundStyle}
+    <ScrollView
+      maximumZoomScale={10.0}
+      contentContainerStyle={galleryStyles.container}
+      centerContent
+    >
+      <ArtOnDisplay
+        artOnDisplay={artOnDisplay}
+        backgroundImage={backgroundImage}
+        artToDisplay={artOnDisplay.image}
+        wallHeight={wallHeight}
+        isPortrait={isPortrait}
       />
-      <Image 
-        source={artOnDisplay.image}
-        style={artStyle}
+      <RotateScreenButton
+        isPortrait={isPortrait}
       />
-
-      <Slider />
-    </View>
+      <NavigateArt
+        toggleArtForward={toggleArtForward}
+        toggleArtBackward={toggleArtBackward}
+        isPortrait={isPortrait}
+      />
+      <InteractionButtons
+        isPortrait={isPortrait}
+        flipOrientation={flipOrientation}
+      />
+    </ScrollView>
   );
 }
 

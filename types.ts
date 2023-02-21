@@ -5,13 +5,13 @@ export type CardItemT = {
   image: any;
   isOnline?: boolean;
   matches?: string;
-  name: string;
+  // name: string;
 };
 
 export type IconT = {
-  name: any;
+  icon: any;
   size: number;
-  color: string;
+  iconColor: string;
   style?: any;
   type?: string;
 };
@@ -35,14 +35,15 @@ export type ProfileItemT = {
 
 export type TabBarIconT = {
   focused: boolean;
-  text: string;
+  icon: string;
+  text?: string;
   type?: string;
   iconName?: any;
   emoji?: string;
 };
 
 type Gene = {
-  displayName: string | null; 
+  displayName: string | null;
   name: string;
   id: string;
 }
@@ -50,7 +51,7 @@ type Gene = {
 export type DataT = {
   id: string;
   image: string;
-  artist: string; 
+  artist: string;
   canInquire?: true;
   category: string;
   createdAt: string;
@@ -72,10 +73,10 @@ export type DataT = {
   geneName: string[];
   genes : Gene[];
   iconicity: number;
-  labels:  string[];
+  labels: string[];
   medium: string;
   price: string;
   slug: string;
   sold : boolean,
-  title :  string;
+  title : string;
 };

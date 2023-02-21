@@ -1,10 +1,5 @@
-// import {
-//   doc,
-// } from '@firebase/firestore/lite';
+import firestore from '@react-native-firebase/firestore';
 
-// import { db } from './firebase';
+const ImageCollection = firestore().collection('Images');
 
-// const approvedImageDoc = doc(db, 'Images/approvedImages');
-// const declinedImagesDoc = doc(db, 'Images/declinedImages');
-
-// export { approvedImageDoc, declinedImagesDoc };
+export { ImageCollection };

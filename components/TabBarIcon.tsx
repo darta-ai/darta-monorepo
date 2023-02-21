@@ -4,15 +4,12 @@ import IconElement from './Icon';
 import styles, { DARK_GRAY, PRIMARY_COLOR } from '../assets/styles';
 import { TabBarIconT } from '../types';
 
-function TabBarIcon({
-  emoji, text, focused,
-}: TabBarIconT) {
+function TabBarIcon({ focused, icon }: TabBarIconT) {
   const iconFocused = focused ? PRIMARY_COLOR : DARK_GRAY;
 
   return (
     <View style={styles.iconMenu}>
-      <Text style={[styles.tabButtonText, { color: iconFocused }, { fontSize: 15 }]}>{emoji}</Text>
-      <Text style={[styles.tabButtonText, { color: iconFocused }]}>{text}</Text>
+      <IconElement icon={icon} size={25} iconColor={iconFocused} />
     </View>
   );
 }
