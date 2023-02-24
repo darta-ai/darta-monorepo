@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   StyleSheet,
+  Animated,
+  View,
   Alert,
 } from 'react-native';
-import { FAB, Provider } from 'react-native-paper';
+import { IconButton } from 'react-native-paper';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const icons = {
@@ -22,23 +24,51 @@ function InteractionButtons({
     isPortrait:boolean
     flipOrientation: () => void
   }) {
-  const [state, setState] = useState({ open: false });
+  const [open, setOpen] = useState<boolean>(false);
 
-  const onStateChange = ({ open }: {open: boolean}) => setState({ open });
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const { open } = state;
+  const duration = 250;
+
+  const fadeIn = () => {
+    // Will change fadeAnim value to 1 in 5 seconds
+    setOpen(!open);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const fadeOut = async () => {
+    // Will change fadeAnim value to 0 in 3 seconds
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration,
+      useNativeDriver: true,
+    }).start(() => setOpen(!open));
+  };
+
+  const openClose = (): void => {
+    if (open) {
+      fadeOut();
+    } else {
+      fadeIn();
+    }
+  };
 
   const interactionButtonStyles = StyleSheet.create({
     ratingContainerPortrait: {
       position: 'absolute',
-      top: hp('0%'),
-      left: wp('70%'),
+      bottom: hp('0%'),
+      left: wp('75%'),
       borderRadius: 30,
-      opacity: 0.85,
+      opacity: 0.8,
+      backgroundColor: '#FFF',
     },
     ratingContainerLandscape: {
-      top: hp('0%'),
-      left: wp('75%'),
+      top: hp('50%'),
+      left: wp('40%'),
       borderRadius: 30,
       transform: [{ rotate: '90deg' }],
       opacity: 0.85,
@@ -49,48 +79,75 @@ function InteractionButtons({
       backgroundColor: '#FFF',
       borderRadius: 30,
     },
+    animatedButtonStyle: {
+      height: hp('75%'),
+    },
   });
 
   const defaultIcon = 'menu';
 
-  const orientationStylePortrait = {
+  const ratingButtonStyle = {
     position: 'absolute',
-    marginBottom: hp('44%'),
+    backgroundColor: '#FFF',
+    opacity: 0.9,
+  };
+
+  const orientationStylePortrait = {
+    ...ratingButtonStyle,
+    marginBottom: hp('24%'),
+    marginRight: hp('6%'),
   };
 
   const orientationStyleLandscape = {
-    position: 'absolute',
-    marginBottom: hp('25%'),
-  };
-
-  const likedButtonStylePortrait = {
-    position: 'absolute',
-    marginBottom: hp('36%'),
-  };
-
-  const likedButtonStyleLandscape = {
-    position: 'absolute',
-    marginBottom: hp('25%'),
-  };
-
-  const disLikeButtonStylePortrait = {
-    position: 'absolute',
+    ...ratingButtonStyle,
     marginBottom: hp('28%'),
   };
 
-  const disLikeButtonStyleLandscape = {
-    position: 'absolute',
-    marginBottom: hp('18%'),
+  const likedButtonStylePortrait = {
+    ...ratingButtonStyle,
+    top: hp('42%'),
+    left: wp('76%'),
+  };
+
+  const likedButtonStyleLandscape = {
+    ...ratingButtonStyle,
+    marginBottom: hp('25%'),
   };
 
   const heartButtonStylePortrait = {
-    position: 'absolute',
-    marginBottom: hp('20%'),
+    ...ratingButtonStyle,
+    top: hp('48%'),
+    left: wp('76%'),
   };
 
   const heartButtonStyleLandscape = {
-    position: 'absolute',
-    marginBottom: hp('11%'),
+    ...ratingButtonStyle,
+    marginBottom: hp('5%'),
+  };
+
+  const disLikeButtonStylePortrait = {
+    ...ratingButtonStyle,
+    top: hp('54%'),
+    left: wp('76%'),
+  };
+
+  const disLikeButtonStyleLandscape = {
+    ...ratingButtonStyle,
+    marginBottom: hp('18%'),
+    marginRight: hp('1.5%'),
+    transition: 'width 2s',
+  };
+
+  const rotateScreenPortrait = {
+    ...ratingButtonStyle,
+    top: hp('60%'),
+    left: wp('76%'),
+  };
+
+  const rotateScreenLandscape = {
+    ...ratingButtonStyle,
+    marginBottom: hp('18%'),
+    marginRight: hp('1.5%'),
   };
 
   const orientationButtonStyle:any = isPortrait
@@ -106,43 +163,77 @@ function InteractionButtons({
   const heartButtonStyle:any = isPortrait
     ? heartButtonStylePortrait : heartButtonStyleLandscape;
 
+  const rotateScreenButtonStyle:any = isPortrait
+    ? rotateScreenPortrait : rotateScreenLandscape;
+
   const rateArtworkContainerStyle = isPortrait ? interactionButtonStyles.ratingContainerPortrait
     : interactionButtonStyles.ratingContainerLandscape;
 
   return (
-    <Provider>
-      <FAB.Group
-        fabStyle={rateArtworkContainerStyle}
-        open={open}
-        visible
-        icon={open ? `${icons.minus}` : `${defaultIcon}`}
-        actions={[
-          {
-            icon: `${icons.screenRotation}`,
-            style: orientationButtonStyle,
-            onPress: () => flipOrientation(),
-          },
-          {
-            icon: `${icons.liked}`,
-            style: likedButtonStyle,
-            onPress: () => Alert.alert('Liked!'),
-          },
-          {
-            icon: `${icons.disliked}`,
-            style: dislikeButtonStyle,
-            labelTextColor: '#FFF',
-            onPress: () => Alert.alert('Disliked!'),
-          },
-          {
-            icon: `${icons.saved}`,
-            labelTextColor: '#FFF',
-            style: heartButtonStyle,
-            onPress: () => Alert.alert('Saved!'),
-          },
-        ]}
-        onStateChange={onStateChange}
+    <View style={interactionButtonStyles.animatedButtonStyle}>
+      <IconButton
+        mode="outlined"
+        icon={open ? icons.minus : defaultIcon}
+        size={40}
+        style={rateArtworkContainerStyle}
+        accessibilityLabel="Options"
+        testID="options"
+        onPress={() => openClose()}
       />
-    </Provider>
+      <Animated.View
+        style={{
+          position: 'absolute',
+          opacity: fadeAnim,
+        }}
+      >
+        {open && (
+          <>
+            <IconButton
+              mode="outlined"
+              animated
+              icon={icons.liked}
+              size={30}
+              style={likedButtonStyle}
+              accessibilityLabel="Like Artwork"
+              testID="likeButton"
+              onPress={() => {
+                Alert.alert('Pressed Liked!');
+                openClose();
+              }}
+            />
+            <IconButton
+              mode="outlined"
+              animated
+              icon={icons.saved}
+              size={30}
+              style={heartButtonStyle}
+              accessibilityLabel="Save Artwork"
+              testID="saveButton"
+              onPress={() => openClose()}
+            />
+            <IconButton
+              mode="outlined"
+              animated
+              icon={icons.disliked}
+              size={30}
+              style={dislikeButtonStyle}
+              accessibilityLabel="Dislike Artwork"
+              testID="dislikeButton"
+              onPress={() => openClose()}
+            />
+            <IconButton
+              mode="outlined"
+              icon={icons.screenRotation}
+              size={30}
+              style={rotateScreenButtonStyle}
+              accessibilityLabel="Flip Screen Orientation"
+              testID="flipScreenButton"
+              onPress={() => flipOrientation()}
+            />
+          </>
+        )}
+      </Animated.View>
+    </View>
   );
 }
 

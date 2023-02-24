@@ -13,15 +13,14 @@ function NavigateArt({
   toggleArtBackward,
 } : {
   isPortrait: boolean
-  toggleArtForward: () => void
-  toggleArtBackward: () => void
+  toggleArtForward: any
+  toggleArtBackward: any
 }) {
   const navigationContainer = StyleSheet.create({
     navigateContainerPortrait: {
       position: 'absolute',
       flexDirection: 'row',
       bottom: hp('0%'),
-      marginBottom: 20,
       left: wp('0%'),
       width: wp('30%'),
       opacity: 0.9,

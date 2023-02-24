@@ -59,8 +59,9 @@ function ArtOnDisplay({
       height: backgroundImageDimensionsPixels.height,
       position: 'absolute',
       alignSelf: 'center',
-      justifyContent: 'center',
-      alignItems: 'center',
+      // top: hp('0%'),
+      // left: hp('0%'),
+      // alignItems: 'center',
       transform: [isPortrait ? { rotate: '0deg' } : { rotate: '90deg' }],
     },
     screenContainer: {

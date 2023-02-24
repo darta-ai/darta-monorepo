@@ -11,7 +11,7 @@ import InteractionButtons from './Gallery/InteractionButtons';
 
 // import kitchen2 from '../backgrounds/kitchen2.png';
 // import HannahWall from '../backgrounds/HannahWall.png';
-// import galleryWallRaw from '../backgrounds/galleryWallRaw.png';
+import galleryWallRaw from '../backgrounds/galleryWallRaw.png';
 import WallHorizontal from '../backgrounds/WallHorizontal.png';
 import RotateScreenButton from './Gallery/RotateScreenButton';
 import { DataT } from '../types';
@@ -20,7 +20,7 @@ function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
   const [fullGallery] = useState<DataT[]>(galleryImages);
   const [artDisplayIndex, setArtDisplayIndex] = useState<number>(0);
   const [artOnDisplay, setArtOnDisplay] = useState(galleryImages[0]);
-  const [backgroundImage] = useState(WallHorizontal);
+  const [backgroundImage] = useState(galleryWallRaw);
 
   const [isPortrait, setIsPortrait] = useState(true);
 
@@ -76,6 +76,10 @@ function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
         wallHeight={wallHeight}
         isPortrait={isPortrait}
       />
+      <InteractionButtons
+        isPortrait={isPortrait}
+        flipOrientation={flipOrientation}
+      />
       <RotateScreenButton
         isPortrait={isPortrait}
       />
@@ -83,10 +87,6 @@ function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
         toggleArtForward={toggleArtForward}
         toggleArtBackward={toggleArtBackward}
         isPortrait={isPortrait}
-      />
-      <InteractionButtons
-        isPortrait={isPortrait}
-        flipOrientation={flipOrientation}
       />
     </ScrollView>
   );
