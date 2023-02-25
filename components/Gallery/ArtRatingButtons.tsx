@@ -1,37 +1,44 @@
 import React, { useState, useRef } from 'react';
 import {
-  StyleSheet,
   Animated,
-  View,
-  Alert,
 } from 'react-native';
 import { IconButton, Snackbar } from 'react-native-paper';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { artRatingButtonStyles } from './styles';
+import { icons, duration } from './globals';
 
-const icons = {
-  undecided: 'menu',
-  liked: 'thumb-up-outline',
-  disliked: 'thumb-down-outline',
-  saved: 'heart',
-  minus: 'minus',
-  screenRotation: 'screen-rotation',
-};
-
-function InteractionButtons({
+function ArtRatingButtons({
   isPortrait,
+  userArtworkRatings,
+  artOnDisplayId,
   flipOrientation,
+  userArtworkRated,
 } : {
     isPortrait:boolean
+    userArtworkRatings: string
+    artOnDisplayId:string
     flipOrientation: () => void
+    userArtworkRated: (obj:any) => void
   }) {
   const [open, setOpen] = useState<boolean>(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const duration = 250;
-
   const [visible, setVisible] = useState(false);
   const [snackBarText, setSnackBarText] = useState('hey hey 👋');
+
+  const currentRating = Object.keys(userArtworkRatings).forEach((rating) => {
+    if (!userArtworkRatings[rating]) delete userArtworkRatings[rating];
+  });
+
+  const ratingString = Object.keys(userArtworkRatings)[0];
+
+  console.log('#######', artOnDisplayId, ratingString, icons[ratingString]);
+  // console.log(userArtworkRatings, Object.keys(userArtworkRatings), currentRating);
+
+  const defaultIcon = 'menu';
+
+  const [ratingDisplayIcon, setRatingDisplayIcon] = useState<string>(icons[ratingString] ?? defaultIcon);
 
   const fadeIn = () => {
     setOpen(!open);
@@ -59,59 +66,49 @@ function InteractionButtons({
   };
 
   const saveArtwork = () => {
+    const updatedUserArtworkRating = {
+      saved: true,
+      liked: false,
+      dislike: false,
+    };
+    userArtworkRated(updatedUserArtworkRating);
     setSnackBarText('Saved 💛😍');
     openClose();
     setVisible(true);
   };
 
-  const dislikeArtwork = () => {
-    setSnackBarText('Disliked 👎😒');
-    openClose();
-    setVisible(true);
-  };
-
   const likeArtwork = () => {
+    const updatedUserArtworkRating = {
+      saved: false,
+      liked: true,
+      dislike: false,
+    };
+    userArtworkRated(updatedUserArtworkRating);
     setSnackBarText('Liked 👍😏');
     openClose();
     setVisible(true);
   };
 
-  const interactionButtonStyles = StyleSheet.create({
-    ratingContainerPortrait: {
-      position: 'absolute',
-      bottom: '5%',
-      right: '0%',
-      borderRadius: 30,
-      opacity: 0.8,
-      backgroundColor: '#FFF',
-
-    },
-    ratingContainerLandscape: {
-      bottom: '95%',
-      left: '0%',
-      borderColor: 'green',
-      borderWidth: 5,
-      borderRadius: 30,
-      transform: [{ rotate: '90deg' }],
-      opacity: 0.85,
-    },
-  });
-
-  const defaultIcon = 'menu';
-
-  const ratingButtonStyle = {
-    backgroundColor: '#FFF',
-    opacity: 0.9,
+  const dislikeArtwork = () => {
+    const updatedUserArtworkRating = {
+      saved: false,
+      liked: false,
+      dislike: true,
+    };
+    userArtworkRated(updatedUserArtworkRating);
+    setSnackBarText('Disliked 👎😒');
+    openClose();
+    setVisible(true);
   };
 
-  const rateArtworkContainerStyle = isPortrait ? interactionButtonStyles.ratingContainerPortrait
-    : interactionButtonStyles.ratingContainerLandscape;
+  const rateArtworkContainerStyle = isPortrait ? artRatingButtonStyles.ratingContainerPortrait
+    : [artRatingButtonStyles.ratingContainerLandscape, { left: hp('70%') }];
 
   return (
     <>
       <IconButton
         mode="outlined"
-        icon={open ? icons.minus : defaultIcon}
+        icon={open ? icons.minus : icons.menu}
         size={40}
         style={rateArtworkContainerStyle}
         accessibilityLabel="Options"
@@ -120,28 +117,16 @@ function InteractionButtons({
       />
       {open && (
       <Animated.View
-        style={{
-          position: 'absolute',
+        style={[artRatingButtonStyles.animatedRatingsContainer, {
           opacity: fadeAnim,
-          top: '50%',
-          left: '50%',
-          width: '50%',
-          height: '35%',
-          flex: 1,
-
-          paddingBottom: '5%',
-          marginRight: '5%',
-          justifyContent: 'flex-end',
-          alignItems: 'flex-end',
-          flexDirection: 'column',
-        }}
+        }]}
       >
         <IconButton
           mode="outlined"
           animated
           icon={icons.liked}
           size={30}
-          style={ratingButtonStyle}
+          style={artRatingButtonStyles.ratingButtonStyle}
           accessibilityLabel="Like Artwork"
           testID="likeButton"
           onPress={() => { likeArtwork(); }}
@@ -151,7 +136,7 @@ function InteractionButtons({
           animated
           icon={icons.saved}
           size={30}
-          style={ratingButtonStyle}
+          style={artRatingButtonStyles.ratingButtonStyle}
           accessibilityLabel="Save Artwork"
           testID="saveButton"
           onPress={() => saveArtwork()}
@@ -161,7 +146,7 @@ function InteractionButtons({
           animated
           icon={icons.disliked}
           size={30}
-          style={ratingButtonStyle}
+          style={artRatingButtonStyles.ratingButtonStyle}
           accessibilityLabel="Dislike Artwork"
           testID="dislikeButton"
           onPress={() => dislikeArtwork()}
@@ -170,7 +155,7 @@ function InteractionButtons({
           mode="outlined"
           icon={icons.screenRotation}
           size={30}
-          style={ratingButtonStyle}
+          style={artRatingButtonStyles.ratingButtonStyle}
           accessibilityLabel="Flip Screen Orientation"
           testID="flipScreenButton"
           onPress={() => flipOrientation()}
@@ -179,6 +164,12 @@ function InteractionButtons({
       )}
       <Snackbar
         visible={visible}
+        style={
+          [artRatingButtonStyles.ratingsSnackBar, {
+            height: isPortrait ? undefined : hp('70%'),
+            width: isPortrait ? undefined : '95%',
+          }]
+        }
         onDismiss={() => setVisible(false)}
         action={{
           label: 'OK!',
@@ -193,4 +184,4 @@ function InteractionButtons({
   );
 }
 
-export default InteractionButtons;
+export default ArtRatingButtons;

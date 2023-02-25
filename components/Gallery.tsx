@@ -8,13 +8,13 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 // import { galleryStyles } from './Gallery/galleryStyles';
 import ArtOnDisplay from './Gallery/ArtOnDisplay';
 import NavigateArt from './Gallery/NavigateArt';
-import InteractionButtons from './Gallery/InteractionButtons';
+import ArtRatingButtons from './Gallery/ArtRatingButtons';
 
 // import kitchen2 from '../backgrounds/kitchen2.png';
 // import HannahWall from '../backgrounds/HannahWall.png';
+// import WallHorizontal from '../backgrounds/WallHorizontal.png';
 import galleryWallRaw from '../backgrounds/galleryWallRaw.png';
-import WallHorizontal from '../backgrounds/WallHorizontal.png';
-import RotateScreenButton from './Gallery/RotateScreenButton';
+import GalleryOptionsButton from './Gallery/GalleryOptionsButton';
 import { DataT } from '../types';
 
 function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
@@ -23,32 +23,45 @@ function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
   const [artOnDisplay, setArtOnDisplay] = useState(galleryImages[0]);
   const [backgroundImage] = useState(galleryWallRaw);
 
+  const userRatingsEmpty = fullGallery.map((artwork) => (artwork = artwork.id))
+    .reduce((obj, id) => ({
+      ...obj,
+      [id]: {
+        liked: false,
+        disliked: false,
+        saved: false,
+      },
+    }), {});
+
+  const [userArtworkRatings, setUserArtworkRatings] = useState(userRatingsEmpty);
+
   const [isPortrait, setIsPortrait] = useState(true);
 
   const backgroundContainerDimensionsPixels = {
     height: isPortrait ? hp('75%')
-      // : wp('100%')
       : wp('100%'),
     width: isPortrait ? wp('95%')
-      // : hp('80%'),
-      : hp('75%'),
+      : hp('80%'),
   };
 
-  const galleryStyles = StyleSheet.create({
+  const galleryComponentStyles = StyleSheet.create({
     backgroundImageDimensionsPixels: {
       height: '100%',
       width: '100%',
-      borderWidth: 2,
       position: 'absolute',
       zIndex: 2,
-      top: '0%',
     },
   });
 
-  const wallHeight = 108;
+  const wallHeight = 96;
 
   const flipOrientation = () => {
     setIsPortrait(!isPortrait);
+  };
+
+  const userArtworkRated = (updatedRatings: any) => {
+    const artworkId = artOnDisplay.id;
+    setUserArtworkRatings({ ...userArtworkRatings, [artworkId]: updatedRatings });
   };
 
   const toggleArtForward = () => {
@@ -75,17 +88,20 @@ function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
   }, [artDisplayIndex]);
 
   return (
-    <View
-      style={backgroundContainerDimensionsPixels}
+    <View style={{
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      height: isPortrait ? undefined : hp('78%'),
+      width: isPortrait ? undefined : wp('95%'),
+      backgroundColor: 'black',
+    }}
     >
       <ScrollView
-        style={{
-          borderColor: 'yellow',
-          borderWidth: 5,
+        style={[backgroundContainerDimensionsPixels, {
           transform: isPortrait ? [{ rotate: '0deg' }]
             : [{ rotate: '90deg' }],
-        }}
-        contentContainerStyle={{ alignItems: 'center', alignSelf: 'center' }}
+        }]}
         maximumZoomScale={10.0}
         scrollEnabled
         centerContent
@@ -95,20 +111,22 @@ function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
           backgroundImage={backgroundImage}
           artToDisplay={artOnDisplay.image}
           wallHeight={wallHeight}
-          isPortrait={isPortrait}
           backgroundImageDimensionsPixels={backgroundContainerDimensionsPixels}
         />
-        <View style={galleryStyles.backgroundImageDimensionsPixels}>
+        <View style={galleryComponentStyles.backgroundImageDimensionsPixels}>
           <NavigateArt
             toggleArtForward={toggleArtForward}
             toggleArtBackward={toggleArtBackward}
             isPortrait={isPortrait}
           />
-          <InteractionButtons
+          <ArtRatingButtons
             isPortrait={isPortrait}
+            userArtworkRatings={userArtworkRatings[artOnDisplay.id]}
+            artOnDisplayId={artOnDisplay.id}
             flipOrientation={flipOrientation}
+            userArtworkRated={userArtworkRated}
           />
-          <RotateScreenButton
+          <GalleryOptionsButton
             isPortrait={isPortrait}
           />
         </View>
