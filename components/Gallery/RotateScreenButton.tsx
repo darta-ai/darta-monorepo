@@ -3,9 +3,9 @@ import { IconButton } from 'react-native-paper';
 import {
   StyleSheet,
   View,
+  Alert,
 } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { galleryStyles } from './galleryStyles';
 
 function RotateScreenButton({
   isPortrait,
@@ -15,8 +15,9 @@ function RotateScreenButton({
   const rotateButtonStyles = StyleSheet.create({
     rotateScreenContainerPortrait: {
       position: 'absolute',
-      top: hp('0%'),
-      left: wp('80%'),
+      backgroundColor: '#FFF',
+      top: '0%',
+      left: '85%',
       opacity: 1,
     },
     rotateScreenContainerLandscape: {
@@ -32,17 +33,16 @@ function RotateScreenButton({
     : rotateButtonStyles.rotateScreenContainerLandscape;
 
   return (
-
-    <View style={rotateScreenContainerStyle}>
+    <View style={{ zIndex: 2 }}>
       <IconButton
         icon="settings-helper"
         size={20}
         mode="outlined"
-        style={galleryStyles.interactionButton}
+        style={rotateScreenContainerStyle}
         testID="rightScrollButton"
+        onPress={() => Alert.alert('hi!')}
       />
     </View>
-
   );
 }
 

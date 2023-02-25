@@ -16,18 +16,15 @@ function ArtOnDisplay({
   artToDisplay,
   wallHeight,
   isPortrait,
+  backgroundImageDimensionsPixels,
 }: {
     artOnDisplay: DataT
     backgroundImage: ImageSourcePropType,
     artToDisplay: string,
     wallHeight: number
     isPortrait: boolean
+    backgroundImageDimensionsPixels: any
 }) {
-  const backgroundImageDimensionsPixels = {
-    height: isPortrait ? hp('80%') : wp('100%'),
-    width: isPortrait ? wp('95%') : hp('80%'),
-  };
-
   const dimensionsMultiplierPortrait = (backgroundImageDimensionsPixels.width
     / backgroundImageDimensionsPixels.height);
 
@@ -54,16 +51,6 @@ function ArtOnDisplay({
   };
 
   const galleryStylesPortrait = StyleSheet.create({
-    backgroundStyle: {
-      width: backgroundImageDimensionsPixels.width,
-      height: backgroundImageDimensionsPixels.height,
-      position: 'absolute',
-      alignSelf: 'center',
-      // top: hp('0%'),
-      // left: hp('0%'),
-      // alignItems: 'center',
-      transform: [isPortrait ? { rotate: '0deg' } : { rotate: '90deg' }],
-    },
     screenContainer: {
       width: backgroundImageDimensionsPixels.width,
       height: backgroundImageDimensionsPixels.height,
@@ -79,7 +66,12 @@ function ArtOnDisplay({
     },
   });
   return (
-    <View style={galleryStylesPortrait.backgroundStyle}>
+    <View style={{
+      zIndex: 0,
+      borderWidth: 8,
+      borderColor: 'red',
+    }}
+    >
       <ImageBackground
         source={backgroundImage}
         resizeMethod="resize"

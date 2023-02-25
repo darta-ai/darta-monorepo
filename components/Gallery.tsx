@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
   ScrollView,
-  Dimensions,
   View,
+  StyleSheet,
 } from 'react-native';
-import { galleryStyles } from './Gallery/galleryStyles';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+// import { galleryStyles } from './Gallery/galleryStyles';
 import ArtOnDisplay from './Gallery/ArtOnDisplay';
 import NavigateArt from './Gallery/NavigateArt';
 import InteractionButtons from './Gallery/InteractionButtons';
@@ -24,17 +25,27 @@ function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
 
   const [isPortrait, setIsPortrait] = useState(true);
 
-  useEffect(() => {
-    Dimensions.addEventListener('change', ({ window: { width: fullWidthPixels, height: fullHeightPixels } }) => {
-      if (fullWidthPixels < fullHeightPixels) {
-        setIsPortrait(true);
-      } else {
-        setIsPortrait(false);
-      }
-    });
-  }, []);
+  const backgroundContainerDimensionsPixels = {
+    height: isPortrait ? hp('75%')
+      // : wp('100%')
+      : wp('100%'),
+    width: isPortrait ? wp('95%')
+      // : hp('80%'),
+      : hp('75%'),
+  };
 
-  const wallHeight = 96;
+  const galleryStyles = StyleSheet.create({
+    backgroundImageDimensionsPixels: {
+      height: '100%',
+      width: '100%',
+      borderWidth: 2,
+      position: 'absolute',
+      zIndex: 2,
+      top: '0%',
+    },
+  });
+
+  const wallHeight = 108;
 
   const flipOrientation = () => {
     setIsPortrait(!isPortrait);
@@ -64,31 +75,45 @@ function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
   }, [artDisplayIndex]);
 
   return (
-    <ScrollView
-      maximumZoomScale={10.0}
-      contentContainerStyle={galleryStyles.container}
-      centerContent
+    <View
+      style={backgroundContainerDimensionsPixels}
     >
-      <ArtOnDisplay
-        artOnDisplay={artOnDisplay}
-        backgroundImage={backgroundImage}
-        artToDisplay={artOnDisplay.image}
-        wallHeight={wallHeight}
-        isPortrait={isPortrait}
-      />
-      <InteractionButtons
-        isPortrait={isPortrait}
-        flipOrientation={flipOrientation}
-      />
-      <RotateScreenButton
-        isPortrait={isPortrait}
-      />
-      <NavigateArt
-        toggleArtForward={toggleArtForward}
-        toggleArtBackward={toggleArtBackward}
-        isPortrait={isPortrait}
-      />
-    </ScrollView>
+      <ScrollView
+        style={{
+          borderColor: 'yellow',
+          borderWidth: 5,
+          transform: isPortrait ? [{ rotate: '0deg' }]
+            : [{ rotate: '90deg' }],
+        }}
+        contentContainerStyle={{ alignItems: 'center', alignSelf: 'center' }}
+        maximumZoomScale={10.0}
+        scrollEnabled
+        centerContent
+      >
+        <ArtOnDisplay
+          artOnDisplay={artOnDisplay}
+          backgroundImage={backgroundImage}
+          artToDisplay={artOnDisplay.image}
+          wallHeight={wallHeight}
+          isPortrait={isPortrait}
+          backgroundImageDimensionsPixels={backgroundContainerDimensionsPixels}
+        />
+        <View style={galleryStyles.backgroundImageDimensionsPixels}>
+          <NavigateArt
+            toggleArtForward={toggleArtForward}
+            toggleArtBackward={toggleArtBackward}
+            isPortrait={isPortrait}
+          />
+          <InteractionButtons
+            isPortrait={isPortrait}
+            flipOrientation={flipOrientation}
+          />
+          <RotateScreenButton
+            isPortrait={isPortrait}
+          />
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
