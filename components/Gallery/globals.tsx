@@ -1,12 +1,13 @@
 export const icons = {
   menu: 'menu',
-  liked: 'thumb-up-outline',
-  disliked: 'thumb-down-outline',
-  saved: 'heart',
+  like: 'thumb-up-outline',
+  dislike: 'thumb-down-outline',
+  save: 'heart',
   minus: 'minus',
   screenRotation: 'screen-rotation',
   navigateLeft: 'pan-left',
   navigateRight: 'pan-right',
+  thinking: 'lightbulb-outline',
 };
 
 export const duration = 250;

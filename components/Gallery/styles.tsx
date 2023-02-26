@@ -88,6 +88,15 @@ export const artRatingButtonStyles = StyleSheet.create({
     alignItems: 'flex-end',
     flexDirection: 'column',
   },
+  ratedContainer: {
+    position: 'absolute',
+    top: '75%',
+    left: '80%',
+    width: '10%',
+    height: '35%',
+    paddingBottom: '15%',
+    marginRight: '5%',
+  },
   ratingButtonStyle: {
     backgroundColor: '#FFF',
     opacity: 0.9,
@@ -103,7 +112,7 @@ export const rotateButtonStyles = StyleSheet.create({
     position: 'absolute',
     backgroundColor: '#FFF',
     top: '0%',
-    left: '85%',
+    right: '0%',
     opacity: 1,
   },
   rotateScreenContainerLandscape: {
@@ -111,7 +120,25 @@ export const rotateButtonStyles = StyleSheet.create({
     bottom: '0%',
     left: '90%',
     alignSelf: 'center',
-    backgroundColor: '#AAAAAA',
+    backgroundColor: '#FFF',
+    opacity: 1,
+  },
+});
+
+export const artworkRatingStyles = StyleSheet.create({
+  artworkRatingPortrait: {
+    position: 'absolute',
+    backgroundColor: '#FFF',
+    top: '0%',
+    left: '0%',
+    opacity: 1,
+  },
+  artworkRatingLandscape: {
+    position: 'absolute',
+    top: '0%',
+    left: '1=0%',
+    alignSelf: 'center',
+    backgroundColor: '#FFF',
     opacity: 1,
   },
 });

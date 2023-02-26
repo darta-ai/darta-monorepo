@@ -4,22 +4,28 @@ import {
   View,
   Alert,
 } from 'react-native';
-import { rotateButtonStyles } from './styles';
+import { artworkRatingStyles } from './styles';
+import { icons } from './globals';
 
-function ArtRating({
+function ArtRatingIndicator({
   isPortrait,
+  artworkRatedString,
 }: {
     isPortrait: boolean
+    artworkRatedString: string
 }) {
   const rotateScreenContainerStyle = isPortrait
-    ? rotateButtonStyles.rotateScreenContainerPortrait
-    : rotateButtonStyles.rotateScreenContainerLandscape;
+    ? artworkRatingStyles.artworkRatingPortrait
+    : artworkRatingStyles.artworkRatingLandscape;
+
+  const artworkString:string = artworkRatedString ?? 'thinking';
 
   return (
     <View style={{ zIndex: 1 }}>
       <IconButton
-        icon="settings-helper"
+        icon={icons[artworkString]}
         size={20}
+        disabled
         mode="outlined"
         style={rotateScreenContainerStyle}
         testID="rightScrollButton"
@@ -29,4 +35,4 @@ function ArtRating({
   );
 }
 
-export default ArtRating;
+export default ArtRatingIndicator;

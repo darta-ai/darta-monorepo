@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Animated,
+  View,
 } from 'react-native';
 import { IconButton, Snackbar } from 'react-native-paper';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -15,30 +16,22 @@ function ArtRatingButtons({
   userArtworkRated,
 } : {
     isPortrait:boolean
-    userArtworkRatings: string
+    userArtworkRatings: any
     artOnDisplayId:string
     flipOrientation: () => void
     userArtworkRated: (obj:any) => void
   }) {
-  const [open, setOpen] = useState<boolean>(false);
-
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
+  const [open, setOpen] = useState<boolean>(false);
   const [visible, setVisible] = useState(false);
   const [snackBarText, setSnackBarText] = useState('hey hey 👋');
+  const [ratingDisplayIcon, setRatingDisplayIcon] = useState<string>(icons.menu);
 
-  const currentRating = Object.keys(userArtworkRatings).forEach((rating) => {
-    if (!userArtworkRatings[rating]) delete userArtworkRatings[rating];
-  });
-
-  const ratingString = Object.keys(userArtworkRatings)[0];
-
-  console.log('#######', artOnDisplayId, ratingString, icons[ratingString]);
-  // console.log(userArtworkRatings, Object.keys(userArtworkRatings), currentRating);
-
-  const defaultIcon = 'menu';
-
-  const [ratingDisplayIcon, setRatingDisplayIcon] = useState<string>(icons[ratingString] ?? defaultIcon);
+  useEffect(() => {
+    const artworkRating = userArtworkRatings[artOnDisplayId];
+    const ratingString = Object.keys(artworkRating)[0];
+    setRatingDisplayIcon(icons[ratingString] ?? icons.menu);
+  }, [open, visible, artOnDisplayId]);
 
   const fadeIn = () => {
     setOpen(!open);
@@ -66,36 +59,33 @@ function ArtRatingButtons({
   };
 
   const saveArtwork = () => {
-    const updatedUserArtworkRating = {
-      saved: true,
-      liked: false,
-      dislike: false,
-    };
-    userArtworkRated(updatedUserArtworkRating);
+    userArtworkRated({
+      [artOnDisplayId]: {
+        save: true,
+      },
+    });
     setSnackBarText('Saved 💛😍');
     openClose();
     setVisible(true);
   };
 
   const likeArtwork = () => {
-    const updatedUserArtworkRating = {
-      saved: false,
-      liked: true,
-      dislike: false,
-    };
-    userArtworkRated(updatedUserArtworkRating);
+    userArtworkRated({
+      [artOnDisplayId]: {
+        like: true,
+      },
+    });
     setSnackBarText('Liked 👍😏');
     openClose();
     setVisible(true);
   };
 
   const dislikeArtwork = () => {
-    const updatedUserArtworkRating = {
-      saved: false,
-      liked: false,
-      dislike: true,
-    };
-    userArtworkRated(updatedUserArtworkRating);
+    userArtworkRated({
+      [artOnDisplayId]: {
+        dislike: true,
+      },
+    });
     setSnackBarText('Disliked 👎😒');
     openClose();
     setVisible(true);
@@ -108,7 +98,7 @@ function ArtRatingButtons({
     <>
       <IconButton
         mode="outlined"
-        icon={open ? icons.minus : icons.menu}
+        icon={open ? icons.minus : ratingDisplayIcon}
         size={40}
         style={rateArtworkContainerStyle}
         accessibilityLabel="Options"
@@ -116,59 +106,57 @@ function ArtRatingButtons({
         onPress={() => openClose()}
       />
       {open && (
-      <Animated.View
-        style={[artRatingButtonStyles.animatedRatingsContainer, {
-          opacity: fadeAnim,
-        }]}
-      >
-        <IconButton
-          mode="outlined"
-          animated
-          icon={icons.liked}
-          size={30}
-          style={artRatingButtonStyles.ratingButtonStyle}
-          accessibilityLabel="Like Artwork"
-          testID="likeButton"
-          onPress={() => { likeArtwork(); }}
-        />
-        <IconButton
-          mode="outlined"
-          animated
-          icon={icons.saved}
-          size={30}
-          style={artRatingButtonStyles.ratingButtonStyle}
-          accessibilityLabel="Save Artwork"
-          testID="saveButton"
-          onPress={() => saveArtwork()}
-        />
-        <IconButton
-          mode="outlined"
-          animated
-          icon={icons.disliked}
-          size={30}
-          style={artRatingButtonStyles.ratingButtonStyle}
-          accessibilityLabel="Dislike Artwork"
-          testID="dislikeButton"
-          onPress={() => dislikeArtwork()}
-        />
-        <IconButton
-          mode="outlined"
-          icon={icons.screenRotation}
-          size={30}
-          style={artRatingButtonStyles.ratingButtonStyle}
-          accessibilityLabel="Flip Screen Orientation"
-          testID="flipScreenButton"
-          onPress={() => flipOrientation()}
-        />
-      </Animated.View>
+        <Animated.View
+          style={[artRatingButtonStyles.animatedRatingsContainer, {
+            opacity: fadeAnim,
+          }]}
+        >
+          <IconButton
+            mode="outlined"
+            animated
+            icon={icons.like}
+            size={30}
+            style={artRatingButtonStyles.ratingButtonStyle}
+            accessibilityLabel="Like Artwork"
+            testID="likeButton"
+            onPress={() => { likeArtwork(); }}
+          />
+          <IconButton
+            mode="outlined"
+            animated
+            icon={icons.save}
+            size={30}
+            style={artRatingButtonStyles.ratingButtonStyle}
+            accessibilityLabel="Save Artwork"
+            testID="saveButton"
+            onPress={() => saveArtwork()}
+          />
+          <IconButton
+            mode="outlined"
+            animated
+            icon={icons.dislike}
+            size={30}
+            style={artRatingButtonStyles.ratingButtonStyle}
+            accessibilityLabel="Dislike Artwork"
+            testID="dislikeButton"
+            onPress={() => dislikeArtwork()}
+          />
+          <IconButton
+            mode="outlined"
+            icon={icons.screenRotation}
+            size={30}
+            style={artRatingButtonStyles.ratingButtonStyle}
+            accessibilityLabel="Flip Screen Orientation"
+            testID="flipScreenButton"
+            onPress={() => flipOrientation()}
+          />
+        </Animated.View>
       )}
+
       <Snackbar
         visible={visible}
         style={
-          [artRatingButtonStyles.ratingsSnackBar, {
-            height: isPortrait ? undefined : hp('70%'),
-            width: isPortrait ? undefined : '95%',
-          }]
+          [artRatingButtonStyles.ratingsSnackBar]
         }
         onDismiss={() => setVisible(false)}
         action={{

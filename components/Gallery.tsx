@@ -27,9 +27,6 @@ function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
     .reduce((obj, id) => ({
       ...obj,
       [id]: {
-        liked: false,
-        disliked: false,
-        saved: false,
       },
     }), {});
 
@@ -60,8 +57,7 @@ function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
   };
 
   const userArtworkRated = (updatedRatings: any) => {
-    const artworkId = artOnDisplay.id;
-    setUserArtworkRatings({ ...userArtworkRatings, [artworkId]: updatedRatings });
+    setUserArtworkRatings({ ...userArtworkRatings, ...updatedRatings });
   };
 
   const toggleArtForward = () => {
@@ -121,8 +117,8 @@ function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
           />
           <ArtRatingButtons
             isPortrait={isPortrait}
-            userArtworkRatings={userArtworkRatings[artOnDisplay.id]}
             artOnDisplayId={artOnDisplay.id}
+            userArtworkRatings={userArtworkRatings}
             flipOrientation={flipOrientation}
             userArtworkRated={userArtworkRated}
           />
