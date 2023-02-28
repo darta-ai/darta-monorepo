@@ -1122,21 +1122,21 @@ PODS:
     - React-jsi (= 0.71.2)
     - React-logger (= 0.71.2)
     - React-perflogger (= 0.71.2)
-  - RNFBAnalytics (17.1.0):
+  - RNFBAnalytics (17.3.1):
     - Firebase/Analytics (= 10.5.0)
     - React-Core
     - RNFBApp
-  - RNFBApp (17.1.0):
+  - RNFBApp (17.3.1):
     - Firebase/CoreOnly (= 10.5.0)
     - React-Core
-  - RNFBFirestore (17.1.0):
+  - RNFBFirestore (17.3.1):
     - Firebase/Firestore (= 10.5.0)
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - React-Core
     - RNFBApp
   - RNGestureHandler (2.9.0):
     - React-Core
-  - RNScreens (3.19.0):
+  - RNScreens (3.20.0):
     - React-Core
     - React-RCTImage
   - Yoga (1.14.0)
@@ -1345,13 +1345,13 @@ SPEC CHECKSUMS:
   React-RCTVibration: 0af3babdeee1b2d052811a2f86977d1e1c81ebd1
   React-runtimeexecutor: 4bf9a9086d27f74065fce1dddac274aa95216952
   ReactCommon: 2228b5d854dfa2b7569955decfdc52303ed61a7e
-  RNFBAnalytics: 3c0c1b3a4304055d46c529a39d584210bda256b0
-  RNFBApp: 360ea009d4fc306f62e3eb899cb7c922901db7f3
-  RNFBFirestore: 98cdeaa42da363488756bc64b078a19493df730f
+  RNFBAnalytics: 01dd29de4dd871436e72cc3a5f996674443b5e1c
+  RNFBApp: 6210da3d32c005190647805e6ced236d9be5520f
+  RNFBFirestore: c50ed4cbb10d138a1477a6bd02eebe7dbf2f6f0f
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
-  RNScreens: ea4cd3a853063cda19a4e3c28d2e52180c80f4eb
+  RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   Yoga: 5b0304b3dbef2b52e078052138e23a19c7dacaef
 
-PODFILE CHECKSUM: 2f3c7a0a48f3c513681d25fe2815b30496f39cf8
+PODFILE CHECKSUM: afd113381ef6be2b3c1290607208b42c1261affd
 
 COCOAPODS: 1.11.3
