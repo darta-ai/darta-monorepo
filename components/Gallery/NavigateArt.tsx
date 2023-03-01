@@ -1,23 +1,31 @@
-import React, { useState, useRef } from 'react';
+import React, {
+  useRef, Dispatch, SetStateAction,
+} from 'react';
 import {
   Animated,
   View,
 } from 'react-native';
 import { IconButton } from 'react-native-paper';
-import { navigationArtStyles } from './styles';
-import { icons, duration } from './globals';
+import { galleryInteractionStyles } from './styles';
+import { icons, duration } from '../globalVariables';
+import { GlobalText } from '../GlobalElements';
+import { globalTextStyles } from '../styles';
 
-function NavigateArt({
+export function NavigateArt({
   isPortrait,
+  openNav,
   toggleArtForward,
   toggleArtBackward,
+  toggleArtDetails,
+  setOpenNav,
 } : {
   isPortrait: boolean
-  toggleArtForward: any
-  toggleArtBackward: any
+  openNav: boolean
+  toggleArtForward: ()=> void
+  toggleArtBackward: ()=> void
+  toggleArtDetails: ()=> void
+  setOpenNav: Dispatch<SetStateAction<boolean>>
 }) {
-  const [openNav, setOpenNav] = useState<boolean>(false);
-
   const fadeAnimNav = useRef(new Animated.Value(1)).current;
 
   const fadeIn = () => {
@@ -46,41 +54,80 @@ function NavigateArt({
   };
 
   const navigateContainer = isPortrait
-    ? navigationArtStyles.navigateContainerPortrait
-    : navigationArtStyles.navigateContainerLandscape;
+    ? galleryInteractionStyles.containerPortrait
+    : galleryInteractionStyles.containerLandscape;
+
+  const navigateRightStyles = isPortrait
+    ? [galleryInteractionStyles.mainButtonPortrait]
+    : galleryInteractionStyles.mainButtonLandscape;
 
   return (
     <View style={navigateContainer}>
-      <IconButton
-        icon={icons.navigateRight}
-        mode="outlined"
-        size={40}
-        style={navigationArtStyles.navigateRight}
-        accessibilityLabel="Navigate Left"
-        testID="leftScrollButton"
-        onPress={() => toggleArtForward()}
-        onLongPress={() => openClose()}
-      />
-      {openNav && (
-      <Animated.View
-        style={[navigationArtStyles.animatedNavigationContainer, {
-          opacity: fadeAnimNav,
-        }]}
-      >
-
-        <IconButton
-          icon={icons.navigateLeft}
-          mode="outlined"
-          size={30}
-          style={navigationArtStyles.navigateLeft}
-          accessibilityLabel="Navigate Right"
-          testID="rightScrollButton"
-          onPress={() => toggleArtBackward()}
-        />
-      </Animated.View>
-      )}
+      <View style={[galleryInteractionStyles.containerPortraitFlex]}>
+        <View style={{ alignSelf: 'flex-start' }}>
+          <IconButton
+            icon={icons.navigateRight}
+            mode="outlined"
+            size={40}
+            style={navigateRightStyles}
+            accessibilityLabel="Navigate Left"
+            testID="leftScrollButton"
+            onPress={() => toggleArtForward()}
+            onLongPress={() => openClose()}
+          />
+          <GlobalText
+            style={[
+              globalTextStyles.centeredText,
+              galleryInteractionStyles.textLabelsStyle,
+            ]}
+          >
+            move right
+          </GlobalText>
+        </View>
+        {openNav && (
+        <Animated.View
+          style={[galleryInteractionStyles.animatedContainer, {
+            opacity: fadeAnimNav,
+            alignItems: 'center',
+          }]}
+        >
+          <GlobalText
+            style={[
+              globalTextStyles.centeredText,
+              galleryInteractionStyles.textLabelsStyle,
+            ]}
+          >
+            move left
+          </GlobalText>
+          <IconButton
+            icon={icons.navigateLeft}
+            mode="outlined"
+            size={30}
+            style={galleryInteractionStyles.secondaryButton}
+            accessibilityLabel="Navigate Right"
+            testID="rightScrollButton"
+            onPress={() => toggleArtBackward()}
+          />
+          <GlobalText
+            style={[
+              globalTextStyles.centeredText,
+              galleryInteractionStyles.textLabelsStyle,
+            ]}
+          >
+            details
+          </GlobalText>
+          <IconButton
+            icon={icons.learnMore}
+            mode="outlined"
+            size={30}
+            style={galleryInteractionStyles.secondaryButton}
+            accessibilityLabel="Navigate Right"
+            testID="rightScrollButton"
+            onPress={() => toggleArtDetails()}
+          />
+        </Animated.View>
+        )}
+      </View>
     </View>
   );
 }
-
-export default NavigateArt;

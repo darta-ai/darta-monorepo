@@ -3,6 +3,7 @@ import {
   SafeAreaView, ScrollView, Text, View, StyleSheet,
 } from 'react-native';
 import { Slider } from '@miblanchard/react-native-slider';
+import { GlobalText } from './GlobalElements/index';
 
 const borderWidth = 4;
 const trackMarkStyles = StyleSheet.create({
@@ -68,8 +69,8 @@ function SliderContainer(props: {
   return (
     <View style={trackMarkStyles.sliderContainer}>
       <View style={trackMarkStyles.titleContainer}>
-        <Text>{caption}</Text>
-        <Text>{Array.isArray(value) ? value.join(' - ') : value}</Text>
+        <GlobalText>{caption}</GlobalText>
+        <GlobalText>{Array.isArray(value) ? value.join(' - ') : value}</GlobalText>
       </View>
       {renderChildren()}
     </View>

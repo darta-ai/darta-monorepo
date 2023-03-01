@@ -1,3 +1,15 @@
+export interface UserArtworkRated {
+  [key: string]: {
+     like?: boolean,
+     save?: boolean,
+     dislike?: boolean,
+  };
+}
+
+export interface Icons {
+  [key: string] : string
+}
+
 export type CardItemT = {
   description?: string;
   hasActions?: boolean;
@@ -5,7 +17,7 @@ export type CardItemT = {
   image: any;
   isOnline?: boolean;
   matches?: string;
-  // name: string;
+  name?: string;
 };
 
 export type IconT = {

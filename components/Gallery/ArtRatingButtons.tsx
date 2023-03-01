@@ -1,168 +1,222 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+  useState, useRef, useEffect, Dispatch, SetStateAction,
+} from 'react';
 import {
   Animated,
   View,
 } from 'react-native';
 import { IconButton, Snackbar } from 'react-native-paper';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { artRatingButtonStyles } from './styles';
-import { icons, duration } from './globals';
+import { galleryInteractionStyles } from './styles';
+import { icons, duration, buttonSizes } from '../globalVariables';
+import { GlobalText } from '../GlobalElements';
+import { globalTextStyles } from '../styles';
+import { UserArtworkRated } from '../../types';
 
 function ArtRatingButtons({
   isPortrait,
+  openRatings,
   userArtworkRatings,
   artOnDisplayId,
-  flipOrientation,
   userArtworkRated,
+  setOpenRatings,
 } : {
     isPortrait:boolean
+    openRatings:boolean
     userArtworkRatings: any
-    artOnDisplayId:string
-    flipOrientation: () => void
-    userArtworkRated: (obj:any) => void
+    artOnDisplayId:string | undefined
+    // eslint-disable-next-line no-unused-vars
+    userArtworkRated: (arg0: UserArtworkRated) => void
+    setOpenRatings:Dispatch<SetStateAction<boolean>>
   }) {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const [open, setOpen] = useState<boolean>(false);
-  const [visible, setVisible] = useState(false);
+  const fadeAnimRate = useRef(new Animated.Value(1)).current;
+  const [visibleSmack, setVisibleSnack] = useState(false);
   const [snackBarText, setSnackBarText] = useState('hey hey 👋');
   const [ratingDisplayIcon, setRatingDisplayIcon] = useState<string>(icons.menu);
 
   useEffect(() => {
-    const artworkRating = userArtworkRatings[artOnDisplayId];
-    const ratingString = Object.keys(artworkRating)[0];
-    setRatingDisplayIcon(icons[ratingString] ?? icons.menu);
-  }, [open, visible, artOnDisplayId]);
+    if (artOnDisplayId) {
+      const artworkRating = userArtworkRatings[artOnDisplayId];
+      const ratingString:string = Object.keys(artworkRating)[0];
+      const ratingIcon:string = icons[`${ratingString}`] ?? icons.menu;
+      setRatingDisplayIcon(ratingIcon);
+    }
+  }, [artOnDisplayId, userArtworkRatings]);
 
-  const fadeIn = () => {
-    setOpen(!open);
-    Animated.timing(fadeAnim, {
+  const fadeInRating = () => {
+    setOpenRatings(!openRatings);
+    Animated.timing(fadeAnimRate, {
       toValue: 1,
       duration,
       useNativeDriver: true,
     }).start();
   };
 
-  const fadeOut = async () => {
-    Animated.timing(fadeAnim, {
+  const fadeOutRating = async () => {
+    Animated.timing(fadeAnimRate, {
       toValue: 0,
       duration,
       useNativeDriver: true,
-    }).start(() => setOpen(!open));
+    }).start(() => setOpenRatings(!openRatings));
   };
 
-  const openClose = (): void => {
-    if (open) {
-      fadeOut();
+  const openCloseRating = (): void => {
+    if (openRatings) {
+      fadeOutRating();
     } else {
-      fadeIn();
+      fadeInRating();
     }
   };
 
   const saveArtwork = () => {
-    userArtworkRated({
-      [artOnDisplayId]: {
-        save: true,
-      },
-    });
-    setSnackBarText('Saved 💛😍');
-    openClose();
-    setVisible(true);
+    if (artOnDisplayId) {
+      userArtworkRated({
+        [artOnDisplayId]: {
+          save: true,
+        },
+      });
+      setSnackBarText('Saved 💛😍');
+      openCloseRating();
+      setVisibleSnack(true);
+    }
   };
 
   const likeArtwork = () => {
-    userArtworkRated({
-      [artOnDisplayId]: {
-        like: true,
-      },
-    });
-    setSnackBarText('Liked 👍😏');
-    openClose();
-    setVisible(true);
+    if (artOnDisplayId) {
+      userArtworkRated({
+        [artOnDisplayId]: {
+          like: true,
+        },
+      });
+      setSnackBarText('Liked 👍😏');
+      openCloseRating();
+      setVisibleSnack(true);
+    }
   };
 
   const dislikeArtwork = () => {
-    userArtworkRated({
-      [artOnDisplayId]: {
-        dislike: true,
-      },
-    });
-    setSnackBarText('Disliked 👎😒');
-    openClose();
-    setVisible(true);
+    if (artOnDisplayId) {
+      userArtworkRated({
+        [artOnDisplayId]: {
+          dislike: true,
+        },
+      });
+      setSnackBarText('Disliked 👎😒');
+      openCloseRating();
+      setVisibleSnack(true);
+    }
   };
 
-  const rateArtworkContainerStyle = isPortrait ? artRatingButtonStyles.ratingContainerPortrait
-    : [artRatingButtonStyles.ratingContainerLandscape, { left: hp('70%') }];
+  const ratingContainer = isPortrait
+    ? galleryInteractionStyles.containerPortrait
+    : galleryInteractionStyles.containerLandscape;
+
+  const flexContainer = isPortrait
+    ? galleryInteractionStyles.containerPortraitFlex
+    : galleryInteractionStyles.containerLandscapeFlex;
+
+  const rateArtworkContainerStyle = isPortrait
+    ? galleryInteractionStyles.mainButtonPortrait
+    : galleryInteractionStyles.mainButtonLandscape;
 
   return (
     <>
-      <IconButton
-        mode="outlined"
-        icon={open ? icons.minus : ratingDisplayIcon}
-        size={40}
-        style={rateArtworkContainerStyle}
-        accessibilityLabel="Options"
-        testID="options"
-        onPress={() => openClose()}
-      />
-      {open && (
-        <Animated.View
-          style={[artRatingButtonStyles.animatedRatingsContainer, {
-            opacity: fadeAnim,
-          }]}
-        >
-          <IconButton
-            mode="outlined"
-            animated
-            icon={icons.like}
-            size={30}
-            style={artRatingButtonStyles.ratingButtonStyle}
-            accessibilityLabel="Like Artwork"
-            testID="likeButton"
-            onPress={() => { likeArtwork(); }}
-          />
-          <IconButton
-            mode="outlined"
-            animated
-            icon={icons.save}
-            size={30}
-            style={artRatingButtonStyles.ratingButtonStyle}
-            accessibilityLabel="Save Artwork"
-            testID="saveButton"
-            onPress={() => saveArtwork()}
-          />
-          <IconButton
-            mode="outlined"
-            animated
-            icon={icons.dislike}
-            size={30}
-            style={artRatingButtonStyles.ratingButtonStyle}
-            accessibilityLabel="Dislike Artwork"
-            testID="dislikeButton"
-            onPress={() => dislikeArtwork()}
-          />
-          <IconButton
-            mode="outlined"
-            icon={icons.screenRotation}
-            size={30}
-            style={artRatingButtonStyles.ratingButtonStyle}
-            accessibilityLabel="Flip Screen Orientation"
-            testID="flipScreenButton"
-            onPress={() => flipOrientation()}
-          />
-        </Animated.View>
-      )}
-
+      <View style={ratingContainer}>
+        <View style={[flexContainer, { alignSelf: 'flex-end' }]}>
+          <View style={{ alignSelf: 'flex-end' }}>
+            {openRatings && (
+            <Animated.View
+              style={[galleryInteractionStyles.animatedContainer, {
+                opacity: fadeAnimRate,
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+              }]}
+            >
+              <IconButton
+                mode="outlined"
+                animated
+                icon={icons.like}
+                size={buttonSizes.medium}
+                style={galleryInteractionStyles.secondaryButton}
+                accessibilityLabel="Like Artwork"
+                testID="likeButton"
+                onPress={() => { likeArtwork(); }}
+              />
+              <GlobalText
+                style={[
+                  globalTextStyles.centeredText,
+                  galleryInteractionStyles.textLabelsStyle,
+                  { justifyContent: 'flex-end' },
+                ]}
+              >
+                like
+              </GlobalText>
+              <IconButton
+                mode="outlined"
+                animated
+                icon={icons.save}
+                size={buttonSizes.medium}
+                style={galleryInteractionStyles.secondaryButton}
+                accessibilityLabel="Save Artwork"
+                testID="saveButton"
+                onPress={() => saveArtwork()}
+              />
+              <GlobalText
+                style={[
+                  globalTextStyles.centeredText,
+                  galleryInteractionStyles.textLabelsStyle,
+                ]}
+              >
+                save
+              </GlobalText>
+              <IconButton
+                mode="outlined"
+                animated
+                icon={icons.dislike}
+                size={buttonSizes.medium}
+                style={galleryInteractionStyles.secondaryButton}
+                accessibilityLabel="Dislike Artwork"
+                testID="dislikeButton"
+                onPress={() => dislikeArtwork()}
+              />
+              <GlobalText
+                style={[
+                  globalTextStyles.centeredText,
+                  galleryInteractionStyles.textLabelsStyle,
+                ]}
+              >
+                dislike
+              </GlobalText>
+            </Animated.View>
+            )}
+            <IconButton
+              mode="outlined"
+              icon={openRatings ? icons.minus : ratingDisplayIcon}
+              size={buttonSizes.large}
+              style={rateArtworkContainerStyle}
+              accessibilityLabel="Options"
+              testID="options"
+              onPress={() => openCloseRating()}
+            />
+            <GlobalText
+              style={[
+                globalTextStyles.centeredText,
+                galleryInteractionStyles.textLabelsStyle,
+              ]}
+            >
+              rate
+            </GlobalText>
+          </View>
+        </View>
+      </View>
       <Snackbar
-        visible={visible}
-        style={
-          [artRatingButtonStyles.ratingsSnackBar]
-        }
-        onDismiss={() => setVisible(false)}
+        visible={visibleSmack}
+        style={{ alignContent: 'center', top: '0%' }}
+        onDismiss={() => setVisibleSnack(false)}
         action={{
           label: 'OK!',
           onPress: () => {
-            setVisible(false);
+            setVisibleSnack(false);
           },
         }}
       >
@@ -172,4 +226,4 @@ function ArtRatingButtons({
   );
 }
 
-export default ArtRatingButtons;
+export { ArtRatingButtons };

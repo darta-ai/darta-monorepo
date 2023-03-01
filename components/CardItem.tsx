@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Text, View, Image, Dimensions, TouchableOpacity,
+  View, Image, Dimensions, TouchableOpacity,
 } from 'react-native';
 import IconElement from './Icon';
 import { CardItemT } from '../types';
@@ -11,6 +11,7 @@ import styles, {
   STAR_ACTIONS,
   WHITE,
 } from '../assets/styles';
+import { GlobalText } from './GlobalElements/index';
 
 function CardItem({
   description,
@@ -50,30 +51,30 @@ function CardItem({
       {/* MATCHES */}
       {matches && (
         <View style={styles.matchesCardItem}>
-          <Text style={styles.matchesTextCardItem}>
+          <GlobalText style={styles.matchesTextCardItem}>
             <IconElement name="heart" color={WHITE} size={13} />
             {' '}
             {matches}
             % Match!
-          </Text>
+          </GlobalText>
         </View>
       )}
 
       {/* NAME */}
-      <Text style={nameStyle}>{name}</Text>
+      <GlobalText style={nameStyle}>{name}</GlobalText>
 
       {/* DESCRIPTION */}
       {description && (
-        <Text style={styles.descriptionCardItem}>{description}</Text>
+        <GlobalText style={styles.descriptionCardItem}>{description}</GlobalText>
       )}
 
       {/* STATUS */}
       {!description && (
         <View style={styles.status}>
           <View style={isOnline ? styles.online : styles.offline} />
-          <Text style={styles.statusText}>
+          <GlobalText style={styles.statusText}>
             {isOnline ? 'Online' : 'Offline'}
-          </Text>
+          </GlobalText>
         </View>
       )}
 

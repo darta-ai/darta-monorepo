@@ -2,13 +2,13 @@ import React from 'react';
 import {
   ScrollView,
   View,
-  Text,
   ImageBackground,
   TouchableOpacity,
 } from 'react-native';
 import { Icon, ProfileItem } from '../components';
 import DEMO from '../assets/data/demo';
 import styles, { WHITE } from '../assets/styles';
+import { GlobalText } from '../components/GlobalElements';
 
 function Profile() {
   const {
@@ -69,7 +69,7 @@ function Profile() {
 
           <TouchableOpacity style={styles.roundedButton}>
             <Icon name="chatbubble" size={20} color={WHITE} />
-            <Text style={styles.textButton}>Start chatting</Text>
+            <GlobalText style={styles.textButton}>Start chatting</GlobalText>
           </TouchableOpacity>
         </View>
       </ScrollView>

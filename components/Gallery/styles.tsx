@@ -19,65 +19,91 @@ export const galleryStyles = StyleSheet.create({
   },
 });
 
-export const navigationArtStyles = StyleSheet.create({
-  navigateContainerPortrait: {
-    position: 'absolute',
-    bottom: '0%',
+export const galleryInteractionStyles = StyleSheet.create({
+  containerPortrait: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
     height: '100%',
-    width: '80%',
   },
-  navigateContainerLandscape: {
-    position: 'absolute',
-    bottom: '0%',
-    left: '1%',
-    height: '100%',
-    width: '80%',
+  containerLandscape: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
   },
-  navigateRight: {
-    position: 'absolute',
-    bottom: '5%',
-    left: '0%',
+  containerPortraitFlex: {
+    flex: 1,
+    flexDirection: 'column-reverse',
+    justifyContent: 'flex-start',
+    alignSelf: 'flex-start',
+  },
+  containerLandscapeFlex: {
+    flex: 1,
+    flexDirection: 'column-reverse',
+    justifyContent: 'flex-start',
+    alignSelf: 'flex-start',
+  },
+  mainButtonPortrait: {
     borderRadius: 30,
-    opacity: 0.8,
-    backgroundColor: '#FFF',
+    opacity: 0.9,
+    backgroundColor: '#fff',
   },
-  navigateLeft: {
-    backgroundColor: '#FFF',
+  mainButtonLandscape: {
+    borderRadius: 30,
+    opacity: 0.9,
+    backgroundColor: '#fff',
+  },
+  secondaryButton: {
+    backgroundColor: '#fff',
+    color: '#666666',
     opacity: 0.9,
   },
-  animatedNavigationContainer: {
-    position: 'absolute',
-    top: '50%',
-    width: '100%',
-    height: '35%',
+  animatedContainer: {
     flex: 1,
-    paddingLeft: '1%',
-    paddingBottom: '5%',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-start',
-    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    flexDirection: 'column-reverse',
+  },
+  textLabelsStyle: {
+    fontSize: 11,
+    alignSelf: 'center',
+    opacity: 0.7,
+    textAlign: 'center',
   },
 });
 
-export const artRatingButtonStyles = StyleSheet.create({
-  ratingContainerPortrait: {
-    position: 'absolute',
-    bottom: '5%',
-    right: '0%',
-    borderRadius: 30,
-    opacity: 0.8,
-    backgroundColor: '#FFF',
+export const viewOptionsStyles = StyleSheet.create({
+  rotateScreenContainerPortrait: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    zIndex: 1,
+    opacity: 1,
   },
-  ratingContainerLandscape: {
-    top: '80%',
-    borderRadius: 30,
-    opacity: 0.85,
-    backgroundColor: '#FFF',
+  rotateScreenContainerLandscape: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    zIndex: 1,
+    opacity: 1,
   },
-  animatedRatingsContainer: {
+  buttons: {
+    backgroundColor: '#fff',
+    opacity: 0.9,
+  },
+  mainButtonLandScape: {
+    backgroundColor: '#fff',
+    opacity: 0.9,
+  },
+  viewOptionsContainer: {
     position: 'absolute',
-    top: '50%',
-    left: '85%',
+    borderColor: 'red',
+    left: '20%',
     width: '10%',
     height: '35%',
     paddingRight: '5%',
@@ -88,40 +114,9 @@ export const artRatingButtonStyles = StyleSheet.create({
     alignItems: 'flex-end',
     flexDirection: 'column',
   },
-  ratedContainer: {
-    position: 'absolute',
-    top: '75%',
-    left: '80%',
-    width: '10%',
-    height: '35%',
-    paddingBottom: '15%',
-    marginRight: '5%',
-  },
-  ratingButtonStyle: {
-    backgroundColor: '#FFF',
+  viewOptionsButtonStyle: {
+    backgroundColor: '#fff',
     opacity: 0.9,
-  },
-  ratingsSnackBar: {
-    alignContent: 'center',
-    flex: 1,
-  },
-});
-
-export const rotateButtonStyles = StyleSheet.create({
-  rotateScreenContainerPortrait: {
-    position: 'absolute',
-    backgroundColor: '#FFF',
-    top: '0%',
-    right: '0%',
-    opacity: 1,
-  },
-  rotateScreenContainerLandscape: {
-    position: 'absolute',
-    bottom: '0%',
-    left: '90%',
-    alignSelf: 'center',
-    backgroundColor: '#FFF',
-    opacity: 1,
   },
 });
 
@@ -140,5 +135,14 @@ export const artworkRatingStyles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: '#FFF',
     opacity: 1,
+  },
+});
+
+export const galleryComponentStyles = StyleSheet.create({
+  backgroundImageDimensionsPixels: {
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    zIndex: 2,
   },
 });

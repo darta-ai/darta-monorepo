@@ -5,20 +5,21 @@ import {
   View,
   ImageBackground,
   ImageSourcePropType,
+  ActivityIndicator,
 } from 'react-native';
 import { DataT } from '../../types';
 import { galleryStyles } from './styles';
 
-function ArtOnDisplay({
-  artOnDisplay,
+export function ArtOnDisplay({
+  dimensionsInches,
   backgroundImage,
-  artToDisplay,
+  artImage,
   wallHeight,
   backgroundImageDimensionsPixels,
 }: {
-    artOnDisplay: DataT
+    dimensionsInches: DataT['dimensionsInches'] | undefined
     backgroundImage: ImageSourcePropType,
-    artToDisplay: string,
+    artImage: string | undefined,
     wallHeight: number
     backgroundImageDimensionsPixels: any
 }) {
@@ -29,63 +30,72 @@ function ArtOnDisplay({
 
   const backgroundWidthInches = wallHeight * dimensionsMultiplierPortrait;
 
-  const { height: artHeightInches, width: artWidthInches } = artOnDisplay.dimensionsInches;
+  let artHeightInches;
+  let artWidthInches;
+  let artImageSize;
+  let artImageLocation;
+  if (dimensionsInches) {
+    ({ height: artHeightInches, width: artWidthInches } = dimensionsInches);
 
-  const pixelsPerInchHeight = backgroundImageDimensionsPixels.height / backgroundHeightInches;
-  const pixelsPerInchWidth = backgroundImageDimensionsPixels.width / backgroundWidthInches;
+    const pixelsPerInchHeight = backgroundImageDimensionsPixels.height / backgroundHeightInches;
+    const pixelsPerInchWidth = backgroundImageDimensionsPixels.width / backgroundWidthInches;
 
-  const artImageSize = {
-    height: (artHeightInches * pixelsPerInchHeight),
-    width: (artWidthInches * pixelsPerInchWidth),
-  };
+    artImageSize = {
+      height: (artHeightInches * pixelsPerInchHeight),
+      width: (artWidthInches * pixelsPerInchWidth),
+    };
 
-  const artHeightPixels = artHeightInches * pixelsPerInchHeight;
-  const artWidthPixels = artWidthInches * pixelsPerInchWidth;
+    const artHeightPixels = artHeightInches * pixelsPerInchHeight;
+    const artWidthPixels = artWidthInches * pixelsPerInchWidth;
 
-  const artImageLocation = {
-    top: (0.45 * backgroundImageDimensionsPixels.height) - (0.5 * artHeightPixels),
-    left: (0.485 * backgroundImageDimensionsPixels.width) - (0.5 * artWidthPixels),
-  };
-
+    artImageLocation = {
+      top: (0.45 * backgroundImageDimensionsPixels.height) - (0.5 * artHeightPixels),
+      left: (0.485 * backgroundImageDimensionsPixels.width) - (0.5 * artWidthPixels),
+    };
+  }
   const galleryStylesPortrait = StyleSheet.create({
     screenContainer: {
       width: backgroundImageDimensionsPixels.width,
       height: backgroundImageDimensionsPixels.height,
     },
     artContainer: {
-      top: artImageLocation.top,
-      left: artImageLocation.left,
+      top: artImageLocation?.top,
+      left: artImageLocation?.left,
     },
     artwork: {
       borderRadius: 0.5,
-      height: artImageSize.height,
-      width: artImageSize.width,
+      height: artImageSize?.height,
+      width: artImageSize?.width,
     },
   });
-  return (
-    <View style={{
-      zIndex: 0,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-    >
-      <ImageBackground
-        source={backgroundImage}
-        resizeMethod="resize"
+  if (artImageSize) {
+    return (
+      <View style={{
+        zIndex: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
       >
-        <View style={galleryStylesPortrait.screenContainer}>
-          <View style={galleryStylesPortrait.artContainer}>
-            <View style={galleryStyles.frameStyle}>
-              <Image
-                src={artToDisplay}
-                style={galleryStylesPortrait.artwork}
-              />
+        <ImageBackground
+          source={backgroundImage}
+          resizeMethod="resize"
+        >
+          <View style={galleryStylesPortrait.screenContainer}>
+            <View style={galleryStylesPortrait.artContainer}>
+              <View style={galleryStyles.frameStyle}>
+                <Image
+                  source={{ uri: artImage }}
+                  style={galleryStylesPortrait.artwork}
+                />
+              </View>
             </View>
           </View>
-        </View>
-      </ImageBackground>
-    </View>
+        </ImageBackground>
+      </View>
+    );
+  }
+
+  return (
+    <ActivityIndicator size="large" />
   );
 }
-
-export default ArtOnDisplay;
