@@ -12,6 +12,8 @@ import {
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
+  listenOrientationChange as lor,
+  removeOrientationListener as rol,
 } from 'react-native-responsive-screen';
 import {
   ArtOnDisplay,
@@ -40,6 +42,7 @@ export function Gallery({ artworkIds } : {artworkIds : string[]}) {
   const [artOnDisplay, setArtOnDisplay] = useState<DataT | undefined>();
   const [backgroundImage] = useState<ImageSourcePropType>(galleryWallRaw);
   const [userArtworkRatings, setUserArtworkRatings] = useState<UserArtworkRatings>();
+  const [isPortrait, setIsPortrait] = useState(true);
 
   useEffect(() => {
     const loadGallery = async () => {
@@ -61,7 +64,11 @@ export function Gallery({ artworkIds } : {artworkIds : string[]}) {
     }
   }, [artDisplayIndex]);
 
-  const [isPortrait, setIsPortrait] = useState(true);
+  // useEffect(() => {
+  //   lor();
+  //   return () => rol();
+  // }, []);
+
   const [openNav, setOpenNav] = useState<boolean>(false);
   const [openRatings, setOpenRatings] = useState<boolean>(false);
   const [openOptions, setOpenOptions] = useState<boolean>(false);
@@ -92,7 +99,6 @@ export function Gallery({ artworkIds } : {artworkIds : string[]}) {
       case OpenStateEnum.openNav:
         return { fadeAnim: fadeAnimNav, currentState: openNav };
       case OpenStateEnum.openRatings:
-        console.log('triggered', OpenStateEnum.openRatings);
         return { fadeAnim: fadeAnimRating, currentState: openRatings };
       case OpenStateEnum.openOptions:
         return { fadeAnim: fadeAnimOptions, currentState: openOptions };
@@ -201,17 +207,19 @@ export function Gallery({ artworkIds } : {artworkIds : string[]}) {
                 : [{ rotate: '90deg' }],
               backgroundColor: 'black',
             }]}
-            maximumZoomScale={10.0}
+            maximumZoomScale={3.5}
             scrollEnabled
             centerContent
           >
             <ArtOnDisplay
-              dimensionsInches={artOnDisplay?.dimensionsInches}
-              backgroundImage={backgroundImage}
               artImage={artOnDisplay?.image}
-              wallHeight={wallHeight}
+              backgroundImage={backgroundImage}
               backgroundImageDimensionsPixels={backgroundContainerDimensionsPixels}
+              dimensionsInches={artOnDisplay?.dimensionsInches}
               isPortrait={isPortrait}
+              wallHeight={wallHeight}
+              toggleArtForward={toggleArtForward}
+              toggleArtBackward={toggleArtBackward}
             />
             <View style={interactionContainer}>
               <View style={{

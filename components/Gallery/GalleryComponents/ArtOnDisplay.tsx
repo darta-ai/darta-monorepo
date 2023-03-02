@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Image,
   StyleSheet,
@@ -15,20 +15,48 @@ import { DataT } from '../../../types';
 import { galleryStyles } from '../galleryStyles';
 
 export function ArtOnDisplay({
-  dimensionsInches,
-  backgroundImage,
   artImage,
-  wallHeight,
+  backgroundImage,
   backgroundImageDimensionsPixels,
+  dimensionsInches,
   isPortrait,
+  wallHeight,
+  toggleArtForward,
+  toggleArtBackward,
 }: {
-    dimensionsInches: DataT['dimensionsInches'] | undefined
-    backgroundImage: ImageSourcePropType,
     artImage: string | undefined,
-    wallHeight: number
+    backgroundImage: ImageSourcePropType,
     backgroundImageDimensionsPixels: any
+    dimensionsInches: DataT['dimensionsInches'] | undefined
     isPortrait: boolean
+    wallHeight: number
+    toggleArtForward: ()=> void
+    toggleArtBackward: ()=> void
 }) {
+  const [touchX, setTouchX] = useState<number>(0);
+  const [touchY, setTouchY] = useState<number>(0);
+
+  const widthPercent = wp('50%');
+  console.log({ widthPercent });
+
+  const swipeArtwork = (pageX:number, pageY:number) => {
+    if (isPortrait) {
+      if (pageX - touchX > wp('50%')) {
+        toggleArtForward();
+      }
+      if (touchX - pageX > wp('50%')) {
+        toggleArtBackward();
+      }
+    } else {
+      if (pageY - touchY > hp('50%')) {
+        toggleArtForward();
+      }
+      if (touchY - pageY > hp('50%')) {
+        toggleArtBackward();
+      }
+    }
+  };
+
   const dimensionsMultiplierPortrait = (backgroundImageDimensionsPixels.width
     / backgroundImageDimensionsPixels.height);
 
@@ -85,9 +113,22 @@ export function ArtOnDisplay({
         source={backgroundImage}
         resizeMethod="resize"
       >
-        <View style={galleryStylesPortrait.screenContainer}>
+        <View
+          style={[galleryStylesPortrait.screenContainer, { borderWidth: 2 }]}
+          onTouchStart={({ nativeEvent: { pageX, pageY } }) => {
+            setTouchX(pageX);
+            setTouchY(pageY);
+          }}
+          onTouchEnd={({ nativeEvent: { pageX, pageY } }) => {
+            console.log({ pageX, touchX });
+            swipeArtwork(pageX, pageY);
+          }}
+        >
           <View style={galleryStylesPortrait.artContainer}>
-            <View style={galleryStyles.frameStyle}>
+
+            <View
+              style={galleryStyles.frameStyle}
+            >
               {artImage
                 ? (
                   <Image
@@ -103,7 +144,6 @@ export function ArtOnDisplay({
                     }}
                   />
                 )}
-
             </View>
           </View>
         </View>

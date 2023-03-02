@@ -8,8 +8,8 @@ export const galleryComponentStyles = StyleSheet.create({
   interactionContainerPortrait: {
     position: 'absolute',
     width: wp('95%'),
-    height: hp('40%'),
-    top: hp('35%'),
+    height: hp('15%'),
+    top: hp('65%'),
   },
   interactionContainerLandscape: {
     position: 'absolute',
@@ -19,9 +19,9 @@ export const galleryComponentStyles = StyleSheet.create({
   },
   viewContainerPortrait: {
     position: 'absolute',
-    width: wp('50%'),
-    left: wp('45%'),
-    height: hp('30%'),
+    width: wp('15%'),
+    left: wp('80%'),
+    height: hp('5%'),
     top: hp('2%'),
   },
   viewContainerLandscape: {
