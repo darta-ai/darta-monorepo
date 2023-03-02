@@ -7,8 +7,8 @@ import {
   ImageSourcePropType,
   ActivityIndicator,
 } from 'react-native';
-import { DataT } from '../../types';
-import { galleryStyles } from './styles';
+import { DataT } from '../../../types';
+import { galleryStyles } from '../galleryStyles';
 
 export function ArtOnDisplay({
   dimensionsInches,

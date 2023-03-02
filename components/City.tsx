@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import IconElement from './Icon';
+import IconElement from './GlobalElements/Icon';
 import styles, { DARK_GRAY } from '../assets/styles';
 import { GlobalText } from './GlobalElements/index';
 

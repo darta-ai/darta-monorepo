@@ -4,8 +4,8 @@ import {
   View,
   Animated,
 } from 'react-native';
-import { viewOptionsStyles, galleryInteractionStyles } from './styles';
-import { icons, buttonSizes } from '../globalVariables';
+import { viewOptionsStyles, galleryInteractionStyles } from '../galleryStyles';
+import { icons, buttonSizes } from '../../globalVariables';
 
 function GalleryViewOptions({
   isPortrait,

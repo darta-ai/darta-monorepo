@@ -2,7 +2,7 @@ import React from 'react';
 import {
   View, Image, Dimensions, TouchableOpacity,
 } from 'react-native';
-import IconElement from './Icon';
+import IconElement from './GlobalElements/Icon';
 import { CardItemT } from '../types';
 import styles, {
   DISLIKE_ACTIONS,

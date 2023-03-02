@@ -6,11 +6,11 @@ import {
   View,
 } from 'react-native';
 import { IconButton, Snackbar } from 'react-native-paper';
-import { galleryInteractionStyles } from './styles';
-import { icons, duration, buttonSizes } from '../globalVariables';
-import { GlobalText } from '../GlobalElements';
-import { globalTextStyles } from '../styles';
-import { UserArtworkRated } from '../../types';
+import { galleryInteractionStyles } from '../galleryStyles';
+import { icons, duration, buttonSizes } from '../../globalVariables';
+import { GlobalText } from '../../GlobalElements';
+import { UserArtworkRated } from '../../../types';
+import { globalTextStyles } from '../../styles';
 
 function ArtRatingButtons({
   isPortrait,

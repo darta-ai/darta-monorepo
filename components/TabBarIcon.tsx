@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import IconElement from './Icon';
+import IconElement from './GlobalElements/Icon';
 import styles, { DARK_GRAY, PRIMARY_COLOR } from '../assets/styles';
 import { TabBarIconT } from '../types';
 

@@ -12,16 +12,16 @@ import {
   NavigateArt,
   ArtRatingButtons,
   GalleryViewOptions,
-} from './Gallery/index';
-import { galleryComponentStyles } from './styles';
-import { galleryDimensionsPortrait, duration, galleryDimensionsLandscape } from './globalVariables';
-import { DataT } from '../types';
-import { TombstonePortrait, TombstoneLandscape } from './Tombstone/index';
+} from './GalleryComponents/index';
+import { galleryComponentStyles } from './galleryStyles';
+import { galleryDimensionsPortrait, duration, galleryDimensionsLandscape } from '../globalVariables';
+import { DataT } from '../../types';
+import { TombstonePortrait, TombstoneLandscape } from '../Tombstone/index';
 
 // import kitchen2 from '../backgrounds/kitchen2.png';
 // import HannahWall from '../backgrounds/HannahWall.png';
 // import WallHorizontal from '../backgrounds/WallHorizontal.png';
-const galleryWallRaw = require('../backgrounds/galleryWallRaw.png');
+const galleryWallRaw = require('../../backgrounds/galleryWallRaw.png');
 
 export function Gallery({ galleryImages } : {galleryImages : DataT[]}) {
   const [fullGallery] = useState<DataT[]>(galleryImages);

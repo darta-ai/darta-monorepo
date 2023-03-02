@@ -34,10 +34,6 @@ export const galleryComponentStyles = StyleSheet.create({
 
 const baseText = { fontFamily: 'Avenir Next' };
 
-export const globalInteractionGallery = StyleSheet.create({
-
-});
-
 export const globalTextStyles = StyleSheet.create({
   baseText: {
     ...baseText,

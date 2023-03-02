@@ -9,7 +9,7 @@ import { DataT } from '../../types';
 import { globalTextStyles } from '../styles';
 import { icons, buttonSizes } from '../globalVariables';
 import { GlobalText } from '../GlobalElements';
-import { galleryInteractionStyles } from '../Gallery/styles';
+import { galleryInteractionStyles } from '../Gallery/galleryStyles';
 
 const artworkPortraitStyle = {
   backgroundColor: '#FFF',

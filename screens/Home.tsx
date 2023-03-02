@@ -6,7 +6,7 @@ import {
   ImageCollection,
 } from '../firebase/hooks';
 import styles from '../assets/styles';
-import { Gallery } from '../components/Gallery';
+import { Gallery } from '../components/Gallery/Gallery';
 
 const images2 = [
   '4d8b94774eb68a1b2c002a78',

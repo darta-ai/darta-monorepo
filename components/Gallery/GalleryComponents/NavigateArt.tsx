@@ -6,10 +6,10 @@ import {
   View,
 } from 'react-native';
 import { IconButton } from 'react-native-paper';
-import { galleryInteractionStyles } from './styles';
-import { icons, duration } from '../globalVariables';
-import { GlobalText } from '../GlobalElements';
-import { globalTextStyles } from '../styles';
+import { galleryInteractionStyles } from '../galleryStyles';
+import { icons, duration } from '../../globalVariables';
+import { GlobalText } from '../../GlobalElements';
+import { globalTextStyles } from '../../styles';
 
 export function NavigateArt({
   isPortrait,

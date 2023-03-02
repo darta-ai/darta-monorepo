@@ -2,6 +2,43 @@ import {
   StyleSheet,
 } from 'react-native';
 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
+export const galleryComponentStyles = StyleSheet.create({
+  interactionContainerPortrait: {
+    position: 'absolute',
+    width: wp('95%'),
+    height: hp('40%'),
+    top: hp('35%'),
+  },
+  interactionContainerLandscape: {
+    position: 'absolute',
+    width: hp('80%'),
+    height: wp('45%'),
+    top: wp('50%'),
+  },
+  viewContainerPortrait: {
+    position: 'absolute',
+    width: wp('50%'),
+    left: wp('45%'),
+    height: hp('30%'),
+    top: hp('2%'),
+  },
+  viewContainerLandscape: {
+    position: 'absolute',
+    width: hp('50%'),
+    height: wp('30%'),
+    left: wp('60%'),
+    top: wp('2%'),
+  },
+  backgroundImageDimensionsPixels: {
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    zIndex: 2,
+  },
+});
+
 export const galleryStyles = StyleSheet.create({
   container: {
     height: '100%',
@@ -131,18 +168,9 @@ export const artworkRatingStyles = StyleSheet.create({
   artworkRatingLandscape: {
     position: 'absolute',
     top: '0%',
-    left: '1=0%',
+    left: '10%',
     alignSelf: 'center',
     backgroundColor: '#FFF',
     opacity: 1,
-  },
-});
-
-export const galleryComponentStyles = StyleSheet.create({
-  backgroundImageDimensionsPixels: {
-    height: '100%',
-    width: '100%',
-    position: 'absolute',
-    zIndex: 2,
   },
 });
