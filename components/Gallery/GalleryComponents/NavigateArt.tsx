@@ -1,58 +1,34 @@
-import React, {
-  useRef, Dispatch, SetStateAction,
-} from 'react';
+import React from 'react';
 import {
   Animated,
   View,
 } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { galleryInteractionStyles } from '../galleryStyles';
-import { icons, duration } from '../../globalVariables';
+import { icons } from '../../globalVariables';
 import { GlobalText } from '../../GlobalElements';
 import { globalTextStyles } from '../../styles';
+import { OpenStateEnum } from '../../../types';
 
 export function NavigateArt({
+  fadeAnimNav,
   isPortrait,
-  openNav,
+  openIdentifier,
   toggleArtForward,
   toggleArtBackward,
   toggleArtDetails,
-  setOpenNav,
+  toggleButtonView,
 } : {
+  fadeAnimNav: Animated.Value,
   isPortrait: boolean
-  openNav: boolean
+  openIdentifier: OpenStateEnum
   toggleArtForward: ()=> void
   toggleArtBackward: ()=> void
   toggleArtDetails: ()=> void
-  setOpenNav: Dispatch<SetStateAction<boolean>>
+  toggleButtonView:
+  // eslint-disable-next-line
+  (openIdentifier: OpenStateEnum) => void
 }) {
-  const fadeAnimNav = useRef(new Animated.Value(1)).current;
-
-  const fadeIn = () => {
-    setOpenNav(!openNav);
-    Animated.timing(fadeAnimNav, {
-      toValue: 1,
-      duration,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const fadeOut = async () => {
-    Animated.timing(fadeAnimNav, {
-      toValue: 0,
-      duration,
-      useNativeDriver: true,
-    }).start(() => setOpenNav(!openNav));
-  };
-
-  const openClose = (): void => {
-    if (openNav) {
-      fadeOut();
-    } else {
-      fadeIn();
-    }
-  };
-
   const navigateContainer = isPortrait
     ? galleryInteractionStyles.containerPortrait
     : galleryInteractionStyles.containerLandscape;
@@ -73,7 +49,7 @@ export function NavigateArt({
             accessibilityLabel="Navigate Left"
             testID="leftScrollButton"
             onPress={() => toggleArtForward()}
-            onLongPress={() => openClose()}
+            onLongPress={() => toggleButtonView(openIdentifier)}
           />
           <GlobalText
             style={[
@@ -84,7 +60,6 @@ export function NavigateArt({
             move right
           </GlobalText>
         </View>
-        {openNav && (
         <Animated.View
           style={[galleryInteractionStyles.animatedContainer, {
             opacity: fadeAnimNav,
@@ -126,7 +101,6 @@ export function NavigateArt({
             onPress={() => toggleArtDetails()}
           />
         </Animated.View>
-        )}
       </View>
     </View>
   );

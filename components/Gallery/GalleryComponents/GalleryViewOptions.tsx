@@ -6,19 +6,21 @@ import {
 } from 'react-native';
 import { viewOptionsStyles, galleryInteractionStyles } from '../galleryStyles';
 import { icons, buttonSizes } from '../../globalVariables';
+import { OpenStateEnum } from '../../../types';
 
 function GalleryViewOptions({
-  isPortrait,
-  openOptions,
   fadeAnimOptions,
+  isPortrait,
+  openIdentifier,
+  toggleButtonView,
   flipOrientation,
-  toggleOptionsView,
 }: {
     isPortrait: boolean
-    openOptions: boolean
     fadeAnimOptions: Animated.Value
+    openIdentifier: OpenStateEnum
+    // eslint-disable-next-line
+    toggleButtonView:(openIdentifier: OpenStateEnum) => void
     flipOrientation: () => void
-    toggleOptionsView: () => void
 }) {
   const rotateScreenContainerStyle = isPortrait
     ? viewOptionsStyles.rotateScreenContainerPortrait
@@ -32,9 +34,9 @@ function GalleryViewOptions({
         mode="outlined"
         style={viewOptionsStyles.buttons}
         testID="rightScrollButton"
-        onPress={() => toggleOptionsView()}
+        onPress={() => toggleButtonView(openIdentifier)}
       />
-      {openOptions && (
+      {/* {openOptions && ( */}
       <Animated.View
         style={[galleryInteractionStyles.animatedContainer, {
           opacity: fadeAnimOptions,
@@ -51,7 +53,7 @@ function GalleryViewOptions({
           onPress={() => flipOrientation()}
         />
       </Animated.View>
-      )}
+      {/* )} */}
     </View>
   );
 }

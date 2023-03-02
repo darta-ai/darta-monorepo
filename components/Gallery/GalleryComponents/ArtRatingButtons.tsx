@@ -1,5 +1,5 @@
 import React, {
-  useState, useRef, useEffect, Dispatch, SetStateAction,
+  useState, useEffect,
 } from 'react';
 import {
   Animated,
@@ -7,28 +7,33 @@ import {
 } from 'react-native';
 import { IconButton, Snackbar } from 'react-native-paper';
 import { galleryInteractionStyles } from '../galleryStyles';
-import { icons, duration, buttonSizes } from '../../globalVariables';
+import { icons, buttonSizes } from '../../globalVariables';
 import { GlobalText } from '../../GlobalElements';
-import { UserArtworkRated } from '../../../types';
+import { UserArtworkRated, OpenStateEnum } from '../../../types';
 import { globalTextStyles } from '../../styles';
 
 function ArtRatingButtons({
+  artOnDisplayId,
+  fadeAnimRating,
   isPortrait,
+  openIdentifier,
   openRatings,
   userArtworkRatings,
-  artOnDisplayId,
+  toggleButtonView,
   userArtworkRated,
-  setOpenRatings,
 } : {
+    artOnDisplayId:string | undefined
+    fadeAnimRating: Animated.Value
     isPortrait:boolean
+    openIdentifier: OpenStateEnum
     openRatings:boolean
     userArtworkRatings: any
-    artOnDisplayId:string | undefined
+    // eslint-disable-next-line
+    toggleButtonView:(openIdentifier: OpenStateEnum) => void
     // eslint-disable-next-line no-unused-vars
     userArtworkRated: (arg0: UserArtworkRated) => void
-    setOpenRatings:Dispatch<SetStateAction<boolean>>
+
   }) {
-  const fadeAnimRate = useRef(new Animated.Value(1)).current;
   const [visibleSmack, setVisibleSnack] = useState(false);
   const [snackBarText, setSnackBarText] = useState('hey hey 👋');
   const [ratingDisplayIcon, setRatingDisplayIcon] = useState<string>(icons.menu);
@@ -42,31 +47,6 @@ function ArtRatingButtons({
     }
   }, [artOnDisplayId, userArtworkRatings]);
 
-  const fadeInRating = () => {
-    setOpenRatings(!openRatings);
-    Animated.timing(fadeAnimRate, {
-      toValue: 1,
-      duration,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const fadeOutRating = async () => {
-    Animated.timing(fadeAnimRate, {
-      toValue: 0,
-      duration,
-      useNativeDriver: true,
-    }).start(() => setOpenRatings(!openRatings));
-  };
-
-  const openCloseRating = (): void => {
-    if (openRatings) {
-      fadeOutRating();
-    } else {
-      fadeInRating();
-    }
-  };
-
   const saveArtwork = () => {
     if (artOnDisplayId) {
       userArtworkRated({
@@ -75,7 +55,7 @@ function ArtRatingButtons({
         },
       });
       setSnackBarText('Saved 💛😍');
-      openCloseRating();
+      toggleButtonView(openIdentifier);
       setVisibleSnack(true);
     }
   };
@@ -88,7 +68,7 @@ function ArtRatingButtons({
         },
       });
       setSnackBarText('Liked 👍😏');
-      openCloseRating();
+      toggleButtonView(openIdentifier);
       setVisibleSnack(true);
     }
   };
@@ -101,7 +81,7 @@ function ArtRatingButtons({
         },
       });
       setSnackBarText('Disliked 👎😒');
-      openCloseRating();
+      toggleButtonView(openIdentifier);
       setVisibleSnack(true);
     }
   };
@@ -123,10 +103,9 @@ function ArtRatingButtons({
       <View style={ratingContainer}>
         <View style={[flexContainer, { alignSelf: 'flex-end' }]}>
           <View style={{ alignSelf: 'flex-end' }}>
-            {openRatings && (
             <Animated.View
               style={[galleryInteractionStyles.animatedContainer, {
-                opacity: fadeAnimRate,
+                opacity: fadeAnimRating,
                 flexDirection: 'column',
                 justifyContent: 'flex-end',
                 alignItems: 'center',
@@ -188,7 +167,6 @@ function ArtRatingButtons({
                 dislike
               </GlobalText>
             </Animated.View>
-            )}
             <IconButton
               mode="outlined"
               icon={openRatings ? icons.minus : ratingDisplayIcon}
@@ -196,7 +174,7 @@ function ArtRatingButtons({
               style={rateArtworkContainerStyle}
               accessibilityLabel="Options"
               testID="options"
-              onPress={() => openCloseRating()}
+              onPress={() => toggleButtonView(openIdentifier)}
             />
             <GlobalText
               style={[

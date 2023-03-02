@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 export interface UserArtworkRated {
   [key: string]: {
      like?: boolean,
@@ -6,6 +7,20 @@ export interface UserArtworkRated {
   };
 }
 
+// eslint-disable-next-line no-shadow
+export enum OpenStateEnum {
+  openNav = 'openNav',
+  openRatings = 'openRatings',
+  openOptions = 'openOptions',
+}
+
+export type UserArtworkRatings = {
+  [key : string] : {
+    like? : string,
+    save? : string,
+    dislike? : string
+  }
+}
 export interface Icons {
   [key: string] : string
 }

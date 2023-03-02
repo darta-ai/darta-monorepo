@@ -7,6 +7,10 @@ import {
   ImageSourcePropType,
   ActivityIndicator,
 } from 'react-native';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 import { DataT } from '../../../types';
 import { galleryStyles } from '../galleryStyles';
 
@@ -16,12 +20,14 @@ export function ArtOnDisplay({
   artImage,
   wallHeight,
   backgroundImageDimensionsPixels,
+  isPortrait,
 }: {
     dimensionsInches: DataT['dimensionsInches'] | undefined
     backgroundImage: ImageSourcePropType,
     artImage: string | undefined,
     wallHeight: number
     backgroundImageDimensionsPixels: any
+    isPortrait: boolean
 }) {
   const dimensionsMultiplierPortrait = (backgroundImageDimensionsPixels.width
     / backgroundImageDimensionsPixels.height);
@@ -68,34 +74,40 @@ export function ArtOnDisplay({
       width: artImageSize?.width,
     },
   });
-  if (artImageSize) {
-    return (
-      <View style={{
-        zIndex: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
+  return (
+    <View style={{
+      zIndex: 0,
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+    >
+      <ImageBackground
+        source={backgroundImage}
+        resizeMethod="resize"
       >
-        <ImageBackground
-          source={backgroundImage}
-          resizeMethod="resize"
-        >
-          <View style={galleryStylesPortrait.screenContainer}>
-            <View style={galleryStylesPortrait.artContainer}>
-              <View style={galleryStyles.frameStyle}>
-                <Image
-                  source={{ uri: artImage }}
-                  style={galleryStylesPortrait.artwork}
-                />
-              </View>
+        <View style={galleryStylesPortrait.screenContainer}>
+          <View style={galleryStylesPortrait.artContainer}>
+            <View style={galleryStyles.frameStyle}>
+              {artImage
+                ? (
+                  <Image
+                    source={{ uri: artImage }}
+                    style={galleryStylesPortrait.artwork}
+                  />
+                )
+                : (
+                  <ActivityIndicator
+                    style={{
+                      top: isPortrait ? hp('35%') : hp('20%'),
+                      justifyContent: 'center',
+                    }}
+                  />
+                )}
+
             </View>
           </View>
-        </ImageBackground>
-      </View>
-    );
-  }
-
-  return (
-    <ActivityIndicator size="large" />
+        </View>
+      </ImageBackground>
+    </View>
   );
 }
