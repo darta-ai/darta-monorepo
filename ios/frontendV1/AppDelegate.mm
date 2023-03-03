@@ -1,11 +1,13 @@
 #import "AppDelegate.h"
 #import "Firebase.h"
+#import "Orientation.h"
 
 #import <React/RCTBundleURLProvider.h>
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+
 {
   [FIRApp configure];
   self.moduleName = @"frontendV1";
@@ -17,6 +19,8 @@
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+
+
 {
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];

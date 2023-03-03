@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* frontendV1Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* frontendV1Tests.m */; };
-		013D2A0A0AB6545CEFE843B0 /* Pods_frontendV1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA24E6B52A08FF821351807 /* Pods_frontendV1.framework */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -32,6 +31,8 @@
 		C16CBB5529968EFC00483254 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16CBB4529968EFB00483254 /* MaterialIcons.ttf */; };
 		C1B04B7F29956483009D8487 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = C1B04B7E29956483009D8487 /* fonts */; };
 		C1BB97352994A78C00BCAE3E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C1BB97342994A78C00BCAE3E /* GoogleService-Info.plist */; };
+		C1C65EDC29B2999E0016080B /* Pods_frontendV1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA24E6B52A08FF821351807 /* Pods_frontendV1.framework */; };
+		C1C65EDD29B2999E0016080B /* Pods_frontendV1.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA24E6B52A08FF821351807 /* Pods_frontendV1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +44,20 @@
 			remoteInfo = frontendV1;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C1C65EDE29B2999E0016080B /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C1C65EDD29B2999E0016080B /* Pods_frontendV1.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		00E356EE1AD99517003FC87E /* frontendV1Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = frontendV1Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -95,7 +110,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				013D2A0A0AB6545CEFE843B0 /* Pods_frontendV1.framework in Frameworks */,
+				C1C65EDC29B2999E0016080B /* Pods_frontendV1.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,6 +260,7 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				B988F83CBA626B2C1AA083F6 /* [CP] Embed Pods Frameworks */,
 				F786E304295DDE20080F7C58 /* [CP-User] [RNFB] Core Configuration */,
+				C1C65EDE29B2999E0016080B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -541,7 +557,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CD3E1BD0503D5236472B4C6D /* Pods-frontendV1.debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Q48593UT73;
@@ -570,7 +587,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 148791C21F17A1C9EB068A82 /* Pods-frontendV1.release.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Q48593UT73;

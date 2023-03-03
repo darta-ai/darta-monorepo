@@ -1,4 +1,5 @@
 import React from 'react';
+// import Orientation from 'react-native-orientation-locker';
 import {
   View,
   TouchableOpacity,

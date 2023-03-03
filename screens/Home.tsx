@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, ImageBackground } from 'react-native';
 // import CardStack, { Card } from "react-native-card-stack-swiper";
 // import {getImageCollection} from '../firebase/firebase'
-import {
-  ImageCollection,
-} from '../firebase/hooks';
 import styles from '../assets/styles';
 import { Gallery } from '../components/Gallery/Gallery';
 
@@ -50,42 +47,15 @@ const images2 = [
 ];
 
 function Home() {
-  const [fullGallery, setFullGallery] = useState<any[]>([]);
-
-  const getImages = async (docIds:string[]) => {
-    const results: any[] = await Promise.all(docIds.map(async (docID:string): Promise<any> => {
-      let artwork;
-      await ImageCollection.doc(docID).get().then((doc) => {
-        if (doc.exists) {
-          ({ artwork } = doc.data());
-        }
-      }).catch((e) => {
-        console.log('!!!! error', { e });
-        throw new Error(`No image exists for id ${docID}`);
-      });
-      return artwork;
-    }));
-    setFullGallery(results);
-  };
-
-  useEffect(() => {
-    const asyncGetImages = async () => {
-      await getImages(images2);
-    };
-    asyncGetImages();
-  }, []);
   return (
     <ImageBackground
       source={require('../assets/images/bg.png')}
       style={styles.bg}
     >
       <View style={styles.containerHome}>
-        {fullGallery.length
-          ? (
-            <Gallery
-              artworkIds={images2}
-            />
-          ) : null}
+        <Gallery
+          artworkIds={images2}
+        />
       </View>
     </ImageBackground>
   );

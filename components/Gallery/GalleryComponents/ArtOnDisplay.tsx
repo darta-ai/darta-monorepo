@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Image,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   ImageSourcePropType,
   ActivityIndicator,
 } from 'react-native';
+import Orientation from 'react-native-orientation-locker';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -36,22 +37,20 @@ export function ArtOnDisplay({
   const [touchX, setTouchX] = useState<number>(0);
   const [touchY, setTouchY] = useState<number>(0);
 
-  const widthPercent = wp('50%');
-  console.log({ widthPercent });
-
   const swipeArtwork = (pageX:number, pageY:number) => {
     if (isPortrait) {
-      if (pageX - touchX > wp('50%')) {
+      // Y axis is to prevent the pinch to zoom resulting in a touch
+      if ((pageX - touchX > wp('55%')) && (pageY - touchY < hp('25%'))) {
         toggleArtForward();
       }
-      if (touchX - pageX > wp('50%')) {
+      if (touchX - pageX > wp('55%') && (pageY - touchY < hp('25%'))) {
         toggleArtBackward();
       }
     } else {
-      if (pageY - touchY > hp('50%')) {
+      if (pageY - touchY > hp('25%') && (pageX - touchX < wp('25%'))) {
         toggleArtForward();
       }
-      if (touchY - pageY > hp('50%')) {
+      if (touchY - pageY > hp('25%') && (pageX - touchX < wp('25%'))) {
         toggleArtBackward();
       }
     }
@@ -105,6 +104,8 @@ export function ArtOnDisplay({
   return (
     <View style={{
       zIndex: 0,
+      height: '100%',
+      width: '100%',
       justifyContent: 'center',
       alignItems: 'center',
     }}
@@ -114,13 +115,14 @@ export function ArtOnDisplay({
         resizeMethod="resize"
       >
         <View
-          style={[galleryStylesPortrait.screenContainer, { borderWidth: 2 }]}
+          style={galleryStylesPortrait.screenContainer}
           onTouchStart={({ nativeEvent: { pageX, pageY } }) => {
             setTouchX(pageX);
             setTouchY(pageY);
           }}
+          // onTouchMove={({ nativeEvent: { pageX, pageY } }) => {
+          // }}
           onTouchEnd={({ nativeEvent: { pageX, pageY } }) => {
-            console.log({ pageX, touchX });
             swipeArtwork(pageX, pageY);
           }}
         >

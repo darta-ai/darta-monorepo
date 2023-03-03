@@ -12,9 +12,8 @@ import {
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-  listenOrientationChange as lor,
-  removeOrientationListener as rol,
 } from 'react-native-responsive-screen';
+import { OrientationLocker, PORTRAIT } from 'react-native-orientation-locker';
 import {
   ArtOnDisplay,
   NavigateArt,
@@ -27,16 +26,23 @@ import {
   duration,
   galleryDimensionsLandscape,
 } from '../globalVariables';
-import { DataT, OpenStateEnum, UserArtworkRatings } from '../../types';
+import {
+  DataT, OpenStateEnum, UserArtworkRatings, OrientationsEnum,
+} from '../../types';
+
 import { TombstonePortrait, TombstoneLandscape } from '../Tombstone/index';
 import { getImages } from './galleryFunctions';
 
 // import kitchen2 from '../backgrounds/kitchen2.png';
-// import HannahWall from '../backgrounds/HannahWall.png';
-// import WallHorizontal from '../backgrounds/WallHorizontal.png';
+// import HannahWall = require('../backgrounds/HannahWall.png');
+// import WallHorizontal = require('../backgrounds/WallHorizontal.png');
 const galleryWallRaw = require('../../backgrounds/galleryWallRaw.png');
 
-export function Gallery({ artworkIds } : {artworkIds : string[]}) {
+export function Gallery({
+  artworkIds,
+} : {
+  artworkIds : string[],
+}) {
   const [fullGallery, setFullGallery] = useState<DataT[]>();
   const [artDisplayIndex, setArtDisplayIndex] = useState<number>(0);
   const [artOnDisplay, setArtOnDisplay] = useState<DataT | undefined>();
@@ -63,11 +69,6 @@ export function Gallery({ artworkIds } : {artworkIds : string[]}) {
       setArtOnDisplay(fullGallery.at(artDisplayIndex));
     }
   }, [artDisplayIndex]);
-
-  // useEffect(() => {
-  //   lor();
-  //   return () => rol();
-  // }, []);
 
   const [openNav, setOpenNav] = useState<boolean>(false);
   const [openRatings, setOpenRatings] = useState<boolean>(false);
@@ -148,6 +149,10 @@ export function Gallery({ artworkIds } : {artworkIds : string[]}) {
     fadeOutButtons(OpenStateEnum.openOptions, fadeAnimOptions);
   };
 
+  const screenRotation = (orientation:string) => {
+
+  };
+
   const backgroundContainerDimensionsPixels = isPortrait
     ? { ...galleryDimensionsPortrait } : { ...galleryDimensionsLandscape };
 
@@ -158,7 +163,7 @@ export function Gallery({ artworkIds } : {artworkIds : string[]}) {
   };
 
   const toggleArtForward = () => {
-    const numberOfArtworks = fullGallery.length;
+    const numberOfArtworks = fullGallery?.length ?? 0;
     const currentDisplayIndex = artDisplayIndex;
     if (currentDisplayIndex + 1 >= numberOfArtworks) {
       setArtDisplayIndex(0);
@@ -167,7 +172,7 @@ export function Gallery({ artworkIds } : {artworkIds : string[]}) {
     }
   };
   const toggleArtBackward = () => {
-    const numberOfArtworks = fullGallery.length;
+    const numberOfArtworks = fullGallery?.length ?? 0;
     const currentDisplayIndex = artDisplayIndex;
     if (currentDisplayIndex === 0) {
       setArtDisplayIndex(numberOfArtworks - 1);
@@ -190,15 +195,22 @@ export function Gallery({ artworkIds } : {artworkIds : string[]}) {
     : galleryComponentStyles.viewContainerLandscape;
 
   return (
-    <View style={{
-      justifyContent: 'center',
-      alignItems: 'center',
-      left: isPortrait ? undefined : '10%',
-      height: isPortrait ? hp('80%') : hp('80%'),
-      width: isPortrait ? wp('95%') : wp('75%'),
-    }}
+    <View
+      style={{
+        justifyContent: 'center',
+        alignItems: 'center',
+        left: isPortrait ? undefined : '10%',
+        height: isPortrait ? hp('80%') : hp('80%'),
+        width: isPortrait ? wp('95%') : wp('75%'),
+      }}
     >
-
+      <OrientationLocker
+        orientation={PORTRAIT}
+        onDeviceChange={(ori) => {
+          console.log(ori);
+          setIsPortrait(!isPortrait);
+        }}
+      />
       {showArtDetails
         ? (
           <ScrollView

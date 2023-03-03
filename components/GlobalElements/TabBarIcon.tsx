@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
-import IconElement from './GlobalElements/Icon';
-import styles, { DARK_GRAY, PRIMARY_COLOR } from '../assets/styles';
-import { TabBarIconT } from '../types';
+import IconElement from './IconElement';
+import styles, { DARK_GRAY, PRIMARY_COLOR } from '../../assets/styles';
+import { TabBarIconT } from '../../types';
 
 function TabBarIcon({ focused, icon }: TabBarIconT) {
   const iconFocused = focused ? PRIMARY_COLOR : DARK_GRAY;

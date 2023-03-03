@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import IconElement from './GlobalElements/Icon';
+import IconElement from './GlobalElements/IconElement';
 import { ProfileItemT } from '../types';
 import styles, { DARK_GRAY, WHITE } from '../assets/styles';
 

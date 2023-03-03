@@ -14,6 +14,13 @@ export enum OpenStateEnum {
   openOptions = 'openOptions',
 }
 
+export enum OrientationsEnum {
+  landscapeLeft = 'LANDSCAPE-LEFT',
+  portraitUp = 'PORTRAIT-UPSIDEDOWN',
+  landscapeRight = 'LANDSCAPE-RIGHT',
+  portrait = 'PORTRAIT'
+}
+
 export type UserArtworkRatings = {
   [key : string] : {
     like? : string,

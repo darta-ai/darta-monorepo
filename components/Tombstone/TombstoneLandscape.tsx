@@ -21,6 +21,8 @@ export function TombstoneLandscape({ artOnDisplay, toggleArtDetails }:
 
   const dimensionsInches = artToDisplay?.dimensionsInches;
 
+  console.log('~~~ toombstone landscape');
+
   const height = dimensionsInches?.height;
   const width = dimensionsInches?.width;
 

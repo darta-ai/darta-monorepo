@@ -19,6 +19,8 @@ export function TombstonePortrait({ artOnDisplay, toggleArtDetails }:
   {artOnDisplay:DataT | undefined, toggleArtDetails: () => void}) {
   const [artToDisplay] = useState<DataT | undefined>(artOnDisplay);
 
+  console.log('~~~ toombstone portrait');
+
   const dimensionsInches = artToDisplay?.dimensionsInches;
 
   const height = dimensionsInches?.height;
