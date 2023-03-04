@@ -13,6 +13,8 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		4408B615B247B0AF76AA261D /* Pods_frontendV1_frontendV1Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 088EF6A28D60730D8C261438 /* Pods_frontendV1_frontendV1Tests.framework */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		C15368F029B2DBEE0010C456 /* Pods_frontendV1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA24E6B52A08FF821351807 /* Pods_frontendV1.framework */; };
+		C15368F129B2DBEE0010C456 /* Pods_frontendV1.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA24E6B52A08FF821351807 /* Pods_frontendV1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C16CBB4629968EFC00483254 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16CBB3629968EFB00483254 /* Fontisto.ttf */; };
 		C16CBB4729968EFC00483254 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16CBB3729968EFB00483254 /* Octicons.ttf */; };
 		C16CBB4829968EFC00483254 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16CBB3829968EFB00483254 /* Feather.ttf */; };
@@ -31,8 +33,6 @@
 		C16CBB5529968EFC00483254 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16CBB4529968EFB00483254 /* MaterialIcons.ttf */; };
 		C1B04B7F29956483009D8487 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = C1B04B7E29956483009D8487 /* fonts */; };
 		C1BB97352994A78C00BCAE3E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C1BB97342994A78C00BCAE3E /* GoogleService-Info.plist */; };
-		C1C65EDC29B2999E0016080B /* Pods_frontendV1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA24E6B52A08FF821351807 /* Pods_frontendV1.framework */; };
-		C1C65EDD29B2999E0016080B /* Pods_frontendV1.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA24E6B52A08FF821351807 /* Pods_frontendV1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,13 +46,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C1C65EDE29B2999E0016080B /* Embed Frameworks */ = {
+		C15368F229B2DBEE0010C456 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C1C65EDD29B2999E0016080B /* Pods_frontendV1.framework in Embed Frameworks */,
+				C15368F129B2DBEE0010C456 /* Pods_frontendV1.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -110,7 +110,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C1C65EDC29B2999E0016080B /* Pods_frontendV1.framework in Frameworks */,
+				C15368F029B2DBEE0010C456 /* Pods_frontendV1.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,7 +260,7 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				B988F83CBA626B2C1AA083F6 /* [CP] Embed Pods Frameworks */,
 				F786E304295DDE20080F7C58 /* [CP-User] [RNFB] Core Configuration */,
-				C1C65EDE29B2999E0016080B /* Embed Frameworks */,
+				C15368F229B2DBEE0010C456 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -507,6 +507,7 @@
 			baseConfigurationReference = 02E4963986F3845457FA6F89 /* Pods-frontendV1-frontendV1Tests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = Q48593UT73;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -535,6 +536,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = Q48593UT73;
 				INFOPLIST_FILE = frontendV1Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -564,12 +566,14 @@
 				DEVELOPMENT_TEAM = Q48593UT73;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = frontendV1/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "d a r t a";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				"OTHER_CODE_SIGN_FLAGS[sdk=*]" = "--generate-entitlement-der";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -593,12 +597,14 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Q48593UT73;
 				INFOPLIST_FILE = frontendV1/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "d a r t a";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				"OTHER_CODE_SIGN_FLAGS[sdk=*]" = "--generate-entitlement-der";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
