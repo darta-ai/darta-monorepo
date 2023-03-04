@@ -13,13 +13,15 @@ function GalleryViewOptions({
   isPortrait,
   localButtonSizes,
   openIdentifier,
+  openOptions,
   toggleButtonView,
   flipOrientation,
 }: {
-    isPortrait: boolean
     fadeAnimOptions: Animated.Value
-    openIdentifier: OpenStateEnum
+    isPortrait: boolean
     localButtonSizes: any
+    openIdentifier: OpenStateEnum
+    openOptions: boolean
     // eslint-disable-next-line
     toggleButtonView:(openIdentifier: OpenStateEnum) => void
     flipOrientation: () => void
@@ -49,6 +51,7 @@ function GalleryViewOptions({
           mode="outlined"
           icon={icons.screenRotation}
           size={localButtonSizes.small}
+          disabled={!openOptions}
           style={viewOptionsStyles.viewOptionsButtonStyle}
           accessibilityLabel="Flip Screen Orientation"
           testID="flipScreenButton"

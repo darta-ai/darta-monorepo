@@ -294,6 +294,7 @@ export function Gallery({
                   isPortrait={isPortrait}
                   fadeAnimOptions={fadeAnimOptions}
                   openIdentifier={OpenStateEnum.openOptions}
+                  openOptions={openOptions}
                   toggleButtonView={toggleButtonView}
                   flipOrientation={flipOrientation}
                   localButtonSizes={localButtonSizes}

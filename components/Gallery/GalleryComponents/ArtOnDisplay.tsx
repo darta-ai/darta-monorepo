@@ -105,17 +105,29 @@ export function ArtOnDisplay({
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
     .onStart(async () => {
-      if (currentZoomScale === 1) {
-        const screenRatoX = isPortrait ? screenContainer.height / screenContainer.width : 1;
-        const screenRatoY = isPortrait ? 1 : screenContainer.width / screenContainer.height;
+      const isCurrentZoomOne = currentZoomScale === 1;
+      if (isCurrentZoomOne && isPortrait) {
+        const screenRatoX = screenContainer.height / screenContainer.width;
         const x = (touchX / screenContainer.width) * 100;
         const y = (touchY / screenContainer.height) * 100;
-        console.log({ x, y });
 
         setCurrentZoomScale(3);
         scrollViewRef.current?.scrollTo({
-          x: wp(`${y * screenRatoX}%`),
-          y: hp(`${x * screenRatoY}%`),
+          x: wp(`${x * screenRatoX}%`),
+          y: hp(`${y}%`),
+          animated: false,
+        });
+      } else if (isCurrentZoomOne && !isPortrait) {
+        const screenRatoX = isPortrait ? screenContainer.width / screenContainer.height : 1;
+        const scaledY = Math.abs((wp('100%') - touchX));
+        const scaledX = touchY;
+        const x = (scaledX / screenContainer.width) * 100;
+        const y = (scaledY / screenContainer.height) * 100;
+
+        setCurrentZoomScale(3);
+        scrollViewRef.current?.scrollTo({
+          x: wp(`${x * screenRatoX}%`),
+          y: hp(`${y}%`),
           animated: false,
         });
       } else {
@@ -166,7 +178,6 @@ export function ArtOnDisplay({
           >
             <Pressable
               onTouchStart={({ nativeEvent: { pageX, pageY } }) => {
-                console.log({ pageX, pageY });
                 setTouchX(pageX);
                 setTouchY(pageY);
               }}
