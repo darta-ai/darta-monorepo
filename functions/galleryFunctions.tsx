@@ -3,12 +3,15 @@ import {
 } from 'react-native';
 import {
   ImageCollection,
-} from '../../firebase/hooks';
-import { DataT } from '../../types';
+} from '../firebase/hooks';
+import { DataT } from '../types';
 
 const imagePrefetch = async (imageUrls: string[]) => {
   const imagePrefetchResults: boolean[] = await Promise.all(imageUrls.map(
-    async (imageUrl:string): Promise<boolean> => Image.prefetch(imageUrl),
+    async (imageUrl:string): Promise<boolean> => Image.prefetch(imageUrl).catch((e : Error) => {
+      console.log('!!!! error', { e });
+      throw new Error(`No image exists for id ${imageUrl}`);
+    }),
   ));
   return imagePrefetchResults;
 };

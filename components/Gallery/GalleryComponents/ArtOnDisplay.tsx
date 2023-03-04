@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Image,
   StyleSheet,
@@ -6,8 +6,9 @@ import {
   ImageBackground,
   ImageSourcePropType,
   ActivityIndicator,
+  Pressable,
+  ScrollView,
 } from 'react-native';
-import Orientation from 'react-native-orientation-locker';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -22,6 +23,7 @@ export function ArtOnDisplay({
   dimensionsInches,
   isPortrait,
   wallHeight,
+  // zoomScale,
   toggleArtForward,
   toggleArtBackward,
 }: {
@@ -31,19 +33,24 @@ export function ArtOnDisplay({
     dimensionsInches: DataT['dimensionsInches'] | undefined
     isPortrait: boolean
     wallHeight: number
+    // zoomScale: number
     toggleArtForward: ()=> void
     toggleArtBackward: ()=> void
 }) {
   const [touchX, setTouchX] = useState<number>(0);
   const [touchY, setTouchY] = useState<number>(0);
+  const [zoomScale, setZoomScale] = useState<number>(1);
 
   const swipeArtwork = (pageX:number, pageY:number) => {
+    if (zoomScale !== 1) {
+      return;
+    }
     if (isPortrait) {
       // Y axis is to prevent the pinch to zoom resulting in a touch
-      if ((pageX - touchX > wp('55%')) && (pageY - touchY < hp('25%'))) {
+      if ((pageX - touchX > wp('25%')) && (pageY - touchY < hp('25%'))) {
         toggleArtForward();
       }
-      if (touchX - pageX > wp('55%') && (pageY - touchY < hp('25%'))) {
+      if (touchX - pageX > wp('25%') && (pageY - touchY < hp('25%'))) {
         toggleArtBackward();
       }
     } else {
@@ -102,54 +109,64 @@ export function ArtOnDisplay({
     },
   });
   return (
-    <View style={{
-      zIndex: 0,
-      height: '100%',
-      width: '100%',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-    >
-      <ImageBackground
-        source={backgroundImage}
-        resizeMethod="resize"
-      >
-        <View
-          style={galleryStylesPortrait.screenContainer}
-          onTouchStart={({ nativeEvent: { pageX, pageY } }) => {
-            setTouchX(pageX);
-            setTouchY(pageY);
-          }}
-          // onTouchMove={({ nativeEvent: { pageX, pageY } }) => {
-          // }}
-          onTouchEnd={({ nativeEvent: { pageX, pageY } }) => {
-            swipeArtwork(pageX, pageY);
-          }}
-        >
-          <View style={galleryStylesPortrait.artContainer}>
+    <ScrollView
+      onScroll={(event) => setZoomScale(event.nativeEvent.zoomScale)}
+      scrollEventThrottle={3}
+      maximumZoomScale={5}
+      scrollEnabled
+      centerContent
 
+    >
+      <View style={{
+        zIndex: 0,
+        height: '100%',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+      >
+        <ImageBackground
+          source={backgroundImage}
+          resizeMethod="resize"
+        >
+          <Pressable
+            onTouchStart={({ nativeEvent: { pageX, pageY } }) => {
+              setTouchX(pageX);
+              setTouchY(pageY);
+            }}
+            onTouchEnd={({ nativeEvent: { pageX, pageY } }) => {
+              swipeArtwork(pageX, pageY);
+            }}
+          >
             <View
-              style={galleryStyles.frameStyle}
+              style={galleryStylesPortrait.screenContainer}
             >
-              {artImage
-                ? (
-                  <Image
-                    source={{ uri: artImage }}
-                    style={galleryStylesPortrait.artwork}
-                  />
-                )
-                : (
-                  <ActivityIndicator
-                    style={{
-                      top: isPortrait ? hp('35%') : hp('20%'),
-                      justifyContent: 'center',
-                    }}
-                  />
-                )}
+              <View style={galleryStylesPortrait.artContainer}>
+
+                <View
+                  style={galleryStyles.frameStyle}
+                >
+                  {artImage
+                    ? (
+                      <Image
+                        source={{ uri: artImage }}
+                        style={galleryStylesPortrait.artwork}
+                      />
+                    )
+                    : (
+                      <ActivityIndicator
+                        style={{
+                          top: isPortrait ? hp('35%') : hp('20%'),
+                          justifyContent: 'center',
+                        }}
+                      />
+                    )}
+                </View>
+              </View>
             </View>
-          </View>
-        </View>
-      </ImageBackground>
-    </View>
+          </Pressable>
+        </ImageBackground>
+      </View>
+    </ScrollView>
   );
 }

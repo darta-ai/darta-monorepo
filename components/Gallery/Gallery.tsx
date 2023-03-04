@@ -4,7 +4,6 @@ import React, {
   useRef,
 } from 'react';
 import {
-  ScrollView,
   View,
   Animated,
   ImageSourcePropType,
@@ -31,7 +30,7 @@ import {
 } from '../../types';
 
 import { TombstonePortrait, TombstoneLandscape } from '../Tombstone/index';
-import { getImages } from './galleryFunctions';
+import { getImages } from '../../functions/galleryFunctions';
 
 // import kitchen2 from '../backgrounds/kitchen2.png';
 // import HannahWall = require('../backgrounds/HannahWall.png');
@@ -150,7 +149,18 @@ export function Gallery({
   };
 
   const screenRotation = (orientation:string) => {
-
+    if (
+      (isPortrait && (
+        orientation === OrientationsEnum.landscapeLeft
+        || orientation === OrientationsEnum.landscapeRight
+      ))
+      || (!isPortrait && (
+        orientation === OrientationsEnum.portrait
+        || orientation === OrientationsEnum.portraitUp
+      ))
+    ) {
+      setIsPortrait(!isPortrait);
+    }
   };
 
   const backgroundContainerDimensionsPixels = isPortrait
@@ -181,7 +191,7 @@ export function Gallery({
     }
   };
 
-  const [showArtDetails, setShowDetails] = useState(true);
+  const [showArtDetails, setShowDetails] = useState<boolean>(false);
 
   const toggleArtDetails = () => {
     setShowDetails(!showArtDetails);
@@ -206,22 +216,18 @@ export function Gallery({
     >
       <OrientationLocker
         orientation={PORTRAIT}
-        onDeviceChange={(ori) => {
-          console.log(ori);
-          setIsPortrait(!isPortrait);
+        onDeviceChange={(orientation:string) => {
+          screenRotation(orientation);
         }}
       />
-      {showArtDetails
+      {!showArtDetails
         ? (
-          <ScrollView
+          <View
             style={[backgroundContainerDimensionsPixels, {
               transform: isPortrait ? [{ rotate: '0deg' }]
                 : [{ rotate: '90deg' }],
               backgroundColor: 'black',
             }]}
-            maximumZoomScale={3.5}
-            scrollEnabled
-            centerContent
           >
             <ArtOnDisplay
               artImage={artOnDisplay?.image}
@@ -273,7 +279,7 @@ export function Gallery({
                 />
               </View>
             </View>
-          </ScrollView>
+          </View>
         )
         : (
           <View>
