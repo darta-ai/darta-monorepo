@@ -5,12 +5,13 @@ import {
   Animated,
 } from 'react-native';
 import { viewOptionsStyles, galleryInteractionStyles } from '../galleryStyles';
-import { icons, buttonSizes } from '../../globalVariables';
+import { icons } from '../../globalVariables';
 import { OpenStateEnum } from '../../../types';
 
 function GalleryViewOptions({
   fadeAnimOptions,
   isPortrait,
+  localButtonSizes,
   openIdentifier,
   toggleButtonView,
   flipOrientation,
@@ -18,6 +19,7 @@ function GalleryViewOptions({
     isPortrait: boolean
     fadeAnimOptions: Animated.Value
     openIdentifier: OpenStateEnum
+    localButtonSizes: any
     // eslint-disable-next-line
     toggleButtonView:(openIdentifier: OpenStateEnum) => void
     flipOrientation: () => void
@@ -30,7 +32,7 @@ function GalleryViewOptions({
     <View style={rotateScreenContainerStyle}>
       <IconButton
         icon={icons.viewSettings}
-        size={buttonSizes.small}
+        size={localButtonSizes.small}
         mode="outlined"
         style={viewOptionsStyles.buttons}
         testID="rightScrollButton"
@@ -46,7 +48,7 @@ function GalleryViewOptions({
         <IconButton
           mode="outlined"
           icon={icons.screenRotation}
-          size={buttonSizes.small}
+          size={localButtonSizes.small}
           style={viewOptionsStyles.viewOptionsButtonStyle}
           accessibilityLabel="Flip Screen Orientation"
           testID="flipScreenButton"

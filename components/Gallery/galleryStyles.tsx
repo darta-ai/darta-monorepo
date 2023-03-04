@@ -8,14 +8,16 @@ export const galleryComponentStyles = StyleSheet.create({
   interactionContainerPortrait: {
     position: 'absolute',
     width: wp('95%'),
-    height: hp('15%'),
-    top: hp('65%'),
+    height: hp('12%'),
+    top: hp('67%'),
+    marginLeft: 1,
   },
   interactionContainerLandscape: {
     position: 'absolute',
+    alignSelf: 'center',
+    height: wp('20%'),
     width: hp('80%'),
-    height: wp('45%'),
-    top: wp('50%'),
+    top: wp('80%'),
   },
   viewContainerPortrait: {
     position: 'absolute',
@@ -26,9 +28,9 @@ export const galleryComponentStyles = StyleSheet.create({
   },
   viewContainerLandscape: {
     position: 'absolute',
-    width: hp('15%'),
+    width: hp('10%'),
     height: wp('15%'),
-    left: hp('65%'),
+    left: hp('68%'),
     top: wp('1%'),
   },
   backgroundImageDimensionsPixels: {
@@ -66,10 +68,6 @@ export const galleryInteractionStyles = StyleSheet.create({
   },
   containerLandscape: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
   },
   containerPortraitFlex: {
     flex: 1,

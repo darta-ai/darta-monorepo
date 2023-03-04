@@ -14,7 +14,7 @@
 		4408B615B247B0AF76AA261D /* Pods_frontendV1_frontendV1Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 088EF6A28D60730D8C261438 /* Pods_frontendV1_frontendV1Tests.framework */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		C15368F029B2DBEE0010C456 /* Pods_frontendV1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA24E6B52A08FF821351807 /* Pods_frontendV1.framework */; };
-		C15368F129B2DBEE0010C456 /* Pods_frontendV1.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA24E6B52A08FF821351807 /* Pods_frontendV1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C15368F129B2DBEE0010C456 /* Pods_frontendV1.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA24E6B52A08FF821351807 /* Pods_frontendV1.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		C16CBB4629968EFC00483254 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16CBB3629968EFB00483254 /* Fontisto.ttf */; };
 		C16CBB4729968EFC00483254 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16CBB3729968EFB00483254 /* Octicons.ttf */; };
 		C16CBB4829968EFC00483254 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16CBB3829968EFB00483254 /* Feather.ttf */; };

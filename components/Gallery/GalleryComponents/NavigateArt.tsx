@@ -13,6 +13,8 @@ import { OpenStateEnum } from '../../../types';
 export function NavigateArt({
   fadeAnimNav,
   isPortrait,
+  localButtonSizes,
+  openNav,
   openIdentifier,
   toggleArtForward,
   toggleArtBackward,
@@ -21,6 +23,8 @@ export function NavigateArt({
 } : {
   fadeAnimNav: Animated.Value,
   isPortrait: boolean
+  localButtonSizes: any
+  openNav: boolean
   openIdentifier: OpenStateEnum
   toggleArtForward: ()=> void
   toggleArtBackward: ()=> void
@@ -39,26 +43,20 @@ export function NavigateArt({
 
   return (
     <View style={navigateContainer}>
-      <View style={[galleryInteractionStyles.containerPortraitFlex]}>
+      <View style={galleryInteractionStyles.containerPortraitFlex}>
         <View style={{ alignSelf: 'flex-start' }}>
           <IconButton
-            icon={icons.navigateRight}
+            icon={icons.learnMore}
             mode="outlined"
-            size={40}
-            style={navigateRightStyles}
-            accessibilityLabel="Navigate Left"
-            testID="leftScrollButton"
-            onPress={() => toggleArtForward()}
-            onLongPress={() => toggleButtonView(openIdentifier)}
+            size={localButtonSizes.large}
+            style={galleryInteractionStyles.secondaryButton}
+            accessibilityLabel="Navigate Right"
+            testID="rightScrollButton"
+            onPress={() => toggleArtDetails()}
+            onLongPress={() => {
+              toggleButtonView(openIdentifier);
+            }}
           />
-          <GlobalText
-            style={[
-              globalTextStyles.centeredText,
-              galleryInteractionStyles.textLabelsStyle,
-            ]}
-          >
-            move right
-          </GlobalText>
         </View>
         <Animated.View
           style={[galleryInteractionStyles.animatedContainer, {
@@ -72,12 +70,13 @@ export function NavigateArt({
               galleryInteractionStyles.textLabelsStyle,
             ]}
           >
-            move left
+            left
           </GlobalText>
           <IconButton
             icon={icons.navigateLeft}
+            disabled={!openNav}
             mode="outlined"
-            size={30}
+            size={localButtonSizes.medium}
             style={galleryInteractionStyles.secondaryButton}
             accessibilityLabel="Navigate Right"
             testID="rightScrollButton"
@@ -89,16 +88,20 @@ export function NavigateArt({
               galleryInteractionStyles.textLabelsStyle,
             ]}
           >
-            details
+            right
           </GlobalText>
           <IconButton
-            icon={icons.learnMore}
+            disabled={!openNav}
+            icon={icons.navigateRight}
             mode="outlined"
-            size={30}
-            style={galleryInteractionStyles.secondaryButton}
-            accessibilityLabel="Navigate Right"
-            testID="rightScrollButton"
-            onPress={() => toggleArtDetails()}
+            size={localButtonSizes.medium}
+            style={navigateRightStyles}
+            accessibilityLabel="Navigate Left"
+            testID="leftScrollButton"
+            onPress={() => toggleArtForward()}
+            onLongPress={() => {
+              toggleButtonView(openIdentifier);
+            }}
           />
         </Animated.View>
       </View>

@@ -1,15 +1,16 @@
 import {
   Image,
 } from 'react-native';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import {
   ImageCollection,
 } from '../firebase/hooks';
 import { DataT } from '../types';
+import { buttonSizes } from '../components/globalVariables';
 
 const imagePrefetch = async (imageUrls: string[]) => {
   const imagePrefetchResults: boolean[] = await Promise.all(imageUrls.map(
     async (imageUrl:string): Promise<boolean> => Image.prefetch(imageUrl).catch((e : Error) => {
-      console.log('!!!! error', { e });
       throw new Error(`No image exists for id ${imageUrl}`);
     }),
   ));
@@ -37,4 +38,15 @@ export const getImages = async (docIds:string[]) => {
   ));
   await imagePrefetch(imageIds);
   return results;
+};
+
+export const getButtonSizes = (hp: number) => {
+  const baseHeight = 926;
+  // { extraSmall: 15, small: 20, medium: 30, large: 40 }
+  return {
+    extraSmall: Math.floor((hp / baseHeight) * buttonSizes.extraSmall),
+    small: Math.floor((hp / baseHeight) * buttonSizes.small),
+    medium: Math.floor((hp / baseHeight) * buttonSizes.medium),
+    large: Math.floor((hp / baseHeight) * buttonSizes.large),
+  };
 };

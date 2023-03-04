@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { IconButton, Snackbar } from 'react-native-paper';
 import { galleryInteractionStyles } from '../galleryStyles';
-import { icons, buttonSizes } from '../../globalVariables';
+import { icons } from '../../globalVariables';
 import { GlobalText } from '../../GlobalElements';
 import { UserArtworkRated, OpenStateEnum } from '../../../types';
 import { globalTextStyles } from '../../styles';
@@ -16,6 +16,7 @@ function ArtRatingButtons({
   artOnDisplayId,
   fadeAnimRating,
   isPortrait,
+  localButtonSizes,
   openIdentifier,
   openRatings,
   userArtworkRatings,
@@ -25,6 +26,7 @@ function ArtRatingButtons({
     artOnDisplayId:string | undefined
     fadeAnimRating: Animated.Value
     isPortrait:boolean
+    localButtonSizes: any
     openIdentifier: OpenStateEnum
     openRatings:boolean
     userArtworkRatings: any
@@ -112,12 +114,13 @@ function ArtRatingButtons({
               }]}
             >
               <IconButton
-                mode="outlined"
-                animated
-                icon={icons.like}
-                size={buttonSizes.medium}
-                style={galleryInteractionStyles.secondaryButton}
                 accessibilityLabel="Like Artwork"
+                animated
+                disabled={!openRatings}
+                icon={icons.like}
+                mode="outlined"
+                size={localButtonSizes.medium}
+                style={galleryInteractionStyles.secondaryButton}
                 testID="likeButton"
                 onPress={() => { likeArtwork(); }}
               />
@@ -131,12 +134,13 @@ function ArtRatingButtons({
                 like
               </GlobalText>
               <IconButton
-                mode="outlined"
-                animated
-                icon={icons.save}
-                size={buttonSizes.medium}
-                style={galleryInteractionStyles.secondaryButton}
                 accessibilityLabel="Save Artwork"
+                animated
+                disabled={!openRatings}
+                mode="outlined"
+                icon={icons.save}
+                size={localButtonSizes.medium}
+                style={galleryInteractionStyles.secondaryButton}
                 testID="saveButton"
                 onPress={() => saveArtwork()}
               />
@@ -149,12 +153,13 @@ function ArtRatingButtons({
                 save
               </GlobalText>
               <IconButton
-                mode="outlined"
-                animated
-                icon={icons.dislike}
-                size={buttonSizes.medium}
-                style={galleryInteractionStyles.secondaryButton}
                 accessibilityLabel="Dislike Artwork"
+                animated
+                mode="outlined"
+                disabled={!openRatings}
+                icon={icons.dislike}
+                size={localButtonSizes.medium}
+                style={galleryInteractionStyles.secondaryButton}
                 testID="dislikeButton"
                 onPress={() => dislikeArtwork()}
               />
@@ -170,20 +175,12 @@ function ArtRatingButtons({
             <IconButton
               mode="outlined"
               icon={openRatings ? icons.minus : ratingDisplayIcon}
-              size={buttonSizes.large}
+              size={localButtonSizes.large}
               style={rateArtworkContainerStyle}
               accessibilityLabel="Options"
               testID="options"
               onPress={() => toggleButtonView(openIdentifier)}
             />
-            <GlobalText
-              style={[
-                globalTextStyles.centeredText,
-                galleryInteractionStyles.textLabelsStyle,
-              ]}
-            >
-              rate
-            </GlobalText>
           </View>
         </View>
       </View>

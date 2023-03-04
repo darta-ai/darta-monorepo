@@ -30,7 +30,7 @@ import {
 } from '../../types';
 
 import { TombstonePortrait, TombstoneLandscape } from '../Tombstone/index';
-import { getImages } from '../../functions/galleryFunctions';
+import { getImages, getButtonSizes } from '../../functions/galleryFunctions';
 
 // import kitchen2 from '../backgrounds/kitchen2.png';
 // import HannahWall = require('../backgrounds/HannahWall.png');
@@ -48,6 +48,7 @@ export function Gallery({
   const [backgroundImage] = useState<ImageSourcePropType>(galleryWallRaw);
   const [userArtworkRatings, setUserArtworkRatings] = useState<UserArtworkRatings>();
   const [isPortrait, setIsPortrait] = useState(true);
+  const localButtonSizes = getButtonSizes(hp('100%'));
 
   useEffect(() => {
     const loadGallery = async () => {
@@ -73,9 +74,9 @@ export function Gallery({
   const [openRatings, setOpenRatings] = useState<boolean>(false);
   const [openOptions, setOpenOptions] = useState<boolean>(false);
 
-  const fadeAnimOptions = useRef(new Animated.Value(0)).current;
-  const fadeAnimRating = useRef(new Animated.Value(0)).current;
   const fadeAnimNav = useRef(new Animated.Value(0)).current;
+  const fadeAnimRating = useRef(new Animated.Value(0)).current;
+  const fadeAnimOptions = useRef(new Animated.Value(0)).current;
 
   const openOrCloseContainer = (openIdentifier: OpenStateEnum) => {
     switch (openIdentifier) {
@@ -196,6 +197,19 @@ export function Gallery({
   const toggleArtDetails = () => {
     setShowDetails(!showArtDetails);
   };
+
+  const screenContainer = isPortrait
+    ? { height: hp('80%'), width: wp('95%') }
+    : {
+      height: hp('80%'),
+      width: wp('75%'),
+      left: wp('10%'),
+    };
+
+  const openInteractionContainer = isPortrait
+    ? { height: hp('30%'), top: hp('49%') }
+    : {};
+
   const interactionContainer = isPortrait
     ? galleryComponentStyles.interactionContainerPortrait
     : galleryComponentStyles.interactionContainerLandscape;
@@ -209,9 +223,7 @@ export function Gallery({
       style={{
         justifyContent: 'center',
         alignItems: 'center',
-        left: isPortrait ? undefined : '10%',
-        height: isPortrait ? hp('80%') : hp('80%'),
-        width: isPortrait ? wp('95%') : wp('75%'),
+        ...screenContainer,
       }}
     >
       <OrientationLocker
@@ -235,11 +247,16 @@ export function Gallery({
               backgroundImageDimensionsPixels={backgroundContainerDimensionsPixels}
               dimensionsInches={artOnDisplay?.dimensionsInches}
               isPortrait={isPortrait}
+              screenContainer={screenContainer}
               wallHeight={wallHeight}
               toggleArtForward={toggleArtForward}
               toggleArtBackward={toggleArtBackward}
             />
-            <View style={interactionContainer}>
+            <View style={[interactionContainer,
+              (openNav || openRatings)
+                && { ...openInteractionContainer },
+            ]}
+            >
               <View style={{
                 flex: 1,
                 flexDirection: 'row',
@@ -250,6 +267,8 @@ export function Gallery({
                 <NavigateArt
                   fadeAnimNav={fadeAnimNav}
                   isPortrait={isPortrait}
+                  localButtonSizes={localButtonSizes}
+                  openNav={openNav}
                   openIdentifier={OpenStateEnum.openNav}
                   toggleArtBackward={toggleArtBackward}
                   toggleArtDetails={toggleArtDetails}
@@ -259,6 +278,7 @@ export function Gallery({
                 <ArtRatingButtons
                   artOnDisplayId={artOnDisplay?.id}
                   fadeAnimRating={fadeAnimRating}
+                  localButtonSizes={localButtonSizes}
                   isPortrait={isPortrait}
                   openIdentifier={OpenStateEnum.openRatings}
                   openRatings={openRatings}
@@ -276,6 +296,7 @@ export function Gallery({
                   openIdentifier={OpenStateEnum.openOptions}
                   toggleButtonView={toggleButtonView}
                   flipOrientation={flipOrientation}
+                  localButtonSizes={localButtonSizes}
                 />
               </View>
             </View>

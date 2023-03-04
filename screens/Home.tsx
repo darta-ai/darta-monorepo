@@ -15,6 +15,9 @@ const images1 = [
   '544949e072616938d3531400',
   '544949e37261692d60ec0200',
   '55846e6f72616943da0000b0',
+  '56e8952f9c18db74180001a2',
+  '565de2309acc8a7721000086',
+  '55f2ffcc72616966bd0000f4',
   // '55846ebd7261690c170000d9',
   // '55846ec572616918230000b8',
   // '55a3bb6a7261694214000580',
@@ -54,7 +57,7 @@ function Home() {
     >
       <View style={styles.containerHome}>
         <Gallery
-          artworkIds={images2}
+          artworkIds={images1}
         />
       </View>
     </ImageBackground>
