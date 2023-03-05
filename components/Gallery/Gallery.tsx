@@ -13,6 +13,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { OrientationLocker, PORTRAIT } from 'react-native-orientation-locker';
+import ProgressBar from 'react-native-progress/Bar';
 import {
   ArtOnDisplay,
   NavigateArt,
@@ -26,7 +27,12 @@ import {
   galleryDimensionsLandscape,
 } from '../globalVariables';
 import {
-  DataT, OpenStateEnum, UserArtworkRatings, OrientationsEnum,
+  DataT,
+  SnackTextEnum,
+  RatingEnum,
+  OpenStateEnum,
+  OrientationsEnum,
+  UserArtworkRatings,
 } from '../../types';
 
 import { TombstonePortrait, TombstoneLandscape } from '../Tombstone/index';
@@ -48,12 +54,15 @@ export function Gallery({
   const [backgroundImage] = useState<ImageSourcePropType>(galleryWallRaw);
   const [userArtworkRatings, setUserArtworkRatings] = useState<UserArtworkRatings>();
   const [isPortrait, setIsPortrait] = useState(true);
+  const [numberOfArtworks, setNumberOfArtworks] = useState<number>(1);
+  const [numberOfRatedWorks, setNumberOfRatedWorks] = useState<number>(0);
   const localButtonSizes = getButtonSizes(hp('100%'));
 
   useEffect(() => {
     const loadGallery = async () => {
       const fullImages = await getImages(artworkIds);
       setFullGallery(fullImages);
+      setNumberOfArtworks(fullImages.length);
 
       const userRatingsEmpty = artworkIds.reduce((obj, id) => ({
         ...obj,
@@ -174,7 +183,6 @@ export function Gallery({
   };
 
   const toggleArtForward = () => {
-    const numberOfArtworks = fullGallery?.length ?? 0;
     const currentDisplayIndex = artDisplayIndex;
     if (currentDisplayIndex + 1 >= numberOfArtworks) {
       setArtDisplayIndex(0);
@@ -183,7 +191,6 @@ export function Gallery({
     }
   };
   const toggleArtBackward = () => {
-    const numberOfArtworks = fullGallery?.length ?? 0;
     const currentDisplayIndex = artDisplayIndex;
     if (currentDisplayIndex === 0) {
       setArtDisplayIndex(numberOfArtworks - 1);
@@ -192,10 +199,40 @@ export function Gallery({
     }
   };
 
-  const [showArtDetails, setShowDetails] = useState<boolean>(false);
+  const [showArtTombstone, setShowArtTombstone] = useState<boolean>(false);
 
-  const toggleArtDetails = () => {
-    setShowDetails(!showArtDetails);
+  const toggleArtTombstone = () => {
+    setShowArtTombstone(!showArtTombstone);
+  };
+
+  // Rating State
+  const [visibleSnack, setVisibleSnack] = useState(false);
+  const [snackBarText, setSnackBarText] = useState('hey hey 👋');
+
+  const rateArtwork = (
+    rating: RatingEnum,
+    openIdentifier: OpenStateEnum,
+    artOnDisplayId: string,
+  ) => {
+    if (!artOnDisplayId || !userArtworkRatings) {
+      return;
+    }
+    if (
+      !userArtworkRatings[artOnDisplayId].like
+      && !userArtworkRatings[artOnDisplayId].save
+      && !userArtworkRatings[artOnDisplayId].dislike
+    ) {
+      setNumberOfRatedWorks(numberOfRatedWorks + 1);
+    }
+    userArtworkRated({
+      [artOnDisplayId]: {
+        [rating]: true,
+      },
+    });
+
+    toggleButtonView(openIdentifier);
+    setVisibleSnack(true);
+    setSnackBarText(SnackTextEnum[rating]);
   };
 
   const screenContainer = isPortrait
@@ -226,13 +263,25 @@ export function Gallery({
         ...screenContainer,
       }}
     >
+
       <OrientationLocker
         orientation={PORTRAIT}
         onDeviceChange={(orientation:string) => {
           screenRotation(orientation);
         }}
       />
-      {!showArtDetails
+      <View
+        style={{
+          zIndex: 0,
+          position: 'absolute',
+          width: wp('95%'),
+          height: hp('12%'),
+          top: hp('67%'),
+          marginLeft: 1,
+        }}
+
+      />
+      {!showArtTombstone
         ? (
           <View
             style={[backgroundContainerDimensionsPixels, {
@@ -241,20 +290,35 @@ export function Gallery({
               backgroundColor: 'black',
             }]}
           >
+            <View>
+              <ProgressBar
+                progress={numberOfRatedWorks / numberOfArtworks}
+                borderRadius={0}
+                width={isPortrait ? screenContainer.width : screenContainer.height}
+                color="rgb(218, 223, 225)"
+                useNativeDriver
+                animated
+              />
+            </View>
             <ArtOnDisplay
               artImage={artOnDisplay?.image}
               backgroundImage={backgroundImage}
               backgroundImageDimensionsPixels={backgroundContainerDimensionsPixels}
               dimensionsInches={artOnDisplay?.dimensionsInches}
               isPortrait={isPortrait}
+              visibleSnack={visibleSnack}
               wallHeight={wallHeight}
+              setVisibleSnack={setVisibleSnack}
               toggleArtForward={toggleArtForward}
               toggleArtBackward={toggleArtBackward}
             />
-            <View style={[interactionContainer,
-              (openNav || openRatings)
+
+            <View
+              style={[interactionContainer,
+                (openNav || openRatings)
                 && { ...openInteractionContainer },
-            ]}
+              ]}
+
             >
               <View style={{
                 flex: 1,
@@ -270,7 +334,7 @@ export function Gallery({
                   openNav={openNav}
                   openIdentifier={OpenStateEnum.openNav}
                   toggleArtBackward={toggleArtBackward}
-                  toggleArtDetails={toggleArtDetails}
+                  toggleArtTombstone={toggleArtTombstone}
                   toggleArtForward={toggleArtForward}
                   toggleButtonView={toggleButtonView}
                 />
@@ -281,9 +345,12 @@ export function Gallery({
                   isPortrait={isPortrait}
                   openIdentifier={OpenStateEnum.openRatings}
                   openRatings={openRatings}
+                  snackBarText={snackBarText}
                   userArtworkRatings={userArtworkRatings}
+                  visibleSnack={visibleSnack}
+                  rateArtwork={rateArtwork}
+                  setVisibleSnack={setVisibleSnack}
                   toggleButtonView={toggleButtonView}
-                  userArtworkRated={userArtworkRated}
                 />
               </View>
             </View>
@@ -308,13 +375,27 @@ export function Gallery({
               ? (
                 <TombstonePortrait
                   artOnDisplay={artOnDisplay}
-                  toggleArtDetails={toggleArtDetails}
+                  artOnDisplayId={artOnDisplay?.id}
+                  openIdentifier={OpenStateEnum.tombstone}
+                  snackBarText={snackBarText}
+                  userArtworkRatings={userArtworkRatings}
+                  visibleSnack={visibleSnack}
+                  rateArtwork={rateArtwork}
+                  setVisibleSnack={setVisibleSnack}
+                  toggleArtTombstone={toggleArtTombstone}
                 />
               )
               : (
                 <TombstoneLandscape
                   artOnDisplay={artOnDisplay}
-                  toggleArtDetails={toggleArtDetails}
+                  artOnDisplayId={artOnDisplay?.id}
+                  openIdentifier={OpenStateEnum.tombstone}
+                  snackBarText={snackBarText}
+                  userArtworkRatings={userArtworkRatings}
+                  visibleSnack={visibleSnack}
+                  rateArtwork={rateArtwork}
+                  setVisibleSnack={setVisibleSnack}
+                  toggleArtTombstone={toggleArtTombstone}
                 />
               )}
           </View>

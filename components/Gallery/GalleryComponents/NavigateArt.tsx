@@ -18,7 +18,7 @@ export function NavigateArt({
   openIdentifier,
   toggleArtForward,
   toggleArtBackward,
-  toggleArtDetails,
+  toggleArtTombstone,
   toggleButtonView,
 } : {
   fadeAnimNav: Animated.Value,
@@ -28,7 +28,7 @@ export function NavigateArt({
   openIdentifier: OpenStateEnum
   toggleArtForward: ()=> void
   toggleArtBackward: ()=> void
-  toggleArtDetails: ()=> void
+  toggleArtTombstone: ()=> void
   toggleButtonView:
   // eslint-disable-next-line
   (openIdentifier: OpenStateEnum) => void
@@ -52,7 +52,7 @@ export function NavigateArt({
             style={galleryInteractionStyles.secondaryButton}
             accessibilityLabel="Navigate Right"
             testID="rightScrollButton"
-            onPress={() => toggleArtDetails()}
+            onPress={() => toggleArtTombstone()}
             onLongPress={() => {
               toggleButtonView(openIdentifier);
             }}

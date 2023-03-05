@@ -9,35 +9,42 @@ import { IconButton, Snackbar } from 'react-native-paper';
 import { galleryInteractionStyles } from '../galleryStyles';
 import { icons } from '../../globalVariables';
 import { GlobalText } from '../../GlobalElements';
-import { UserArtworkRated, OpenStateEnum } from '../../../types';
+import {
+  OpenStateEnum,
+  RatingEnum,
+} from '../../../types';
 import { globalTextStyles } from '../../styles';
 
 function ArtRatingButtons({
   artOnDisplayId,
   fadeAnimRating,
-  isPortrait,
   localButtonSizes,
+  isPortrait,
   openIdentifier,
   openRatings,
+  snackBarText,
   userArtworkRatings,
+  visibleSnack,
+  rateArtwork,
+  setVisibleSnack,
   toggleButtonView,
-  userArtworkRated,
 } : {
     artOnDisplayId:string | undefined
     fadeAnimRating: Animated.Value
-    isPortrait:boolean
     localButtonSizes: any
+    isPortrait:boolean
     openIdentifier: OpenStateEnum
     openRatings:boolean
     userArtworkRatings: any
+    snackBarText: string
+    visibleSnack: boolean
+    // eslint-disable-next-line
+    rateArtwork: (rating: RatingEnum, openIdentifier: OpenStateEnum, artOnDisplayId: string) => void
+    // eslint-disable-next-line
+    setVisibleSnack: (arg0: boolean) => void
     // eslint-disable-next-line
     toggleButtonView:(openIdentifier: OpenStateEnum) => void
-    // eslint-disable-next-line no-unused-vars
-    userArtworkRated: (arg0: UserArtworkRated) => void
-
   }) {
-  const [visibleSmack, setVisibleSnack] = useState(false);
-  const [snackBarText, setSnackBarText] = useState('hey hey 👋');
   const [ratingDisplayIcon, setRatingDisplayIcon] = useState<string>(icons.menu);
 
   useEffect(() => {
@@ -48,45 +55,6 @@ function ArtRatingButtons({
       setRatingDisplayIcon(ratingIcon);
     }
   }, [artOnDisplayId, userArtworkRatings]);
-
-  const saveArtwork = () => {
-    if (artOnDisplayId) {
-      userArtworkRated({
-        [artOnDisplayId]: {
-          save: true,
-        },
-      });
-      setSnackBarText('Saved 💛😍');
-      toggleButtonView(openIdentifier);
-      setVisibleSnack(true);
-    }
-  };
-
-  const likeArtwork = () => {
-    if (artOnDisplayId) {
-      userArtworkRated({
-        [artOnDisplayId]: {
-          like: true,
-        },
-      });
-      setSnackBarText('Liked 👍😏');
-      toggleButtonView(openIdentifier);
-      setVisibleSnack(true);
-    }
-  };
-
-  const dislikeArtwork = () => {
-    if (artOnDisplayId) {
-      userArtworkRated({
-        [artOnDisplayId]: {
-          dislike: true,
-        },
-      });
-      setSnackBarText('Disliked 👎😒');
-      toggleButtonView(openIdentifier);
-      setVisibleSnack(true);
-    }
-  };
 
   const ratingContainer = isPortrait
     ? galleryInteractionStyles.containerPortrait
@@ -122,7 +90,7 @@ function ArtRatingButtons({
                 size={localButtonSizes.medium}
                 style={galleryInteractionStyles.secondaryButton}
                 testID="likeButton"
-                onPress={() => { likeArtwork(); }}
+                onPress={() => { rateArtwork(RatingEnum.like, openIdentifier, artOnDisplayId ?? ''); }}
               />
               <GlobalText
                 style={[
@@ -142,7 +110,7 @@ function ArtRatingButtons({
                 size={localButtonSizes.medium}
                 style={galleryInteractionStyles.secondaryButton}
                 testID="saveButton"
-                onPress={() => saveArtwork()}
+                onPress={() => { rateArtwork(RatingEnum.save, openIdentifier, artOnDisplayId ?? ''); }}
               />
               <GlobalText
                 style={[
@@ -161,7 +129,7 @@ function ArtRatingButtons({
                 size={localButtonSizes.medium}
                 style={galleryInteractionStyles.secondaryButton}
                 testID="dislikeButton"
-                onPress={() => dislikeArtwork()}
+                onPress={() => { rateArtwork(RatingEnum.dislike, openIdentifier, artOnDisplayId ?? ''); }}
               />
               <GlobalText
                 style={[
@@ -185,7 +153,7 @@ function ArtRatingButtons({
         </View>
       </View>
       <Snackbar
-        visible={visibleSmack}
+        visible={visibleSnack}
         style={{ alignContent: 'center', top: '0%' }}
         onDismiss={() => setVisibleSnack(false)}
         action={{

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-export interface UserArtworkRated {
+export interface IUserArtworkRated {
   [key: string]: {
      like?: boolean,
      save?: boolean,
@@ -12,8 +12,24 @@ export enum OpenStateEnum {
   openNav = 'openNav',
   openRatings = 'openRatings',
   openOptions = 'openOptions',
+  tombstone = 'tombstone'
 }
 
+// eslint-disable-next-line no-shadow
+export enum SnackTextEnum {
+  save = 'Saved 💛😍',
+  like = 'Liked 👍😏',
+  dislike = 'Disliked 👎😒'
+}
+
+// eslint-disable-next-line no-shadow
+export enum RatingEnum {
+  save = 'save',
+  like = 'like',
+  dislike = 'dislike'
+}
+
+// eslint-disable-next-line no-shadow
 export enum OrientationsEnum {
   landscapeLeft = 'LANDSCAPE-LEFT',
   portraitUp = 'PORTRAIT-UPSIDEDOWN',

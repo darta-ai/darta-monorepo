@@ -14,6 +14,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+// import ProgressBar from 'react-native-progress/Bar';
 import { DataT } from '../../../types';
 import { galleryStyles } from '../galleryStyles';
 
@@ -23,7 +24,9 @@ export function ArtOnDisplay({
   backgroundImageDimensionsPixels,
   dimensionsInches,
   isPortrait,
+  visibleSnack,
   wallHeight,
+  setVisibleSnack,
   toggleArtForward,
   toggleArtBackward,
 }: {
@@ -32,7 +35,10 @@ export function ArtOnDisplay({
     backgroundImageDimensionsPixels: any
     dimensionsInches: DataT['dimensionsInches'] | undefined
     isPortrait: boolean
+    visibleSnack: boolean,
     wallHeight: number
+    // eslint-disable-next-line no-unused-vars
+    setVisibleSnack: (arg0:boolean) => void
     toggleArtForward: ()=> void
     toggleArtBackward: ()=> void
 }) {
@@ -103,7 +109,7 @@ export function ArtOnDisplay({
 
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
-    .onStart(async () => {
+    .onStart(() => {
       const isCurrentZoomOne = currentZoomScale === 1;
       if (isCurrentZoomOne && isPortrait) {
         setCurrentZoomScale(3);
@@ -169,10 +175,13 @@ export function ArtOnDisplay({
             source={backgroundImage}
             resizeMethod="resize"
           >
+
             <Pressable
               onTouchStart={({ nativeEvent: { pageX, pageY } }) => {
-                console.log({ pageX, pageY });
                 setTouchCoordinates({ touchX: pageX, touchY: pageY });
+                if (visibleSnack) {
+                  setVisibleSnack(false);
+                }
               }}
               onTouchEnd={({ nativeEvent: { pageX, pageY } }) => {
                 swipeArtwork(pageX, pageY);
