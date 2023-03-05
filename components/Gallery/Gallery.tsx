@@ -247,7 +247,6 @@ export function Gallery({
               backgroundImageDimensionsPixels={backgroundContainerDimensionsPixels}
               dimensionsInches={artOnDisplay?.dimensionsInches}
               isPortrait={isPortrait}
-              screenContainer={screenContainer}
               wallHeight={wallHeight}
               toggleArtForward={toggleArtForward}
               toggleArtBackward={toggleArtBackward}

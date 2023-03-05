@@ -13,8 +13,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		4408B615B247B0AF76AA261D /* Pods_frontendV1_frontendV1Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 088EF6A28D60730D8C261438 /* Pods_frontendV1_frontendV1Tests.framework */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		C15368F029B2DBEE0010C456 /* Pods_frontendV1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA24E6B52A08FF821351807 /* Pods_frontendV1.framework */; };
-		C15368F129B2DBEE0010C456 /* Pods_frontendV1.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA24E6B52A08FF821351807 /* Pods_frontendV1.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C15368F329B400C10010C456 /* Pods_frontendV1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA24E6B52A08FF821351807 /* Pods_frontendV1.framework */; };
 		C16CBB4629968EFC00483254 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16CBB3629968EFB00483254 /* Fontisto.ttf */; };
 		C16CBB4729968EFC00483254 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16CBB3729968EFB00483254 /* Octicons.ttf */; };
 		C16CBB4829968EFC00483254 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16CBB3829968EFB00483254 /* Feather.ttf */; };
@@ -44,20 +43,6 @@
 			remoteInfo = frontendV1;
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		C15368F229B2DBEE0010C456 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				C15368F129B2DBEE0010C456 /* Pods_frontendV1.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		00E356EE1AD99517003FC87E /* frontendV1Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = frontendV1Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -110,7 +95,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C15368F029B2DBEE0010C456 /* Pods_frontendV1.framework in Frameworks */,
+				C15368F329B400C10010C456 /* Pods_frontendV1.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,7 +245,6 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				B988F83CBA626B2C1AA083F6 /* [CP] Embed Pods Frameworks */,
 				F786E304295DDE20080F7C58 /* [CP-User] [RNFB] Core Configuration */,
-				C15368F229B2DBEE0010C456 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
