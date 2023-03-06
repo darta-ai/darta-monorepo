@@ -92,6 +92,10 @@ export type TabBarIconT = {
   emoji?: string;
 };
 
+export type ButtonSizesT = {
+  [key : string] : number
+}
+
 type Gene = {
   displayName: string | null;
   name: string;

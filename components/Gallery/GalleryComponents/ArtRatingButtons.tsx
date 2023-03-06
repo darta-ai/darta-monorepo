@@ -10,8 +10,10 @@ import { galleryInteractionStyles } from '../galleryStyles';
 import { icons } from '../../globalVariables';
 import { GlobalText } from '../../GlobalElements';
 import {
+  ButtonSizesT,
   OpenStateEnum,
   RatingEnum,
+  IUserArtworkRated,
 } from '../../../types';
 import { globalTextStyles } from '../../styles';
 
@@ -31,7 +33,7 @@ function ArtRatingButtons({
 } : {
     artOnDisplayId:string | undefined
     fadeAnimRating: Animated.Value
-    localButtonSizes: any
+    localButtonSizes: ButtonSizesT
     isPortrait:boolean
     openIdentifier: OpenStateEnum
     openRatings:boolean
@@ -46,6 +48,13 @@ function ArtRatingButtons({
     toggleButtonView:(openIdentifier: OpenStateEnum) => void
   }) {
   const [ratingDisplayIcon, setRatingDisplayIcon] = useState<string>(icons.menu);
+  const [currentArtRating, setCurrentArtRating] = useState<IUserArtworkRated>({});
+
+  useEffect(() => {
+    if (artOnDisplayId) {
+      setCurrentArtRating(userArtworkRatings[artOnDisplayId]);
+    }
+  }, [userArtworkRatings, artOnDisplayId]);
 
   useEffect(() => {
     if (artOnDisplayId) {
@@ -86,7 +95,7 @@ function ArtRatingButtons({
                 animated
                 disabled={!openRatings}
                 icon={icons.like}
-                mode="outlined"
+                mode={currentArtRating[RatingEnum.like] ? 'contained' : 'outlined'}
                 size={localButtonSizes.medium}
                 style={galleryInteractionStyles.secondaryButton}
                 testID="likeButton"
@@ -100,12 +109,13 @@ function ArtRatingButtons({
                 ]}
               >
                 like
+                {currentArtRating[RatingEnum.like] && 'd'}
               </GlobalText>
               <IconButton
                 accessibilityLabel="Save Artwork"
                 animated
                 disabled={!openRatings}
-                mode="outlined"
+                mode={currentArtRating[RatingEnum.save] ? 'contained' : 'outlined'}
                 icon={icons.save}
                 size={localButtonSizes.medium}
                 style={galleryInteractionStyles.secondaryButton}
@@ -119,11 +129,12 @@ function ArtRatingButtons({
                 ]}
               >
                 save
+                {currentArtRating[RatingEnum.save] && 'd'}
               </GlobalText>
               <IconButton
                 accessibilityLabel="Dislike Artwork"
                 animated
-                mode="outlined"
+                mode={currentArtRating[RatingEnum.dislike] ? 'contained' : 'outlined'}
                 disabled={!openRatings}
                 icon={icons.dislike}
                 size={localButtonSizes.medium}
@@ -138,10 +149,16 @@ function ArtRatingButtons({
                 ]}
               >
                 dislike
+                {currentArtRating[RatingEnum.dislike] && 'd'}
               </GlobalText>
             </Animated.View>
             <IconButton
-              mode="outlined"
+              mode={(
+                currentArtRating[RatingEnum.save]
+                || currentArtRating[RatingEnum.dislike]
+                || currentArtRating[RatingEnum.like]
+              )
+                ? 'contained' : 'outlined'}
               icon={openRatings ? icons.minus : ratingDisplayIcon}
               size={localButtonSizes.large}
               style={rateArtworkContainerStyle}

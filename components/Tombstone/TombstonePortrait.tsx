@@ -51,7 +51,7 @@ export function TombstonePortrait({
     if (artOnDisplayId) {
       setCurrentArtRating(userArtworkRatings[artOnDisplayId]);
     }
-  }, [userArtworkRatings]);
+  }, [userArtworkRatings, artOnDisplayId]);
 
   const dimensionsInches = artToDisplay?.dimensionsInches;
 
@@ -219,6 +219,7 @@ export function TombstonePortrait({
                   ]}
                 >
                   like
+                  {currentArtRating[RatingEnum.like] && 'd'}
                 </GlobalText>
               </View>
               <View>
@@ -244,6 +245,7 @@ export function TombstonePortrait({
                   ]}
                 >
                   save
+                  {currentArtRating[RatingEnum.save] && 'd'}
                 </GlobalText>
               </View>
               <View>
@@ -269,6 +271,7 @@ export function TombstonePortrait({
                   ]}
                 >
                   dislike
+                  {currentArtRating[RatingEnum.dislike] && 'd'}
                 </GlobalText>
 
               </View>

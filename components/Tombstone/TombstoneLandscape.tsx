@@ -16,7 +16,7 @@ import { GlobalText } from '../GlobalElements';
 import { galleryInteractionStyles } from '../Gallery/galleryStyles';
 
 const artworkPortraitStyle = {
-  backgroundColor: '#FFF',
+
 };
 
 export function TombstoneLandscape({
@@ -50,7 +50,7 @@ export function TombstoneLandscape({
     if (artOnDisplayId) {
       setCurrentArtRating(userArtworkRatings[artOnDisplayId]);
     }
-  }, [userArtworkRatings]);
+  }, [userArtworkRatings, artOnDisplayId]);
   const dimensionsInches = artToDisplay?.dimensionsInches;
 
   const height = dimensionsInches?.height;
@@ -216,6 +216,7 @@ export function TombstoneLandscape({
                   ]}
                 >
                   like
+                  {currentArtRating[RatingEnum.like] && 'd'}
                 </GlobalText>
               </View>
               <View>
@@ -242,6 +243,7 @@ export function TombstoneLandscape({
                   ]}
                 >
                   save
+                  {currentArtRating[RatingEnum.save] && 'd'}
                 </GlobalText>
               </View>
               <View>
@@ -267,6 +269,7 @@ export function TombstoneLandscape({
                   ]}
                 >
                   dislike
+                  {currentArtRating[RatingEnum.dislike] && 'd'}
                 </GlobalText>
 
               </View>

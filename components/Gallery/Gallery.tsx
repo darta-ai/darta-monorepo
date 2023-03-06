@@ -27,6 +27,7 @@ import {
   galleryDimensionsLandscape,
 } from '../globalVariables';
 import {
+
   DataT,
   SnackTextEnum,
   RatingEnum,
