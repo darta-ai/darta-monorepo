@@ -44,7 +44,7 @@ function App() {
                 }}
               >
                 <Tab.Screen
-                  name="Openings"
+                  name="d a r t a"
                   component={Home}
                   options={{
                     tabBarIcon: ({ focused }) => (

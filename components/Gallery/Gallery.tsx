@@ -8,12 +8,22 @@ import {
   Animated,
   ImageSourcePropType,
 } from 'react-native';
+import { Button } from 'react-native-paper';
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { OrientationLocker, PORTRAIT } from 'react-native-orientation-locker';
 import ProgressBar from 'react-native-progress/Bar';
+import { globalTextStyles } from '../styles';
+import { GlobalText } from '../GlobalElements';
+import {
+  icons,
+  galleryDimensionsPortrait,
+  duration,
+  galleryDimensionsLandscape,
+} from '../globalVariables';
 import {
   ArtOnDisplay,
   NavigateArt,
@@ -22,12 +32,6 @@ import {
 } from './GalleryComponents/index';
 import { galleryComponentStyles } from './galleryStyles';
 import {
-  galleryDimensionsPortrait,
-  duration,
-  galleryDimensionsLandscape,
-} from '../globalVariables';
-import {
-
   DataT,
   SnackTextEnum,
   RatingEnum,
@@ -37,42 +41,53 @@ import {
 } from '../../types';
 
 import { TombstonePortrait, TombstoneLandscape } from '../Tombstone/index';
-import { getImages, getButtonSizes } from '../../functions/galleryFunctions';
+import { getButtonSizes } from '../../functions/galleryFunctions';
 
 // import kitchen2 from '../backgrounds/kitchen2.png';
 // import HannahWall = require('../backgrounds/HannahWall.png');
 // import WallHorizontal = require('../backgrounds/WallHorizontal.png');
 const galleryWallRaw = require('../../backgrounds/galleryWallRaw.png');
 
+// (galleryId: string, currentIndex?: number)
+
 export function Gallery({
-  artworkIds,
+  fullDGallery,
+  resumedDisplayIndex,
+  galleryId,
+  numberOfRatedWorks,
+  numberOfArtworks,
+  userArtworkRatings,
+  isPortrait,
+  setIsPortrait,
+  showGallery,
+  setUserArtworkRatings,
 } : {
-  artworkIds : string[],
+  fullDGallery: DataT[]
+  resumedDisplayIndex: number
+  galleryId: string
+  numberOfRatedWorks: number
+  numberOfArtworks: number
+  userArtworkRatings: UserArtworkRatings
+  isPortrait: boolean
+  // eslint-disable-next-line no-unused-vars
+  setIsPortrait: (arg0: boolean) => void
+  // eslint-disable-next-line no-unused-vars, no-shadow
+  showGallery: (galleryId: string, currentIndex?: number) => void
+  setUserArtworkRatings: (
+    // eslint-disable-next-line no-unused-vars, no-shadow
+    galleryId: string,
+    // eslint-disable-next-line no-unused-vars
+    artOnDisplayId: string,
+    // eslint-disable-next-line no-unused-vars
+    updatedRatings: any) => void,
+
 }) {
-  const [fullGallery, setFullGallery] = useState<DataT[]>();
-  const [artDisplayIndex, setArtDisplayIndex] = useState<number>(0);
+  const [fullGallery] = useState<DataT[]>(fullDGallery);
+  const [artDisplayIndex, setArtDisplayIndex] = useState<number>(resumedDisplayIndex);
   const [artOnDisplay, setArtOnDisplay] = useState<DataT | undefined>();
   const [backgroundImage] = useState<ImageSourcePropType>(galleryWallRaw);
-  const [userArtworkRatings, setUserArtworkRatings] = useState<UserArtworkRatings>();
-  const [isPortrait, setIsPortrait] = useState(true);
-  const [numberOfArtworks, setNumberOfArtworks] = useState<number>(1);
-  const [numberOfRatedWorks, setNumberOfRatedWorks] = useState<number>(0);
+
   const localButtonSizes = getButtonSizes(hp('100%'));
-
-  useEffect(() => {
-    const loadGallery = async () => {
-      const fullImages = await getImages(artworkIds);
-      setFullGallery(fullImages);
-      setNumberOfArtworks(fullImages.length);
-
-      const userRatingsEmpty = artworkIds.reduce((obj, id) => ({
-        ...obj,
-        [id]: {},
-      }), {});
-      setUserArtworkRatings(userRatingsEmpty);
-    };
-    loadGallery();
-  }, []);
 
   useEffect(() => {
     if (fullGallery) {
@@ -179,10 +194,6 @@ export function Gallery({
 
   const wallHeight = 96;
 
-  const userArtworkRated = (updatedRatings: any) => {
-    setUserArtworkRatings({ ...userArtworkRatings, ...updatedRatings });
-  };
-
   const toggleArtForward = () => {
     const currentDisplayIndex = artDisplayIndex;
     if (currentDisplayIndex + 1 >= numberOfArtworks) {
@@ -218,18 +229,12 @@ export function Gallery({
     if (!artOnDisplayId || !userArtworkRatings) {
       return;
     }
-    if (
-      !userArtworkRatings[artOnDisplayId].like
-      && !userArtworkRatings[artOnDisplayId].save
-      && !userArtworkRatings[artOnDisplayId].dislike
-    ) {
-      setNumberOfRatedWorks(numberOfRatedWorks + 1);
-    }
-    userArtworkRated({
+    const artworkRating = {
       [artOnDisplayId]: {
         [rating]: true,
       },
-    });
+    };
+    setUserArtworkRatings(galleryId, artOnDisplayId, { ...artworkRating });
 
     toggleButtonView(openIdentifier);
     setVisibleSnack(true);
@@ -368,6 +373,27 @@ export function Gallery({
                 />
               </View>
             </View>
+            <Button
+              icon={icons.back}
+              style={{
+                position: 'absolute',
+                top: isPortrait ? '1%' : '3%',
+                opacity: 0.7,
+                backgroundColor: '#FFF',
+              }}
+              accessibilityLabel="Navigate To Gallery Selector"
+              testID="galleryBack"
+              onPress={() => showGallery(galleryId, artDisplayIndex)}
+            >
+              <GlobalText
+                style={[
+                  globalTextStyles.centeredText,
+                  { justifyContent: 'flex-start' },
+                ]}
+              >
+                back
+              </GlobalText>
+            </Button>
           </View>
         )
         : (

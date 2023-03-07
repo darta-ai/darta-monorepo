@@ -91,6 +91,9 @@ export function TombstoneLandscape({
             accessibilityLabel="Navigate To Gallery"
             testID="tombstoneBack"
             onPress={() => toggleArtTombstone()}
+            // TECH DEBT
+            // eslint-disable-next-line react/no-children-prop
+            children={undefined}
           />
         </View>
         <View

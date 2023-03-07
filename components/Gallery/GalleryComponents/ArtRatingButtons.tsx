@@ -50,20 +50,23 @@ function ArtRatingButtons({
   const [ratingDisplayIcon, setRatingDisplayIcon] = useState<string>(icons.menu);
   const [currentArtRating, setCurrentArtRating] = useState<IUserArtworkRated>({});
 
-  useEffect(() => {
-    if (artOnDisplayId) {
-      setCurrentArtRating(userArtworkRatings[artOnDisplayId]);
-    }
-  }, [userArtworkRatings, artOnDisplayId]);
+  const rateAndUpdateState = (
+    rating: RatingEnum,
+  ) => {
+    setRatingDisplayIcon(icons[`${rating}`]);
+    setCurrentArtRating({ [rating]: true });
+    rateArtwork(rating, openIdentifier, artOnDisplayId ?? '');
+  };
 
   useEffect(() => {
     if (artOnDisplayId) {
       const artworkRating = userArtworkRatings[artOnDisplayId];
-      const ratingString:string = Object.keys(artworkRating)[0];
+      setCurrentArtRating(artworkRating ?? {});
+      const ratingString:string = Object.keys(artworkRating)[0] ?? null;
       const ratingIcon:string = icons[`${ratingString}`] ?? icons.menu;
       setRatingDisplayIcon(ratingIcon);
     }
-  }, [artOnDisplayId, userArtworkRatings]);
+  }, [userArtworkRatings, artOnDisplayId]);
 
   const ratingContainer = isPortrait
     ? galleryInteractionStyles.containerPortrait
@@ -99,7 +102,7 @@ function ArtRatingButtons({
                 size={localButtonSizes.medium}
                 style={galleryInteractionStyles.secondaryButton}
                 testID="likeButton"
-                onPress={() => { rateArtwork(RatingEnum.like, openIdentifier, artOnDisplayId ?? ''); }}
+                onPress={() => { rateAndUpdateState(RatingEnum.like); }}
               />
               <GlobalText
                 style={[
@@ -120,7 +123,7 @@ function ArtRatingButtons({
                 size={localButtonSizes.medium}
                 style={galleryInteractionStyles.secondaryButton}
                 testID="saveButton"
-                onPress={() => { rateArtwork(RatingEnum.save, openIdentifier, artOnDisplayId ?? ''); }}
+                onPress={() => { rateAndUpdateState(RatingEnum.save); }}
               />
               <GlobalText
                 style={[
@@ -140,7 +143,7 @@ function ArtRatingButtons({
                 size={localButtonSizes.medium}
                 style={galleryInteractionStyles.secondaryButton}
                 testID="dislikeButton"
-                onPress={() => { rateArtwork(RatingEnum.dislike, openIdentifier, artOnDisplayId ?? ''); }}
+                onPress={() => { rateAndUpdateState(RatingEnum.dislike); }}
               />
               <GlobalText
                 style={[
