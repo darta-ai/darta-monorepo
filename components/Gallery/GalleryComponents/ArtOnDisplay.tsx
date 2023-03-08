@@ -1,19 +1,20 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
-  StyleSheet,
-  View,
   ImageBackground,
   ImageSourcePropType,
-  ActivityIndicator,
-  ScrollView,
   Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+
 // import ProgressBar from 'react-native-progress/Bar';
 import { DataT } from '../../../types';
 import { galleryStyles } from '../galleryStyles';
@@ -48,6 +49,7 @@ export function ArtOnDisplay({
   }
   const [touchCoordinates, setTouchCoordinates] = useState<SetTouch>({ touchX: 0, touchY: 0 });
   const [currentZoomScale, setCurrentZoomScale] = useState<number>(1);
+  const [scrollEnabled, setScrollEnabled] = useState(false);
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -111,14 +113,8 @@ export function ArtOnDisplay({
     .numberOfTaps(2)
     .onStart(() => {
       const isCurrentZoomOne = currentZoomScale === 1;
-      if (isCurrentZoomOne && isPortrait) {
-        setCurrentZoomScale(3);
-        scrollViewRef.current?.scrollTo({
-          x: (backgroundImageDimensionsPixels.width - (0.25 * artWidthPixels)),
-          y: (backgroundImageDimensionsPixels.height - (0.25 * artHeightPixels)),
-          animated: false,
-        });
-      } else if (isCurrentZoomOne && !isPortrait) {
+      if (isCurrentZoomOne) {
+        setScrollEnabled(true);
         setCurrentZoomScale(3);
         scrollViewRef.current?.scrollTo({
           x: (backgroundImageDimensionsPixels.width - (0.25 * artWidthPixels)),
@@ -127,9 +123,19 @@ export function ArtOnDisplay({
         });
       } else {
         setCurrentZoomScale(1);
+        setScrollEnabled(false);
         scrollViewRef.current?.scrollToEnd({ animated: false });
       }
     });
+
+  useEffect(() => {
+    const isCurrentZoomOne = currentZoomScale === 1;
+    if (isCurrentZoomOne) {
+      setScrollEnabled(false);
+    } else {
+      setScrollEnabled(true);
+    }
+  }, [touchCoordinates]);
 
   const galleryStylesPortrait = StyleSheet.create({
     screenContainer: {
@@ -150,10 +156,11 @@ export function ArtOnDisplay({
     <GestureDetector gesture={doubleTap}>
       <ScrollView
         ref={scrollViewRef}
+        scrollEnabled={scrollEnabled}
         onScroll={({ nativeEvent: { zoomScale } }) => setCurrentZoomScale(zoomScale)}
         zoomScale={currentZoomScale}
-        scrollEventThrottle={2}
-        maximumZoomScale={5}
+        scrollEventThrottle={7}
+        maximumZoomScale={6}
         minimumZoomScale={1}
         scrollToOverflowEnabled={false}
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
@@ -173,7 +180,7 @@ export function ArtOnDisplay({
         >
           <ImageBackground
             source={backgroundImage}
-            resizeMethod="resize"
+            // resizeMethod="resize"
           >
 
             <Pressable

@@ -1,47 +1,46 @@
 import React, {
-  useState,
   useEffect,
   useRef,
+  useState,
 } from 'react';
 import {
-  View,
   Animated,
   ImageSourcePropType,
+  View,
 } from 'react-native';
-import { Button } from 'react-native-paper';
-
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 import { OrientationLocker, PORTRAIT } from 'react-native-orientation-locker';
+import { Button } from 'react-native-paper';
 import ProgressBar from 'react-native-progress/Bar';
-import { globalTextStyles } from '../styles';
-import { GlobalText } from '../GlobalElements';
 import {
-  icons,
-  galleryDimensionsPortrait,
-  duration,
-  galleryDimensionsLandscape,
-} from '../globalVariables';
-import {
-  ArtOnDisplay,
-  NavigateArt,
-  ArtRatingButtons,
-  GalleryViewOptions,
-} from './GalleryComponents/index';
-import { galleryComponentStyles } from './galleryStyles';
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+
+import { getButtonSizes } from '../../functions/galleryFunctions';
 import {
   DataT,
-  SnackTextEnum,
-  RatingEnum,
   OpenStateEnum,
   OrientationsEnum,
+  RatingEnum,
+  SnackTextEnum,
   UserArtworkRatings,
 } from '../../types';
-
-import { TombstonePortrait, TombstoneLandscape } from '../Tombstone/index';
-import { getButtonSizes } from '../../functions/galleryFunctions';
+import { GlobalText } from '../GlobalElements';
+import {
+  duration,
+  galleryDimensionsLandscape,
+  galleryDimensionsPortrait,
+  icons,
+} from '../globalVariables';
+import { globalTextStyles } from '../styles';
+import { TombstoneLandscape, TombstonePortrait } from '../Tombstone/index';
+import {
+  ArtOnDisplay,
+  ArtRatingButtons,
+  GalleryViewOptions,
+  NavigateArt,
+} from './GalleryComponents/index';
+import { galleryComponentStyles } from './galleryStyles';
 
 // import kitchen2 from '../backgrounds/kitchen2.png';
 // import HannahWall = require('../backgrounds/HannahWall.png');

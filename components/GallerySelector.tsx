@@ -1,19 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-  View,
-  FlatList,
   Alert,
+  FlatList,
   SafeAreaView,
+  View,
 } from 'react-native';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Divider } from 'react-native-elements';
-import { GlobalText } from './GlobalElements/index';
-import { GalleryPreview } from './Gallery/GalleryComponents';
-import { globalTextStyles } from './styles';
-import { DataT } from '../types';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import { getImages } from '../functions/galleryFunctions';
-import { images1, images2, timWilson } from './globalVariables';
+import { DataT } from '../types';
 import { Gallery } from './Gallery/Gallery';
+import { GalleryPreview } from './Gallery/GalleryComponents';
+import { GlobalText } from './GlobalElements/index';
+import {
+  cathleenClark, cathleenClarkPreview,
+  darbyMilbrath,
+  darbyMilbrathPreview,
+  image1Preview, image2Preview,
+  images1, images2, timWilson, timWilsonPreview,
+} from './globalVariables';
+import { globalTextStyles } from './styles';
 
 // Mock Data
 interface GalleryIds {
@@ -21,32 +28,64 @@ interface GalleryIds {
         type: string,
         galleryId: string,
         artworkIds: string[],
+        preview?: {
+            [key : string]: {
+            id: string;
+            image: string;
+            dimensionsInches: {
+                height: number;
+                width: number;
+            };
+        }
+    }
         text: string,
         body: string
     }
 }
+
+const today = new Date().getDay();
+const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
 const galleryInfo: GalleryIds = {
   '01a5ac40-bc52-11ed-afa1-0242ac120002': {
     type: 'privateGallery',
     galleryId: '01a5ac40-bc52-11ed-afa1-0242ac120002',
     artworkIds: images1,
-    text: 'Private Opening',
-    body: 'Your Daily Opening',
+    preview: image1Preview,
+    text: `${days[today]}'s opening`,
+    body: 'curated by darta',
   },
   '1d2091ce-bc52-11ed-afa1-0242ac120002': {
     type: 'groupShow',
     galleryId: '1d2091ce-bc52-11ed-afa1-0242ac120002',
     artworkIds: images2,
-    text: 'A Group Show',
-    body: 'Curated By Gallerina Delvey',
+    preview: image2Preview,
+    text: 'Femme Power',
+    body: 'curated by Ana Delvey',
   },
   '645d3af4-565e-4edd-9d61-e7dd0c7a26ba': {
     type: 'galleryOpening',
     galleryId: '645d3af4-565e-4edd-9d61-e7dd0c7a26ba',
     artworkIds: timWilson,
-    text: 'Tim Wilson Opening',
-    body: 'Artwork by Tim Wilson',
+    preview: timWilsonPreview,
+    text: 'Tim Wilson: ',
+    body: 'Meditations',
+  },
+  '870f8c2c-6cb6-4061-8acc-c7fc4ceb33fc': {
+    type: 'galleryOpening',
+    galleryId: '870f8c2c-6cb6-4061-8acc-c7fc4ceb33fc',
+    artworkIds: cathleenClark,
+    preview: cathleenClarkPreview,
+    text: 'Cathleen Clarke:',
+    body: 'Hidden In Plain Sight',
+  },
+  'a28261e6-db56-441b-b65d-dbb540f61c10': {
+    type: 'galleryOpening',
+    galleryId: 'a28261e6-db56-441b-b65d-dbb540f61c10',
+    artworkIds: darbyMilbrath,
+    preview: darbyMilbrathPreview,
+    text: 'Darby Milbrath:',
+    body: 'A Sudden Shift',
   },
 };
 
@@ -69,7 +108,8 @@ export function GallerySelector() {
 
   const otherGalleryIds = Object.keys(galleryInfo).filter((id : string) => galleryInfo[id].type !== 'privateGallery');
   const otherGalleries = otherGalleryIds.map(
-    (id: string) => id = { ...galleryInfo[id] },
+    // eslint-disable-next-line no-return-assign, no-param-reassign
+    (id) => id = { ...galleryInfo[id] },
   );
 
   const [isGalleryDisplayed, setIsGalleryDisplayed] = useState<boolean>(false);
@@ -98,7 +138,7 @@ export function GallerySelector() {
       }
       if (!gallery?.userArtworkRankings && gallery.artworkIds) {
         const { artworkIds } = gallery;
-        const userRatingsEmpty = artworkIds.reduce((obj, id) => ({
+        const userRatingsEmpty = artworkIds.reduce((obj: {}, id: string) => ({
           ...obj,
           [id]: {},
         }), {});
@@ -164,7 +204,7 @@ export function GallerySelector() {
         : (
           <>
             <View style={{
-              height: hp('25%'), width: '100%',
+              height: hp('30%'), width: '100%',
             }}
             >
               <GlobalText style={[globalTextStyles.titleText,
@@ -173,12 +213,12 @@ export function GallerySelector() {
                 d a r t a
               </GlobalText>
               <GalleryPreview
-                galleryId={personalGallery.galleryId}
-                text={personalGallery.text}
                 body={personalGallery.body}
+                galleryId={personalGallery.galleryId}
+                preview={personalGallery.preview}
                 numberOfArtworks={globalGallery[personalGallery.galleryId]?.numberOfArtworks}
                 numberOfRatedWorks={globalGallery[personalGallery.galleryId]?.numberOfRatedWorks}
-                isPortrait={isPortrait}
+                text={personalGallery.text}
                 showGallery={showGallery}
               />
             </View>
@@ -188,18 +228,23 @@ export function GallerySelector() {
               margin: 10,
             }}
             />
-            <View style={{ height: hp('50%'), marginTop: 10 }}>
-              <SafeAreaView style={{ flex: 1 }}>
+            <View style={{ height: hp('45%'), marginTop: 10, paddingBottom: 30 }}>
+              <GlobalText style={[globalTextStyles.titleText,
+                globalTextStyles.centeredText]}
+              >
+                r e c o m m e n d a t i o n s
+              </GlobalText>
+              <SafeAreaView style={{ flexDirection: 'row' }}>
                 <FlatList
                   data={otherGalleries}
                   renderItem={({ item }) => (
                     <GalleryPreview
                       galleryId={item.galleryId}
                       text={item.text}
+                      preview={item.preview}
                       body={item.body}
                       numberOfArtworks={globalGallery[item.galleryId]?.numberOfArtworks}
                       numberOfRatedWorks={globalGallery[item.galleryId]?.numberOfRatedWorks}
-                      isPortrait={isPortrait}
                       showGallery={showGallery}
                     />
                   )}

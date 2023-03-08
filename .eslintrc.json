@@ -27,7 +27,8 @@
   },
   "plugins": [
       "react",
-      "@typescript-eslint"
+      "@typescript-eslint",
+      "simple-import-sort"
   ],
   "rules": {
       "import/prefer-default-export": "off",
@@ -36,6 +37,8 @@
       "no-restricted-syntax" : "off",
       "react/prop-types" : "off",
       "guard-for-in" : "off",
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error",
       "@typescript-eslint/no-use-before-define": ["error"],
       "import/extensions": [
           "error",

@@ -10,7 +10,6 @@ export const globalTextStyles = StyleSheet.create({
   },
   italicTitleText: {
     fontFamily: 'AvenirNext-Italic',
-    fontSize: 20,
   },
   boldTitleText: {
     fontFamily: 'AvenirNext-Bold',

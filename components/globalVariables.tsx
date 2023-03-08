@@ -1,4 +1,5 @@
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+
 import { Icons } from '../types';
 
 export const galleryDimensionsPortrait = {
@@ -42,34 +43,50 @@ export const duration = 250;
 
 export const images1 = [
   '4d8b94774eb68a1b2c002a78',
+  '57e59a54cd530e44a60001ee',
+  '565de2309acc8a7721000086',
   '50be685e5d3885e229000f9a',
   '52da700d139b21128d0001a6',
   '5c4cd3477cda7f02e87f8adc',
   '5408bb247261694c85c50100',
   '5423431772616939790c0000',
-  '544949e072616938d3531400',
-  '544949e37261692d60ec0200',
   '55846e6f72616943da0000b0',
   '56e8952f9c18db74180001a2',
-  '565de2309acc8a7721000086',
   '55f2ffcc72616966bd0000f4',
-  // '55846ebd7261690c170000d9',
-  // '55846ec572616918230000b8',
-  // '55a3bb6a7261694214000580',
-  // '55ad4d3772616972f1000027',
+  '55846ebd7261690c170000d9',
+  '55a3bb6a7261694214000580',
   '55f2ffc97261696610000113',
-  '57e59a54cd530e44a60001ee',
-  // '57ea0527275b2405a700031b',
-  // '57f662f3a09a67387f000937',
-  // '580e62df8b3b817eba0000e0',
-  '58a72baf7622dd1b4ec98f7a',
-  // '58a72bafa09a676b405edf32',
-  // '5a287782a09a67123d2210db',
-  // '5a4e9010c9dc2406f90b6341',
+  '57ea0527275b2405a700031b',
+  '57f662f3a09a67387f000937',
+  '580e62df8b3b817eba0000e0',
+  '58a72bafa09a676b405edf32',
+  '5a287782a09a67123d2210db',
+  '5a4e9010c9dc2406f90b6341',
   '5a628f7d139b210c2f2c03ea',
 ];
 
+export const image1Preview = {
+  0: {
+    id: '4d8b92c64eb68a1b2c00051f',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/AJp-r4WDs4Mpvaj5koBmvQ/larger.jpg',
+    dimensionsInches: { height: 13.625, width: 12.825 },
+  },
+  1: {
+    id: '57e59a54cd530e44a60001ee',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/M-4i_FVEf18UvZNXoiJXtQ/larger.jpg',
+    dimensionsInches: { height: 12, width: 9 },
+  },
+  2: {
+    id: '565de2309acc8a7721000086',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/hy7UuwOCMHTTt6gAdT-Dow/larger.jpg',
+    dimensionsInches: { height: 48, width: 37.5 },
+  },
+};
+
 export const images2 = [
+  '4d90d196dcdd5f44a50000cb',
+  '55884922726169561d0007e0',
+  '5f6294bb9c4bc2000d71925e',
   '55f2ffcc72616966bd0000f4',
   '55f87d667261691783000109',
   '55f87d697261690f2d0000ee',
@@ -84,11 +101,31 @@ export const images2 = [
   '5762cd33cd530e65e9000487',
 ];
 
+export const image2Preview = {
+  0: {
+    id: '4d90d196dcdd5f44a50000cb',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/5SdcJI5ZujL0gWSbgCuFtQ/larger.jpg',
+    dimensionsInches: { height: 32, width: 28 },
+  },
+  1: {
+    id: '55884922726169561d0007e0',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/M0MQ8KVCSFZDeWSE3AtONA/larger.jpg',
+    dimensionsInches: { height: 20, width: 16 },
+  },
+  2: {
+    id: '5f6294bb9c4bc2000d71925e',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/FPjgCJxN5dpXalMB2bvZxQ/larger.jpg',
+    dimensionsInches: { height: 34, width: 24 },
+  },
+};
+
 export const timWilson = [
+  '62cf1d7f62225b000be802c2',
+  '62ed758894df06000cfb27e5',
+  '635c35a37b79fa000d14594a',
   '62ffee2872d832000b40b4b6',
   '6309247c3701ae000bc661d4',
   '635c35a11787ad000b3e364e',
-  '635c35a37b79fa000d14594a',
   '635c35a6147afd000c0fa46d',
   '635c35a6b41398000b690a11',
   '635c35a937c616000bca3f37',
@@ -100,3 +137,87 @@ export const timWilson = [
   '635c35bb1787ad000b3e3668',
   '635c35bc1fa2bf000d1cb9ae',
 ];
+
+export const timWilsonPreview = {
+  0: {
+    id: '62cf1d7f62225b000be802c2',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/NTwfXxEswLgn_tcznK9XJw/larger.jpg',
+    dimensionsInches: { height: 18, width: 22.5 },
+  },
+  1: {
+    id: '62ed758894df06000cfb27e5',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/UgMq9Jp7ok9W4V0-a78dtg/larger.jpg',
+    dimensionsInches: { height: 16, width: 11 },
+  },
+  2: {
+    id: '635c35a37b79fa000d14594a',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/30pHFzA-GsM_1Hjv2bfFmA/larger.jpg',
+    dimensionsInches: { height: 12.5, width: 9 },
+  },
+};
+
+export const cathleenClark = [
+  '5fc79929a2b682000e6b0bb0',
+  '5fc79934a2b6820012bd4854',
+  '6140f87bb86c11000c3b2949',
+  '6140f882c2bf92000b4fb1e6',
+  '6140f883c2bf92000d54483d',
+  '6140f88574009b000c83085f',
+  '61449a4a6f235e000ce5636e',
+  '6345699c7144f7000e2e33ff',
+  '63517abef325ef000b593164',
+  '63517c8cd5b1c8000bee440d',
+  '63517d2a3004ca000c6f9a30',
+  '63517db46ea025000d01a521',
+  '63517e203004ca000c6f9b43',
+  '63517e20484408000bc94aee',
+];
+
+export const cathleenClarkPreview = {
+  0: {
+    id: '5fc79929a2b682000e6b0bb0',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/iE7tBe76SRAxu2dPm0LeJA/larger.jpg',
+    dimensionsInches: { height: 24, width: 18 },
+  },
+  1: {
+    id: '63517d2a3004ca000c6f9a30',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/GpYI0yMppN-Cej2apLD7Yg/larger.jpg',
+    dimensionsInches: { height: 36, width: 36 },
+  },
+  2: {
+    id: '63517e20d7f7b6000dcf6b98',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/tppydTz_gNSxdcl_QJh0Aw/larger.jpg',
+    dimensionsInches: { height: 30, width: 24 },
+  },
+};
+
+export const darbyMilbrath = [
+  '5f553ad7ba960c000e2cf5d8',
+  '607d4df05692f00012685538',
+  '6131223005e7f8000bb582f1',
+  '613122305e1e46000da8f824',
+  '62379871fdb5a6000d0b67d1',
+  '623798831c6953000ca446e8',
+  '62379899f40db8000baa2cce',
+  '633f3c4ec84fca000cbc88e5',
+  '6362b0c45beb58000c736727',
+  '6362b0c5409d67000e261e64',
+];
+
+export const darbyMilbrathPreview = {
+  0: {
+    id: '5f553ad7ba960c000e2cf5d8',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/vYIXji1F1PZ7JlR2lGKY-g/larger.jpg',
+    dimensionsInches: { height: 40, width: 30 },
+  },
+  1: {
+    id: '607d4df05692f00012685538',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/GzeVDVMXGkMFazAbzA2VZQ/larger.jpg',
+    dimensionsInches: { height: 14, width: 12 },
+  },
+  2: {
+    id: '6131223005e7f8000bb582f1',
+    image: 'https://d32dm0rphc51dk.cloudfront.net/hdWA5Lf9ES_4aUK7sEYoDg/larger.jpg',
+    dimensionsInches: { height: 76, width: 64 },
+  },
+};

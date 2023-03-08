@@ -1,9 +1,15 @@
 import {
   StyleSheet,
 } from 'react-native';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-
+export const galleryPreviewStyles = StyleSheet.create({
+  previewContainerPortrait: {
+    borderWidth: 2,
+    borderRadius: 20,
+    height: hp('25%'),
+  },
+});
 export const galleryComponentStyles = StyleSheet.create({
   interactionContainerPortrait: {
     position: 'absolute',
