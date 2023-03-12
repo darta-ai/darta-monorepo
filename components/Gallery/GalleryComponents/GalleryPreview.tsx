@@ -12,11 +12,11 @@ import {
 import ProgressBar from 'react-native-progress/Bar';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-import { GlobalText } from '../GlobalElements/index';
-import { globalTextStyles } from '../styles';
-import { galleryPreviewStyles } from './galleryStyles';
+import { GlobalText } from '../../GlobalElements/index';
+import { globalTextStyles } from '../../styles';
+import { galleryPreviewStyles } from '../galleryStyles';
 
-const galleryWallRaw = require('../../backgrounds/galleryWallRaw.png');
+const galleryWallRaw = require('../../../backgrounds/galleryWallRaw.png');
 
 export function GalleryPreview({
   body,

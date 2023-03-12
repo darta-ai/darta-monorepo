@@ -23,10 +23,12 @@ export function ArtOnDisplay({
   artImage,
   backgroundImage,
   backgroundImageDimensionsPixels,
+  currentZoomScale,
   dimensionsInches,
   isPortrait,
   visibleSnack,
   wallHeight,
+  setCurrentZoomScale,
   setVisibleSnack,
   toggleArtForward,
   toggleArtBackward,
@@ -34,10 +36,13 @@ export function ArtOnDisplay({
     artImage: string | undefined,
     backgroundImage: ImageSourcePropType,
     backgroundImageDimensionsPixels: any
+    currentZoomScale: number
     dimensionsInches: DataT['dimensionsInches'] | undefined
     isPortrait: boolean
     visibleSnack: boolean,
     wallHeight: number
+    // eslint-disable-next-line no-unused-vars
+    setCurrentZoomScale: (arg0:number) => void
     // eslint-disable-next-line no-unused-vars
     setVisibleSnack: (arg0:boolean) => void
     toggleArtForward: ()=> void
@@ -48,7 +53,6 @@ export function ArtOnDisplay({
     touchY: number
   }
   const [touchCoordinates, setTouchCoordinates] = useState<SetTouch>({ touchX: 0, touchY: 0 });
-  const [currentZoomScale, setCurrentZoomScale] = useState<number>(1);
   const [scrollEnabled, setScrollEnabled] = useState(false);
 
   const scrollViewRef = useRef<ScrollView | null>(null);

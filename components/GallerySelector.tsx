@@ -13,81 +13,10 @@ import { DataT } from '../types';
 import { Gallery } from './Gallery/Gallery';
 import { GalleryPreview } from './Gallery/GalleryComponents';
 import { GlobalText } from './GlobalElements/index';
-import {
-  cathleenClark, cathleenClarkPreview,
-  darbyMilbrath,
-  darbyMilbrathPreview,
-  image1Preview, image2Preview,
-  images1, images2, timWilson, timWilsonPreview,
-} from './globalVariables';
+import * as globals from './globalVariables';
 import { globalTextStyles } from './styles';
 
-// Mock Data
-interface GalleryIds {
-    [key : string] : {
-        type: string,
-        galleryId: string,
-        artworkIds: string[],
-        preview?: {
-            [key : string]: {
-            id: string;
-            image: string;
-            dimensionsInches: {
-                height: number;
-                width: number;
-            };
-        }
-    }
-        text: string,
-        body: string
-    }
-}
-
-const today = new Date().getDay();
-const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-
-const galleryInfo: GalleryIds = {
-  '01a5ac40-bc52-11ed-afa1-0242ac120002': {
-    type: 'privateGallery',
-    galleryId: '01a5ac40-bc52-11ed-afa1-0242ac120002',
-    artworkIds: images1,
-    preview: image1Preview,
-    text: `${days[today]}'s opening`,
-    body: 'curated by darta',
-  },
-  '1d2091ce-bc52-11ed-afa1-0242ac120002': {
-    type: 'groupShow',
-    galleryId: '1d2091ce-bc52-11ed-afa1-0242ac120002',
-    artworkIds: images2,
-    preview: image2Preview,
-    text: 'Femme Power',
-    body: 'curated by Ana Delvey',
-  },
-  '645d3af4-565e-4edd-9d61-e7dd0c7a26ba': {
-    type: 'galleryOpening',
-    galleryId: '645d3af4-565e-4edd-9d61-e7dd0c7a26ba',
-    artworkIds: timWilson,
-    preview: timWilsonPreview,
-    text: 'Tim Wilson: ',
-    body: 'Meditations',
-  },
-  '870f8c2c-6cb6-4061-8acc-c7fc4ceb33fc': {
-    type: 'galleryOpening',
-    galleryId: '870f8c2c-6cb6-4061-8acc-c7fc4ceb33fc',
-    artworkIds: cathleenClark,
-    preview: cathleenClarkPreview,
-    text: 'Cathleen Clarke:',
-    body: 'Hidden In Plain Sight',
-  },
-  'a28261e6-db56-441b-b65d-dbb540f61c10': {
-    type: 'galleryOpening',
-    galleryId: 'a28261e6-db56-441b-b65d-dbb540f61c10',
-    artworkIds: darbyMilbrath,
-    preview: darbyMilbrathPreview,
-    text: 'Darby Milbrath:',
-    body: 'A Sudden Shift',
-  },
-};
+const galleryInfo = globals.galleryDummyData;
 
 export function GallerySelector() {
   const emptyGalleryList = Object.keys(galleryInfo).reduce((obj, id) => ({

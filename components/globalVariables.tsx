@@ -1,6 +1,6 @@
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-import { Icons } from '../types';
+import { GalleryLandingPage, Icons } from '../types';
 
 export const galleryDimensionsPortrait = {
   height: hp('80%'),
@@ -84,8 +84,6 @@ export const image1Preview = {
 };
 
 export const images2 = [
-  '4d90d196dcdd5f44a50000cb',
-  '55884922726169561d0007e0',
   '5f6294bb9c4bc2000d71925e',
   '55f2ffcc72616966bd0000f4',
   '55f87d667261691783000109',
@@ -219,5 +217,51 @@ export const darbyMilbrathPreview = {
     id: '6131223005e7f8000bb582f1',
     image: 'https://d32dm0rphc51dk.cloudfront.net/hdWA5Lf9ES_4aUK7sEYoDg/larger.jpg',
     dimensionsInches: { height: 76, width: 64 },
+  },
+};
+
+const today = new Date().getDay();
+const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+export const galleryDummyData: GalleryLandingPage = {
+  '01a5ac40-bc52-11ed-afa1-0242ac120002': {
+    type: 'privateGallery',
+    galleryId: '01a5ac40-bc52-11ed-afa1-0242ac120002',
+    artworkIds: images1,
+    preview: image1Preview,
+    text: `${days[today]}'s opening`,
+    body: 'curated by darta',
+  },
+  '1d2091ce-bc52-11ed-afa1-0242ac120002': {
+    type: 'groupShow',
+    galleryId: '1d2091ce-bc52-11ed-afa1-0242ac120002',
+    artworkIds: images2,
+    preview: image2Preview,
+    text: 'Femme Power',
+    body: 'curated by Ana Delvey',
+  },
+  '645d3af4-565e-4edd-9d61-e7dd0c7a26ba': {
+    type: 'galleryOpening',
+    galleryId: '645d3af4-565e-4edd-9d61-e7dd0c7a26ba',
+    artworkIds: timWilson,
+    preview: timWilsonPreview,
+    text: 'Tim Wilson: ',
+    body: 'Meditations',
+  },
+  '870f8c2c-6cb6-4061-8acc-c7fc4ceb33fc': {
+    type: 'galleryOpening',
+    galleryId: '870f8c2c-6cb6-4061-8acc-c7fc4ceb33fc',
+    artworkIds: cathleenClark,
+    preview: cathleenClarkPreview,
+    text: 'Cathleen Clarke:',
+    body: 'Hidden In Plain Sight',
+  },
+  'a28261e6-db56-441b-b65d-dbb540f61c10': {
+    type: 'galleryOpening',
+    galleryId: 'a28261e6-db56-441b-b65d-dbb540f61c10',
+    artworkIds: darbyMilbrath,
+    preview: darbyMilbrathPreview,
+    text: 'Darby Milbrath:',
+    body: 'A Sudden Shift',
   },
 };

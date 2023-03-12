@@ -1,13 +1,14 @@
-import React from 'react';
+/* eslint-disable react/no-unstable-nested-components */
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
-import { Home, Matches, Profile } from './screens';
-import {
-  PRIMARY_COLOR, DARK_GRAY, BLACK, WHITE,
-} from './assets/styles';
+
 import TabBarIcon from './components/GlobalElements/TabBarIcon';
+import {
+  Camera, Home, Matches, Profile,
+} from './screens';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -22,27 +23,7 @@ function App() {
             options={{ headerShown: false, animationEnabled: true }}
           >
             {() => (
-              <Tab.Navigator
-                screenOptions={{
-                  showLabel: true,
-                  activeTintColor: PRIMARY_COLOR,
-                  inactiveTintColor: DARK_GRAY,
-                  labelStyle: {
-                    fontSize: 14,
-                    textTransform: 'uppercase',
-                    paddingTop: 10,
-                  },
-                  style: {
-                    backgroundColor: WHITE,
-                    borderTopWidth: 0,
-                    marginBottom: 0,
-                    shadowOpacity: 0.05,
-                    shadowRadius: 10,
-                    shadowColor: BLACK,
-                    shadowOffset: { height: 0, width: 0 },
-                  },
-                }}
-              >
+              <Tab.Navigator>
                 <Tab.Screen
                   name="d a r t a"
                   component={Home}
@@ -57,7 +38,7 @@ function App() {
                 />
 
                 <Tab.Screen
-                  name="Saved"
+                  name="s a v e d"
                   component={Matches}
                   options={{
                     tabBarIcon: ({ focused }) => (
@@ -69,13 +50,25 @@ function App() {
                   }}
                 />
                 <Tab.Screen
-                  name="Profile"
+                  name="p r o f i l e"
                   component={Profile}
                   options={{
                     tabBarIcon: ({ focused }) => (
                       <TabBarIcon
                         focused={focused}
                         icon="account-circle"
+                      />
+                    ),
+                  }}
+                />
+                <Tab.Screen
+                  name="camera beta"
+                  component={Camera}
+                  options={{
+                    tabBarIcon: ({ focused }) => (
+                      <TabBarIcon
+                        focused={focused}
+                        icon="camera"
                       />
                     ),
                   }}

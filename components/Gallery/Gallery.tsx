@@ -42,8 +42,8 @@ import {
 } from './GalleryComponents/index';
 import { galleryComponentStyles } from './galleryStyles';
 
-// import kitchen2 from '../backgrounds/kitchen2.png';
-// import HannahWall = require('../backgrounds/HannahWall.png');
+// const kitchen2 = require('../../backgrounds/kitchen2.png');
+// const HannahWall = require('../../backgrounds/HannahWall.png');
 // import WallHorizontal = require('../backgrounds/WallHorizontal.png');
 const galleryWallRaw = require('../../backgrounds/galleryWallRaw.png');
 
@@ -85,6 +85,7 @@ export function Gallery({
   const [artDisplayIndex, setArtDisplayIndex] = useState<number>(resumedDisplayIndex);
   const [artOnDisplay, setArtOnDisplay] = useState<DataT | undefined>();
   const [backgroundImage] = useState<ImageSourcePropType>(galleryWallRaw);
+  const [currentZoomScale, setCurrentZoomScale] = useState<number>(1);
 
   const localButtonSizes = getButtonSizes(hp('100%'));
 
@@ -184,6 +185,7 @@ export function Gallery({
         || orientation === OrientationsEnum.portraitUp
       ))
     ) {
+      setCurrentZoomScale(1);
       setIsPortrait(!isPortrait);
     }
   };
@@ -309,10 +311,12 @@ export function Gallery({
               artImage={artOnDisplay?.image}
               backgroundImage={backgroundImage}
               backgroundImageDimensionsPixels={backgroundContainerDimensionsPixels}
+              currentZoomScale={currentZoomScale}
               dimensionsInches={artOnDisplay?.dimensionsInches}
               isPortrait={isPortrait}
               visibleSnack={visibleSnack}
               wallHeight={wallHeight}
+              setCurrentZoomScale={setCurrentZoomScale}
               setVisibleSnack={setVisibleSnack}
               toggleArtForward={toggleArtForward}
               toggleArtBackward={toggleArtBackward}

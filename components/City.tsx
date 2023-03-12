@@ -1,7 +1,8 @@
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import IconElement from './GlobalElements/IconElement';
+
 import styles, { DARK_GRAY } from '../assets/styles';
+import IconElement from './GlobalElements/IconElement';
 import { GlobalText } from './GlobalElements/index';
 
 function City() {

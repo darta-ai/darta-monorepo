@@ -134,3 +134,24 @@ export type DataT = {
   sold : boolean,
   title : string;
 };
+
+// Mock Data
+export interface GalleryLandingPage {
+  [key : string] : {
+      type: string,
+      galleryId: string,
+      artworkIds: string[],
+      preview?: {
+          [key : string]: {
+          id: string;
+          image: string;
+          dimensionsInches: {
+              height: number;
+              width: number;
+          };
+      }
+  }
+      text: string,
+      body: string
+  }
+}
