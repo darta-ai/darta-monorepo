@@ -17,13 +17,7 @@ import { useIsForeground } from './hooks';
 
 export function CameraRequest() {
   const [useCamera, setUserCamera] = useState<boolean>(false);
-  const camera = useRef<Camera>(null);
   const [device, setDevice] = useState<CameraDevice>({});
-
-  const onInitialized = useCallback(() => {
-    console.log('Camera initialized!');
-    setIsCameraInitialized(true);
-  }, []);
 
   const isAppForeground = useIsForeground();
   const onCameraInitialized = useCallback(() => console.log('camera initialized'), []);

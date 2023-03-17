@@ -1,18 +1,19 @@
 import {
   Image,
 } from 'react-native';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+
+import { buttonSizes } from '../components/globalVariables';
 import {
   ImageCollection,
 } from '../firebase/hooks';
 import { DataT } from '../types';
-import { buttonSizes } from '../components/globalVariables';
 
 const imagePrefetch = async (imageUrls: string[]) => {
   const imagePrefetchResults: boolean[] = await Promise.all(imageUrls.map(
-    async (imageUrl:string): Promise<boolean> => Image.prefetch(imageUrl).catch((e : Error) => {
-      throw new Error(`No image exists for id ${imageUrl}`);
-    }),
+    async (imageUrl:string): Promise<boolean> => Image.prefetch(imageUrl)
+      .catch((e : Error) => {
+        throw new Error(`No image exists for id ${imageUrl}, ${e}`);
+      }),
   ));
   return imagePrefetchResults;
 };

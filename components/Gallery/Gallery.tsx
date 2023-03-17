@@ -42,7 +42,7 @@ import {
 } from './GalleryComponents/index';
 import { galleryComponentStyles } from './galleryStyles';
 
-// const kitchen2 = require('../../backgrounds/kitchen2.png');
+const kitchen2 = require('../../backgrounds/kitchen2.png');
 // const HannahWall = require('../../backgrounds/HannahWall.png');
 // import WallHorizontal = require('../backgrounds/WallHorizontal.png');
 const galleryWallRaw = require('../../backgrounds/galleryWallRaw.png');

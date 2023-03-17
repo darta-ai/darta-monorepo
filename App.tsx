@@ -7,7 +7,9 @@ import { Provider as PaperProvider } from 'react-native-paper';
 
 import TabBarIcon from './components/GlobalElements/TabBarIcon';
 import {
-  Camera, Home, Matches, Profile,
+  // Camera,
+  Home,
+  Matches,
 } from './screens';
 
 const Stack = createStackNavigator();
@@ -20,7 +22,11 @@ function App() {
         <Stack.Navigator>
           <Stack.Screen
             name="Tab"
-            options={{ headerShown: false, animationEnabled: true }}
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+              cardOverlayEnabled: true,
+            }}
           >
             {() => (
               <Tab.Navigator>
@@ -31,25 +37,25 @@ function App() {
                     tabBarIcon: ({ focused }) => (
                       <TabBarIcon
                         focused={focused}
-                        icon="brush"
+                        icon="image-frame"
                       />
                     ),
                   }}
                 />
 
                 <Tab.Screen
-                  name="s a v e d"
+                  name="a c c o u n t"
                   component={Matches}
                   options={{
                     tabBarIcon: ({ focused }) => (
                       <TabBarIcon
                         focused={focused}
-                        icon="heart"
+                        icon="account-box-outline"
                       />
                     ),
                   }}
                 />
-                <Tab.Screen
+                {/* <Tab.Screen
                   name="p r o f i l e"
                   component={Profile}
                   options={{
@@ -60,8 +66,8 @@ function App() {
                       />
                     ),
                   }}
-                />
-                <Tab.Screen
+                /> */}
+                {/* <Tab.Screen
                   name="camera beta"
                   component={Camera}
                   options={{
@@ -72,7 +78,7 @@ function App() {
                       />
                     ),
                   }}
-                />
+                /> */}
               </Tab.Navigator>
             )}
           </Stack.Screen>
