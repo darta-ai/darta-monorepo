@@ -17,7 +17,7 @@
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
                BuildableName = "frontendV1.app"
                BlueprintName = "frontendV1"
-               ReferencedContainer = "container:frontendV1.xcodeproj">
+               ReferencedContainer = "container:d a r t a.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
                BuildableName = "frontendV1Tests.xctest"
                BlueprintName = "frontendV1Tests"
-               ReferencedContainer = "container:frontendV1.xcodeproj">
+               ReferencedContainer = "container:d a r t a.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -57,7 +57,7 @@
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "frontendV1.app"
             BlueprintName = "frontendV1"
-            ReferencedContainer = "container:frontendV1.xcodeproj">
+            ReferencedContainer = "container:d a r t a.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -74,7 +74,7 @@
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "frontendV1.app"
             BlueprintName = "frontendV1"
-            ReferencedContainer = "container:frontendV1.xcodeproj">
+            ReferencedContainer = "container:d a r t a.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
