@@ -1,11 +1,11 @@
 import React from 'react';
-import { View } from 'react-native';
+import {View} from 'react-native';
 import IconElement from './IconElement';
-import styles, { DARK_GRAY, PRIMARY_COLOR } from '../../assets/styles';
-import { TabBarIconT } from '../../types';
+import styles, {DARK_GRAY, SECONDARY_COLOR} from '../../assets/styles';
+import {TabBarIconT} from '../../types';
 
-function TabBarIcon({ focused, icon }: TabBarIconT) {
-  const iconFocused = focused ? PRIMARY_COLOR : DARK_GRAY;
+function TabBarIcon({focused, icon, colors}: TabBarIconT) {
+  const iconFocused = focused ? colors.focused : colors.notFocused;
 
   return (
     <View style={styles.iconMenu}>

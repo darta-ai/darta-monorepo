@@ -1,6 +1,9 @@
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
-import { GalleryLandingPage, Icons } from '../types';
+import {GalleryLandingPage, Icons} from '../types';
 
 export const galleryDimensionsPortrait = {
   height: hp('80%'),
@@ -26,6 +29,7 @@ export const icons: Icons = {
   viewSettings: 'eye-settings-outline',
   downWardsNavigation: 'down',
   learnMore: 'bookshelf',
+  inquire: 'message-processing-outline'
 };
 
 // export const getButtonSize = (wp:number, size: string) => {
@@ -68,18 +72,21 @@ export const images1 = [
 export const image1Preview = {
   0: {
     id: '4d8b92c64eb68a1b2c00051f',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/AJp-r4WDs4Mpvaj5koBmvQ/larger.jpg',
-    dimensionsInches: { height: 13.625, width: 12.825 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/AJp-r4WDs4Mpvaj5koBmvQ/larger.jpg',
+    dimensionsInches: {height: 13.625, width: 12.825},
   },
   1: {
     id: '57e59a54cd530e44a60001ee',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/M-4i_FVEf18UvZNXoiJXtQ/larger.jpg',
-    dimensionsInches: { height: 12, width: 9 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/M-4i_FVEf18UvZNXoiJXtQ/larger.jpg',
+    dimensionsInches: {height: 12, width: 9},
   },
   2: {
     id: '565de2309acc8a7721000086',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/hy7UuwOCMHTTt6gAdT-Dow/larger.jpg',
-    dimensionsInches: { height: 48, width: 37.5 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/hy7UuwOCMHTTt6gAdT-Dow/larger.jpg',
+    dimensionsInches: {height: 48, width: 37.5},
   },
 };
 
@@ -102,18 +109,21 @@ export const images2 = [
 export const image2Preview = {
   0: {
     id: '4d90d196dcdd5f44a50000cb',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/5SdcJI5ZujL0gWSbgCuFtQ/larger.jpg',
-    dimensionsInches: { height: 32, width: 28 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/5SdcJI5ZujL0gWSbgCuFtQ/larger.jpg',
+    dimensionsInches: {height: 32, width: 28},
   },
   1: {
     id: '55884922726169561d0007e0',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/M0MQ8KVCSFZDeWSE3AtONA/larger.jpg',
-    dimensionsInches: { height: 20, width: 16 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/M0MQ8KVCSFZDeWSE3AtONA/larger.jpg',
+    dimensionsInches: {height: 20, width: 16},
   },
   2: {
     id: '5f6294bb9c4bc2000d71925e',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/FPjgCJxN5dpXalMB2bvZxQ/larger.jpg',
-    dimensionsInches: { height: 34, width: 24 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/FPjgCJxN5dpXalMB2bvZxQ/larger.jpg',
+    dimensionsInches: {height: 34, width: 24},
   },
 };
 
@@ -139,18 +149,21 @@ export const timWilson = [
 export const timWilsonPreview = {
   0: {
     id: '62cf1d7f62225b000be802c2',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/NTwfXxEswLgn_tcznK9XJw/larger.jpg',
-    dimensionsInches: { height: 18, width: 22.5 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/NTwfXxEswLgn_tcznK9XJw/larger.jpg',
+    dimensionsInches: {height: 18, width: 22.5},
   },
   1: {
     id: '62ed758894df06000cfb27e5',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/UgMq9Jp7ok9W4V0-a78dtg/larger.jpg',
-    dimensionsInches: { height: 16, width: 11 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/UgMq9Jp7ok9W4V0-a78dtg/larger.jpg',
+    dimensionsInches: {height: 16, width: 11},
   },
   2: {
     id: '635c35a37b79fa000d14594a',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/30pHFzA-GsM_1Hjv2bfFmA/larger.jpg',
-    dimensionsInches: { height: 12.5, width: 9 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/30pHFzA-GsM_1Hjv2bfFmA/larger.jpg',
+    dimensionsInches: {height: 12.5, width: 9},
   },
 };
 
@@ -174,18 +187,21 @@ export const cathleenClark = [
 export const cathleenClarkPreview = {
   0: {
     id: '5fc79929a2b682000e6b0bb0',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/iE7tBe76SRAxu2dPm0LeJA/larger.jpg',
-    dimensionsInches: { height: 24, width: 18 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/iE7tBe76SRAxu2dPm0LeJA/larger.jpg',
+    dimensionsInches: {height: 24, width: 18},
   },
   1: {
     id: '63517d2a3004ca000c6f9a30',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/GpYI0yMppN-Cej2apLD7Yg/larger.jpg',
-    dimensionsInches: { height: 36, width: 36 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/GpYI0yMppN-Cej2apLD7Yg/larger.jpg',
+    dimensionsInches: {height: 36, width: 36},
   },
   2: {
     id: '63517e20d7f7b6000dcf6b98',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/tppydTz_gNSxdcl_QJh0Aw/larger.jpg',
-    dimensionsInches: { height: 30, width: 24 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/tppydTz_gNSxdcl_QJh0Aw/larger.jpg',
+    dimensionsInches: {height: 30, width: 24},
   },
 };
 
@@ -205,23 +221,34 @@ export const darbyMilbrath = [
 export const darbyMilbrathPreview = {
   0: {
     id: '5f553ad7ba960c000e2cf5d8',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/vYIXji1F1PZ7JlR2lGKY-g/larger.jpg',
-    dimensionsInches: { height: 40, width: 30 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/vYIXji1F1PZ7JlR2lGKY-g/larger.jpg',
+    dimensionsInches: {height: 40, width: 30},
   },
   1: {
     id: '607d4df05692f00012685538',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/GzeVDVMXGkMFazAbzA2VZQ/larger.jpg',
-    dimensionsInches: { height: 14, width: 12 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/GzeVDVMXGkMFazAbzA2VZQ/larger.jpg',
+    dimensionsInches: {height: 14, width: 12},
   },
   2: {
     id: '6131223005e7f8000bb582f1',
-    image: 'https://d32dm0rphc51dk.cloudfront.net/hdWA5Lf9ES_4aUK7sEYoDg/larger.jpg',
-    dimensionsInches: { height: 76, width: 64 },
+    image:
+      'https://d32dm0rphc51dk.cloudfront.net/hdWA5Lf9ES_4aUK7sEYoDg/larger.jpg',
+    dimensionsInches: {height: 76, width: 64},
   },
 };
 
 const today = new Date().getDay();
-const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+const days = [
+  'sunday',
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+];
 
 export const galleryDummyData: GalleryLandingPage = {
   '01a5ac40-bc52-11ed-afa1-0242ac120002': {
@@ -237,7 +264,7 @@ export const galleryDummyData: GalleryLandingPage = {
     galleryId: '1d2091ce-bc52-11ed-afa1-0242ac120002',
     artworkIds: images2,
     preview: image2Preview,
-    text: 'Femme Power',
+    text: 'Grouper',
     body: 'curated by Ana Delvey',
   },
   '645d3af4-565e-4edd-9d61-e7dd0c7a26ba': {
@@ -245,7 +272,7 @@ export const galleryDummyData: GalleryLandingPage = {
     galleryId: '645d3af4-565e-4edd-9d61-e7dd0c7a26ba',
     artworkIds: timWilson,
     preview: timWilsonPreview,
-    text: 'Tim Wilson: ',
+    text: 'Tim Wilson',
     body: 'Meditations',
   },
   '870f8c2c-6cb6-4061-8acc-c7fc4ceb33fc': {
@@ -253,7 +280,7 @@ export const galleryDummyData: GalleryLandingPage = {
     galleryId: '870f8c2c-6cb6-4061-8acc-c7fc4ceb33fc',
     artworkIds: cathleenClark,
     preview: cathleenClarkPreview,
-    text: 'Cathleen Clarke:',
+    text: 'Cathleen Clarke',
     body: 'Hidden In Plain Sight',
   },
   'a28261e6-db56-441b-b65d-dbb540f61c10': {
@@ -261,7 +288,7 @@ export const galleryDummyData: GalleryLandingPage = {
     galleryId: 'a28261e6-db56-441b-b65d-dbb540f61c10',
     artworkIds: darbyMilbrath,
     preview: darbyMilbrathPreview,
-    text: 'Darby Milbrath:',
+    text: 'Darby Milbrath',
     body: 'A Sudden Shift',
   },
 };

@@ -1,1 +1,1 @@
-export { GlobalText } from './GlobalText';
+export {GlobalText} from './GlobalText';

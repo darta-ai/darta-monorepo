@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 
 export const PRIMARY_COLOR = '#7444C0';
 export const SECONDARY_COLOR = '#5636B8';
@@ -29,7 +29,7 @@ export default StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 10,
     shadowColor: BLACK,
-    shadowOffset: { height: 0, width: 0 },
+    shadowOffset: {height: 0, width: 0},
   },
   matchesCardItem: {
     marginTop: -35,
@@ -85,7 +85,7 @@ export default StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 20,
     shadowColor: DARK_GRAY,
-    shadowOffset: { height: 10, width: 0 },
+    shadowOffset: {height: 10, width: 0},
   },
   miniButton: {
     width: 40,
@@ -99,7 +99,7 @@ export default StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 20,
     shadowColor: DARK_GRAY,
-    shadowOffset: { height: 10, width: 0 },
+    shadowOffset: {height: 10, width: 0},
   },
 
   // COMPONENT - CITY
@@ -112,7 +112,7 @@ export default StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 10,
     shadowColor: BLACK,
-    shadowOffset: { height: 0, width: 0 },
+    shadowOffset: {height: 0, width: 0},
   },
   cityText: {
     color: DARK_GRAY,
@@ -154,7 +154,7 @@ export default StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 10,
     shadowColor: BLACK,
-    shadowOffset: { height: 0, width: 0 },
+    shadowOffset: {height: 0, width: 0},
   },
   matchesProfileItem: {
     width: 135,
@@ -210,7 +210,7 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  title: { paddingBottom: 10, fontSize: 22, color: DARK_GRAY },
+  title: {paddingBottom: 10, fontSize: 22, color: DARK_GRAY},
 
   // CONTAINER - HOME
   containerHome: {
@@ -232,7 +232,7 @@ export default StyleSheet.create({
   },
 
   // CONTAINER - PROFILE
-  containerProfile: { marginHorizontal: 0 },
+  containerProfile: {marginHorizontal: 0},
   photo: {
     width: DIMENSION_WIDTH,
     height: 450,

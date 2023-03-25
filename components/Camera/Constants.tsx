@@ -1,11 +1,12 @@
-import { Dimensions, Platform } from 'react-native';
+import {Dimensions, Platform} from 'react-native';
 import StaticSafeAreaInsets from 'react-native-static-safe-area-insets';
 
 export const CONTENT_SPACING = 15;
 
-const SAFE_BOTTOM = Platform.select({
-  ios: StaticSafeAreaInsets.safeAreaInsetsBottom,
-}) ?? 0;
+const SAFE_BOTTOM =
+  Platform.select({
+    ios: StaticSafeAreaInsets.safeAreaInsetsBottom,
+  }) ?? 0;
 
 export const SAFE_AREA_PADDING = {
   paddingLeft: StaticSafeAreaInsets.safeAreaInsetsLeft + CONTENT_SPACING,
@@ -19,7 +20,8 @@ export const MAX_ZOOM_FACTOR = 20;
 
 export const SCREEN_WIDTH = Dimensions.get('window').width;
 export const SCREEN_HEIGHT = Platform.select<number>({
-  android: Dimensions.get('screen').height - StaticSafeAreaInsets.safeAreaInsetsBottom,
+  android:
+    Dimensions.get('screen').height - StaticSafeAreaInsets.safeAreaInsetsBottom,
   ios: Dimensions.get('window').height,
 }) as number;
 

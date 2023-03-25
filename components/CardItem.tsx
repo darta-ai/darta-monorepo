@@ -1,9 +1,7 @@
 import React from 'react';
-import {
-  View, Image, Dimensions, TouchableOpacity,
-} from 'react-native';
+import {View, Image, Dimensions, TouchableOpacity} from 'react-native';
 import IconElement from './GlobalElements/IconElement';
-import { CardItemT } from '../types';
+import {CardItemT} from '../types';
 import styles, {
   DISLIKE_ACTIONS,
   FLASH_ACTIONS,
@@ -11,7 +9,7 @@ import styles, {
   STAR_ACTIONS,
   WHITE,
 } from '../assets/styles';
-import { GlobalText } from './GlobalElements/index';
+import {GlobalText} from './GlobalElements/index';
 
 function CardItem({
   description,
@@ -52,10 +50,8 @@ function CardItem({
       {matches && (
         <View style={styles.matchesCardItem}>
           <GlobalText style={styles.matchesTextCardItem}>
-            <IconElement name="heart" color={WHITE} size={13} />
-            {' '}
-            {matches}
-            % Match!
+            <IconElement name="heart" color={WHITE} size={13} /> {matches}%
+            Match!
           </GlobalText>
         </View>
       )}
@@ -65,7 +61,9 @@ function CardItem({
 
       {/* DESCRIPTION */}
       {description && (
-        <GlobalText style={styles.descriptionCardItem}>{description}</GlobalText>
+        <GlobalText style={styles.descriptionCardItem}>
+          {description}
+        </GlobalText>
       )}
 
       {/* STATUS */}

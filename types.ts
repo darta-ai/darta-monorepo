@@ -1,10 +1,6 @@
 /* eslint-disable no-unused-vars */
 export interface IUserArtworkRated {
-  [key: string]: {
-     like?: boolean,
-     save?: boolean,
-     dislike?: boolean,
-  };
+  [key: string]: boolean;
 }
 
 // eslint-disable-next-line no-shadow
@@ -12,21 +8,22 @@ export enum OpenStateEnum {
   openNav = 'openNav',
   openRatings = 'openRatings',
   openOptions = 'openOptions',
-  tombstone = 'tombstone'
+  tombstone = 'tombstone',
 }
 
 // eslint-disable-next-line no-shadow
 export enum SnackTextEnum {
-  save = 'Saved 💛😍',
-  like = 'Liked 👍😏',
-  dislike = 'Disliked 👎😒'
+  save = 'Saved 😍',
+  like = 'Liked 😏',
+  dislike = 'Disliked 😒',
+  reset = 'Reset 🧹',
 }
 
 // eslint-disable-next-line no-shadow
 export enum RatingEnum {
   save = 'save',
   like = 'like',
-  dislike = 'dislike'
+  dislike = 'dislike',
 }
 
 // eslint-disable-next-line no-shadow
@@ -34,18 +31,18 @@ export enum OrientationsEnum {
   landscapeLeft = 'LANDSCAPE-LEFT',
   portraitUp = 'PORTRAIT-UPSIDEDOWN',
   landscapeRight = 'LANDSCAPE-RIGHT',
-  portrait = 'PORTRAIT'
+  portrait = 'PORTRAIT',
 }
 
 export type UserArtworkRatings = {
-  [key : string] : {
-    like? : string,
-    save? : string,
-    dislike? : string
-  }
-}
+  [key: string]: {
+    like?: string;
+    save?: string;
+    dislike?: string;
+  };
+};
 export interface Icons {
-  [key: string] : string
+  [key: string]: string;
 }
 
 export type CardItemT = {
@@ -86,6 +83,10 @@ export type ProfileItemT = {
 export type TabBarIconT = {
   focused: boolean;
   icon: string;
+  colors: {
+    focused: string;
+    notFocused: string;
+  };
   text?: string;
   type?: string;
   iconName?: any;
@@ -93,14 +94,14 @@ export type TabBarIconT = {
 };
 
 export type ButtonSizesT = {
-  [key : string] : number
-}
+  [key: string]: number;
+};
 
 type Gene = {
   displayName: string | null;
   name: string;
   id: string;
-}
+};
 
 export type DataT = {
   id: string;
@@ -109,14 +110,14 @@ export type DataT = {
   canInquire?: true;
   category: string;
   createdAt: string;
-  date: string,
+  date: string;
   dimensionsInches: {
     height: number;
     text: string;
     width: number;
     depth?: number | null;
     diameter?: number | null;
-  },
+  };
   gallery: {
     name: string;
     region: string;
@@ -125,33 +126,33 @@ export type DataT = {
     id: string;
   };
   geneName: string[];
-  genes : Gene[];
+  genes: Gene[];
   iconicity: number;
   labels: string[];
   medium: string;
   price: string;
   slug: string;
-  sold : boolean,
-  title : string;
+  sold: boolean;
+  title: string;
 };
 
 // Mock Data
 export interface GalleryLandingPage {
-  [key : string] : {
-      type: string,
-      galleryId: string,
-      artworkIds: string[],
-      preview?: {
-          [key : string]: {
-          id: string;
-          image: string;
-          dimensionsInches: {
-              height: number;
-              width: number;
-          };
-      }
-  }
-      text: string,
-      body: string
-  }
+  [key: string]: {
+    type: string;
+    galleryId: string;
+    artworkIds: string[];
+    preview?: {
+      [key: string]: {
+        id: string;
+        image: string;
+        dimensionsInches: {
+          height: number;
+          width: number;
+        };
+      };
+    };
+    text: string;
+    body: string;
+  };
 }

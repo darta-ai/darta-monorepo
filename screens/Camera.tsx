@@ -1,13 +1,10 @@
 import React from 'react';
+import {View} from 'react-native';
 
-import { CameraPage } from '../components/Camera/CameraPage';
+// import { CameraPage } from '../components/Camera/CameraPage';
 
 function Camera() {
-  return (
-
-    <CameraPage />
-
-  );
+  return <View />;
 }
 
 export default Camera;

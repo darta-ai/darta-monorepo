@@ -1,8 +1,6 @@
-import {
-  StyleSheet,
-} from 'react-native';
+import {StyleSheet} from 'react-native';
 
-const baseText = { fontFamily: 'Avenir Next' };
+const baseText = {fontFamily: 'Avenir Next'};
 
 export const globalTextStyles = StyleSheet.create({
   baseText: {

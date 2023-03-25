@@ -1,12 +1,9 @@
 import React from 'react';
-import { IconButton } from 'react-native-paper';
-import {
-  View,
-  Animated,
-} from 'react-native';
-import { viewOptionsStyles, galleryInteractionStyles } from '../galleryStyles';
-import { icons } from '../../globalVariables';
-import { OpenStateEnum } from '../../../types';
+import {IconButton} from 'react-native-paper';
+import {View, Animated} from 'react-native';
+import {viewOptionsStyles, galleryInteractionStyles} from '../galleryStyles';
+import {icons} from '../../globalVariables';
+import {OpenStateEnum} from '../../../types';
 
 function GalleryViewOptions({
   fadeAnimOptions,
@@ -17,14 +14,14 @@ function GalleryViewOptions({
   toggleButtonView,
   flipOrientation,
 }: {
-    fadeAnimOptions: Animated.Value
-    isPortrait: boolean
-    localButtonSizes: any
-    openIdentifier: OpenStateEnum
-    openOptions: boolean
-    // eslint-disable-next-line
-    toggleButtonView:(openIdentifier: OpenStateEnum) => void
-    flipOrientation: () => void
+  fadeAnimOptions: Animated.Value;
+  isPortrait: boolean;
+  localButtonSizes: any;
+  openIdentifier: OpenStateEnum;
+  openOptions: boolean;
+  // eslint-disable-next-line
+  toggleButtonView: (openIdentifier: OpenStateEnum) => void;
+  flipOrientation: () => void;
 }) {
   const rotateScreenContainerStyle = isPortrait
     ? viewOptionsStyles.rotateScreenContainerPortrait
@@ -40,13 +37,14 @@ function GalleryViewOptions({
         testID="rightScrollButton"
         onPress={() => toggleButtonView(openIdentifier)}
       />
-      {/* {openOptions && ( */}
       <Animated.View
-        style={[galleryInteractionStyles.animatedContainer, {
-          opacity: fadeAnimOptions,
-          justifyContent: 'flex-end',
-        }]}
-      >
+        style={[
+          galleryInteractionStyles.animatedContainer,
+          {
+            opacity: fadeAnimOptions,
+            justifyContent: 'flex-end',
+          },
+        ]}>
         <IconButton
           mode="outlined"
           icon={icons.screenRotation}
@@ -63,4 +61,4 @@ function GalleryViewOptions({
   );
 }
 
-export { GalleryViewOptions };
+export {GalleryViewOptions};
