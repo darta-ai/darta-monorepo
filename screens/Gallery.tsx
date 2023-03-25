@@ -10,7 +10,7 @@ import {StoreContext} from '../components/Gallery/galleryStore';
 import * as globals from '../components/globalVariables';
 import {createOpeningTransition} from '../components/Screens/openingTransition';
 import {TombstoneRoute} from '../components/Gallery/Tombstone/TombstoneRoute';
-import { headerOptions } from './styles';
+import {headerOptions} from './styles';
 import {
   SafeAreaProvider,
   useSafeAreaInsets,

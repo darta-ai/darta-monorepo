@@ -5,15 +5,15 @@ import styles, {DARK_GRAY} from '../../assets/styles';
 import IconElement from './IconElement';
 import {GlobalText} from './index';
 
-function City() {
+function LocationIndicator() {
   return (
     <TouchableOpacity style={styles.city}>
       <GlobalText style={styles.cityText}>
-        <IconElement name="location-sharp" size={13} color={DARK_GRAY} /> New
-        York
+        <IconElement icon="location-sharp" size={13} iconColor={DARK_GRAY} />{' '}
+        New York
       </GlobalText>
     </TouchableOpacity>
   );
 }
 
-export default City;
+export default LocationIndicator;

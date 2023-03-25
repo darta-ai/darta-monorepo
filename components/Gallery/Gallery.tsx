@@ -237,7 +237,7 @@ export function GalleryRoute({
       tombstoneTitle: artOnDisplay?.title,
     });
     navigation.navigate(GalleryNavigatorEnum.tombstone, {
-      artOnDisplay
+      artOnDisplay,
     });
   };
 

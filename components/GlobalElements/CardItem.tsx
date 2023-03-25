@@ -1,15 +1,15 @@
 import React from 'react';
 import {View, Image, Dimensions, TouchableOpacity} from 'react-native';
-import IconElement from './GlobalElements/IconElement';
-import {CardItemT} from '../types';
+import IconElement from './IconElement';
+import {CardItemT} from '../../types';
 import styles, {
   DISLIKE_ACTIONS,
   FLASH_ACTIONS,
   LIKE_ACTIONS,
   STAR_ACTIONS,
   WHITE,
-} from '../assets/styles';
-import {GlobalText} from './GlobalElements/index';
+} from '../../assets/styles';
+import {GlobalText} from './index';
 
 function CardItem({
   description,

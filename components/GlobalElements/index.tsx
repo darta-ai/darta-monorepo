@@ -1,1 +1,0 @@
-export {GlobalText} from './GlobalText';

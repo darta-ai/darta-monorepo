@@ -1,40 +1,38 @@
-// import React from 'react';
-// // import Orientation from 'react-native-orientation-locker';
-// import {FlatList, ImageBackground, TouchableOpacity, View} from 'react-native';
+import React from 'react';
 
-// import DEMO from '../assets/data/demo';
-// import { UserStack } from '../App';
-// import { GalleryNavigatorEnum } from '../components/Gallery/galleryRoutes.d';
+import {UserStack} from '../App';
+import {UserRoutesEnum} from '../components/User/userRoutes';
+import {UserHome} from '../components/User';
+import {headerOptions} from './styles';
 
-// function User() {
-//   return (
-//     <UserStack.Navigator screenOptions={{headerTintColor: 'white'}}>
-//       <UserStack.Group>
-//         <UserStack.Screen
-//           name={GalleryNavigatorEnum.galleryHome}
-//           component={GalleryHome}
-//           options={{...headerOptions}}
-//           initialParams={{galleryInfo}}
-//         />
-//         <UserStack.Screen
-//           name={GalleryNavigatorEnum.gallery}
-//           component={GalleryRoute}
-//           options={{
-//             ...headerOptions,
-//             ...openingTransition,
-//             headerTitle: state.galleryTitle,
-//           }}
-//         />
-//       </UserStack.Group>
-//       <UserStack.Group screenOptions={{presentation: 'modal'}}>
-//         <UserStack.Screen
-//           name={GalleryNavigatorEnum.tombstone}
-//           component={TombstoneRoute}
-//           options={{...headerOptions, headerTitle: state.tombstoneTitle}}
-//         />
-//       </UserStack.Group>
-//     </UserStack.Navigator>
-//   );
-// }
+function User() {
+  return (
+    <UserStack.Navigator screenOptions={{headerTintColor: 'white'}}>
+      <UserStack.Group>
+        <UserStack.Screen
+          name={UserRoutesEnum.home}
+          component={UserHome}
+          options={{...headerOptions}}
+        />
+        {/* <UserStack.Screen
+          name={GalleryNavigatorEnum.gallery}
+          component={GalleryRoute}
+          options={{
+            ...headerOptions,
+            ...openingTransition,
+            headerTitle: state.galleryTitle,
+          }}
+        /> */}
+      </UserStack.Group>
+      <UserStack.Group screenOptions={{presentation: 'modal'}}>
+        {/* <UserStack.Screen
+          name={GalleryNavigatorEnum.tombstone}
+          component={TombstoneRoute}
+          options={{...headerOptions, headerTitle: state.tombstoneTitle}}
+        /> */}
+      </UserStack.Group>
+    </UserStack.Navigator>
+  );
+}
 
-// export default User;
+export default User;

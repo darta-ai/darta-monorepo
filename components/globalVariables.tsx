@@ -29,7 +29,7 @@ export const icons: Icons = {
   viewSettings: 'eye-settings-outline',
   downWardsNavigation: 'down',
   learnMore: 'bookshelf',
-  inquire: 'message-processing-outline'
+  inquire: 'message-processing-outline',
 };
 
 // export const getButtonSize = (wp:number, size: string) => {

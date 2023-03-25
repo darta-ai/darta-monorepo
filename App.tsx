@@ -18,7 +18,7 @@ import {
 } from './screens';
 
 export const GalleryStack = createStackNavigator();
-export const UserStack = createStackNavigator()
+export const UserStack = createStackNavigator();
 export const Tab = createBottomTabNavigator();
 
 const footerOptions = {

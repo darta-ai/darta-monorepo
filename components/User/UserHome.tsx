@@ -1,4 +1,3 @@
-
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext, useEffect, useState} from 'react';
 import {Alert, FlatList, SafeAreaView, View, StatusBar} from 'react-native';
@@ -17,3 +16,9 @@ import {
 } from './galleryRoutes.d';
 import {ETypes, StoreContext} from './galleryStore';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+
+function UserHome() {
+  return <View>Hey</View>;
+}
+
+export default UserHome;
