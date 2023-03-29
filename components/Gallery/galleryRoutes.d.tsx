@@ -7,7 +7,7 @@ export enum GalleryNavigatorEnum {
 }
 
 export type GalleryRootStackParamList = {
-  [GalleryNavigatorEnum.galleryHome]: null;
-  [GalleryNavigatorEnum.gallery]: null;
-  [GalleryNavigatorEnum.tombstone]: any;
+  [GalleryNavigatorEnum.galleryHome]: undefined;
+  [GalleryNavigatorEnum.gallery]: undefined;
+  [GalleryNavigatorEnum.tombstone]: undefined;
 };

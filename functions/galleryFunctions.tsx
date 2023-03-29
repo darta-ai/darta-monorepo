@@ -48,6 +48,7 @@ export const getButtonSizes = (hp: number) => {
   return {
     extraSmall: Math.floor((hp / baseHeight) * buttonSizes.extraSmall),
     small: Math.floor((hp / baseHeight) * buttonSizes.small),
+    mediumSmall: Math.floor((hp / baseHeight) * buttonSizes.mediumSmall),
     medium: Math.floor((hp / baseHeight) * buttonSizes.medium),
     large: Math.floor((hp / baseHeight) * buttonSizes.large),
   };

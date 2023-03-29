@@ -30,6 +30,7 @@ export const icons: Icons = {
   downWardsNavigation: 'down',
   learnMore: 'bookshelf',
   inquire: 'message-processing-outline',
+  cog: 'cog-outline',
 };
 
 // export const getButtonSize = (wp:number, size: string) => {
@@ -39,6 +40,7 @@ export const icons: Icons = {
 export const buttonSizes = {
   extraSmall: 15,
   small: 20,
+  mediumSmall: 25,
   medium: 30,
   large: 40,
 };

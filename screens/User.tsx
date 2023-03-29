@@ -1,7 +1,8 @@
 import React from 'react';
 
 import {UserStack} from '../App';
-import {UserRoutesEnum} from '../components/User/userRoutes';
+// import {UserRoutesEnum} from '../components/User/userRoutes';
+import {UserRoutesEnum} from '../components/User/userRoutes.d';
 import {UserHome} from '../components/User';
 import {headerOptions} from './styles';
 
@@ -12,7 +13,7 @@ function User() {
         <UserStack.Screen
           name={UserRoutesEnum.home}
           component={UserHome}
-          options={{...headerOptions}}
+          options={{...headerOptions, headerTitle: 'Home'}}
         />
         {/* <UserStack.Screen
           name={GalleryNavigatorEnum.gallery}

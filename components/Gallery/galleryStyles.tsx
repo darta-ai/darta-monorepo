@@ -3,6 +3,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import {DARK_GREY, LIGHT_GREY, MILK} from '../../assets/styles';
 
 export const galleryPreviewStyles = StyleSheet.create({
   previewContainerPortrait: {
@@ -92,6 +93,13 @@ export const galleryInteractionStyles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: '#fff',
     color: 'black',
+    opacity: 0.9,
+  },
+  secondaryButtonBlackButton: {
+    backgroundColor: MILK,
+    borderColor: LIGHT_GREY,
+    borderWidth: 1,
+    color: MILK,
     opacity: 0.9,
   },
   animatedContainer: {

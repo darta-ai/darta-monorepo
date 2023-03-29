@@ -6,6 +6,10 @@ export const WHITE = '#FFFFFF';
 export const GRAY = '#757E90';
 export const DARK_GRAY = '#363636';
 export const BLACK = '#000000';
+export const DARK_BLUE = '#000033';
+export const DARK_GREY = '#333333';
+export const LIGHT_GREY = '#F5F5F5';
+export const MILK = '#FAFDF3';
 
 export const ONLINE_STATUS = '#46A575';
 export const OFFLINE_STATUS = '#D04949';

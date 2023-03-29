@@ -39,7 +39,7 @@ export function NavigateArt({
 
   return (
     <View style={navigateContainer}>
-      <View style={galleryInteractionStyles.containerPortraitFlex}>
+      <View>
         <View style={{alignSelf: 'flex-start'}}>
           <IconButton
             icon={icons.learnMore}

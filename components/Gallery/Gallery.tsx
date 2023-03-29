@@ -10,6 +10,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {getButtonSizes} from '../../functions/galleryFunctions';
 import {
@@ -260,6 +261,8 @@ export function GalleryRoute({
     );
   };
 
+  const insets = useSafeAreaInsets();
+
   const interactionContainer = state.isPortrait
     ? galleryComponentStyles.interactionContainerPortrait
     : galleryComponentStyles.interactionContainerLandscape;
@@ -277,6 +280,10 @@ export function GalleryRoute({
           justifyContent: 'center',
           alignSelf: 'center',
           alignItems: 'center',
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
         }}>
         <OrientationLocker
           orientation={PORTRAIT}

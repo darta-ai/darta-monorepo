@@ -1,24 +1,41 @@
-import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext, useEffect, useState} from 'react';
-import {Alert, FlatList, SafeAreaView, View, StatusBar} from 'react-native';
-import {Divider} from 'react-native-elements';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {SafeAreaView, View, ScrollView, Image} from 'react-native';
+import {UserScreenSelector} from './UserComponents/UserScreenSelector';
+import {UserProfile} from './UserComponents/UserProfile';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {getButtonSizes} from '../../functions/galleryFunctions';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-import {getImages, imagePrefetch} from '../../functions/galleryFunctions';
-import {DataT} from '../../types';
-import {GlobalText} from '../GlobalElements/index';
-import {globalTextStyles} from '../styles';
-import {GalleryPreview} from './GalleryComponents';
-import {
-  GalleryRootStackParamList,
-  GalleryNavigatorEnum,
-} from './galleryRoutes.d';
-import {ETypes, StoreContext} from './galleryStore';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-
 function UserHome() {
-  return <View>Hey</View>;
+  const insets = useSafeAreaInsets();
+  const localButtonSizes = getButtonSizes(hp('100%'));
+  return (
+    <View
+      style={{
+        backgroundColor: '#EEEEEE',
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+        paddingLeft: insets.left,
+        paddingRight: insets.right,
+        flex: 1,
+        flexDirection: 'column',
+        alignContent: 'center',
+      }}>
+      <SafeAreaView style={{flexDirection: 'column'}}>
+        <View>
+          <View>
+            <UserProfile localButtonSizes={localButtonSizes} />
+          </View>
+          <View>
+            <UserScreenSelector
+              headline={'| a r o u n d'}
+              localButtonSizes={localButtonSizes}
+            />
+          </View>
+        </View>
+      </SafeAreaView>
+    </View>
+  );
 }
 
 export default UserHome;
