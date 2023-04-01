@@ -98,7 +98,7 @@ export const galleryInteractionStyles = StyleSheet.create({
   secondaryButtonBlackButton: {
     backgroundColor: MILK,
     borderColor: LIGHT_GREY,
-    borderWidth: 1,
+    borderWidth: 0.5,
     color: MILK,
     opacity: 0.9,
   },

@@ -1,40 +1,25 @@
-import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useContext, useEffect, useState} from 'react';
-import {
-  Alert,
-  FlatList,
-  SafeAreaView,
-  View,
-  StatusBar,
-  Image,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
+import React from 'react';
+import {View, StyleSheet} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {GlobalText} from '../../GlobalElements';
-import {DARK_BLUE, DARK_GRAY, LIGHT_GREY} from '../../../assets/styles';
+import {DARK_GRAY, MILK} from '../../../assets/styles';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {Badge} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Text} from 'react-native-paper';
 import {globalTextStyles} from '../../styles';
-import {buttonSizes} from '../../globalVariables';
-import {getButtonSizes} from '../../../functions/galleryFunctions';
 
 export function GallerySelectorComponent({
   headline,
   subHeadline,
   localButtonSizes,
-  image,
   showBadge,
   notificationNumber,
 }: {
   headline: string;
   subHeadline: string;
-  image: string;
   showBadge: boolean;
   notificationNumber?: number;
   localButtonSizes: {
@@ -48,7 +33,7 @@ export function GallerySelectorComponent({
       style={[
         styles.componentContainer,
         {
-          height: hp('7%'),
+          height: hp('8%'),
           width: wp('90%'),
         },
       ]}>
@@ -63,17 +48,16 @@ export function GallerySelectorComponent({
       <View
         style={{
           flex: 0.05,
-          borderLeftColor: LIGHT_GREY,
+          borderLeftColor: MILK,
           borderLeftWidth: 3,
           borderTopLeftRadius: hp('0.3%'),
           borderBottomLeftRadius: hp('2%'),
         }}></View>
       <View style={{flex: 0.8, justifyContent: 'center'}}>
-        <GlobalText style={[globalTextStyles.titleText, {color: LIGHT_GREY}]}>
+        <GlobalText style={[globalTextStyles.titleText, {color: MILK}]}>
           {headline}
         </GlobalText>
-        <GlobalText
-          style={[globalTextStyles.italicTitleText, {color: LIGHT_GREY}]}>
+        <GlobalText style={[globalTextStyles.italicTitleText, {color: MILK}]}>
           {subHeadline}
         </GlobalText>
       </View>
@@ -95,11 +79,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   badgeContainer: {
-    backgroundColor: LIGHT_GREY,
+    backgroundColor: MILK,
     margin: hp('1%'),
   },
   badgeText: {
-    color: DARK_BLUE,
+    color: DARK_GRAY,
     fontSize: 15,
     textAlign: 'center',
   },
