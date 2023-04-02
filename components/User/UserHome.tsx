@@ -1,18 +1,33 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {SafeAreaView, View, ScrollView, Image} from 'react-native';
+import React, {useContext, useState, useRef} from 'react';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Animated,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
 import {UserScreenSelector} from './UserComponents/UserScreenSelector';
 import {UserProfile} from './UserComponents/UserProfile';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {getButtonSizes} from '../../functions/galleryFunctions';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import {ExploreArtworks} from './UserComponents/ExploreArtworks';
-import {MILK} from '../../assets/styles';
+import {DARK_GRAY, MILK} from '../../assets/styles';
+const HEADER_MAX_HEIGHT = hp('20%');
+const HEADER_MIN_HEIGHT = hp('10%');
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const exploreData = {
   '0': {
     name: 'Liliane Tomasko',
     details: 'los angeles based artist',
     id: '506b34324466170002001bef',
+    preview:
+      'https://d32dm0rphc51dk.cloudfront.net/dYP6Mb47wE9tutjWMK4xgA/larger.jpg',
     type: 'artist',
   },
   '1': {
@@ -44,24 +59,62 @@ const exploreData = {
 };
 
 function UserHome() {
-  const insets = useSafeAreaInsets();
   const localButtonSizes = getButtonSizes(hp('100%'));
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const headerHeightInterpolate = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+    extrapolate: 'clamp',
+  });
+
+  const imageWidthInterpolate = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [hp('15%'), hp('5%')],
+    extrapolate: 'clamp',
+  });
+
+  const imagePositionInterpolate = scrollY.interpolate({
+    inputRange: [10, HEADER_SCROLL_DISTANCE],
+    outputRange: [0, wp('-5%')],
+    extrapolate: 'clamp',
+  });
+
+  const handleScroll = Animated.event(
+    [{nativeEvent: {contentOffset: {y: scrollY}}}],
+    {
+      useNativeDriver: false,
+      listener: ({nativeEvent}: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const offsetY = nativeEvent.contentOffset.y;
+        scrollY.setValue(offsetY);
+        if (offsetY > hp('6%')) {
+          setIsScrolled(true);
+        } else {
+          setIsScrolled(false);
+        }
+      },
+    },
+  );
   return (
     <View
       style={{
         backgroundColor: MILK,
-        paddingBottom: insets.bottom,
-        paddingLeft: insets.left,
-        paddingRight: insets.right,
         flex: 1,
         flexDirection: 'column',
         alignContent: 'center',
+        paddingTop: hp('3%'),
       }}>
-      <ScrollView style={{flexDirection: 'column'}}>
+      <Animated.View style={[styles.header, {height: headerHeightInterpolate}]}>
+        <UserProfile
+          imageWidthInterpolate={imageWidthInterpolate}
+          imagePositionInterpolate={imagePositionInterpolate}
+          localButtonSizes={localButtonSizes}
+          isScrolled={isScrolled}
+        />
+      </Animated.View>
+      <ScrollView onScroll={handleScroll} scrollEventThrottle={16}>
         <View>
-          <View>
-            <UserProfile localButtonSizes={localButtonSizes} />
-          </View>
           <ScrollView>
             <View>
               <UserScreenSelector
@@ -82,5 +135,15 @@ function UserHome() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  header: {
+    backgroundColor: MILK,
+    overflow: 'hidden',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    paddingHorizontal: wp('5%'),
+  },
+});
 
 export default UserHome;

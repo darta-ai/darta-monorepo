@@ -8,6 +8,9 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
+// people need to download the app and they're just dropped on the screen with the art ratings
+// it's very simple - gets right to the point
+
 export function UserScreenSelector({
   headline,
   localButtonSizes,

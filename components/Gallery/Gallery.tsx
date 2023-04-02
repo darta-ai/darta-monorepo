@@ -248,7 +248,6 @@ export function GalleryRoute({
     }
     const currentRating = userArtworkRatings[artOnDisplay.id];
     const isResetRatings = !!currentRating[rating];
-    console.log({currentRating});
     dispatch({
       type: ETypes.rateArtwork,
       rating: rating,

@@ -33,7 +33,6 @@ export function ExploreArtworks({
     };
   };
 }) {
-  console.log({exploreData});
   return (
     <View
       style={{

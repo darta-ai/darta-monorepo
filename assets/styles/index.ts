@@ -4,10 +4,9 @@ export const PRIMARY_COLOR = '#7444C0';
 export const SECONDARY_COLOR = '#5636B8';
 export const WHITE = '#FFFFFF';
 export const GRAY = '#757E90';
-export const DARK_GRAY = '#363636';
+export const DARK_GRAY = '#333333';
 export const BLACK = '#000000';
 export const DARK_BLUE = '#000033';
-export const DARK_GREY = '#333333';
 export const LIGHT_GREY = '#8C8D8C';
 export const MILK = '#FAFDF3';
 
