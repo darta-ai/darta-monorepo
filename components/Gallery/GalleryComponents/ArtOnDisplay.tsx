@@ -192,7 +192,6 @@ export function ArtOnDisplay({
           }}>
           <ImageBackground
             source={backgroundImage}
-            // resizeMethod="resize"
           >
             <Pressable
               onTouchStart={({nativeEvent: {pageX, pageY}}) => {
