@@ -9,6 +9,7 @@ export enum OpenStateEnum {
   openRatings = 'openRatings',
   openOptions = 'openOptions',
   tombstone = 'tombstone',
+  swiped = 'swipped',
 }
 
 // eslint-disable-next-line no-shadow
@@ -21,6 +22,7 @@ export enum SnackTextEnum {
 
 // eslint-disable-next-line no-shadow
 export enum RatingEnum {
+  unrated = 'unrated',
   save = 'save',
   like = 'like',
   dislike = 'dislike',

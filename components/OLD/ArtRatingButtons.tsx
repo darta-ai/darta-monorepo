@@ -20,11 +20,8 @@ function ArtRatingButtons({
   isPortrait,
   openIdentifier,
   openRatings,
-  snackBarText,
   userArtworkRatings,
-  visibleSnack,
   rateArtwork,
-  setVisibleSnack,
   toggleButtonView,
 }: {
   artOnDisplayId: string | undefined;
@@ -34,8 +31,6 @@ function ArtRatingButtons({
   openIdentifier: OpenStateEnum;
   openRatings: boolean;
   userArtworkRatings: any;
-  snackBarText: string;
-  visibleSnack: boolean;
   // eslint-disable-next-line
   rateArtwork: (
     rating: RatingEnum,
@@ -74,10 +69,6 @@ function ArtRatingButtons({
     ? galleryInteractionStyles.containerPortrait
     : galleryInteractionStyles.containerLandscape;
 
-  const flexContainer = isPortrait
-    ? galleryInteractionStyles.containerPortraitFlex
-    : galleryInteractionStyles.containerLandscapeFlex;
-
   const rateArtworkContainerStyle = isPortrait
     ? galleryInteractionStyles.mainButtonPortrait
     : galleryInteractionStyles.mainButtonLandscape;
@@ -85,7 +76,7 @@ function ArtRatingButtons({
   return (
     <>
       <View style={ratingContainer}>
-        <View style={[flexContainer, {alignSelf: 'flex-end'}]}>
+        <View style={ {alignSelf: 'flex-end'}}>
           <View style={{alignSelf: 'center'}}>
             <Animated.View
               style={{
@@ -180,12 +171,13 @@ function ArtRatingButtons({
               style={rateArtworkContainerStyle}
               accessibilityLabel="Options"
               testID="options"
+              disabled
               onPress={() => toggleButtonView(openIdentifier)}
             />
           </View>
         </View>
       </View>
-      <Snackbar
+      {/* <Snackbar
         visible={visibleSnack}
         style={{alignContent: 'center', top: '0%'}}
         onDismiss={() => setVisibleSnack(false)}
@@ -196,7 +188,7 @@ function ArtRatingButtons({
           },
         }}>
         {snackBarText}
-      </Snackbar>
+      </Snackbar> */}
     </>
   );
 }

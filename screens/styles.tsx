@@ -1,14 +1,34 @@
+import {PRIMARY_BLUE, PRIMARY_LIGHTBLUE, PRIMARY_MILK} from '../assets/styles';
+import {globalTextStyles} from '../components/styles';
+
 export const headerOptions = {
-  headerTitle: 'Openings',
+  headerTitle: 'd | a r t | a',
   headerTitleStyle: {
-    fontFamily: 'Avenir Next',
-    fontSize: 15,
+    fontFamily: 'EB Garamond',
+    fontSize: 18,
+    color: PRIMARY_MILK,
   },
   headerBackTitleStyle: {
-    fontFamily: 'AvenirNext-Italic',
+    fontFamily: 'EB Garamond',
     fontSize: 15,
   },
   headerStyle: {
-    backgroundColor: 'black',
+    backgroundColor: PRIMARY_BLUE,
   },
+};
+
+export const footerOptions = {
+  headerTitle: 'd | a r t | a',
+  tabBarLabelStyle: {
+    fontFamily: 'EB Garamond',
+    fontSize: 15,
+    color: PRIMARY_MILK,
+  },
+  tabBarStyle: {
+    backgroundColor: PRIMARY_BLUE,
+  },
+};
+export const footerColors = {
+  focused: PRIMARY_MILK,
+  notFocused: PRIMARY_LIGHTBLUE,
 };

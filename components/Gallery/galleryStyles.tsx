@@ -3,11 +3,14 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {DARK_GREY, LIGHT_GREY, MILK} from '../../assets/styles';
+import {LIGHT_GREY, MILK} from '../../assets/styles';
 
 export const galleryPreviewStyles = StyleSheet.create({
   previewContainerPortrait: {
     height: hp('25%'),
+    borderRadius: 10,
+    alignSelf: 'center',
+    justifyContent: 'center',
   },
 });
 export const galleryComponentStyles = StyleSheet.create({

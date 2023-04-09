@@ -8,7 +8,6 @@ import {
   ImageBackground,
   View,
 } from 'react-native';
-import ProgressBar from 'react-native-progress/Bar';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -17,10 +16,9 @@ import {
 import {GlobalText} from '../../GlobalElements/index';
 import {globalTextStyles} from '../../styles';
 import {galleryPreviewStyles} from '../galleryStyles';
+import { DEFAULT_Gallery_Image } from '../../globalVariables';
 
-const galleryWallRaw =
-  'https://lh5.googleusercontent.com/hIu5cpHJlz8t3_ApZ-JIbXLT4QzIB04XpmvLcqVIOWXrfKjnLAo_fNqM60nGU5SVE2U=w2400';
-
+const galleryWallRaw = DEFAULT_Gallery_Image
 export function GalleryPreview({
   body,
   preview,
@@ -74,6 +72,7 @@ export function GalleryPreview({
           display: 'flex',
           flexDirection: 'column',
           height: hp('25%'),
+          marginTop: hp('1%'),
           justifyContent: 'space-around',
         }}>
         <View style={{}}>
@@ -135,17 +134,7 @@ export function GalleryPreview({
             alignSelf: 'center',
             backgroundColor: 'rgb(0, 0, 0)',
             borderRadius: 20,
-          }}>
-          <ProgressBar
-            progress={(numberOfRatedWorks ?? 0) / (numberOfArtworks ?? 1)}
-            borderRadius={20}
-            backgroundColor=""
-            color="#FFF"
-            width={wp('85%')}
-            useNativeDriver
-            animated
-          />
-        </View>
+          }}></View>
       </View>
     </>
   );
