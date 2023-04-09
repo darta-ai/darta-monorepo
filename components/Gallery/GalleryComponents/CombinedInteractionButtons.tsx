@@ -63,7 +63,7 @@ function CombinedInteractionButtons({
 
     if (ratingObject) {
       const ratingString = Object.keys(ratingObject)[0];
-      setRatingDisplayIcon(icons[ratingString] || icons.save);
+      setRatingDisplayIcon(icons[ratingString] || icons.thumbsUpDown);
       switch (ratingString) {
         case RatingEnum.like:
           setRatingDisplayColor(PRIMARY_BLUE)
@@ -140,6 +140,9 @@ function CombinedInteractionButtons({
                 animated
                 disabled={!openRatings}
                 icon={icons.like}
+                iconColor={
+                  currentArtRating[RatingEnum.like] ? PRIMARY_BLUE : PRIMARY_GREY
+                }
                 mode={
                   currentArtRating[RatingEnum.like] ? 'contained' : 'outlined'
                 }
@@ -168,6 +171,9 @@ function CombinedInteractionButtons({
                 mode={
                   currentArtRating[RatingEnum.save] ? 'contained' : 'outlined'
                 }
+                iconColor={
+                  currentArtRating[RatingEnum.save] ? PRIMARY_PROGRESS : PRIMARY_GREY
+                }
                 icon={icons.save}
                 size={localButtonSizes.medium}
                 style={galleryInteractionStyles.secondaryButton}
@@ -193,6 +199,9 @@ function CombinedInteractionButtons({
                   currentArtRating[RatingEnum.dislike]
                     ? 'contained'
                     : 'outlined'
+                }
+                iconColor={
+                  currentArtRating[RatingEnum.dislike] ? PRIMARY_RED : PRIMARY_GREY
                 }
                 disabled={!openRatings}
                 icon={icons.dislike}

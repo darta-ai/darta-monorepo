@@ -106,7 +106,6 @@ const reducer = (state: IState, action: IAction): IState => {
     case ETypes.setPortrait:
       return {...state, isPortrait: !state.isPortrait};
     case ETypes.rateArtwork:
-      console.log('triggered')
       if (!rating && !artworkOnDisplayId) {
         return state;
       }

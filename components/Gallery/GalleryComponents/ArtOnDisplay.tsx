@@ -67,17 +67,7 @@ export function ArtOnDisplay({
     swipeDown = 'swipeDown',
   }
 
-  useEffect(() => {
-    const {artworkOnDisplayId, userArtworkRatings} = state;
-    
-    const currentArtworkRating = userArtworkRatings[artworkOnDisplayId]
-
-    console.log('currentArtworkRating', currentArtworkRating)
-  }, [state])
-
   const handleArtRatingGesture = (gesture: ArtRatingGesture) => {
-    console.log('triggrered art rating gesture')
-    console.log({gesture})
     const {artworkOnDisplayId, userArtworkRatings} = state;
     
     const currentArtworkRating = userArtworkRatings[artworkOnDisplayId]
@@ -130,10 +120,10 @@ export function ArtOnDisplay({
       else if (touchX - pageX > wp('25%') && pageY - touchY < hp('25%')) {
         toggleArtForward();
       }
-      else if (pageX - touchX < wp('10%') && touchY - pageY > hp('25%')) {
+      else if (pageX - touchX < wp('10%') && touchY - pageY > hp('10%')) {
         handleArtRatingGesture(ArtRatingGesture.swipeUp)
       }
-      else if (pageX - touchX < wp('10%') && pageY - touchY > hp('25%')) {
+      else if (pageX - touchX < wp('10%') && pageY - touchY > hp('10%')) {
         handleArtRatingGesture(ArtRatingGesture.swipeDown)
       }
     } else {
@@ -143,7 +133,7 @@ export function ArtOnDisplay({
       if (touchY - pageY > hp('10%') && pageX - touchX < wp('25%')) {
         toggleArtForward();
       }
-      if (pageY - touchY < hp('10%') && pageX - touchX > wp('25%')) {
+      if (pageY - touchY < hp('10%') && pageX - touchX > wp('10%')) {
         handleArtRatingGesture(ArtRatingGesture.swipeDown)
       }
       if (touchY - pageY < hp('10%') && touchX - pageX > wp('25%')) {

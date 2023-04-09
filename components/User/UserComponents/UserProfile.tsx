@@ -22,9 +22,6 @@ export function UserProfile({
   imagePositionInterpolate: any;
   isScrolled: boolean;
 }) {
-  useEffect(() => {
-    console.log({isScrolled});
-  }, [isScrolled]);
   const styles = StyleSheet.create({
     image: {
       height: imageWidthInterpolate,

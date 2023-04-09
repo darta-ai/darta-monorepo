@@ -331,8 +331,8 @@ export function GalleryRoute({
             <View>
               <ProgressBar
                 progress={numberOfRatedWorks / numberOfArtworks}
-                borderRadius={0}
-                width={state.isPortrait ? wp('95%') : hp('80%')}
+                borderRadius={10}
+                width={state.isPortrait ? wp('90%') : hp('80%')}
                 color="rgb(218, 223, 225)"
                 useNativeDriver
                 animated
