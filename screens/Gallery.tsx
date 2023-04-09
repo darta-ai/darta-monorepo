@@ -11,10 +11,6 @@ import * as globals from '../components/globalVariables';
 import {createOpeningTransition} from '../components/Screens/openingTransition';
 import {TombstoneRoute} from '../components/Gallery/Tombstone/TombstoneRoute';
 import {headerOptions} from './styles';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
 
 const galleryInfo = globals.galleryDummyData;
 
@@ -45,7 +41,13 @@ function GalleryStackScreen() {
         <GalleryStack.Screen
           name={GalleryNavigatorEnum.tombstone}
           component={TombstoneRoute}
-          options={{...headerOptions, headerTitle: state.tombstoneTitle}}
+          options={{
+            ...headerOptions,
+            headerTitle: state.tombstoneTitle,
+            headerTitleStyle: {
+              fontSize: 15,
+            },
+          }}
         />
       </GalleryStack.Group>
     </GalleryStack.Navigator>

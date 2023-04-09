@@ -11,7 +11,7 @@ export const globalTextStyles = StyleSheet.create({
   },
   boldTitleText: {
     fontFamily: 'AvenirNext-Bold',
-    fontSize: 20,
+    fontSize: 15,
   },
   titleText: {
     ...baseText,

@@ -16,16 +16,14 @@ import {icons} from '../../globalVariables';
 import {globalTextStyles} from '../../styles';
 import {galleryInteractionStyles} from '../galleryStyles';
 import {StoreContext} from '../galleryStore';
+import { PRIMARY_BLUE, PRIMARY_GREY, PRIMARY_MILK, PRIMARY_PROGRESS, PRIMARY_RED } from '../../../assets/styles';
 
 function CombinedInteractionButtons({
   fadeAnimRating,
   localButtonSizes,
   isPortrait,
   openRatings,
-  snackBarText,
-  visibleSnack,
   rateArtwork,
-  setVisibleSnack,
   toggleArtTombstone,
   toggleButtonView,
 }: {
@@ -35,22 +33,24 @@ function CombinedInteractionButtons({
   isPortrait: boolean;
   openRatings: boolean;
   openNav: boolean;
-  snackBarText: string;
-  visibleSnack: boolean;
-  // eslint-disable-next-line
   rateArtwork: (rating: RatingEnum, openIdentifier: OpenStateEnum) => void;
-  // eslint-disable-next-line
-  setVisibleSnack: (arg0: boolean) => void;
   toggleArtTombstone: () => void;
-  // eslint-disable-next-line
   toggleButtonView: (
     openIdentifier: OpenStateEnum,
     instructions?: boolean,
   ) => void;
 }) {
   const [ratingDisplayIcon, setRatingDisplayIcon] = useState<string>(
-    icons.menu,
+    icons.save,
   );
+  const [ratingDisplayColor, setRatingDisplayColor] = useState<string>(
+    PRIMARY_GREY
+  );
+
+  const [isRated, setIsRated] = useState<boolean>(
+    false
+  );
+
   const [currentArtRating, setCurrentArtRating] = useState<IUserArtworkRated>(
     {},
   );
@@ -60,12 +60,29 @@ function CombinedInteractionButtons({
   const modifyDisplayRating = () => {
     const artworkOnDisplayId = state.artworkOnDisplayId;
     const ratingObject = state.userArtworkRatings[artworkOnDisplayId];
+
     if (ratingObject) {
       const ratingString = Object.keys(ratingObject)[0];
-      setRatingDisplayIcon(icons[ratingString] || icons.menu);
+      setRatingDisplayIcon(icons[ratingString] || icons.save);
+      switch (ratingString) {
+        case RatingEnum.like:
+          setRatingDisplayColor(PRIMARY_BLUE)
+          break;
+        case RatingEnum.dislike:
+          setRatingDisplayColor(PRIMARY_RED)
+          break;
+        case RatingEnum.save:
+            setRatingDisplayColor(PRIMARY_PROGRESS)
+            break;
+        default:
+          setRatingDisplayColor(PRIMARY_GREY)
+          break;
+      }
     } else {
       toggleButtonView(OpenStateEnum.openRatings, false);
     }
+    const ratingBool = ratingObject[RatingEnum.save] || ratingObject[RatingEnum.dislike] || ratingObject[RatingEnum.like] 
+    setIsRated(ratingBool as boolean)
     setCurrentArtRating(ratingObject || {});
   };
 
@@ -97,7 +114,8 @@ function CombinedInteractionButtons({
           <IconButton
             icon={icons.learnMore}
             mode="outlined"
-            size={localButtonSizes.large}
+            size={localButtonSizes.medium}
+            iconColor={PRIMARY_GREY}
             style={galleryInteractionStyles.secondaryButton}
             accessibilityLabel="view tombstone"
             testID="tombstone"
@@ -203,23 +221,20 @@ function CombinedInteractionButtons({
             height: '100%',
           }}>
           <IconButton
-            mode={
-              currentArtRating[RatingEnum.save] ||
-              currentArtRating[RatingEnum.dislike] ||
-              currentArtRating[RatingEnum.like]
-                ? 'contained'
-                : 'outlined'
-            }
+            animated
+            mode={isRated ? 'contained' : 'outlined'}
             icon={openRatings ? icons.minus : ratingDisplayIcon}
-            size={localButtonSizes.large}
+            size={isRated ? localButtonSizes.large : localButtonSizes.medium}
+            iconColor={ratingDisplayColor}
             style={galleryInteractionStyles.mainButtonPortrait}
             accessibilityLabel="Options"
             testID="options"
             onPress={() => toggleButtonView(OpenStateEnum.openRatings)}
+            onLongPress={() => toggleButtonView(OpenStateEnum.openRatings)}
           />
         </View>
       </View>
-      <Snackbar
+      {/* <Snackbar
         visible={visibleSnack}
         style={{alignContent: 'center', top: '0%'}}
         onDismiss={() => setVisibleSnack(false)}
@@ -230,7 +245,7 @@ function CombinedInteractionButtons({
           },
         }}>
         {snackBarText}
-      </Snackbar>
+      </Snackbar> */}
     </>
   );
 }

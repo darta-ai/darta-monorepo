@@ -2,7 +2,6 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Animated, ImageSourcePropType, View} from 'react-native';
-import {Text} from 'react-native-elements';
 import {OrientationLocker, PORTRAIT} from 'react-native-orientation-locker';
 // import { Button } from 'react-native-paper';
 import ProgressBar from 'react-native-progress/Bar';
@@ -18,16 +17,13 @@ import {
   OpenStateEnum,
   OrientationsEnum,
   RatingEnum,
-  SnackTextEnum,
 } from '../../types';
-// import { GlobalText } from '../GlobalElements';
 import {
+  DEFAULT_Gallery_Image,
   duration,
   galleryDimensionsLandscape,
   galleryDimensionsPortrait,
-  // icons,
 } from '../globalVariables';
-// import { globalTextStyles } from '../styles';
 import {
   ArtOnDisplay,
   GalleryViewOptions,
@@ -40,11 +36,7 @@ import {
 import {ETypes, StoreContext} from './galleryStore';
 import {galleryComponentStyles} from './galleryStyles';
 
-// const kitchen2 = require('../../backgrounds/kitchen2.png');
-// const HannahWall = require('../../backgrounds/HannahWall.png');
-// import WallHorizontal = require('../backgrounds/WallHorizontal.png');
-const galleryWallRaw =
-  'https://lh5.googleusercontent.com/hIu5cpHJlz8t3_ApZ-JIbXLT4QzIB04XpmvLcqVIOWXrfKjnLAo_fNqM60nGU5SVE2U=w2400';
+const galleryWallRaw = DEFAULT_Gallery_Image
 
 type ProfileScreenNavigationProp = StackNavigationProp<
   GalleryRootStackParamList,
@@ -225,9 +217,6 @@ export function GalleryRoute({
   };
 
   // Rating State
-  const [visibleSnack, setVisibleSnack] = useState(false);
-  const [snackBarText, setSnackBarText] = useState('hey hey 👋');
-
   const toggleArtTombstone = () => {
     dispatch({
       type: ETypes.setArtwork,
@@ -242,22 +231,15 @@ export function GalleryRoute({
     });
   };
 
-  const rateArtwork = (rating: RatingEnum, openIdentifier: OpenStateEnum) => {
+  const rateArtwork = (rating: RatingEnum) => {
     if (!rating && !userArtworkRatings) {
       return;
     }
-    const currentRating = userArtworkRatings[artOnDisplay.id];
-    const isResetRatings = !!currentRating[rating];
     dispatch({
       type: ETypes.rateArtwork,
       rating: rating,
     });
 
-    toggleButtonView(openIdentifier, false);
-    setVisibleSnack(true);
-    setSnackBarText(
-      isResetRatings ? SnackTextEnum.reset : SnackTextEnum[rating],
-    );
   };
 
   const insets = useSafeAreaInsets();
@@ -274,8 +256,8 @@ export function GalleryRoute({
     <>
       <View
         style={{
-          height: hp('80%'),
-          width: wp('95%'),
+          height: hp('75%'),
+          width: wp('90%'),
           justifyContent: 'center',
           alignSelf: 'center',
           alignItems: 'center',
@@ -310,16 +292,6 @@ export function GalleryRoute({
               backgroundColor: 'black',
             },
           ]}>
-          <View>
-            <ProgressBar
-              progress={numberOfRatedWorks / numberOfArtworks}
-              borderRadius={0}
-              width={state.isPortrait ? wp('95%') : hp('80%')}
-              color="rgb(218, 223, 225)"
-              useNativeDriver
-              animated
-            />
-          </View>
           <ArtOnDisplay
             artImage={artOnDisplay?.image}
             backgroundImage={backgroundImage}
@@ -329,10 +301,9 @@ export function GalleryRoute({
             currentZoomScale={currentZoomScale}
             dimensionsInches={artOnDisplay?.dimensionsInches}
             isPortrait={state.isPortrait}
-            visibleSnack={visibleSnack}
             wallHeight={wallHeight}
+            rateArtwork={rateArtwork}
             setCurrentZoomScale={setCurrentZoomScale}
-            setVisibleSnack={setVisibleSnack}
             toggleArtForward={toggleArtForward}
             toggleArtBackward={toggleArtBackward}
           />
@@ -352,12 +323,19 @@ export function GalleryRoute({
                 isPortrait={state.isPortrait}
                 openNav={openNav}
                 openRatings={openRatings}
-                snackBarText={snackBarText}
-                visibleSnack={visibleSnack}
-                setVisibleSnack={setVisibleSnack}
                 rateArtwork={rateArtwork}
                 toggleArtTombstone={toggleArtTombstone}
                 toggleButtonView={toggleButtonView}
+              />
+            </View>
+            <View>
+              <ProgressBar
+                progress={numberOfRatedWorks / numberOfArtworks}
+                borderRadius={0}
+                width={state.isPortrait ? wp('95%') : hp('80%')}
+                color="rgb(218, 223, 225)"
+                useNativeDriver
+                animated
               />
             </View>
           </View>
