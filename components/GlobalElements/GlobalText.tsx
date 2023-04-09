@@ -2,10 +2,11 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import {Text} from 'react-native';
+import {globalTextStyles} from '../styles';
 
 export function GlobalText(props: any) {
   return (
-    <Text style={{fontFamily: 'Avenir Next'}} {...props}>
+    <Text style={globalTextStyles.baseText} {...props}>
       {props.children}
     </Text>
   );

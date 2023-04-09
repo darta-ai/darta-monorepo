@@ -3,7 +3,11 @@ import React, {useContext, useEffect, useState} from 'react';
 import {Alert, FlatList, SafeAreaView, View, StatusBar} from 'react-native';
 import {Divider} from 'react-native-elements';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+import ProgressBar from 'react-native-progress/Bar';
 
 import {getImages, imagePrefetch} from '../../functions/galleryFunctions';
 import {DataT} from '../../types';
@@ -16,6 +20,12 @@ import {
 } from './galleryRoutes.d';
 import {ETypes, StoreContext} from './galleryStore';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {
+  PRIMARY_BLUE,
+  PRIMARY_MILK,
+  PRIMARY_PROGRESS,
+} from '../../assets/styles';
+import { DEFAULT_Gallery_Image } from '../globalVariables';
 
 type ProfileScreenNavigationProp = StackNavigationProp<
   GalleryRootStackParamList,
@@ -64,9 +74,7 @@ export function GalleryHome({
         galleryLandingPageData: galleryInfo,
       });
     }
-    imagePrefetch([
-      'https://lh5.googleusercontent.com/hIu5cpHJlz8t3_ApZ-JIbXLT4QzIB04XpmvLcqVIOWXrfKjnLAo_fNqM60nGU5SVE2U=w2400',
-    ]);
+    imagePrefetch([DEFAULT_Gallery_Image]);
   }, []);
 
   const updateLoadingStatus = (galleryId: string, isLoading: boolean) => {
@@ -113,28 +121,27 @@ export function GalleryHome({
     <>
       <View
         style={{
-          backgroundColor: 'white',
-          paddingTop: insets.top,
-          paddingBottom: insets.bottom,
-          paddingLeft: insets.left,
-          paddingRight: insets.right,
+          backgroundColor: PRIMARY_MILK,
+          paddingTop: hp('2%'),
+          height: hp('100%'),
+          flexDirection: 'column',
+          justifyContent: 'space-around',
         }}>
         <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
         <View
           style={{
-            height: hp('30%'),
-            width: '100%',
+            height: hp('70%'),
           }}>
-          <GlobalText
+          {/* <GlobalText
             style={[globalTextStyles.titleText, globalTextStyles.centeredText]}>
-            d a r t a
-          </GlobalText>
+            d | a r t | a
+          </GlobalText> */}
           <TouchableOpacity
             onPress={async () => {
               updateLoadingStatus(personalGalleryId, true);
               await showGallery(personalGalleryId);
             }}
-            style={{margin: hp('1%')}}>
+            style={{marginLeft: hp('1%'), marginRight: hp('1%')}}>
             <GalleryPreview
               body={personalGallery.body}
               preview={personalGallery.preview}
@@ -148,15 +155,35 @@ export function GalleryHome({
               text={personalGallery.text}
             />
           </TouchableOpacity>
+          <View style={{alignSelf: 'center'}}>
+            <ProgressBar
+              progress={
+                (state?.globalGallery[personalGalleryId]?.numberOfArtworks ??
+                  0) /
+                (state?.globalGallery[personalGalleryId]?.numberOfRatedWorks ??
+                  1)
+              }
+              borderRadius={20}
+              backgroundColor={PRIMARY_PROGRESS}
+              color={PRIMARY_MILK}
+              width={wp('85%')}
+              useNativeDriver
+              animated
+            />
+          </View>
+          <View>
+            <GlobalText>Heyyy</GlobalText>
+          </View>
         </View>
-        <Divider
+
+        {/* <Divider
           style={{
-            backgroundColor: '#D3D3D3',
+            backgroundColor: PRIMARY_BLUE,
             paddingVertical: 5,
             margin: 10,
           }}
-        />
-        <View style={{height: hp('45%'), marginTop: 10, paddingBottom: 30}}>
+        /> */}
+        {/* <View style={{height: hp('45%'), marginTop: 10, paddingBottom: 30}}>
           <GlobalText
             style={[globalTextStyles.titleText, globalTextStyles.centeredText]}>
             r e c o m m e n d a t i o n s
@@ -189,7 +216,7 @@ export function GalleryHome({
               keyExtractor={item => item.galleryId}
             />
           </SafeAreaView>
-        </View>
+        </View> */}
       </View>
     </>
   );

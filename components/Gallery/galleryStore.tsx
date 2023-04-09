@@ -1,6 +1,6 @@
 import React, {createContext, ReactNode, useReducer} from 'react';
 
-import {DataT, GalleryLandingPage} from '../../types';
+import {DataT, GalleryLandingPage, RatingEnum} from '../../types';
 import * as globals from '../globalVariables';
 
 //
@@ -9,7 +9,7 @@ export interface IUserArtworkRatings {
     like?: boolean;
     save?: boolean;
     dislike?: boolean;
-    default?: boolean;
+    unrated?: boolean;
   };
 }
 
@@ -31,14 +31,7 @@ interface IState {
   artworkOnDisplayId: string;
   globalGallery: IGalleryData;
   isPortrait: boolean;
-  userArtworkRatings: {
-    [key: string]: {
-      like?: boolean;
-      dislike?: boolean;
-      save?: boolean;
-      default?: boolean;
-    };
-  };
+  userArtworkRatings: IUserArtworkRatings
   galleryTitle: string;
   tombstoneTitle: string;
 }
@@ -93,7 +86,7 @@ const initialState: IState = {
 const reducer = (state: IState, action: IAction): IState => {
   const {
     type,
-    rating = {},
+    rating = 'default',
     galleryId = '',
     currentIndex = 0,
     loadedDGallery = [],
@@ -113,19 +106,25 @@ const reducer = (state: IState, action: IAction): IState => {
     case ETypes.setPortrait:
       return {...state, isPortrait: !state.isPortrait};
     case ETypes.rateArtwork:
+      console.log('triggered')
       if (!rating && !artworkOnDisplayId) {
         return state;
       }
       let currentRating = state.userArtworkRatings[artworkId];
-      if (!currentRating[rating]) {
-        tempState = state.userArtworkRatings[artworkId] = {[rating]: true};
-        tempGallery = state.globalGallery[galleryOnDisplayId];
-        tempGallery.numberOfRatedWorks += 1;
-        return {...state, ...tempState, ...tempGallery};
-      } else {
+      if (rating === RatingEnum.unrated){
         tempState = state.userArtworkRatings[artworkId] = {};
         tempGallery = state.globalGallery[galleryOnDisplayId];
-        tempGallery.numberOfRatedWorks -= 1;
+        if (tempGallery.numberOfRatedWorks > 0){
+          tempGallery.numberOfRatedWorks -= 1;
+        }
+        return {...state, ...tempState, ...tempGallery};
+      }
+      else {
+        tempState = state.userArtworkRatings[artworkId] = {[rating]: true};
+        tempGallery = state.globalGallery[galleryOnDisplayId];
+        if(!currentRating[RatingEnum.like] && !currentRating[RatingEnum.dislike] && !currentRating[RatingEnum.save]){
+          tempGallery.numberOfRatedWorks += 1;
+        }
         return {...state, ...tempState, ...tempGallery};
       }
 

@@ -1,7 +1,10 @@
 import React, {useEffect} from 'react';
 import {View, Animated, StyleSheet, TouchableOpacity} from 'react-native';
 import {GlobalText} from '../../GlobalElements/GlobalText';
-import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import {globalTextStyles} from '../../styles';
 import {IconButton} from 'react-native-paper';
 import {icons} from '../../globalVariables';
@@ -54,16 +57,15 @@ export function UserProfile({
         style={{
           alignSelf: 'center',
           flexDirection: 'column',
-          width: wp('45%')
+          width: wp('45%'),
         }}>
-        <View >
+        <View>
           <GlobalText
             style={[
               globalTextStyles.titleText,
-              {alignSelf: 'center', color: MILK,},
+              {alignSelf: 'center', color: MILK},
             ]}
-            numberOfLines={1}
-            >
+            numberOfLines={1}>
             User#12321
           </GlobalText>
         </View>

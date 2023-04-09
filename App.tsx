@@ -5,36 +5,15 @@ import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import {Provider as PaperProvider} from 'react-native-paper';
 import {StoreProvider} from './components/Gallery/galleryStore';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {footerOptions, footerColors} from './screens/styles';
 
 import TabBarIcon from './components/GlobalElements/TabBarIcon';
-import {
-  GalleryStackScreen,
-  // Camera,
-  User,
-} from './screens';
+import {GalleryStackScreen, User} from './screens';
 
 export const GalleryStack = createStackNavigator();
 export const UserStack = createStackNavigator();
 export const Tab = createBottomTabNavigator();
-
-const footerOptions = {
-  headerTitle: 'Openings',
-  tabBarLabelStyle: {
-    fontFamily: 'Avenir Next',
-    fontSize: 15,
-  },
-  tabBarStyle: {
-    backgroundColor: 'black',
-  },
-};
-const colors = {
-  focused: 'white',
-  notFocused: '#A9A9A9',
-};
 
 function App() {
   return (
@@ -44,14 +23,14 @@ function App() {
           <NavigationContainer>
             <Tab.Navigator screenOptions={{headerShown: false}}>
               <Tab.Screen
-                name="d a r t a"
+                name="d | a r t | a"
                 component={GalleryStackScreen}
                 options={{
                   tabBarIcon: ({focused}) => (
                     <TabBarIcon
                       focused={focused}
                       icon="image-frame"
-                      colors={colors}
+                      colors={footerColors}
                     />
                   ),
                   ...footerOptions,
@@ -65,7 +44,7 @@ function App() {
                     <TabBarIcon
                       focused={focused}
                       icon="account-box-outline"
-                      colors={colors}
+                      colors={footerColors}
                     />
                   ),
                   ...footerOptions,

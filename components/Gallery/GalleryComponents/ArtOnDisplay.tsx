@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -9,11 +9,17 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import {
+  OpenStateEnum,
+  RatingEnum,
+} from '../../../types';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+
+import { StoreContext } from '../galleryStore';
 
 import {DataT} from '../../../types';
 import {galleryStyles} from '../galleryStyles';
@@ -25,10 +31,9 @@ export function ArtOnDisplay({
   currentZoomScale,
   dimensionsInches,
   isPortrait,
-  visibleSnack,
   wallHeight,
+  rateArtwork,
   setCurrentZoomScale,
-  setVisibleSnack,
   toggleArtForward,
   toggleArtBackward,
 }: {
@@ -38,15 +43,13 @@ export function ArtOnDisplay({
   currentZoomScale: number;
   dimensionsInches: DataT['dimensionsInches'] | undefined;
   isPortrait: boolean;
-  visibleSnack: boolean;
   wallHeight: number;
-  // eslint-disable-next-line no-unused-vars
+  rateArtwork: (rating: RatingEnum, openIdentifier: OpenStateEnum) => void;
   setCurrentZoomScale: (arg0: number) => void;
-  // eslint-disable-next-line no-unused-vars
-  setVisibleSnack: (arg0: boolean) => void;
   toggleArtForward: () => void;
   toggleArtBackward: () => void;
 }) {
+  const {state} = useContext(StoreContext);
   type SetTouch = {
     touchX: number;
     touchY: number;
@@ -59,6 +62,61 @@ export function ArtOnDisplay({
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
+  enum ArtRatingGesture {
+    swipeUp = 'swipeUp',
+    swipeDown = 'swipeDown',
+  }
+
+  useEffect(() => {
+    const {artworkOnDisplayId, userArtworkRatings} = state;
+    
+    const currentArtworkRating = userArtworkRatings[artworkOnDisplayId]
+
+    console.log('currentArtworkRating', currentArtworkRating)
+  }, [state])
+
+  const handleArtRatingGesture = (gesture: ArtRatingGesture) => {
+    console.log('triggrered art rating gesture')
+    console.log({gesture})
+    const {artworkOnDisplayId, userArtworkRatings} = state;
+    
+    const currentArtworkRating = userArtworkRatings[artworkOnDisplayId]
+    switch (gesture) {
+      case ArtRatingGesture.swipeUp:
+        if(currentArtworkRating[RatingEnum.like]) {
+          rateArtwork(RatingEnum.save, OpenStateEnum.swiped);
+          break;
+        } 
+        else if(currentArtworkRating[RatingEnum.dislike]){
+          rateArtwork(RatingEnum.unrated, OpenStateEnum.swiped);
+          break;
+        }
+        else if(currentArtworkRating[RatingEnum.save]){
+          break;
+        }
+        else{
+          rateArtwork(RatingEnum.like, OpenStateEnum.swiped);
+          break;
+        }
+      case ArtRatingGesture.swipeDown:
+        if(currentArtworkRating[RatingEnum.save]) {
+          rateArtwork(RatingEnum.like, OpenStateEnum.swiped);
+          break;
+        } 
+        else if(currentArtworkRating[RatingEnum.like]){
+          rateArtwork(RatingEnum.unrated, OpenStateEnum.swiped);
+          break;
+        }
+        else if(currentArtworkRating[RatingEnum.dislike]){
+          break;
+        }
+        else{
+          rateArtwork(RatingEnum.dislike, OpenStateEnum.swiped);
+          break;
+        } 
+    }
+  }
+
   const swipeArtwork = (pageX: number, pageY: number): void => {
     if (currentZoomScale !== 1) {
       return;
@@ -69,8 +127,14 @@ export function ArtOnDisplay({
       if (pageX - touchX > wp('25%') && pageY - touchY < hp('25%')) {
         toggleArtBackward();
       }
-      if (touchX - pageX > wp('25%') && pageY - touchY < hp('25%')) {
+      else if (touchX - pageX > wp('25%') && pageY - touchY < hp('25%')) {
         toggleArtForward();
+      }
+      else if (pageX - touchX < wp('10%') && touchY - pageY > hp('25%')) {
+        handleArtRatingGesture(ArtRatingGesture.swipeUp)
+      }
+      else if (pageX - touchX < wp('10%') && pageY - touchY > hp('25%')) {
+        handleArtRatingGesture(ArtRatingGesture.swipeDown)
       }
     } else {
       if (pageY - touchY > hp('10%') && pageX - touchX < wp('25%')) {
@@ -78,6 +142,12 @@ export function ArtOnDisplay({
       }
       if (touchY - pageY > hp('10%') && pageX - touchX < wp('25%')) {
         toggleArtForward();
+      }
+      if (pageY - touchY < hp('10%') && pageX - touchX > wp('25%')) {
+        handleArtRatingGesture(ArtRatingGesture.swipeDown)
+      }
+      if (touchY - pageY < hp('10%') && touchX - pageX > wp('25%')) {
+        handleArtRatingGesture(ArtRatingGesture.swipeUp)
       }
     }
   };
@@ -190,15 +260,10 @@ export function ArtOnDisplay({
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <ImageBackground
-            source={backgroundImage}
-          >
+          <ImageBackground source={backgroundImage}>
             <Pressable
               onTouchStart={({nativeEvent: {pageX, pageY}}) => {
                 setTouchCoordinates({touchX: pageX, touchY: pageY});
-                if (visibleSnack) {
-                  setVisibleSnack(false);
-                }
               }}
               onTouchEnd={({nativeEvent: {pageX, pageY}}) => {
                 swipeArtwork(pageX, pageY);
