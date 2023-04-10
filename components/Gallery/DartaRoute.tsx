@@ -43,7 +43,7 @@ type ProfileScreenNavigationProp = StackNavigationProp<
   GalleryNavigatorEnum.gallery
 >;
 
-export function GalleryRoute({
+export function DartaRoute({
   navigation,
 }: {
   navigation: ProfileScreenNavigationProp;
@@ -216,7 +216,6 @@ export function GalleryRoute({
     }
   };
 
-  // Rating State
   const toggleArtTombstone = () => {
     dispatch({
       type: ETypes.setArtwork,
@@ -256,6 +255,7 @@ export function GalleryRoute({
     <>
       <View
         style={{
+          top: hp('2%'),
           height: hp('75%'),
           width: wp('90%'),
           justifyContent: 'center',
@@ -328,11 +328,11 @@ export function GalleryRoute({
                 toggleButtonView={toggleButtonView}
               />
             </View>
-            <View>
+            <View style={{alignSelf:"center"}}>
               <ProgressBar
-                progress={numberOfRatedWorks / numberOfArtworks}
+                progress={state.globalGallery[galleryId].galleryIndex / (numberOfArtworks - 1)}
                 borderRadius={10}
-                width={state.isPortrait ? wp('90%') : hp('80%')}
+                width={state.isPortrait ? wp('90%') : hp('65%')}
                 color="rgb(218, 223, 225)"
                 useNativeDriver
                 animated

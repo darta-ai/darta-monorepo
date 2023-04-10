@@ -23,7 +23,7 @@ function App() {
           <NavigationContainer>
             <Tab.Navigator screenOptions={{headerShown: false}}>
               <Tab.Screen
-                name="d | a r t | a"
+                name="d | a r t | ai"
                 component={GalleryStackScreen}
                 options={{
                   tabBarIcon: ({focused}) => (

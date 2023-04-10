@@ -12,11 +12,13 @@ export const MILK = '#FAFDF3';
 
 // DARTA PRIMARY
 export const PRIMARY_BLUE = '#68AFEF';
+export const PRIMARY_DARK_BLUE = '#538CBF';
 export const PRIMARY_RED = '#f17f82';
 export const PRIMARY_MILK = '#FAFDF3';
 export const PRIMARY_PROGRESS = `#EFA868`;
 export const PRIMARY_LIGHTBLUE = '#ADD4f6';
 export const PRIMARY_GREY = '#757E90'
+export const PRIMARY_DARK_GREY = '#525966'
 
 export const ONLINE_STATUS = '#46A575';
 export const OFFLINE_STATUS = '#D04949';

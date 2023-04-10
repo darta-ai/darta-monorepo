@@ -245,8 +245,8 @@ export const darbyMilbrathPreview = {
   },
 };
 
-const today = new Date().getDay();
-const days = [
+export const today = new Date().getDay();
+export const days = [
   'sunday',
   'monday',
   'tuesday',
@@ -262,6 +262,7 @@ export const galleryDummyData: GalleryLandingPage = {
     galleryId: '01a5ac40-bc52-11ed-afa1-0242ac120002',
     artworkIds: images1,
     preview: image1Preview,
+    tombstone: 'featuring works by contemporary artists Robert Bordo, Tahnee Lonsdale, and more',
     text: `${days[today]}'s opening`,
     body: 'curated by darta',
   },

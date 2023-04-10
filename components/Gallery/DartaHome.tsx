@@ -1,13 +1,13 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext, useEffect, useState} from 'react';
 import {Alert, FlatList, SafeAreaView, View, StatusBar} from 'react-native';
-import {Divider} from 'react-native-elements';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import ProgressBar from 'react-native-progress/Bar';
+
+import { today, days } from '../globalVariables';
 
 import {getImages, imagePrefetch} from '../../functions/galleryFunctions';
 import {DataT} from '../../types';
@@ -19,11 +19,10 @@ import {
   GalleryNavigatorEnum,
 } from './galleryRoutes.d';
 import {ETypes, StoreContext} from './galleryStore';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
   PRIMARY_BLUE,
+  PRIMARY_DARK_BLUE,
   PRIMARY_MILK,
-  PRIMARY_PROGRESS,
 } from '../../assets/styles';
 import { DEFAULT_Gallery_Image } from '../globalVariables';
 
@@ -32,14 +31,13 @@ type ProfileScreenNavigationProp = StackNavigationProp<
   GalleryNavigatorEnum.galleryHome
 >;
 
-export function GalleryHome({
+export function DartaHome({
   navigation,
   route,
 }: {
   navigation: ProfileScreenNavigationProp;
   route: any;
 }) {
-  const insets = useSafeAreaInsets();
 
   const {galleryInfo} = route.params;
   const personalGalleryId = Object.keys(galleryInfo).filter(
@@ -50,7 +48,7 @@ export function GalleryHome({
   const otherGalleryIds = Object.keys(galleryInfo).filter(
     (id: string) => galleryInfo[id].type !== 'privateGallery',
   );
-  const otherGalleries = otherGalleryIds.map(id => (id = {...galleryInfo[id]}));
+  // const otherGalleries = otherGalleryIds.map(id => (id = {...galleryInfo[id]}));
 
   type LoadingStatus = {
     isLoading: boolean;
@@ -122,20 +120,11 @@ export function GalleryHome({
       <View
         style={{
           backgroundColor: PRIMARY_MILK,
-          paddingTop: hp('2%'),
-          height: hp('100%'),
+          height: hp('85%'),
           flexDirection: 'column',
-          justifyContent: 'space-around',
+          justifyContent: 'space-evenly',
         }}>
-        <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
-        <View
-          style={{
-            height: hp('70%'),
-          }}>
-          {/* <GlobalText
-            style={[globalTextStyles.titleText, globalTextStyles.centeredText]}>
-            d | a r t | a
-          </GlobalText> */}
+        <View>
           <TouchableOpacity
             onPress={async () => {
               updateLoadingStatus(personalGalleryId, true);
@@ -143,36 +132,26 @@ export function GalleryHome({
             }}
             style={{marginLeft: hp('1%'), marginRight: hp('1%')}}>
             <GalleryPreview
-              body={personalGallery.body}
+              body={''}
               preview={personalGallery.preview}
-              numberOfArtworks={
-                state?.globalGallery[personalGalleryId]?.numberOfArtworks ?? 1
-              }
-              numberOfRatedWorks={
-                state?.globalGallery[personalGalleryId]?.numberOfRatedWorks ?? 0
-              }
               isLoading={isLoadingDict[personalGalleryId].isLoading}
               text={personalGallery.text}
+              personalGalleryId={personalGalleryId}
+              showGallery={showGallery}
             />
           </TouchableOpacity>
-          <View style={{alignSelf: 'center'}}>
-            <ProgressBar
-              progress={
-                (state?.globalGallery[personalGalleryId]?.numberOfArtworks ??
-                  0) /
-                (state?.globalGallery[personalGalleryId]?.numberOfRatedWorks ??
-                  1)
-              }
-              borderRadius={20}
-              backgroundColor={PRIMARY_PROGRESS}
-              color={PRIMARY_MILK}
-              width={wp('85%')}
-              useNativeDriver
-              animated
-            />
+          <View>
+            <GlobalText style={[globalTextStyles.boldTitleText, {alignSelf:"center", fontSize: 20, margin: hp('0.5%')}]}>{days[today]}'s opening</GlobalText>
           </View>
           <View>
-            <GlobalText>Heyyy</GlobalText>
+            <GlobalText style={[globalTextStyles.centeredText, {alignSelf:"center", margin: hp('0.5%')}]}>curated by d | a r t | ai</GlobalText>
+          </View>
+          <View>
+            <GlobalText style={[globalTextStyles.centeredText, {alignSelf:"center", fontSize: 15, padding: hp('5%') }]}>{personalGallery.tombstone}</GlobalText>
+          </View>
+          <View>
+            <GlobalText style={[globalTextStyles.centeredText, {fontWeight: 'bold' ,alignSelf:"center",color: PRIMARY_BLUE, paddingTop: hp('5%') }]}>like, dislike, and save:</GlobalText>
+            <GlobalText style={[globalTextStyles.centeredText, {fontWeight: 'bold' ,alignSelf:"center",color: PRIMARY_BLUE }]}>teach your digital art advisor your tastes</GlobalText>
           </View>
         </View>
 

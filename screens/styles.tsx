@@ -2,7 +2,7 @@ import {PRIMARY_BLUE, PRIMARY_LIGHTBLUE, PRIMARY_MILK} from '../assets/styles';
 import {globalTextStyles} from '../components/styles';
 
 export const headerOptions = {
-  headerTitle: 'd | a r t | a',
+  headerTitle: 'd | a r t | ai',
   headerTitleStyle: {
     fontFamily: 'EB Garamond',
     fontSize: 18,
@@ -18,7 +18,7 @@ export const headerOptions = {
 };
 
 export const footerOptions = {
-  headerTitle: 'd | a r t | a',
+  headerTitle: 'd | a r t | ai',
   tabBarLabelStyle: {
     fontFamily: 'EB Garamond',
     fontSize: 15,

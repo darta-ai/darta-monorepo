@@ -43,16 +43,16 @@ export function UserScreenSelector({
           justifyContent: 'center',
         }}>
         <GallerySelectorComponent
-          headline={'d a r t a'}
-          subHeadline={'daily work for your tastes'}
-          showBadge={true}
-          notificationNumber={20}
+          headline={'s a v e s'}
+          subHeadline={'artwork you have saved'}
+          showBadge={false}
+          notificationNumber={15}
           localButtonSizes={localButtonSizes}
         />
         <GallerySelectorComponent
-          headline={'a r t i s t s'}
-          subHeadline={'new work from your favorite artists'}
-          showBadge={true}
+          headline={'i n q u i r i e s'}
+          subHeadline={'artwork you have inquired about'}
+          showBadge={false}
           notificationNumber={15}
           localButtonSizes={localButtonSizes}
         />

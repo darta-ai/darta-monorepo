@@ -134,10 +134,10 @@ export function ArtOnDisplay({
         toggleArtForward();
       }
       if (pageY - touchY < hp('10%') && pageX - touchX > wp('10%')) {
-        handleArtRatingGesture(ArtRatingGesture.swipeDown)
+        handleArtRatingGesture(ArtRatingGesture.swipeUp)
       }
       if (touchY - pageY < hp('10%') && touchX - pageX > wp('25%')) {
-        handleArtRatingGesture(ArtRatingGesture.swipeUp)
+        handleArtRatingGesture(ArtRatingGesture.swipeDown)
       }
     }
   };
