@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ScrollView, View, Image} from 'react-native';
+import {ScrollView, View, Image, Keyboard} from 'react-native';
 import {GlobalText} from '../../../GlobalElements';
 import {settingsStyles} from '../../Screens/UserSettings';
 import {IconButton, TextInput, Button} from 'react-native-paper';
@@ -19,10 +19,23 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
-  const [showOnlyOne, setShowOnlyOne] = useState(false);
+type FieldState = {
+  isEditing: boolean;
+};
 
-  const [formData, setFormData] = useState({
+type FormData = {
+  profilePicture: FieldState;
+  userName: FieldState;
+  legalName: FieldState;
+  email: FieldState;
+  phone: FieldState;
+};
+
+export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
+  console.log(uniqueId)
+    const [showOnlyOne, setShowOnlyOne] = useState(false);
+
+  const [formData, setFormData] = useState<FormData>({
     profilePicture: {
       isEditing: false,
     },
@@ -40,12 +53,19 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
     },
   });
   const {
-    register,
     handleSubmit,
-    watch,
     control,
     formState: {errors},
-  } = useForm();
+    getValues,
+  } = useForm({
+    defaultValues: {
+      profilePicture: '',
+      userName: 'user name 10000',
+      legalName: 'firstName lastName',
+      email: 'email@gmail.com',
+      phone: '(123) 123-4567',
+    },
+  });
 
   useEffect(() => {
     const isShowing =
@@ -57,27 +77,47 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
     setShowOnlyOne(isShowing);
   }, [formData]);
 
-  const onSave = () => {
-    console.log('save');
+  const defaultFieldState = () => ({
+    isEditing: false,
+  });
+
+  const resetUi = () => {
     setFormData({
-        profilePicture: {
-          isEditing: false,
-        },
-        userName: {
-          isEditing: false,
-        },
-        legalName: {
-          isEditing: false,
-        },
-        email: {
-          isEditing: false,
-        },
-        phone: {
-          isEditing: false,
-        },
-      })
-      setShowOnlyOne(false)
-  }
+      profilePicture: defaultFieldState(),
+      userName: defaultFieldState(),
+      legalName: defaultFieldState(),
+      email: defaultFieldState(),
+      phone: defaultFieldState(),
+    });
+    setShowOnlyOne(false);
+  };
+
+  const onSave = (data: unknown) => {
+    // here need to do some backend stuff
+    console.log('save', data);
+    resetUi();
+  };
+  const [keyboardStatus, setKeyboardStatus] = useState<boolean>(false);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardStatus(true);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardStatus(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!keyboardStatus) {
+      resetUi();
+    }
+  }, [keyboardStatus]);
   return (
     <>
       <ScrollView style={{height: hp('100%')}}>
@@ -125,10 +165,12 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
                     name="userName"
                     rules={{required: true}}
                     control={control}
-                    render={({field: {onChange, onBlur, value}}) => (
+                    render={({field: {onChange, value}}) => (
                       <TextInput
-                        inputAccessoryViewID="userNameInput"
+                        onChangeText={onChange}
+                        value={value}
                         autoFocus
+                        inputAccessoryViewID="userNameInput"
                         label="user name"
                         testID="userNameInput"
                         mode="outlined"
@@ -145,14 +187,13 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
                   />
                 ) : (
                   <GlobalText style={settingsStyles.text}>
-                    {uniqueId}
+                    {console.log(getValues())}
+                    {getValues().userName}
                   </GlobalText>
                 )}
               </View>
               <IconButton
-                icon={
-                  formData.userName.isEditing ? icons.minus : icons.cog
-                }
+                icon={formData.userName.isEditing ? icons.minus : icons.cog}
                 mode="outlined"
                 size={buttonSizes.extraSmall}
                 iconColor={
@@ -182,29 +223,37 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
             <View style={settingsStyles.textEditContainer}>
               <View style={{width: wp('60%')}}>
                 {formData.legalName.isEditing ? (
-                  <TextInput
-                    autoFocus
-                    label="full name"
-                    testID="fullNameInput"
-                    mode="outlined"
-                    autoComplete="name"
-                    activeOutlineColor={PRIMARY_BLUE}
-                    style={{
-                      backgroundColor: PRIMARY_MILK,
-                      fontFamily: 'AvenirNext-Bold',
-                    }}></TextInput>
+                  <Controller
+                    name="legalName"
+                    rules={{required: true}}
+                    control={control}
+                    render={({field: {onChange, onBlur, value}}) => (
+                      <TextInput
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        value={value}
+                        autoFocus
+                        testID="fullNameInput"
+                        label="full name"
+                        mode="outlined"
+                        autoComplete="name"
+                        activeOutlineColor={PRIMARY_BLUE}
+                        style={{
+                          backgroundColor: PRIMARY_MILK,
+                          fontFamily: 'AvenirNext-Bold',
+                        }}
+                      />
+                    )}
+                  />
                 ) : (
                   <GlobalText style={settingsStyles.text}>
-                    firstName lastName
+                    {getValues().legalName}
                   </GlobalText>
                 )}
               </View>
               <View>
                 <IconButton
-                  icon={
-                    formData.legalName.isEditing ?
-                    icons.minus : icons.cog
-                  }
+                  icon={formData.legalName.isEditing ? icons.minus : icons.cog}
                   mode="outlined"
                   size={buttonSizes.extraSmall}
                   iconColor={
@@ -236,28 +285,36 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
               <View style={settingsStyles.textEditContainer}>
                 <View style={{width: wp('60%')}}>
                   {formData.email.isEditing ? (
-                    <TextInput
-                      autoFocus
-                      label="email"
-                      value="email@email.com"
-                      testID="emailInput"
-                      mode="outlined"
-                      autoComplete="name"
-                      activeOutlineColor={PRIMARY_BLUE}
-                      style={{
-                        backgroundColor: PRIMARY_MILK,
-                        fontFamily: 'AvenirNext-Bold',
-                      }}></TextInput>
+                    <Controller
+                      name="email"
+                      rules={{required: true}}
+                      control={control}
+                      render={({field: {onChange, onBlur, value}}) => (
+                        <TextInput
+                          onChangeText={onChange}
+                          onBlur={onBlur}
+                          value={value}
+                          autoFocus
+                          label="email"
+                          testID="emailInput"
+                          mode="outlined"
+                          autoComplete="email"
+                          activeOutlineColor={PRIMARY_BLUE}
+                          style={{
+                            backgroundColor: PRIMARY_MILK,
+                            fontFamily: 'AvenirNext-Bold',
+                          }}
+                        />
+                      )}
+                    />
                   ) : (
                     <GlobalText style={settingsStyles.text}>
-                      email@email.com
+                    {getValues().email}
                     </GlobalText>
                   )}
                 </View>
                 <IconButton
-                  icon={
-                    formData.email.isEditing ? icons.minus : icons.cog
-                  }
+                  icon={formData.email.isEditing ? icons.minus : icons.cog}
                   mode="outlined"
                   size={buttonSizes.extraSmall}
                   iconColor={
@@ -289,27 +346,36 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
               <View style={settingsStyles.textEditContainer}>
                 <View style={{width: wp('60%')}}>
                   {formData.phone.isEditing ? (
-                    <TextInput
-                      autoFocus
-                      label="enter phone number"
-                      testID="phoneInput"
-                      mode="outlined"
-                      autoComplete="name"
-                      activeOutlineColor={PRIMARY_BLUE}
-                      style={{
-                        backgroundColor: PRIMARY_MILK,
-                        fontFamily: 'AvenirNext-Bold',
-                      }}></TextInput>
+                    <Controller
+                      name="phone"
+                      rules={{required: true}}
+                      control={control}
+                      render={({field: {onChange, onBlur, value}}) => (
+                        <TextInput
+                          autoFocus
+                          onChangeText={onChange}
+                          onBlur={onBlur}
+                          value={value}
+                          label="phone number"
+                          testID="phoneInput"
+                          mode="outlined"
+                          autoComplete="tel"
+                          activeOutlineColor={PRIMARY_BLUE}
+                          style={{
+                            backgroundColor: PRIMARY_MILK,
+                            fontFamily: 'AvenirNext-Bold',
+                          }}
+                        />
+                      )}
+                    />
                   ) : (
                     <GlobalText style={settingsStyles.text}>
-                      (123) 123-4567
+                    {getValues().phone}
                     </GlobalText>
                   )}
                 </View>
                 <IconButton
-                  icon={
-                    formData.phone.isEditing ? icons.minus : icons.cog
-                  }
+                  icon={formData.phone.isEditing ? icons.minus : icons.cog}
                   mode="outlined"
                   size={buttonSizes.extraSmall}
                   iconColor={
@@ -334,18 +400,21 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
           </>
         )}
         {showOnlyOne && (
-            <View style={{alignContent:'center'}}>
-                <Button 
-                icon={icons.saveSettings} 
-                mode="contained" 
-                buttonColor={PRIMARY_BLUE}
-                textColor={MILK}
-                style={{width: wp('80%'), marginTop: hp('5%'), alignSelf: 'center'}} 
-                onPress={() => onSave()}
-                >
-                Save
-                </Button>
-            </View>
+          <View style={{alignContent: 'center'}}>
+            <Button
+              icon={icons.saveSettings}
+              mode="contained"
+              buttonColor={PRIMARY_BLUE}
+              textColor={MILK}
+              style={{
+                width: wp('80%'),
+                marginTop: hp('5%'),
+                alignSelf: 'center',
+              }}
+              onPress={handleSubmit(onSave)}>
+              Save
+            </Button>
+          </View>
         )}
       </ScrollView>
     </>
