@@ -7,7 +7,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import { today, days } from '../globalVariables';
+import {today, days} from '../globalVariables';
 
 import {getImages, imagePrefetch} from '../../functions/galleryFunctions';
 import {DataT} from '../../types';
@@ -24,7 +24,7 @@ import {
   PRIMARY_DARK_BLUE,
   PRIMARY_MILK,
 } from '../../assets/styles';
-import { DEFAULT_Gallery_Image } from '../globalVariables';
+import {DEFAULT_Gallery_Image} from '../globalVariables';
 
 type ProfileScreenNavigationProp = StackNavigationProp<
   GalleryRootStackParamList,
@@ -38,7 +38,6 @@ export function DartaHome({
   navigation: ProfileScreenNavigationProp;
   route: any;
 }) {
-
   const {galleryInfo} = route.params;
   const personalGalleryId = Object.keys(galleryInfo).filter(
     (id: string) => galleryInfo[id].type === 'privateGallery',
@@ -141,17 +140,52 @@ export function DartaHome({
             />
           </TouchableOpacity>
           <View>
-            <GlobalText style={[globalTextStyles.boldTitleText, {alignSelf:"center", fontSize: 20, margin: hp('0.5%')}]}>{days[today]}'s opening</GlobalText>
+            <GlobalText
+              style={[
+                globalTextStyles.boldTitleText,
+                {alignSelf: 'center', fontSize: 20, margin: hp('0.5%')},
+              ]}>
+              {days[today]}'s opening
+            </GlobalText>
           </View>
           <View>
-            <GlobalText style={[globalTextStyles.centeredText, {alignSelf:"center", margin: hp('0.5%')}]}>curated by d | a r t | ai</GlobalText>
+            <GlobalText
+              style={[
+                globalTextStyles.centeredText,
+                {alignSelf: 'center', margin: hp('0.5%')},
+              ]}>
+              curated by d | a r t | ai
+            </GlobalText>
           </View>
           <View>
-            <GlobalText style={[globalTextStyles.centeredText, {alignSelf:"center", fontSize: 15, padding: hp('5%') }]}>{personalGallery.tombstone}</GlobalText>
+            <GlobalText
+              style={[
+                globalTextStyles.centeredText,
+                {alignSelf: 'center', fontSize: 15, padding: hp('5%')},
+              ]}>
+              {personalGallery.tombstone}
+            </GlobalText>
           </View>
           <View>
-            <GlobalText style={[globalTextStyles.centeredText, {fontWeight: 'bold' ,alignSelf:"center",color: PRIMARY_BLUE, paddingTop: hp('5%') }]}>like, dislike, and save:</GlobalText>
-            <GlobalText style={[globalTextStyles.centeredText, {fontWeight: 'bold' ,alignSelf:"center",color: PRIMARY_BLUE }]}>teach your digital art advisor your tastes</GlobalText>
+            <GlobalText
+              style={[
+                globalTextStyles.centeredText,
+                {
+                  fontWeight: 'bold',
+                  alignSelf: 'center',
+                  color: PRIMARY_BLUE,
+                  paddingTop: hp('5%'),
+                },
+              ]}>
+              like, dislike, and save:
+            </GlobalText>
+            <GlobalText
+              style={[
+                globalTextStyles.centeredText,
+                {fontWeight: 'bold', alignSelf: 'center', color: PRIMARY_BLUE},
+              ]}>
+              teach your digital art advisor your tastes
+            </GlobalText>
           </View>
         </View>
 

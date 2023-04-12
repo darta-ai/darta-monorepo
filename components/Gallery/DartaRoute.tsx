@@ -12,12 +12,7 @@ import {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {getButtonSizes} from '../../functions/galleryFunctions';
-import {
-  DataT,
-  OpenStateEnum,
-  OrientationsEnum,
-  RatingEnum,
-} from '../../types';
+import {DataT, OpenStateEnum, OrientationsEnum, RatingEnum} from '../../types';
 import {
   DEFAULT_Gallery_Image,
   duration,
@@ -36,7 +31,7 @@ import {
 import {ETypes, StoreContext} from './galleryStore';
 import {galleryComponentStyles} from './galleryStyles';
 
-const galleryWallRaw = DEFAULT_Gallery_Image
+const galleryWallRaw = DEFAULT_Gallery_Image;
 
 type ProfileScreenNavigationProp = StackNavigationProp<
   GalleryRootStackParamList,
@@ -238,7 +233,6 @@ export function DartaRoute({
       type: ETypes.rateArtwork,
       rating: rating,
     });
-
   };
 
   const insets = useSafeAreaInsets();
@@ -328,9 +322,12 @@ export function DartaRoute({
                 toggleButtonView={toggleButtonView}
               />
             </View>
-            <View style={{alignSelf:"center"}}>
+            <View style={{alignSelf: 'center'}}>
               <ProgressBar
-                progress={state.globalGallery[galleryId].galleryIndex / (numberOfArtworks - 1)}
+                progress={
+                  state.globalGallery[galleryId].galleryIndex /
+                  (numberOfArtworks - 1)
+                }
                 borderRadius={10}
                 width={state.isPortrait ? wp('90%') : hp('65%')}
                 color="rgb(218, 223, 225)"

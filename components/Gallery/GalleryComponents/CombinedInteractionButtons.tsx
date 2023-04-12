@@ -1,10 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Animated, View} from 'react-native';
-import {IconButton, Snackbar} from 'react-native-paper';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {IconButton} from 'react-native-paper';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {
   ButtonSizesT,
   IUserArtworkRated,
@@ -16,7 +13,12 @@ import {icons} from '../../globalVariables';
 import {globalTextStyles} from '../../styles';
 import {galleryInteractionStyles} from '../galleryStyles';
 import {StoreContext} from '../galleryStore';
-import { PRIMARY_BLUE, PRIMARY_GREY, PRIMARY_MILK, PRIMARY_PROGRESS, PRIMARY_RED } from '../../../assets/styles';
+import {
+  PRIMARY_BLUE,
+  PRIMARY_GREY,
+  PRIMARY_PROGRESS,
+  PRIMARY_RED,
+} from '../../../assets/styles';
 
 function CombinedInteractionButtons({
   fadeAnimRating,
@@ -43,13 +45,10 @@ function CombinedInteractionButtons({
   const [ratingDisplayIcon, setRatingDisplayIcon] = useState<string>(
     icons.save,
   );
-  const [ratingDisplayColor, setRatingDisplayColor] = useState<string>(
-    PRIMARY_GREY
-  );
+  const [ratingDisplayColor, setRatingDisplayColor] =
+    useState<string>(PRIMARY_GREY);
 
-  const [isRated, setIsRated] = useState<boolean>(
-    false
-  );
+  const [isRated, setIsRated] = useState<boolean>(false);
 
   const [currentArtRating, setCurrentArtRating] = useState<IUserArtworkRated>(
     {},
@@ -66,23 +65,26 @@ function CombinedInteractionButtons({
       setRatingDisplayIcon(icons[ratingString] || icons.thumbsUpDown);
       switch (ratingString) {
         case RatingEnum.like:
-          setRatingDisplayColor(PRIMARY_BLUE)
+          setRatingDisplayColor(PRIMARY_BLUE);
           break;
         case RatingEnum.dislike:
-          setRatingDisplayColor(PRIMARY_RED)
+          setRatingDisplayColor(PRIMARY_RED);
           break;
         case RatingEnum.save:
-            setRatingDisplayColor(PRIMARY_PROGRESS)
-            break;
+          setRatingDisplayColor(PRIMARY_PROGRESS);
+          break;
         default:
-          setRatingDisplayColor(PRIMARY_GREY)
+          setRatingDisplayColor(PRIMARY_GREY);
           break;
       }
     } else {
       toggleButtonView(OpenStateEnum.openRatings, false);
     }
-    const ratingBool = ratingObject[RatingEnum.save] || ratingObject[RatingEnum.dislike] || ratingObject[RatingEnum.like] 
-    setIsRated(ratingBool as boolean)
+    const ratingBool =
+      ratingObject[RatingEnum.save] ||
+      ratingObject[RatingEnum.dislike] ||
+      ratingObject[RatingEnum.like];
+    setIsRated(ratingBool as boolean);
     setCurrentArtRating(ratingObject || {});
   };
 
@@ -141,7 +143,9 @@ function CombinedInteractionButtons({
                 disabled={!openRatings}
                 icon={icons.like}
                 iconColor={
-                  currentArtRating[RatingEnum.like] ? PRIMARY_BLUE : PRIMARY_GREY
+                  currentArtRating[RatingEnum.like]
+                    ? PRIMARY_BLUE
+                    : PRIMARY_GREY
                 }
                 mode={
                   currentArtRating[RatingEnum.like] ? 'contained' : 'outlined'
@@ -172,7 +176,9 @@ function CombinedInteractionButtons({
                   currentArtRating[RatingEnum.save] ? 'contained' : 'outlined'
                 }
                 iconColor={
-                  currentArtRating[RatingEnum.save] ? PRIMARY_PROGRESS : PRIMARY_GREY
+                  currentArtRating[RatingEnum.save]
+                    ? PRIMARY_PROGRESS
+                    : PRIMARY_GREY
                 }
                 icon={icons.save}
                 size={localButtonSizes.medium}
@@ -201,7 +207,9 @@ function CombinedInteractionButtons({
                     : 'outlined'
                 }
                 iconColor={
-                  currentArtRating[RatingEnum.dislike] ? PRIMARY_RED : PRIMARY_GREY
+                  currentArtRating[RatingEnum.dislike]
+                    ? PRIMARY_RED
+                    : PRIMARY_GREY
                 }
                 disabled={!openRatings}
                 icon={icons.dislike}

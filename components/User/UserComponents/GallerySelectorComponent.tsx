@@ -2,7 +2,14 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {GlobalText} from '../../GlobalElements';
-import {DARK_GRAY, MILK, PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_GREY, PRIMARY_LIGHTBLUE} from '../../../assets/styles';
+import {
+  DARK_GRAY,
+  MILK,
+  PRIMARY_BLUE,
+  PRIMARY_DARK_GREY,
+  PRIMARY_GREY,
+  PRIMARY_LIGHTBLUE,
+} from '../../../assets/styles';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -36,7 +43,7 @@ export function GallerySelectorComponent({
           height: hp('8%'),
           width: wp('90%'),
           borderWidth: 0.5,
-          borderColor: PRIMARY_DARK_GREY
+          borderColor: PRIMARY_DARK_GREY,
         },
       ]}>
       <View style={{flex: 0.15, justifyContent: 'center', alignSelf: 'center'}}>
@@ -44,7 +51,9 @@ export function GallerySelectorComponent({
           visible={showBadge}
           size={localButtonSizes.medium}
           style={styles.badgeContainer}
-          children={<Text style={styles.badgeText}>{notificationNumber}</Text>}
+          children={
+            (<Text style={styles.badgeText}>{notificationNumber}</Text>) as any
+          }
         />
       </View>
       <View
@@ -54,13 +63,19 @@ export function GallerySelectorComponent({
           borderLeftWidth: 3,
           borderTopLeftRadius: hp('0.5%'),
           borderBottomLeftRadius: hp('10%'),
-          height: '100%'
-        }} />
+          height: '100%',
+        }}
+      />
       <View style={{flex: 0.8, justifyContent: 'center'}}>
-        <GlobalText style={[globalTextStyles.titleText, {color: PRIMARY_DARK_GREY}]}>
+        <GlobalText
+          style={[globalTextStyles.titleText, {color: PRIMARY_DARK_GREY}]}>
           {headline}
         </GlobalText>
-        <GlobalText style={[globalTextStyles.italicTitleText, {color: PRIMARY_DARK_GREY}]}>
+        <GlobalText
+          style={[
+            globalTextStyles.italicTitleText,
+            {color: PRIMARY_DARK_GREY},
+          ]}>
           {subHeadline}
         </GlobalText>
       </View>

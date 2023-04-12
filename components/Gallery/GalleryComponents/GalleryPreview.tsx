@@ -17,23 +17,23 @@ import {
 import {GlobalText} from '../../GlobalElements/index';
 import {globalTextStyles} from '../../styles';
 import {galleryPreviewStyles} from '../galleryStyles';
-import { DEFAULT_Gallery_Image } from '../../globalVariables';
+import {DEFAULT_Gallery_Image} from '../../globalVariables';
 
-const galleryWallRaw = DEFAULT_Gallery_Image
+const galleryWallRaw = DEFAULT_Gallery_Image;
 export function GalleryPreview({
   body,
   preview,
   isLoading,
   text,
   personalGalleryId,
-  showGallery
+  showGallery,
 }: {
   body: string;
   preview: any;
   isLoading: boolean;
   text: string;
-  personalGalleryId: string
-  showGallery: (personalGalleryId: string) => void
+  personalGalleryId: string;
+  showGallery: (personalGalleryId: string) => void;
 }) {
   const previewWorks = Object.keys(preview).map(id => (id = preview[id]));
 
@@ -93,8 +93,7 @@ export function GalleryPreview({
             height: maxDimension,
             alignItems: 'center',
           }}
-          onPress={() => showGallery(personalGalleryId)}
-          >
+          onPress={() => showGallery(personalGalleryId)}>
           <FlatList
             data={resizedPreviewWorks}
             contentContainerStyle={{

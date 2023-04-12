@@ -58,7 +58,7 @@ const exploreData = {
   },
 };
 
-function UserHome() {
+function UserHome({navigation}: {navigation: any}) {
   const localButtonSizes = getButtonSizes(hp('100%'));
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -101,6 +101,7 @@ function UserHome() {
       }}>
       <Animated.View style={[styles.header, {height: headerHeightInterpolate}]}>
         <UserProfile
+          navigation={navigation}
           imageWidthInterpolate={imageWidthInterpolate}
           localButtonSizes={localButtonSizes}
         />

@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react';
+import {runOnJS} from 'react-native-reanimated';
 import {View, Animated, StyleSheet, TouchableOpacity} from 'react-native';
 import {GlobalText} from '../../GlobalElements/GlobalText';
 import {
@@ -9,16 +10,26 @@ import {globalTextStyles} from '../../styles';
 import {IconButton} from 'react-native-paper';
 import {icons} from '../../globalVariables';
 import {galleryInteractionStyles} from '../../Gallery/galleryStyles';
-import {PRIMARY_DARK_GREY, DARK_GRAY, MILK, PRIMARY_BLUE} from '../../../assets/styles';
+import {DARK_GRAY, MILK, PRIMARY_BLUE} from '../../../assets/styles';
+import {UserRoutesEnum} from '../userRoutes.d';
+import {UserRouteStackParamList} from '../userRoutes.d';
+import {StackNavigationProp} from '@react-navigation/stack';
+
+type UserScreenNavigationProp = StackNavigationProp<
+  UserRouteStackParamList,
+  UserRoutesEnum.userSettings
+>;
 
 export function UserProfile({
   localButtonSizes,
   imageWidthInterpolate,
+  navigation,
 }: {
   localButtonSizes: any;
   imageWidthInterpolate: any;
+  navigation: UserScreenNavigationProp;
 }) {
-  const styles = StyleSheet.create({
+  const userProfileStyles = StyleSheet.create({
     image: {
       height: imageWidthInterpolate,
       width: imageWidthInterpolate,
@@ -26,6 +37,13 @@ export function UserProfile({
       alignSelf: 'flex-start',
     },
   });
+  const navigateTo = () => {
+    navigation.navigate(UserRoutesEnum.userSettings);
+  };
+
+  const onPressFunction = () => {
+    runOnJS(navigateTo)();
+  };
   return (
     <View
       style={{
@@ -43,7 +61,7 @@ export function UserProfile({
           source={{
             uri: 'https://www.shutterstock.com/image-photo/closeup-photo-amazing-short-hairdo-260nw-1617540484.jpg',
           }}
-          style={styles.image}
+          style={userProfileStyles.image}
         />
       </TouchableOpacity>
       <View
@@ -74,7 +92,7 @@ export function UserProfile({
           iconColor={DARK_GRAY}
           accessibilityLabel="settings"
           testID="settings"
-          onPress={() => console.log('Pressed')}
+          onPress={onPressFunction}
         />
       </View>
     </View>

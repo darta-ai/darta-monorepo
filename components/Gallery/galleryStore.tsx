@@ -31,7 +31,7 @@ interface IState {
   artworkOnDisplayId: string;
   globalGallery: IGalleryData;
   isPortrait: boolean;
-  userArtworkRatings: IUserArtworkRatings
+  userArtworkRatings: IUserArtworkRatings;
   galleryTitle: string;
   tombstoneTitle: string;
 }
@@ -110,18 +110,21 @@ const reducer = (state: IState, action: IAction): IState => {
         return state;
       }
       let currentRating = state.userArtworkRatings[artworkId];
-      if (rating === RatingEnum.unrated){
+      if (rating === RatingEnum.unrated) {
         tempState = state.userArtworkRatings[artworkId] = {};
         tempGallery = state.globalGallery[galleryOnDisplayId];
-        if (tempGallery.numberOfRatedWorks > 0){
+        if (tempGallery.numberOfRatedWorks > 0) {
           tempGallery.numberOfRatedWorks -= 1;
         }
         return {...state, ...tempState, ...tempGallery};
-      }
-      else {
+      } else {
         tempState = state.userArtworkRatings[artworkId] = {[rating]: true};
         tempGallery = state.globalGallery[galleryOnDisplayId];
-        if(!currentRating[RatingEnum.like] && !currentRating[RatingEnum.dislike] && !currentRating[RatingEnum.save]){
+        if (
+          !currentRating[RatingEnum.like] &&
+          !currentRating[RatingEnum.dislike] &&
+          !currentRating[RatingEnum.save]
+        ) {
           tempGallery.numberOfRatedWorks += 1;
         }
         return {...state, ...tempState, ...tempGallery};
