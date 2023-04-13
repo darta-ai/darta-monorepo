@@ -3,8 +3,8 @@ import React, {useContext} from 'react';
 import {Button, StyleSheet} from 'react-native';
 
 import {GalleryStack} from '../App';
-import {GalleryHome} from '../components/Gallery/GalleryHome';
-import {GalleryRoute} from '../components/Gallery/Gallery';
+import {DartaHome} from '../components/Gallery/DartaHome';
+import {DartaRoute} from '../components/Gallery/DartaRoute';
 import {GalleryNavigatorEnum} from '../components/Gallery/galleryRoutes.d';
 import {StoreContext} from '../components/Gallery/galleryStore';
 import * as globals from '../components/globalVariables';
@@ -23,13 +23,13 @@ function GalleryStackScreen() {
       <GalleryStack.Group>
         <GalleryStack.Screen
           name={GalleryNavigatorEnum.galleryHome}
-          component={GalleryHome}
+          component={DartaHome}
           options={{...headerOptions}}
           initialParams={{galleryInfo}}
         />
         <GalleryStack.Screen
           name={GalleryNavigatorEnum.gallery}
-          component={GalleryRoute}
+          component={DartaRoute}
           options={{
             ...headerOptions,
             ...openingTransition,

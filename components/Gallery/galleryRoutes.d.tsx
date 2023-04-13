@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import { DataT } from "../../types";
+import {DataT} from '../../types';
 
 export enum GalleryNavigatorEnum {
   galleryHome = 'GALLERY_HOME',

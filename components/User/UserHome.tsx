@@ -58,10 +58,9 @@ const exploreData = {
   },
 };
 
-function UserHome() {
+function UserHome({navigation}: {navigation: any}) {
   const localButtonSizes = getButtonSizes(hp('100%'));
   const scrollY = useRef(new Animated.Value(0)).current;
-  const [isScrolled, setIsScrolled] = useState(false);
 
   const headerHeightInterpolate = scrollY.interpolate({
     inputRange: [0, HEADER_SCROLL_DISTANCE],
@@ -88,11 +87,6 @@ function UserHome() {
       listener: ({nativeEvent}: NativeSyntheticEvent<NativeScrollEvent>) => {
         const offsetY = nativeEvent.contentOffset.y;
         scrollY.setValue(offsetY);
-        if (offsetY > hp('6%')) {
-          setIsScrolled(true);
-        } else {
-          setIsScrolled(false);
-        }
       },
     },
   );
@@ -107,10 +101,9 @@ function UserHome() {
       }}>
       <Animated.View style={[styles.header, {height: headerHeightInterpolate}]}>
         <UserProfile
+          navigation={navigation}
           imageWidthInterpolate={imageWidthInterpolate}
-          imagePositionInterpolate={imagePositionInterpolate}
           localButtonSizes={localButtonSizes}
-          isScrolled={isScrolled}
         />
       </Animated.View>
       <ScrollView onScroll={handleScroll} scrollEventThrottle={16}>
