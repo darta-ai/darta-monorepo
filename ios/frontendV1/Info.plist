@@ -54,7 +54,7 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>YOUR TEXT</string>
 	<key>NSRemindersUsageDescription</key>
-	<string>YOUR TEXT</string>
+	<string>Allow darta to access your photos?</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
