@@ -12,12 +12,7 @@ import {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {getButtonSizes} from '../../functions/galleryFunctions';
-import {
-  DataT,
-  OpenStateEnum,
-  OrientationsEnum,
-  RatingEnum,
-} from '../../types';
+import {DataT, OpenStateEnum, OrientationsEnum, RatingEnum} from '../../types';
 import {
   DEFAULT_Gallery_Image,
   duration,
@@ -36,14 +31,14 @@ import {
 import {ETypes, StoreContext} from './galleryStore';
 import {galleryComponentStyles} from './galleryStyles';
 
-const galleryWallRaw = DEFAULT_Gallery_Image
+const galleryWallRaw = DEFAULT_Gallery_Image;
 
 type ProfileScreenNavigationProp = StackNavigationProp<
   GalleryRootStackParamList,
   GalleryNavigatorEnum.gallery
 >;
 
-export function GalleryRoute({
+export function DartaRoute({
   navigation,
 }: {
   navigation: ProfileScreenNavigationProp;
@@ -216,7 +211,6 @@ export function GalleryRoute({
     }
   };
 
-  // Rating State
   const toggleArtTombstone = () => {
     dispatch({
       type: ETypes.setArtwork,
@@ -239,7 +233,6 @@ export function GalleryRoute({
       type: ETypes.rateArtwork,
       rating: rating,
     });
-
   };
 
   const insets = useSafeAreaInsets();
@@ -256,6 +249,7 @@ export function GalleryRoute({
     <>
       <View
         style={{
+          top: hp('2%'),
           height: hp('75%'),
           width: wp('90%'),
           justifyContent: 'center',
@@ -328,11 +322,14 @@ export function GalleryRoute({
                 toggleButtonView={toggleButtonView}
               />
             </View>
-            <View>
+            <View style={{alignSelf: 'center'}}>
               <ProgressBar
-                progress={numberOfRatedWorks / numberOfArtworks}
-                borderRadius={0}
-                width={state.isPortrait ? wp('95%') : hp('80%')}
+                progress={
+                  state.globalGallery[galleryId].galleryIndex /
+                  (numberOfArtworks - 1)
+                }
+                borderRadius={10}
+                width={state.isPortrait ? wp('90%') : hp('65%')}
                 color="rgb(218, 223, 225)"
                 useNativeDriver
                 animated

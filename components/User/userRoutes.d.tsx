@@ -9,10 +9,10 @@ export enum UserRoutesEnum {
 }
 
 export type UserRouteStackParamList = {
-  [UserRoutesEnum.home]: null;
-  [UserRoutesEnum.userGalleries]: null;
-  [UserRoutesEnum.userArtists]: null;
-  [UserRoutesEnum.savedWork]: any;
-  [UserRoutesEnum.learn]: any;
-  [UserRoutesEnum.userSettings]: any;
+  [UserRoutesEnum.home]: undefined;
+  [UserRoutesEnum.userGalleries]: undefined;
+  [UserRoutesEnum.userArtists]: undefined;
+  [UserRoutesEnum.savedWork]: undefined;
+  [UserRoutesEnum.learn]: undefined;
+  [UserRoutesEnum.userSettings]: undefined;
 };

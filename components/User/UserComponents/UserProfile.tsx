@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react';
+import {runOnJS} from 'react-native-reanimated';
 import {View, Animated, StyleSheet, TouchableOpacity} from 'react-native';
 import {GlobalText} from '../../GlobalElements/GlobalText';
 import {
@@ -9,40 +10,50 @@ import {globalTextStyles} from '../../styles';
 import {IconButton} from 'react-native-paper';
 import {icons} from '../../globalVariables';
 import {galleryInteractionStyles} from '../../Gallery/galleryStyles';
-import {DARK_BLUE, DARK_GRAY, MILK} from '../../../assets/styles';
+import {DARK_GRAY, MILK, PRIMARY_BLUE} from '../../../assets/styles';
+import {UserRoutesEnum} from '../userRoutes.d';
+import {UserRouteStackParamList} from '../userRoutes.d';
+import {StackNavigationProp} from '@react-navigation/stack';
+
+type UserScreenNavigationProp = StackNavigationProp<
+  UserRouteStackParamList,
+  UserRoutesEnum.userSettings
+>;
 
 export function UserProfile({
   localButtonSizes,
   imageWidthInterpolate,
-  imagePositionInterpolate,
-  isScrolled,
+  navigation,
 }: {
   localButtonSizes: any;
   imageWidthInterpolate: any;
-  imagePositionInterpolate: any;
-  isScrolled: boolean;
+  navigation: UserScreenNavigationProp;
 }) {
-  useEffect(() => {
-    console.log({isScrolled});
-  }, [isScrolled]);
-  const styles = StyleSheet.create({
+  const userProfileStyles = StyleSheet.create({
     image: {
       height: imageWidthInterpolate,
       width: imageWidthInterpolate,
       borderRadius: 50,
-      alignSelf: isScrolled ? 'flex-start' : 'center',
+      alignSelf: 'flex-start',
     },
   });
+  const navigateTo = () => {
+    navigation.navigate(UserRoutesEnum.userSettings);
+  };
+
+  const onPressFunction = () => {
+    runOnJS(navigateTo)();
+  };
   return (
     <View
       style={{
-        backgroundColor: DARK_GRAY,
+        backgroundColor: PRIMARY_BLUE,
         borderRadius: 20,
         padding: hp('1%'),
         height: 'auto',
         width: '100%',
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-around',
         alignContent: 'center',
       }}>
       <TouchableOpacity>
@@ -50,7 +61,7 @@ export function UserProfile({
           source={{
             uri: 'https://www.shutterstock.com/image-photo/closeup-photo-amazing-short-hairdo-260nw-1617540484.jpg',
           }}
-          style={[styles.image]}
+          style={userProfileStyles.image}
         />
       </TouchableOpacity>
       <View
@@ -69,51 +80,6 @@ export function UserProfile({
             User#12321
           </GlobalText>
         </View>
-        <View>
-          {!isScrolled && (
-            <>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  gap: hp('3%'),
-                }}>
-                <View>
-                  <IconButton
-                    icon={icons.save}
-                    mode="contained-tonal"
-                    size={localButtonSizes.mediumSmall}
-                    style={galleryInteractionStyles.secondaryButtonBlackButton}
-                    iconColor={DARK_GRAY}
-                    accessibilityLabel="view tombstone"
-                    testID="tombstone"
-                    onPress={() => console.log('Pressed')}
-                  />
-                  <GlobalText
-                    style={[globalTextStyles.centeredText, {color: MILK}]}>
-                    saved
-                  </GlobalText>
-                </View>
-                <View>
-                  <IconButton
-                    icon={icons.inquire}
-                    mode="contained"
-                    size={localButtonSizes.mediumSmall}
-                    style={galleryInteractionStyles.secondaryButtonBlackButton}
-                    iconColor={DARK_GRAY}
-                    accessibilityLabel="view tombstone"
-                    testID="tombstone"
-                    onPress={() => console.log('Pressed')}
-                  />
-                  <GlobalText
-                    style={[globalTextStyles.centeredText, {color: MILK}]}>
-                    inquired
-                  </GlobalText>
-                </View>
-              </View>
-            </>
-          )}
-        </View>
       </View>
       <View
         style={{
@@ -126,7 +92,7 @@ export function UserProfile({
           iconColor={DARK_GRAY}
           accessibilityLabel="settings"
           testID="settings"
-          onPress={() => console.log('Pressed')}
+          onPress={onPressFunction}
         />
       </View>
     </View>

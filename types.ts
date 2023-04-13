@@ -144,6 +144,7 @@ export interface GalleryLandingPage {
     type: string;
     galleryId: string;
     artworkIds: string[];
+    tombstone?: string;
     preview?: {
       [key: string]: {
         id: string;

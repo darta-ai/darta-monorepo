@@ -9,17 +9,14 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {
-  OpenStateEnum,
-  RatingEnum,
-} from '../../../types';
+import {OpenStateEnum, RatingEnum} from '../../../types';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import { StoreContext } from '../galleryStore';
+import {StoreContext} from '../galleryStore';
 
 import {DataT} from '../../../types';
 import {galleryStyles} from '../galleryStyles';
@@ -67,55 +64,39 @@ export function ArtOnDisplay({
     swipeDown = 'swipeDown',
   }
 
-  useEffect(() => {
-    const {artworkOnDisplayId, userArtworkRatings} = state;
-    
-    const currentArtworkRating = userArtworkRatings[artworkOnDisplayId]
-
-    console.log('currentArtworkRating', currentArtworkRating)
-  }, [state])
-
   const handleArtRatingGesture = (gesture: ArtRatingGesture) => {
-    console.log('triggrered art rating gesture')
-    console.log({gesture})
     const {artworkOnDisplayId, userArtworkRatings} = state;
-    
-    const currentArtworkRating = userArtworkRatings[artworkOnDisplayId]
+
+    const currentArtworkRating = userArtworkRatings[artworkOnDisplayId];
     switch (gesture) {
       case ArtRatingGesture.swipeUp:
-        if(currentArtworkRating[RatingEnum.like]) {
+        if (currentArtworkRating[RatingEnum.like]) {
           rateArtwork(RatingEnum.save, OpenStateEnum.swiped);
           break;
-        } 
-        else if(currentArtworkRating[RatingEnum.dislike]){
+        } else if (currentArtworkRating[RatingEnum.dislike]) {
           rateArtwork(RatingEnum.unrated, OpenStateEnum.swiped);
           break;
-        }
-        else if(currentArtworkRating[RatingEnum.save]){
+        } else if (currentArtworkRating[RatingEnum.save]) {
           break;
-        }
-        else{
+        } else {
           rateArtwork(RatingEnum.like, OpenStateEnum.swiped);
           break;
         }
       case ArtRatingGesture.swipeDown:
-        if(currentArtworkRating[RatingEnum.save]) {
+        if (currentArtworkRating[RatingEnum.save]) {
           rateArtwork(RatingEnum.like, OpenStateEnum.swiped);
           break;
-        } 
-        else if(currentArtworkRating[RatingEnum.like]){
+        } else if (currentArtworkRating[RatingEnum.like]) {
           rateArtwork(RatingEnum.unrated, OpenStateEnum.swiped);
           break;
-        }
-        else if(currentArtworkRating[RatingEnum.dislike]){
+        } else if (currentArtworkRating[RatingEnum.dislike]) {
           break;
-        }
-        else{
+        } else {
           rateArtwork(RatingEnum.dislike, OpenStateEnum.swiped);
           break;
-        } 
+        }
     }
-  }
+  };
 
   const swipeArtwork = (pageX: number, pageY: number): void => {
     if (currentZoomScale !== 1) {
@@ -126,15 +107,12 @@ export function ArtOnDisplay({
       // Y axis is to prevent the pinch to zoom resulting in a touch
       if (pageX - touchX > wp('25%') && pageY - touchY < hp('25%')) {
         toggleArtBackward();
-      }
-      else if (touchX - pageX > wp('25%') && pageY - touchY < hp('25%')) {
+      } else if (touchX - pageX > wp('25%') && pageY - touchY < hp('25%')) {
         toggleArtForward();
-      }
-      else if (pageX - touchX < wp('10%') && touchY - pageY > hp('25%')) {
-        handleArtRatingGesture(ArtRatingGesture.swipeUp)
-      }
-      else if (pageX - touchX < wp('10%') && pageY - touchY > hp('25%')) {
-        handleArtRatingGesture(ArtRatingGesture.swipeDown)
+      } else if (pageX - touchX < wp('10%') && touchY - pageY > hp('10%')) {
+        handleArtRatingGesture(ArtRatingGesture.swipeUp);
+      } else if (pageX - touchX < wp('10%') && pageY - touchY > hp('10%')) {
+        handleArtRatingGesture(ArtRatingGesture.swipeDown);
       }
     } else {
       if (pageY - touchY > hp('10%') && pageX - touchX < wp('25%')) {
@@ -143,11 +121,11 @@ export function ArtOnDisplay({
       if (touchY - pageY > hp('10%') && pageX - touchX < wp('25%')) {
         toggleArtForward();
       }
-      if (pageY - touchY < hp('10%') && pageX - touchX > wp('25%')) {
-        handleArtRatingGesture(ArtRatingGesture.swipeDown)
+      if (pageY - touchY < hp('10%') && pageX - touchX > wp('10%')) {
+        handleArtRatingGesture(ArtRatingGesture.swipeUp);
       }
       if (touchY - pageY < hp('10%') && touchX - pageX > wp('25%')) {
-        handleArtRatingGesture(ArtRatingGesture.swipeUp)
+        handleArtRatingGesture(ArtRatingGesture.swipeDown);
       }
     }
   };

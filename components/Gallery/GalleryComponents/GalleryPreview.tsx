@@ -6,6 +6,7 @@ import {
   FlatList,
   Image,
   ImageBackground,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {
@@ -16,23 +17,23 @@ import {
 import {GlobalText} from '../../GlobalElements/index';
 import {globalTextStyles} from '../../styles';
 import {galleryPreviewStyles} from '../galleryStyles';
-import { DEFAULT_Gallery_Image } from '../../globalVariables';
+import {DEFAULT_Gallery_Image} from '../../globalVariables';
 
-const galleryWallRaw = DEFAULT_Gallery_Image
+const galleryWallRaw = DEFAULT_Gallery_Image;
 export function GalleryPreview({
   body,
   preview,
-  numberOfArtworks,
-  numberOfRatedWorks,
   isLoading,
   text,
+  personalGalleryId,
+  showGallery,
 }: {
   body: string;
   preview: any;
-  numberOfArtworks: number;
-  numberOfRatedWorks: number;
   isLoading: boolean;
   text: string;
+  personalGalleryId: string;
+  showGallery: (personalGalleryId: string) => void;
 }) {
   const previewWorks = Object.keys(preview).map(id => (id = preview[id]));
 
@@ -87,12 +88,12 @@ export function GalleryPreview({
             {body}
           </GlobalText>
         </View>
-        <View
+        <TouchableOpacity
           style={{
             height: maxDimension,
             alignItems: 'center',
-            // alignContent: 'space-around',
-          }}>
+          }}
+          onPress={() => showGallery(personalGalleryId)}>
           <FlatList
             data={resizedPreviewWorks}
             contentContainerStyle={{
@@ -127,7 +128,7 @@ export function GalleryPreview({
               </>
             )}
           />
-        </View>
+        </TouchableOpacity>
         <View
           style={{
             marginBottom: hp('1%'),

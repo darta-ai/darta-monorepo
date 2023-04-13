@@ -11,12 +11,12 @@ import {GlobalText} from '../../../GlobalElements';
 import {globalTextStyles} from '../../../styles';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {DARK_GRAY, MILK} from '../../../../assets/styles';
-import { DEFAULT_Gallery_Image } from '../../../globalVariables';
+import {DEFAULT_Gallery_Image} from '../../../globalVariables';
 
 export const SLIDER_WIDTH = Dimensions.get('window').width + 80;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
 
-const defaultImage = DEFAULT_Gallery_Image
+const defaultImage = DEFAULT_Gallery_Image;
 
 export function CarouselCardItem({item, index}: {item: any; index: number}) {
   return (

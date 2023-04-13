@@ -15,8 +15,8 @@ export const galleryDimensionsLandscape = {
   height: wp('100%'),
 };
 
-export const DEFAULT_Gallery_Image = 'https://lh3.googleusercontent.com/pw/AMWts8A127Q1kjVXhb88Fmm8APNKph27xdQ_chFVbh42T5PClwoMztq0EIj6fMpBoAAgM9TfjIQPCrfbYOqFTLqE8XhmLWhbLEWyq1vy77WqexLXo7Ehq2mhfpXZ3L3OKQra96wrOju1sj8chqzAY3-qr_QDTA=w1778-h998-s-no'
-
+export const DEFAULT_Gallery_Image =
+  'https://lh3.googleusercontent.com/pw/AMWts8A127Q1kjVXhb88Fmm8APNKph27xdQ_chFVbh42T5PClwoMztq0EIj6fMpBoAAgM9TfjIQPCrfbYOqFTLqE8XhmLWhbLEWyq1vy77WqexLXo7Ehq2mhfpXZ3L3OKQra96wrOju1sj8chqzAY3-qr_QDTA=w1778-h998-s-no';
 
 export const icons: Icons = {
   back: 'arrow-left',
@@ -34,7 +34,8 @@ export const icons: Icons = {
   learnMore: 'bookshelf',
   inquire: 'message-processing-outline',
   cog: 'cog-outline',
-  thumbsUpDown: 'thumbs-up-down-outline'
+  thumbsUpDown: 'thumbs-up-down-outline',
+  saveSettings: 'content-save',
 };
 
 // export const getButtonSize = (wp:number, size: string) => {
@@ -245,8 +246,8 @@ export const darbyMilbrathPreview = {
   },
 };
 
-const today = new Date().getDay();
-const days = [
+export const today = new Date().getDay();
+export const days = [
   'sunday',
   'monday',
   'tuesday',
@@ -262,6 +263,8 @@ export const galleryDummyData: GalleryLandingPage = {
     galleryId: '01a5ac40-bc52-11ed-afa1-0242ac120002',
     artworkIds: images1,
     preview: image1Preview,
+    tombstone:
+      'featuring works by contemporary artists Robert Bordo, Tahnee Lonsdale, and more',
     text: `${days[today]}'s opening`,
     body: 'curated by darta',
   },

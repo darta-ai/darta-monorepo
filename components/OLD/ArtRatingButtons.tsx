@@ -76,7 +76,7 @@ function ArtRatingButtons({
   return (
     <>
       <View style={ratingContainer}>
-        <View style={ {alignSelf: 'flex-end'}}>
+        <View style={{alignSelf: 'flex-end'}}>
           <View style={{alignSelf: 'center'}}>
             <Animated.View
               style={{
