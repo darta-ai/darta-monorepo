@@ -20,6 +20,7 @@ export const DEFAULT_Gallery_Image =
 
 export const icons: Icons = {
   back: 'arrow-left',
+  cancel: 'cancel',
   menu: 'menu',
   like: 'thumb-up-outline',
   dislike: 'thumb-down-outline',

@@ -74,12 +74,6 @@ function UserHome({navigation}: {navigation: any}) {
     extrapolate: 'clamp',
   });
 
-  const imagePositionInterpolate = scrollY.interpolate({
-    inputRange: [10, HEADER_SCROLL_DISTANCE],
-    outputRange: [0, wp('-5%')],
-    extrapolate: 'clamp',
-  });
-
   const handleScroll = Animated.event(
     [{nativeEvent: {contentOffset: {y: scrollY}}}],
     {

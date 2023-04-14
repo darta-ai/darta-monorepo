@@ -9,8 +9,9 @@ import {
 } from 'react-native-responsive-screen';
 import {deviceInformation} from '../../../App';
 import {PRIMARY_DARK_GREY} from '../../../assets/styles';
+import { PatUserData } from '../UserComponents/UserProfile';
 
-export function UserSettings() {
+export function UserSettings(rawDataUserData: PatUserData) {
   const onSubmit = (data: any) => console.log(data);
 
   const [uniqueId, setUniqueId] = useState<string>('');
@@ -32,7 +33,7 @@ export function UserSettings() {
         marginBottom: hp('5%'),
       }}>
       <View>
-        <UserSettingsSignedIn uniqueId={uniqueId} />
+        <UserSettingsSignedIn uniqueId={uniqueId} userSettingData={rawDataUserData} />
       </View>
     </View>
   );
@@ -52,11 +53,11 @@ export const settingsStyles = StyleSheet.create({
   header: {
     ...globalTextStyles.italicTitleText,
     alignSelf: 'center',
-    height: hp('3%'),
     marginBottom: hp('0.5%'),
   },
   text: {
-    ...globalTextStyles.boldTitleText,
+    fontFamily: 'AvenirNext-Bold',
+    fontSize: 15,
     alignSelf: 'flex-start',
     color: PRIMARY_DARK_GREY,
   },
