@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useState, useContext} from 'react';
 import {runOnJS} from 'react-native-reanimated';
 import {View, Animated, StyleSheet, TouchableOpacity} from 'react-native';
 import {GlobalText} from '../../GlobalElements/GlobalText';
@@ -14,11 +14,31 @@ import {DARK_GRAY, MILK, PRIMARY_BLUE} from '../../../assets/styles';
 import {UserRoutesEnum} from '../userRoutes.d';
 import {UserRouteStackParamList} from '../userRoutes.d';
 import {StackNavigationProp} from '@react-navigation/stack';
+import { StoreContext } from '../../Gallery/galleryStore';
 
 type UserScreenNavigationProp = StackNavigationProp<
   UserRouteStackParamList,
   UserRoutesEnum.userSettings
 >;
+
+
+export type PatUserData = {
+  profilePicture: string;
+  userName: string;
+  legalName: string;
+  email: string;
+  phone: string;
+  uniqueId?: string;
+};
+
+const rawDataUserData:  PatUserData = {
+  profilePicture: 'https://www.shutterstock.com/image-photo/closeup-photo-amazing-short-hairdo-260nw-1617540484.jpg',
+  userName: 'user name 10000',
+  legalName: 'firstName lastName',
+  email: 'email@gmail.com',
+  phone: '(123) 123-4567',
+}
+
 
 export function UserProfile({
   localButtonSizes,
@@ -37,13 +57,16 @@ export function UserProfile({
       alignSelf: 'flex-start',
     },
   });
-  const navigateTo = () => {
+  const navigateToEditUserSettings = () => {
     navigation.navigate(UserRoutesEnum.userSettings);
   };
 
   const onPressFunction = () => {
-    runOnJS(navigateTo)();
+    runOnJS(navigateToEditUserSettings)();
   };
+
+  const {state} = useContext(StoreContext);
+
   return (
     <View
       style={{
@@ -56,14 +79,14 @@ export function UserProfile({
         justifyContent: 'space-around',
         alignContent: 'center',
       }}>
-      <TouchableOpacity>
+      <View>
         <Animated.Image
           source={{
-            uri: 'https://www.shutterstock.com/image-photo/closeup-photo-amazing-short-hairdo-260nw-1617540484.jpg',
+            uri: state.userSettings.profilePicture,
           }}
           style={userProfileStyles.image}
         />
-      </TouchableOpacity>
+      </View>
       <View
         style={{
           alignSelf: 'center',
@@ -77,7 +100,7 @@ export function UserProfile({
               {alignSelf: 'center', color: MILK},
             ]}
             numberOfLines={1}>
-            User#12321
+            {state.userSettings.userName}
           </GlobalText>
         </View>
       </View>

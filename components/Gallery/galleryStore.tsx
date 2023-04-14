@@ -13,6 +13,25 @@ export interface IUserArtworkRatings {
   };
 }
 
+
+export type PatUserData = {
+  profilePicture: string;
+  userName: string;
+  legalName: string;
+  email: string;
+  phone: string;
+  uniqueId?: string;
+};
+
+const rawDataUserData:  PatUserData = {
+  profilePicture: 'https://www.shutterstock.com/image-photo/closeup-photo-amazing-short-hairdo-260nw-1617540484.jpg',
+  userName: 'user name 10000',
+  legalName: 'firstName lastName',
+  email: 'email@gmail.com',
+  phone: '(123) 123-4567',
+}
+
+
 interface IGalleryData {
   [id: string]: {
     id: string;
@@ -34,6 +53,7 @@ interface IState {
   userArtworkRatings: IUserArtworkRatings;
   galleryTitle: string;
   tombstoneTitle: string;
+  userSettings: PatUserData;
 }
 
 export enum ETypes {
@@ -46,6 +66,7 @@ export enum ETypes {
   setTitle = 'SET_TITLE',
   setArtwork = 'SET_ARTWORK',
   setTombstone = 'SET_TOMBSTONE',
+  setUserSettings = 'SET_USER_SETTINGS'
 }
 
 // Define the action type
@@ -69,6 +90,9 @@ interface IAction {
 
   // for tombstone
   tombstoneTitle?: string;
+
+  // for userSettings
+  userSettings?: PatUserData;
 }
 
 // Define the initial state
@@ -80,6 +104,7 @@ const initialState: IState = {
   isPortrait: true,
   galleryTitle: 'd a r t a',
   tombstoneTitle: 't o m b s t o n e',
+  userSettings: rawDataUserData,
 };
 
 // Define the reducer function
@@ -94,6 +119,7 @@ const reducer = (state: IState, action: IAction): IState => {
     artworkOnDisplayId = 'string',
     galleryTitle = 'd a r t a',
     tombstoneTitle = 't o m b s t o n e',
+    userSettings = rawDataUserData,
   } = action;
 
   let tempGallery: any;
@@ -103,6 +129,8 @@ const reducer = (state: IState, action: IAction): IState => {
   const artworkId = state.artworkOnDisplayId;
 
   switch (type) {
+    case ETypes.setUserSettings:
+      return {...state, userSettings: userSettings };  
     case ETypes.setPortrait:
       return {...state, isPortrait: !state.isPortrait};
     case ETypes.rateArtwork:
