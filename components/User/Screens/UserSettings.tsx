@@ -1,19 +1,20 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {globalTextStyles} from '../../styles';
 import {UserSettingsSignedIn} from '../UserComponents/UserSettings/SignedInUserSettings';
-import {useForm} from 'react-hook-form';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {deviceInformation} from '../../../App';
 import {PRIMARY_DARK_GREY} from '../../../assets/styles';
-import { PatUserData } from '../UserComponents/UserProfile';
+import { StoreContext } from '../../Gallery/galleryStore';
 
-export function UserSettings(rawDataUserData: PatUserData) {
-  const onSubmit = (data: any) => console.log(data);
+export function UserSettings() {
 
+  const {state} = useContext(StoreContext);
+
+  // can delete - for uuid settings
   const [uniqueId, setUniqueId] = useState<string>('');
   useEffect(() => {
     const getDeviceInformation = async () => {
@@ -33,7 +34,7 @@ export function UserSettings(rawDataUserData: PatUserData) {
         marginBottom: hp('5%'),
       }}>
       <View>
-        <UserSettingsSignedIn uniqueId={uniqueId} userSettingData={rawDataUserData} />
+        <UserSettingsSignedIn uniqueId={uniqueId} />
       </View>
     </View>
   );

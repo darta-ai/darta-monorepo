@@ -228,24 +228,6 @@ const reducer = (state: IState, action: IAction): IState => {
   }
 };
 
-const galleryInfo = globals.galleryDummyData;
-
-const emptyGalleryList = Object.keys(galleryInfo).reduce(
-  (obj, id) => ({
-    ...obj,
-    [id]: {
-      id,
-      fullDGallery: false,
-      numberOfRatedWorks: 0,
-      artworkIds: galleryInfo[id].artworkIds,
-      numberOfArtworks: galleryInfo[id].artworkIds.length,
-      userArtworkRatings: false,
-      galleryIndex: 0,
-    },
-  }),
-  {},
-);
-
 // Create the context
 const StoreContext = createContext<{
   state: IState;

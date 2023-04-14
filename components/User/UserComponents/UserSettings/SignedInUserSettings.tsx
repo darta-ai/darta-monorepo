@@ -20,7 +20,6 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import { PatUserData } from '../UserProfile';
 import { ETypes, StoreContext } from '../../../Gallery/galleryStore';
 
 type FieldState = {
@@ -28,7 +27,7 @@ type FieldState = {
   value?: string;
 };
 
-enum ButtonTypes {
+enum SignedInActions {
   profilePicture = 'profilePicture',
   userName = 'userName',
   legalName = 'legalName',
@@ -132,11 +131,11 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
   const [tempImage, setTempImage] = useState<any>({uri: '', type: ''});
   const [tempValue, setTempValue] = useState<string>('');
 
-  const handleButtonClick = async (formName: ButtonTypes) => {
+  const handleButtonClick = async (formName: SignedInActions) => {
     // profile picture stuff
 
     switch (formName) {
-      case ButtonTypes.profilePicture:
+      case SignedInActions.profilePicture:
         if (!formData[formName].isEditing) {
           setFormData({
             ...formData,
@@ -154,6 +153,7 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
             ...formData,
             [formName]: {isEditing: false},
           });
+          setTempImage({uri: ''});
           handleExpandElements();
         }
         break;
@@ -228,7 +228,7 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
             testID="editPhoto"
             animated
             onPress={() => {
-              handleButtonClick(ButtonTypes.profilePicture);
+              handleButtonClick(SignedInActions.profilePicture);
             }}
           />
         </View>
@@ -290,7 +290,7 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
                 accessibilityLabel="edit username"
                 testID="editUserName"
                 animated
-                onPress={() => handleButtonClick(ButtonTypes.userName)}
+                onPress={() => handleButtonClick(SignedInActions.userName)}
               />
             </View>
           </View>
@@ -350,7 +350,7 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
                   accessibilityLabel="edit name"
                   testID="editName"
                   animated
-                  onPress={() => handleButtonClick(ButtonTypes.legalName)}
+                  onPress={() => handleButtonClick(SignedInActions.legalName)}
                 />
               </View>
             </View>
@@ -410,7 +410,7 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
                 accessibilityLabel="edit name"
                 testID="editName"
                 animated
-                onPress={() => handleButtonClick(ButtonTypes.email)}
+                onPress={() => handleButtonClick(SignedInActions.email)}
               />
             </View>
           </View>
@@ -469,7 +469,7 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
                 accessibilityLabel="edit name"
                 testID="editName"
                 animated
-                onPress={() => handleButtonClick(ButtonTypes.phone)}
+                onPress={() => handleButtonClick(SignedInActions.phone)}
               />
             </View>
           </View>
