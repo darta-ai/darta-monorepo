@@ -13,6 +13,6 @@ const calculateDistanceFromHeightHorizontal = (wallHeight: number): number => {
 };
 
 export {
-  calculateHeightFromDistanceHorizontal,
   calculateDistanceFromHeightHorizontal,
+  calculateHeightFromDistanceHorizontal,
 };

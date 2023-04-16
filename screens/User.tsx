@@ -1,11 +1,11 @@
 import React from 'react';
 
 import {UserStack} from '../App';
-import {UserRoutesEnum} from '../components/User/userRoutes.d';
-import {UserHome} from '../components/User';
-import {headerOptions} from './styles';
-import {UserSettings} from '../components/User/Screens/UserSettings';
 import {MILK} from '../assets/styles';
+import {UserHome} from '../components/Screens/User';
+import {UserSettings} from '../components/Screens/User/Screens/UserSettings';
+import {UserRoutesEnum} from '../components/Screens/User/userRoutes.d';
+import {headerOptions} from './styles';
 
 function User() {
   const leftToRightAnimation = {

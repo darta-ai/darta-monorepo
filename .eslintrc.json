@@ -42,7 +42,7 @@
     "simple-import-sort/exports": "error",
     "@typescript-eslint/no-use-before-define": ["error"],
     "@typescript-eslint/no-unused-vars": "error",
-    "@typescript-eslint/no-shadow": "on",
+    "@typescript-eslint/no-shadow": 1,
     "no-shadow": "off",
     "import/extensions": [
       "error",

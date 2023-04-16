@@ -1,11 +1,12 @@
 import React from 'react';
 import {Animated, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
-import {galleryInteractionStyles} from '../Gallery/galleryStyles';
-import {icons} from '../globalVariables';
-import {GlobalText} from '../GlobalElements';
-import {globalTextStyles} from '../styles';
+
 import {OpenStateEnum} from '../../types';
+import {GlobalText} from '../GlobalElements';
+import {icons} from '../globalVariables';
+import {galleryInteractionStyles} from '../Screens/Gallery/galleryStyles';
+import {globalTextStyles} from '../styles';
 
 export function NavigateArt({
   fadeAnimNav,
@@ -26,8 +27,7 @@ export function NavigateArt({
   toggleArtForward: () => void;
   toggleArtBackward: () => void;
   toggleArtTombstone: () => void;
-  toggleButtonView: // eslint-disable-next-line
-  (openIdentifier: OpenStateEnum) => void;
+  toggleButtonView: (openIdentifier: OpenStateEnum) => void;
 }) {
   const navigateContainer = isPortrait
     ? galleryInteractionStyles.containerPortrait
