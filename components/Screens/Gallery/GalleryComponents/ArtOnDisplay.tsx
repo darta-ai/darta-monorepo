@@ -16,7 +16,6 @@ import {
   View,
 } from 'react-native';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
-import {runOnJS} from 'react-native-reanimated';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,

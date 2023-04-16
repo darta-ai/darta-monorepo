@@ -9,10 +9,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 import {getButtonSizes} from '../../../functions/galleryFunctions';
 import {
