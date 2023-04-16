@@ -1,6 +1,6 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext, useEffect, useState} from 'react';
-import {Alert, View} from 'react-native';
+import {Alert, StyleSheet, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
@@ -105,14 +105,17 @@ export function DartaHome({
     return navigation.navigate(GalleryNavigatorEnum.gallery);
   };
 
+  const SSDartaHome = StyleSheet.create({
+    container: {
+      backgroundColor: PRIMARY_MILK,
+      height: hp('85%'),
+      flexDirection: 'column',
+      justifyContent: 'space-evenly',
+    },
+  });
+
   return (
-    <View
-      style={{
-        backgroundColor: PRIMARY_MILK,
-        height: hp('85%'),
-        flexDirection: 'column',
-        justifyContent: 'space-evenly',
-      }}>
+    <View style={SSDartaHome.container}>
       <View>
         <TouchableOpacity
           onPress={async () => {

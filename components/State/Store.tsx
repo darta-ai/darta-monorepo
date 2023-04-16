@@ -1,6 +1,7 @@
 import React, {createContext, ReactNode, useReducer} from 'react';
 
 import {DataT, GalleryLandingPage, RatingEnum} from '../../types';
+import {days, image1Preview, images1, today} from '../globalVariables';
 
 export interface IUserArtworkRatings {
   [id: string]: {
@@ -29,6 +30,49 @@ const rawDataUserData: PatUserData = {
   phone: '(123) 123-4567',
 };
 
+const fetchRawUserData = () => {
+  return rawDataUserData;
+};
+
+// for Pat
+export type PatDartaData = {
+  [key: string]: {
+    type: string;
+    galleryId: string;
+    artworkIds: string[];
+    tombstone?: string;
+    preview?: {
+      [key: string]: {
+        id: string;
+        image: string;
+        dimensionsInches: {
+          height: number;
+          width: number;
+        };
+      };
+    };
+    text: string;
+    body: string;
+  };
+};
+
+const rawDartaData: PatDartaData = {
+  '01a5ac40-bc52-11ed-afa1-0242ac120002': {
+    type: 'privateGallery',
+    galleryId: '01a5ac40-bc52-11ed-afa1-0242ac120002',
+    artworkIds: images1,
+    preview: image1Preview,
+    tombstone:
+      'featuring works by contemporary artists Robert Bordo, Tahnee Lonsdale, and more',
+    text: `${days[today]}'s opening`,
+    body: 'curated by darta',
+  },
+};
+
+const fetchRawDartaData = () => {
+  return rawDartaData;
+};
+
 interface IGalleryData {
   [id: string]: {
     id: string;
@@ -51,6 +95,7 @@ interface IState {
   galleryTitle: string;
   tombstoneTitle: string;
   userSettings: PatUserData;
+  galleryData: PatDartaData;
 }
 
 export enum ETypes {
@@ -69,6 +114,7 @@ export enum ETypes {
 // Define the action type
 interface IAction {
   type: ETypes;
+
   // For RATE
   rating?: string;
 
@@ -79,7 +125,6 @@ interface IAction {
 
   // for LOAD
   loadedDGallery?: DataT[];
-  userRatingsEmpty?: {};
   galleryLandingPageData?: GalleryLandingPage;
 
   // for title
@@ -101,7 +146,8 @@ const initialState: IState = {
   isPortrait: true,
   galleryTitle: 'd a r t a',
   tombstoneTitle: 't o m b s t o n e',
-  userSettings: rawDataUserData,
+  userSettings: fetchRawUserData(),
+  galleryData: fetchRawDartaData(),
 };
 
 // Define the reducer function
@@ -112,11 +158,10 @@ const reducer = (state: IState, action: IAction): IState => {
     galleryId = '',
     currentIndex = 0,
     loadedDGallery = [],
-    galleryLandingPageData = {},
     artworkOnDisplayId = 'string',
     galleryTitle = 'd a r t a',
     tombstoneTitle = 't o m b s t o n e',
-    userSettings = rawDataUserData,
+    userSettings = fetchRawUserData(),
   } = action;
 
   let tempGallery: any;
@@ -159,27 +204,27 @@ const reducer = (state: IState, action: IAction): IState => {
       }
 
     case ETypes.preLoadState:
-      if (Object.keys(galleryLandingPageData).length === 0) {
+      if (Object.keys(state.galleryData).length === 0) {
         return state;
       }
       tempGallery = state.globalGallery;
       tempState = state;
-      galleryIds = Object.keys(galleryLandingPageData);
+      galleryIds = Object.keys(state.galleryData);
       galleryIds.forEach(itemId => {
-        (tempGallery[itemId] = {
-          artworkIds: galleryLandingPageData[itemId].artworkIds,
+        tempGallery[itemId] = {
+          artworkIds: state.galleryData[itemId].artworkIds,
           id: itemId,
           numberOfRatedWorks: 0,
-          numberOfArtworks: galleryLandingPageData[itemId].artworkIds.length,
+          numberOfArtworks: state.galleryData[itemId].artworkIds.length,
           galleryIndex: 0,
           fullDGallery: null,
-        }),
-          galleryLandingPageData[itemId].artworkIds.forEach(artId => {
-            tempState.userArtworkRatings = {
-              ...tempState.userArtworkRatings,
-              [artId]: {},
-            };
-          });
+        };
+        state.galleryData[itemId].artworkIds.forEach(artId => {
+          tempState.userArtworkRatings = {
+            ...tempState.userArtworkRatings,
+            [artId]: {},
+          };
+        });
       });
       return {...tempState, ...tempGallery};
     case ETypes.loadArt:
