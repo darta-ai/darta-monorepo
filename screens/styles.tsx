@@ -1,5 +1,4 @@
 import {PRIMARY_BLUE, PRIMARY_LIGHTBLUE, PRIMARY_MILK} from '../assets/styles';
-import {globalTextStyles} from '../components/styles';
 
 export const headerOptions = {
   headerTitle: 'd | a r t | ai',

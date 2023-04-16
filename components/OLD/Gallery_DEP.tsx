@@ -24,20 +24,20 @@ import {
   galleryDimensionsPortrait,
   icons,
 } from '../globalVariables';
-import {globalTextStyles} from '../styles';
+import {
+  ArtOnDisplay,
+  // ArtRatingButtons,
+  GalleryViewOptions,
+  // NavigateArt,
+} from '../Screens/Gallery/GalleryComponents/index';
+import {galleryComponentStyles} from '../Screens/Gallery/galleryStyles';
 import {
   TombstoneLandscape,
   TombstonePortrait,
-} from '../Gallery/Tombstone/index';
-import {
-  ArtOnDisplay,
-  ArtRatingButtons,
-  GalleryViewOptions,
-  NavigateArt,
-} from '../Gallery/GalleryComponents/index';
-import {galleryComponentStyles} from '../Gallery/galleryStyles';
+} from '../Screens/Gallery/Tombstone/index';
+import {globalTextStyles} from '../styles';
 
-const kitchen2 = require('../../backgrounds/kitchen2.png');
+// const kitchen2 = require('../../backgrounds/kitchen2.png');
 // const HannahWall = require('../../backgrounds/HannahWall.png');
 // import WallHorizontal = require('../backgrounds/WallHorizontal.png');
 const galleryWallRaw = require('../../backgrounds/galleryWallRaw.png');
@@ -63,16 +63,15 @@ export function Gallery({
   numberOfArtworks: number;
   userArtworkRatings: UserArtworkRatings;
   isPortrait: boolean;
-  // eslint-disable-next-line no-unused-vars
+
   setIsPortrait: (arg0: boolean) => void;
-  // eslint-disable-next-line no-unused-vars, no-shadow
+
   showGallery: (galleryId: string, currentIndex?: number) => void;
   setUserArtworkRatings: (
-    // eslint-disable-next-line no-unused-vars, no-shadow
     galleryId: string,
-    // eslint-disable-next-line no-unused-vars
+
     artOnDisplayId: string,
-    // eslint-disable-next-line no-unused-vars
+
     updatedRatings: any,
   ) => void;
 }) {
@@ -89,7 +88,7 @@ export function Gallery({
     if (fullGallery) {
       setArtOnDisplay(fullGallery.at(artDisplayIndex));
     }
-  }, [artDisplayIndex]);
+  }, [artDisplayIndex, fullGallery]);
 
   const [openNav, setOpenNav] = useState<boolean>(false);
   const [openRatings, setOpenRatings] = useState<boolean>(false);
@@ -160,7 +159,6 @@ export function Gallery({
 
     if (details) {
       const {fadeAnim, currentState} = details;
-      // eslint-disable-next-line no-unused-expressions
       currentState
         ? fadeOutButtons(openIdentifier, fadeAnim)
         : fadeInButtons(openIdentifier, fadeAnim);

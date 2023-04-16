@@ -2,6 +2,7 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import {Text} from 'react-native';
+
 import {globalTextStyles} from '../styles';
 
 export function GlobalText(props: any) {

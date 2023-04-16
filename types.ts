@@ -1,9 +1,7 @@
-/* eslint-disable no-unused-vars */
 export interface IUserArtworkRated {
   [key: string]: boolean;
 }
 
-// eslint-disable-next-line no-shadow
 export enum OpenStateEnum {
   openNav = 'openNav',
   openRatings = 'openRatings',
@@ -12,7 +10,6 @@ export enum OpenStateEnum {
   swiped = 'swipped',
 }
 
-// eslint-disable-next-line no-shadow
 export enum SnackTextEnum {
   save = 'Saved 😍',
   like = 'Liked 😏',
@@ -20,7 +17,6 @@ export enum SnackTextEnum {
   reset = 'Reset 🧹',
 }
 
-// eslint-disable-next-line no-shadow
 export enum RatingEnum {
   unrated = 'unrated',
   save = 'save',
@@ -28,7 +24,6 @@ export enum RatingEnum {
   dislike = 'dislike',
 }
 
-// eslint-disable-next-line no-shadow
 export enum OrientationsEnum {
   landscapeLeft = 'LANDSCAPE-LEFT',
   portraitUp = 'PORTRAIT-UPSIDEDOWN',

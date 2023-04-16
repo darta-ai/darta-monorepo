@@ -1,5 +1,6 @@
 import React from 'react';
 import {IconButton} from 'react-native-paper';
+
 import {IconT} from '../../types';
 
 function IconElement({iconColor, icon, size, style}: IconT) {
