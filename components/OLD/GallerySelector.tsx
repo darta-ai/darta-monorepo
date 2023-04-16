@@ -5,11 +5,11 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 import {getImages} from '../../functions/galleryFunctions';
 import {DataT} from '../../types';
-import {Gallery} from './Gallery_DEP';
-import {GalleryPreview} from '../Gallery/GalleryComponents';
 import {GlobalText} from '../GlobalElements/index';
 import * as globals from '../globalVariables';
+import {GalleryPreview} from '../Screens/Gallery/GalleryComponents';
 import {globalTextStyles} from '../styles';
+import {Gallery} from './Gallery_DEP';
 
 const galleryInfo = globals.galleryDummyData;
 

@@ -1,14 +1,8 @@
 import React from 'react';
-import {View, Image, Dimensions, TouchableOpacity} from 'react-native';
-import IconElement from './IconElement';
+import {Dimensions, Image, View} from 'react-native';
+
+import styles from '../../assets/styles';
 import {CardItemT} from '../../types';
-import styles, {
-  DISLIKE_ACTIONS,
-  FLASH_ACTIONS,
-  LIKE_ACTIONS,
-  STAR_ACTIONS,
-  WHITE,
-} from '../../assets/styles';
 import {GlobalText} from './index';
 
 function CardItem({
@@ -49,10 +43,7 @@ function CardItem({
       {/* MATCHES */}
       {matches && (
         <View style={styles.matchesCardItem}>
-          <GlobalText style={styles.matchesTextCardItem}>
-            <IconElement name="heart" color={WHITE} size={13} /> {matches}%
-            Match!
-          </GlobalText>
+          <GlobalText style={styles.matchesTextCardItem} />
         </View>
       )}
 
@@ -77,25 +68,7 @@ function CardItem({
       )}
 
       {/* ACTIONS */}
-      {hasActions && (
-        <View style={styles.actionsCardItem}>
-          <TouchableOpacity style={styles.miniButton}>
-            <IconElement name="star" color={STAR_ACTIONS} size={14} />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button}>
-            <IconElement name="heart" color={LIKE_ACTIONS} size={25} />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button}>
-            <IconElement name="close" color={DISLIKE_ACTIONS} size={25} />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.miniButton}>
-            <IconElement name="flash" color={FLASH_ACTIONS} size={14} />
-          </TouchableOpacity>
-        </View>
-      )}
+      {hasActions && <View style={styles.actionsCardItem} />}
     </View>
   );
 }
