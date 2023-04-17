@@ -1,7 +1,7 @@
 import {Image} from 'react-native';
 
-import {buttonSizes} from '../components/globalVariables';
 import {ImageCollection} from '../firebase/hooks';
+import {buttonSizes} from '../src/globalVariables';
 import {DataT} from '../types';
 
 export const imagePrefetch = async (imageUrls: string[]) => {

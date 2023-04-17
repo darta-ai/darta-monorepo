@@ -1,13 +1,13 @@
 import React, {useContext} from 'react';
 
 import {GalleryStack} from '../App';
-import * as globals from '../components/globalVariables';
-import {DartaHome} from '../components/Screens/Gallery/DartaHome';
-import {DartaRoute} from '../components/Screens/Gallery/DartaRoute';
-import {GalleryNavigatorEnum} from '../components/Screens/Gallery/galleryRoutes.d';
-import {TombstoneRoute} from '../components/Screens/Gallery/Tombstone/TombstoneRoute';
-import {createOpeningTransition} from '../components/Screens/openingTransition';
-import {StoreContext} from '../components/State/Store';
+import * as globals from '../src/globalVariables';
+import {DartaHome} from '../src/Screens/Gallery/DartaHome';
+import {DartaRoute} from '../src/Screens/Gallery/DartaRoute';
+import {GalleryNavigatorEnum} from '../src/Screens/Gallery/galleryRoutes.d';
+import {TombstoneRoute} from '../src/Screens/Gallery/Tombstone/TombstoneRoute';
+import {createOpeningTransition} from '../src/Screens/openingTransition';
+import {StoreContext} from '../src/State/Store';
 import {headerOptions} from './styles';
 
 const galleryInfo = globals.galleryDummyData;
