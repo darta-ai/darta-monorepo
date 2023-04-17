@@ -2,9 +2,9 @@ import React from 'react';
 
 import {UserStack} from '../App';
 import {MILK} from '../assets/styles';
-import {UserHome} from '../components/Screens/User';
-import {UserSettings} from '../components/Screens/User/Screens/UserSettings';
-import {UserRoutesEnum} from '../components/Screens/User/userRoutes.d';
+import {UserHome} from '../src/Screens/User';
+import {UserSettings} from '../src/Screens/User/Screens/UserSettings';
+import {UserRoutesEnum} from '../src/Screens/User/userRoutes.d';
 import {headerOptions} from './styles';
 
 function User() {
