@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Alert, FlatList, SafeAreaView, View} from 'react-native';
 import {Divider} from 'react-native-elements';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -10,10 +10,12 @@ import * as globals from '../globalVariables';
 import {GalleryPreview} from '../Screens/Gallery/GalleryComponents';
 import {globalTextStyles} from '../styles';
 import {Gallery} from './Gallery_DEP';
+import {StoreContext} from './Store';
 
 const galleryInfo = globals.galleryDummyData;
 
 export function GallerySelector() {
+  const {state} = useContext(StoreContext);
   const emptyGalleryList = Object.keys(galleryInfo).reduce(
     (obj, id) => ({
       ...obj,

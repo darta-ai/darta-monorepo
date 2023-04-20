@@ -13,6 +13,11 @@ export const globalTextStyles = StyleSheet.create({
     fontFamily: 'AvenirNext-Bold',
     fontSize: 15,
   },
+  boldTitleCenteredText: {
+    fontFamily: 'AvenirNext-Bold',
+    fontSize: 15,
+    textAlign: 'center',
+  },
   titleText: {
     ...baseText,
     fontSize: 20,

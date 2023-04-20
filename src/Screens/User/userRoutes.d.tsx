@@ -6,6 +6,9 @@ export enum UserRoutesEnum {
   learn = 'LEARN',
   userCollection = 'USER_COLLECTION',
   userSettings = 'USER_SETTINGS',
+  userSavedArtwork = 'USER_SAVED_ARTWORK',
+  userInquiredArtwork = 'USER_INQUIRED_ARTWORK',
+  tombstone = 'TOMBSTONE',
 }
 
 export type UserRouteStackParamList = {
@@ -15,4 +18,7 @@ export type UserRouteStackParamList = {
   [UserRoutesEnum.savedWork]: undefined;
   [UserRoutesEnum.learn]: undefined;
   [UserRoutesEnum.userSettings]: undefined;
+  [UserRoutesEnum.userSavedArtwork]: undefined;
+  [UserRoutesEnum.userInquiredArtwork]: undefined;
+  [UserRoutesEnum.tombstone]: undefined;
 };

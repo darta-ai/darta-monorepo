@@ -43,6 +43,7 @@
     "react-native-screens": "^3.19.0",
     "react-native-snap-carousel": "^3.9.1",
     "react-native-static-safe-area-insets": "^2.2.0",
+    "react-native-svg": "^13.9.0",
     "react-native-vector-icons": "^9.2.0",
     "react-native-vision-camera": "^2.15.4"
   },

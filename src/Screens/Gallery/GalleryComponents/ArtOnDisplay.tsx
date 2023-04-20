@@ -193,7 +193,6 @@ export function ArtOnDisplay({
     .numberOfTaps(2)
     .onStart(() => {
       const isCurrentZoomOne = currentZoomScale === 1;
-      console.log('triggered');
       if (isCurrentZoomOne) {
         setScrollEnabled(true);
         setCurrentZoomScale(3);

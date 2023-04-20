@@ -48,7 +48,6 @@ export function DartaRoute({
 }: {
   navigation: ProfileScreenNavigationProp;
 }) {
-  console.log('DartaRoute re-rendered');
   const {state, dispatch} = useContext(StoreContext);
 
   const {galleryOnDisplayId} = state;
@@ -184,7 +183,6 @@ export function DartaRoute({
   const wallHeight = 96;
 
   const toggleArtForward = () => {
-    console.log('triggered forward');
     const currentIndex = state.globalGallery[galleryId].galleryIndex;
     if (currentIndex + 1 >= numberOfArtworks) {
       dispatch({
@@ -201,7 +199,6 @@ export function DartaRoute({
     }
   };
   const toggleArtBackward = () => {
-    console.log('triggered backwards');
     const currentIndex = state.globalGallery[galleryId].galleryIndex;
     if (currentIndex === 0) {
       dispatch({
