@@ -445,7 +445,7 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
                 </GlobalText>
               )}
             </View>
-            <IconButton
+            {/* <IconButton
               icon={formData.phone.isEditing ? icons.minus : icons.cog}
               mode="outlined"
               size={buttonSizes.extraSmall}
@@ -458,7 +458,7 @@ export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
               testID="editName"
               animated
               onPress={() => handleButtonClick(SignedInActions.phone)}
-            />
+            /> */}
           </View>
         </View>
       </Animated.View>

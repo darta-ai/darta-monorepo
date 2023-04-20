@@ -1,15 +1,25 @@
-import React from 'react';
+import React, {useContext} from 'react';
 
 import {UserStack} from '../App';
 import {MILK} from '../assets/styles';
+import {TombstoneRoute} from '../src/Screens/Gallery/Tombstone/TombstoneRoute';
 import {UserHome} from '../src/Screens/User';
+import {UserSavedArtwork} from '../src/Screens/User/Screens/UserSavedArtwork';
 import {UserSettings} from '../src/Screens/User/Screens/UserSettings';
 import {UserRoutesEnum} from '../src/Screens/User/userRoutes.d';
+import {StoreContext} from '../src/State/Store';
 import {headerOptions} from './styles';
 
 function User() {
+  const {state} = useContext(StoreContext);
   const leftToRightAnimation = {
-    cardStyleInterpolator: ({current, layouts}) => {
+    cardStyleInterpolator: ({
+      current,
+      layouts,
+    }: {
+      current: any;
+      layouts: any;
+    }) => {
       return {
         cardStyle: {
           transform: [
@@ -41,14 +51,30 @@ function User() {
             ...leftToRightAnimation,
           }}
         />
+        <UserStack.Screen
+          name={UserRoutesEnum.userSavedArtwork}
+          component={UserSavedArtwork}
+          options={{
+            ...headerOptions,
+            headerTitle: 's a v e d',
+          }}
+        />
+        <UserStack.Screen
+          name={UserRoutesEnum.userInquiredArtwork}
+          component={UserSavedArtwork}
+          options={{
+            ...headerOptions,
+            headerTitle: 's a v e d',
+          }}
+        />
       </UserStack.Group>
 
       <UserStack.Group screenOptions={{presentation: 'modal'}}>
-        {/* <UserStack.Screen
-          name={GalleryNavigatorEnum.tombstone}
+        <UserStack.Screen
+          name={UserRoutesEnum.tombstone}
           component={TombstoneRoute}
           options={{...headerOptions, headerTitle: state.tombstoneTitle}}
-        /> */}
+        />
       </UserStack.Group>
     </UserStack.Navigator>
   );

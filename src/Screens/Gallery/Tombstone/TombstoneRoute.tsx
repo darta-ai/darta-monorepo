@@ -12,11 +12,11 @@ export function TombstoneRoute({route}: {route: any}) {
   const inquireAlert = () =>
     Alert.alert("We'll reach out", 'How would you like to get in contact?', [
       {
-        text: 'Email: fake.email@gmail.com',
+        text: `Email: ${state.userSettings.email}`,
         onPress: () => console.log('Ask me later pressed'),
       },
       {
-        text: 'Text: (415)612-3214',
+        text: `Text: ${state.userSettings.phone}`,
         onPress: () => console.log('Cancel Pressed'),
       },
       {
