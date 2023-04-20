@@ -14,8 +14,8 @@ import {
 
 import {MILK} from '../../../assets/styles';
 import {getButtonSizes} from '../../../functions/galleryFunctions';
+import {UserProfile} from './Screens/UserProfile';
 import {ExploreArtworks} from './UserComponents/ExploreArtworks';
-import {UserProfile} from './UserComponents/UserProfile';
 import {UserScreenSelector} from './UserComponents/UserScreenSelector';
 
 const HEADER_MAX_HEIGHT = hp('20%');
@@ -117,6 +117,7 @@ function UserHome({navigation}: {navigation: any}) {
           <ScrollView>
             <View>
               <UserScreenSelector
+                navigation={navigation}
                 headline="| y o u"
                 localButtonSizes={localButtonSizes}
               />

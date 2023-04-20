@@ -24,12 +24,11 @@ type ProfileScreenNavigationProp = StackNavigationProp<
 
 export function DartaHome({
   navigation,
-  route,
 }: {
   navigation: ProfileScreenNavigationProp;
-  route: any;
 }) {
-  const {galleryInfo} = route.params;
+  const {state, dispatch} = useContext(StoreContext);
+  const galleryInfo = state.artworkData;
   const personalGalleryId = Object.keys(galleryInfo).filter(
     (id: string) => galleryInfo[id].type === 'privateGallery',
   )[0];
@@ -48,7 +47,6 @@ export function DartaHome({
     [key: string]: LoadingStatus;
   };
 
-  const {state, dispatch} = useContext(StoreContext);
   const [isLoadingDict, setIsLoadingDict] = useState<LoadingStatusMap>(
     otherGalleryIds
       .concat(personalGalleryId)
@@ -59,7 +57,6 @@ export function DartaHome({
     if (!state.galleryOnDisplayId) {
       dispatch({
         type: ETypes.preLoadState,
-        galleryLandingPageData: galleryInfo,
       });
     }
     imagePrefetch([DEFAULT_Gallery_Image]);

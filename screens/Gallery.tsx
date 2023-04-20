@@ -1,20 +1,23 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 
 import {GalleryStack} from '../App';
-import * as globals from '../src/globalVariables';
 import {DartaHome} from '../src/Screens/Gallery/DartaHome';
 import {DartaRoute} from '../src/Screens/Gallery/DartaRoute';
 import {GalleryNavigatorEnum} from '../src/Screens/Gallery/galleryRoutes.d';
 import {TombstoneRoute} from '../src/Screens/Gallery/Tombstone/TombstoneRoute';
 import {createOpeningTransition} from '../src/Screens/openingTransition';
-import {StoreContext} from '../src/State/Store';
+import {ETypes, StoreContext} from '../src/State/Store';
 import {headerOptions} from './styles';
-
-const galleryInfo = globals.galleryDummyData;
 
 function GalleryStackScreen() {
   const openingTransition = createOpeningTransition();
-  const {state} = useContext(StoreContext);
+  const {state, dispatch} = useContext(StoreContext);
+
+  useEffect(() => {
+    dispatch({
+      type: ETypes.preLoadState,
+    });
+  }, [dispatch]);
 
   return (
     <GalleryStack.Navigator screenOptions={{headerTintColor: 'white'}}>
@@ -23,7 +26,6 @@ function GalleryStackScreen() {
           name={GalleryNavigatorEnum.galleryHome}
           component={DartaHome}
           options={{...headerOptions}}
-          initialParams={{galleryInfo}}
         />
         <GalleryStack.Screen
           name={GalleryNavigatorEnum.gallery}
