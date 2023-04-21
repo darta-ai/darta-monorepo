@@ -6,6 +6,7 @@ import {
 } from 'react-native-responsive-screen';
 
 import {MILK} from '../../../../assets/styles';
+import {SAFE_AREA_PADDING} from '../../../Camera/Constants';
 // import {GlobalText} from '../../../GlobalElements';
 import {StoreContext} from '../../../State/Store';
 import {ArtworkSelectorCard} from '../UserComponents/UserArtworkDisplay/ArtworkSelectorCard';
@@ -17,8 +18,8 @@ export const SSUserSavedArtwork = StyleSheet.create({
     justifyContent: 'space-around',
     alignSelf: 'center',
     width: wp('100%'),
-    height: hp('100%'),
-    marginBottom: hp('5%'),
+    height: hp('95%'),
+    paddingBottom: SAFE_AREA_PADDING.paddingBottom,
     backgroundColor: MILK,
   },
   flexContainer: {
@@ -31,7 +32,7 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
   const {state} = useContext(StoreContext);
 
   // TODO: fix this
-  const gallery = state.globalGallery.savedArtwork.fullDGallery;
+  const gallery = state.globalGallery.savedArtwork?.fullDGallery;
 
   const indexes = Array.from(Array(gallery.length).keys());
   const odds = indexes.filter(index => index % 2 !== 0);
@@ -42,6 +43,7 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
       <FlatList
         data={[0]}
         keyExtractor={item => item.toString()}
+        style={{marginBottom: hp('10%'), marginTop: hp('2.5%')}}
         renderItem={() => (
           <View style={SSUserSavedArtwork.flexContainer}>
             <View style={{flex: 1}}>

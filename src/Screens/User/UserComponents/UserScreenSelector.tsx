@@ -7,7 +7,7 @@ import {
 
 import {getImages} from '../../../../functions/galleryFunctions';
 import {GlobalText} from '../../../GlobalElements';
-import {ETypes, IState, StoreContext} from '../../../State/Store';
+import {ETypes, StoreContext} from '../../../State/Store';
 import {globalTextStyles} from '../../../styles';
 import {UserRoutesEnum} from '../userRoutes.d';
 import {GallerySelectorComponent} from './GallerySelectorComponent';
@@ -28,7 +28,7 @@ export function UserScreenSelector({
 
   const navigateToSaved = async () => {
     let fullImages;
-    if (state.globalGallery.savedArtwork.fullDGallery.length === 0) {
+    if (!state.globalGallery.savedArtwork.fullDGallery) {
       try {
         fullImages = await getImages(state.artworkData.savedArtwork.artworkIds);
         dispatch({

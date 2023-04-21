@@ -249,21 +249,12 @@ export function DartaRoute({
 
   const SSDartaRoute = StyleSheet.create({
     container: {
-      // borderWidth: 2,
       margin: state.isPortrait ? hp('0%') : hp('2%'),
       justifyContent: 'center',
       alignSelf: 'center',
       alignItems: 'center',
       marginTop: state.isPortrait ? hp('1%') : hp('17%'),
     },
-    // artOnDisplayContainer: {
-    // zIndex: 0,
-    // position: 'absolute',
-    // width: wp('95%'),
-    // height: hp('12%'),
-    // // top: hp('67%'),
-    // marginLeft: 1,
-    // },
     artOnDisplayContainer: {
       transform: state.isPortrait ? [{rotate: '0deg'}] : [{rotate: '90deg'}],
       backgroundColor: 'black',

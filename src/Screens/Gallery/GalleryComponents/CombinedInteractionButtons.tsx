@@ -41,7 +41,6 @@ function CombinedInteractionButtons({
     instructions?: boolean,
   ) => void;
 }) {
-  console.log('rendering CombinedInteractionButtons');
   const [ratingDisplayIcon, setRatingDisplayIcon] = useState<string>(
     icons.save,
   );
@@ -95,7 +94,6 @@ function CombinedInteractionButtons({
   // }, []);
 
   useEffect(() => {
-    console.log('triggered in use Effect2');
     modifyDisplayRating();
   }, [state]);
 
