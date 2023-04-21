@@ -44,9 +44,7 @@ type FormData = {
   uniqueId?: string;
 };
 
-export function UserSettingsSignedIn({uniqueId}: {uniqueId: string}) {
-  console.log(uniqueId);
-
+export function UserSettingsSignedIn() {
   const {state, dispatch} = useContext(StoreContext);
 
   const [showOnlyOne, setShowOnlyOne] = useState(false);
