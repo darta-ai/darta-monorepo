@@ -2,8 +2,8 @@ import React, {useContext} from 'react';
 
 import {UserStack} from '../App';
 import {MILK} from '../assets/styles';
-import {TombstoneRoute} from '../src/Screens/Gallery/Tombstone/TombstoneRoute';
 import {UserHome} from '../src/Screens/User';
+import {InspectSavedArtworkRoute} from '../src/Screens/User/Screens/InspectSavedArtworkRoute';
 import {UserSavedArtwork} from '../src/Screens/User/Screens/UserSavedArtwork';
 import {UserSettings} from '../src/Screens/User/Screens/UserSettings';
 import {UserRoutesEnum} from '../src/Screens/User/userRoutes.d';
@@ -72,7 +72,7 @@ function User() {
       <UserStack.Group screenOptions={{presentation: 'modal'}}>
         <UserStack.Screen
           name={UserRoutesEnum.tombstone}
-          component={TombstoneRoute}
+          component={InspectSavedArtworkRoute}
           options={{...headerOptions, headerTitle: state.tombstoneTitle}}
         />
       </UserStack.Group>
