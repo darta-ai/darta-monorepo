@@ -14,15 +14,15 @@ import {
 
 import {MILK} from '../../../assets/styles';
 import {getButtonSizes} from '../../../functions/galleryFunctions';
-import {UserProfile} from './Screens/UserProfile';
-import {ExploreArtworks} from './UserComponents/ExploreArtworks';
-import {UserScreenSelector} from './UserComponents/UserScreenSelector';
+import {ExploreArtworks} from '../../Components/User/ExploreArtworks';
+import {UserPersonalWorkSelector} from '../../Components/User/UserPersonalWorkSelector';
+import {UserProfile} from './UserProfile';
 
 const HEADER_MAX_HEIGHT = hp('20%');
 const HEADER_MIN_HEIGHT = hp('10%');
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
-const userHomeStyles = StyleSheet.create({
+export const userHomeStyles = StyleSheet.create({
   userHomeContainer: {
     backgroundColor: MILK,
     flex: 1,
@@ -76,7 +76,7 @@ const exploreData = {
   },
 };
 
-function UserHome({navigation}: {navigation: any}) {
+export function UserHome({navigation}: {navigation: any}) {
   const localButtonSizes = getButtonSizes(hp('100%'));
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -116,7 +116,7 @@ function UserHome({navigation}: {navigation: any}) {
         <View>
           <ScrollView>
             <View>
-              <UserScreenSelector
+              <UserPersonalWorkSelector
                 navigation={navigation}
                 headline="| y o u"
                 localButtonSizes={localButtonSizes}
@@ -134,5 +134,3 @@ function UserHome({navigation}: {navigation: any}) {
     </View>
   );
 }
-
-export default UserHome;
