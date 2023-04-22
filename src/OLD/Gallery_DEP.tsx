@@ -17,6 +17,12 @@ import {
   SnackTextEnum,
   UserArtworkRatings,
 } from '../../types';
+import {
+  ArtOnDisplay,
+  // ArtRatingButtons,
+  GalleryViewOptions,
+  // NavigateArt,
+} from '../Components/Gallery/index';
 import {GlobalText} from '../GlobalElements';
 import {
   duration,
@@ -24,12 +30,6 @@ import {
   galleryDimensionsPortrait,
   icons,
 } from '../globalVariables';
-import {
-  ArtOnDisplay,
-  // ArtRatingButtons,
-  GalleryViewOptions,
-  // NavigateArt,
-} from '../Screens/Gallery/GalleryComponents/index';
 import {galleryComponentStyles} from '../Screens/Gallery/galleryStyles';
 import {
   TombstoneLandscape,
