@@ -43,20 +43,22 @@ const iPhones = {
 
 // 69.39° horizontal field of view, 79.52° on the diagonal
 
-const calculateAngularFOV = (
+export const calculateAngularFOV = (
   horizontalDimensionOfSensor: number,
   focalLength: number,
 ): number =>
   2 * Math.tan(1) ** -1 * (horizontalDimensionOfSensor / (2 * focalLength));
 // where h is the horizontal dimension of the sensor and F is the focal length of the camera lens.
-const calculateFOV = (
+export const calculateFOV = (
   horizontalDimensionOfSensor: number,
   focalLength: number,
 ): number =>
   2 * Math.tan(1) ** -1 * ((horizontalDimensionOfSensor / 2) * focalLength);
 // where h is the horizontal dimension of the sensor and F is the focal length of the camera lens.
-const calculateDiameterFOV = (fov: number, magnification: number): number =>
-  fov / magnification;
+export const calculateDiameterFOV = (
+  fov: number,
+  magnification: number,
+): number => fov / magnification;
 
 // https://developer.apple.com/documentation/modelio/mdlcamera/1391726-fieldofview
 // The default field of view is 54 degrees,

@@ -1,18 +1,17 @@
 /* eslint-disable react/no-unstable-nested-components */
 import 'react-native-gesture-handler';
+
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import {Provider as PaperProvider} from 'react-native-paper';
-import {StoreProvider} from './components/Gallery/galleryStore';
-// import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {footerOptions, footerColors} from './screens/styles';
-// import DeviceInfo from 'react-native-device-info';
 import {getUniqueId} from 'react-native-device-info';
+import {Provider as PaperProvider} from 'react-native-paper';
 
-import TabBarIcon from './components/GlobalElements/TabBarIcon';
-import {GalleryStackScreen, User} from './screens';
+import {footerColors, footerOptions} from './screens/styles';
+import TabBarIcon from './src/GlobalElements/TabBarIcon';
+import {GalleryStackNavigator, UserStackNavigator} from './src/Navigators';
+import {StoreProvider} from './src/State/Store';
 
 export const GalleryStack = createStackNavigator();
 export const UserStack = createStackNavigator();
@@ -25,14 +24,13 @@ export const deviceInformation = async () => {
 
 function App() {
   return (
-    // <SafeAreaProvider>
     <PaperProvider>
       <StoreProvider>
         <NavigationContainer>
           <Tab.Navigator screenOptions={{headerShown: false}}>
             <Tab.Screen
               name="d | a r t | ai"
-              component={GalleryStackScreen}
+              component={GalleryStackNavigator}
               options={{
                 tabBarIcon: ({focused}) => (
                   <TabBarIcon
@@ -46,7 +44,7 @@ function App() {
             />
             <Tab.Screen
               name="m e"
-              component={User}
+              component={UserStackNavigator}
               options={{
                 tabBarIcon: ({focused}) => (
                   <TabBarIcon
@@ -62,7 +60,6 @@ function App() {
         </NavigationContainer>
       </StoreProvider>
     </PaperProvider>
-    // </SafeAreaProvider>
   );
 }
 
