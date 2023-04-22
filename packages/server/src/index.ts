@@ -5,12 +5,11 @@ const app = express();
 // Routes
 
 // Routes for User
-    // Get user by id => return user object
-
+// Get user by id => return user object
 
 app.get('/', async (req, res) => {
-  res.json({ hello: 'world' });
-}); 
+  res.json({hello: 'world'});
+});
 
 // Start the server
 const PORT = process.env.PORT || 1160;
