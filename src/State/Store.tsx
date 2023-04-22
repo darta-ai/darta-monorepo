@@ -37,8 +37,15 @@ const rawDataUserData: PatUserData = {
   phone: '(123) 123-4567',
 };
 
-const fetchRawUserData = () => {
-  return rawDataUserData;
+// here is the test.
+
+const fetchRawUserData = async () => {
+  try {
+    const result: PatUserData = await fetch(
+      'http://localhost:1160/userDetails',
+    );
+    return result;
+  } catch (e) {}
 };
 
 export type PatUserSavedArtworkData = {
