@@ -7,15 +7,15 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../assets/styles';
 import {getImages, imagePrefetch} from '../../../functions/galleryFunctions';
 import {DataT} from '../../../types';
+import {GalleryPreview} from '../../Components/Gallery';
 import {GlobalText} from '../../GlobalElements/index';
 import {days, DEFAULT_Gallery_Image, today} from '../../globalVariables';
-import {ETypes, StoreContext} from '../../State/Store';
-import {globalTextStyles} from '../../styles';
-import {GalleryPreview} from './GalleryComponents';
 import {
   GalleryNavigatorEnum,
   GalleryRootStackParamList,
-} from './galleryRoutes.d';
+} from '../../Navigators/Routes/galleryRoutes.d';
+import {ETypes, StoreContext} from '../../State/Store';
+import {globalTextStyles} from '../../styles';
 
 type ProfileScreenNavigationProp = StackNavigationProp<
   GalleryRootStackParamList,
