@@ -1,0 +1,9 @@
+{
+  "name": "server",
+  "version": "0.1.0",
+  "main": "build/index.js",
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "typescript": "^5.0.4"
+  }
+}
