@@ -6,7 +6,8 @@
         "sourceMap": true,
         "strict": true,
         "target": "es2019",
-        "lib": ["es2019", "dom"]
+        "lib": ["es2019", "dom"],
+        "esModuleInterop" : true,
     },
     "include": ["src/**/*.ts"],
     "exclude": ["node_modules"]
