@@ -132,24 +132,30 @@ export function SavedArtOnDisplay({
     };
   }
 
+  const doubleTapToZoom = () => {
+    const isCurrentZoomOne = currentZoomScale === 1;
+    if (isCurrentZoomOne) {
+      setScrollEnabled(true);
+      setCurrentZoomScale(3);
+      scrollViewRef.current?.scrollTo({
+        x: backgroundImageDimensionsPixels.width - 0.25 * artWidthPixels,
+        y: backgroundImageDimensionsPixels.height - 0.25 * artHeightPixels,
+        animated: false,
+      });
+    } else {
+      setCurrentZoomScale(1);
+      setScrollEnabled(false);
+      scrollViewRef.current?.scrollToEnd({animated: false});
+    }
+  };
+
   // const doubleTap = Gesture.Tap()
   //   .numberOfTaps(2)
   //   .onStart(() => {
-  //     const isCurrentZoomOne = currentZoomScale === 1;
-  //     if (isCurrentZoomOne) {
-  //       setScrollEnabled(true);
-  //       setCurrentZoomScale(3);
-  //       scrollViewRef.current?.scrollTo({
-  //         x: backgroundImageDimensionsPixels.width - 0.25 * artWidthPixels,
-  //         y: backgroundImageDimensionsPixels.height - 0.25 * artHeightPixels,
-  //         animated: false,
-  //       });
-  //     } else {
-  //       setCurrentZoomScale(1);
-  //       setScrollEnabled(false);
-  //       scrollViewRef.current?.scrollToEnd({animated: false});
-  //     }
+  //     doubleTapToZoom();
   //   });
+
+  // const composed = Gesture.Race(dragGesture, longPressGesture);
 
   useEffect(() => {
     const isCurrentZoomOne = currentZoomScale === 1;
@@ -197,6 +203,7 @@ export function SavedArtOnDisplay({
         onScroll={({nativeEvent: {zoomScale}}) => {
           setCurrentZoomScale(zoomScale);
         }}
+        onMagicTap={() => doubleTapToZoom()}
         zoomScale={currentZoomScale}
         scrollEventThrottle={7}
         maximumZoomScale={6}

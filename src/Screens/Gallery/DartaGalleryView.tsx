@@ -1,8 +1,11 @@
 // (galleryId: string, currentIndex?: number)
+// eslint-disable-next-line import/no-extraneous-dependencies
+import Slider from '@react-native-community/slider';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Animated, ImageSourcePropType, StyleSheet, View} from 'react-native';
 import {OrientationLocker, PORTRAIT} from 'react-native-orientation-locker';
+import Bar from 'react-native-progress';
 // import { Button } from 'react-native-paper';
 import ProgressBar from 'react-native-progress/Bar';
 import {
@@ -11,6 +14,7 @@ import {
 } from 'react-native-responsive-screen';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 
+import {MILK, PRIMARY_BLUE} from '../../../assets/styles';
 import {getButtonSizes} from '../../../functions/galleryFunctions';
 import {
   DataT,

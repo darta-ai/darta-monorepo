@@ -27,7 +27,6 @@ function GalleryViewOptions({
   toggleButtonView: (openIdentifier: OpenStateEnum) => void;
   flipOrientation: () => void;
 }) {
-  console.log('rendering GalleryViewOptions');
   const rotateScreenContainerStyle = isPortrait
     ? viewOptionsStyles.rotateScreenContainerPortrait
     : viewOptionsStyles.rotateScreenContainerLandscape;

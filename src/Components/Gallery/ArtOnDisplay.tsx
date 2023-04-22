@@ -7,6 +7,8 @@ import React, {
 } from 'react';
 import {
   ActivityIndicator,
+  Animated,
+  FlatList,
   Image,
   ImageBackground,
   ImageSourcePropType,
@@ -15,11 +17,11 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 import {DataT, OpenStateEnum, RatingEnum} from '../../../types';
 import {galleryStyles} from '../../Screens/Gallery/galleryStyles';
@@ -60,8 +62,8 @@ export function ArtOnDisplay({
     touchY: 0,
   });
   const [scrollEnabled, setScrollEnabled] = useState(false);
-
   const scrollViewRef = useRef<ScrollView | null>(null);
+  const imageRef = useRef<ScrollView | null>(null);
 
   enum ArtRatingGesture {
     swipeUp = 'swipeUp',
@@ -114,13 +116,13 @@ export function ArtOnDisplay({
       if (touchX && touchY) {
         if (isPortrait) {
           // Y axis is to prevent the pinch to zoom resulting in a touch
-          if (pageX - touchX > wp('25%') && pageY - touchY < hp('25%')) {
+          if (pageX - touchX > wp('30%') && pageY - touchY < hp('25%')) {
             toggleArtBackward();
-          } else if (touchX - pageX > wp('25%') && pageY - touchY < hp('25%')) {
+          } else if (touchX - pageX > wp('30%') && pageY - touchY < hp('25%')) {
             toggleArtForward();
-          } else if (pageX - touchX < wp('10%') && touchY - pageY > hp('10%')) {
+          } else if (pageX - touchX < wp('15%') && touchY - pageY > hp('10%')) {
             handleArtRatingGesture(ArtRatingGesture.swipeUp);
-          } else if (pageX - touchX < wp('10%') && pageY - touchY > hp('10%')) {
+          } else if (pageX - touchX < wp('15%') && pageY - touchY > hp('10%')) {
             handleArtRatingGesture(ArtRatingGesture.swipeDown);
           }
         } else {
@@ -189,31 +191,40 @@ export function ArtOnDisplay({
     };
   }
 
-  const doubleTap = Gesture.Tap()
-    .numberOfTaps(2)
-    .onStart(() => {
-      const isCurrentZoomOne = currentZoomScale === 1;
-      if (isCurrentZoomOne) {
-        setScrollEnabled(true);
-        setCurrentZoomScale(3);
-        scrollViewRef.current?.scrollTo({
-          x: backgroundImageDimensionsPixels.width - 0.25 * artWidthPixels,
-          y: backgroundImageDimensionsPixels.height - 0.25 * artHeightPixels,
-          animated: false,
-        });
-      } else {
-        setCurrentZoomScale(1);
-        setScrollEnabled(false);
-        scrollViewRef.current?.scrollToEnd({animated: false});
-      }
-    });
+  // const doubleTapToZoom = () => {
+  //   'worklet';
+
+  //   console.log('fired');
+  //   const isCurrentZoomOne = currentZoomScale === 1;
+  //   if (isCurrentZoomOne) {
+  //     setScrollEnabled(true);
+  //     setCurrentZoomScale(3);
+  //     scrollViewRef.current?.scrollTo({
+  //       x: backgroundImageDimensionsPixels.width - 0.25 * artWidthPixels,
+  //       y: backgroundImageDimensionsPixels.height - 0.25 * artHeightPixels,
+  //       animated: false,
+  //     });
+  //   } else {
+  //     setCurrentZoomScale(1);
+  //     setScrollEnabled(false);
+  //     scrollViewRef.current?.scrollToEnd({animated: false});
+  //   }
+  // };
+
+  // const doubleTap = Gesture.Tap()
+  //   .numberOfTaps(2)
+  //   .onStart(() => {
+  //     console.log('fired doubletap');
+  //     return doubleTapToZoom();
+  //   });
 
   useEffect(() => {
     const isCurrentZoomOne = currentZoomScale === 1;
     if (isCurrentZoomOne) {
-      return setScrollEnabled(false);
+      setScrollEnabled(false);
+    } else {
+      setScrollEnabled(true);
     }
-    return setScrollEnabled(true);
   }, [currentZoomScale]);
 
   const galleryStylesPortrait = StyleSheet.create({
@@ -241,9 +252,14 @@ export function ArtOnDisplay({
       top: isPortrait ? hp('35%') : hp('20%'),
       justifyContent: 'center',
     },
+    contentContainerStyle: {
+      flexGrow: 1,
+      justifyContent: 'center',
+    },
   });
+
   return (
-    <ScrollView
+    <Animated.ScrollView
       ref={scrollViewRef}
       scrollEnabled={scrollEnabled}
       onScroll={({nativeEvent: {zoomScale}}) => {
@@ -254,7 +270,7 @@ export function ArtOnDisplay({
       maximumZoomScale={6}
       minimumZoomScale={1}
       scrollToOverflowEnabled={false}
-      contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
+      contentContainerStyle={galleryStylesPortrait.contentContainerStyle}
       centerContent
       horizontal
       pinchGestureEnabled
@@ -268,17 +284,17 @@ export function ArtOnDisplay({
           onTouchEnd={({nativeEvent: {pageX, pageY}}) => {
             swipeArtwork(pageX, pageY);
           }}>
-          <View>
+          <Animated.View>
             <View style={galleryStylesPortrait.screenContainer}>
-              {/* <GestureDetector gesture={doubleTap}> */}
               <View style={galleryStylesPortrait.artContainer}>
                 <View style={galleryStyles.frameStyle}>
-                  {/* checked out */}
                   {artImage ? (
-                    <Image
-                      source={{uri: artImage}}
-                      style={galleryStylesPortrait.artwork}
-                    />
+                    <ScrollView ref={imageRef}>
+                      <Image
+                        source={{uri: artImage}}
+                        style={galleryStylesPortrait.artwork}
+                      />
+                    </ScrollView>
                   ) : (
                     <ActivityIndicator
                       style={galleryStylesPortrait.activityIndicator}
@@ -286,11 +302,10 @@ export function ArtOnDisplay({
                   )}
                 </View>
               </View>
-              {/* </GestureDetector> */}
             </View>
-          </View>
+          </Animated.View>
         </Pressable>
       </ImageBackground>
-    </ScrollView>
+    </Animated.ScrollView>
   );
 }

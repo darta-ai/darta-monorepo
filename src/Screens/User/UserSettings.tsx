@@ -5,7 +5,6 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-// import {deviceInformation} from '../../../App';
 import {UserSettingsSignedIn} from '../../Components/User/UserSettings/SignedInUserSettings';
 
 export const SSUserSettings = StyleSheet.create({
@@ -19,16 +18,6 @@ export const SSUserSettings = StyleSheet.create({
 });
 
 export function UserSettings() {
-  // can delete - for uuid settings
-  // const [uniqueId, setUniqueId] = useState<string>('');
-  // useEffect(() => {
-  //   const getDeviceInformation = async () => {
-  //     const {uniqueId} = await deviceInformation();
-  //     setUniqueId(uniqueId);
-  //   };
-  //   getDeviceInformation();
-  // }, []);
-
   return (
     <View style={SSUserSettings.container}>
       <View>

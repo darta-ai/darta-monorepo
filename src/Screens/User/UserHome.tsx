@@ -14,9 +14,11 @@ import {
 
 import {MILK} from '../../../assets/styles';
 import {getButtonSizes} from '../../../functions/galleryFunctions';
-import {ExploreArtworks} from '../../Components/User/ExploreArtworks';
-import {UserPersonalWorkSelector} from '../../Components/User/UserPersonalWorkSelector';
-import {UserProfile} from './UserProfile';
+import {
+  ExploreArtworks,
+  UserPersonalWorkSelector,
+  UserProfileWidget,
+} from '../../Components/User/index';
 
 const HEADER_MAX_HEIGHT = hp('20%');
 const HEADER_MIN_HEIGHT = hp('10%');
@@ -106,7 +108,7 @@ export function UserHome({navigation}: {navigation: any}) {
     <View style={userHomeStyles.userHomeContainer}>
       <Animated.View
         style={[userHomeStyles.header, {height: headerHeightInterpolate}]}>
-        <UserProfile
+        <UserProfileWidget
           navigation={navigation}
           imageWidthInterpolate={imageWidthInterpolate}
           localButtonSizes={localButtonSizes}

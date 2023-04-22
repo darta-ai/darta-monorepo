@@ -8,7 +8,6 @@ import {
 import {MILK} from '../../../assets/styles';
 import {SAFE_AREA_PADDING} from '../../Camera/Constants';
 import {ArtworkSelectorCard} from '../../Components/User/UserArtworkDisplay/ArtworkSelectorCard';
-// import {GlobalText} from '../../../GlobalElements';
 import {StoreContext} from '../../State/Store';
 
 export const SSUserSavedArtwork = StyleSheet.create({

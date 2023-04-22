@@ -15,9 +15,9 @@ import {
   UserRoutesEnum,
   UserRouteStackParamList,
 } from '../../Navigators/Routes/userRoutes.d';
+import {galleryInteractionStyles} from '../../Screens/Gallery/galleryStyles';
 import {StoreContext} from '../../State/Store';
 import {globalTextStyles} from '../../styles';
-import {galleryInteractionStyles} from '../Gallery/galleryStyles';
 
 type UserScreenNavigationProp = StackNavigationProp<
   UserRouteStackParamList,
@@ -33,16 +33,7 @@ export type PatUserData = {
   uniqueId?: string;
 };
 
-// const rawDataUserData: PatUserData = {
-//   profilePicture:
-//     'https://www.shutterstock.com/image-photo/closeup-photo-amazing-short-hairdo-260nw-1617540484.jpg',
-//   userName: 'user name 10000',
-//   legalName: 'firstName lastName',
-//   email: 'email@gmail.com',
-//   phone: '(123) 123-4567',
-// };
-
-export function UserProfile({
+export function UserProfileWidget({
   localButtonSizes,
   imageWidthInterpolate,
   navigation,
