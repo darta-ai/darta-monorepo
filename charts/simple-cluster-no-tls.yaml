@@ -1,0 +1,13 @@
+---
+apiVersion: database.arangodb.com/v1
+kind: ArangoDeployment
+metadata:
+  name: simple-cluster-no-tls
+  namespace: "arango-resources"
+spec:
+  mode: Cluster
+  image: arangodb/arangodb:3.10.5
+  tls:
+    caSecretName: None
+  nodeSelector:
+    nodePool: cluster
