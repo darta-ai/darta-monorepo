@@ -10,6 +10,10 @@ const app = express();
 // get the data that is their saved work
 // get the data that is their inquired work
 
+app.get('/', async (req, res) => {
+  res.send('Welcome to Darta!');
+})
+
 app.get('/user', async (req, res) => {
   res.json({
     profilePicture:
@@ -22,10 +26,10 @@ app.get('/user', async (req, res) => {
 });
 
 app.post('/user', async (req, res) => {
-    res.json({
-        profilePicture:
-    )}
-)
+  res.json({
+    profilePicture: 'nothingtoseehere.jpeg',
+  })
+})
 
 // Routes for interactions
 // create edge between user and artwork
