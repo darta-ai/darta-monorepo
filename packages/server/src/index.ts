@@ -1,4 +1,5 @@
 import express from 'express';
+import './arango';
 
 const app = express();
 
