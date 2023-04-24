@@ -21,9 +21,12 @@ app.get('/user', async (req, res) => {
   });
 });
 
+//app.post user/saves
+//app.post user/pat/pretty-artwork-today
+
 app.post('/user', async (req, res) => {
     res.json({
-        profilePicture:
+        profilePicture: 'test'
     )}
 )
 
