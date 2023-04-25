@@ -1,6 +1,12 @@
 // (galleryId: string, currentIndex?: number)
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {Animated, ImageSourcePropType, StyleSheet, View} from 'react-native';
 import {OrientationLocker, PORTRAIT} from 'react-native-orientation-locker';
 // import { Button } from 'react-native-paper';
@@ -198,7 +204,7 @@ export function DartaGalleryView({
       });
     }
   };
-  const toggleArtBackward = () => {
+  const toggleArtBackward = useCallback(() => {
     const currentIndex = state.globalGallery[galleryId].galleryIndex;
     if (currentIndex === 0) {
       dispatch({
@@ -213,7 +219,7 @@ export function DartaGalleryView({
         currentIndex: currentIndex - 1,
       });
     }
-  };
+  }, [dispatch, galleryId, state.globalGallery]);
 
   const toggleArtTombstone = () => {
     dispatch({
