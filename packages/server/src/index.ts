@@ -1,3 +1,5 @@
+import './arango';
+
 import express from 'express';
 
 const app = express();
@@ -10,6 +12,10 @@ const app = express();
 // get the data that is their saved work
 // get the data that is their inquired work
 
+app.get('/', async (req, res) => {
+  res.send('Welcome to Darta!');
+});
+
 app.get('/user', async (req, res) => {
   res.json({
     profilePicture:
@@ -21,14 +27,14 @@ app.get('/user', async (req, res) => {
   });
 });
 
-//app.post user/saves
-//app.post user/pat/pretty-artwork-today
+// app.post user/saves
+// app.post user/pat/pretty-artwork-today
 
 app.post('/user', async (req, res) => {
-    res.json({
-        profilePicture: 'test'
-    )}
-)
+  res.json({
+    profilePicture: 'nothingtoseehere.jpeg',
+  });
+});
 
 // Routes for interactions
 // create edge between user and artwork

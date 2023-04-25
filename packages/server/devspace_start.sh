@@ -1,16 +1,12 @@
 #!/bin/bash
 set +e  # Continue on errors
 
-export NODE_ENV=development
-if [ -f "yarn.lock" ]; then
-   echo "Installing Yarn Dependencies"
-   yarn
-else 
-   if [ -f "package.json" ]; then
-      echo "Installing NPM Dependencies"
-      npm install
-   fi
-fi
+# export NODE_ENV=development
+
+echo "Installing Yarn Dependencies"
+ln -s ../../yarn.lock yarn.lock
+yarn
+rm yarn.lock
 
 COLOR_BLUE="\033[0;94m"
 COLOR_GREEN="\033[0;92m"
