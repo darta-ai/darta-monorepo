@@ -37,6 +37,7 @@ export const icons: Icons = {
   cog: 'cog-outline',
   thumbsUpDown: 'thumbs-up-down-outline',
   saveSettings: 'content-save',
+  brokenHeart: 'heart-broken',
 };
 
 // export const getButtonSize = (wp:number, size: string) => {
@@ -103,15 +104,15 @@ export const images2 = [
   '55f2ffcc72616966bd0000f4',
   '55f87d667261691783000109',
   '55f87d697261690f2d0000ee',
-  '55f87d6a72616905100000f0',
-  '55f87d6b72616950010000bc',
-  '5628e6ec72616978130004d6',
-  '563b882772616952c8000501',
-  '5650bf66258faf48f300057f',
-  '565de2309acc8a7721000086',
-  '56e8952f9c18db74180001a2',
-  '57609fda139b2169c700028d',
-  '5762cd33cd530e65e9000487',
+  // '55f87d6a72616905100000f0',
+  // '55f87d6b72616950010000bc',
+  // '5628e6ec72616978130004d6',
+  // '563b882772616952c8000501',
+  // '5650bf66258faf48f300057f',
+  // '565de2309acc8a7721000086',
+  // '56e8952f9c18db74180001a2',
+  // '57609fda139b2169c700028d',
+  // '5762cd33cd530e65e9000487',
 ];
 
 export const image2Preview = {

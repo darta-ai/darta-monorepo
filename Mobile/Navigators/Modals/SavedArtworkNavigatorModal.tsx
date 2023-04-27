@@ -17,7 +17,7 @@ export function SavedArtworkNavigatorModal({route}: {route: any}) {
     <Tab.Navigator
       style={{backgroundColor: MILK, height: hp('80%')}}
       screenOptions={{
-        tabBarLabelStyle: {fontSize: 12, fontFamily: 'Avenir Next'},
+        tabBarLabelStyle: {fontSize: 11, fontFamily: 'Avenir Next'},
         tabBarItemStyle: {width: wp('50%')},
         tabBarStyle: {backgroundColor: MILK},
       }}>
