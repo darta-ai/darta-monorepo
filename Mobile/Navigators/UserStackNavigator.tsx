@@ -74,7 +74,7 @@ export function UserStackNavigator() {
 
       <UserStack.Group screenOptions={{presentation: 'modal'}}>
         <UserStack.Screen
-          name={UserRoutesEnum.tombstone}
+          name={UserRoutesEnum.SavedArtworkModal}
           component={SavedArtworkNavigatorModal}
           options={{...headerOptions, headerTitle: state.tombstoneTitle}}
         />

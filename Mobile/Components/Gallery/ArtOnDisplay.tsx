@@ -17,9 +17,10 @@ import {
 
 import {DataT, OpenStateEnum, RatingEnum} from '../../../types';
 import {galleryStyles} from '../../Screens/Gallery/galleryStyles';
-import {StoreContext} from '../../State/Store';
+import {ETypes, StoreContext} from '../../State/Store';
 
 export function ArtOnDisplay({
+  artOnDisplay,
   artImage,
   backgroundImage,
   backgroundImageDimensionsPixels,
@@ -32,6 +33,7 @@ export function ArtOnDisplay({
   toggleArtForward,
   toggleArtBackward,
 }: {
+  artOnDisplay: DataT;
   artImage: string | undefined;
   backgroundImage: ImageSourcePropType;
   backgroundImageDimensionsPixels: any;
@@ -44,7 +46,7 @@ export function ArtOnDisplay({
   toggleArtForward: () => void;
   toggleArtBackward: () => void;
 }) {
-  const {state} = useContext(StoreContext);
+  const {state, dispatch} = useContext(StoreContext);
 
   const [isPanActionEnabled, setisPanActionEnabled] = useState(true);
 
@@ -57,12 +59,18 @@ export function ArtOnDisplay({
 
   const handleArtRatingGesture = useCallback(
     (gesture: ArtRatingGesture) => {
+      console.log('!!!!!');
       const {artworkOnDisplayId, userArtworkRatings} = state;
 
       const currentArtworkRating = userArtworkRatings[artworkOnDisplayId];
       switch (gesture) {
         case ArtRatingGesture.swipeUp:
           if (currentArtworkRating[RatingEnum.like]) {
+            dispatch({
+              type: ETypes.setSaveArtwork,
+              artOnDisplay,
+              saveWork: true,
+            });
             rateArtwork(RatingEnum.save, OpenStateEnum.swiped);
             break;
           } else if (currentArtworkRating[RatingEnum.dislike]) {
@@ -77,6 +85,11 @@ export function ArtOnDisplay({
         case ArtRatingGesture.swipeDown:
           if (currentArtworkRating[RatingEnum.save]) {
             rateArtwork(RatingEnum.like, OpenStateEnum.swiped);
+            dispatch({
+              type: ETypes.setSaveArtwork,
+              artOnDisplay,
+              saveWork: false,
+            });
             break;
           } else if (currentArtworkRating[RatingEnum.like]) {
             rateArtwork(RatingEnum.unrated, OpenStateEnum.swiped);
@@ -130,16 +143,13 @@ export function ArtOnDisplay({
     };
   }
 
-  const handleDoubleTap = (event: any) => {
+  const handleDoubleTap = () => {
     if (isPanActionEnabled) {
       setisPanActionEnabled(false);
       const targetScale = 3;
 
       // Calculate the translation values
       setCurrentZoomScale(targetScale);
-      const ratioX = event.x * targetScale;
-      const ratioY = event.y * targetScale;
-      console.log({x: event.x, y: event.y, ratioX, ratioY});
 
       scrollViewRef.current?.scrollTo({
         x: wp('90%'),
@@ -206,9 +216,8 @@ export function ArtOnDisplay({
     .onEnd((event, success) => {
       'worklet';
 
-      console.log('!!!', {event});
       if (success) {
-        runOnJS(handleDoubleTap)(event);
+        runOnJS(handleDoubleTap)();
       }
       return success;
     });

@@ -46,7 +46,10 @@ export function UserPersonalWorkSelector({
       ...showActivityIndicator,
       [UserScreenSelectorEnum.savedArtwork]: true,
     });
-    if (!state.globalGallery.savedArtwork.fullDGallery) {
+    if (
+      !state.globalGallery.savedArtwork?.isLoaded ||
+      !state.artworkData.savedArtwork?.fullDGallery
+    ) {
       try {
         fullImages = await getImages(state.artworkData.savedArtwork.artworkIds);
         dispatch({
@@ -58,6 +61,7 @@ export function UserPersonalWorkSelector({
         Alert.alert('Unable to load saved artwork 🧑‍💻🤦');
       }
     }
+
     setShowActivityIndicator({
       ...showActivityIndicator,
       [UserScreenSelectorEnum.savedArtwork]: false,

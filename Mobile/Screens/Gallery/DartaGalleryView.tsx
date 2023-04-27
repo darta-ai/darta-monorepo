@@ -66,7 +66,9 @@ export function DartaGalleryView({
 
   const {userArtworkRatings} = state;
 
-  const [fullGallery] = useState<DataT[]>(fullDGallery);
+  const arrayGallery: DataT[] = Object.values(fullDGallery);
+
+  const [fullGallery] = useState<DataT[]>(arrayGallery);
 
   const [artOnDisplay, setArtOnDisplay] = useState<DataT | undefined>(
     fullGallery.at(state.globalGallery[galleryId].galleryIndex),
@@ -290,7 +292,6 @@ export function DartaGalleryView({
             screenRotation(orientation);
           }}
         />
-        {/* <View style={SSDartaGalleryView.container} /> */}
         <View
           style={[
             backgroundContainerDimensionsPixels,
@@ -302,6 +303,7 @@ export function DartaGalleryView({
             backgroundImageDimensionsPixels={
               backgroundContainerDimensionsPixels
             }
+            artOnDisplay={artOnDisplay!}
             currentZoomScale={currentZoomScale}
             dimensionsInches={artOnDisplay?.dimensionsInches}
             isPortrait={state.isPortrait}
@@ -312,7 +314,7 @@ export function DartaGalleryView({
             toggleArtBackward={toggleArtBackward}
           />
 
-          <View style={[interactionContainer]}>
+          <View style={interactionContainer}>
             <View style={SSDartaGalleryView.interactionButtonsContainer}>
               <CombinedInteractionButtons
                 localButtonSizes={localButtonSizes}
@@ -324,6 +326,7 @@ export function DartaGalleryView({
                 toggleButtonView={toggleButtonView}
               />
             </View>
+
             <View style={SSDartaGalleryView.progressBarContainer}>
               <ProgressBar
                 progress={
