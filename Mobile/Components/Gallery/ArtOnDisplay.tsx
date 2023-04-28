@@ -59,7 +59,6 @@ export function ArtOnDisplay({
 
   const handleArtRatingGesture = useCallback(
     (gesture: ArtRatingGesture) => {
-      console.log('!!!!!');
       const {artworkOnDisplayId, userArtworkRatings} = state;
 
       const currentArtworkRating = userArtworkRatings[artworkOnDisplayId];
@@ -164,7 +163,7 @@ export function ArtOnDisplay({
   };
 
   const panGestureRight = Gesture.Pan()
-    .activeOffsetX(20)
+    .activeOffsetX(wp('20%'))
     .onStart(() => {
       if (!isPanActionEnabled) {
         return;
@@ -175,7 +174,7 @@ export function ArtOnDisplay({
     });
 
   const panGestureLeft = Gesture.Pan()
-    .activeOffsetX(-20)
+    .activeOffsetX(-wp('20%'))
     .onStart(() => {
       if (!isPanActionEnabled) {
         return;
@@ -187,7 +186,7 @@ export function ArtOnDisplay({
     });
 
   const panGestureUp = Gesture.Pan()
-    .activeOffsetY(20)
+    .activeOffsetY(wp('20%'))
     .onStart(() => {
       if (!isPanActionEnabled) {
         return;
@@ -199,7 +198,7 @@ export function ArtOnDisplay({
     });
 
   const panGestureDown = Gesture.Pan()
-    .activeOffsetY(-10)
+    .activeOffsetY(-wp('20%'))
     .onStart(async () => {
       if (!isPanActionEnabled) {
         return;

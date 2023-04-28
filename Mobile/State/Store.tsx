@@ -45,7 +45,6 @@ const fetchRawUserData = async (): Promise<PatUserData> => {
   try {
     const result = await fetch('http://localhost:1160/user');
     data = await result.json();
-    console.log(data);
   } catch (e) {}
   return data;
 };
@@ -310,10 +309,6 @@ const reducer = (state: IState, action: IAction): IState => {
           ...loadedDGallery,
           ...fullGallery,
         };
-        console.log('!!!!!', {
-          tempGallery: tempGallery[galleryId].fullDGallery,
-          loadedDGallery: Object.keys(fullGallery),
-        });
       } else {
         fullGallery = loadedDGallery;
       }
@@ -364,7 +359,6 @@ const reducer = (state: IState, action: IAction): IState => {
             ...artOnDisplay,
             savedAt: new Date(),
           };
-          console.log(tempGallery.savedArtwork.fullDGallery);
         } else {
           tempGallery.savedArtwork = {
             fullDGallery: {
@@ -383,6 +377,13 @@ const reducer = (state: IState, action: IAction): IState => {
         tempGallery = tempState.globalGallery;
         delete tempGallery.savedArtwork.fullDGallery[artOnDisplay.id];
         console.log(Object.keys(tempGallery.savedArtwork.fullDGallery));
+        if (state.userArtworkRatings[artworkId]) {
+          if (tempGallery.numberOfRatedWorks > 0) {
+            tempGallery.numberOfRatedWorks -= 1;
+          }
+
+          tempState.userArtworkRatings[artworkId] = {};
+        }
         return {
           ...tempState,
           ...tempGallery,
