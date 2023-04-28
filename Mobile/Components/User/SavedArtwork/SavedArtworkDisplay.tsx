@@ -1,4 +1,3 @@
-import {NavigationAction} from '@react-navigation/core';
 import React, {useContext, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
@@ -42,12 +41,12 @@ export function SavedArtworkDisplay({
   });
 
   const [showActivityIndicator, setShowActivityIndicator] =
-    useState<boolean>(true);
+    useState<boolean>(false);
 
   useEffect(() => {
     setTimeout(() => {
       setShowActivityIndicator(false);
-    }, 1250);
+    }, 1000);
   }, []);
 
   const [currentZoomScale, setCurrentZoomScale] = useState<number>(0);
@@ -58,7 +57,7 @@ export function SavedArtworkDisplay({
       artOnDisplay,
       saveWork: false,
     });
-    navigation.goBack();
+    navigation.navigate(UserRoutesEnum.userSavedArtwork);
   };
 
   const confirmUnsaveAlert = () =>
@@ -70,7 +69,6 @@ export function SavedArtworkDisplay({
       },
       {
         text: 'No, do not delete',
-        onPress: () => console.log('k'),
       },
     ]);
 
