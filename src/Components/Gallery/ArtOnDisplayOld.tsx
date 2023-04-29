@@ -1,15 +1,21 @@
-import React, {useCallback, useContext, useRef, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   ActivityIndicator,
   Image,
   ImageBackground,
   ImageSourcePropType,
+  Pressable,
   ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
-import {runOnJS} from 'react-native-reanimated';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -45,8 +51,15 @@ export function ArtOnDisplay({
   toggleArtBackward: () => void;
 }) {
   const {state} = useContext(StoreContext);
-
-  const [isPanActionEnabled, setisPanActionEnabled] = useState(true);
+  type SetTouch = {
+    touchX: number;
+    touchY: number;
+  };
+  const [touchCoordinates, setTouchCoordinates] = useState<SetTouch>({
+    touchX: 0,
+    touchY: 0,
+  });
+  const [scrollEnabled, setScrollEnabled] = useState(false);
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -92,6 +105,52 @@ export function ArtOnDisplay({
     [state, ArtRatingGesture.swipeUp, ArtRatingGesture.swipeDown, rateArtwork],
   );
 
+  const swipeArtwork = useCallback(
+    (pageX: number, pageY: number): void => {
+      if (currentZoomScale !== 1) {
+        return;
+      }
+      const {touchX, touchY} = touchCoordinates;
+      if (touchX && touchY) {
+        if (isPortrait) {
+          // Y axis is to prevent the pinch to zoom resulting in a touch
+          if (pageX - touchX > wp('25%') && pageY - touchY < hp('25%')) {
+            toggleArtBackward();
+          } else if (touchX - pageX > wp('25%') && pageY - touchY < hp('25%')) {
+            toggleArtForward();
+          } else if (pageX - touchX < wp('10%') && touchY - pageY > hp('10%')) {
+            handleArtRatingGesture(ArtRatingGesture.swipeUp);
+          } else if (pageX - touchX < wp('10%') && pageY - touchY > hp('10%')) {
+            handleArtRatingGesture(ArtRatingGesture.swipeDown);
+          }
+        } else {
+          if (pageY - touchY > hp('10%') && pageX - touchX < wp('25%')) {
+            toggleArtBackward();
+          }
+          if (touchY - pageY > hp('10%') && pageX - touchX < wp('25%')) {
+            toggleArtForward();
+          }
+          if (pageY - touchY < hp('10%') && pageX - touchX > wp('10%')) {
+            handleArtRatingGesture(ArtRatingGesture.swipeUp);
+          }
+          if (touchY - pageY < hp('10%') && touchX - pageX > wp('25%')) {
+            handleArtRatingGesture(ArtRatingGesture.swipeDown);
+          }
+        }
+      }
+    },
+    [
+      currentZoomScale,
+      touchCoordinates,
+      isPortrait,
+      toggleArtBackward,
+      toggleArtForward,
+      handleArtRatingGesture,
+      ArtRatingGesture.swipeUp,
+      ArtRatingGesture.swipeDown,
+    ],
+  );
+
   const dimensionsMultiplierPortrait =
     backgroundImageDimensionsPixels.width /
     backgroundImageDimensionsPixels.height;
@@ -130,95 +189,33 @@ export function ArtOnDisplay({
     };
   }
 
-  const handleDoubleTap = (event: any) => {
-    if (isPanActionEnabled) {
-      setisPanActionEnabled(false);
-      const targetScale = 3;
-
-      // Calculate the translation values
-      setCurrentZoomScale(targetScale);
-      const ratioX = event.x * targetScale;
-      const ratioY = event.y * targetScale;
-      console.log({x: event.x, y: event.y, ratioX, ratioY});
-
-      scrollViewRef.current?.scrollTo({
-        x: wp('90%'),
-        y: hp('75%'),
-        animated: false,
-      });
-    } else {
-      setisPanActionEnabled(true);
-      setCurrentZoomScale(1);
-      scrollViewRef.current?.scrollToEnd({animated: false});
-    }
-  };
-
-  const panGestureRight = Gesture.Pan()
-    .activeOffsetX(20)
-    .onStart(() => {
-      if (!isPanActionEnabled) {
-        return;
-      }
-      state.isPortrait
-        ? runOnJS(toggleArtBackward)()
-        : runOnJS(handleArtRatingGesture)(ArtRatingGesture.swipeUp);
-    });
-
-  const panGestureLeft = Gesture.Pan()
-    .activeOffsetX(-20)
-    .onStart(() => {
-      if (!isPanActionEnabled) {
-        return;
-      }
-
-      state.isPortrait
-        ? runOnJS(toggleArtForward)()
-        : runOnJS(handleArtRatingGesture)(ArtRatingGesture.swipeDown);
-    });
-
-  const panGestureUp = Gesture.Pan()
-    .activeOffsetY(20)
-    .onStart(() => {
-      if (!isPanActionEnabled) {
-        return;
-      }
-
-      state.isPortrait
-        ? runOnJS(handleArtRatingGesture)(ArtRatingGesture.swipeDown)
-        : runOnJS(toggleArtBackward)();
-    });
-
-  const panGestureDown = Gesture.Pan()
-    .activeOffsetY(-10)
-    .onStart(async () => {
-      if (!isPanActionEnabled) {
-        return;
-      }
-
-      state.isPortrait
-        ? runOnJS(handleArtRatingGesture)(ArtRatingGesture.swipeUp)
-        : runOnJS(toggleArtForward)();
-    });
-
-  const doubleTapGesture = Gesture.Tap()
+  const doubleTap = Gesture.Tap()
+    .shouldCancelWhenOutside(true)
     .numberOfTaps(2)
-    .maxDistance(9)
-    .onEnd((event, success) => {
-      'worklet';
-
-      console.log('!!!', {event});
-      if (success) {
-        runOnJS(handleDoubleTap)(event);
+    .onFinalize(() => {
+      const isCurrentZoomOne = currentZoomScale === 1;
+      if (isCurrentZoomOne) {
+        setScrollEnabled(true);
+        setCurrentZoomScale(3);
+        scrollViewRef.current?.scrollTo({
+          x: backgroundImageDimensionsPixels.width - 0.25 * artWidthPixels,
+          y: backgroundImageDimensionsPixels.height - 0.25 * artHeightPixels,
+          animated: false,
+        });
+      } else {
+        setCurrentZoomScale(1);
+        setScrollEnabled(false);
+        scrollViewRef.current?.scrollToEnd({animated: false});
       }
-      return success;
     });
 
-  const composed = Gesture.Exclusive(
-    panGestureRight,
-    panGestureLeft,
-    panGestureUp,
-    panGestureDown,
-  );
+  useEffect(() => {
+    const isCurrentZoomOne = currentZoomScale === 1;
+    if (isCurrentZoomOne) {
+      return setScrollEnabled(false);
+    }
+    return setScrollEnabled(true);
+  }, [currentZoomScale]);
 
   const galleryStylesPortrait = StyleSheet.create({
     container: {
@@ -227,10 +224,6 @@ export function ArtOnDisplay({
       width: '100%',
       justifyContent: 'center',
       alignItems: 'center',
-    },
-    scrollViewStyles: {
-      flexGrow: 1,
-      justifyContent: 'center',
     },
     screenContainer: {
       width: backgroundImageDimensionsPixels.width,
@@ -250,37 +243,43 @@ export function ArtOnDisplay({
       justifyContent: 'center',
     },
   });
-
   return (
-    <GestureDetector gesture={composed}>
-      <ScrollView
-        ref={scrollViewRef}
-        scrollEnabled={!isPanActionEnabled}
-        // pinchGestureEnabled={isPanActionEnabled}
-        onScrollEndDrag={({nativeEvent: {zoomScale}}) => {
-          setCurrentZoomScale(zoomScale);
-          if (zoomScale <= 1.1) {
-            setisPanActionEnabled(true);
-          } else {
-            setisPanActionEnabled(false);
-          }
-        }}
-        zoomScale={currentZoomScale}
-        scrollEventThrottle={7}
-        maximumZoomScale={6}
-        minimumZoomScale={1}
-        scrollToOverflowEnabled={false}
-        contentContainerStyle={galleryStylesPortrait.scrollViewStyles}
-        centerContent
-        horizontal
-        removeClippedSubviews
-        snapToAlignment="center">
-        <GestureDetector gesture={doubleTapGesture}>
-          <ImageBackground source={backgroundImage}>
+    <ScrollView
+      ref={scrollViewRef}
+      scrollEnabled={scrollEnabled}
+      onScroll={({nativeEvent: {zoomScale}}) => {
+        setCurrentZoomScale(zoomScale);
+      }}
+      zoomScale={currentZoomScale}
+      scrollEventThrottle={7}
+      maximumZoomScale={6}
+      minimumZoomScale={1}
+      scrollToOverflowEnabled={false}
+      contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
+      centerContent
+      horizontal
+      pinchGestureEnabled
+      removeClippedSubviews
+      snapToAlignment="center">
+      <View
+        style={{
+          zIndex: 0,
+          height: '100%',
+        }}>
+        <ImageBackground source={backgroundImage}>
+          <Pressable
+            onTouchStart={({nativeEvent: {pageX, pageY}}) => {
+              setTouchCoordinates({touchX: pageX, touchY: pageY});
+            }}
+            onTouchEnd={({nativeEvent: {pageX, pageY}}) => {
+              swipeArtwork(pageX, pageY);
+            }}>
             <View>
               <View style={galleryStylesPortrait.screenContainer}>
+                {/* <GestureDetector gesture={doubleTap}> */}
                 <View style={galleryStylesPortrait.artContainer}>
                   <View style={galleryStyles.frameStyle}>
+                    {/* checked out */}
                     {artImage ? (
                       <Image
                         source={{uri: artImage}}
@@ -293,11 +292,12 @@ export function ArtOnDisplay({
                     )}
                   </View>
                 </View>
+                {/* </GestureDetector> */}
               </View>
             </View>
-          </ImageBackground>
-        </GestureDetector>
-      </ScrollView>
-    </GestureDetector>
+          </Pressable>
+        </ImageBackground>
+      </View>
+    </ScrollView>
   );
 }
