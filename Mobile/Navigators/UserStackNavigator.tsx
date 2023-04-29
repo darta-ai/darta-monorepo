@@ -4,6 +4,7 @@ import {UserStack} from '../../App';
 import {MILK} from '../../assets/styles';
 import {headerOptions} from '../../screens/styles';
 import {UserHome} from '../Screens/User';
+import {UserInquiredArtwork} from '../Screens/User/UserInquiredArtwork';
 import {UserSavedArtwork} from '../Screens/User/UserSavedArtwork';
 import {UserSettings} from '../Screens/User/UserSettings';
 import {StoreContext} from '../State/Store';
@@ -64,17 +65,17 @@ export function UserStackNavigator() {
         />
         <UserStack.Screen
           name={UserRoutesEnum.userInquiredArtwork}
-          component={UserSavedArtwork}
+          component={UserInquiredArtwork}
           options={{
             ...headerOptions,
-            headerTitle: 's a v e d',
+            headerTitle: 'i n q u i r e d',
           }}
         />
       </UserStack.Group>
 
       <UserStack.Group screenOptions={{presentation: 'modal'}}>
         <UserStack.Screen
-          name={UserRoutesEnum.tombstone}
+          name={UserRoutesEnum.SavedArtworkModal}
           component={SavedArtworkNavigatorModal}
           options={{...headerOptions, headerTitle: state.tombstoneTitle}}
         />

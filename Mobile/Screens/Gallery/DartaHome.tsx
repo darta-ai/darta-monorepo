@@ -92,6 +92,11 @@ export function DartaHome({
           loadedDGallery: fullImages,
           galleryId,
         });
+        dispatch({
+          type: ETypes.indexArt,
+          currentIndex: 0,
+          galleryId,
+        });
         updateLoadingStatus(galleryId, false);
         return navigation.navigate(GalleryNavigatorEnum.gallery);
       } catch (e) {

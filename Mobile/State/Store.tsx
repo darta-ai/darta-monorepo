@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, {createContext, ReactNode, useReducer} from 'react';
 
 import {DataT, RatingEnum} from '../../types';
@@ -7,6 +8,7 @@ import {
   image2Preview,
   images1,
   images2,
+  images3,
   today,
 } from '../globalVariables';
 
@@ -44,7 +46,6 @@ const fetchRawUserData = async (): Promise<PatUserData> => {
   try {
     const result = await fetch('http://localhost:1160/user');
     data = await result.json();
-    console.log(data);
   } catch (e) {}
   return data;
 };
@@ -115,7 +116,7 @@ const rawArtworkData: PatArtworkData = {
   inquiredArtwork: {
     type: 'inquiredGallery',
     galleryId: 'inquired',
-    artworkIds: images1,
+    artworkIds: images3,
     preview: image1Preview,
     tombstone:
       'featuring works by contemporary artists Robert Bordo, Tahnee Lonsdale, and more',
@@ -137,6 +138,7 @@ interface IGalleryData {
     numberOfArtworks: number;
     userArtworkRatings: IUserArtworkRatings;
     galleryIndex: number;
+    isLoaded: boolean;
   };
 }
 
@@ -159,11 +161,13 @@ export enum ETypes {
   indexArt = 'INDEX',
   loadArt = 'LOAD_ART',
   setGalleryId = 'GALLERY_ID',
+  setArtworkId = 'ARTWORK_ID',
   preLoadState = 'preLoadState',
   setTitle = 'SET_TITLE',
   setArtwork = 'SET_ARTWORK',
   setTombstone = 'SET_TOMBSTONE',
   setUserSettings = 'SET_USER_SETTINGS',
+  setSaveArtwork = 'SET_UNSAVE',
 }
 
 // Define the action type
@@ -189,6 +193,10 @@ interface IAction {
 
   // for userSettings
   userSettings?: PatUserData;
+
+  // for saving artwork
+  artOnDisplay?: DataT;
+  saveWork?: boolean;
 }
 
 // Define the initial state
@@ -215,12 +223,21 @@ const reducer = (state: IState, action: IAction): IState => {
     artworkOnDisplayId = 'string',
     galleryTitle = 'd a r t a',
     tombstoneTitle = 't o m b s t o n e',
-    userSettings = fetchRawUserData(),
+    userSettings = {
+      profilePicture: 'https://i.imgur.com/5ABY3J8.jpg',
+      userName: 'error fetching data',
+      legalName: 'legal Name',
+      email: 'email',
+      phone: 'phone',
+    },
+    artOnDisplay = {},
+    saveWork = false,
   } = action;
 
   let tempGallery: any;
   let tempState: any;
   let galleryIds;
+  let fullGallery: any;
   let currentRating: IUserArtworkRatings[0];
   const {galleryOnDisplayId} = state;
   const artworkId = state.artworkOnDisplayId;
@@ -272,6 +289,7 @@ const reducer = (state: IState, action: IAction): IState => {
           numberOfArtworks: state.artworkData[itemId].artworkIds.length,
           galleryIndex: 0,
           fullDGallery: null,
+          isLoaded: false,
         };
         state.artworkData[itemId].artworkIds.forEach(artId => {
           tempState.userArtworkRatings = {
@@ -286,18 +304,28 @@ const reducer = (state: IState, action: IAction): IState => {
         return state;
       }
       tempGallery = state.globalGallery;
+      if (tempGallery[galleryId].fullDGallery) {
+        fullGallery = tempGallery[galleryId].fullDGallery;
+        fullGallery = {
+          ...loadedDGallery,
+          ...fullGallery,
+        };
+      } else {
+        fullGallery = loadedDGallery;
+      }
       tempGallery[galleryId] = {
         artworkIds: tempGallery[galleryId].artworkIds,
         id: galleryId,
         numberOfRatedWorks: 0,
-        numberOfArtworks: loadedDGallery.length,
+        numberOfArtworks: Object.keys(loadedDGallery).length,
         galleryIndex: 0,
-        fullDGallery: loadedDGallery,
+        fullDGallery: {...fullGallery},
+        isLoaded: true,
       };
+      // const
       return {
         ...state,
         ...tempGallery,
-        artworkOnDisplayId: tempGallery[galleryId].artworkIds[0],
       };
     case ETypes.setGalleryId:
       if (!galleryId) {
@@ -320,6 +348,48 @@ const reducer = (state: IState, action: IAction): IState => {
 
     case ETypes.setTitle:
       return {...state, galleryTitle};
+    case ETypes.setSaveArtwork:
+      if (!artOnDisplay && !artOnDisplay.id) {
+        return state;
+      }
+      if (saveWork) {
+        tempState = _.cloneDeep(state);
+        tempGallery = tempState.globalGallery;
+        if (tempGallery.savedArtwork.fullDGallery) {
+          tempGallery.savedArtwork.fullDGallery[artOnDisplay.id] = {
+            ...artOnDisplay,
+            savedAt: new Date(),
+          };
+        } else {
+          tempGallery.savedArtwork = {
+            fullDGallery: {
+              [artOnDisplay.id]: {
+                ...artOnDisplay,
+                savedAt: new Date(),
+              },
+            },
+          };
+        }
+        return {
+          ...tempState,
+        };
+      } else {
+        tempState = _.cloneDeep(state);
+        tempGallery = tempState.globalGallery;
+        delete tempGallery.savedArtwork.fullDGallery[artOnDisplay.id];
+        console.log(Object.keys(tempGallery.savedArtwork.fullDGallery));
+        if (state.userArtworkRatings[artworkId]) {
+          if (tempGallery.numberOfRatedWorks > 0) {
+            tempGallery.numberOfRatedWorks -= 1;
+          }
+
+          tempState.userArtworkRatings[artworkId] = {};
+        }
+        return {
+          ...tempState,
+          ...tempGallery,
+        };
+      }
     case ETypes.setTombstone:
       return {...state, tombstoneTitle};
     default:
