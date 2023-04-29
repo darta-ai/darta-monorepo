@@ -7,18 +7,9 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-// import {Gesture, GestureDetector} from 'react-native-gesture-handler';
-import {
-  heightPercentageToDP as hp,
-  // widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-import {
-  DataT,
-  // OpenStateEnum,
-  // RatingEnum
-} from '../../../../../types';
-// import {StoreContext} from '../../../../../State/Store';
+import {DataT} from '../../../../../types';
 import {galleryStyles} from '../../../../Screens/Gallery/galleryStyles';
 
 export function SavedArtOnDisplay({
@@ -29,7 +20,6 @@ export function SavedArtOnDisplay({
   dimensionsInches,
   isPortrait,
   wallHeight,
-  // rateArtwork,
   setCurrentZoomScale,
 }: {
   artImage: string | undefined;
@@ -39,60 +29,11 @@ export function SavedArtOnDisplay({
   dimensionsInches: DataT['dimensionsInches'] | undefined;
   isPortrait: boolean;
   wallHeight: number;
-  // rateArtwork: (rating: RatingEnum, openIdentifier: OpenStateEnum) => void;
   setCurrentZoomScale: (arg0: number) => void;
 }) {
-  // const {state} = useContext(StoreContext);
-  // type SetTouch = {
-  //   touchX: number;
-  //   touchY: number;
-  // };
-
   const [scrollEnabled, setScrollEnabled] = useState(false);
 
   const scrollViewRef = useRef<ScrollView | null>(null);
-
-  // enum ArtRatingGesture {
-  //   swipeUp = 'swipeUp',
-  //   swipeDown = 'swipeDown',
-  // }
-
-  // const handleArtRatingGesture = useCallback(
-  //   (gesture: ArtRatingGesture) => {
-  //     const {artworkOnDisplayId, userArtworkRatings} = state;
-
-  //     const currentArtworkRating = userArtworkRatings[artworkOnDisplayId];
-  //     switch (gesture) {
-  //       case ArtRatingGesture.swipeUp:
-  //         if (currentArtworkRating[RatingEnum.like]) {
-  //           rateArtwork(RatingEnum.save, OpenStateEnum.swiped);
-  //           break;
-  //         } else if (currentArtworkRating[RatingEnum.dislike]) {
-  //           rateArtwork(RatingEnum.unrated, OpenStateEnum.swiped);
-  //           break;
-  //         } else if (currentArtworkRating[RatingEnum.save]) {
-  //           break;
-  //         } else {
-  //           rateArtwork(RatingEnum.like, OpenStateEnum.swiped);
-  //           break;
-  //         }
-  //       case ArtRatingGesture.swipeDown:
-  //         if (currentArtworkRating[RatingEnum.save]) {
-  //           rateArtwork(RatingEnum.like, OpenStateEnum.swiped);
-  //           break;
-  //         } else if (currentArtworkRating[RatingEnum.like]) {
-  //           rateArtwork(RatingEnum.unrated, OpenStateEnum.swiped);
-  //           break;
-  //         } else if (currentArtworkRating[RatingEnum.dislike]) {
-  //           break;
-  //         } else {
-  //           rateArtwork(RatingEnum.dislike, OpenStateEnum.swiped);
-  //           break;
-  //         }
-  //     }
-  //   },
-  //   [state, ArtRatingGesture.swipeUp, ArtRatingGesture.swipeDown, rateArtwork],
-  // );
 
   const dimensionsMultiplierPortrait =
     backgroundImageDimensionsPixels.width /
@@ -132,25 +73,6 @@ export function SavedArtOnDisplay({
     };
   }
 
-  // const doubleTap = Gesture.Tap()
-  //   .numberOfTaps(2)
-  //   .onStart(() => {
-  //     const isCurrentZoomOne = currentZoomScale === 1;
-  //     if (isCurrentZoomOne) {
-  //       setScrollEnabled(true);
-  //       setCurrentZoomScale(3);
-  //       scrollViewRef.current?.scrollTo({
-  //         x: backgroundImageDimensionsPixels.width - 0.25 * artWidthPixels,
-  //         y: backgroundImageDimensionsPixels.height - 0.25 * artHeightPixels,
-  //         animated: false,
-  //       });
-  //     } else {
-  //       setCurrentZoomScale(1);
-  //       setScrollEnabled(false);
-  //       scrollViewRef.current?.scrollToEnd({animated: false});
-  //     }
-  //   });
-
   useEffect(() => {
     const isCurrentZoomOne = currentZoomScale === 1;
     if (isCurrentZoomOne) {
@@ -161,9 +83,7 @@ export function SavedArtOnDisplay({
 
   const galleryStylesPortrait = StyleSheet.create({
     container: {
-      zIndex: 0,
-      height: '100%',
-      width: '100%',
+      zIndex: 1,
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -213,7 +133,6 @@ export function SavedArtOnDisplay({
           style={galleryStylesPortrait.screenContainer}>
           <View>
             <View style={galleryStylesPortrait.screenContainer}>
-              {/* <GestureDetector gesture={doubleTap}> */}
               <View style={galleryStylesPortrait.artContainer}>
                 <View style={galleryStyles.frameStyle}>
                   <Image
@@ -222,7 +141,6 @@ export function SavedArtOnDisplay({
                   />
                 </View>
               </View>
-              {/* </GestureDetector> */}
             </View>
           </View>
         </ImageBackground>

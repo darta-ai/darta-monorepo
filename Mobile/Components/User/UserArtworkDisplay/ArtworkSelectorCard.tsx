@@ -32,7 +32,7 @@ export function ArtworkSelectorCard({
       type: ETypes.setTombstone,
       tombstoneTitle: artwork?.title,
     });
-    navigation.navigate(UserRoutesEnum.tombstone, {
+    navigation.navigate(UserRoutesEnum.SavedArtworkModal, {
       artOnDisplay: artwork,
     });
   };

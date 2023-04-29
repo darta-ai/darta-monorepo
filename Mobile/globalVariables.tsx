@@ -37,6 +37,7 @@ export const icons: Icons = {
   cog: 'cog-outline',
   thumbsUpDown: 'thumbs-up-down-outline',
   saveSettings: 'content-save',
+  brokenHeart: 'heart-broken',
 };
 
 // export const getButtonSize = (wp:number, size: string) => {
@@ -103,15 +104,15 @@ export const images2 = [
   '55f2ffcc72616966bd0000f4',
   '55f87d667261691783000109',
   '55f87d697261690f2d0000ee',
-  '55f87d6a72616905100000f0',
-  '55f87d6b72616950010000bc',
-  '5628e6ec72616978130004d6',
-  '563b882772616952c8000501',
-  '5650bf66258faf48f300057f',
-  '565de2309acc8a7721000086',
-  '56e8952f9c18db74180001a2',
-  '57609fda139b2169c700028d',
-  '5762cd33cd530e65e9000487',
+  // '55f87d6a72616905100000f0',
+  // '55f87d6b72616950010000bc',
+  // '5628e6ec72616978130004d6',
+  // '563b882772616952c8000501',
+  // '5650bf66258faf48f300057f',
+  // '565de2309acc8a7721000086',
+  // '56e8952f9c18db74180001a2',
+  // '57609fda139b2169c700028d',
+  // '5762cd33cd530e65e9000487',
 ];
 
 export const image2Preview = {
@@ -134,6 +135,18 @@ export const image2Preview = {
     dimensionsInches: {height: 34, width: 24},
   },
 };
+
+export const images3 = [
+  '5bdc7d4858dd23002b45a04a',
+  '5bdc7f54c875ba7fba5706d4',
+  '5bdc817e7ffd4170a19174ca',
+  '5bdc86fc5ce68326a130d022',
+  '5bdc87cba9c50f2e3f925982',
+  '5bdc885ea9c50f2e3f9259bd',
+  '5bdc88f13cc37034b824af5d',
+  '5beb75673051a8002c6aa871',
+  '5bef01b78f6c3d0791834aa2',
+];
 
 export const timWilson = [
   '62cf1d7f62225b000be802c2',

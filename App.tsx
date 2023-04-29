@@ -8,10 +8,10 @@ import React from 'react';
 import {getUniqueId} from 'react-native-device-info';
 import {Provider as PaperProvider} from 'react-native-paper';
 
+import TabBarIcon from './Mobile/GlobalElements/TabBarIcon';
+import {GalleryStackNavigator, UserStackNavigator} from './Mobile/Navigators';
+import {StoreProvider} from './Mobile/State/Store';
 import {footerColors, footerOptions} from './screens/styles';
-import TabBarIcon from './src/GlobalElements/TabBarIcon';
-import {GalleryStackNavigator, UserStackNavigator} from './src/Navigators';
-import {StoreProvider} from './src/State/Store';
 
 export const GalleryStack = createStackNavigator();
 export const UserStack = createStackNavigator();

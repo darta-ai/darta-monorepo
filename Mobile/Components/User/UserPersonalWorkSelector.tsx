@@ -46,23 +46,58 @@ export function UserPersonalWorkSelector({
       ...showActivityIndicator,
       [UserScreenSelectorEnum.savedArtwork]: true,
     });
-    if (!state.globalGallery.savedArtwork.fullDGallery) {
+    if (
+      !state.globalGallery.savedArtwork?.isLoaded ||
+      !state.artworkData.savedArtwork?.fullDGallery
+    ) {
       try {
         fullImages = await getImages(state.artworkData.savedArtwork.artworkIds);
         dispatch({
           type: ETypes.loadArt,
           loadedDGallery: fullImages,
-          galleryId: 'savedArtwork',
+          galleryId: UserScreenSelectorEnum.savedArtwork,
         });
       } catch (e) {
         Alert.alert('Unable to load saved artwork 🧑‍💻🤦');
       }
     }
+
     setShowActivityIndicator({
       ...showActivityIndicator,
       [UserScreenSelectorEnum.savedArtwork]: false,
     });
     return navigation.navigate(UserRoutesEnum.userSavedArtwork);
+  };
+
+  const navigateToInquired = async () => {
+    let fullImages;
+    setShowActivityIndicator({
+      ...showActivityIndicator,
+      [UserScreenSelectorEnum.inquiredArtwork]: true,
+    });
+    if (
+      !state.globalGallery.inquiredArtwork?.isLoaded ||
+      !state.artworkData?.inquiredArtwork?.fullDGallery
+    ) {
+      try {
+        fullImages = await getImages(
+          state.artworkData.inquiredArtwork.artworkIds,
+        );
+        dispatch({
+          type: ETypes.loadArt,
+          loadedDGallery: fullImages,
+          galleryId: 'inquiredArtwork',
+        });
+      } catch (e) {
+        Alert.alert('Unable to load saved artwork 🧑‍💻🤦');
+      }
+    }
+
+    setShowActivityIndicator({
+      ...showActivityIndicator,
+      [UserScreenSelectorEnum.inquiredArtwork]: false,
+    });
+    return navigation.navigate(UserRoutesEnum.userInquiredArtwork);
   };
   const SSUserScreenSelector = StyleSheet.create({
     container: {
@@ -102,10 +137,7 @@ export function UserPersonalWorkSelector({
             localButtonSizes={localButtonSizes}
           />
         </Pressable>
-        <Pressable
-          onPress={() =>
-            navigation.navigate(UserRoutesEnum.userInquiredArtwork)
-          }>
+        <Pressable onPress={async () => navigateToInquired()}>
           <GallerySelectorComponent
             headline="i n q u i r i e s"
             subHeadline="artwork you have inquired about"

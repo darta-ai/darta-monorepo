@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, View} from 'react-native';
+import {Image, StyleSheet, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Button} from 'react-native-paper';
 import {
@@ -36,66 +36,81 @@ export function TombstonePortrait({
     artWidth = maxDimension;
     artHeight = Math.floor((height / width) * artWidth);
   }
+  const SSTombstonePortrait = StyleSheet.create({
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignContent: 'center',
+    },
+    imageContainer: {
+      alignSelf: 'center',
+      justifyContent: 'center',
+      width: wp('100%'),
+      height: maxDimension,
+    },
+    image: {
+      height: artHeight,
+      width: artWidth,
+      alignSelf: 'center',
+    },
+    textContainer: {
+      width: wp('90%'),
+      height: 'auto',
+      alignSelf: 'center',
+      alignItems: 'center',
+    },
+    artistName: {
+      marginTop: hp('3%'),
+      fontSize: 20,
+      textAlign: 'center',
+    },
+    artTitle: {fontSize: 17, textAlign: 'center'},
+    artMedium: {fontSize: 15, textAlign: 'center'},
+    artDimensions: {fontSize: 12},
+    artPrice: {
+      textAlign: 'center',
+      fontSize: 14,
+    },
+    inquireButton: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      alignItems: 'center',
+      marginTop: hp('2%'),
+    },
+  });
   return (
     <>
       <SafeAreaView>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignContent: 'center',
-          }}>
+        <View style={SSTombstonePortrait.container}>
           <ScrollView
             scrollEventThrottle={7}
             maximumZoomScale={6}
             minimumZoomScale={1}
             scrollToOverflowEnabled={false}
-            contentContainerStyle={{
-              alignSelf: 'center',
-            }}
             centerContent>
-            <View
-              style={{
-                alignSelf: 'center',
-                justifyContent: 'center',
-                width: wp('100%'),
-                height: maxDimension,
-              }}>
+            <View style={SSTombstonePortrait.imageContainer}>
               <Image
                 source={{uri: artOnDisplay?.image}}
-                style={{
-                  height: artHeight,
-                  width: artWidth,
-                  alignSelf: 'center',
-                }}
+                style={SSTombstonePortrait.image}
               />
             </View>
           </ScrollView>
         </View>
       </SafeAreaView>
       <ScrollView scrollEventThrottle={7}>
-        <View
-          style={{
-            width: maxDimension,
-            height: 'auto',
-            alignSelf: 'center',
-            alignItems: 'center',
-          }}>
+        <View style={SSTombstonePortrait.textContainer}>
           <GlobalText
             style={[
               globalTextStyles.boldTitleText,
-              {
-                marginTop: hp('3%'),
-                fontSize: 20,
-                textAlign: 'center',
-              },
+              SSTombstonePortrait.artistName,
             ]}>
             {artOnDisplay?.artist}
           </GlobalText>
           <GlobalText
             style={[
-              {fontSize: 18, textAlign: 'center'},
+              SSTombstonePortrait.artTitle,
               globalTextStyles.italicTitleText,
             ]}
             numberOfLines={5}>
@@ -105,48 +120,34 @@ export function TombstonePortrait({
           </GlobalText>
           <GlobalText
             style={[
-              {fontSize: 15, textAlign: 'center'},
+              SSTombstonePortrait.artMedium,
               globalTextStyles.italicTitleText,
             ]}
             numberOfLines={1}>
             {artOnDisplay?.medium}
           </GlobalText>
           <GlobalText
-            style={[{fontSize: 12}, globalTextStyles.centeredText]}
+            style={[
+              SSTombstonePortrait.artDimensions,
+              globalTextStyles.centeredText,
+            ]}
             numberOfLines={5}>
             {artOnDisplay?.dimensionsInches.text}
             {'\n'}
           </GlobalText>
-          <GlobalText
-            style={[
-              globalTextStyles.centeredText,
-              {
-                textAlign: 'center',
-                fontSize: 15,
-              },
-            ]}>
+          <GlobalText style={[globalTextStyles.centeredText]}>
             {artOnDisplay?.category}
             {'\n'}
           </GlobalText>
           <GlobalText
             style={[
               globalTextStyles.italicTitleText,
-              {
-                textAlign: 'center',
-                fontSize: 15,
-              },
+              SSTombstonePortrait.artPrice,
             ]}>
             {artOnDisplay?.price}
           </GlobalText>
         </View>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            marginTop: hp('2%'),
-          }}>
+        <View style={SSTombstonePortrait.inquireButton}>
           <View>
             <Button
               icon={icons.inquire}
