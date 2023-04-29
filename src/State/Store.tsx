@@ -39,13 +39,14 @@ const rawDataUserData: PatUserData = {
 
 // here is the test.
 
-const fetchRawUserData = async () => {
+const fetchRawUserData = async (): Promise<PatUserData> => {
+  let data;
   try {
-    const result: PatUserData = await fetch(
-      'http://localhost:1160/userDetails',
-    );
-    return result;
+    const result = await fetch('http://localhost:1160/user');
+    data = await result.json();
+    console.log(data);
   } catch (e) {}
+  return data;
 };
 
 export type PatUserSavedArtworkData = {

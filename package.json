@@ -12,6 +12,9 @@
     "test": "jest",
     "prettier": "npx prettier --write ."
   },
+  "resolutions": {
+    "react-native-gesture-handler": ">=2.9.0"
+  },
   "dependencies": {
     "@react-native-community/image-editor": "^2.3.0",
     "@react-native-firebase/app": "17.4.2",
