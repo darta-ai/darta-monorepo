@@ -8,6 +8,7 @@ import {
   image2Preview,
   images1,
   images2,
+  images3,
   today,
 } from '../globalVariables';
 
@@ -115,7 +116,7 @@ const rawArtworkData: PatArtworkData = {
   inquiredArtwork: {
     type: 'inquiredGallery',
     galleryId: 'inquired',
-    artworkIds: images1,
+    artworkIds: images3,
     preview: image1Preview,
     tombstone:
       'featuring works by contemporary artists Robert Bordo, Tahnee Lonsdale, and more',
