@@ -3,6 +3,7 @@
 ## Dev Setup
 
 1. Install [kind](https://kind.sigs.k8s.io/docs/user/quick-start/) (ArangoDB does not seem to work with minikube—YMMV).
+    1a. run `kind create cluster`
 2. Install [devspace](https://devspace.sh/cli/docs/getting-started/installation).
 3. In your cluster, create the correct namespace if it does not already exist: `kubectl create namespace arango-cluster`.
 4. Run `./install_arango.sh`, which will install the ArangoDB Kubernetes operators and create a database cluster.
