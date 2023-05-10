@@ -62,25 +62,30 @@ export type PatUserSavedArtworkData = {
   };
 };
 
-export type PatArtworkData = {
-  [key: string]: {
-    type: string;
-    galleryId: string;
-    artworkIds: string[];
-    tombstone?: string;
-    preview?: {
-      [key: string]: {
-        id: string;
-        image: string;
-        dimensionsInches: {
-          height: number;
-          width: number;
-        };
+export type GalleryData = {
+  type: string;
+  galleryId: string;
+  artworkIds: string[];
+  tombstone?: string;
+  preview?: {
+    [key: string]: {
+      id: string;
+      image: string;
+      dimensionsInches: {
+        height: number;
+        width: number;
       };
     };
-    text: string;
-    body: string;
   };
+  text: string;
+  body: string;
+};
+
+export type PatArtworkData = {
+  darta: GalleryData;
+  savedArtwork: GalleryData;
+  inquiredArtwork: GalleryData;
+  [key: string]: GalleryData;
 };
 
 const rawArtworkData: PatArtworkData = {
@@ -143,6 +148,7 @@ export interface IState {
   tombstoneTitle: string;
   userSettings: PatUserData;
   artworkData: PatArtworkData;
+  savedArtwork?: GalleryData;
 }
 
 export enum ETypes {
@@ -156,6 +162,7 @@ export enum ETypes {
   setArtwork = 'SET_ARTWORK',
   setTombstone = 'SET_TOMBSTONE',
   setUserSettings = 'SET_USER_SETTINGS',
+  saveArtwork = 'SAVE_ARTWORK',
 }
 
 // Define the action type
@@ -313,6 +320,9 @@ const reducer = (state: IState, action: IAction): IState => {
     case ETypes.setTitle:
       return {...state, galleryTitle};
     case ETypes.setTombstone:
+      const tempSavedGallery = state.globalGallery?.savedArtwork;
+      let;
+    case ETypes.saveArtwork:
       return {...state, tombstoneTitle};
     default:
       return state;

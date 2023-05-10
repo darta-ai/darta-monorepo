@@ -67,7 +67,6 @@ export function ArtOnDisplay({
     swipeUp = 'swipeUp',
     swipeDown = 'swipeDown',
   }
-
   const handleArtRatingGesture = useCallback(
     (gesture: ArtRatingGesture) => {
       const {artworkOnDisplayId, userArtworkRatings} = state;
