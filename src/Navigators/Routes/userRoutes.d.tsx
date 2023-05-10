@@ -20,5 +20,5 @@ export type UserRouteStackParamList = {
   [UserRoutesEnum.userSettings]: undefined;
   [UserRoutesEnum.userSavedArtwork]: undefined;
   [UserRoutesEnum.userInquiredArtwork]: undefined;
-  [UserRoutesEnum.tombstone]: undefined;
+  [UserRoutesEnum.SavedArtworkModal]: undefined;
 };

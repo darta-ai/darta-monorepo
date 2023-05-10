@@ -1,8 +1,6 @@
 import {Database} from 'arangojs';
 import https from 'https';
 
-// This is just an example.
-// Let's think about how to use it.
 (async () => {
   console.log('Hello, world!');
   try {
@@ -25,10 +23,10 @@ import https from 'https';
     console.log('got db ');
 
     console.log('was it a blip?');
-    // Create a new collection
-    const collection = db.collection('helloWorldCollection');
+    // Create a new collection of users
+    const collection = db.collection('users');
     await collection.create();
-    console.log('Created `helloWorldCollection`');
+    console.log('Created `users`');
 
     // Create a new document
     const document = {
@@ -39,7 +37,7 @@ import https from 'https';
     await collection.save(document);
 
     // Read the document
-    const retrievedDocument = await collection.document('helloWorld');
+    const retrievedDocument = await collection.document('users');
     console.log('Retrieved document:', retrievedDocument);
 
     // Update the document

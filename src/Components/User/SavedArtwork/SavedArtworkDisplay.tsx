@@ -69,6 +69,7 @@ export function SavedArtworkDisplay({route}: {route: any}) {
     progressBarContainer: {
       alignSelf: 'center',
     },
+    activityIndicator: {alignSelf: 'center', justifyContent: 'center', flex: 1},
   });
 
   const backgroundContainerDimensionsPixels = state.isPortrait
@@ -89,7 +90,7 @@ export function SavedArtworkDisplay({route}: {route: any}) {
           <ActivityIndicator
             size="large"
             color={MILK}
-            style={{alignSelf: 'center', justifyContent: 'center', flex: 1}}
+            style={SSDartaGalleryView.activityIndicator}
           />
         ) : (
           <SavedArtOnDisplay
@@ -102,7 +103,6 @@ export function SavedArtworkDisplay({route}: {route: any}) {
             dimensionsInches={artOnDisplay?.dimensionsInches}
             isPortrait={state.isPortrait}
             wallHeight={wallHeight}
-            // rateArtwork={rateArtwork}
             setCurrentZoomScale={setCurrentZoomScale}
           />
         )}

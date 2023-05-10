@@ -17,6 +17,6 @@
         "rootDir": "src",
         "lib": ["es2019", "dom"],
     },
-    "include": ["src/**/*.ts"],
+    "include": ["src/**/*.ts", "src/keys/private-key.pem"],
     "exclude": ["node_modules"]
 }

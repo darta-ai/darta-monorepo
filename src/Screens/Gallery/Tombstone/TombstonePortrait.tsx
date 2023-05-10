@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, View} from 'react-native';
+import {Image, StyleSheet, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Button} from 'react-native-paper';
 import {
@@ -36,52 +36,50 @@ export function TombstonePortrait({
     artWidth = maxDimension;
     artHeight = Math.floor((height / width) * artWidth);
   }
+  const SSTombstonePortrait = StyleSheet.create({
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignContent: 'center',
+    },
+    scrollViewStyle: {
+      alignSelf: 'center',
+    },
+    imageContainer: {
+      alignSelf: 'center',
+      justifyContent: 'center',
+      width: wp('100%'),
+      height: maxDimension,
+    },
+    image: {
+      height: artHeight,
+      width: artWidth,
+      alignSelf: 'center',
+    },
+  });
   return (
     <>
       <SafeAreaView>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignContent: 'center',
-          }}>
+        <View style={SSTombstonePortrait.container}>
           <ScrollView
             scrollEventThrottle={7}
             maximumZoomScale={6}
             minimumZoomScale={1}
             scrollToOverflowEnabled={false}
-            contentContainerStyle={{
-              alignSelf: 'center',
-            }}
+            contentContainerStyle={SSTombstonePortrait.scrollViewStyle}
             centerContent>
-            <View
-              style={{
-                alignSelf: 'center',
-                justifyContent: 'center',
-                width: wp('100%'),
-                height: maxDimension,
-              }}>
+            <View style={SSTombstonePortrait.imageContainer}>
               <Image
                 source={{uri: artOnDisplay?.image}}
-                style={{
-                  height: artHeight,
-                  width: artWidth,
-                  alignSelf: 'center',
-                }}
+                style={SSTombstonePortrait.image}
               />
             </View>
           </ScrollView>
         </View>
       </SafeAreaView>
       <ScrollView scrollEventThrottle={7}>
-        <View
-          style={{
-            width: maxDimension,
-            height: 'auto',
-            alignSelf: 'center',
-            alignItems: 'center',
-          }}>
+        <View style={}>
           <GlobalText
             style={[
               globalTextStyles.boldTitleText,

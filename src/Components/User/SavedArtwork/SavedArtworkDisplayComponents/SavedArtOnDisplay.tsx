@@ -213,7 +213,6 @@ export function SavedArtOnDisplay({
           style={galleryStylesPortrait.screenContainer}>
           <View>
             <View style={galleryStylesPortrait.screenContainer}>
-              {/* <GestureDetector gesture={doubleTap}> */}
               <View style={galleryStylesPortrait.artContainer}>
                 <View style={galleryStyles.frameStyle}>
                   <Image
@@ -222,7 +221,6 @@ export function SavedArtOnDisplay({
                   />
                 </View>
               </View>
-              {/* </GestureDetector> */}
             </View>
           </View>
         </ImageBackground>
