@@ -19,9 +19,10 @@ export const Tab = createBottomTabNavigator();
 
 export const deviceInformation = async () => {
   const uniqueId = await getUniqueId();
+  console.log({uniqueId});
   return {uniqueId};
 };
-
+deviceInformation();
 function App() {
   return (
     <PaperProvider>
