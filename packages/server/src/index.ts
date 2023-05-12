@@ -10,8 +10,21 @@ import {Container} from 'inversify';
 import path from 'path';
 
 import {config} from './config';
-import {ArangoArtworkService, ArangoUserService} from './services';
-import {Artwork, ArtworkService, User, UserService} from './services/types';
+import {
+  ArangoArtworkRepository,
+  ArangoRatingRepository,
+  ArangoUserRepository,
+  CreateCollectionsRepository,
+} from './repositories';
+import {
+  Artwork,
+  IArtworkRepository,
+  ICreateCollections,
+  IRatingRepository,
+  IUserRepository,
+  Rating,
+  User,
+} from './repositories/types';
 
 // Load the SSL certificate and key files
 const privateKey = fs.readFileSync(
@@ -45,11 +58,21 @@ container.bind(Database).toConstantValue(
     agent,
   }),
 );
-container.bind<UserService>(ArangoUserService).toSelf();
-container.bind<ArtworkService>(ArangoArtworkService).toSelf();
+container.bind<IUserRepository>(ArangoUserRepository).toSelf();
+container.bind<IArtworkRepository>(ArangoArtworkRepository).toSelf();
+container.bind<IRatingRepository>(ArangoRatingRepository).toSelf();
+container.bind<ICreateCollections>(CreateCollectionsRepository).toSelf();
 
-const userRepository = container.get<UserService>(ArangoUserService);
-const artworkRepository = container.get<ArtworkService>(ArangoArtworkService);
+const userRepository = container.get<IUserRepository>(ArangoUserRepository);
+const artworkRepository = container.get<IArtworkRepository>(
+  ArangoArtworkRepository,
+);
+const ratingRepository = container.get<IRatingRepository>(
+  ArangoRatingRepository,
+);
+const createCollections = container.get<ICreateCollections>(
+  CreateCollectionsRepository,
+);
 
 console.log('hi from index');
 
@@ -149,9 +172,55 @@ app.put('/user/update/:deviceId', async (req: Request, res: Response) => {
   }
 });
 
+app.post('/rating/create', async (req: Request, res: Response) => {
+  try {
+    const rating: Rating = req.body;
+    const createdRating = await ratingRepository.createUserArtworkEdge(rating);
+    res.status(201).json(createdRating);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+app.put('/rating/update', async (req: Request, res: Response) => {
+  try {
+    const rating: Rating = req.body;
+    const updatedRating = await ratingRepository.updateUserArtworkEdge(rating);
+    res.status(201).json(updatedRating);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+app.get('/rating/get/:key', async (req: Request, res: Response) => {
+  try {
+    const rating = await ratingRepository.getUserArtworkEdge(req.params.key);
+    if (rating) {
+      res.json(rating);
+    } else {
+      res.status(404).send('Rating not found');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+  }
+});
+
 app.get('/ping', async (req: Request, res: Response) => {
   console.log('pong');
   res.status(200).send('pong');
+});
+
+app.get('/createCollections', async (req: Request, res: Response) => {
+  try {
+    await createCollections.createCollections();
+    res.status(200).send('Collections created');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+  }
 });
 
 app.get('/', async (req: Request, res: Response) => {

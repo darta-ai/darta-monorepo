@@ -1,7 +1,7 @@
-// __tests__/arangoUserService.test.ts
+// __tests__/ArangoUserRepository.test.ts
 import {Database} from 'arangojs';
 
-import {ArangoUserService} from '../src/services';
+import {ArangoUserRepository} from '../src/services';
 
 // Simple mock implementation for the ArangoDB Database class
 class MockDatabase extends Database {
@@ -12,21 +12,21 @@ class MockDatabase extends Database {
   }
 }
 
-describe('ArangoUserService', () => {
-  let userService: ArangoUserService;
+describe('ArangoUserRepository', () => {
+  let IUserRepository: ArangoUserRepository;
 
   beforeEach(() => {
-    userService = new ArangoUserService(
+    IUserRepository = new ArangoUserRepository(
       new MockDatabase() as unknown as Database,
     );
   });
 
-  it('should create an instance of ArangoUserService', () => {
-    expect(userService).toBeInstanceOf(ArangoUserService);
+  it('should create an instance of ArangoUserRepository', () => {
+    expect(IUserRepository).toBeInstanceOf(ArangoUserRepository);
   });
 
   it('should return null when user is not found', async () => {
-    const user = await userService.getUser('non-existent-key');
+    const user = await IUserRepository.getUser('non-existent-key');
     expect(user).toBeNull();
   });
 
