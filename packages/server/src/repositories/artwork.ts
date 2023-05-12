@@ -1,6 +1,6 @@
 /* eslint-disable no-empty-function */
 /* eslint-disable no-useless-constructor */
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import * as joi from '@hapi/joi';
 import {aql, Database} from 'arangojs';
 import crypto from 'crypto';
@@ -9,20 +9,21 @@ import {inject, injectable} from 'inversify';
 import {
   Artwork,
   artworkSchema,
-  ArtworkService,
+  Collections,
+  IArtworkRepository,
   updateArtworkSchema,
 } from './types';
 
 @injectable()
-export class ArangoArtworkService implements ArtworkService {
+export class ArangoArtworkRepository implements IArtworkRepository {
   constructor(@inject(Database) private db: Database) {}
 
   async getArtwork(key: string): Promise<Artwork | null> {
     const cursor = await this.db.query(aql`
-        FOR artwork IN artworks
+          FOR artwork IN ${Collections.Artworks}
           FILTER artwork._key == ${key}
           RETURN artwork
-      `);
+        `);
     const result = await cursor.all();
     return result.length ? result[0] : null;
   }
@@ -44,7 +45,7 @@ export class ArangoArtworkService implements ArtworkService {
       UPSERT { slug: ${art.slug} }
       INSERT ${art}
       UPDATE {}
-      IN artworks
+      IN ${Collections.Artworks}
       RETURN NEW
     `);
       const result = await cursor.all();
@@ -60,10 +61,16 @@ export class ArangoArtworkService implements ArtworkService {
     const art = artwork;
     art.updatedAt = updatedAt;
 
+    try {
+      joi.attempt(art, updateArtworkSchema);
+    } catch (e: any) {
+      throw new Error(e.message);
+    }
+
     const cursor = await this.db.query(aql`
-      FOR a IN artworks
+      FOR a IN ${Collections.Artworks}
       FILTER a.slug == ${art.slug}
-      UPDATE a WITH ${art} IN artworks
+      UPDATE a WITH ${art} IN ${Collections.Artworks}
       RETURN NEW
     `);
     const result = await cursor.all();
