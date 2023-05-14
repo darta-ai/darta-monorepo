@@ -4,7 +4,7 @@
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 
-import {Collections, ICreateCollections} from './types';
+import {Collections, ICreateCollections} from '../types';
 
 @injectable()
 export class CreateCollectionsRepository implements ICreateCollections {
@@ -24,13 +24,13 @@ export class CreateCollectionsRepository implements ICreateCollections {
       console.error('Failed to create collection/s:', err);
     }
     try {
-      await this.db.createEdgeCollection(Collections.ArtworkRatingEdge);
+      await this.db.createEdgeCollection(Collections.ArtworkRatingEdges);
       console.log('rating edge collection created');
     } catch (err) {
       console.error('Failed to create collection/s:', err);
     }
     try {
-      await this.db.createEdgeCollection(Collections.ArtworkOwnersEdge);
+      await this.db.createEdgeCollection(Collections.ArtworkOwnersEdges);
       console.log('owner edge collection created');
     } catch (err) {
       console.error('Failed to create collection/s:', err);

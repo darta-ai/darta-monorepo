@@ -9,19 +9,18 @@ import {inject, injectable} from 'inversify';
 import {
   Artwork,
   artworkSchema,
-  Collections,
   IArtworkRepository,
   updateArtworkSchema,
-} from './types';
+} from '../types';
 
 @injectable()
 export class ArangoArtworkRepository implements IArtworkRepository {
   constructor(@inject(Database) private db: Database) {}
 
-  async getArtwork(key: string): Promise<Artwork | null> {
+  async getArtwork(slug: string): Promise<Artwork | null> {
     const cursor = await this.db.query(aql`
-          FOR artwork IN ${Collections.Artworks}
-          FILTER artwork._key == ${key}
+          FOR artwork IN artworks
+          FILTER artwork.slug == ${slug}
           RETURN artwork
         `);
     const result = await cursor.all();
@@ -45,7 +44,7 @@ export class ArangoArtworkRepository implements IArtworkRepository {
       UPSERT { slug: ${art.slug} }
       INSERT ${art}
       UPDATE {}
-      IN ${Collections.Artworks}
+      IN artworks
       RETURN NEW
     `);
       const result = await cursor.all();
@@ -68,9 +67,9 @@ export class ArangoArtworkRepository implements IArtworkRepository {
     }
 
     const cursor = await this.db.query(aql`
-      FOR a IN ${Collections.Artworks}
+      FOR a IN artworks
       FILTER a.slug == ${art.slug}
-      UPDATE a WITH ${art} IN ${Collections.Artworks}
+      UPDATE a WITH ${art} IN artworks
       RETURN NEW
     `);
     const result = await cursor.all();
