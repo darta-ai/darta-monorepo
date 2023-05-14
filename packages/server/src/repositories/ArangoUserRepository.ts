@@ -4,7 +4,7 @@ import {aql, Database} from 'arangojs';
 import crypto from 'crypto';
 import {inject, injectable} from 'inversify';
 
-import {Collections, IUserRepository, Rating, User} from './types';
+import {IUserRepository, Rating, User} from '../types';
 
 @injectable()
 export class ArangoUserRepository implements IUserRepository {
@@ -12,9 +12,9 @@ export class ArangoUserRepository implements IUserRepository {
 
   async getUser(deviceId: string): Promise<User | null> {
     const cursor = await this.db.query(aql`
-        FOR user IN ${Collections.Users}
-          FILTER user.deviceId == ${deviceId}
-          RETURN user
+        FOR user IN users
+        FILTER user.deviceId == ${deviceId}
+        RETURN user
       `);
     const result = await cursor.all();
     return result.length ? result[0] : null;
@@ -33,7 +33,7 @@ export class ArangoUserRepository implements IUserRepository {
       UPSERT { deviceId: ${u.deviceId} }
       INSERT ${u}
       UPDATE {}
-      IN ${Collections.Users}
+      IN users
       RETURN NEW
     `);
       const result = await cursor.all();
@@ -49,9 +49,9 @@ export class ArangoUserRepository implements IUserRepository {
     const u = user;
     u.updatedAt = updatedAt;
     const cursor = await this.db.query(aql`
-      FOR u IN ${Collections.Users}
+      FOR u IN users
       FILTER u.deviceId == ${user.deviceId}
-      UPDATE u WITH ${user} IN ${Collections.Users}
+      UPDATE u WITH ${user} IN users
       RETURN NEW
     `);
     const result = await cursor.all();
@@ -59,31 +59,15 @@ export class ArangoUserRepository implements IUserRepository {
   }
 
   // NOT WORKING
-  async addLikedArtworkToUser(userKey: string, rating: Rating): Promise<User> {
+  async addRatingIdToUser(userKey: string, rating: Rating): Promise<User> {
     const edgeKey = rating._key;
     const updatedAt = new Date().toISOString();
 
     const cursor = await this.db.query(aql`
-      LET user = DOCUMENT("${Collections.Users}/${userKey}")
+      LET user = DOCUMENT("users/${userKey}")
       LET edgeKey = "${edgeKey}"
       LET updatedLikedArtworks = MERGE(user.likedArtworks, {[${edgeKey}]: ${edgeKey}})
-      UPDATE user WITH {likedArtworks: updatedLikedArtworks, updatedAt: "${updatedAt}"} IN ${Collections.Users}
-    `);
-
-    const result = await cursor.all();
-    return result[0];
-  }
-
-  // NOT WORKING
-  async addSavedArtworkToUser(userKey: string, edge: Rating): Promise<User> {
-    const edgeKey = edge._key;
-    const updatedAt = new Date().toISOString();
-
-    const cursor = await this.db.query(aql`
-      LET user = DOCUMENT("${Collections.Users}/${userKey}")
-      LET edgeKey = "${edgeKey}"
-      LET updatedLikedArtworks = MERGE(user.savedArtwork, {[edgeKey]: edgeKey})
-      UPDATE user WITH {savedArtwork: updatedLikedArtworks, updatedAt: "${updatedAt}"} IN ${Collections.Users}
+      UPDATE user WITH {likedArtworks: updatedLikedArtworks, updatedAt: "${updatedAt}"} IN users
     `);
 
     const result = await cursor.all();

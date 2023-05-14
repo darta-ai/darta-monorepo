@@ -2,29 +2,18 @@
 // needed for the inversify container
 import 'reflect-metadata';
 
-import {Database} from 'arangojs';
 import express, {Request, Response} from 'express';
 import * as fs from 'fs';
 import https from 'https';
-import {Container} from 'inversify';
 import path from 'path';
 
-import {config} from './config';
 import {
-  ArangoArtworkRepository,
-  ArangoRatingRepository,
-  ArangoUserRepository,
-  CreateCollectionsRepository,
-} from './repositories';
-import {
-  Artwork,
-  IArtworkRepository,
-  ICreateCollections,
-  IRatingRepository,
-  IUserRepository,
-  Rating,
-  User,
-} from './repositories/types';
+  artworkRepository,
+  createCollections,
+  ratingRepository,
+  userRepository,
+} from './container';
+import {Artwork, Rating, User} from './types';
 
 // Load the SSL certificate and key files
 const privateKey = fs.readFileSync(
@@ -35,46 +24,6 @@ const certificate = fs.readFileSync(
   path.join(__dirname, `/ssl/certificate.pem`),
   'utf8',
 );
-
-const container = new Container();
-const agent = new https.Agent({
-  rejectUnauthorized: false,
-});
-
-container.bind(Database).toConstantValue(
-  // Configure the ArangoDB connection
-  new Database({
-    url: config.arango.url!,
-    databaseName: config.arango.database!,
-    auth: {
-      username: config.arango.user!,
-      password: '',
-    },
-    agentOptions: {
-      key: privateKey,
-      cert: certificate,
-      passphrase: 'darta',
-    },
-    agent,
-  }),
-);
-container.bind<IUserRepository>(ArangoUserRepository).toSelf();
-container.bind<IArtworkRepository>(ArangoArtworkRepository).toSelf();
-container.bind<IRatingRepository>(ArangoRatingRepository).toSelf();
-container.bind<ICreateCollections>(CreateCollectionsRepository).toSelf();
-
-const userRepository = container.get<IUserRepository>(ArangoUserRepository);
-const artworkRepository = container.get<IArtworkRepository>(
-  ArangoArtworkRepository,
-);
-const ratingRepository = container.get<IRatingRepository>(
-  ArangoRatingRepository,
-);
-const createCollections = container.get<ICreateCollections>(
-  CreateCollectionsRepository,
-);
-
-console.log('hi from index');
 
 const app = express();
 app.use(express.json());

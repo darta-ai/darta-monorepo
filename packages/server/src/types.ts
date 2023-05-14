@@ -80,8 +80,7 @@ export interface IUserRepository {
   getUser(key: string): Promise<User | null>;
   updateUser(user: User): Promise<User>;
   createUser(user: User): Promise<User>;
-  addLikedArtworkToUser(userKey: string, edge: Rating): Promise<User>;
-  addSavedArtworkToUser(userKey: string, edge: Rating): Promise<User>;
+  addRatingIdToUser(userKey: string, edge: Rating): Promise<User>;
 }
 
 export interface IArtworkRepository {
@@ -103,6 +102,6 @@ export interface ICreateCollections {
 export enum Collections {
   Users = 'users',
   Artworks = 'artworks',
-  ArtworkRatingEdge = 'artworkRatingEdge',
-  ArtworkOwnersEdge = 'artworkOwnersEdge',
+  ArtworkRatingEdges = 'artworkRatingEdges',
+  ArtworkOwnersEdges = 'artworkOwnersEdges',
 }
