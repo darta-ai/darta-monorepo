@@ -1,0 +1,13 @@
+---
+apiVersion: database.arangodb.com/v1
+kind: ArangoDeployment
+metadata:
+  name: arangodb-single-no-auth
+  namespace: arango-resources
+spec:
+  mode: Single
+  image: arangodb/arangodb:3.10.5
+  auth:
+    jwtSecretName: none
+  nodeSelector:
+    nodePool: cluster
