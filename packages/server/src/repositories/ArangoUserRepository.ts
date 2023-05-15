@@ -11,9 +11,15 @@ export class ArangoUserRepository implements IUserRepository {
   constructor(@inject(Database) private db: Database) {}
 
   async getUser(deviceId: string): Promise<User | null> {
-    const cursor = await this.db.query(aql`
-        FOR user IN users FILTER user.deviceId == ${deviceId} RETURN user
-      `);
+    console.log('deviceId', deviceId);
+    const cursor = await this.db.query(
+      `
+        FOR user IN users 
+        FILTER user.deviceId == @deviceId
+        RETURN user
+      `,
+      {deviceId},
+    );
     const result = await cursor.all();
     return result.length ? result[0] : null;
   }

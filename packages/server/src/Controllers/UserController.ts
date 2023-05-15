@@ -18,7 +18,7 @@ export class UserController {
         res.status(400).send('Device ID is required');
       }
       try {
-        const users = await this.userService.userLogin(req.params.key);
+        const users = await this.userService.userLogin(deviceId);
         res.json(users);
       } catch (err: any) {
         res.status(500).send(err.message);

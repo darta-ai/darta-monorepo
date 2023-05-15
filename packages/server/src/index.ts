@@ -17,6 +17,8 @@ import {UserController} from './Controllers/UserController';
 import {UserService} from './Services/UserService';
 import {Artwork, Rating} from './types';
 
+console.log('began server');
+
 // Load the SSL certificate and key files
 const privateKey = fs.readFileSync(
   path.join(__dirname, `/ssl/private-key.pem`),
@@ -26,6 +28,8 @@ const certificate = fs.readFileSync(
   path.join(__dirname, `/ssl/certificate.pem`),
   'utf8',
 );
+
+console.log('got private keys');
 
 const app = express();
 app.use(express.json());

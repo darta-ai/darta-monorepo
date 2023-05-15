@@ -3,10 +3,11 @@ kind: "ArangoDeployment"
 metadata:
   name: "arango-dev-cluster"
   namespace: "arango-cluster"
+# PAT MAY NEED SOMETHING DIFFERENT FOR HIS MACHINE
 spec:
   mode: Cluster
   architecture:
-    - arm64
+    - arm64 
   image: 'arangodb/arangodb:3.10.5-arm64v8'
   affinity:
     nodeAffinity:
