@@ -22,6 +22,8 @@ import {
   IUserService,
 } from './types';
 
+console.log('here');
+
 const privateKey = fs.readFileSync(
   path.join(__dirname, `/ssl/private-key.pem`),
   'utf8',
