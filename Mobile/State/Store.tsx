@@ -71,6 +71,7 @@ export type PatUserSavedArtworkData = {
   };
 };
 
+
 export type GalleryData = {
   type: string;
   galleryId: string;
@@ -95,6 +96,26 @@ export type PatArtworkData = {
   savedArtwork: GalleryData;
   inquiredArtwork: GalleryData;
   [key: string]: GalleryData;
+}
+export type PatArtworkData = {
+  [key: string]: {
+    type: string;
+    galleryId: string;
+    artworkIds: string[];
+    tombstone?: string;
+    preview?: {
+      [key: string]: {
+        id: string;
+        image: string;
+        dimensionsInches: {
+          height: number;
+          width: number;
+        };
+      };
+    };
+    text: string;
+    body: string;
+  };
 };
 
 const rawArtworkData: PatArtworkData = {
