@@ -17,8 +17,6 @@ import {UserController} from './Controllers/UserController';
 import {UserService} from './Services/UserService';
 import {Artwork, Rating} from './types';
 
-console.log('began server');
-
 // Load the SSL certificate and key files
 const privateKey = fs.readFileSync(
   path.join(__dirname, `/ssl/private-key.pem`),
@@ -28,8 +26,6 @@ const certificate = fs.readFileSync(
   path.join(__dirname, `/ssl/certificate.pem`),
   'utf8',
 );
-
-console.log('got private keys');
 
 const app = express();
 app.use(express.json());
@@ -44,8 +40,6 @@ const credentials = {
 const httpsServer = https.createServer(credentials, app);
 
 const PORT = process.env.PORT || 1160;
-
-console.log('hi from app get');
 
 const userService = container.get<UserService>('UserService');
 const userController = new UserController(userService);
@@ -92,45 +86,6 @@ app.put('/artwork/update', async (req: Request, res: Response) => {
     }
   }
 });
-
-// // Get a user by key
-// app.get('/user/get/:key', async (req: Request, res: Response) => {
-//   try {
-//     const user = await userRepository.getUser(req.params.key);
-//     if (user) {
-//       res.json(user);
-//     } else {
-//       res.status(404).send('User not found');
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send('Internal server error');
-//   }
-// });
-
-// // Create a user dummy
-// app.post('/user/create', async (req: Request, res: Response) => {
-//   try {
-//     const user: User = req.body;
-//     const createdUser = await userRepository.createUser(user);
-//     res.status(201).json(createdUser);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send('Internal server error');
-//   }
-// });
-
-// // Update a user
-// app.put('/user/update/:deviceId', async (req: Request, res: Response) => {
-//   try {
-//     const user: User = req.body;
-//     const updatedUser = await userRepository.updateUser(user);
-//     res.json(updatedUser);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send('Internal server error');
-//   }
-// });
 
 app.post('/rating/create', async (req: Request, res: Response) => {
   try {
