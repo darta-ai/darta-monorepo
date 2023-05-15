@@ -76,6 +76,12 @@ export type UserArtworkEdge = Rating & {
   _from: string;
   _to: string;
 };
+
+export interface IUserService {
+  userLogin(key: string): Promise<User | null>;
+  updateUser(user: User): Promise<User | void>;
+}
+
 export interface IUserRepository {
   getUser(key: string): Promise<User | null>;
   updateUser(user: User): Promise<User>;

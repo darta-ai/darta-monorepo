@@ -12,9 +12,7 @@ export class ArangoUserRepository implements IUserRepository {
 
   async getUser(deviceId: string): Promise<User | null> {
     const cursor = await this.db.query(aql`
-        FOR user IN users
-        FILTER user.deviceId == ${deviceId}
-        RETURN user
+        FOR user IN users FILTER user.deviceId == ${deviceId} RETURN user
       `);
     const result = await cursor.all();
     return result.length ? result[0] : null;
