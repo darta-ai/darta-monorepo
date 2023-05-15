@@ -13,6 +13,10 @@ export class UserController {
     const router = express.Router();
 
     router.get('/:deviceId', async (req: Request, res: Response) => {
+      const deviceId = req.params?.deviceId;
+      if (!deviceId) {
+        res.status(400).send('Device ID is required');
+      }
       try {
         const users = await this.userService.userLogin(req.params.key);
         res.json(users);
@@ -24,6 +28,9 @@ export class UserController {
     router.put('/:deviceId', async (req: Request, res: Response) => {
       try {
         const user = req.body;
+        if (!user.deviceId) {
+          res.status(400).send('Device ID is required');
+        }
         const updatedUser = await this.userService.updateUser(user);
         res.status(201).json(updatedUser);
       } catch (err: any) {

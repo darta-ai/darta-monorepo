@@ -13,11 +13,13 @@ import {
   ArangoUserRepository,
   CreateCollectionsRepository,
 } from './Repositories';
+import {UserService} from './Services/UserService';
 import {
   IArtworkRepository,
   ICreateCollections,
   IRatingRepository,
   IUserRepository,
+  IUserService,
 } from './types';
 
 const privateKey = fs.readFileSync(
@@ -62,9 +64,9 @@ container
   .bind<ICreateCollections>('CollectionsRepository')
   .to(CreateCollectionsRepository);
 container.bind<IUserRepository>('UserRepository').to(ArangoUserRepository);
+container.bind<IUserService>('UserService').to(UserService);
 
 export const userRepository = container.get<IUserRepository>('UserRepository');
-
 export const artworkRepository =
   container.get<IArtworkRepository>('ArtworkRepository');
 export const ratingRepository =

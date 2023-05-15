@@ -1,25 +1,28 @@
 import {inject, injectable} from 'inversify';
 
-import {IUserRepository, User} from '../types';
+import {IUserRepository, IUserService, User} from '../types';
 
 @injectable()
-export class UserService {
+export class UserService implements IUserService {
   constructor(
-    @inject('IUserRepository') private userRepository: IUserRepository,
+    @inject('UserRepository') private userRepository: IUserRepository,
   ) {
     this.userRepository = userRepository;
   }
 
-  public async userLogin(deviceId: string) {
+  public async userLogin(deviceId: string): Promise<User | null> {
     const user = await this.userRepository.getUser(deviceId);
     if (user) {
       return user;
     }
     const newUser = await this.userRepository.createUser({deviceId});
-    return newUser;
+    if (newUser) {
+      return newUser;
+    }
+    throw new Error('Failed to create user');
   }
 
-  public async updateUser(user: User) {
+  public async updateUser(user: User): Promise<User | void> {
     try {
       const createdUser = await this.userRepository.updateUser(user);
       if (createdUser) {

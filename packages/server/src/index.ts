@@ -9,11 +9,13 @@ import path from 'path';
 
 import {
   artworkRepository,
+  container,
   createCollections,
   ratingRepository,
-  userRepository,
 } from './container';
-import {Artwork, Rating, User} from './types';
+import {UserController} from './Controllers/UserController';
+import {UserService} from './Services/UserService';
+import {Artwork, Rating} from './types';
 
 // Load the SSL certificate and key files
 const privateKey = fs.readFileSync(
@@ -40,6 +42,11 @@ const httpsServer = https.createServer(credentials, app);
 const PORT = process.env.PORT || 1160;
 
 console.log('hi from app get');
+
+const userService = container.get<UserService>('UserService');
+const userController = new UserController(userService);
+
+app.use('/user', userController.routes());
 
 // get an artwork by uuid
 app.get('/artwork/get/:key', async (req: Request, res: Response) => {
@@ -82,44 +89,44 @@ app.put('/artwork/update', async (req: Request, res: Response) => {
   }
 });
 
-// Get a user by key
-app.get('/user/get/:key', async (req: Request, res: Response) => {
-  try {
-    const user = await userRepository.getUser(req.params.key);
-    if (user) {
-      res.json(user);
-    } else {
-      res.status(404).send('User not found');
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal server error');
-  }
-});
+// // Get a user by key
+// app.get('/user/get/:key', async (req: Request, res: Response) => {
+//   try {
+//     const user = await userRepository.getUser(req.params.key);
+//     if (user) {
+//       res.json(user);
+//     } else {
+//       res.status(404).send('User not found');
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('Internal server error');
+//   }
+// });
 
-// Create a user dummy
-app.post('/user/create', async (req: Request, res: Response) => {
-  try {
-    const user: User = req.body;
-    const createdUser = await userRepository.createUser(user);
-    res.status(201).json(createdUser);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal server error');
-  }
-});
+// // Create a user dummy
+// app.post('/user/create', async (req: Request, res: Response) => {
+//   try {
+//     const user: User = req.body;
+//     const createdUser = await userRepository.createUser(user);
+//     res.status(201).json(createdUser);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('Internal server error');
+//   }
+// });
 
-// Update a user
-app.put('/user/update/:deviceId', async (req: Request, res: Response) => {
-  try {
-    const user: User = req.body;
-    const updatedUser = await userRepository.updateUser(user);
-    res.json(updatedUser);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal server error');
-  }
-});
+// // Update a user
+// app.put('/user/update/:deviceId', async (req: Request, res: Response) => {
+//   try {
+//     const user: User = req.body;
+//     const updatedUser = await userRepository.updateUser(user);
+//     res.json(updatedUser);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('Internal server error');
+//   }
+// });
 
 app.post('/rating/create', async (req: Request, res: Response) => {
   try {
