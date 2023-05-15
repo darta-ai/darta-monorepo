@@ -1,7 +1,7 @@
 import {Image} from 'react-native';
 
 import {ImageCollection} from '../firebase/hooks';
-import {buttonSizes} from '../src/globalVariables';
+import {buttonSizes} from '../Mobile/globalVariables';
 import {DataT} from '../types';
 
 export const imagePrefetch = async (imageUrls: string[]) => {
@@ -39,7 +39,7 @@ export const getImages = async (docIds: string[]) => {
     }),
   );
   await imagePrefetch(imageIds);
-  return results;
+  return results.reduce((a, v) => ({...a, [v.id]: v}), {});
 };
 
 export const getButtonSizes = (hp: number) => {
