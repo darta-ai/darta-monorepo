@@ -71,6 +71,32 @@ export type PatUserSavedArtworkData = {
   };
 };
 
+
+export type GalleryData = {
+  type: string;
+  galleryId: string;
+  artworkIds: string[];
+  tombstone?: string;
+  preview?: {
+    [key: string]: {
+      id: string;
+      image: string;
+      dimensionsInches: {
+        height: number;
+        width: number;
+      };
+    };
+  };
+  text: string;
+  body: string;
+};
+
+export type PatArtworkData = {
+  darta: GalleryData;
+  savedArtwork: GalleryData;
+  inquiredArtwork: GalleryData;
+  [key: string]: GalleryData;
+}
 export type PatArtworkData = {
   [key: string]: {
     type: string;
@@ -153,6 +179,7 @@ export interface IState {
   tombstoneTitle: string;
   userSettings: PatUserData;
   artworkData: PatArtworkData;
+  savedArtwork?: GalleryData;
 }
 
 export enum ETypes {
@@ -391,6 +418,8 @@ const reducer = (state: IState, action: IAction): IState => {
         };
       }
     case ETypes.setTombstone:
+      const tempSavedGallery = state.globalGallery?.savedArtwork;
+    case ETypes.saveArtwork:
       return {...state, tombstoneTitle};
     default:
       return state;
