@@ -1,0 +1,12 @@
+apiVersion: "storage.arangodb.com/v1alpha"
+kind: "ArangoLocalStorage"
+metadata:
+  name: "example-arangodb-storage"
+  namespace: "arango-resources"
+spec:
+  storageClass:
+    name: my-local-ssd
+  localPath:
+  - /Users/tj.wetmore/Code/darta/frontend/frontendV1/data/arango
+  nodeSelector:
+    nodePool: cluster

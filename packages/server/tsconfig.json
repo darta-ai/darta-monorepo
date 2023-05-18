@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "target": "es6",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "outDir": "dist",
+        "strict": true,
+        "baseUrl": ".",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "skipLibCheck": true,
+        "paths": {
+          "*": ["node_modules/*"]
+        },
+        "rootDir": "src",
+        "lib": ["es2019", "dom"],
+    },
+    "include": ["src/**/*.ts", "src/keys/private-key.pem"],
+    "exclude": ["node_modules"]
+}
