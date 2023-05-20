@@ -12,7 +12,7 @@ import {
   ArangoRatingRepository,
   ArangoUserRepository,
   CreateCollectionsRepository,
-} from './Repositories';
+} from './repositories';
 import {UserService} from './Services/UserService';
 import {
   IArtworkRepository,
@@ -21,8 +21,6 @@ import {
   IUserRepository,
   IUserService,
 } from './types';
-
-console.log('here');
 
 const privateKey = fs.readFileSync(
   path.join(__dirname, `/ssl/private-key.pem`),
