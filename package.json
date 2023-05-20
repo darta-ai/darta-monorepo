@@ -1,0 +1,8 @@
+{
+    "name": "darta",
+    "private": true,
+    "workspaces": [
+      "packages/*"
+    ]
+  }
+  
