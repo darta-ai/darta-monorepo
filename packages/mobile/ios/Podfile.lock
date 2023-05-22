@@ -990,7 +990,7 @@ PODS:
     - React-Core
   - react-native-pager-view (6.2.0):
     - React-Core
-  - react-native-safe-area-context (4.5.0):
+  - react-native-safe-area-context (4.5.3):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -1085,16 +1085,16 @@ PODS:
   - RNFBApp (17.4.2):
     - Firebase/CoreOnly (= 10.7.0)
     - React-Core
-  - RNFBAuth (17.4.2):
+  - RNFBAuth (17.5.0):
     - Firebase/Auth (= 10.7.0)
     - React-Core
     - RNFBApp
-  - RNFBFirestore (17.3.2):
+  - RNFBFirestore (17.5.0):
     - Firebase/Firestore (= 10.7.0)
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - React-Core
     - RNFBApp
-  - RNGestureHandler (2.9.0):
+  - RNGestureHandler (2.10.1):
     - React-Core
   - RNPermissions (3.8.0):
     - React-Core
@@ -1356,7 +1356,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: ec9b713e248760bfa0f879f0715391de4651a7cb
   react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
   react-native-pager-view: 0ccb8bf60e2ebd38b1f3669fa3650ecce81db2df
-  react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
+  react-native-safe-area-context: b8979f5eda6ed5903d4dbc885be3846ea3daa753
   React-perflogger: c7ccda3d1d1da837f7ff4e54e816022a6803ee87
   React-RCTActionSheet: 01c125aebbad462a24228f68c584c7a921d6c28e
   React-RCTAnimation: 5277a9440acffc4a5b7baa6ae3880fe467277ae6
@@ -1372,9 +1372,9 @@ SPEC CHECKSUMS:
   ReactCommon: 2228b5d854dfa2b7569955decfdc52303ed61a7e
   RNDeviceInfo: 475a4c447168d0ad4c807e48ef5e0963a0f4eb1b
   RNFBApp: 55dbfc574e5ae414f2984394934f79f87eb4b050
-  RNFBAuth: d30acc0f5f169bc28c7fcbf1b45cd061cc647590
-  RNFBFirestore: d9e0512e5d62f0a4c5ac13f7cdcf34b2a530ea4d
-  RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
+  RNFBAuth: 54e598bb1358a0cf6c0a187f43161cd1bde90455
+  RNFBFirestore: 4edfb28f95cb461ef8423c6ae4354dfe98186586
+  RNGestureHandler: 42ec7c28dd02d540ed6c9159c57a98ff016492dc
   RNPermissions: 0c59c31f335ebead7746aeba4ffd63425dfa9a5c
   RNReanimated: f0dd6b881808e635ef0673f89642937d6c141314
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
@@ -1383,6 +1383,6 @@ SPEC CHECKSUMS:
   VisionCamera: c6356b309f7b8e185b7be2e703ec67bb35acf345
   Yoga: 5b0304b3dbef2b52e078052138e23a19c7dacaef
 
-PODFILE CHECKSUM: e523bba413fdf619ff9066502b99e67d4375ac46
+PODFILE CHECKSUM: 6b757d5ae4ea0ee687918db758e0be62165a4173
 
 COCOAPODS: 1.11.3
