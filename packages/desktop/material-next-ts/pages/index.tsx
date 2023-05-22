@@ -16,7 +16,6 @@ Home.getInitialProps = async () => {
 };
 
 export default function Home({pamphletData}: {pamphletData: any}) {
-  console.log({pamphletData});
   return (
     <Container maxWidth="lg">
       {pamphletData && (
