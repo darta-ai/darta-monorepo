@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 require('dotenv').config();
-const withVideos = require('next-videos')
+const withVideos = require('next-videos');
 module.exports = {
   reactStrictMode: true,
   env: {
@@ -20,5 +20,4 @@ module.exports = {
   },
 };
 
-
-module.exports = withVideos()
+module.exports = withVideos();

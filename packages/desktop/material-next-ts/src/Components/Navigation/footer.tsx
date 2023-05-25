@@ -1,24 +1,26 @@
 import React from 'react';
-import {Typography, Box, Link} from '@mui/material';
+import {Typography, Box} from '@mui/material';
 import {PRIMARY_BLUE, PRIMARY_MILK, PRIMARY_LIGHTBLUE} from '../../../styles';
+import Link from 'next/link';
 
 const styles = {
   footerBox: {
     width: '100%',
-    height: '35px',
-    // position: 'fixed',
+    height: '5vh',
     bottom: 0,
     backgroundColor: PRIMARY_BLUE,
-    marginTop: '100px',
   },
   divider: {
     color: PRIMARY_MILK,
   },
   textContainer: {
     display: 'flex',
+    height: '100%',
+    flexDirection: 'row',
+    alignContent: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: '5%',
+    gap: '7vh',
   },
   typography: {
     fontFamily: 'EB Garamond',
@@ -44,7 +46,7 @@ export const Footer = () => {
         </Typography>
         <div style={styles.divider}>|</div>
         <Typography component="div" sx={styles.typography}>
-          <div onClick={() => console.log('clicked')}>contact</div>
+          contact
         </Typography>
         <div style={styles.divider}>|</div>
         <Typography component="div" sx={styles.typography}>

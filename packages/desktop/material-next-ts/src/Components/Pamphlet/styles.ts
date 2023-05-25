@@ -6,55 +6,67 @@ export const styles = {
     marginBottom: '15%',
     width: '95%',
     '@media (min-width:600px)': {
-      height: 'auto',
-      width: '85%',
+      width: '80%',
+      height: '45vh',
     },
-    bottomBorderWidth: '1px',
-    bottomBorderColor: 'black',
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: '5%',
   },
   textContainer: {
     display: 'flex',
     flexDirection: 'column',
     flex: 3,
-    minWidth: '60%'
+    minWidth: '60%',
   },
-  imageSize: {
-    minWidth: '100%',
+  imageContainer: {
+    minWidth: '50%',
     height: '100%',
-    display:'flex',
+    display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image : {
-    width: `100%`,
-    height: 'unset',
-    alignSelf: 'center',
-  },
-  videoContainer:{
-    minWidth: '30%',
-    height: '100%',
-    display:'flex',
-    alignItems: 'center',
+    alignSelf: 'flex-end',
     justifyContent: 'center',
     '@media (min-width:600px)': {
       height: '200px',
       width: '150px',
-    }
+    },
   },
-  videoStyle:{
-    width: `90%`,
+  imageSize: {
+    minWidth: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: `100%`,
     height: 'unset',
     alignSelf: 'center',
+  },
+  videoContainer: {
+    minWidth: '50%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+    '@media (min-width:600px)': {
+      height: '100%',
+      minWidth: '20%',
+    },
+  },
+  videoStyle: {
+    width: `90%`,
+    height: 'unset',
   },
   typographyTitle: {
     fontFamily: 'EB Garamond',
     color: PRIMARY_BLUE,
     fontSize: '2rem',
     '@media (min-width:600px)': {
-      fontSize: '1.5rem',
+      fontSize: '2.5rem',
     },
   },
   typography: {
@@ -66,5 +78,4 @@ export const styles = {
     },
     cursor: 'none',
   },
-
 };

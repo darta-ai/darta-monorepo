@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import Link from '../src/Link';
 import ProTip from '../src/ProTip';
 import Copyright from '../src/Copyright';
-import {getPamphlet} from '../frontendFirebase/firebaseApp';
+import {getPamphlet} from '../frontendFirebase/firebaseDB';
 import {PamphletRight} from '../src/Components/Pamphlet/pamphletRight';
 import {PamphletLeft} from '../src/Components/Pamphlet/pamphletLeft';
 import {PRIMARY_MILK} from '../styles';
@@ -26,15 +26,16 @@ export default function Home({pamphletData}: {pamphletData: any}) {
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
+            marginTop: '10%',
           }}>
           {pamphletData &&
             pamphletData.map((data: any, index: number) => {
               const isEven = index % 2 === 0;
-              const pamphletData = data
-              console.log(pamphletData)
+              const pamphletData = data;
               if (isEven) {
                 return (
                   <PamphletRight
+                    key={index}
                     headline={pamphletData?.headline}
                     line1={pamphletData?.line1}
                     line2={pamphletData?.line2}
@@ -45,6 +46,7 @@ export default function Home({pamphletData}: {pamphletData: any}) {
               } else {
                 return (
                   <PamphletLeft
+                    key={index}
                     headline={pamphletData?.headline}
                     line1={pamphletData?.line1}
                     line2={pamphletData?.line2}

@@ -2,6 +2,7 @@ import React from 'react';
 import {Typography, Box} from '@mui/material';
 import {PRIMARY_BLUE, PRIMARY_MILK, PRIMARY_LIGHTBLUE} from '../../../styles';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const styles = {
   headerBox: {
@@ -40,9 +41,11 @@ export const Header = () => {
       <Typography component="div" sx={styles.typography}>
         <div onClick={() => console.log('clicked')}>for artists</div>
       </Typography>
-      <Typography component="div" sx={styles.typography}>
-        <div onClick={() => console.log('clicked')}>for galleries</div>
-      </Typography>
+      <Link href="/Authenticate/Galleries">
+        <Typography component="div" sx={styles.typography}>
+          for Galleries
+        </Typography>
+      </Link>
       <Typography component="div" sx={styles.typography}>
         <div onClick={() => console.log('clicked')}>for curators</div>
       </Typography>
@@ -50,12 +53,13 @@ export const Header = () => {
       <div />
       <div />
       <div />
+      <Link href="/" >
       <Image
         src="/static/images/dartahouseblue.png"
         alt="me"
         width="64"
-        height="64"
-      />
+        height="64" />
+      </Link>
     </Box>
   );
 };

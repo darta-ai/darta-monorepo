@@ -1,6 +1,7 @@
-import {initializeApp} from 'firebase/app';
-import {getFirestore, collection, getDocs} from 'firebase/firestore/lite';
-
+// import {initializeApp} from 'firebase/app';
+import {getAuth, Auth} from 'firebase/auth';
+import firebase from 'firebase/compat/app';
+import {getFirestore, Firestore} from 'firebase/firestore/lite';
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -11,13 +12,13 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+let app;
+let auth: Auth;
+let db: Firestore;
 
-// Get a list of cities from your database
-export async function getPamphlet() {
-  const pamphletData = collection(db, 'pamphlet');
-  const pamphletSnapshot = await getDocs(pamphletData);
-  const pamphletList = pamphletSnapshot.docs.map(doc => doc.data());
-  return pamphletList;
+if (firebaseConfig.apiKey) {
+  app = firebase.initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
 }
+export {app, auth, db};
