@@ -3,8 +3,7 @@ import React from 'react';
 import {Typography, Box, Divider} from '@mui/material';
 import Image from 'next/image';
 
-import {styles} from  './styles'
-
+import {styles} from './styles';
 
 export const PamphletRight = ({
   headline,
@@ -19,17 +18,17 @@ export const PamphletRight = ({
   line3?: string;
   index: number;
 }) => {
-  let png; 
+  let png;
   let video;
-  try{
-    png = require(`../../../public/static/pamphlet/${index}.png`)
-  }catch(e){
-    png = null
+  try {
+    png = require(`../../../public/static/pamphlet/${index}.png`);
+  } catch (e) {
+    png = null;
   }
-  try{
-    video = require(`../../../public/static/pamphlet/${index}.mp4`)
-  }catch(e){
-    video = null
+  try {
+    video = require(`../../../public/static/pamphlet/${index}.mp4`);
+  } catch (e) {
+    video = null;
   }
   return (
     <Box sx={styles.container}>
@@ -47,23 +46,14 @@ export const PamphletRight = ({
       <Box sx={{flex: 1}}>
         {png ? (
           <div style={styles.imageSize}>
-          <Image
-            src={png}
-            alt="info"
-            style={styles.image}
-          />
+            <Image src={png} alt="info" style={styles.image} />
           </div>
-        ): (
+        ) : (
           <Box sx={styles.videoContainer}>
-            <video
-              title={headline}
-              muted
-              playsInline
-              style={styles.videoStyle}
-            >
+            <video title={headline} muted playsInline style={styles.videoStyle}>
               <source src={video} type="video/mp4" />
             </video>
-            </Box>
+          </Box>
         )}
       </Box>
       <Divider />
