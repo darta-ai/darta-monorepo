@@ -2,7 +2,7 @@ import React from 'react';
 import {Typography, Box} from '@mui/material';
 import {AuthEnum} from '../../Auth/types';
 import Link from 'next/link';
-import {styles} from './styles'
+import {styles} from './styles';
 
 export const NeedAnAccount = ({routeType}: {routeType: AuthEnum}) => {
   return (

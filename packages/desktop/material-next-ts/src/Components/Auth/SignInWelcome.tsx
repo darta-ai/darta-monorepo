@@ -14,7 +14,7 @@ const styles = {
     '@media (min-width:600px)': {
       padding: '10vh',
       flexDirection: 'row',
-      height: '130vh',
+      height: '100vh',
     },
 
     boarderRadius: '30px',

@@ -1,11 +1,11 @@
 import React from 'react';
-import {Typography, Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../styles';
-import {AuthEnum, WelcomeBack} from '../../src/Components/Auth/types';
-import {SignInForm} from '../../src/Components/Auth/SignInForm';
-import {welcomeBack} from '../../frontendFirebase/firebaseDB';
-import {SignInWelcome} from '../../src/Components/Auth/SignInWelcome';
+import {AuthEnum, DartaBenefits} from '../../src/Components/Auth/types';
+import {signUpBenefits} from '../../frontendFirebase/firebaseDB';
+import {SignUpWelcome} from '../../src/Components/Auth/SignUpWelcome';
 import type {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {SignUpForm} from '../../src/Components/Auth/SignUpForm';
 
 const styles = {
   container: {
@@ -77,26 +77,12 @@ const styles = {
   },
 };
 
-export default function GallerySignIn({
-  data,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function ForgotPassword() {
   return (
-    <Box sx={styles.container}>
-      <SignInWelcome welcomeBackData={data as WelcomeBack} />
-      <SignInForm signUpType={AuthEnum.galleries} />
-    </Box>
+    <>
+      <Box sx={styles.container}>
+        <Typography>forgot password</Typography>
+      </Box>
+    </>
   );
 }
-
-type WelcomeBackData = {
-  data: WelcomeBack;
-};
-
-export const getStaticProps: GetStaticProps<{
-  data: WelcomeBackData;
-}> = async () => {
-  const welcomeBackData = (await welcomeBack(
-    AuthEnum.galleries,
-  )) as WelcomeBackData;
-  return {props: {data: welcomeBackData}};
-};

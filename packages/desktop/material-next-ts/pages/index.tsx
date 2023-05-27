@@ -9,13 +9,15 @@ import {getPamphlet} from '../frontendFirebase/firebaseDB';
 import {PamphletRight} from '../src/Components/Pamphlet/pamphletRight';
 import {PamphletLeft} from '../src/Components/Pamphlet/pamphletLeft';
 import {PRIMARY_MILK} from '../styles';
-import type {GetStaticProps, InferGetStaticPropsType } from 'next';
+import type {GetStaticProps, InferGetStaticPropsType} from 'next';
 
-export default function Home({data}: InferGetStaticPropsType<typeof getStaticProps>) {
-  const { pamphletData } = data;
+export default function Home({
+  data,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
+  const {pamphletData} = data;
   return (
     <Container maxWidth="lg">
-      {data.pamphletData && (
+      {pamphletData && (
         <Box
           sx={{
             my: 4,
@@ -60,14 +62,12 @@ export default function Home({data}: InferGetStaticPropsType<typeof getStaticPro
 }
 
 type PamphletData = {
-  data: any
+  pamphletData: any;
 };
-
 
 export const getStaticProps: GetStaticProps<{
   data: any;
 }> = async () => {
-  const pamphletData = await getPamphlet();
-  return {props: {data: pamphletData}};
+  const pamphletData = (await getPamphlet()) as any[];
+  return {props: {data: {pamphletData}}};
 };
-

@@ -5,7 +5,7 @@ import {TextField, FormHelperText, Button} from '@mui/material';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { AlreadySignedUp } from '../Navigation/Auth/AlreadySignedUp';
+import {AlreadySignedUp} from '../Navigation/Auth/AlreadySignedUp';
 import {AuthEnum} from './types';
 
 const signUpStyles = {

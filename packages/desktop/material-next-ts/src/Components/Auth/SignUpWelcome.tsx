@@ -19,6 +19,23 @@ const styles = {
 
     boarderRadius: '30px',
   },
+  headerContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    height: '10%',
+    bottomBorder: '1px solid white',
+  },
+  header: {
+    fontFamily: 'EB Garamond',
+    alignText: 'center',
+    color: PRIMARY_MILK,
+    fontSize: '2rem',
+    alignSelf: 'center',
+    '@media (min-width:600px)': {
+      fontSize: '2rem',
+    },
+  },
   introContainer: {
     flex: 4,
     height: '100%',
@@ -78,6 +95,11 @@ export function SignUpWelcome({benefitsData}: {benefitsData: DartaBenefits}) {
   return (
     <Box sx={styles.introContainer}>
       <Box sx={styles.textContainer}>
+        {benefitsData?.Headline && (
+          <Box sx={styles.headerContainer}>
+            <Typography sx={styles.header}>{benefitsData.Headline}</Typography>
+          </Box>
+        )}
         {benefitsData?.Field1 && (
           <>
             <Box sx={styles.checkBoxes}>
