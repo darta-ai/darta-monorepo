@@ -15,6 +15,6 @@ export const styles = {
     '@media (min-width:600px)': {
       fontSize: '1.2em',
     },
-    cursor: 'pointer',
+    cursor: 'default',
   },
 };

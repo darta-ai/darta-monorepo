@@ -4,6 +4,7 @@ import {PRIMARY_BLUE, PRIMARY_MILK, PRIMARY_LIGHTBLUE} from '../../../styles';
 import Image from 'next/image';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
+import {AuthEnum} from '../Auth/types';
 
 const styles = {
   headerBox: {
@@ -32,7 +33,7 @@ const styles = {
       backgroundColor: PRIMARY_LIGHTBLUE,
       opacity: [0.9, 0.9, 0.9],
     },
-    cursor: 'pointer',
+    cursor: 'default',
   },
 };
 
@@ -40,17 +41,21 @@ export const Header = () => {
   const router = useRouter();
   return (
     <Box sx={styles.headerBox}>
-      <Typography component="div" sx={styles.typography}>
-        <div onClick={() => console.log('clicked')}>for artists</div>
-      </Typography>
-      <Link href="/Authenticate/Galleries">
+      <Link href={`/Authenticate/${AuthEnum.artists}`}>
+        <Typography component="div" sx={styles.typography}>
+          for artists
+        </Typography>
+      </Link>
+      <Link href={`/Authenticate/${AuthEnum.galleries}`}>
         <Typography component="div" sx={styles.typography}>
           for galleries
         </Typography>
       </Link>
-      <Typography component="div" sx={styles.typography}>
-        <div onClick={() => console.log('clicked')}>for curators</div>
-      </Typography>
+      <Link href={`/Authenticate/${AuthEnum.curators}`}>
+        <Typography component="div" sx={styles.typography}>
+          for curators
+        </Typography>
+      </Link>
       <div />
       <div />
       <div />

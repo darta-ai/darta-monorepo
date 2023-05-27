@@ -24,7 +24,7 @@ const styles = {
 };
 
 //defines everything
-const userType = AuthEnum.galleries;
+const userType = AuthEnum.curators;
 
 export default function GallerySignIn({
   data,
@@ -46,6 +46,11 @@ type BenefitsData = {
 export const getStaticProps: GetStaticProps<{
   data: BenefitsData;
 }> = async () => {
-  const benefitsData = (await signUpBenefits(userType)) as BenefitsData;
-  return {props: {data: benefitsData}};
+  try {
+    const benefitsData = (await signUpBenefits(userType)) as BenefitsData;
+    return {props: {data: benefitsData}};
+  } catch (e) {
+    console.log(e);
+    return {props: {data: {data: {}}}};
+  }
 };
