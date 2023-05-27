@@ -68,6 +68,7 @@ export const styles = {
     '@media (min-width:600px)': {
       fontSize: '2.5rem',
     },
+    cursor: 'default',
   },
   typography: {
     fontFamily: 'EB Garamond',
@@ -76,6 +77,6 @@ export const styles = {
     '@media (min-width:600px)': {
       fontSize: '1.2rem',
     },
-    cursor: 'none',
+    cursor: 'default',
   },
 };

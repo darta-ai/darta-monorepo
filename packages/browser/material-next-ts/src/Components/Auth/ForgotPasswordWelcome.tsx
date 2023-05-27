@@ -1,7 +1,7 @@
 import React from 'react';
 import {Typography, Box} from '@mui/material';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../../styles';
-import {AuthEnum, WelcomeBack} from './types';
+import {forgotPasswordText} from './types';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 
 const styles = {
@@ -16,6 +16,7 @@ const styles = {
       flexDirection: 'row',
       height: '100vh',
     },
+
     boarderRadius: '30px',
   },
   introContainer: {
@@ -110,24 +111,16 @@ const styles = {
   },
 };
 
-export function SignInWelcome({
-  welcomeBackData,
-  signInType,
-}: {
-  welcomeBackData: WelcomeBack;
-  signInType: AuthEnum;
-}) {
+export function ForgotPasswordWelcome() {
   return (
     <Box sx={styles.introContainer}>
       <Box sx={styles.textContainer}>
-        {welcomeBackData?.Headline && (
-          <Box sx={styles.headerContainer}>
-            <Typography sx={styles.header}>
-              {welcomeBackData.Headline}
-            </Typography>
-          </Box>
-        )}
-        {welcomeBackData?.Field1 && (
+        <Box sx={styles.headerContainer}>
+          <Typography sx={styles.header}>
+            {forgotPasswordText.Headline}
+          </Typography>
+        </Box>
+        {forgotPasswordText?.Field1 && (
           <>
             <Box sx={styles.checkBoxes}>
               <Box>
@@ -137,17 +130,17 @@ export function SignInWelcome({
               </Box>
               <Box>
                 <Typography sx={styles.typographyTitle}>
-                  {welcomeBackData.Field1}
+                  {forgotPasswordText?.Field1}
                 </Typography>
                 <Typography sx={styles.typography}>
-                  {welcomeBackData.Field1Subset}
+                  {forgotPasswordText?.Field1Subset}
                 </Typography>
               </Box>
             </Box>
           </>
         )}
 
-        {welcomeBackData?.Field2 && (
+        {forgotPasswordText?.Field2 && (
           <>
             <Box sx={styles.checkBoxes}>
               <Box>
@@ -157,16 +150,16 @@ export function SignInWelcome({
               </Box>
               <Box>
                 <Typography sx={styles.typographyTitle}>
-                  {welcomeBackData.Field2}
+                  {forgotPasswordText?.Field2}
                 </Typography>
                 <Typography sx={styles.typography}>
-                  {welcomeBackData.Field2Subset}
+                  {forgotPasswordText?.Field2Subset}
                 </Typography>
               </Box>
             </Box>
           </>
         )}
-        {welcomeBackData?.Field3 && (
+        {forgotPasswordText?.Field3 && (
           <>
             <Box sx={styles.checkBoxes}>
               <Box>
@@ -176,16 +169,16 @@ export function SignInWelcome({
               </Box>
               <Box>
                 <Typography sx={styles.typographyTitle}>
-                  {welcomeBackData.Field3}
+                  {forgotPasswordText?.Field3}
                 </Typography>
                 <Typography sx={styles.typography}>
-                  {welcomeBackData.Field3Subset}
+                  {forgotPasswordText?.Field3Subset}
                 </Typography>
               </Box>
             </Box>
           </>
         )}
-        {welcomeBackData?.Field4 && (
+        {forgotPasswordText?.Field4 && (
           <>
             <Box sx={styles.checkBoxes}>
               <Box>
@@ -195,22 +188,21 @@ export function SignInWelcome({
               </Box>
               <Box>
                 <Typography sx={styles.typographyTitle}>
-                  {welcomeBackData.Field4}
+                  {forgotPasswordText?.Field4}
                 </Typography>
                 <Typography sx={styles.typography}>
-                  {welcomeBackData.Field4Subset}
+                  {forgotPasswordText?.Field4Subset}
                 </Typography>
               </Box>
             </Box>
           </>
         )}
-        {welcomeBackData?.Footer && (
+        {forgotPasswordText?.Footer && (
           <Box sx={styles.footerContainer}>
             <Typography sx={styles.footerText}>
-              {welcomeBackData.Footer}{' '}
-              <a
-                href={`mailto: ${welcomeBackData.HelpEmail}+${signInType}@darta.works`}>
-                {welcomeBackData.HelpEmail}
+              {forgotPasswordText.Footer}{' '}
+              <a href={`mailto: ${forgotPasswordText.HelpEmail}`}>
+                {forgotPasswordText.HelpEmail}
               </a>
             </Typography>
           </Box>

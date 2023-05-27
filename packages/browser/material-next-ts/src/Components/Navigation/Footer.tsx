@@ -33,7 +33,7 @@ const styles = {
       backgroundColor: PRIMARY_LIGHTBLUE,
       opacity: [0.9, 0.9, 0.9],
     },
-    cursor: 'pointer',
+    cursor: 'default',
   },
 };
 

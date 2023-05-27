@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Typography} from '@mui/material';
+import {Box} from '@mui/material';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../styles';
 import {AuthEnum, DartaBenefits} from '../../src/Components/Auth/types';
 import {signUpBenefits} from '../../frontendFirebase/firebaseDB';
@@ -77,12 +77,29 @@ const styles = {
   },
 };
 
-export default function ForgotPassword() {
+//defines everything
+const userType = AuthEnum.artists;
+
+export default function GallerySignIn({
+  data,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <>
       <Box sx={styles.container}>
-        <Typography>forgot password</Typography>
+        <SignUpWelcome benefitsData={data as DartaBenefits} />
+        <SignUpForm signUpType={userType} />
       </Box>
     </>
   );
 }
+
+type BenefitsData = {
+  data: DartaBenefits;
+};
+
+export const getStaticProps: GetStaticProps<{
+  data: BenefitsData;
+}> = async () => {
+  const benefitsData = (await signUpBenefits(userType)) as BenefitsData;
+  return {props: {data: benefitsData}};
+};

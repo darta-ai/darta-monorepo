@@ -23,7 +23,7 @@ const styles = {
 };
 
 //defines everything
-const userType = AuthEnum.galleries;
+const userType = AuthEnum.artists;
 
 export default function GallerySignIn({
   data,
