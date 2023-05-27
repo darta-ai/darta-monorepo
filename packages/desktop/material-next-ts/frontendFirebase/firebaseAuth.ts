@@ -1,6 +1,9 @@
-import {auth, app} from './firebaseApp';
+import {app} from './firebaseApp';
 import firebase from 'firebase/compat/app';
 import {onAuthStateChanged} from 'firebase/auth';
+import {getAuth, Auth} from 'firebase/auth';
+
+let auth: Auth = getAuth(app);
 
 export const firebaseSignUp = async (email: string, password: string) => {
   firebase

@@ -3,6 +3,7 @@ import {Typography, Box} from '@mui/material';
 import {PRIMARY_BLUE, PRIMARY_MILK, PRIMARY_LIGHTBLUE} from '../../../styles';
 import Image from 'next/image';
 import Link from 'next/link';
+import {useRouter} from 'next/router';
 
 const styles = {
   headerBox: {
@@ -36,6 +37,7 @@ const styles = {
 };
 
 export const Header = () => {
+  const router = useRouter();
   return (
     <Box sx={styles.headerBox}>
       <Typography component="div" sx={styles.typography}>
@@ -43,7 +45,7 @@ export const Header = () => {
       </Typography>
       <Link href="/Authenticate/Galleries">
         <Typography component="div" sx={styles.typography}>
-          for Galleries
+          for galleries
         </Typography>
       </Link>
       <Typography component="div" sx={styles.typography}>
@@ -53,13 +55,15 @@ export const Header = () => {
       <div />
       <div />
       <div />
-      <Link href="/" >
-      <Image
-        src="/static/images/dartahouseblue.png"
-        alt="me"
-        width="64"
-        height="64" />
-      </Link>
+      <Box>
+        <Image
+          src="/static/images/dartahouseblue.png"
+          alt="me"
+          width="64"
+          height="64"
+          onClick={() => router.push('/', undefined, {shallow: true})}
+        />
+      </Box>
     </Box>
   );
 };

@@ -1,10 +1,11 @@
 import React from 'react';
 import {Typography, Box} from '@mui/material';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../styles';
-import {AuthEnum, BenefitsFields} from '../../src/Components/Auth/types';
-import {SignInComponent} from '../../src/Components/Auth/SignInComponent';
-import {getBenefits} from '../../frontendFirebase/firebaseDB';
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import {AuthEnum, WelcomeBack} from '../../src/Components/Auth/types';
+import {SignInForm} from '../../src/Components/Auth/SignInForm';
+import {welcomeBack} from '../../frontendFirebase/firebaseDB';
+import {SignInWelcome} from '../../src/Components/Auth/SignInWelcome';
+import type {GetStaticProps, InferGetStaticPropsType} from 'next';
 
 const styles = {
   container: {
@@ -76,83 +77,26 @@ const styles = {
   },
 };
 
-GallerySignIn.getInitialProps = async () => {
-  const benefitsData = await getBenefits(AuthEnum.galleries);
-  return {benefitsData};
-};
-
 export default function GallerySignIn({
-  benefitsData,
-}: {
-  benefitsData: BenefitsFields;
-}) {
+  data,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <Box sx={styles.container}>
-      <Box sx={styles.introContainer}>
-        <Box sx={styles.textContainer}>
-          <Box sx={styles.checkBoxes}>
-            <Box>
-              <KeyboardDoubleArrowRightIcon
-                sx={{transform: 'scale(1.5)', color: PRIMARY_MILK}}
-              />
-            </Box>
-            <Box>
-              <Typography sx={styles.typographyTitle}>
-                {benefitsData.Field1}
-              </Typography>
-              <Typography sx={styles.typography}>
-                {benefitsData.Field1Subset}
-              </Typography>
-            </Box>
-          </Box>
-          <Box sx={styles.checkBoxes}>
-            <Box>
-              <KeyboardDoubleArrowRightIcon
-                sx={{transform: 'scale(1.5)', color: PRIMARY_MILK}}
-              />
-            </Box>
-            <Box>
-              <Typography sx={styles.typographyTitle}>
-                {benefitsData.Field2}
-              </Typography>
-              <Typography sx={styles.typography}>
-                {benefitsData.Field2Subset}
-              </Typography>
-            </Box>
-          </Box>
-          <Box sx={styles.checkBoxes}>
-            <Box>
-              <KeyboardDoubleArrowRightIcon
-                sx={{transform: 'scale(1.5)', color: PRIMARY_MILK}}
-              />
-            </Box>
-            <Box>
-              <Typography sx={styles.typographyTitle}>
-                {benefitsData.Field3}
-              </Typography>
-              <Typography sx={styles.typography}>
-                {benefitsData.Field3Subset}
-              </Typography>
-            </Box>
-          </Box>
-          <Box sx={styles.checkBoxes}>
-            <Box>
-              <KeyboardDoubleArrowRightIcon
-                sx={{transform: 'scale(1.5)', color: PRIMARY_MILK}}
-              />
-            </Box>
-            <Box>
-              <Typography sx={styles.typographyTitle}>
-                {benefitsData.Field4}
-              </Typography>
-              <Typography sx={styles.typography}>
-                {benefitsData.Field4Subset}
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-      <SignInComponent signUpType={AuthEnum.galleries} />
+      <SignInWelcome welcomeBackData={data as WelcomeBack} />
+      <SignInForm signUpType={AuthEnum.galleries} />
     </Box>
   );
 }
+
+
+type WelcomeBackData = {
+  data: WelcomeBack
+};
+
+
+export const getStaticProps: GetStaticProps<{
+  data: WelcomeBackData;
+}> = async () => {
+  const welcomeBackData = await welcomeBack(AuthEnum.galleries) as WelcomeBackData;
+  return {props: {data: welcomeBackData}};
+};
