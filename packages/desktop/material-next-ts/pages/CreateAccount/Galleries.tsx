@@ -1,20 +1,11 @@
-import React, {useEffect} from 'react';
-import {Typography, Box} from '@mui/material';
-import {
-  PRIMARY_BLUE,
-  PRIMARY_DARK_BLUE,
-  PRIMARY_DARK_GREY,
-  PRIMARY_MILK,
-} from '../../styles';
-import Image from 'next/image';
-import {TextField, FormHelperText, Button} from '@mui/material';
-import {useForm} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import {AuthEnum, BenefitsFields} from '../../src/Components/Auth/types';
-import {SignUpComponent} from '../../src/Components/Auth/SignUp';
-import {getBenefits} from '../../frontendFirebase/firebaseDB';
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import React from 'react';
+import {Box} from '@mui/material';
+import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../styles';
+import {AuthEnum, DartaBenefits} from '../../src/Components/Auth/types';
+import {signUpBenefits} from '../../frontendFirebase/firebaseDB';
+import {SignUpWelcome} from '../../src/Components/Auth/SignUpWelcome';
+import type {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {SignUpForm} from '../../src/Components/Auth/SignUpForm';
 
 const styles = {
   container: {
@@ -41,34 +32,6 @@ const styles = {
       borderTopLeftRadius: '30px',
       borderBottomLeftRadius: '30px',
       borderTopRightRadius: '0px',
-    },
-  },
-  signInContainer: {
-    flex: 3,
-    border: '1px solid',
-    borderColor: PRIMARY_BLUE,
-    height: '100%',
-    borderTopRightRadius: '0px',
-    borderTopLeftRadius: '0px',
-    borderBottomLeftRadius: '30px',
-    borderBottomRightRadius: '30px',
-    '@media (min-width:600px)': {
-      borderTopRightRadius: '30px',
-      borderBottomRightRadius: '30px',
-      borderTopLeftRadius: '0px',
-      borderBottomLeftRadius: '0px',
-    },
-  },
-  signInFieldContainer: {
-    margin: '10px',
-    display: 'flex',
-    height: '100%',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    gap: '3vh',
-    alignContent: 'center',
-    '@media (min-width:600px)': {
-      gap: '2vh',
     },
   },
   textContainer: {
@@ -114,113 +77,28 @@ const styles = {
   },
 };
 
-const phoneRegExp =
-  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-
-const schema = yup
-  .object({
-    email: yup.string().required('please include an email address').email(),
-    phoneNumber: yup
-      .string()
-      .matches(phoneRegExp, 'please double check your phone number')
-      .optional(),
-    password: yup
-      .string()
-      .min(8, 'password must be at least 8 characters')
-      .required(),
-    confirmPassword: yup
-      .string()
-      .oneOf([yup.ref('password'), undefined], 'passwords must match')
-      .required('please confirm your password'),
-    website: yup.string().url().optional(),
-  })
-  .required();
-
-GallerySignUp.getInitialProps = async () => {
-  const benefitsData = await getBenefits(AuthEnum.galleries);
-  return {benefitsData};
-};
-
-export default function GallerySignUp({
-  benefitsData,
-}: {
-  benefitsData: BenefitsFields;
-}) {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: {errors},
-  } = useForm({resolver: yupResolver(schema)});
-  const onSubmit = (data: any) => console.log(data);
-
+export default function GallerySignIn({
+  data,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
-    <Box sx={styles.container}>
-      <Box sx={styles.introContainer}>
-        <Box sx={styles.textContainer}>
-          <Box sx={styles.checkBoxes}>
-            <Box>
-              <KeyboardDoubleArrowRightIcon
-                sx={{transform: 'scale(1.5)', color: PRIMARY_MILK}}
-              />
-            </Box>
-            <Box>
-              <Typography sx={styles.typographyTitle}>
-                {benefitsData.Field1}
-              </Typography>
-              <Typography sx={styles.typography}>
-                {benefitsData.Field1Subset}
-              </Typography>
-            </Box>
-          </Box>
-          <Box sx={styles.checkBoxes}>
-            <Box>
-              <KeyboardDoubleArrowRightIcon
-                sx={{transform: 'scale(1.5)', color: PRIMARY_MILK}}
-              />
-            </Box>
-            <Box>
-              <Typography sx={styles.typographyTitle}>
-                {benefitsData.Field2}
-              </Typography>
-              <Typography sx={styles.typography}>
-                {benefitsData.Field2Subset}
-              </Typography>
-            </Box>
-          </Box>
-          <Box sx={styles.checkBoxes}>
-            <Box>
-              <KeyboardDoubleArrowRightIcon
-                sx={{transform: 'scale(1.5)', color: PRIMARY_MILK}}
-              />
-            </Box>
-            <Box>
-              <Typography sx={styles.typographyTitle}>
-                {benefitsData.Field3}
-              </Typography>
-              <Typography sx={styles.typography}>
-                {benefitsData.Field3Subset}
-              </Typography>
-            </Box>
-          </Box>
-          <Box sx={styles.checkBoxes}>
-            <Box>
-              <KeyboardDoubleArrowRightIcon
-                sx={{transform: 'scale(1.5)', color: PRIMARY_MILK}}
-              />
-            </Box>
-            <Box>
-              <Typography sx={styles.typographyTitle}>
-                {benefitsData.Field4}
-              </Typography>
-              <Typography sx={styles.typography}>
-                {benefitsData.Field4Subset}
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
+    <>
+      <Box sx={styles.container}>
+        <SignUpWelcome benefitsData={data as DartaBenefits} />
+        <SignUpForm signUpType={AuthEnum.galleries} />
       </Box>
-      <SignUpComponent signUpType={AuthEnum.galleries} />
-    </Box>
+    </>
   );
 }
+
+
+type BenefitsData = {
+  data: DartaBenefits
+};
+
+
+export const getStaticProps: GetStaticProps<{
+  data: BenefitsData;
+}> = async () => {
+  const benefitsData = await signUpBenefits(AuthEnum.galleries) as BenefitsData;
+  return {props: {data: benefitsData}};
+};
