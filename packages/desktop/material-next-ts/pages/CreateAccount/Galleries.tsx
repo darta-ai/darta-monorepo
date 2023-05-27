@@ -90,15 +90,15 @@ export default function GallerySignIn({
   );
 }
 
-
 type BenefitsData = {
-  data: DartaBenefits
+  data: DartaBenefits;
 };
-
 
 export const getStaticProps: GetStaticProps<{
   data: BenefitsData;
 }> = async () => {
-  const benefitsData = await signUpBenefits(AuthEnum.galleries) as BenefitsData;
+  const benefitsData = (await signUpBenefits(
+    AuthEnum.galleries,
+  )) as BenefitsData;
   return {props: {data: benefitsData}};
 };

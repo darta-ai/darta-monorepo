@@ -5,6 +5,7 @@ export enum AuthEnum {
 }
 
 export type DartaBenefits = {
+  Headline?: string;
   Field1?: string;
   Field2?: string;
   Field3?: string;

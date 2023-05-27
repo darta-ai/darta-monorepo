@@ -6,7 +6,7 @@ import {useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {AuthEnum} from './types';
-import { NeedAnAccount } from '../Navigation/Auth/NeedAnAccount';
+import {NeedAnAccount} from '../Navigation/Auth/NeedAnAccount';
 
 const signUpStyles = {
   signInContainer: {
@@ -95,7 +95,7 @@ export function SignInForm({signUpType}: {signUpType: AuthEnum}) {
           sx={{alignSelf: 'center', margin: '2vh'}}>
           Sign In
         </Button>
-      <NeedAnAccount routeType={signUpType} />
+        <NeedAnAccount routeType={signUpType} />
       </Box>
     </Box>
   );
