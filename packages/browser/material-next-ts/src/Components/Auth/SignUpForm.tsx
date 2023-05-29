@@ -17,7 +17,7 @@ import {AlreadySignedUp} from '../Navigation/Auth';
 import {AuthEnum} from './types';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
+import {signUp} from '../../../API/AccountManagement';
 const signUpStyles = {
   signInContainer: {
     flex: 3,
@@ -82,8 +82,11 @@ const schema = yup
       .required('please confirm your password'),
     website: yup
       .string()
-      .matches(websiteRegExp, 'please double check your website url')
-      .optional(),
+      .optional()
+      .matches(websiteRegExp, {
+        message:'please double check your website url',
+        excludeEmptyString:true
+        })
   })
   .required();
 
@@ -94,7 +97,10 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
     watch,
     formState: {errors},
   } = useForm({resolver: yupResolver(schema)});
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit = (data: any) => {
+    console.log(data)
+    signUp(data.email, data.password)
+  };
 
   const [togglePasswordView, setTogglePasswordView] = useState<boolean>(true);
   const [toggleConfirmPasswordView, setToggleConfirmPasswordView] =

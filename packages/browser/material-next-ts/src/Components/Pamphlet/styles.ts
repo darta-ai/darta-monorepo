@@ -7,7 +7,7 @@ export const styles = {
     width: '95%',
     '@media (min-width:600px)': {
       width: '80%',
-      height: '45vh',
+      height: '30vh',
     },
     display: 'flex',
     flexDirection: 'row',

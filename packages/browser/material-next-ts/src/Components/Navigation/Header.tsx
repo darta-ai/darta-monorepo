@@ -43,19 +43,19 @@ export const Header = () => {
     <Box sx={styles.headerBox}>
       <Link href={`/Authenticate/${AuthEnum.artists}`}>
         <Typography component="div" sx={styles.typography}>
-          for artists
+          artists
         </Typography>
       </Link>
       <Link href={`/Authenticate/${AuthEnum.galleries}`}>
         <Typography component="div" sx={styles.typography}>
-          for galleries
+          galleries
         </Typography>
       </Link>
-      <Link href={`/Authenticate/${AuthEnum.curators}`}>
+      {/* <Link href={`/Authenticate/${AuthEnum.curators}`}>
         <Typography component="div" sx={styles.typography}>
-          for curators
+          curators
         </Typography>
-      </Link>
+      </Link> */}
       <div />
       <div />
       <div />

@@ -2,7 +2,7 @@ import React from 'react';
 import {Box} from '@mui/material';
 import {AuthEnum, WelcomeBack} from '../../src/Components/Auth/types';
 import {SignInForm, SignInWelcome} from '../../src/Components/Auth';
-import {welcomeBack} from '../../frontendFirebase/firebaseDB';
+import {welcomeBack} from '../../browserFirebase/firebaseDB';
 import type {GetStaticProps, InferGetStaticPropsType} from 'next';
 
 const styles = {

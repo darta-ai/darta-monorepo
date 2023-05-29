@@ -12,7 +12,7 @@ import {PRIMARY_MILK} from '../styles';
 import '@fontsource/eb-garamond/400.css';
 import '@fontsource/eb-garamond/500.css';
 import '@fontsource/eb-garamond/700.css';
-export {app, db} from '../frontendFirebase/firebaseApp';
+export {app, db} from '../browserFirebase/firebaseApp';
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 

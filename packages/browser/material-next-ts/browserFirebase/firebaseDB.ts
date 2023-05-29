@@ -34,3 +34,14 @@ export async function welcomeBack(documentName: string) {
     console.log('No such document!');
   }
 }
+
+// About page
+export async function getAbout() {
+  const docRefText = doc(db, 'FrontendUI', 'About');
+  try {
+    const docSnap = await getDoc(docRefText);
+    return docSnap.data();
+  } catch (e) {
+    console.log('No such document!');
+  }
+}
