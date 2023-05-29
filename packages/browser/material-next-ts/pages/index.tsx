@@ -8,7 +8,7 @@ import Copyright from '../src/Copyright';
 import {getPamphlet} from '../browserFirebase/firebaseDB';
 import {PamphletRight} from '../src/Components/Pamphlet/pamphletRight';
 import {PamphletLeft} from '../src/Components/Pamphlet/pamphletLeft';
-import {PRIMARY_MILK} from '../styles';
+
 import type {GetStaticProps, InferGetStaticPropsType} from 'next';
 import Head from 'next/head';
 
