@@ -2,7 +2,7 @@ import React from 'react';
 import {Box} from '@mui/material';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../styles';
 import {AuthEnum, DartaBenefits} from '../../src/Components/Auth/types';
-import {signUpBenefits} from '../../frontendFirebase/firebaseDB';
+import {signUpBenefits} from '../../browserFirebase/firebaseDB';
 import {SignUpWelcome} from '../../src/Components/Auth/SignUpWelcome';
 import type {GetStaticProps, InferGetStaticPropsType} from 'next';
 import {SignUpForm} from '../../src/Components/Auth/SignUpForm';

@@ -20,7 +20,10 @@ const styles = {
     alignContent: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: '7vh',
+    gap: '3vh',
+    '@media (min-width:600px)': {
+      gap: '7vh',
+    },
   },
   typography: {
     fontFamily: 'EB Garamond',
@@ -41,13 +44,17 @@ export const Footer = () => {
   return (
     <Box sx={styles.footerBox}>
       <Box sx={styles.textContainer}>
-        <Typography component="div" sx={styles.typography}>
-          <div onClick={() => console.log('clicked')}>about</div>
-        </Typography>
+        <Link href={`/Darta/About`}>
+          <Typography component="div" sx={styles.typography}>
+            <div onClick={() => console.log('clicked')}>about</div>
+          </Typography>
+        </Link>
         <div style={styles.divider}>|</div>
-        <Typography component="div" sx={styles.typography}>
-          contact
-        </Typography>
+        <Link href={`/Darta/Contact`}>
+          <Typography component="div" sx={styles.typography}>
+            contact
+          </Typography>
+        </Link>
         <div style={styles.divider}>|</div>
         <Typography component="div" sx={styles.typography}>
           <div onClick={() => console.log('clicked')}>terms & conditions</div>
