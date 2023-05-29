@@ -28,7 +28,7 @@ const signUpStyles = {
     borderTopLeftRadius: '0px',
     borderBottomLeftRadius: '30px',
     borderBottomRightRadius: '30px',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       borderTopRightRadius: '30px',
       borderBottomRightRadius: '30px',
       borderTopLeftRadius: '0px',
@@ -44,7 +44,7 @@ const signUpStyles = {
     justifyContent: 'space-around',
     gap: '3vh',
     alignContent: 'center',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       gap: '2vh',
     },
   },
@@ -102,9 +102,9 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
     signUp(data.email, data.password)
   };
 
-  const [togglePasswordView, setTogglePasswordView] = useState<boolean>(true);
+  const [togglePasswordView, setTogglePasswordView] = useState<boolean>(false);
   const [toggleConfirmPasswordView, setToggleConfirmPasswordView] =
-    useState<boolean>(true);
+    useState<boolean>(false);
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>,
