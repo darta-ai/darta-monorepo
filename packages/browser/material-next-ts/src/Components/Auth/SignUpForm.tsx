@@ -94,12 +94,11 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
   const {
     register,
     handleSubmit,
-    watch,
     formState: {errors},
   } = useForm({resolver: yupResolver(schema)});
-  const onSubmit = (data: any) => {
-    console.log(data)
-    signUp(data.email, data.password)
+  const onSubmit = async (data: any) => {
+    const results = await signUp(data, signUpType);
+    console.log(results)
   };
 
   const [togglePasswordView, setTogglePasswordView] = useState<boolean>(false);
@@ -219,7 +218,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
           </FormHelperText>
         </FormControl>
         <Button
-          onClick={handleSubmit(onSubmit)}
+          onClick={async () => handleSubmit(onSubmit)}
           variant="contained"
           color="primary"
           sx={{alignSelf: 'center', margin: '2vh'}}>

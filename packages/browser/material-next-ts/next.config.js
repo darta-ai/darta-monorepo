@@ -13,6 +13,10 @@ module.exports = {
     REACT_APP_FIREBASE_APP_ID: process.env.REACT_APP_FIREBASE_APP_ID,
     REACT_APP_FIREBASE_MEASUREMENT_ID:
       process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+    IS_APP_LIVE:  process.env.IS_APP_LIVE,
+    NODE_ENV: process.env.NODE_ENV,
+    SUPERBASE_URL: process.env.SUPERBASE_URL,
+    SUPERBASE_API_KEY: process.env.SUPERBASE_API_KEY,
   },
   images: {
     domains: ['lh3.googleusercontent.com'],

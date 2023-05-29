@@ -1,6 +1,5 @@
 import {db} from '../pages/_app';
-import {collection, getDocs, doc, getDoc} from 'firebase/firestore/lite';
-
+import { collection, addDoc, getDocs, doc, getDoc, setDoc} from "firebase/firestore"; 
 // Get all the pamphlets data from the database
 export async function getPamphlet() {
   try {
@@ -43,5 +42,20 @@ export async function getAbout() {
     return docSnap.data();
   } catch (e) {
     console.log('No such document!');
+  }
+}
+
+// Get all the benefits from Signing Up data from the database
+export async function writeWaitList(user: any, documentName: string) {
+  console.log(documentName)
+  try {
+    const results = await setDoc(doc(db, "EarlyRegister", documentName), {
+      name: "Los Angeles",
+      state: "CA",
+      country: "USA"
+    });
+    console.log('results', {results})
+  }catch(e){
+    console.log('error', {e})
   }
 }
