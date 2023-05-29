@@ -5,7 +5,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import {getUniqueId} from 'react-native-device-info';
+import {getDisplay, getDeviceId, getInstanceId, getUniqueId} from 'react-native-device-info';
 import {Provider as PaperProvider} from 'react-native-paper';
 
 import TabBarIcon from './src/GlobalElements/TabBarIcon';
@@ -17,11 +17,13 @@ export const GalleryStack = createStackNavigator();
 export const UserStack = createStackNavigator();
 export const Tab = createBottomTabNavigator();
 
-export const deviceInformation = async () => {
+export const getDeviceInformation = async () => {
   const uniqueId = await getUniqueId();
+  console.log(uniqueId)
   return {uniqueId};
 };
-deviceInformation();
+getDeviceInformation();
+
 function App() {
   return (
     <PaperProvider>
