@@ -8,6 +8,7 @@ import {AuthEnum} from './types';
 import {GoToSignIn} from '../Navigation/Auth';
 import {dartaForgotPassword} from '../../../API/AccountManagement';
 import {authStyles} from './styles';
+import {NeedAnAccount} from '../Navigation/Auth';
 
 const schema = yup
   .object({
@@ -30,20 +31,22 @@ export function ForgotPasswordForm({
   } = useForm({resolver: yupResolver(schema)});
   const handleForgotPassword = async (data: any) => {
     try {
-      const {success, errorMessage} = await dartaForgotPassword(data);
-      if (!success) {
-        setFirebaseError(errorMessage);
-      } else {
-        setShowSuccess(true);
+      const results = await dartaForgotPassword(data);
+      if (results) {
+        const {success, errorMessage} = results;
+        if (!success) {
+          setFirebaseError(errorMessage);
+        } else {
+          setShowSuccess(true);
+        }
       }
     } catch (error) {
       console.log(error);
     }
   };
-
-  if (!showSuccess) {
-    return (
-      <Box sx={authStyles.signInContainer}>
+  return (
+    <Box sx={authStyles.signInContainer}>
+      {!showSuccess ? (
         <Box sx={authStyles.signInFieldContainer}>
           <TextField
             variant="standard"
@@ -69,19 +72,16 @@ export function ForgotPasswordForm({
             sx={{alignSelf: 'center', margin: '2vh'}}>
             Reset Password
           </Button>
+          <NeedAnAccount routeType={forgotPasswordType} />
         </Box>
-      </Box>
-    );
-  } else {
-    return (
-      <Box sx={authStyles.signInContainer}>
+      ) : (
         <Box sx={authStyles.signInFieldContainer}>
           <Typography sx={authStyles.typographyTitle}>
             Check your inbox for a password reset link
           </Typography>
           <GoToSignIn routeType={forgotPasswordType} />
         </Box>
-      </Box>
-    );
-  }
+      )}
+    </Box>
+  );
 }

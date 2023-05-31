@@ -28,7 +28,7 @@ export default function ForgotPassword() {
     <>
       <Box sx={styles.container}>
         <ForgotPasswordWelcome />
-        <ForgotPasswordForm forgotPasswordType={AuthEnum.curators} />
+        <ForgotPasswordForm forgotPasswordType={AuthEnum.galleries} />
       </Box>
     </>
   );
