@@ -17,7 +17,9 @@ import {AlreadySignedUp} from '../Navigation/Auth';
 import {AuthEnum} from './types';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import {signUp} from '../../../API/AccountManagement';
+import {dartaSignUp} from '../../../API/AccountManagement';
+import {useRouter} from 'next/router';
+
 const signUpStyles = {
   signInContainer: {
     flex: 3,
@@ -28,7 +30,7 @@ const signUpStyles = {
     borderTopLeftRadius: '0px',
     borderBottomLeftRadius: '30px',
     borderBottomRightRadius: '30px',
-    '@media (min-width:800px)': {
+    '@media (min-width: 800px)': {
       borderTopRightRadius: '30px',
       borderBottomRightRadius: '30px',
       borderTopLeftRadius: '0px',
@@ -44,7 +46,7 @@ const signUpStyles = {
     justifyContent: 'space-around',
     gap: '3vh',
     alignContent: 'center',
-    '@media (min-width:800px)': {
+    '@media (min-width: 800px)': {
       gap: '2vh',
     },
   },
@@ -55,6 +57,11 @@ const signUpStyles = {
   warningText: {
     alignSelf: 'left',
     fontSize: 12,
+    color: 'red',
+  },
+  warningTextLarge: {
+    alignSelf: 'center',
+    fontSize: 18,
     color: 'red',
   },
 };
@@ -80,25 +87,37 @@ const schema = yup
       .string()
       .oneOf([yup.ref('password'), undefined], 'passwords must match')
       .required('please confirm your password'),
-    website: yup
-      .string()
-      .optional()
-      .matches(websiteRegExp, {
-        message:'please double check your website url',
-        excludeEmptyString:true
-        })
+    website: yup.string().optional().matches(websiteRegExp, {
+      message: 'please double check your website url',
+      excludeEmptyString: true,
+    }),
   })
   .required();
 
 export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
+  const router = useRouter();
+  const [firebaseError, setFirebaseError] = useState<string>('');
   const {
     register,
     handleSubmit,
     formState: {errors},
   } = useForm({resolver: yupResolver(schema)});
-  const onSubmit = async (data: any) => {
-    const results = await signUp(data, signUpType);
-    console.log(results)
+  const handleSignUp = async (data: any) => {
+    const submitMe = async () => {
+      try {
+        const {error, user, errorMessage} = await dartaSignUp(data, signUpType);
+        if (error) {
+          setFirebaseError(errorMessage);
+        } else if (user?.displayName) {
+          router.push(`/${signUpType}/Home`);
+        } else {
+          router.push(`/`);
+        }
+      } catch (e: any) {
+        setFirebaseError('Something went wrong. Please try again.');
+      }
+    };
+    submitMe();
   };
 
   const [togglePasswordView, setTogglePasswordView] = useState<boolean>(false);
@@ -217,10 +236,18 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             {errors?.website?.message as string}
           </FormHelperText>
         </FormControl>
+        {firebaseError && (
+          <FormHelperText
+            id="phoneHelperText"
+            sx={signUpStyles.warningTextLarge}>
+            {firebaseError as string}
+          </FormHelperText>
+        )}
         <Button
-          onClick={async () => handleSubmit(onSubmit)}
+          onClick={handleSubmit(handleSignUp)}
           variant="contained"
           color="primary"
+          type="submit"
           sx={{alignSelf: 'center', margin: '2vh'}}>
           Sign Up
         </Button>

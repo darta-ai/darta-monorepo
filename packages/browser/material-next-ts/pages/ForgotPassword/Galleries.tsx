@@ -9,7 +9,7 @@ const styles = {
     height: '180vh',
     alignSelf: 'center',
     padding: '2vh',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       padding: '10vh',
       flexDirection: 'row',
       height: '100vh',

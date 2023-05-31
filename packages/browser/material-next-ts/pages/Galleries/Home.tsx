@@ -1,18 +1,21 @@
 import React from 'react';
 import Head from 'next/head';
+import firebase from 'firebase/compat/app';
+// import {user} from '../../browserFirebase/firebaseApp';
+import 'firebase/compat/auth';
 import {
   Container,
   Typography,
   Box,
   Grid,
   Card,
-  CardMedia,
   CardContent,
   List,
   ListItem,
 } from '@mui/material';
 import type {GetStaticProps, InferGetStaticPropsType} from 'next';
 import {getAbout} from '../../browserFirebase/firebaseDB';
+import {isSignedIn} from '../../browserFirebase/firebaseApp';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
 import Image from 'next/image';
 
@@ -101,6 +104,13 @@ type AboutData = {
 export default function About({
   data,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  React.useEffect(() => {
+    const checkSignedIn = async () => {
+      const user = await isSignedIn();
+      console.log({user});
+    };
+    checkSignedIn();
+  }, []);
   const beliefs = Object.keys(data).filter(key => key.includes('DartaBelief'));
   const values = Object.keys(data).filter(key =>
     key.includes('DartaCoreValue'),
