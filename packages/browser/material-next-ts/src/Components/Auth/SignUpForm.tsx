@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {Box} from '@mui/material';
-import {PRIMARY_BLUE} from '../../../styles';
 import {
   FormHelperText,
   Button,
@@ -19,52 +18,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {dartaSignUp} from '../../../API/AccountManagement';
 import {useRouter} from 'next/router';
-
-const signUpStyles = {
-  signInContainer: {
-    flex: 3,
-    border: '1px solid',
-    borderColor: PRIMARY_BLUE,
-    height: '100%',
-    borderTopRightRadius: '0px',
-    borderTopLeftRadius: '0px',
-    borderBottomLeftRadius: '30px',
-    borderBottomRightRadius: '30px',
-    '@media (min-width: 800px)': {
-      borderTopRightRadius: '30px',
-      borderBottomRightRadius: '30px',
-      borderTopLeftRadius: '0px',
-      borderBottomLeftRadius: '0px',
-    },
-  },
-  signInFieldContainer: {
-    margin: '10px',
-    display: 'flex',
-    height: '100%',
-    width: '95%',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    gap: '3vh',
-    alignContent: 'center',
-    '@media (min-width: 800px)': {
-      gap: '2vh',
-    },
-  },
-  formHelperText: {
-    alignSelf: 'center',
-    fontSize: 15,
-  },
-  warningText: {
-    alignSelf: 'left',
-    fontSize: 12,
-    color: 'red',
-  },
-  warningTextLarge: {
-    alignSelf: 'center',
-    fontSize: 18,
-    color: 'red',
-  },
-};
+import {authStyles} from './styles';
 
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -131,8 +85,8 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
   };
 
   return (
-    <Box sx={signUpStyles.signInContainer}>
-      <Box sx={signUpStyles.signInFieldContainer}>
+    <Box sx={authStyles.signInContainer}>
+      <Box sx={authStyles.signInFieldContainer}>
         <FormControl variant="outlined" required>
           <InputLabel htmlFor="outlined-adornment-password">email</InputLabel>
           <Input
@@ -143,7 +97,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             color="info"
             required
           />
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.warningText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.email?.message as string}
           </FormHelperText>
         </FormControl>
@@ -158,12 +112,12 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             color="info"
             aria-describedby="phoneNumber"
           />
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.warningText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.phoneNumber?.message as string}
           </FormHelperText>
         </FormControl>
         {!errors?.password?.message && (
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.formHelperText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.formHelperText}>
             For account management purposes.
           </FormHelperText>
         )}
@@ -189,7 +143,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
               </InputAdornment>
             }
           />
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.warningText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.email?.message as string}
           </FormHelperText>
         </FormControl>
@@ -219,7 +173,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
               </InputAdornment>
             }
           />
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.warningText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.confirmPassword?.message as string}
           </FormHelperText>
         </FormControl>
@@ -232,14 +186,12 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             color="info"
             aria-describedby="website"
           />
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.warningText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.website?.message as string}
           </FormHelperText>
         </FormControl>
         {firebaseError && (
-          <FormHelperText
-            id="phoneHelperText"
-            sx={signUpStyles.warningTextLarge}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningTextLarge}>
             {firebaseError as string}
           </FormHelperText>
         )}

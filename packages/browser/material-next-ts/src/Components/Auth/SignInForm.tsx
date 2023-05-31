@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {Box} from '@mui/material';
-import {PRIMARY_BLUE} from '../../../styles';
 import {
   FormHelperText,
   Button,
@@ -19,52 +18,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {dartaSignIn} from '../../../API/AccountManagement';
 import {useRouter} from 'next/router';
-
-const signUpStyles = {
-  signInContainer: {
-    flex: 3,
-    border: '1px solid',
-    borderColor: PRIMARY_BLUE,
-    height: '100%',
-    borderTopRightRadius: '0px',
-    borderTopLeftRadius: '0px',
-    borderBottomLeftRadius: '30px',
-    borderBottomRightRadius: '30px',
-    '@media (min-width: 800px)': {
-      borderTopRightRadius: '30px',
-      borderBottomRightRadius: '30px',
-      borderTopLeftRadius: '0px',
-      borderBottomLeftRadius: '0px',
-    },
-  },
-  signInFieldContainer: {
-    margin: '10px',
-    display: 'flex',
-    height: '100%',
-    width: '95%',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    gap: '3vh',
-    alignContent: 'center',
-    '@media (min-width: 800px)': {
-      gap: '2vh',
-    },
-  },
-  formHelperText: {
-    alignSelf: 'center',
-    fontSize: 15,
-  },
-  warningText: {
-    alignSelf: 'left',
-    fontSize: 12,
-    color: 'red',
-  },
-  warningTextLarge: {
-    alignSelf: 'center',
-    fontSize: 18,
-    color: 'red',
-  },
-};
+import {authStyles} from './styles';
 
 const schema = yup
   .object({
@@ -86,19 +40,18 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
     formState: {errors},
   } = useForm({resolver: yupResolver(schema)});
   const handleSignIn = async (data: any) => {
-    console.log('here');
-      try {
-        const {error, user, errorMessage} = await dartaSignIn(data, signInType);
-        if (error) {
-          setFirebaseError(errorMessage);
-        } else if (user?.displayName) {
-          router.push(`/${user?.displayName}/Home`);
-        } else {
-          router.push(`/`);
-        }
-      } catch (error) {
-        console.log(error);
+    try {
+      const {error, user, errorMessage} = await dartaSignIn(data, signInType);
+      if (error) {
+        setFirebaseError(errorMessage);
+      } else if (user?.displayName) {
+        router.push(`/${user?.displayName}/Home`);
+      } else {
+        router.push(`/`);
       }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const [togglePasswordView, setTogglePasswordView] = useState<boolean>(false);
@@ -110,18 +63,17 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
   };
 
   const handleEnter = async (event: any) => {
-    console.log('triggered')
     if (event.key === 'Enter') {
       event.preventDefault();
       const values = getValues();
       handleSubmit(handleSignIn);
-      return
+      return;
     }
   };
 
   return (
-    <Box sx={signUpStyles.signInContainer}>
-      <Box sx={signUpStyles.signInFieldContainer}>
+    <Box sx={authStyles.signInContainer}>
+      <Box sx={authStyles.signInFieldContainer}>
         <FormControl variant="outlined" required>
           <InputLabel htmlFor="outlined-adornment-password">email</InputLabel>
           <Input
@@ -132,7 +84,7 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
             color="info"
             required
           />
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.warningText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.email?.message as string}
           </FormHelperText>
         </FormControl>
@@ -161,9 +113,7 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
           />
         </FormControl>
         {firebaseError && (
-          <FormHelperText
-            id="phoneHelperText"
-            sx={signUpStyles.warningTextLarge}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningTextLarge}>
             {firebaseError as string}
           </FormHelperText>
         )}

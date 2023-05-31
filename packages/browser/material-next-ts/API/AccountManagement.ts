@@ -1,4 +1,8 @@
-import {firebaseSignUp, firebaseSignIn} from '../browserFirebase/firebaseApp';
+import {
+  firebaseSignUp,
+  firebaseSignIn,
+  firebaseForgotPassword,
+} from '../browserFirebase/firebaseApp';
 
 export const dartaSignUp = async (user: any, signUpType: string) => {
   const firebaseCheck = await firebaseSignUp(
@@ -15,5 +19,12 @@ export const dartaSignIn = async (user: any, signUpType: string) => {
     user.password,
     signUpType,
   );
+  return firebaseCheck;
+};
+
+export const dartaForgotPassword = async (
+  user: any,
+): Promise<{success: boolean; errorMessage: string}> => {
+  const firebaseCheck = await firebaseForgotPassword(user.email);
   return firebaseCheck;
 };
