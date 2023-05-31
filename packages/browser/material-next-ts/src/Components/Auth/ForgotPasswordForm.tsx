@@ -18,7 +18,7 @@ const signUpStyles = {
     borderTopLeftRadius: '0px',
     borderBottomLeftRadius: '30px',
     borderBottomRightRadius: '30px',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       borderTopRightRadius: '30px',
       borderBottomRightRadius: '30px',
       borderTopLeftRadius: '0px',
@@ -33,7 +33,7 @@ const signUpStyles = {
     justifyContent: 'space-around',
     gap: '3vh',
     alignContent: 'center',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       gap: '2vh',
     },
   },

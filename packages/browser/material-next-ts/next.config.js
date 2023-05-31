@@ -13,7 +13,7 @@ module.exports = {
     REACT_APP_FIREBASE_APP_ID: process.env.REACT_APP_FIREBASE_APP_ID,
     REACT_APP_FIREBASE_MEASUREMENT_ID:
       process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
-    IS_APP_LIVE:  process.env.IS_APP_LIVE,
+    IS_APP_LIVE: process.env.IS_APP_LIVE,
     NODE_ENV: process.env.NODE_ENV,
     SUPERBASE_URL: process.env.SUPERBASE_URL,
     SUPERBASE_API_KEY: process.env.SUPERBASE_API_KEY,
@@ -25,7 +25,6 @@ module.exports = {
 };
 
 module.exports = withVideos();
-
 
 // REACT_APP_FIREBASE_API_KEY : "AIzaSyAjZz2ggOnHZJ-g0_8Nuz5bJFSVh756YB4",
 // REACT_APP_FIREBASE_AUTH_DOMAIN:  "darta-desktop.firebaseapp.com",

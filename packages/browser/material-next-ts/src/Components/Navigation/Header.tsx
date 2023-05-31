@@ -1,11 +1,15 @@
 import React from 'react';
-import {Typography, Box} from '@mui/material';
+import {Typography, Box, Button} from '@mui/material';
 import {PRIMARY_BLUE, PRIMARY_MILK, PRIMARY_LIGHTBLUE} from '../../../styles';
 import Image from 'next/image';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {AuthEnum} from '../Auth/types';
-
+import {
+  isSignedIn,
+  firebaseSignOut,
+} from '../../../browserFirebase/firebaseApp';
+import {AuthContext} from '../../../pages/_app';
 const styles = {
   headerBox: {
     width: '100%',
@@ -26,7 +30,7 @@ const styles = {
     fontFamily: 'EB Garamond',
     color: PRIMARY_MILK,
     fontSize: '1.2rem',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       fontSize: '1.2rem',
     },
     '&:hover': {
@@ -39,8 +43,29 @@ const styles = {
 
 export const Header = () => {
   const router = useRouter();
+  const {user} = React.useContext(AuthContext);
+  const handleSignOut = async () => {
+    console.log('triggered!');
+    try {
+      const results = await firebaseSignOut();
+      console.log({results});
+      router.push('/');
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <Box sx={styles.headerBox}>
+      {user && (
+        <Button
+          onClick={async () => {
+            await handleSignOut();
+          }}
+          sx={{backgroundColor: PRIMARY_MILK}}
+          variant="contained">
+          Sign Out
+        </Button>
+      )}
       <Link href={`/Authenticate/${AuthEnum.artists}`}>
         <Typography component="div" sx={styles.typography}>
           artists

@@ -12,7 +12,7 @@ export const styles = {
     fontFamily: 'EB Garamond',
     color: PRIMARY_BLUE,
     fontSize: '0.75rem',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       fontSize: '1.2em',
     },
     cursor: 'default',

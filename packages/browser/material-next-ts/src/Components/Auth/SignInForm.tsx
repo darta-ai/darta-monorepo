@@ -3,7 +3,6 @@ import {Box} from '@mui/material';
 import {PRIMARY_BLUE} from '../../../styles';
 import {
   FormHelperText,
-  TextField,
   Button,
   Input,
   InputLabel,
@@ -18,6 +17,8 @@ import {AuthEnum} from './types';
 import {NeedAnAccount, ForgotPassword} from '../Navigation/Auth';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import {dartaSignIn} from '../../../API/AccountManagement';
+import {useRouter} from 'next/router';
 
 const signUpStyles = {
   signInContainer: {
@@ -29,7 +30,7 @@ const signUpStyles = {
     borderTopLeftRadius: '0px',
     borderBottomLeftRadius: '30px',
     borderBottomRightRadius: '30px',
-    '@media (min-width:800px)': {
+    '@media (min-width: 800px)': {
       borderTopRightRadius: '30px',
       borderBottomRightRadius: '30px',
       borderTopLeftRadius: '0px',
@@ -45,7 +46,7 @@ const signUpStyles = {
     justifyContent: 'space-around',
     gap: '3vh',
     alignContent: 'center',
-    '@media (min-width:800px)': {
+    '@media (min-width: 800px)': {
       gap: '2vh',
     },
   },
@@ -56,6 +57,11 @@ const signUpStyles = {
   warningText: {
     alignSelf: 'left',
     fontSize: 12,
+    color: 'red',
+  },
+  warningTextLarge: {
+    alignSelf: 'center',
+    fontSize: 18,
     color: 'red',
   },
 };
@@ -71,20 +77,46 @@ const schema = yup
   .required();
 
 export function SignInForm({signInType}: {signInType: AuthEnum}) {
+  const router = useRouter();
+  const [firebaseError, setFirebaseError] = useState<string>('');
   const {
     register,
     handleSubmit,
-    watch,
+    getValues,
     formState: {errors},
   } = useForm({resolver: yupResolver(schema)});
-  const onSubmit = (data: any) => console.log(data);
+  const handleSignIn = async (data: any) => {
+    console.log('here');
+      try {
+        const {error, user, errorMessage} = await dartaSignIn(data, signInType);
+        if (error) {
+          setFirebaseError(errorMessage);
+        } else if (user?.displayName) {
+          router.push(`/${user?.displayName}/Home`);
+        } else {
+          router.push(`/`);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+  };
 
-  const [togglePasswordView, setTogglePasswordView] = useState<boolean>(true);
+  const [togglePasswordView, setTogglePasswordView] = useState<boolean>(false);
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
     event.preventDefault();
+  };
+
+  const handleEnter = async (event: any) => {
+    console.log('triggered')
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const values = getValues();
+      handleSubmit(handleSignIn);
+      return
+    }
   };
 
   return (
@@ -114,6 +146,7 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
             {...register('password')}
             error={errors?.password?.message ? true : false}
             color="info"
+            onKeyPress={handleEnter}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -127,10 +160,18 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
             }
           />
         </FormControl>
+        {firebaseError && (
+          <FormHelperText
+            id="phoneHelperText"
+            sx={signUpStyles.warningTextLarge}>
+            {firebaseError as string}
+          </FormHelperText>
+        )}
         <Button
-          onClick={handleSubmit(onSubmit)}
+          onClick={handleSubmit(handleSignIn)}
           variant="contained"
           color="primary"
+          type="submit"
           sx={{alignSelf: 'center', margin: '2vh'}}>
           Sign In
         </Button>

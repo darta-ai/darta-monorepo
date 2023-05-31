@@ -10,10 +10,10 @@ const useStyles = {
     gap: '2%',
     justifyContent: 'space-around',
     width: '100%',
-    my: 3, 
+    my: 3,
     alignSelf: 'center',
     height: '100vh',
-    '@media (min-width:800px)': {
+    '@media (min-width: 800px)': {
       height: '100vh',
     },
   },
@@ -24,11 +24,11 @@ const useStyles = {
     alignItems: 'center',
     alignContent: 'center',
     gap: '7vh',
-    '@media (min-width:800px)': {
-        flexDirection: 'row',
-        alignSelf: 'center',
-        alignItems: 'center',
-      },
+    '@media (min-width: 800px)': {
+      flexDirection: 'row',
+      alignSelf: 'center',
+      alignItems: 'center',
+    },
   },
   root: {
     padding: 3,
@@ -55,7 +55,7 @@ const useStyles = {
   reachOutText: {
     fontSize: 18,
     textAlign: 'center',
-  }
+  },
 };
 
 const ContactElement = ({
@@ -73,14 +73,10 @@ const ContactElement = ({
         {title}
         <Link href={`mailto:${email}`} color="inherit"></Link>
       </Typography>
-      <Typography sx={useStyles.contactText}>
-        {blurb}
-      </Typography>
+      <Typography sx={useStyles.contactText}>{blurb}</Typography>
       <Typography sx={useStyles.reachOutText}>
-      <a href={`mailto: ${email}`}>
-        reach out
-        </a>
-    </Typography>
+        <a href={`mailto: ${email}`}>reach out</a>
+      </Typography>
     </Box>
   );
 };

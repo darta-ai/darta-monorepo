@@ -1,5 +1,12 @@
 import {db} from '../pages/_app';
-import { collection, addDoc, getDocs, doc, getDoc, setDoc} from "firebase/firestore"; 
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  getDoc,
+  setDoc,
+} from 'firebase/firestore';
 // Get all the pamphlets data from the database
 export async function getPamphlet() {
   try {
@@ -47,15 +54,15 @@ export async function getAbout() {
 
 // Get all the benefits from Signing Up data from the database
 export async function writeWaitList(user: any, documentName: string) {
-  console.log(documentName)
+  console.log(documentName);
   try {
-    const results = await setDoc(doc(db, "EarlyRegister", documentName), {
-      name: "Los Angeles",
-      state: "CA",
-      country: "USA"
+    const results = await setDoc(doc(db, 'EarlyRegister', documentName), {
+      name: 'Los Angeles',
+      state: 'CA',
+      country: 'USA',
     });
-    console.log('results', {results})
-  }catch(e){
-    console.log('error', {e})
+    console.log('results', {results});
+  } catch (e) {
+    console.log('error', {e});
   }
 }
