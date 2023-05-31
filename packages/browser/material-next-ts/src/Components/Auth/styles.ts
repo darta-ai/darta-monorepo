@@ -32,7 +32,8 @@ export const authStyles = {
   typographyTitle: {
     fontFamily: 'EB Garamond',
     alignText: 'center',
-    color: PRIMARY_MILK,
+    alignSelf: 'center',
+    color: PRIMARY_DARK_GREY,
     fontSize: '1.5rem',
     '@media (min-width:800px)': {
       fontSize: '1.5rem',

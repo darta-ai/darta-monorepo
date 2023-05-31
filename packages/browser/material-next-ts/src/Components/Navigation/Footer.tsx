@@ -21,7 +21,7 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     gap: '3vh',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       gap: '7vh',
     },
   },
@@ -29,7 +29,7 @@ const styles = {
     fontFamily: 'EB Garamond',
     color: PRIMARY_MILK,
     fontSize: '0.75rem',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       fontSize: '0.9rem',
     },
     '&:hover': {

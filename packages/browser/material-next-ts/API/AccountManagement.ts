@@ -24,7 +24,7 @@ export const dartaSignIn = async (user: any, signUpType: string) => {
 
 export const dartaForgotPassword = async (
   user: any,
-): Promise<{success: boolean; errorMessage: string}> => {
+): Promise<{success: boolean; errorMessage: string} | void> => {
   const firebaseCheck = await firebaseForgotPassword(user.email);
   return firebaseCheck;
 };

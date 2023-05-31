@@ -86,18 +86,14 @@ export async function firebaseSignIn(
 
 export async function firebaseForgotPassword(
   email: string,
-): Promise<{success: boolean; errorMessage: string}> {
-  sendPasswordResetEmail(auth, email)
-    .then(() => {
-      return {success: true, errorMessage: ''};
-    })
-    .catch(error => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log({errorCode, errorMessage});
-      return {success: true, errorMessage: firebaseErrors(errorCode)};
-    });
-  return {success: false, errorMessage: ''};
+): Promise<{success: boolean; errorMessage: string} | void> {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return {success: true, errorMessage: ''};
+  } catch (error: any) {
+    const errorCode = error.code;
+    return {success: false, errorMessage: firebaseErrors(errorCode)};
+  }
 }
 
 const db: any = getFirestore(app);
