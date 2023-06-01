@@ -45,10 +45,8 @@ export const Header = () => {
   const router = useRouter();
   const {user} = React.useContext(AuthContext);
   const handleSignOut = async () => {
-    console.log('triggered!');
     try {
       const results = await firebaseSignOut();
-      console.log({results});
       router.push('/');
     } catch (err) {
       console.log(err);
