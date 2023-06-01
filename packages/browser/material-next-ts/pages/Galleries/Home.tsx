@@ -107,7 +107,6 @@ export default function About({
   React.useEffect(() => {
     const checkSignedIn = async () => {
       const user = await isSignedIn();
-      console.log({user});
     };
     checkSignedIn();
   }, []);
@@ -236,7 +235,6 @@ export const getStaticProps: GetStaticProps<{
     const aboutData = (await getAbout()) as AboutDataFB;
     return {props: {data: aboutData}};
   } catch (e) {
-    console.log(e);
     return {props: {data: {data: {}}}};
   }
 };

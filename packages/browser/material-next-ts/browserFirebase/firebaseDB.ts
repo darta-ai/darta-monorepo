@@ -26,7 +26,7 @@ export async function signUpBenefits(documentName: string) {
     const docSnap = await getDoc(docRef);
     return docSnap.data();
   } catch (e) {
-    console.log('No such document!');
+    // console.log('No such document!');
   }
 }
 
@@ -37,7 +37,7 @@ export async function welcomeBack(documentName: string) {
     const docSnap = await getDoc(docRef);
     return docSnap.data();
   } catch (e) {
-    console.log('No such document!');
+    // console.log('No such document!');
   }
 }
 
@@ -48,21 +48,20 @@ export async function getAbout() {
     const docSnap = await getDoc(docRefText);
     return docSnap.data();
   } catch (e) {
-    console.log('No such document!');
+    // console.log('No such document!');
   }
 }
 
 // Get all the benefits from Signing Up data from the database
 export async function writeWaitList(user: any, documentName: string) {
-  console.log(documentName);
   try {
     const results = await setDoc(doc(db, 'EarlyRegister', documentName), {
       name: 'Los Angeles',
       state: 'CA',
       country: 'USA',
     });
-    console.log('results', {results});
+    // console.log('results', {results});
   } catch (e) {
-    console.log('error', {e});
+    // console.log('error', {e});
   }
 }
