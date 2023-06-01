@@ -16,6 +16,12 @@
     "jsxImportSource": "@emotion/react",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "Supabase/supabase.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "Supabase/supabase.js",
+    "cypress/e2e/index.cy.js"
+  ],
   "exclude": ["node_modules"]
 }

@@ -7,7 +7,6 @@ import {
   browserSessionPersistence,
   updateProfile,
   signInWithEmailAndPassword,
-  setPersistence,
   sendPasswordResetEmail,
 } from 'firebase/auth';
 

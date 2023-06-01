@@ -13,7 +13,7 @@ import {
   List,
   ListItem,
 } from '@mui/material';
-import type {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import {getAbout} from '../../browserFirebase/firebaseDB';
 import {isSignedIn} from '../../browserFirebase/firebaseApp';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
@@ -27,7 +27,7 @@ const aboutStyles = {
     width: '100%',
     mb: 5,
     alignSelf: 'center',
-    '@media (min-width: 800px)': {
+    '@media (minWidth: 800px)': {
       paddingTop: '7vh',
     },
   },
@@ -37,7 +37,7 @@ const aboutStyles = {
     alignItems: 'center',
     alignSelf: 'flex-end',
     justifyContent: 'center',
-    '@media (min-width: 800px)': {
+    '@media (minWidth: 800px)': {
       height: '200px',
       width: '150px',
     },
@@ -48,7 +48,7 @@ const aboutStyles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    '@media (min-width: 800px)': {
+    '@media (minWidth: 800px)': {
       minWidth: '100%',
       height: '100%',
     },
@@ -73,7 +73,7 @@ const aboutStyles = {
     fontFamily: 'EB Garamond',
     color: PRIMARY_DARK_GREY,
     fontSize: '1rem',
-    '@media (min-width: 800px)': {
+    '@media (minWidth: 800px)': {
       fontSize: '1.3rem',
     },
     cursor: 'default',
@@ -82,7 +82,7 @@ const aboutStyles = {
     fontFamily: 'EB Garamond',
     color: PRIMARY_DARK_GREY,
     fontSize: '1.2rem',
-    '@media (min-width: 800px)': {
+    '@media (minWidth: 800px)': {
       fontSize: '1.75rem',
     },
     cursor: 'default',

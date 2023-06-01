@@ -66,12 +66,14 @@ export const Header = () => {
           Sign Out
         </Button>
       )}
-      <Link href={`/Authenticate/${AuthEnum.artists}`}>
+      <Link id="authenticateArtists" href={`/Authenticate/${AuthEnum.artists}`}>
         <Typography component="div" sx={styles.typography}>
           artists
         </Typography>
       </Link>
-      <Link href={`/Authenticate/${AuthEnum.galleries}`}>
+      <Link
+        id="authenticateGalleries"
+        href={`/Authenticate/${AuthEnum.galleries}`}>
         <Typography component="div" sx={styles.typography}>
           galleries
         </Typography>
@@ -88,6 +90,7 @@ export const Header = () => {
       <Box>
         <Image
           src="/static/images/dartahouseblue.png"
+          data-testid="dartaHouseBlue"
           alt="me"
           width="64"
           height="64"
