@@ -3,7 +3,7 @@ import {Box} from '@mui/material';
 import {AuthEnum, DartaBenefits} from '../../src/Components/Auth/types';
 import {signUpBenefits} from '../../browserFirebase/firebaseDB';
 import {SignUpWelcome} from '../../src/Components/Auth/SignUpWelcome';
-import type {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import {SignUpForm} from '../../src/Components/Auth/SignUpForm';
 
 const styles = {

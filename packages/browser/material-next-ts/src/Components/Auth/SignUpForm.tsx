@@ -85,8 +85,10 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
   };
 
   return (
-    <Box sx={authStyles.signInContainer}>
-      <Box sx={authStyles.signInFieldContainer}>
+    <Box sx={authStyles.signInContainer} data-testid="signInContainer">
+      <Box
+        sx={authStyles.signInFieldContainer}
+        data-testid="signInFieldContainer">
         <FormControl variant="outlined" required>
           <InputLabel htmlFor="outlined-adornment-password">email</InputLabel>
           <Input
@@ -96,6 +98,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             aria-describedby="email"
             color="info"
             required
+            data-testid="emailInput"
           />
           <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.email?.message as string}
@@ -111,6 +114,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             id="phoneNumber"
             color="info"
             aria-describedby="phoneNumber"
+            data-testid="phoneNumberInput"
           />
           <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.phoneNumber?.message as string}
@@ -137,11 +141,13 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
                   aria-label="toggle password visibility"
                   onClick={() => setTogglePasswordView(!togglePasswordView)}
                   onMouseDown={handleMouseDownPassword}
-                  edge="end">
+                  edge="end"
+                  data-testid="passwordToggleButton">
                   {togglePasswordView ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
             }
+            data-testid="passwordInput"
           />
           <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.email?.message as string}
@@ -167,11 +173,13 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
                     setToggleConfirmPasswordView(!toggleConfirmPasswordView)
                   }
                   onMouseDown={handleMouseDownPassword}
-                  edge="end">
+                  edge="end"
+                  data-testid="confirmPasswordToggleButton">
                   {togglePasswordView ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
             }
+            data-testid="confirmPasswordInput"
           />
           <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.confirmPassword?.message as string}
@@ -185,6 +193,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             id="website"
             color="info"
             aria-describedby="website"
+            data-testid="websiteInput"
           />
           <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.website?.message as string}
@@ -200,7 +209,8 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
           variant="contained"
           color="primary"
           type="submit"
-          sx={{alignSelf: 'center', margin: '2vh'}}>
+          sx={{alignSelf: 'center', margin: '2vh'}}
+          data-testid="signUpButton">
           Sign Up
         </Button>
         <AlreadySignedUp routeType={signUpType} />
