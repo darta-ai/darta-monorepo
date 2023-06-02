@@ -53,26 +53,30 @@ export const Header = () => {
     }
   };
   return (
-    <Box sx={styles.headerBox}>
+    <Box sx={styles.headerBox} data-testid="header-box">
       {user && (
         <Button
           onClick={async () => {
             await handleSignOut();
           }}
           sx={{backgroundColor: PRIMARY_MILK}}
-          variant="contained">
+          variant="contained"
+          data-testid="header-signout-button"
+        >
           Sign Out
         </Button>
       )}
-      <Link id="authenticateArtists" href={`/Authenticate/${AuthEnum.artists}`}>
-        <Typography component="div" sx={styles.typography}>
+      <Link id="authenticateArtists" href={`/Authenticate/${AuthEnum.artists}`} data-testid="header-link-artists">
+        <Typography component="div" sx={styles.typography} data-testid="header-link-artists-text">
           artists
         </Typography>
       </Link>
       <Link
         id="authenticateGalleries"
-        href={`/Authenticate/${AuthEnum.galleries}`}>
-        <Typography component="div" sx={styles.typography}>
+        href={`/Authenticate/${AuthEnum.galleries}`}
+        data-testid="header-link-galleries"
+      >
+        <Typography component="div" sx={styles.typography} data-testid="header-link-galleries-text">
           galleries
         </Typography>
       </Link>
@@ -85,10 +89,10 @@ export const Header = () => {
       <div />
       <div />
       <div />
-      <Box>
+      <Box data-testid="header-image-box">
         <Image
           src="/static/images/dartahouseblue.png"
-          data-testid="dartaHouseBlue"
+          data-testid="header-image"
           alt="me"
           width="64"
           height="64"
