@@ -72,10 +72,10 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
   };
 
   return (
-    <Box sx={authStyles.signInContainer}>
-      <Box sx={authStyles.signInFieldContainer}>
-        <FormControl variant="outlined" required>
-          <InputLabel htmlFor="outlined-adornment-password">email</InputLabel>
+    <Box sx={authStyles.signInContainer} data-testid="signin-container">
+      <Box sx={authStyles.signInFieldContainer} data-testid="signin-field-container">
+        <FormControl variant="outlined" required data-testid="signin-email-formcontrol">
+          <InputLabel htmlFor="outlined-adornment-password" data-testid="signin-email-inputlabel">email</InputLabel>
           <Input
             error={errors?.email?.message ? true : false}
             {...register('email')}
@@ -83,13 +83,14 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
             aria-describedby="email"
             color="info"
             required
+            data-testid="signin-email-input"
           />
-          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText} data-testid="signin-email-formhelpertext">
             {errors?.email?.message as string}
           </FormHelperText>
         </FormControl>
-        <FormControl variant="outlined" required>
-          <InputLabel htmlFor="outlined-adornment-password">
+        <FormControl variant="outlined" required data-testid="signin-password-formcontrol">
+          <InputLabel htmlFor="outlined-adornment-password" data-testid="signin-password-inputlabel">
             password
           </InputLabel>
           <Input
@@ -99,13 +100,15 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
             error={errors?.password?.message ? true : false}
             color="info"
             onKeyPress={handleEnter}
+            data-testid="signin-password-input"
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
                   aria-label="toggle password visibility"
                   onClick={() => setTogglePasswordView(!togglePasswordView)}
                   onMouseDown={handleMouseDownPassword}
-                  edge="end">
+                  edge="end"
+                  data-testid="signin-password-iconbutton">
                   {togglePasswordView ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
@@ -113,7 +116,7 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
           />
         </FormControl>
         {firebaseError && (
-          <FormHelperText id="phoneHelperText" sx={authStyles.warningTextLarge}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningTextLarge} data-testid="signin-firebaseerror-formhelpertext">
             {firebaseError as string}
           </FormHelperText>
         )}
@@ -122,14 +125,16 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
           variant="contained"
           color="primary"
           type="submit"
-          sx={{alignSelf: 'center', margin: '2vh'}}>
+          sx={{alignSelf: 'center', margin: '2vh'}}
+          data-testid="signin-button">
           Sign In
         </Button>
-        <Box>
-          <ForgotPassword routeType={signInType} />
-          <NeedAnAccount routeType={signInType} />
+        <Box data-testid="signin-links-box">
+          <ForgotPassword routeType={signInType} data-testid="signin-forgotpassword-link" />
+          <NeedAnAccount routeType={signInType} data-testid="signin-needanaccount-link" />
         </Box>
       </Box>
     </Box>
   );
+  
 }
