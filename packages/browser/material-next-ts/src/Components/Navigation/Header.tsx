@@ -5,11 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {AuthEnum} from '../Auth/types';
-import {
-  isSignedIn,
-  firebaseSignOut,
-} from '../../../browserFirebase/firebaseApp';
 import {AuthContext} from '../../../pages/_app';
+
 const styles = {
   headerBox: {
     width: '100%',
@@ -44,42 +41,50 @@ const styles = {
 export const Header = () => {
   const router = useRouter();
   const {user} = React.useContext(AuthContext);
-  const handleSignOut = async () => {
-    try {
-      const results = await firebaseSignOut();
-      router.push('/');
-    } catch (err) {
-      console.log(err);
-    }
-  };
+
+  const userIsAuthenticated = user !== null;
+  const userIsArtist = user?.displayName === AuthEnum.artists;
+
+  const galleryRoute = userIsAuthenticated
+    ? `/Galleries/Home`
+    : `/Authenticate/${AuthEnum.galleries}`;
+  const artistRoute = userIsAuthenticated
+    ? `/Artists/Home`
+    : `/Authenticate/${AuthEnum.artists}`;
+
+  const showArtistLink =
+    (userIsArtist && userIsAuthenticated) || !userIsAuthenticated;
+  const showGaleryLink =
+    (!userIsArtist && userIsAuthenticated) || !userIsAuthenticated;
+
   return (
     <Box sx={styles.headerBox} data-testid="header-box">
-      {user && (
-        <Button
-          onClick={async () => {
-            await handleSignOut();
-          }}
-          sx={{backgroundColor: PRIMARY_MILK}}
-          variant="contained"
-          data-testid="header-signout-button"
-        >
-          Sign Out
-        </Button>
+      {showArtistLink && (
+        <Link
+          id="authenticateArtists"
+          href={artistRoute}
+          data-testid="header-link-artists">
+          <Typography
+            component="div"
+            sx={styles.typography}
+            data-testid="header-link-artists-text">
+            artists
+          </Typography>
+        </Link>
       )}
-      <Link id="authenticateArtists" href={`/Authenticate/${AuthEnum.artists}`} data-testid="header-link-artists">
-        <Typography component="div" sx={styles.typography} data-testid="header-link-artists-text">
-          artists
-        </Typography>
-      </Link>
-      <Link
-        id="authenticateGalleries"
-        href={`/Authenticate/${AuthEnum.galleries}`}
-        data-testid="header-link-galleries"
-      >
-        <Typography component="div" sx={styles.typography} data-testid="header-link-galleries-text">
-          galleries
-        </Typography>
-      </Link>
+      {showGaleryLink && (
+        <Link
+          id="authenticateGalleries"
+          href={galleryRoute}
+          data-testid="header-link-galleries">
+          <Typography
+            component="div"
+            sx={styles.typography}
+            data-testid="header-link-galleries-text">
+            galleries
+          </Typography>
+        </Link>
+      )}
       {/* <Link href={`/Authenticate/${AuthEnum.curators}`}>
         <Typography component="div" sx={styles.typography}>
           curators

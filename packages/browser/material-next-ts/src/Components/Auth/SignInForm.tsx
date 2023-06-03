@@ -73,9 +73,18 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
 
   return (
     <Box sx={authStyles.signInContainer} data-testid="signin-container">
-      <Box sx={authStyles.signInFieldContainer} data-testid="signin-field-container">
-        <FormControl variant="outlined" required data-testid="signin-email-formcontrol">
-          <InputLabel htmlFor="outlined-adornment-password" data-testid="signin-email-inputlabel">email</InputLabel>
+      <Box
+        sx={authStyles.signInFieldContainer}
+        data-testid="signin-field-container">
+        <FormControl
+          variant="outlined"
+          required
+          data-testid="signin-email-formcontrol">
+          <InputLabel
+            htmlFor="outlined-adornment-password"
+            data-testid="signin-email-inputlabel">
+            email
+          </InputLabel>
           <Input
             error={errors?.email?.message ? true : false}
             {...register('email')}
@@ -85,12 +94,20 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
             required
             data-testid="signin-email-input"
           />
-          <FormHelperText id="phoneHelperText" sx={authStyles.warningText} data-testid="signin-email-formhelpertext">
+          <FormHelperText
+            id="phoneHelperText"
+            sx={authStyles.warningText}
+            data-testid="signin-email-formhelpertext">
             {errors?.email?.message as string}
           </FormHelperText>
         </FormControl>
-        <FormControl variant="outlined" required data-testid="signin-password-formcontrol">
-          <InputLabel htmlFor="outlined-adornment-password" data-testid="signin-password-inputlabel">
+        <FormControl
+          variant="outlined"
+          required
+          data-testid="signin-password-formcontrol">
+          <InputLabel
+            htmlFor="outlined-adornment-password"
+            data-testid="signin-password-inputlabel">
             password
           </InputLabel>
           <Input
@@ -116,7 +133,10 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
           />
         </FormControl>
         {firebaseError && (
-          <FormHelperText id="phoneHelperText" sx={authStyles.warningTextLarge} data-testid="signin-firebaseerror-formhelpertext">
+          <FormHelperText
+            id="phoneHelperText"
+            sx={authStyles.warningTextLarge}
+            data-testid="signin-firebaseerror-formhelpertext">
             {firebaseError as string}
           </FormHelperText>
         )}
@@ -130,11 +150,16 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
           Sign In
         </Button>
         <Box data-testid="signin-links-box">
-          <ForgotPassword routeType={signInType} data-testid="signin-forgotpassword-link" />
-          <NeedAnAccount routeType={signInType} data-testid="signin-needanaccount-link" />
+          <ForgotPassword
+            routeType={signInType}
+            data-testid="signin-forgotpassword-link"
+          />
+          <NeedAnAccount
+            routeType={signInType}
+            data-testid="signin-needanaccount-link"
+          />
         </Box>
       </Box>
     </Box>
   );
-  
 }

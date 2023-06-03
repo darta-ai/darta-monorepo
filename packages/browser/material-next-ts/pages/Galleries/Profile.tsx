@@ -21,34 +21,6 @@ const aboutStyles = {
       paddingTop: '7vh',
     },
   },
-  imageContainer: {
-    minWidth: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    justifyContent: 'center',
-    '@media (minWidth: 800px)': {
-      height: '200px',
-      width: '150px',
-    },
-  },
-  imageSize: {
-    minWidth: '100%',
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    '@media (minWidth: 800px)': {
-      minWidth: '100%',
-      height: '100%',
-    },
-  },
-  image: {
-    width: `100%`,
-    height: 'unset',
-    alignSelf: 'center',
-    borderRadius: 20,
-  },
   typographyTitle: {
     fontFamily: 'EB Garamond',
     color: PRIMARY_BLUE,
@@ -68,15 +40,6 @@ const aboutStyles = {
     },
     cursor: 'default',
   },
-  typographyH3: {
-    fontFamily: 'EB Garamond',
-    color: PRIMARY_DARK_GREY,
-    fontSize: '1.2rem',
-    '@media (minWidth: 800px)': {
-      fontSize: '1.75rem',
-    },
-    cursor: 'default',
-  },
 };
 
 type AboutData = {
@@ -91,7 +54,7 @@ type AboutData = {
 };
 
 // About component
-export default function GalleryHome({
+export default function GalleryProfile({
   data,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   React.useEffect(() => {
@@ -118,7 +81,7 @@ export default function GalleryHome({
         <Container maxWidth="md" sx={aboutStyles.container}>
           <Box>
             <Typography variant="h2" sx={aboutStyles.typographyTitle}>
-              Home
+              Profile
             </Typography>
           </Box>
         </Container>
