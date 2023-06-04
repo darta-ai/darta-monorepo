@@ -21,7 +21,7 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     gap: '3vh',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       gap: '7vh',
     },
   },
@@ -29,7 +29,7 @@ const styles = {
     fontFamily: 'EB Garamond',
     color: PRIMARY_MILK,
     fontSize: '0.75rem',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       fontSize: '0.9rem',
     },
     '&:hover': {
@@ -42,22 +42,35 @@ const styles = {
 
 export const Footer = () => {
   return (
-    <Box sx={styles.footerBox}>
-      <Box sx={styles.textContainer}>
+    <Box sx={styles.footerBox} data-testid="footer-box">
+      <Box sx={styles.textContainer} data-testid="text-container">
         <Link href={`/Darta/About`}>
-          <Typography component="div" sx={styles.typography}>
-            <div onClick={() => console.log('clicked')}>about</div>
+          <Typography
+            component="div"
+            sx={styles.typography}
+            data-testid="about-link">
+            about
           </Typography>
         </Link>
-        <div style={styles.divider}>|</div>
+        <div style={styles.divider} data-testid="first-divider">
+          |
+        </div>
         <Link href={`/Darta/Contact`}>
-          <Typography component="div" sx={styles.typography}>
+          <Typography
+            component="div"
+            sx={styles.typography}
+            data-testid="contact-link">
             contact
           </Typography>
         </Link>
-        <div style={styles.divider}>|</div>
-        <Typography component="div" sx={styles.typography}>
-          <div onClick={() => console.log('clicked')}>terms & conditions</div>
+        <div style={styles.divider} data-testid="second-divider">
+          |
+        </div>
+        <Typography
+          component="div"
+          sx={styles.typography}
+          data-testid="terms-link">
+          terms & conditions
         </Typography>
       </Box>
     </Box>

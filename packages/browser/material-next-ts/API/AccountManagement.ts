@@ -1,9 +1,30 @@
-import * as firebaseAuth from '../browserFirebase/firebaseAuth'
-import { writeWaitList } from '../browserFirebase/firebaseDB'
+import {
+  firebaseSignUp,
+  firebaseSignIn,
+  firebaseForgotPassword,
+} from '../browserFirebase/firebaseApp';
 
+export const dartaSignUp = async (user: any, signUpType: string) => {
+  const firebaseCheck = await firebaseSignUp(
+    user.email,
+    user.password,
+    signUpType,
+  );
+  return firebaseCheck;
+};
 
-export const signUp = async (user: any, signUpType: string) => {
-    const firebaseCheck = await firebaseAuth.firebaseSignUp(user.email, user.password)
-    const waitListResults = await writeWaitList(user, signUpType)
-    return firebaseCheck
-}
+export const dartaSignIn = async (user: any, signUpType: string) => {
+  const firebaseCheck = await firebaseSignIn(
+    user.email,
+    user.password,
+    signUpType,
+  );
+  return firebaseCheck;
+};
+
+export const dartaForgotPassword = async (
+  user: any,
+): Promise<{success: boolean; errorMessage: string} | void> => {
+  const firebaseCheck = await firebaseForgotPassword(user.email);
+  return firebaseCheck;
+};

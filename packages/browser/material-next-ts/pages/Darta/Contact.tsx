@@ -2,6 +2,7 @@
 import React from 'react';
 import Head from 'next/head';
 import {Container, Typography, Box, Link} from '@mui/material';
+import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
 
 const useStyles = {
   container: {
@@ -10,10 +11,10 @@ const useStyles = {
     gap: '2%',
     justifyContent: 'space-around',
     width: '100%',
-    my: 3, 
+    my: 3,
     alignSelf: 'center',
     height: '100vh',
-    '@media (min-width:800px)': {
+    '@media (min-width: 800px)': {
       height: '100vh',
     },
   },
@@ -24,11 +25,11 @@ const useStyles = {
     alignItems: 'center',
     alignContent: 'center',
     gap: '7vh',
-    '@media (min-width:800px)': {
-        flexDirection: 'row',
-        alignSelf: 'center',
-        alignItems: 'center',
-      },
+    '@media (min-width: 800px)': {
+      flexDirection: 'row',
+      alignSelf: 'center',
+      alignItems: 'center',
+    },
   },
   root: {
     padding: 3,
@@ -36,10 +37,18 @@ const useStyles = {
   },
   title: {
     alignSelf: 'center',
+    fontSize: 40,
+    '@media (min-width: 750px)': {
+      fontSize: 50,
+    },
   },
   contact: {
     marginBottom: 1,
+    fontSize: 28,
     fontWeight: 'bold',
+    '@media (min-width: 750px)': {
+      fontSize: 35,
+    },
   },
   contactElementContainer: {
     display: 'flex',
@@ -49,39 +58,45 @@ const useStyles = {
     alignItems: 'center',
   },
   contactText: {
-    fontSize: 18,
+    fontSize: 16,
     textAlign: 'center',
+    '@media (min-width: 750px)': {
+      fontSize: 18,
+    },
   },
   reachOutText: {
-    fontSize: 18,
+    fontSize: 16,
     textAlign: 'center',
-  }
+    '@media (min-width: 750px)': {
+      fontSize: 18,
+    },
+  },
 };
 
 const ContactElement = ({
   title,
   blurb,
   email,
+  dataTestId,
 }: {
   title: string;
   blurb: string;
   email: string;
+  dataTestId: string;
 }) => {
   return (
-    <Box sx={useStyles.contactElementContainer}>
-      <Typography variant="h4" sx={useStyles.contact}>
-        {title}
-        <Link href={`mailto:${email}`} color="inherit"></Link>
-      </Typography>
-      <Typography sx={useStyles.contactText}>
-        {blurb}
-      </Typography>
-      <Typography sx={useStyles.reachOutText}>
-      <a href={`mailto: ${email}`}>
-        reach out
-        </a>
-    </Typography>
-    </Box>
+    <>
+      <Box sx={useStyles.contactElementContainer} data-testid={dataTestId}>
+        <Typography variant="h4" sx={useStyles.contact}>
+          {title}
+          <Link href={`mailto:${email}`} color="inherit"></Link>
+        </Typography>
+        <Typography sx={useStyles.contactText}>{blurb}</Typography>
+        <Typography sx={useStyles.reachOutText}>
+          <a href={`mailto: ${email}`}>reach out</a>
+        </Typography>
+      </Box>
+    </>
   );
 };
 
@@ -93,28 +108,36 @@ const Contact = () => {
         <title>Darta | Contact</title>
         <meta name="description" content="Get in touch with Darta." />
       </Head>
-
-      <Container maxWidth="md" sx={useStyles.container}>
-        <Box>
-          <Typography variant="h2" sx={useStyles.title}>
+      <BaseHeader />
+      <Container
+        maxWidth="md"
+        sx={useStyles.container}
+        data-testid="contact-container">
+        <Box data-testid="title-box">
+          <Typography sx={useStyles.title} data-testid="contact-title">
             Get In Touch
           </Typography>
         </Box>
-        <Box sx={useStyles.contactLinksContainer}>
+        <Box
+          sx={useStyles.contactLinksContainer}
+          data-testid="contact-links-container">
           <ContactElement
             title="support"
             blurb="Have questions about your account or using the app?"
             email="support@darta.works"
+            dataTestId="contact-element-support"
           />
           <ContactElement
             title="collaborate"
-            blurb="Love the mission? Want to work with us? Want equity?"
+            blurb="Love the mission? Want to work with us?"
             email="collaborate@darta.works"
+            dataTestId="contact-element-collaborate"
           />
           <ContactElement
             title="press"
             blurb="If you're a writer or editor and want to connect on a story."
             email="press@darta.works"
+            dataTestId="contact-element-press"
           />
         </Box>
       </Container>

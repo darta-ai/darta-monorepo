@@ -3,7 +3,7 @@ import {Box} from '@mui/material';
 import {AuthEnum, DartaBenefits} from '../../src/Components/Auth/types';
 import {signUpBenefits} from '../../browserFirebase/firebaseDB';
 import {SignUpWelcome} from '../../src/Components/Auth/SignUpWelcome';
-import type {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import {SignUpForm} from '../../src/Components/Auth/SignUpForm';
 
 const styles = {
@@ -13,7 +13,7 @@ const styles = {
     height: '180vh',
     alignSelf: 'center',
     padding: '2vh',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       padding: '10vh',
       flexDirection: 'row',
       height: '100vh',
@@ -26,7 +26,7 @@ const styles = {
 //defines everything
 const userType = AuthEnum.curators;
 
-export default function GallerySignIn({
+export default function CuratorsSignIn({
   data,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (

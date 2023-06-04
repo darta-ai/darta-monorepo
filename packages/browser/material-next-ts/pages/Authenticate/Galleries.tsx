@@ -3,7 +3,8 @@ import {Box} from '@mui/material';
 import {AuthEnum, WelcomeBack} from '../../src/Components/Auth/types';
 import {SignInForm, SignInWelcome} from '../../src/Components/Auth';
 import {welcomeBack} from '../../browserFirebase/firebaseDB';
-import type {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
 
 const styles = {
   container: {
@@ -12,7 +13,7 @@ const styles = {
     height: '180vh',
     alignSelf: 'center',
     padding: '2vh',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       padding: '10vh',
       flexDirection: 'row',
       height: '100vh',
@@ -29,13 +30,16 @@ export default function GallerySignIn({
   data,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
-    <Box sx={styles.container}>
-      <SignInWelcome
-        welcomeBackData={data as WelcomeBack}
-        signInType={userType}
-      />
-      <SignInForm signInType={userType} />
-    </Box>
+    <>
+      <BaseHeader />
+      <Box sx={styles.container}>
+        <SignInWelcome
+          welcomeBackData={data as WelcomeBack}
+          signInType={userType}
+        />
+        <SignInForm signInType={userType} />
+      </Box>
+    </>
   );
 }
 

@@ -1,43 +1,14 @@
 import React from 'react';
 import {Box} from '@mui/material';
-import {PRIMARY_BLUE} from '../../../styles';
-import {TextField, FormHelperText, Button} from '@mui/material';
+import {TextField, FormHelperText, Button, Typography} from '@mui/material';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {AuthEnum} from './types';
-import {NeedAnAccount, ForgotPassword} from '../Navigation/Auth';
-
-const signUpStyles = {
-  signInContainer: {
-    flex: 3,
-    border: '1px solid',
-    borderColor: PRIMARY_BLUE,
-    height: '100%',
-    borderTopRightRadius: '0px',
-    borderTopLeftRadius: '0px',
-    borderBottomLeftRadius: '30px',
-    borderBottomRightRadius: '30px',
-    '@media (min-width:600px)': {
-      borderTopRightRadius: '30px',
-      borderBottomRightRadius: '30px',
-      borderTopLeftRadius: '0px',
-      borderBottomLeftRadius: '0px',
-    },
-  },
-  signInFieldContainer: {
-    margin: '10px',
-    display: 'flex',
-    height: '100%',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    gap: '3vh',
-    alignContent: 'center',
-    '@media (min-width:600px)': {
-      gap: '2vh',
-    },
-  },
-};
+import {GoToSignIn} from '../Navigation/Auth';
+import {dartaForgotPassword} from '../../../API/AccountManagement';
+import {authStyles} from './styles';
+import {NeedAnAccount} from '../Navigation/Auth';
 
 const schema = yup
   .object({
@@ -45,36 +16,72 @@ const schema = yup
   })
   .required();
 
-export function ForgotPasswordForm() {
+export function ForgotPasswordForm({
+  forgotPasswordType,
+}: {
+  forgotPasswordType: AuthEnum;
+}) {
+  const [firebaseError, setFirebaseError] = React.useState<string>('');
+  const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
   const {
     register,
     handleSubmit,
     watch,
     formState: {errors},
   } = useForm({resolver: yupResolver(schema)});
-  const onSubmit = (data: any) => console.log(data);
-
+  const handleForgotPassword = async (data: any) => {
+    try {
+      const results = await dartaForgotPassword(data);
+      if (results) {
+        const {success, errorMessage} = results;
+        if (!success) {
+          setFirebaseError(errorMessage);
+        } else {
+          setShowSuccess(true);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
-    <Box sx={signUpStyles.signInContainer}>
-      <Box sx={signUpStyles.signInFieldContainer}>
-        <TextField
-          variant="standard"
-          error={errors?.email?.message ? true : false}
-          helperText={errors?.email?.message as string}
-          label="email"
-          {...register('email')}
-          id="email"
-          aria-describedby="email"
-          required
-        />
-        <Button
-          onClick={handleSubmit(onSubmit)}
-          variant="contained"
-          color="primary"
-          sx={{alignSelf: 'center', margin: '2vh'}}>
-          Reset Password
-        </Button>
-      </Box>
+    <Box sx={authStyles.signInContainer}>
+      {!showSuccess ? (
+        <Box sx={authStyles.signInFieldContainer}>
+          <TextField
+            variant="standard"
+            error={errors?.email?.message ? true : false}
+            helperText={errors?.email?.message as string}
+            label="email"
+            {...register('email')}
+            id="email"
+            aria-describedby="email"
+            required
+          />
+          {firebaseError && (
+            <FormHelperText
+              id="phoneHelperText"
+              sx={authStyles.warningTextLarge}>
+              {firebaseError as string}
+            </FormHelperText>
+          )}
+          <Button
+            onClick={handleSubmit(handleForgotPassword)}
+            variant="contained"
+            color="primary"
+            sx={{alignSelf: 'center', margin: '2vh'}}>
+            Reset Password
+          </Button>
+          <NeedAnAccount routeType={forgotPasswordType} />
+        </Box>
+      ) : (
+        <Box sx={authStyles.signInFieldContainer}>
+          <Typography sx={authStyles.typographyTitle}>
+            Check your inbox for a password reset link
+          </Typography>
+          <GoToSignIn routeType={forgotPasswordType} />
+        </Box>
+      )}
     </Box>
   );
 }

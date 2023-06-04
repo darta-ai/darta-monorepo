@@ -5,7 +5,7 @@ export const styles = {
     height: 'auto',
     marginBottom: '15%',
     width: '95%',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       width: '80%',
       height: '30vh',
     },
@@ -28,7 +28,7 @@ export const styles = {
     alignItems: 'center',
     alignSelf: 'flex-end',
     justifyContent: 'center',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       height: '200px',
       width: '150px',
     },
@@ -52,20 +52,20 @@ export const styles = {
     alignItems: 'center',
     alignSelf: 'flex-end',
     justifyContent: 'center',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       height: '100%',
       minWidth: '20%',
     },
   },
   videoStyle: {
-    width: `90%`,
+    width: `60%`,
     height: 'unset',
   },
   typographyTitle: {
     fontFamily: 'EB Garamond',
     color: PRIMARY_BLUE,
     fontSize: '2rem',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       fontSize: '2.5rem',
     },
     cursor: 'default',
@@ -74,7 +74,7 @@ export const styles = {
     fontFamily: 'EB Garamond',
     color: PRIMARY_DARK_GREY,
     fontSize: '1rem',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       fontSize: '1.2rem',
     },
     cursor: 'default',

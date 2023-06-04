@@ -3,7 +3,7 @@ import {Box} from '@mui/material';
 import {AuthEnum, WelcomeBack} from '../../src/Components/Auth/types';
 import {SignInForm, SignInWelcome} from '../../src/Components/Auth';
 import {welcomeBack} from '../../browserFirebase/firebaseDB';
-import type {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {GetStaticProps, InferGetStaticPropsType} from 'next';
 
 const styles = {
   container: {
@@ -12,7 +12,7 @@ const styles = {
     height: '180vh',
     alignSelf: 'center',
     padding: '2vh',
-    '@media (min-width:600px)': {
+    '@media (min-width:800px)': {
       padding: '10vh',
       flexDirection: 'row',
       height: '100vh',

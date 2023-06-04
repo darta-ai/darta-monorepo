@@ -2,6 +2,7 @@ import React from 'react';
 
 import {Typography, Box, Divider} from '@mui/material';
 import Image from 'next/image';
+import {AuthEnum} from '../Auth/types';
 
 import {styles} from './styles';
 
@@ -11,22 +12,24 @@ export const PamphletRight = ({
   line2,
   line3,
   index,
+  authType,
 }: {
+  authType: AuthEnum;
+  index: number;
   headline?: string;
   line1?: string;
   line2?: string;
   line3?: string;
-  index: number;
 }) => {
   let png;
   let video;
   try {
-    png = require(`../../../public/static/pamphlet/${index}.png`);
+    png = require(`../../../public/static/Home/${authType}/${index}.png`);
   } catch (e) {
     png = null;
   }
   try {
-    video = require(`../../../public/static/pamphlet/${index}.mp4`);
+    video = require(`../../../public/static/Home/${authType}/${index}.mp4`);
   } catch (e) {
     video = null;
   }

@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {Box} from '@mui/material';
-import {PRIMARY_BLUE} from '../../../styles';
 import {
   FormHelperText,
   Button,
@@ -17,47 +16,9 @@ import {AlreadySignedUp} from '../Navigation/Auth';
 import {AuthEnum} from './types';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import {signUp} from '../../../API/AccountManagement';
-const signUpStyles = {
-  signInContainer: {
-    flex: 3,
-    border: '1px solid',
-    borderColor: PRIMARY_BLUE,
-    height: '100%',
-    borderTopRightRadius: '0px',
-    borderTopLeftRadius: '0px',
-    borderBottomLeftRadius: '30px',
-    borderBottomRightRadius: '30px',
-    '@media (min-width:800px)': {
-      borderTopRightRadius: '30px',
-      borderBottomRightRadius: '30px',
-      borderTopLeftRadius: '0px',
-      borderBottomLeftRadius: '0px',
-    },
-  },
-  signInFieldContainer: {
-    margin: '10px',
-    display: 'flex',
-    height: '100%',
-    width: '95%',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    gap: '3vh',
-    alignContent: 'center',
-    '@media (min-width:800px)': {
-      gap: '2vh',
-    },
-  },
-  formHelperText: {
-    alignSelf: 'center',
-    fontSize: 15,
-  },
-  warningText: {
-    alignSelf: 'left',
-    fontSize: 12,
-    color: 'red',
-  },
-};
+import {dartaSignUp} from '../../../API/AccountManagement';
+import {useRouter} from 'next/router';
+import {authStyles} from './styles';
 
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -80,25 +41,37 @@ const schema = yup
       .string()
       .oneOf([yup.ref('password'), undefined], 'passwords must match')
       .required('please confirm your password'),
-    website: yup
-      .string()
-      .optional()
-      .matches(websiteRegExp, {
-        message:'please double check your website url',
-        excludeEmptyString:true
-        })
+    website: yup.string().optional().matches(websiteRegExp, {
+      message: 'please double check your website url',
+      excludeEmptyString: true,
+    }),
   })
   .required();
 
 export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
+  const router = useRouter();
+  const [firebaseError, setFirebaseError] = useState<string>('');
   const {
     register,
     handleSubmit,
     formState: {errors},
   } = useForm({resolver: yupResolver(schema)});
-  const onSubmit = async (data: any) => {
-    const results = await signUp(data, signUpType);
-    console.log(results)
+  const handleSignUp = async (data: any) => {
+    const submitMe = async () => {
+      try {
+        const {error, user, errorMessage} = await dartaSignUp(data, signUpType);
+        if (error) {
+          setFirebaseError(errorMessage);
+        } else if (user?.displayName) {
+          router.push(`/${signUpType}/Home`);
+        } else {
+          router.push(`/`);
+        }
+      } catch (e: any) {
+        setFirebaseError('Something went wrong. Please try again.');
+      }
+    };
+    submitMe();
   };
 
   const [togglePasswordView, setTogglePasswordView] = useState<boolean>(false);
@@ -112,8 +85,10 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
   };
 
   return (
-    <Box sx={signUpStyles.signInContainer}>
-      <Box sx={signUpStyles.signInFieldContainer}>
+    <Box sx={authStyles.signInContainer} data-testid="signInContainer">
+      <Box
+        sx={authStyles.signInFieldContainer}
+        data-testid="signInFieldContainer">
         <FormControl variant="outlined" required>
           <InputLabel htmlFor="outlined-adornment-password">email</InputLabel>
           <Input
@@ -123,8 +98,9 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             aria-describedby="email"
             color="info"
             required
+            data-testid="emailInput"
           />
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.warningText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.email?.message as string}
           </FormHelperText>
         </FormControl>
@@ -138,13 +114,14 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             id="phoneNumber"
             color="info"
             aria-describedby="phoneNumber"
+            data-testid="phoneNumberInput"
           />
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.warningText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.phoneNumber?.message as string}
           </FormHelperText>
         </FormControl>
         {!errors?.password?.message && (
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.formHelperText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.formHelperText}>
             For account management purposes.
           </FormHelperText>
         )}
@@ -164,13 +141,15 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
                   aria-label="toggle password visibility"
                   onClick={() => setTogglePasswordView(!togglePasswordView)}
                   onMouseDown={handleMouseDownPassword}
-                  edge="end">
+                  edge="end"
+                  data-testid="passwordToggleButton">
                   {togglePasswordView ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
             }
+            data-testid="passwordInput"
           />
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.warningText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.email?.message as string}
           </FormHelperText>
         </FormControl>
@@ -194,13 +173,15 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
                     setToggleConfirmPasswordView(!toggleConfirmPasswordView)
                   }
                   onMouseDown={handleMouseDownPassword}
-                  edge="end">
+                  edge="end"
+                  data-testid="confirmPasswordToggleButton">
                   {togglePasswordView ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
             }
+            data-testid="confirmPasswordInput"
           />
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.warningText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.confirmPassword?.message as string}
           </FormHelperText>
         </FormControl>
@@ -212,16 +193,24 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             id="website"
             color="info"
             aria-describedby="website"
+            data-testid="websiteInput"
           />
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.warningText}>
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
             {errors?.website?.message as string}
           </FormHelperText>
         </FormControl>
+        {firebaseError && (
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningTextLarge}>
+            {firebaseError as string}
+          </FormHelperText>
+        )}
         <Button
-          onClick={async () => handleSubmit(onSubmit)}
+          onClick={handleSubmit(handleSignUp)}
           variant="contained"
           color="primary"
-          sx={{alignSelf: 'center', margin: '2vh'}}>
+          type="submit"
+          sx={{alignSelf: 'center', margin: '2vh'}}
+          data-testid="signUpButton">
           Sign Up
         </Button>
         <AlreadySignedUp routeType={signUpType} />
