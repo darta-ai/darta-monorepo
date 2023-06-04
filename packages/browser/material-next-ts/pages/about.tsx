@@ -6,10 +6,12 @@ import Button from '@mui/material/Button';
 import Link from '../src/Link';
 import ProTip from '../src/ProTip';
 import Copyright from '../src/Copyright';
+import {BaseHeader} from '../src/Components/Navigation/Headers/BaseHeader';
 
 export default function About() {
   return (
     <Container maxWidth="lg">
+      <BaseHeader />
       <Box
         sx={{
           my: 4,

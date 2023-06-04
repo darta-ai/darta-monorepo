@@ -14,6 +14,7 @@ import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import {getAbout} from '../../browserFirebase/firebaseDB';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
 import Image from 'next/image';
+import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
 
 const aboutStyles = {
   container: {
@@ -113,7 +114,7 @@ export default function About({
           content="Learn about Darta, your digital art advisor."
         />
       </Head>
-
+      <BaseHeader />
       <Container
         maxWidth="md"
         sx={aboutStyles.container}

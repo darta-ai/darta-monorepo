@@ -6,6 +6,9 @@ import {PamphletRight} from '../src/Components/Pamphlet/pamphletRight';
 import {PamphletLeft} from '../src/Components/Pamphlet/pamphletLeft';
 
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {BaseHeader} from '../src/Components/Navigation/Headers/BaseHeader';
+import {AuthEnum} from '../src/Components/Auth/types';
+
 import Head from 'next/head';
 
 export default function Home({
@@ -21,6 +24,7 @@ export default function Home({
           content="Learn about Darta, your digital art advisor."
         />
       </Head>
+      <BaseHeader />
       <Container maxWidth="lg">
         {pamphletData && (
           <Box
@@ -44,6 +48,7 @@ export default function Home({
                       line2={pamphletData?.line2}
                       line3={pamphletData?.line3}
                       index={index}
+                      authType={AuthEnum.home}
                     />
                   );
                 } else {
@@ -55,6 +60,7 @@ export default function Home({
                       line2={pamphletData?.line2}
                       line3={pamphletData?.line3}
                       index={index}
+                      authType={AuthEnum.home}
                     />
                   );
                 }

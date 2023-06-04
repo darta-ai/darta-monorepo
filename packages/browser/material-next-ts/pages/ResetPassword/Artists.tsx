@@ -5,6 +5,7 @@ import {
   ForgotPasswordForm,
 } from '../../src/Components/Auth';
 import {AuthEnum} from '../../src/Components/Auth/types';
+import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
 
 const styles = {
   container: {
@@ -25,6 +26,7 @@ const styles = {
 export default function ForgotPassword() {
   return (
     <>
+      <BaseHeader />
       <Box sx={styles.container}>
         <ForgotPasswordWelcome />
         <ForgotPasswordForm forgotPasswordType={AuthEnum.artists} />

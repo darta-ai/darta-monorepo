@@ -6,6 +6,7 @@ import {signUpBenefits} from '../../browserFirebase/firebaseDB';
 import {SignUpWelcome} from '../../src/Components/Auth/SignUpWelcome';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import {SignUpForm} from '../../src/Components/Auth/SignUpForm';
+import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
 
 const styles = {
   container: {
@@ -85,6 +86,7 @@ export default function GallerySignIn({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <>
+      <BaseHeader />
       <Box sx={styles.container}>
         <SignUpWelcome benefitsData={data as DartaBenefits} />
         <SignUpForm signUpType={userType} />

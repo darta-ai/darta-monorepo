@@ -2,6 +2,7 @@
 import React from 'react';
 import Head from 'next/head';
 import {Container, Typography, Box, Link} from '@mui/material';
+import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
 
 const useStyles = {
   container: {
@@ -84,16 +85,18 @@ const ContactElement = ({
   dataTestId: string;
 }) => {
   return (
-    <Box sx={useStyles.contactElementContainer} data-testid={dataTestId}>
-      <Typography variant="h4" sx={useStyles.contact}>
-        {title}
-        <Link href={`mailto:${email}`} color="inherit"></Link>
-      </Typography>
-      <Typography sx={useStyles.contactText}>{blurb}</Typography>
-      <Typography sx={useStyles.reachOutText}>
-        <a href={`mailto: ${email}`}>reach out</a>
-      </Typography>
-    </Box>
+    <>
+      <Box sx={useStyles.contactElementContainer} data-testid={dataTestId}>
+        <Typography variant="h4" sx={useStyles.contact}>
+          {title}
+          <Link href={`mailto:${email}`} color="inherit"></Link>
+        </Typography>
+        <Typography sx={useStyles.contactText}>{blurb}</Typography>
+        <Typography sx={useStyles.reachOutText}>
+          <a href={`mailto: ${email}`}>reach out</a>
+        </Typography>
+      </Box>
+    </>
   );
 };
 
@@ -105,7 +108,7 @@ const Contact = () => {
         <title>Darta | Contact</title>
         <meta name="description" content="Get in touch with Darta." />
       </Head>
-
+      <BaseHeader />
       <Container
         maxWidth="md"
         sx={useStyles.container}
@@ -126,7 +129,7 @@ const Contact = () => {
           />
           <ContactElement
             title="collaborate"
-            blurb="Love the mission? Want to work with us? Want equity?"
+            blurb="Love the mission? Want to work with us?"
             email="collaborate@darta.works"
             dataTestId="contact-element-collaborate"
           />
