@@ -6,8 +6,7 @@ import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import {getAbout} from '../../browserFirebase/firebaseDB';
 import {isSignedIn} from '../../browserFirebase/firebaseApp';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
-import {SideNavigationWrapper} from '../../src/Components/Navigation/SideNavigation/SideNavigationWrapper';
-import {AuthEnum} from '../../src/Components/Auth/types';
+import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 
 const aboutStyles = {
   container: {

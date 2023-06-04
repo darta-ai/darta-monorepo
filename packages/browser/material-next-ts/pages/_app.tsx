@@ -6,7 +6,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import {CacheProvider, EmotionCache} from '@emotion/react';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
-import {Header} from '../src/Components/Navigation/Header';
 import {Footer} from '../src/Components/Navigation/Footer';
 import {PRIMARY_MILK} from '../styles';
 import '@fontsource/eb-garamond/400.css';
@@ -44,12 +43,12 @@ export default function MyApp(props: MyAppProps) {
   return (
     <CacheProvider value={emotionCache}>
       <Head>
+        <title>Darta | Buy for love</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthContext.Provider value={{user, setUser}}>
-          <Header />
           <Component {...pageProps} sx={{backgroundColor: PRIMARY_MILK}} />
           <Footer />
         </AuthContext.Provider>

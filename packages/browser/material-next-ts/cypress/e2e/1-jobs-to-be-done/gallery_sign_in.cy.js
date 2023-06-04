@@ -7,7 +7,11 @@ describe('Gallery Sign In Flow', () => {
   it('should navigate from the home page to gallery sign in and sign in', () => {
     cy.visit('http://localhost:3000/');
 
-    cy.get('a[href*="/Authenticate/Galleries"]').click();
+    cy.get('[data-testid=header-link-gallery]').click();
+
+    cy.url().should('include', '/Galleries/Home');
+
+    cy.get('[data-testid=header-navigation-signIn-button]').click();
 
     cy.url().should('include', '/Authenticate');
 
@@ -18,7 +22,9 @@ describe('Gallery Sign In Flow', () => {
     cy.get('[data-testid=signin-button]').click();
     cy.url().should('include', '/Home');
 
-    cy.get('[data-testid=header-navigation-signout-button]').should('be.visible');
+    cy.get('[data-testid=header-navigation-signout-button]').should(
+      'be.visible',
+    );
     cy.get('[data-testid=header-navigation-signout-button]').click();
     cy.url().should('not.include', '/Authenticate');
   });
@@ -47,6 +53,5 @@ describe('Gallery Sign In Flow', () => {
 
     cy.get('[data-testid=homeButton]').click();
     cy.url().should('include', '/Home');
-
   });
 });

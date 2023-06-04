@@ -58,7 +58,7 @@ export const styles = {
     },
   },
   videoStyle: {
-    width: `90%`,
+    width: `60%`,
     height: 'unset',
   },
   typographyTitle: {

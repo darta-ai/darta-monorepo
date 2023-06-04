@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 import {Typography, Box} from '@mui/material';
 import Image from 'next/image';
 import {styles} from './styles';
+import {AuthEnum} from '../Auth/types';
 
 export const PamphletLeft = ({
   headline,
@@ -10,26 +11,28 @@ export const PamphletLeft = ({
   line2,
   line3,
   index,
+  authType,
 }: {
+  authType: AuthEnum;
+  index: number;
   headline?: string;
   line1?: string;
   line2?: string;
   line3?: string;
-  index: number;
 }) => {
   let png;
   let video;
   try {
-    png = require(`../../../public/static/pamphlet/${index}.png`);
+    png = require(`../../../public/static/Home/${authType}/${index}.png`);
   } catch (e) {
     png = null;
   }
   try {
-    video = require(`../../../public/static/pamphlet/${index}.mp4`);
+    video = require(`../../../public/static/Home/${authType}/${index}.mp4`);
   } catch (e) {
     video = null;
   }
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   return (
     <Box sx={styles.container}>
       <Box sx={{flex: 1}}>
@@ -38,12 +41,11 @@ export const PamphletLeft = ({
             <Image src={png} alt="info" style={styles.image} />
           </div>
         ) : (
-          <Box
-            sx={styles.videoContainer}
-            onClick={() => setIsPlaying(!isPlaying)}>
+          <Box sx={styles.videoContainer}>
             <video
+              controls
+              controlsList="nodownload noremoteplayback noplaybackrate foobar"
               title={headline}
-              autoPlay={isPlaying}
               loop
               muted
               playsInline

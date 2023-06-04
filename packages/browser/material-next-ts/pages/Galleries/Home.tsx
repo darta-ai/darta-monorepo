@@ -1,143 +1,82 @@
-import React from 'react';
-import Head from 'next/head';
-import 'firebase/compat/auth';
-import {Container, Typography, Box} from '@mui/material';
+import * as React from 'react';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import {getGalleryPamphlet} from '../../browserFirebase/firebaseDB';
+import {PamphletRight} from '../../src/Components/Pamphlet/pamphletRight';
+import {PamphletLeft} from '../../src/Components/Pamphlet/pamphletLeft';
+
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
-import {getAbout} from '../../browserFirebase/firebaseDB';
-import {isSignedIn} from '../../browserFirebase/firebaseApp';
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
-import {SideNavigationWrapper} from '../../src/Components/Navigation/SideNavigation/SideNavigationWrapper';
+import Head from 'next/head';
+import {GalleryHeader} from '../../src/Components/Navigation/Headers/GalleryHeader';
 import {AuthEnum} from '../../src/Components/Auth/types';
 
-const aboutStyles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '5%',
-    width: '100%',
-    mb: 5,
-    alignSelf: 'center',
-    '@media (minWidth: 800px)': {
-      paddingTop: '7vh',
-    },
-  },
-  imageContainer: {
-    minWidth: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    justifyContent: 'center',
-    '@media (minWidth: 800px)': {
-      height: '200px',
-      width: '150px',
-    },
-  },
-  imageSize: {
-    minWidth: '100%',
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    '@media (minWidth: 800px)': {
-      minWidth: '100%',
-      height: '100%',
-    },
-  },
-  image: {
-    width: `100%`,
-    height: 'unset',
-    alignSelf: 'center',
-    borderRadius: 20,
-  },
-  typographyTitle: {
-    fontFamily: 'EB Garamond',
-    color: PRIMARY_BLUE,
-    fontSize: '2rem',
-    my: '3vh',
-    '@media (min-width:800px)': {
-      fontSize: '2.5rem',
-    },
-    cursor: 'default',
-  },
-  typography: {
-    fontFamily: 'EB Garamond',
-    color: PRIMARY_DARK_GREY,
-    fontSize: '1rem',
-    '@media (minWidth: 800px)': {
-      fontSize: '1.3rem',
-    },
-    cursor: 'default',
-  },
-  typographyH3: {
-    fontFamily: 'EB Garamond',
-    color: PRIMARY_DARK_GREY,
-    fontSize: '1.2rem',
-    '@media (minWidth: 800px)': {
-      fontSize: '1.75rem',
-    },
-    cursor: 'default',
-  },
-};
-
-type AboutData = {
-  HeadTitle: string;
-  DartaCoreValue: string;
-  Headline: string;
-  WhoWeAre: string;
-  DartaBelief1?: string;
-  DartaBelief2?: string;
-  DartaBelief3?: string;
-  DartaBelief4?: string;
-};
-
-// About component
-export default function GalleryHome({
+export default function Home({
   data,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  React.useEffect(() => {
-    const checkSignedIn = async () => {
-      const user = await isSignedIn();
-    };
-    checkSignedIn();
-  }, []);
-  const beliefs = Object.keys(data).filter(key => key.includes('DartaBelief'));
-  const values = Object.keys(data).filter(key =>
-    key.includes('DartaCoreValue'),
-  );
+  const {pamphletData} = data;
   return (
     <>
       <Head>
-        <title>{data.HeadTitle}</title>
         <meta
           name="description"
           content="Learn about Darta, your digital art advisor."
         />
       </Head>
-
-      <SideNavigationWrapper>
-        <Container maxWidth="md" sx={aboutStyles.container}>
-          <Box>
-            <Typography variant="h2" sx={aboutStyles.typographyTitle}>
-              Home
-            </Typography>
+      <GalleryHeader />
+      <Container maxWidth="lg">
+        {pamphletData && (
+          <Box
+            sx={{
+              my: 10,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            {pamphletData &&
+              pamphletData.map((data: any, index: number) => {
+                const isEven = index % 2 === 0;
+                const pamphletData = data;
+                if (isEven) {
+                  return (
+                    <PamphletRight
+                      key={index}
+                      headline={pamphletData?.headline}
+                      line1={pamphletData?.line1}
+                      line2={pamphletData?.line2}
+                      line3={pamphletData?.line3}
+                      index={index}
+                      authType={AuthEnum.galleries}
+                    />
+                  );
+                } else {
+                  return (
+                    <PamphletLeft
+                      key={index}
+                      headline={pamphletData?.headline}
+                      line1={pamphletData?.line1}
+                      line2={pamphletData?.line2}
+                      line3={pamphletData?.line3}
+                      index={index}
+                      authType={AuthEnum.galleries}
+                    />
+                  );
+                }
+              })}
           </Box>
-        </Container>
-      </SideNavigationWrapper>
+        )}
+      </Container>
     </>
   );
 }
 
-type AboutDataFB = {
-  data: AboutData;
+type PamphletData = {
+  pamphletData: any;
 };
 
 export const getStaticProps: GetStaticProps<{
   data: any;
 }> = async () => {
-  try {
-    const aboutData = (await getAbout()) as AboutDataFB;
-    return {props: {data: aboutData}};
-  } catch (e) {
-    return {props: {data: {data: {}}}};
-  }
+  const pamphletData = (await getGalleryPamphlet()) as any[];
+  return {props: {data: {pamphletData}}};
 };

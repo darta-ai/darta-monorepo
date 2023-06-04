@@ -19,6 +19,17 @@ export async function getPamphlet() {
   }
 }
 
+export async function getGalleryPamphlet() {
+  try {
+    const pamphletData = collection(db, 'galleryPamphlet');
+    const pamphletSnapshot = await getDocs(pamphletData);
+    const pamphletList = pamphletSnapshot.docs.map(doc => doc.data());
+    return pamphletList;
+  } catch (e) {
+    console.log({e});
+  }
+}
+
 // Get all the benefits from Signing Up data from the database
 export async function signUpBenefits(documentName: string) {
   const docRef = doc(db, 'benefits', documentName);
@@ -47,6 +58,15 @@ export async function getAbout() {
   try {
     const docSnap = await getDoc(docRefText);
     return docSnap.data();
+  } catch (e) {
+    // console.log('No such document!');
+  }
+}
+
+// getGallery
+export async function getGallery() {
+  try {
+    return null;
   } catch (e) {
     // console.log('No such document!');
   }

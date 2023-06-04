@@ -4,6 +4,7 @@ import {AuthEnum, WelcomeBack} from '../../src/Components/Auth/types';
 import {SignInForm, SignInWelcome} from '../../src/Components/Auth';
 import {welcomeBack} from '../../browserFirebase/firebaseDB';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
 
 const styles = {
   container: {
@@ -29,13 +30,16 @@ export default function GallerySignIn({
   data,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
-    <Box sx={styles.container}>
-      <SignInWelcome
-        welcomeBackData={data as WelcomeBack}
-        signInType={userType}
-      />
-      <SignInForm signInType={userType} />
-    </Box>
+    <>
+      <BaseHeader />
+      <Box sx={styles.container}>
+        <SignInWelcome
+          welcomeBackData={data as WelcomeBack}
+          signInType={userType}
+        />
+        <SignInForm signInType={userType} />
+      </Box>
+    </>
   );
 }
 

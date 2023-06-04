@@ -1,25 +1,39 @@
 import React from 'react';
 import Head from 'next/head';
 import 'firebase/compat/auth';
-import {Container, Typography, Box} from '@mui/material';
+import {Container, Typography, Box, TextField, Button} from '@mui/material';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
-import {getAbout} from '../../browserFirebase/firebaseDB';
-import {isSignedIn} from '../../browserFirebase/firebaseApp';
+import {getGallery} from '../../browserFirebase/firebaseDB';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
-import {SideNavigationWrapper} from '../../src/Components/Navigation/SideNavigation/SideNavigationWrapper';
-import {AuthEnum} from '../../src/Components/Auth/types';
+import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
+import {useForm} from 'react-hook-form';
+import {
+  EditProfileGallery,
+  ProfileGallery,
+} from '../../src/Components/Profile/';
+import {ImageUploadModal} from '../../src/Components/Modals/UploadImageModal';
+import Image from 'next/image';
 
 const aboutStyles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
+    justifyContent: 'center',
     gap: '5%',
-    width: '100%',
+    width: '80vw',
+    minHeight: '100vh',
     mb: 5,
     alignSelf: 'center',
     '@media (minWidth: 800px)': {
       paddingTop: '7vh',
     },
+  },
+  uploadImageContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    gap: '5%',
+    alignItems: 'center',
   },
   typographyTitle: {
     fontFamily: 'EB Garamond',
@@ -40,6 +54,18 @@ const aboutStyles = {
     },
     cursor: 'default',
   },
+  button: {
+    color: PRIMARY_BLUE,
+  },
+  inputTextContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  formTextField: {
+    width: '100%',
+  },
 };
 
 type AboutData = {
@@ -57,33 +83,21 @@ type AboutData = {
 export default function GalleryProfile({
   data,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  React.useEffect(() => {
-    const checkSignedIn = async () => {
-      const user = await isSignedIn();
-    };
-    checkSignedIn();
-  }, []);
-  const beliefs = Object.keys(data).filter(key => key.includes('DartaBelief'));
-  const values = Object.keys(data).filter(key =>
-    key.includes('DartaCoreValue'),
-  );
+  const [editingProfile, setEditing] = React.useState(false);
+
   return (
     <>
       <Head>
-        <title>{data.HeadTitle}</title>
+        <title>Darta | Gallery</title>
         <meta
           name="description"
-          content="Learn about Darta, your digital art advisor."
+          content="Your profile page for your gallery on Darta."
         />
       </Head>
 
       <SideNavigationWrapper>
         <Container maxWidth="md" sx={aboutStyles.container}>
-          <Box>
-            <Typography variant="h2" sx={aboutStyles.typographyTitle}>
-              Profile
-            </Typography>
-          </Box>
+          {editingProfile ? <EditProfileGallery /> : <ProfileGallery />}
         </Container>
       </SideNavigationWrapper>
     </>
@@ -91,15 +105,15 @@ export default function GalleryProfile({
 }
 
 type AboutDataFB = {
-  data: AboutData;
+  data: AboutData | null;
 };
 
 export const getStaticProps: GetStaticProps<{
   data: any;
 }> = async () => {
   try {
-    const aboutData = (await getAbout()) as AboutDataFB;
-    return {props: {data: aboutData}};
+    const aboutData = (await getGallery()) as null;
+    return {props: {data: {data: {}}}};
   } catch (e) {
     return {props: {data: {data: {}}}};
   }
