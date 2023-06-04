@@ -83,7 +83,7 @@ type AboutData = {
 export default function GalleryProfile({
   data,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const [editingProfile, setEditing] = React.useState(false);
+  const [isEditingProfile, setIsEditingProfile] = React.useState(false);
 
   return (
     <>
@@ -97,7 +97,17 @@ export default function GalleryProfile({
 
       <SideNavigationWrapper>
         <Container maxWidth="md" sx={aboutStyles.container}>
-          {editingProfile ? <EditProfileGallery /> : <ProfileGallery />}
+          {isEditingProfile ? (
+            <EditProfileGallery 
+            isEditingProfile={isEditingProfile}
+            setIsEditingProfile={setIsEditingProfile}
+            />
+          ) : (
+            <ProfileGallery
+              isEditingProfile={isEditingProfile}
+              setIsEditingProfile={setIsEditingProfile}
+            />
+          )}
         </Container>
       </SideNavigationWrapper>
     </>

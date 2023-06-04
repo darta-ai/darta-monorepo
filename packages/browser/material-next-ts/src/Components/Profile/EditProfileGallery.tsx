@@ -1,11 +1,12 @@
 import React from 'react';
 import Head from 'next/head';
 import 'firebase/compat/auth';
-import {Container, Typography, Box, TextField, Button} from '@mui/material';
+import {IconButton, Typography, Box, TextField, Button} from '@mui/material';
 import {PRIMARY_DARK_GREY, PRIMARY_BLUE} from '../../../styles';
 import {useForm} from 'react-hook-form';
 import {ImageUploadModal} from '../Modals/UploadImageModal';
 import Image from 'next/image';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const editProfileStyles = {
   container: {
@@ -81,7 +82,13 @@ const galleryFields = {
   primaryContact: '',
 };
 
-export function EditProfileGallery() {
+export function EditProfileGallery({
+  isEditingProfile,
+  setIsEditingProfile,
+}: {
+  isEditingProfile: boolean;
+  setIsEditingProfile: (T: boolean) => void;
+}) {
   const {
     register,
     handleSubmit,
@@ -122,6 +129,11 @@ export function EditProfileGallery() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box mb={2} sx={editProfileStyles.uploadImageContainer}>
           <Box>
+          <Box >
+            <IconButton onClick={() => setIsEditingProfile(!isEditingProfile)}>
+              <SettingsIcon sx={{color: PRIMARY_BLUE}} />
+            </IconButton>
+          </Box>
             <Image
               src={backupImage}
               alt="upload image"
