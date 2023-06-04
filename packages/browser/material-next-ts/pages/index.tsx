@@ -1,15 +1,14 @@
 import * as React from 'react';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import Link from '../src/Link';
-import ProTip from '../src/ProTip';
-import Copyright from '../src/Copyright';
 import {getPamphlet} from '../browserFirebase/firebaseDB';
 import {PamphletRight} from '../src/Components/Pamphlet/pamphletRight';
 import {PamphletLeft} from '../src/Components/Pamphlet/pamphletLeft';
 
-import type {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {BaseHeader} from '../src/Components/Navigation/Headers/BaseHeader';
+import {AuthEnum} from '../src/Components/Auth/types';
+
 import Head from 'next/head';
 
 export default function Home({
@@ -25,6 +24,7 @@ export default function Home({
           content="Learn about Darta, your digital art advisor."
         />
       </Head>
+      <BaseHeader />
       <Container maxWidth="lg">
         {pamphletData && (
           <Box
@@ -48,6 +48,7 @@ export default function Home({
                       line2={pamphletData?.line2}
                       line3={pamphletData?.line3}
                       index={index}
+                      authType={AuthEnum.home}
                     />
                   );
                 } else {
@@ -59,6 +60,7 @@ export default function Home({
                       line2={pamphletData?.line2}
                       line3={pamphletData?.line3}
                       index={index}
+                      authType={AuthEnum.home}
                     />
                   );
                 }

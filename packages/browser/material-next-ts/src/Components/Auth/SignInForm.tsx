@@ -1,9 +1,7 @@
 import React, {useState} from 'react';
 import {Box} from '@mui/material';
-import {PRIMARY_BLUE} from '../../../styles';
 import {
   FormHelperText,
-  TextField,
   Button,
   Input,
   InputLabel,
@@ -18,47 +16,9 @@ import {AuthEnum} from './types';
 import {NeedAnAccount, ForgotPassword} from '../Navigation/Auth';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
-const signUpStyles = {
-  signInContainer: {
-    flex: 3,
-    border: '1px solid',
-    borderColor: PRIMARY_BLUE,
-    height: '100%',
-    borderTopRightRadius: '0px',
-    borderTopLeftRadius: '0px',
-    borderBottomLeftRadius: '30px',
-    borderBottomRightRadius: '30px',
-    '@media (min-width:800px)': {
-      borderTopRightRadius: '30px',
-      borderBottomRightRadius: '30px',
-      borderTopLeftRadius: '0px',
-      borderBottomLeftRadius: '0px',
-    },
-  },
-  signInFieldContainer: {
-    margin: '10px',
-    display: 'flex',
-    height: '100%',
-    width: '95%',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    gap: '3vh',
-    alignContent: 'center',
-    '@media (min-width:800px)': {
-      gap: '2vh',
-    },
-  },
-  formHelperText: {
-    alignSelf: 'center',
-    fontSize: 15,
-  },
-  warningText: {
-    alignSelf: 'left',
-    fontSize: 12,
-    color: 'red',
-  },
-};
+import {dartaSignIn} from '../../../API/AccountManagement';
+import {useRouter} from 'next/router';
+import {authStyles} from './styles';
 
 const schema = yup
   .object({
@@ -71,15 +31,30 @@ const schema = yup
   .required();
 
 export function SignInForm({signInType}: {signInType: AuthEnum}) {
+  const router = useRouter();
+  const [firebaseError, setFirebaseError] = useState<string>('');
   const {
     register,
     handleSubmit,
-    watch,
+    getValues,
     formState: {errors},
   } = useForm({resolver: yupResolver(schema)});
-  const onSubmit = (data: any) => console.log(data);
+  const handleSignIn = async (data: any) => {
+    try {
+      const {error, user, errorMessage} = await dartaSignIn(data, signInType);
+      if (error) {
+        setFirebaseError(errorMessage);
+      } else if (user?.displayName) {
+        router.push(`/${user?.displayName}/Home`);
+      } else {
+        router.push(`/`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  const [togglePasswordView, setTogglePasswordView] = useState<boolean>(true);
+  const [togglePasswordView, setTogglePasswordView] = useState<boolean>(false);
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -87,11 +62,29 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
     event.preventDefault();
   };
 
+  const handleEnter = async (event: any) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const values = getValues();
+      handleSubmit(handleSignIn);
+      return;
+    }
+  };
+
   return (
-    <Box sx={signUpStyles.signInContainer}>
-      <Box sx={signUpStyles.signInFieldContainer}>
-        <FormControl variant="outlined" required>
-          <InputLabel htmlFor="outlined-adornment-password">email</InputLabel>
+    <Box sx={authStyles.signInContainer} data-testid="signin-container">
+      <Box
+        sx={authStyles.signInFieldContainer}
+        data-testid="signin-field-container">
+        <FormControl
+          variant="outlined"
+          required
+          data-testid="signin-email-formcontrol">
+          <InputLabel
+            htmlFor="outlined-adornment-password"
+            data-testid="signin-email-inputlabel">
+            email
+          </InputLabel>
           <Input
             error={errors?.email?.message ? true : false}
             {...register('email')}
@@ -99,13 +92,22 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
             aria-describedby="email"
             color="info"
             required
+            data-testid="signin-email-input"
           />
-          <FormHelperText id="phoneHelperText" sx={signUpStyles.warningText}>
+          <FormHelperText
+            id="phoneHelperText"
+            sx={authStyles.warningText}
+            data-testid="signin-email-formhelpertext">
             {errors?.email?.message as string}
           </FormHelperText>
         </FormControl>
-        <FormControl variant="outlined" required>
-          <InputLabel htmlFor="outlined-adornment-password">
+        <FormControl
+          variant="outlined"
+          required
+          data-testid="signin-password-formcontrol">
+          <InputLabel
+            htmlFor="outlined-adornment-password"
+            data-testid="signin-password-inputlabel">
             password
           </InputLabel>
           <Input
@@ -114,29 +116,48 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
             {...register('password')}
             error={errors?.password?.message ? true : false}
             color="info"
+            onKeyPress={handleEnter}
+            data-testid="signin-password-input"
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
                   aria-label="toggle password visibility"
                   onClick={() => setTogglePasswordView(!togglePasswordView)}
                   onMouseDown={handleMouseDownPassword}
-                  edge="end">
+                  edge="end"
+                  data-testid="signin-password-iconbutton">
                   {togglePasswordView ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
             }
           />
         </FormControl>
+        {firebaseError && (
+          <FormHelperText
+            id="phoneHelperText"
+            sx={authStyles.warningTextLarge}
+            data-testid="signin-firebaseerror-formhelpertext">
+            {firebaseError as string}
+          </FormHelperText>
+        )}
         <Button
-          onClick={handleSubmit(onSubmit)}
+          onClick={handleSubmit(handleSignIn)}
           variant="contained"
           color="primary"
-          sx={{alignSelf: 'center', margin: '2vh'}}>
+          type="submit"
+          sx={{alignSelf: 'center', margin: '2vh'}}
+          data-testid="signin-button">
           Sign In
         </Button>
-        <Box>
-          <ForgotPassword routeType={signInType} />
-          <NeedAnAccount routeType={signInType} />
+        <Box data-testid="signin-links-box">
+          <ForgotPassword
+            routeType={signInType}
+            data-testid="signin-forgotpassword-link"
+          />
+          <NeedAnAccount
+            routeType={signInType}
+            data-testid="signin-needanaccount-link"
+          />
         </Box>
       </Box>
     </Box>
