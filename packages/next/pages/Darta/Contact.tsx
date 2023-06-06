@@ -39,7 +39,7 @@ const useStyles = {
   title: {
     alignSelf: 'center',
     fontSize: 40,
-    '@media (minWidth: 750px)': {
+    '@media (min-width: 750px)': {
       fontSize: 50,
     },
   },
@@ -47,7 +47,7 @@ const useStyles = {
     marginBottom: 1,
     fontSize: 28,
     fontWeight: 'bold',
-    '@media (minWidth: 750px)': {
+    '@media (min-width: 750px)': {
       fontSize: 35,
     },
   },
@@ -61,14 +61,14 @@ const useStyles = {
   contactText: {
     fontSize: 16,
     textAlign: 'center',
-    '@media (minWidth: 750px)': {
+    '@media (min-width: 750px)': {
       fontSize: 18,
     },
   },
   reachOutText: {
     fontSize: 16,
     textAlign: 'center',
-    '@media (minWidth: 750px)': {
+    '@media (min-width: 750px)': {
       fontSize: 18,
     },
   },
