@@ -1,20 +1,19 @@
-import * as React from 'react';
-import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import {getPamphlet} from '../browserFirebase/firebaseDB';
-import {PamphletRight} from '../src/Components/Pamphlet/pamphletRight';
-import {PamphletLeft} from '../src/Components/Pamphlet/pamphletLeft';
-
+import Container from '@mui/material/Container';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
-import {BaseHeader} from '../src/Components/Navigation/Headers/BaseHeader';
-import {AuthEnum} from '../src/Components/Auth/types';
-
 import Head from 'next/head';
+import * as React from 'react';
+
+import {getPamphlet} from '../browserFirebase/firebaseDB';
+import {AuthEnum} from '../src/Components/Auth/types';
+import {BaseHeader} from '../src/Components/Navigation/Headers/BaseHeader';
+import {PamphletLeft} from '../src/Components/Pamphlet/pamphletLeft';
+import {PamphletRight} from '../src/Components/Pamphlet/pamphletRight';
 
 export default function Home({
-  data,
+  staticData,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const {pamphletData} = data;
+  const {pamphletData} = staticData;
   return (
     <>
       <Head>
@@ -38,15 +37,14 @@ export default function Home({
             {pamphletData &&
               pamphletData.map((data: any, index: number) => {
                 const isEven = index % 2 === 0;
-                const pamphletData = data;
                 if (isEven) {
                   return (
                     <PamphletRight
-                      key={index}
-                      headline={pamphletData?.headline}
-                      line1={pamphletData?.line1}
-                      line2={pamphletData?.line2}
-                      line3={pamphletData?.line3}
+                      key={data?.headline}
+                      headline={data?.headline}
+                      line1={data?.line1}
+                      line2={data?.line2}
+                      line3={data?.line3}
                       index={index}
                       authType={AuthEnum.home}
                     />
@@ -54,11 +52,11 @@ export default function Home({
                 } else {
                   return (
                     <PamphletLeft
-                      key={index}
-                      headline={pamphletData?.headline}
-                      line1={pamphletData?.line1}
-                      line2={pamphletData?.line2}
-                      line3={pamphletData?.line3}
+                      key={data?.headline}
+                      headline={data?.headline}
+                      line1={data?.line1}
+                      line2={data?.line2}
+                      line3={data?.line3}
                       index={index}
                       authType={AuthEnum.home}
                     />
@@ -72,13 +70,9 @@ export default function Home({
   );
 }
 
-type PamphletData = {
-  pamphletData: any;
-};
-
 export const getStaticProps: GetStaticProps<{
-  data: any;
+  staticData: any;
 }> = async () => {
   const pamphletData = (await getPamphlet()) as any[];
-  return {props: {data: {pamphletData}}};
+  return {props: {staticData: {pamphletData}}};
 };

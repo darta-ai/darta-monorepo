@@ -3,14 +3,14 @@
   height: 42px;
 }
 
-@media (minwidth: 768px) {
+@media (min-width: 768px) {
   .logoContainer {
     width: 65px;
     height: 46px;
   }
 }
 
-@media (minwidth: 992px) {
+@media (min-width: 992px) {
   .logoContainer {
     width: 90px;
     height: 63px;

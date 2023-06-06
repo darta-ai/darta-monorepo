@@ -1,11 +1,12 @@
-import * as React from 'react';
 import {Box, Button} from '@mui/material';
-import {useRouter} from 'next/router';
 import Image from 'next/image';
-import {headerStyles} from '../styles';
-import {AuthEnum} from '../../../Auth/types';
+import {useRouter} from 'next/router';
+import * as React from 'react';
 
-export const HeaderSignedOut = ({authType}: {authType: AuthEnum}) => {
+import {AuthEnum} from '../../../Auth/types';
+import {headerStyles} from '../styles';
+
+export function HeaderSignedOut({authType}: {authType: AuthEnum}) {
   const router = useRouter();
   return (
     <Box sx={headerStyles.headerBox} data-testid="header-navigation-box">
@@ -43,4 +44,4 @@ export const HeaderSignedOut = ({authType}: {authType: AuthEnum}) => {
       </Box>
     </Box>
   );
-};
+}

@@ -1,8 +1,9 @@
-import React from 'react';
 import {Box} from '@mui/material';
+import React from 'react';
+
 import {
-  ForgotPasswordWelcome,
   ForgotPasswordForm,
+  ForgotPasswordWelcome,
 } from '../../src/Components/Auth';
 import {AuthEnum} from '../../src/Components/Auth/types';
 
@@ -24,11 +25,9 @@ const styles = {
 
 export default function ForgotPassword() {
   return (
-    <>
-      <Box sx={styles.container}>
-        <ForgotPasswordWelcome />
-        <ForgotPasswordForm forgotPasswordType={AuthEnum.curators} />
-      </Box>
-    </>
+    <Box sx={styles.container}>
+      <ForgotPasswordWelcome />
+      <ForgotPasswordForm forgotPasswordType={AuthEnum.curators} />
+    </Box>
   );
 }

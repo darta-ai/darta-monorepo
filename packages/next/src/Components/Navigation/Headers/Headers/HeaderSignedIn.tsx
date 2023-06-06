@@ -1,12 +1,13 @@
-import * as React from 'react';
 import {Box, Button} from '@mui/material';
-import {useRouter} from 'next/router';
 import Image from 'next/image';
-import {firebaseSignOut} from '../../../../../browserFirebase/firebaseApp';
-import {headerStyles} from '../styles';
-import {AuthEnum} from '../../../Auth/types';
+import {useRouter} from 'next/router';
+import * as React from 'react';
 
-export const HeaderSignedIn = ({authType}: {authType: AuthEnum}) => {
+import {firebaseSignOut} from '../../../../../browserFirebase/firebaseApp';
+import {AuthEnum} from '../../../Auth/types';
+import {headerStyles} from '../styles';
+
+export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
   const router = useRouter();
   const handleSignOut = async () => {
     try {
@@ -52,4 +53,4 @@ export const HeaderSignedIn = ({authType}: {authType: AuthEnum}) => {
       </Box>
     </Box>
   );
-};
+}
