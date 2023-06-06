@@ -1,18 +1,13 @@
-import React from 'react';
-import Head from 'next/head';
 import 'firebase/compat/auth';
-import {Container, Typography, Box, TextField, Button} from '@mui/material';
-import {GetStaticProps, InferGetStaticPropsType} from 'next';
-import {getGallery} from '../../browserFirebase/firebaseDB';
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
+
+import {Container} from '@mui/material';
+import {GetStaticProps} from 'next';
+import Head from 'next/head';
+import React from 'react';
+
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
-import {useForm} from 'react-hook-form';
-import {
-  EditProfileGallery,
-  ProfileGallery,
-} from '../../src/Components/Profile/';
-import {ImageUploadModal} from '../../src/Components/Modals/UploadImageModal';
-import Image from 'next/image';
+import {EditProfileGallery, ProfileGallery} from '../../src/Components/Profile';
+import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
 
 const aboutStyles = {
   container: {
@@ -68,21 +63,8 @@ const aboutStyles = {
   },
 };
 
-type AboutData = {
-  HeadTitle: string;
-  DartaCoreValue: string;
-  Headline: string;
-  WhoWeAre: string;
-  DartaBelief1?: string;
-  DartaBelief2?: string;
-  DartaBelief3?: string;
-  DartaBelief4?: string;
-};
-
 // About component
-export default function GalleryProfile({
-  data,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function GalleryProfile() {
   const [isEditingProfile, setIsEditingProfile] = React.useState(false);
 
   return (
@@ -98,9 +80,9 @@ export default function GalleryProfile({
       <SideNavigationWrapper>
         <Container maxWidth="md" sx={aboutStyles.container}>
           {isEditingProfile ? (
-            <EditProfileGallery 
-            isEditingProfile={isEditingProfile}
-            setIsEditingProfile={setIsEditingProfile}
+            <EditProfileGallery
+              isEditingProfile={isEditingProfile}
+              setIsEditingProfile={setIsEditingProfile}
             />
           ) : (
             <ProfileGallery
@@ -114,17 +96,13 @@ export default function GalleryProfile({
   );
 }
 
-type AboutDataFB = {
-  data: AboutData | null;
-};
-
 export const getStaticProps: GetStaticProps<{
   data: any;
 }> = async () => {
-  try {
-    const aboutData = (await getGallery()) as null;
-    return {props: {data: {data: {}}}};
-  } catch (e) {
-    return {props: {data: {data: {}}}};
-  }
+  return {props: {data: {data: {}}}};
+  // try {
+  //   // const aboutData = (await getGallery()) as null;
+  // } catch (e) {
+  //   return {props: {data: {data: {}}}};
+  // }
 };

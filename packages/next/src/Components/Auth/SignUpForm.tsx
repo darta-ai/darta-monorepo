@@ -1,24 +1,26 @@
-import React, {useState} from 'react';
-import {Box} from '@mui/material';
-import {
-  FormHelperText,
-  Button,
-  Input,
-  InputLabel,
-  InputAdornment,
-  FormControl,
-  IconButton,
-} from '@mui/material';
-import {useForm} from 'react-hook-form';
+/* eslint-disable react/jsx-props-no-spreading */
 import {yupResolver} from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import {AlreadySignedUp} from '../Navigation/Auth';
-import {AuthEnum} from './types';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import {dartaSignUp} from '../../../API/AccountManagement';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormHelperText,
+  IconButton,
+  Input,
+  InputAdornment,
+  InputLabel,
+} from '@mui/material';
 import {useRouter} from 'next/router';
+import React, {useState} from 'react';
+import {useForm} from 'react-hook-form';
+import * as yup from 'yup';
+
+import {dartaSignUp} from '../../../API/AccountManagement';
+import {AlreadySignedUp} from '../Navigation/Auth';
 import {authStyles} from './styles';
+import {AuthEnum} from './types';
 
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -92,7 +94,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
         <FormControl variant="outlined" required>
           <InputLabel htmlFor="outlined-adornment-password">email</InputLabel>
           <Input
-            error={errors?.email?.message ? true : false}
+            error={!!errors?.email?.message}
             {...register('email')}
             id="email"
             aria-describedby="email"
@@ -109,7 +111,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             phone number
           </InputLabel>
           <Input
-            error={errors?.phoneNumber?.message ? true : false}
+            error={!!errors?.phoneNumber?.message}
             {...register('phoneNumber')}
             id="phoneNumber"
             color="info"
@@ -133,7 +135,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             id="outlined-adornment-password"
             type={togglePasswordView ? 'text' : 'password'}
             {...register('password')}
-            error={errors?.password?.message ? true : false}
+            error={!!errors?.password?.message}
             color="info"
             endAdornment={
               <InputAdornment position="end">
@@ -160,7 +162,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
           <Input
             id="outlined-adornment-confirm-password"
             type={toggleConfirmPasswordView ? 'text' : 'password'}
-            error={errors?.password?.message ? true : false}
+            error={!!errors?.password?.message}
             {...register('confirmPassword')}
             aria-describedby="confirmPassword"
             color="info"
@@ -188,7 +190,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
         <FormControl variant="outlined">
           <InputLabel htmlFor="outlined-adornment-password">website</InputLabel>
           <Input
-            error={errors?.website?.message ? true : false}
+            error={!!errors?.website?.message}
             {...register('website')}
             id="website"
             color="info"

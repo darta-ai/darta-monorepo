@@ -1,19 +1,24 @@
-import * as React from 'react';
-import Head from 'next/head';
-import {AppProps} from 'next/app';
-import {ThemeProvider} from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import {CacheProvider, EmotionCache} from '@emotion/react';
-import theme from '../src/theme';
-import createEmotionCache from '../src/createEmotionCache';
-import {Footer} from '../src/Components/Navigation/Footer';
-import {PRIMARY_MILK} from '../styles';
+/* eslint-disable react/require-default-props */
+/* eslint-disable react/jsx-props-no-spreading */
 import '@fontsource/eb-garamond/400.css';
 import '@fontsource/eb-garamond/500.css';
 import '@fontsource/eb-garamond/700.css';
-import {auth} from '../browserFirebase/firebaseApp';
+
+import {CacheProvider, EmotionCache} from '@emotion/react';
+import CssBaseline from '@mui/material/CssBaseline';
+import {ThemeProvider} from '@mui/material/styles';
 import {onAuthStateChanged} from 'firebase/auth';
-export {app, db, auth} from '../browserFirebase/firebaseApp';
+import {AppProps} from 'next/app';
+import Head from 'next/head';
+import * as React from 'react';
+
+import {auth} from '../browserFirebase/firebaseApp';
+import {Footer} from '../src/Components/Navigation/Footer';
+import createEmotionCache from '../src/createEmotionCache';
+import theme from '../src/theme';
+import {PRIMARY_MILK} from '../styles';
+
+export {app, auth, db} from '../browserFirebase/firebaseApp';
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
@@ -34,12 +39,14 @@ export default function MyApp(props: MyAppProps) {
   const [user, setUser] = React.useState<any | null>(null);
 
   React.useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user: any) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (u: any) => {
+      setUser(u);
     });
 
     return () => unsubscribe();
   }, []);
+
+  const value = React.useMemo(() => ({user, setUser}), [user, setUser]);
   return (
     <CacheProvider value={emotionCache}>
       <Head>
@@ -48,7 +55,7 @@ export default function MyApp(props: MyAppProps) {
       </Head>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <AuthContext.Provider value={{user, setUser}}>
+        <AuthContext.Provider value={value}>
           <Component {...pageProps} sx={{backgroundColor: PRIMARY_MILK}} />
           <Footer />
         </AuthContext.Provider>

@@ -1,0 +1,7 @@
+{
+  "c": ["pages/Galleries/Profile", "webpack"],
+  "r": ["/_error"],
+  "m": [
+    "./node_modules/next/dist/build/webpack/loaders/next-client-pages-loader.js?absolutePagePath=%2FUsers%2Ftj.wetmore%2FCode%2Fdarta%2Ffrontend%2FfrontendV1%2Fpackages%2Fbrowser%2Fmaterial-next-ts%2Fnode_modules%2Fnext%2Fdist%2Fpages%2F_error.js&page=%2F_error!"
+  ]
+}

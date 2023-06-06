@@ -1,13 +1,13 @@
-import React from 'react';
-import Head from 'next/head';
 import 'firebase/compat/auth';
-import {Container, Typography, Box} from '@mui/material';
+
+import {Box, Container, Typography} from '@mui/material';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
+import Head from 'next/head';
+import React from 'react';
+
 import {getAbout} from '../../browserFirebase/firebaseDB';
-import {isSignedIn} from '../../browserFirebase/firebaseApp';
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
-import {AuthEnum} from '../../src/Components/Auth/types';
+import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
 
 const aboutStyles = {
   container: {
@@ -57,16 +57,6 @@ type AboutData = {
 export default function GalleryCollections({
   data,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  React.useEffect(() => {
-    const checkSignedIn = async () => {
-      const user = await isSignedIn();
-    };
-    checkSignedIn();
-  }, []);
-  const beliefs = Object.keys(data).filter(key => key.includes('DartaBelief'));
-  const values = Object.keys(data).filter(key =>
-    key.includes('DartaCoreValue'),
-  );
   return (
     <>
       <Head>

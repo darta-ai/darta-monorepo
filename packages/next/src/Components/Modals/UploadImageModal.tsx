@@ -1,15 +1,17 @@
-import * as React from 'react';
+/* eslint-disable global-require */
 import {
   Box,
+  Button,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Dialog,
-  Button,
 } from '@mui/material';
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import Image from 'next/image';
+import * as React from 'react';
+
+import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 
 const modalStyles = {
   dialogueContainer: {
@@ -25,6 +27,14 @@ const modalStyles = {
     gap: '5%',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  defaultImage: {
+    marginTop: '1em',
+    maxWidth: '100%',
+    borderWidth: 30,
+  },
+  displayNone: {
+    display: 'none',
   },
 };
 
@@ -81,9 +91,9 @@ export function ImageUploadModal({
           <DialogContentText>{dialogueText}</DialogContentText>
           <Box>
             <Image
-              src={previewUrl ? previewUrl : backupImage}
+              src={previewUrl || backupImage}
               alt="upload image"
-              style={{marginTop: '1em', maxWidth: '100%', borderWidth: 30}}
+              style={modalStyles.defaultImage}
               height={400}
               width={400}
             />
@@ -94,13 +104,11 @@ export function ImageUploadModal({
               id="contained-button-file"
               type="file"
               onChange={handleFileChange}
-              style={{display: 'none'}}
+              style={modalStyles.displayNone}
             />
-            <label htmlFor="contained-button-file">
-              <Button variant="contained" component="span">
-                Select Image
-              </Button>
-            </label>
+            <Button variant="contained" component="span">
+              Select Image
+            </Button>
           </Box>
         </DialogContent>
         <DialogActions>
