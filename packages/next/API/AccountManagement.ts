@@ -1,7 +1,7 @@
 import {
-  firebaseSignUp,
-  firebaseSignIn,
   firebaseForgotPassword,
+  firebaseSignIn,
+  firebaseSignUp,
 } from '../browserFirebase/firebaseApp';
 
 export const dartaSignUp = async (user: any, signUpType: string) => {

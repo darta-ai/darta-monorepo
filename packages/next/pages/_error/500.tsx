@@ -1,6 +1,7 @@
+/* eslint-disable react/no-unescaped-entities */
 import Link from 'next/link';
-import {useEffect} from 'react';
 import {useRouter} from 'next/router';
+import React, {useEffect} from 'react';
 
 export default function Custom500() {
   const router = useRouter();
@@ -9,6 +10,7 @@ export default function Custom500() {
     setTimeout(() => {
       router.push('/');
     }, 5000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -21,11 +23,7 @@ export default function Custom500() {
       </p>
       <p>Redirecting to the home page in 5 seconds...</p>
       <p>
-        If you are not redirected,{' '}
-        <Link href="/">
-          <a>click here</a>
-        </Link>
-        .
+        If you are not redirected, <Link href="/">click here</Link>.
       </p>
     </div>
   );

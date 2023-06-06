@@ -6,7 +6,7 @@ export const styles = {
     marginBottom: '15%',
     width: '95%',
     '@media (min-width:800px)': {
-      width: '80%',
+      width: '60vw',
       height: '30vh',
     },
     display: 'flex',

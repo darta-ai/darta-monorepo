@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Link from 'next/link';
-import {useEffect} from 'react';
 import {useRouter} from 'next/router';
+import React, {useEffect} from 'react';
 
 export default function Custom404() {
   const router = useRouter();
@@ -20,11 +21,7 @@ export default function Custom404() {
       </p>
       <p>Redirecting to the home page in 5 seconds...</p>
       <p>
-        If you are not redirected,{' '}
-        <Link href="/">
-          <a>click here</a>
-        </Link>
-        .
+        If you are not redirected, <Link href="/">click here</Link>.
       </p>
     </div>
   );

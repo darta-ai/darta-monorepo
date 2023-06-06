@@ -1,10 +1,11 @@
-import React from 'react';
-import {Typography, Box} from '@mui/material';
-import {AuthEnum} from '../../Auth/types';
+import {Box, Typography} from '@mui/material';
 import Link from 'next/link';
+import React from 'react';
+
+import {AuthEnum} from '../../Auth/types';
 import {styles} from './styles';
 
-export const AlreadySignedUp = ({routeType}: {routeType: AuthEnum}) => {
+export function AlreadySignedUp({routeType}: {routeType: AuthEnum}) {
   return (
     <Box sx={styles.footerBox} data-testid="alreadyHaveAccount">
       <Typography component="div" sx={styles.typography}>
@@ -13,4 +14,4 @@ export const AlreadySignedUp = ({routeType}: {routeType: AuthEnum}) => {
       </Typography>
     </Box>
   );
-};
+}
