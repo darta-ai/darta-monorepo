@@ -1,20 +1,21 @@
-import React from 'react';
-import Head from 'next/head';
 import {
-  Container,
-  Typography,
   Box,
-  Grid,
   Card,
   CardContent,
+  Container,
+  Grid,
   List,
   ListItem,
+  Typography,
 } from '@mui/material';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
-import {getAbout} from '../../browserFirebase/firebaseDB';
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
+import Head from 'next/head';
 import Image from 'next/image';
+import React from 'react';
+
+import {getAbout} from '../../browserFirebase/firebaseDB';
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
+import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
 
 const aboutStyles = {
   container: {
@@ -24,7 +25,7 @@ const aboutStyles = {
     width: '100%',
     mb: 5,
     alignSelf: 'center',
-    '@media (min-width: 800px)': {
+    '@media (minWidth: 800px)': {
       paddingTop: '7vh',
     },
   },
@@ -34,7 +35,7 @@ const aboutStyles = {
     alignItems: 'center',
     alignSelf: 'flex-end',
     justifyContent: 'center',
-    '@media (min-width: 800px)': {
+    '@media (minWidth: 800px)': {
       height: '15vh',
       width: '10vh',
     },
@@ -45,7 +46,7 @@ const aboutStyles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    '@media (min-width: 800px)': {
+    '@media (minWidth: 800px)': {
       minWidth: '100%',
       height: '100%',
     },
@@ -147,7 +148,7 @@ export default function About({
           </Typography>
           <List sx={{listStyleType: 'disc', pl: 3}} data-testid="beliefs-list">
             {beliefs.map((belief, index) => (
-              <Box key={index} data-testid={`belief-box-${index}`}>
+              <Box key={belief} data-testid={`belief-box-${index}`}>
                 <ListItem
                   sx={{display: 'list-item'}}
                   data-testid={`belief-item-${index}`}>

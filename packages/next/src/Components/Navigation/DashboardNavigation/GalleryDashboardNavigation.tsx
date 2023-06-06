@@ -1,31 +1,29 @@
-import * as React from 'react';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import WorkspacesIcon from '@mui/icons-material/Workspaces';
 import ArtTrackIcon from '@mui/icons-material/ArtTrack';
-
-import {styled, useTheme, Theme, CSSObject} from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import MuiDrawer from '@mui/material/Drawer';
-import MuiAppBar, {AppBarProps as MuiAppBarProps} from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import MenuIcon from '@mui/icons-material/Menu';
+import WorkspacesIcon from '@mui/icons-material/Workspaces';
+import MuiAppBar, {AppBarProps as MuiAppBarProps} from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
+import Divider from '@mui/material/Divider';
+import MuiDrawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import {PRIMARY_BLUE} from '../../../../styles';
+import {CSSObject, styled, Theme, useTheme} from '@mui/material/styles';
+import Toolbar from '@mui/material/Toolbar';
 import {useRouter} from 'next/router';
+import * as React from 'react';
+
 import {AuthContext} from '../../../../pages/_app';
-import {PRIMARY_MILK} from '../../../../styles';
-import HomeIcon from '@mui/icons-material/Home';
-import {HeaderSignedIn} from '../Headers/Headers/HeaderSignedIn';
+import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../../styles';
 import {AuthEnum} from '../../Auth/types';
+import {HeaderSignedIn} from '../Headers/Headers/HeaderSignedIn';
 
 const drawerWidth = 240;
 
@@ -84,22 +82,22 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const Drawer = styled(MuiDrawer, {shouldForwardProp: prop => prop !== 'open'})(
-  ({theme, open}) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme),
-    }),
-    ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme),
-    }),
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: prop => prop !== 'open',
+})(({theme, open}) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
+  boxSizing: 'border-box',
+  ...(open && {
+    ...openedMixin(theme),
+    '& .MuiDrawer-paper': openedMixin(theme),
   }),
-);
+  ...(!open && {
+    ...closedMixin(theme),
+    '& .MuiDrawer-paper': closedMixin(theme),
+  }),
+}));
 
 function MiniDrawer() {
   const theme = useTheme();
@@ -164,7 +162,7 @@ function MiniDrawer() {
         <Divider />
         <Divider />
         <List data-testid="mainList">
-          <ListItem key={'Gallery'} disablePadding>
+          <ListItem key="Gallery" disablePadding>
             <ListItemButton
               data-testid="galleryButton"
               sx={sideNavigationStyles.listItemButton}
@@ -176,11 +174,11 @@ function MiniDrawer() {
               </ListItemIcon>
               <ListItemText
                 sx={{opacity: open ? 1 : 0, fontFamily: 'EB Garamond'}}
-                primary={'Gallery'}
+                primary="Gallery"
               />
             </ListItemButton>
           </ListItem>
-          <ListItem key={'Exhibitions'} disablePadding>
+          <ListItem key="Exhibitions" disablePadding>
             <ListItemButton
               data-testid="exhibitionsButton"
               sx={sideNavigationStyles.listItemButton}
@@ -192,11 +190,11 @@ function MiniDrawer() {
               </ListItemIcon>
               <ListItemText
                 sx={{opacity: open ? 1 : 0, fontFamily: 'EB Garamond'}}
-                primary={'Exhibitions'}
+                primary="Exhibitions"
               />
             </ListItemButton>
           </ListItem>
-          <ListItem key={'Artwork'} disablePadding>
+          <ListItem key="Artwork" disablePadding>
             <ListItemButton
               data-testid="artworkButton"
               sx={sideNavigationStyles.listItemButton}
@@ -208,7 +206,7 @@ function MiniDrawer() {
               </ListItemIcon>
               <ListItemText
                 sx={{opacity: open ? 1 : 0, fontFamily: 'EB Garamond'}}
-                primary={'Artwork'}
+                primary="Artwork"
               />
             </ListItemButton>
           </ListItem>
@@ -219,7 +217,7 @@ function MiniDrawer() {
 }
 
 // here is a wrapper component that will be used to wrap the pages that need to be protected by MiniDrawer
-export const SideNavigationWrapper = ({children}: {children: any}) => {
+export function SideNavigationWrapper({children}: {children: any}) {
   return (
     <Box sx={{display: 'flex'}}>
       <MiniDrawer />
@@ -229,4 +227,4 @@ export const SideNavigationWrapper = ({children}: {children: any}) => {
       </Box>
     </Box>
   );
-};
+}

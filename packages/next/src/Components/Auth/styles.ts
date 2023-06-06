@@ -1,4 +1,4 @@
-import {PRIMARY_MILK, PRIMARY_DARK_GREY, PRIMARY_BLUE} from '../../../styles';
+import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../../styles';
 
 export const authStyles = {
   signInContainer: {

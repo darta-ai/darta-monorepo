@@ -20,8 +20,10 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "Supabase/supabase.js",
     "cypress/e2e/index.cy.js"
   ],
+  "paths": {
+    "react": [ "./node_modules/@types/react" ]
+  },
   "exclude": ["node_modules"]
 }

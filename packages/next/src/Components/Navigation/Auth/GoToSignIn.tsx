@@ -1,10 +1,11 @@
-import React from 'react';
-import {Typography, Box} from '@mui/material';
-import {AuthEnum} from '../../Auth/types';
+import {Box, Typography} from '@mui/material';
 import Link from 'next/link';
+import React from 'react';
+
+import {AuthEnum} from '../../Auth/types';
 import {styles} from './styles';
 
-export const GoToSignIn = ({routeType}: {routeType: AuthEnum}) => {
+export function GoToSignIn({routeType}: {routeType: AuthEnum}) {
   return (
     <Box sx={styles.footerBox}>
       <Typography component="div" sx={styles.typography}>
@@ -13,4 +14,4 @@ export const GoToSignIn = ({routeType}: {routeType: AuthEnum}) => {
       </Typography>
     </Box>
   );
-};
+}
