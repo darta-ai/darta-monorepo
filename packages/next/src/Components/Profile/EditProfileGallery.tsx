@@ -1,75 +1,23 @@
 /* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable global-require */
 import 'firebase/compat/auth';
 
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import SettingsIcon from '@mui/icons-material/Settings';
-import {Box, Button, IconButton, TextField, Typography} from '@mui/material';
+import {
+  Box,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Tooltip,
+} from '@mui/material';
 import Head from 'next/head';
-import Image from 'next/image';
 import React from 'react';
 import {useForm} from 'react-hook-form';
 
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../../styles';
-import {ImageUploadModal} from '../Modals/UploadImageModal';
-
-const editProfileStyles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    gap: '5%',
-    width: '80vw',
-    minHeight: '100vh',
-    mb: 5,
-    alignSelf: 'center',
-    '@media (minWidth: 800px)': {
-      paddingTop: '7vh',
-    },
-  },
-  uploadImageContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    gap: '5%',
-    alignItems: 'center',
-  },
-  typographyTitle: {
-    fontFamily: 'EB Garamond',
-    color: PRIMARY_BLUE,
-    fontSize: '2rem',
-    my: '3vh',
-    '@media (min-width:800px)': {
-      fontSize: '2.5rem',
-    },
-    cursor: 'default',
-  },
-  typography: {
-    fontFamily: 'EB Garamond',
-    color: PRIMARY_DARK_GREY,
-    fontSize: '1rem',
-    '@media (minWidth: 800px)': {
-      fontSize: '1.3rem',
-    },
-    cursor: 'default',
-  },
-  button: {
-    color: PRIMARY_BLUE,
-  },
-  inputTextContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  formTextField: {
-    width: '100%',
-  },
-  fallBackImage: {},
-  defaultImageContainer: {marginTop: '1em', maxWidth: '100%', borderWidth: 30},
-  displayNone: {
-    display: 'none',
-  },
-};
+import {PRIMARY_BLUE} from '../../../styles';
+// import {PlacesAutocomplete} from '../../../ThirdPartyAPIs/PlacesAutocomplete';
+// import {ImageUploadModal} from '../Modals/UploadImageModal';
+import {profileStyles} from './profileStyles';
 
 interface GalleryFields {
   galleryLogo?: string;
@@ -89,6 +37,52 @@ const galleryFields: GalleryFields = {
   primaryContact: '',
 };
 
+function GalleryEditField({
+  fieldName,
+  register,
+  errors,
+  helperTextString,
+  required,
+  inputAdornmentString,
+  toolTips,
+  multiline,
+}: {
+  fieldName: string;
+  register: any;
+  errors: any;
+  toolTips: any;
+  required: boolean;
+  multiline: boolean;
+  helperTextString: string;
+  inputAdornmentString: string;
+}) {
+  return (
+    <>
+      <TextField
+        {...register(`${fieldName}`, {required: true})}
+        variant="standard"
+        error={!!errors.galleryLogo}
+        sx={profileStyles.formTextField}
+        helperText={errors[fieldName] && helperTextString}
+        fullWidth
+        required={required}
+        multiline={multiline}
+        rows={multiline ? 2 : 1}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment sx={{width: '12vw'}} position="start">
+              {inputAdornmentString}
+            </InputAdornment>
+          ),
+        }}
+      />
+      <Tooltip title={toolTips[fieldName]} placement="top">
+        <HelpOutlineIcon fontSize="small" sx={profileStyles.helpIcon} />
+      </Tooltip>
+    </>
+  );
+}
+
 export function EditProfileGallery({
   isEditingProfile,
   setIsEditingProfile,
@@ -99,32 +93,32 @@ export function EditProfileGallery({
   const {
     register,
     handleSubmit,
-    getValues,
     formState: {errors},
   } = useForm({
     defaultValues: {
       ...galleryFields,
     },
   });
-  const galleryFieldKeys = Object.keys(galleryFields);
-  const [editing, setEditing] = React.useState({
-    ...galleryFieldKeys.reduce(
-      (acc: any, curr: any) => ({...acc, [curr]: false}),
-      {},
-    ),
-  });
 
-  console.log({editing});
   const onSubmit = (data: any) => {
     console.log(data);
     // Handle submission here
   };
 
-  const toggleEdit = (field: any) => {
-    setEditing((prev: any) => ({...prev, [field]: !prev[field]}));
-  };
+  // const toggleEdit = (field: any) => {
+  //   setEditing((prev: any) => ({...prev, [field]: !prev[field]}));
+  // };
 
-  const backupImage = require(`../../../public/static/images/UploadImage.png`);
+  const toolTips = {
+    galleryName:
+      'Your gallery name will appear on your openings and artworks that you have uploaded.',
+    galleryLogo:
+      'Your gallery logo will appear on the splash page for your openings and artworks that you have uploaded.',
+    galleryBio: 'A short bio about your gallery',
+    galleryAddress: 'Address of your gallery',
+    galleryZip: 'Zip code of your gallery',
+    primaryContact: 'Primary contact for your gallery',
+  };
 
   return (
     <>
@@ -132,69 +126,111 @@ export function EditProfileGallery({
         <title>Gallery | Edit Profile</title>
         <meta name="description" content="Edit your gallery." />
       </Head>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Box mb={2} sx={editProfileStyles.uploadImageContainer}>
-          <Box>
-            <Box>
-              <IconButton
-                onClick={() => setIsEditingProfile(!isEditingProfile)}>
-                <SettingsIcon sx={{color: PRIMARY_BLUE}} />
-              </IconButton>
-            </Box>
-            <Image
-              src={backupImage}
-              alt="upload image"
-              style={editProfileStyles.defaultImageContainer}
-              height={400}
-              width={400}
-            />
-            <input
-              {...register('galleryLogo', {required: true})}
-              accept="image/*"
-              id="contained-button-file"
-              type="file"
-              style={editProfileStyles.displayNone}
+      <Box mb={2} sx={profileStyles.container}>
+        <Box sx={profileStyles.inputTextContainer}>
+          <Box key="galleryName" sx={profileStyles.inputText}>
+            <GalleryEditField
+              fieldName="galleryName"
+              register={register}
+              errors={errors}
+              required={true}
+              helperTextString="Is required"
+              inputAdornmentString="Gallery Name"
+              toolTips={toolTips}
+              multiline={false}
             />
           </Box>
-          <ImageUploadModal
-            actionText="Upload Logo"
-            dialogueTitle="Upload Gallery Logo"
-            dialogueText=""
-          />
-          {errors.galleryLogo && <p>Gallery Logo is required</p>}
-        </Box>
-        <Box key="galleryName" m={2} sx={editProfileStyles.inputTextContainer}>
-          {editing.galleryName ? (
-            <TextField
-              {...register('galleryName', {required: true})}
-              label="Gallery Name"
-              error={!!errors.galleryLogo}
-              sx={editProfileStyles.formTextField}
-              helperText={errors.galleryName && `Gallery Name is required`}
+          <Box key="galleryBio" sx={profileStyles.inputText}>
+            <GalleryEditField
+              fieldName="galleryBio"
+              register={register}
+              errors={errors}
+              required={false}
+              helperTextString="Gallery Bio is required"
+              inputAdornmentString="Gallery Bio"
+              toolTips={toolTips}
+              multiline={true}
+            />
+          </Box>
+          <Box key="galleryBio" sx={profileStyles.inputText}>
+            <GalleryEditField
+              fieldName="galleryBio"
+              register={register}
+              errors={errors}
+              required={false}
+              helperTextString="Gallery Bio is required"
+              inputAdornmentString="Gallery Bio"
+              toolTips={toolTips}
+              multiline={true}
+            />
+          </Box>
+          {/* <PlacesAutocomplete
+            inputBoxStyles={profileStyles.inputText}
+            inputFormStyles={profileStyles.formTextField}
+            adornmentText="Gallery Address"
+            placeHolderText="Type your gallery address"
+          /> */}
+          {/* <TextField
+              {...register('galleryBio', {required: true})}
+              variant="standard"
+              error={!!errors.galleryBio}
+              sx={profileStyles.formTextField}
+              helperText={errors.galleryBio && `Gallery Name is not required`}
               fullWidth
-            />
-          ) : (
-            <Box>
-              <Typography>Gallery Name</Typography>
-              <Typography>{getValues('galleryName')}</Typography>
-            </Box>
-          )}
-          <Box>
-            <Button
-              variant="outlined"
-              sx={editProfileStyles.button}
-              onClick={() => toggleEdit('galleryName')}>
-              {editing.galleryName ? `Save` : `Edit`}{' '}
-            </Button>
-          </Box>
+              multiline
+              rows={2}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">Gallery Bio</InputAdornment>
+                ),
+              }}
+            /> */}
         </Box>
-
-        <Box sx={{flexDirection: 'column', alignItems: 'right'}}>
-          <Button type="submit" variant="contained" color="primary">
-            Submit
-          </Button>
+        <Box>
+          <form onSubmit={handleSubmit(onSubmit)} />
         </Box>
-      </form>
+      </Box>
+      <Box sx={profileStyles.editButtonProfile}>
+        <IconButton
+          onClick={() => setIsEditingProfile(!isEditingProfile)}
+          sx={profileStyles.editButtonEdit}>
+          <SettingsIcon sx={{color: PRIMARY_BLUE}} />
+        </IconButton>
+      </Box>
     </>
   );
 }
+
+// <Box sx={profileStyles.editContainer}>
+// <Box mb={2} sx={profileStyles.imageBoxEdit}>
+//   <Box sx={{...profileStyles.imageBox, border: '1px solid black'}}>
+//     <Typography sx={{color: PRIMARY_DARK_GREY}}>
+//       Upload Logo
+//     </Typography>
+//     <input
+//       {...register('galleryLogo', {required: true})}
+//       accept="image/*"
+//       id="contained-button-file"
+//       type="file"
+//       style={profileStyles.displayNone}
+//     />
+//   </Box>
+//   <ImageUploadModal
+//     actionText="Upload Logo"
+//     dialogueTitle="Upload Gallery Logo"
+//     dialogueText=""
+//   />
+//   {errors.galleryLogo && <p>Gallery Logo is required</p>}
+// </Box>
+//
+
+//   </Box>
+// </Box>
+// <Button
+//   sx={profileStyles.submitForm}
+//   type="submit"
+//   variant="contained"
+//   color="primary">
+//   Submit
+// </Button>
+// </Box>

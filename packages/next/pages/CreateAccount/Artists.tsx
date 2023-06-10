@@ -2,12 +2,12 @@ import {Box} from '@mui/material';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import React from 'react';
 
-import {signUpBenefits} from '../../browserFirebase/firebaseDB';
 import {SignUpForm} from '../../src/Components/Auth/SignUpForm';
 import {SignUpWelcome} from '../../src/Components/Auth/SignUpWelcome';
 import {AuthEnum, DartaBenefits} from '../../src/Components/Auth/types';
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../styles';
+import {signUpBenefits} from '../../ThirdPartyAPIs/firebaseDB';
 
 const styles = {
   container: {
