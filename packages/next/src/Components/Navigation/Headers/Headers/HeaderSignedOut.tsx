@@ -14,7 +14,7 @@ export function HeaderSignedOut({authType}: {authType: AuthEnum}) {
         onClick={async () => {
           await router.push(`/Authenticate/${authType}`);
         }}
-        sx={headerStyles.signOutButton}
+        sx={headerStyles.button}
         variant="contained"
         data-testid="header-navigation-signIn-button">
         Sign In
@@ -23,7 +23,7 @@ export function HeaderSignedOut({authType}: {authType: AuthEnum}) {
         onClick={async () => {
           await router.push(`/CreateAccount/${authType}`);
         }}
-        sx={headerStyles.signOutButton}
+        sx={headerStyles.button}
         variant="contained"
         data-testid="header-navigation-createAccount-button">
         Create Account
@@ -37,7 +37,7 @@ export function HeaderSignedOut({authType}: {authType: AuthEnum}) {
           src="/static/images/dartahouseblue.png"
           data-testid="header-image"
           alt="me"
-          width="64"
+          width="80"
           height="64"
           onClick={() => router.push('/', undefined, {shallow: true})}
         />

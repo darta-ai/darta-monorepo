@@ -1,12 +1,7 @@
+import {collection, doc, getDoc, getDocs} from 'firebase/firestore';
+
 import {db} from '../pages/_app';
-import {
-  collection,
-  addDoc,
-  getDocs,
-  doc,
-  getDoc,
-  setDoc,
-} from 'firebase/firestore';
+
 // Get all the pamphlets data from the database
 export async function getPamphlet() {
   try {
@@ -65,23 +60,19 @@ export async function getAbout() {
 
 // getGallery
 export async function getGallery() {
-  try {
-    return null;
-  } catch (e) {
-    // console.log('No such document!');
-  }
+  return null;
 }
 
 // Get all the benefits from Signing Up data from the database
-export async function writeWaitList(user: any, documentName: string) {
-  try {
-    const results = await setDoc(doc(db, 'EarlyRegister', documentName), {
-      name: 'Los Angeles',
-      state: 'CA',
-      country: 'USA',
-    });
-    // console.log('results', {results});
-  } catch (e) {
-    // console.log('error', {e});
-  }
-}
+// export async function writeWaitList(user: any, documentName: string) {
+//   try {
+//     const results = await setDoc(doc(db, 'EarlyRegister', documentName), {
+//       name: 'Los Angeles',
+//       state: 'CA',
+//       country: 'USA',
+//     });
+//     // console.log('results', {results});
+//   } catch (e) {
+//     // console.log('error', {e});
+//   }
+// }

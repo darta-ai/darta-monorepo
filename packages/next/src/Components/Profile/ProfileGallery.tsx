@@ -6,87 +6,7 @@ import Head from 'next/head';
 import React from 'react';
 
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../../styles';
-
-const profileStyles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    alignItems: 'flex-start',
-    gap: '5%',
-    width: '80vw',
-    minHeight: '100vh',
-    mb: 5,
-    alignSelf: 'center',
-  },
-  galleryHeaderContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignSelf: 'flex-start',
-    alignItems: 'center',
-    gap: '5%',
-    height: '40%',
-    width: '95%',
-  },
-  galleryBioContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    height: '0%',
-  },
-  galleryDetails: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    alignItems: 'left',
-    width: '60%',
-  },
-  galleryLocationContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    gap: '5%',
-    mt: 3,
-  },
-  galleryAddressContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  galleryBioStyles: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    width: '100%',
-    textAlign: 'center',
-    color: PRIMARY_DARK_GREY,
-  },
-  divider: {
-    width: '100%',
-    maxWidth: 360,
-    bgcolor: PRIMARY_DARK_GREY,
-  },
-  imageBox: {
-    height: 400,
-    width: 400,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignContent: 'center',
-    textAlign: 'center',
-  },
-  editButton: {
-    alignSelf: 'flex-start',
-  },
-  defaultImage: {
-    marginTop: '1em',
-    maxWidth: '100%',
-    borderWidth: 30,
-  },
-};
+import {profileStyles} from './profileStyles';
 
 const steps = [
   {
@@ -247,7 +167,7 @@ export function ProfileGallery({
               </Box>
               <Box sx={profileStyles.galleryBioContainer} />
             </Box>
-            <Box sx={profileStyles.editButton}>
+            <Box sx={profileStyles.editButtonProfile}>
               <IconButton
                 onClick={() => setIsEditingProfile(!isEditingProfile)}
                 className="edit-profile-button">

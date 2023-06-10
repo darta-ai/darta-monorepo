@@ -2,9 +2,9 @@ import {Box} from '@mui/material';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import React from 'react';
 
-import {welcomeBack} from '../../browserFirebase/firebaseDB';
 import {SignInForm, SignInWelcome} from '../../src/Components/Auth';
 import {AuthEnum, WelcomeBack} from '../../src/Components/Auth/types';
+import {welcomeBack} from '../../ThirdPartyAPIs/firebaseDB';
 
 const styles = {
   container: {

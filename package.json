@@ -2,8 +2,10 @@
   "name": "darta",
   "private": true,
   "workspaces": [
-    "packages/*",
-    "packages/next/*"
+    "packages/*"
   ],
-  "version": "v1.22.19"
+  "dependencies": {},
+  "devDependencies": {
+    "lerna": "^7.0.0"
+  }
 }

@@ -5,9 +5,9 @@ import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
-import {getAbout} from '../../browserFirebase/firebaseDB';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
+import {getAbout} from '../../ThirdPartyAPIs/firebaseDB';
 
 const aboutStyles = {
   container: {

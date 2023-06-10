@@ -14,6 +14,14 @@ export const headerStyles = {
     gap: '1%',
     backgroundColor: PRIMARY_BLUE,
   },
+  '@keyframes fadeInAnimation': {
+    '0%': {
+      opacity: 0,
+    },
+    '100%': {
+      opacity: 1,
+    },
+  },
   headerLogo: {
     width: '100px',
     height: '100px',
@@ -33,11 +41,11 @@ export const headerStyles = {
     },
     cursor: 'default',
   },
-  signOutButton: {
+  button: {
     backgroundColor: PRIMARY_MILK,
     color: PRIMARY_BLUE,
     fontSize: '0.8rem',
-    '@media (minWidth:750px)': {
+    '@media (min-width:750px)': {
       fontSize: '1rem',
     },
   },

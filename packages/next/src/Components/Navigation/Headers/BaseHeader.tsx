@@ -29,7 +29,7 @@ export function BaseHeader() {
           onClick={async () => {
             await router.push(artistRoute);
           }}
-          sx={headerStyles.signOutButton}
+          sx={headerStyles.button}
           variant="contained"
           data-testid="header-link-artists">
           artists
@@ -40,7 +40,7 @@ export function BaseHeader() {
           onClick={async () => {
             await router.push(galleryRoute);
           }}
-          sx={headerStyles.signOutButton}
+          sx={headerStyles.button}
           variant="contained"
           data-testid="header-link-gallery">
           galleries
@@ -60,7 +60,7 @@ export function BaseHeader() {
           src="/static/images/dartahouseblue.png"
           data-testid="header-image"
           alt="me"
-          width="64"
+          width="80"
           height="64"
           onClick={() => router.push('/', undefined, {shallow: true})}
         />
