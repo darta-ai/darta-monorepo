@@ -9,11 +9,10 @@ export const styles = {
     height: '5vh',
   },
   typography: {
-    fontFamily: 'EB Garamond',
     color: PRIMARY_BLUE,
     fontSize: '0.75rem',
     '@media (min-width:800px)': {
-      fontSize: '1.2em',
+      fontSize: '1.1em',
     },
     cursor: 'default',
   },

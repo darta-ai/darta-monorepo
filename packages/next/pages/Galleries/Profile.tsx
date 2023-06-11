@@ -6,7 +6,12 @@ import Head from 'next/head';
 import React from 'react';
 
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
-import {EditProfileGallery, ProfileGallery} from '../../src/Components/Profile';
+import {
+  EditProfileGallery,
+  IGalleryProfileData,
+  ProfileGallery,
+} from '../../src/Components/Profile';
+import {galleryProfileRawData} from '../../src/dummyData';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
 
 const aboutStyles = {
@@ -65,7 +70,13 @@ const aboutStyles = {
 
 // About component
 export default function GalleryProfile() {
-  const [isEditingProfile, setIsEditingProfile] = React.useState(false);
+  const [isEditingProfile, setIsEditingProfile] =
+    React.useState<boolean>(false);
+  const [galleryProfileData, setGalleryProfileData] = React.useState<
+    IGalleryProfileData | {}
+  >({
+    ...galleryProfileRawData,
+  });
 
   return (
     <>
@@ -83,11 +94,14 @@ export default function GalleryProfile() {
             <EditProfileGallery
               isEditingProfile={isEditingProfile}
               setIsEditingProfile={setIsEditingProfile}
+              setGalleryProfileData={setGalleryProfileData}
+              galleryProfileData={galleryProfileData}
             />
           ) : (
             <ProfileGallery
               isEditingProfile={isEditingProfile}
               setIsEditingProfile={setIsEditingProfile}
+              galleryProfileData={galleryProfileData}
             />
           )}
         </Container>

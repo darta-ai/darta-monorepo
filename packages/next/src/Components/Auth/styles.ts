@@ -30,7 +30,6 @@ export const authStyles = {
     },
   },
   typographyTitle: {
-    fontFamily: 'EB Garamond',
     alignText: 'center',
     alignSelf: 'center',
     color: PRIMARY_DARK_GREY,
@@ -89,7 +88,7 @@ export const welcomeStyles = {
     bottomBorder: '1px solid white',
   },
   textContainer: {
-    height: '80%',
+    height: '100%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-around',
@@ -118,16 +117,11 @@ export const welcomeStyles = {
     height: '10%',
   },
   typographyTitle: {
-    fontFamily: 'EB Garamond',
-    alignText: 'center',
     color: PRIMARY_MILK,
     fontSize: '1.5rem',
-    '@media (min-width:800px)': {
-      fontSize: '1.5rem',
-    },
+    alignSelf: 'center',
   },
   typography: {
-    fontFamily: 'EB Garamond',
     color: PRIMARY_DARK_GREY,
     fontSize: '1rem',
     '@media (min-width:800px)': {
@@ -135,11 +129,10 @@ export const welcomeStyles = {
     },
   },
   actionArrow: {
-    transform: 'scale(1.5)',
     color: PRIMARY_MILK,
+    height: '100%',
   },
   footerText: {
-    fontFamily: 'EB Garamond',
     color: PRIMARY_MILK,
     fontSize: '1rem',
     '@media (min-width:800px)': {
@@ -150,10 +143,14 @@ export const welcomeStyles = {
     alignSelf: 'center',
     fontSize: 15,
   },
-  checkBoxes: {
+  displayTextContainer: {
     flexDirection: 'row',
+    height: '10vh',
+    width: '95%',
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'flex-start',
+    alignContent: 'center',
     gap: '2%',
   },
   icon: {

@@ -12,7 +12,7 @@ import Document, {
 import * as React from 'react';
 
 import createEmotionCache from '../src/createEmotionCache';
-import theme, {roboto} from '../src/theme';
+import theme, {ebGaramond} from '../src/theme';
 import {MyAppProps} from './_app';
 
 interface MyDocumentProps extends DocumentProps {
@@ -21,7 +21,7 @@ interface MyDocumentProps extends DocumentProps {
 
 export default function MyDocument({emotionStyleTags}: MyDocumentProps) {
   return (
-    <Html lang="en" className={roboto.className}>
+    <Html lang="en">
       <Head>
         {/* PWA primary color */}
         <meta name="theme-color" content={theme.palette.primary.main} />
@@ -30,6 +30,10 @@ export default function MyDocument({emotionStyleTags}: MyDocumentProps) {
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
           href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200&display=swap"
           rel="stylesheet"
         />
         <meta name="emotion-insertion-point" content="" />

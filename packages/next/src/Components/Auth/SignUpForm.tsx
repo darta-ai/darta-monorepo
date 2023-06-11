@@ -177,7 +177,11 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
                   onMouseDown={handleMouseDownPassword}
                   edge="end"
                   data-testid="confirmPasswordToggleButton">
-                  {togglePasswordView ? <VisibilityOff /> : <Visibility />}
+                  {toggleConfirmPasswordView ? (
+                    <VisibilityOff />
+                  ) : (
+                    <Visibility />
+                  )}
                 </IconButton>
               </InputAdornment>
             }
