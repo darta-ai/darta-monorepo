@@ -61,11 +61,17 @@ export function PamphletLeft({
           {headline}
         </Typography>
         <br />
-        <Typography sx={styles.typography}>{line1}</Typography>
+        <Typography variant="body1" sx={styles.typography}>
+          {line1}
+        </Typography>
         <br />
-        <Typography sx={styles.typography}>{line2}</Typography>
+        <Typography variant="body1" sx={styles.typography}>
+          {line2}
+        </Typography>
         <br />
-        <Typography sx={styles.typography}>{line3}</Typography>
+        <Typography variant="body1" sx={styles.typography}>
+          {line3}
+        </Typography>
       </Box>
     </Box>
   );

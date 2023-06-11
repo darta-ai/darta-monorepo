@@ -38,9 +38,9 @@
     "npm": "^9.6.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "@mui/utils": "5.13.1",
     "react-hook-form": "^7.43.9",
     "reactour": "^1.19.0",
-    "cypress": "^12.13.0",
     "yup": "^1.1.1"
   },
   "devDependencies": {

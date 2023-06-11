@@ -9,7 +9,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import {ThemeProvider} from '@mui/material/styles';
 import {onAuthStateChanged} from 'firebase/auth';
 import {AppProps} from 'next/app';
-import dynamic from 'next/dynamic';
 import Head from 'next/head';
 // import Script from 'next/script';
 import * as React from 'react';

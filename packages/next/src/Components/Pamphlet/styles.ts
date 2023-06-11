@@ -71,7 +71,6 @@ export const styles = {
     cursor: 'default',
   },
   typography: {
-    fontFamily: 'EB Garamond',
     color: PRIMARY_DARK_GREY,
     fontSize: '1rem',
     '@media (min-width:800px)': {

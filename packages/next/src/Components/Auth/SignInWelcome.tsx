@@ -25,8 +25,10 @@ export function SignInWelcome({
           </Box>
         )}
         {welcomeBackData?.Field1 && (
-          <Box sx={welcomeStyles.checkBoxes} data-testid="checkboxes-1">
-            <Box data-testid="icon-box-1">
+          <Box
+            sx={welcomeStyles.displayTextContainer}
+            data-testid="checkboxes-1">
+            <Box data-testid="icon-box-1" sx={{height: '100%'}}>
               <KeyboardDoubleArrowRightIcon sx={welcomeStyles.actionArrow} />
             </Box>
             <Box data-testid="text-box-1">
@@ -45,8 +47,10 @@ export function SignInWelcome({
         )}
 
         {welcomeBackData?.Field2 && (
-          <Box sx={welcomeStyles.checkBoxes} data-testid="checkboxes-2">
-            <Box data-testid="icon-box-2">
+          <Box
+            sx={welcomeStyles.displayTextContainer}
+            data-testid="checkboxes-2">
+            <Box data-testid="icon-box-2" sx={{height: '100%'}}>
               <KeyboardDoubleArrowRightIcon sx={welcomeStyles.actionArrow} />
             </Box>
             <Box data-testid="text-box-2">
@@ -64,8 +68,10 @@ export function SignInWelcome({
           </Box>
         )}
         {welcomeBackData?.Field3 && (
-          <Box sx={welcomeStyles.checkBoxes} data-testid="checkboxes-3">
-            <Box data-testid="icon-box-3">
+          <Box
+            sx={welcomeStyles.displayTextContainer}
+            data-testid="checkboxes-3">
+            <Box data-testid="icon-box-3" sx={{height: '100%'}}>
               <KeyboardDoubleArrowRightIcon sx={welcomeStyles.actionArrow} />
             </Box>
             <Box data-testid="text-box-3">
@@ -83,8 +89,10 @@ export function SignInWelcome({
           </Box>
         )}
         {welcomeBackData?.Field4 && (
-          <Box sx={welcomeStyles.checkBoxes} data-testid="checkboxes-4">
-            <Box data-testid="icon-box-4">
+          <Box
+            sx={welcomeStyles.displayTextContainer}
+            data-testid="checkboxes-4">
+            <Box data-testid="icon-box-4" sx={{height: '100%'}}>
               <KeyboardDoubleArrowRightIcon sx={welcomeStyles.actionArrow} />
             </Box>
             <Box data-testid="text-box-4">
