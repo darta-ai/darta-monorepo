@@ -1,12 +1,13 @@
-import React from 'react';
 import {Box} from '@mui/material';
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../styles';
-import {AuthEnum, DartaBenefits} from '../../src/Components/Auth/types';
-import {signUpBenefits} from '../../browserFirebase/firebaseDB';
-import {SignUpWelcome} from '../../src/Components/Auth/SignUpWelcome';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
+import React from 'react';
+
+import {signUpBenefits} from '../../browserFirebase/firebaseDB';
 import {SignUpForm} from '../../src/Components/Auth/SignUpForm';
+import {SignUpWelcome} from '../../src/Components/Auth/SignUpWelcome';
+import {AuthEnum, DartaBenefits} from '../../src/Components/Auth/types';
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
+import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../styles';
 
 const styles = {
   container: {
@@ -78,7 +79,7 @@ const styles = {
   },
 };
 
-//defines everything
+// defines everything
 const userType = AuthEnum.artists;
 
 export default function GallerySignIn({

@@ -1,7 +1,8 @@
-import React from 'react';
-import {Typography, Box} from '@mui/material';
-import {PRIMARY_BLUE, PRIMARY_MILK, PRIMARY_LIGHTBLUE} from '../../../styles';
+import {Box, Typography} from '@mui/material';
 import Link from 'next/link';
+import React from 'react';
+
+import {PRIMARY_BLUE, PRIMARY_LIGHTBLUE, PRIMARY_MILK} from '../../../styles';
 
 const styles = {
   footerBox: {
@@ -40,11 +41,11 @@ const styles = {
   },
 };
 
-export const Footer = () => {
+export function Footer() {
   return (
     <Box sx={styles.footerBox} data-testid="footer-box">
       <Box sx={styles.textContainer} data-testid="text-container">
-        <Link href={`/Darta/About`}>
+        <Link href="/Darta/About">
           <Typography
             component="div"
             sx={styles.typography}
@@ -55,7 +56,7 @@ export const Footer = () => {
         <div style={styles.divider} data-testid="first-divider">
           |
         </div>
-        <Link href={`/Darta/Contact`}>
+        <Link href="/Darta/Contact">
           <Typography
             component="div"
             sx={styles.typography}
@@ -75,4 +76,4 @@ export const Footer = () => {
       </Box>
     </Box>
   );
-};
+}

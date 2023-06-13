@@ -1,9 +1,10 @@
-import React from 'react';
 import {Box} from '@mui/material';
+import React from 'react';
+
 import {
-  ForgotPasswordWelcome,
   ForgotPasswordForm,
-} from '../../src/Components/Auth/';
+  ForgotPasswordWelcome,
+} from '../../src/Components/Auth';
 import {AuthEnum} from '../../src/Components/Auth/types';
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
 

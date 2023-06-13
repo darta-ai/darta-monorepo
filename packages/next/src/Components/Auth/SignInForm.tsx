@@ -1,24 +1,26 @@
-import React, {useState} from 'react';
-import {Box} from '@mui/material';
-import {
-  FormHelperText,
-  Button,
-  Input,
-  InputLabel,
-  InputAdornment,
-  FormControl,
-  IconButton,
-} from '@mui/material';
-import {useForm} from 'react-hook-form';
+/* eslint-disable react/jsx-props-no-spreading */
 import {yupResolver} from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import {AuthEnum} from './types';
-import {NeedAnAccount, ForgotPassword} from '../Navigation/Auth';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import {dartaSignIn} from '../../../API/AccountManagement';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormHelperText,
+  IconButton,
+  Input,
+  InputAdornment,
+  InputLabel,
+} from '@mui/material';
 import {useRouter} from 'next/router';
+import React, {useState} from 'react';
+import {useForm} from 'react-hook-form';
+import * as yup from 'yup';
+
+import {dartaSignIn} from '../../../API/AccountManagement';
+import {ForgotPassword, NeedAnAccount} from '../Navigation/Auth';
 import {authStyles} from './styles';
+import {AuthEnum} from './types';
 
 const schema = yup
   .object({
@@ -36,7 +38,6 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
   const {
     register,
     handleSubmit,
-    getValues,
     formState: {errors},
   } = useForm({resolver: yupResolver(schema)});
   const handleSignIn = async (data: any) => {
@@ -62,12 +63,11 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
     event.preventDefault();
   };
 
+  // TODO: this is dead
   const handleEnter = async (event: any) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      const values = getValues();
       handleSubmit(handleSignIn);
-      return;
     }
   };
 
@@ -86,7 +86,7 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
             email
           </InputLabel>
           <Input
-            error={errors?.email?.message ? true : false}
+            error={!!errors?.email?.message}
             {...register('email')}
             id="email"
             aria-describedby="email"
@@ -114,7 +114,7 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
             id="outlined-adornment-password"
             type={togglePasswordView ? 'text' : 'password'}
             {...register('password')}
-            error={errors?.password?.message ? true : false}
+            error={!!errors?.password?.message}
             color="info"
             onKeyPress={handleEnter}
             data-testid="signin-password-input"

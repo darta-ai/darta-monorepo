@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
-
-import {Typography, Box} from '@mui/material';
+/* eslint-disable import/no-dynamic-require */
+/* eslint-disable global-require */
+import {Box, Typography} from '@mui/material';
 import Image from 'next/image';
-import {styles} from './styles';
-import {AuthEnum} from '../Auth/types';
+import * as React from 'react';
 
-export const PamphletLeft = ({
+import {AuthEnum} from '../Auth/types';
+import {styles} from './styles';
+
+export function PamphletLeft({
   headline,
   line1,
   line2,
@@ -15,11 +17,11 @@ export const PamphletLeft = ({
 }: {
   authType: AuthEnum;
   index: number;
-  headline?: string;
-  line1?: string;
-  line2?: string;
-  line3?: string;
-}) => {
+  headline: string;
+  line1: string;
+  line2: string;
+  line3: string;
+}) {
   let png;
   let video;
   try {
@@ -32,7 +34,6 @@ export const PamphletLeft = ({
   } catch (e) {
     video = null;
   }
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   return (
     <Box sx={styles.container}>
       <Box sx={{flex: 1}}>
@@ -68,4 +69,4 @@ export const PamphletLeft = ({
       </Box>
     </Box>
   );
-};
+}

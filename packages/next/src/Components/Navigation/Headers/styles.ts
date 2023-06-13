@@ -1,7 +1,7 @@
 import {
   PRIMARY_BLUE,
-  PRIMARY_MILK,
   PRIMARY_LIGHTBLUE,
+  PRIMARY_MILK,
 } from '../../../../styles';
 
 export const headerStyles = {
@@ -37,7 +37,7 @@ export const headerStyles = {
     backgroundColor: PRIMARY_MILK,
     color: PRIMARY_BLUE,
     fontSize: '0.8rem',
-    '@media (min-width:750px)': {
+    '@media (minWidth:750px)': {
       fontSize: '1rem',
     },
   },
