@@ -1,10 +1,11 @@
-import React from 'react';
 import {Box} from '@mui/material';
-import {AuthEnum, DartaBenefits} from '../../src/Components/Auth/types';
-import {signUpBenefits} from '../../browserFirebase/firebaseDB';
-import {SignUpWelcome} from '../../src/Components/Auth/SignUpWelcome';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
+import React from 'react';
+
+import {signUpBenefits} from '../../browserFirebase/firebaseDB';
 import {SignUpForm} from '../../src/Components/Auth/SignUpForm';
+import {SignUpWelcome} from '../../src/Components/Auth/SignUpWelcome';
+import {AuthEnum, DartaBenefits} from '../../src/Components/Auth/types';
 
 const styles = {
   container: {
@@ -23,19 +24,17 @@ const styles = {
   },
 };
 
-//defines everything
+// defines everything
 const userType = AuthEnum.curators;
 
 export default function CuratorsSignIn({
   data,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
-    <>
-      <Box sx={styles.container}>
-        <SignUpWelcome benefitsData={data as DartaBenefits} />
-        <SignUpForm signUpType={userType} />
-      </Box>
-    </>
+    <Box sx={styles.container}>
+      <SignUpWelcome benefitsData={data as DartaBenefits} />
+      <SignUpForm signUpType={userType} />
+    </Box>
   );
 }
 

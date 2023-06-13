@@ -1,12 +1,16 @@
-import React from 'react';
-import Head from 'next/head';
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable global-require */
 import 'firebase/compat/auth';
-import {IconButton, Typography, Box, TextField, Button} from '@mui/material';
-import {PRIMARY_DARK_GREY, PRIMARY_BLUE} from '../../../styles';
-import {useForm} from 'react-hook-form';
-import {ImageUploadModal} from '../Modals/UploadImageModal';
-import Image from 'next/image';
+
 import SettingsIcon from '@mui/icons-material/Settings';
+import {Box, Button, IconButton, TextField, Typography} from '@mui/material';
+import Head from 'next/head';
+import Image from 'next/image';
+import React from 'react';
+import {useForm} from 'react-hook-form';
+
+import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../../styles';
+import {ImageUploadModal} from '../Modals/UploadImageModal';
 
 const editProfileStyles = {
   container: {
@@ -60,20 +64,23 @@ const editProfileStyles = {
   formTextField: {
     width: '100%',
   },
+  fallBackImage: {},
+  defaultImageContainer: {marginTop: '1em', maxWidth: '100%', borderWidth: 30},
+  displayNone: {
+    display: 'none',
+  },
 };
 
-type AboutData = {
-  HeadTitle: string;
-  DartaCoreValue: string;
-  Headline: string;
-  WhoWeAre: string;
-  DartaBelief1?: string;
-  DartaBelief2?: string;
-  DartaBelief3?: string;
-  DartaBelief4?: string;
-};
+interface GalleryFields {
+  galleryLogo?: string;
+  galleryName?: string;
+  galleryBio?: string;
+  galleryAddress?: string;
+  galleryZip?: string;
+  primaryContact?: string;
+}
 
-const galleryFields = {
+const galleryFields: GalleryFields = {
   galleryLogo: '',
   galleryName: 'Hello',
   galleryBio: '',
@@ -119,7 +126,6 @@ export function EditProfileGallery({
 
   const backupImage = require(`../../../public/static/images/UploadImage.png`);
 
-  const fields = ['Name', 'Bio', 'Gallery Zip', 'Primary Contact Email'];
   return (
     <>
       <Head>
@@ -129,15 +135,16 @@ export function EditProfileGallery({
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box mb={2} sx={editProfileStyles.uploadImageContainer}>
           <Box>
-          <Box >
-            <IconButton onClick={() => setIsEditingProfile(!isEditingProfile)}>
-              <SettingsIcon sx={{color: PRIMARY_BLUE}} />
-            </IconButton>
-          </Box>
+            <Box>
+              <IconButton
+                onClick={() => setIsEditingProfile(!isEditingProfile)}>
+                <SettingsIcon sx={{color: PRIMARY_BLUE}} />
+              </IconButton>
+            </Box>
             <Image
               src={backupImage}
               alt="upload image"
-              style={{marginTop: '1em', maxWidth: '100%', borderWidth: 30}}
+              style={editProfileStyles.defaultImageContainer}
               height={400}
               width={400}
             />
@@ -146,7 +153,7 @@ export function EditProfileGallery({
               accept="image/*"
               id="contained-button-file"
               type="file"
-              style={{display: 'none'}}
+              style={editProfileStyles.displayNone}
             />
           </Box>
           <ImageUploadModal
@@ -156,22 +163,19 @@ export function EditProfileGallery({
           />
           {errors.galleryLogo && <p>Gallery Logo is required</p>}
         </Box>
-        <Box
-          key={'galleryName'}
-          m={2}
-          sx={editProfileStyles.inputTextContainer}>
+        <Box key="galleryName" m={2} sx={editProfileStyles.inputTextContainer}>
           {editing.galleryName ? (
             <TextField
               {...register('galleryName', {required: true})}
-              label={'Gallery Name'}
-              error={errors['galleryLogo'] ? true : false}
+              label="Gallery Name"
+              error={!!errors.galleryLogo}
               sx={editProfileStyles.formTextField}
               helperText={errors.galleryName && `Gallery Name is required`}
               fullWidth
             />
           ) : (
             <Box>
-              <label>{'Gallery Name'}</label>
+              <Typography>Gallery Name</Typography>
               <Typography>{getValues('galleryName')}</Typography>
             </Box>
           )}
@@ -180,7 +184,7 @@ export function EditProfileGallery({
               variant="outlined"
               sx={editProfileStyles.button}
               onClick={() => toggleEdit('galleryName')}>
-              {editing['galleryName'] ? `Save` : `Edit`}{' '}
+              {editing.galleryName ? `Save` : `Edit`}{' '}
             </Button>
           </Box>
         </Box>

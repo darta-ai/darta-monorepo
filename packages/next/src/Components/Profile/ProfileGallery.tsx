@@ -1,10 +1,11 @@
-import React from 'react';
-import Head from 'next/head';
-import {Typography, Box, IconButton} from '@mui/material';
-import {PRIMARY_DARK_GREY, PRIMARY_BLUE} from '../../../styles';
+/* eslint-disable jsx-a11y/img-redundant-alt */
 import SettingsIcon from '@mui/icons-material/Settings';
-import { TourProvider } from '@reactour/tour'
-import { useTour } from '@reactour/tour'
+import {Box, IconButton, Typography} from '@mui/material';
+import {TourProvider} from '@reactour/tour';
+import Head from 'next/head';
+import React from 'react';
+
+import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../../styles';
 
 const profileStyles = {
   container: {
@@ -80,6 +81,11 @@ const profileStyles = {
   editButton: {
     alignSelf: 'flex-start',
   },
+  defaultImage: {
+    marginTop: '1em',
+    maxWidth: '100%',
+    borderWidth: 30,
+  },
 };
 
 const steps = [
@@ -87,7 +93,7 @@ const steps = [
     selector: '.edit-profile-button',
     content: 'This is my first Step',
   },
-]
+];
 
 export function ProfileGallery({
   isEditingProfile,
@@ -96,9 +102,6 @@ export function ProfileGallery({
   isEditingProfile: boolean;
   setIsEditingProfile: (T: boolean) => void;
 }) {
-  const { setIsOpen } = useTour()
-  const backupImage = require(`../../../public/static/images/UploadImage.png`);
-
   const galleryProfileData = {
     galleryName: 'Pat Kirts Gallery 2000',
     galleryPrimaryAddressLine1: 'Gallery Primary Address Line 1',
@@ -119,29 +122,29 @@ export function ProfileGallery({
     galleryLogo:
       'https://s3.amazonaws.com/files.collageplatform.com.prod/application/599f12405a4091c6048b4568/f1a52b7879c8792b9f00686cca0b86f1.png',
   };
-  const galleryProfileDataEmpty = {
-    galleryName: '',
-    galleryPrimaryAddressLine1: '',
-    galleryPrimaryAddressLine2: '',
-    galleryPrimaryCity: '',
-    galleryPrimaryState: '',
-    galleryPrimaryZip: '',
-    gallerySecondaryLocation: '',
-    gallerySecondaryAddressLine1: '',
-    gallerySecondaryAddressLine2: '',
-    gallerySecondaryCity: '',
-    gallerySecondaryState: '',
-    gallerySecondaryZip: '',
-    galleryTagline: '',
-    galleryBio: '',
-    galleryLogo: '',
-  };
+  // const galleryProfileDataEmpty = {
+  //   galleryName: '',
+  //   galleryPrimaryAddressLine1: '',
+  //   galleryPrimaryAddressLine2: '',
+  //   galleryPrimaryCity: '',
+  //   galleryPrimaryState: '',
+  //   galleryPrimaryZip: '',
+  //   gallerySecondaryLocation: '',
+  //   gallerySecondaryAddressLine1: '',
+  //   gallerySecondaryAddressLine2: '',
+  //   gallerySecondaryCity: '',
+  //   gallerySecondaryState: '',
+  //   gallerySecondaryZip: '',
+  //   galleryTagline: '',
+  //   galleryBio: '',
+  //   galleryLogo: '',
+  // };
 
-  const galleryContainsNoData = Object.values(galleryProfileDataEmpty).filter(
-    value => {
-      return value !== '';
-    },
-  );
+  // const galleryContainsNoData = Object.values(galleryProfileDataEmpty).filter(
+  //   value => {
+  //     return value !== '';
+  //   },
+  // );
 
   return (
     <>
@@ -150,111 +153,114 @@ export function ProfileGallery({
         <meta name="description" content="Edit your gallery." />
       </Head>
       <TourProvider steps={steps}>
-      <Box mb={2} sx={profileStyles.container}>
-        <Box sx={profileStyles.galleryHeaderContainer}>
-          <Box sx={profileStyles.imageBox}>
-            {galleryProfileData?.galleryLogo ? (
-              <img
-                src={galleryProfileData?.galleryLogo}
-                alt="upload image"
-                style={{marginTop: '1em', maxWidth: '100%', borderWidth: 30}}
-              />
-            ) : (
-              <Box sx={{...profileStyles.imageBox, border: '1px solid black'}}>
-                <Typography sx={{color: PRIMARY_DARK_GREY}}>
-                  Upload Image To Get Started
-                </Typography>
-              </Box>
-            )}
-          </Box>
-          <Box sx={profileStyles.galleryDetails}>
-            <Box>
-              <Typography
-                variant="h4"
-                sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
-                {galleryProfileData?.galleryName
-                  ? galleryProfileData?.galleryName
-                  : 'Edit profile to add gallery name'}
-              </Typography>
-              <Box sx={profileStyles.galleryBioStyles}>
-                <Typography>{galleryProfileData?.galleryTagline}</Typography>
-              </Box>
+        <Box mb={2} sx={profileStyles.container}>
+          <Box sx={profileStyles.galleryHeaderContainer}>
+            <Box sx={profileStyles.imageBox}>
+              {galleryProfileData?.galleryLogo ? (
+                <img
+                  src={galleryProfileData?.galleryLogo}
+                  alt="upload image"
+                  style={profileStyles.defaultImage}
+                />
+              ) : (
+                <Box
+                  sx={{...profileStyles.imageBox, border: '1px solid black'}}>
+                  <Typography sx={{color: PRIMARY_DARK_GREY}}>
+                    Upload Image To Get Started
+                  </Typography>
+                </Box>
+              )}
             </Box>
-            <Box sx={profileStyles.galleryLocationContainer}>
-              <Box sx={profileStyles.galleryAddressContainer}>
-                <Typography variant="h6" sx={{color: PRIMARY_DARK_GREY}}>
-                  {galleryProfileData?.galleryPrimaryCity
-                    ? galleryProfileData?.galleryPrimaryCity
-                    : 'Edit profile to add gallery address'}
+            <Box sx={profileStyles.galleryDetails}>
+              <Box>
+                <Typography
+                  variant="h4"
+                  sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
+                  {galleryProfileData?.galleryName
+                    ? galleryProfileData?.galleryName
+                    : 'Edit profile to add gallery name'}
                 </Typography>
-                {galleryProfileData?.galleryPrimaryAddressLine1 && (
-                  <Typography sx={{color: PRIMARY_DARK_GREY}}>
-                    {galleryProfileData?.galleryPrimaryAddressLine1}
-                  </Typography>
-                )}
-                {galleryProfileData?.galleryPrimaryAddressLine2 && (
-                  <Typography sx={{color: PRIMARY_DARK_GREY}}>
-                    {galleryProfileData?.galleryPrimaryAddressLine2}
-                  </Typography>
-                )}
-                <Typography sx={{color: PRIMARY_DARK_GREY}}>-</Typography>
-                {galleryProfileData?.galleryPrimaryState && (
-                  <Typography sx={{color: PRIMARY_DARK_GREY}}>
-                    {galleryProfileData?.galleryPrimaryState}
-                  </Typography>
-                )}
-                {galleryProfileData?.galleryPrimaryZip && (
-                  <Typography sx={{color: PRIMARY_DARK_GREY}}>
-                    {galleryProfileData?.galleryPrimaryZip}
-                  </Typography>
-                )}
+                <Box sx={profileStyles.galleryBioStyles}>
+                  <Typography>{galleryProfileData?.galleryTagline}</Typography>
+                </Box>
               </Box>
-
-              {galleryProfileData?.gallerySecondaryLocation && (
+              <Box sx={profileStyles.galleryLocationContainer}>
                 <Box sx={profileStyles.galleryAddressContainer}>
                   <Typography variant="h6" sx={{color: PRIMARY_DARK_GREY}}>
-                    {galleryProfileData?.gallerySecondaryCity
-                      ? galleryProfileData?.gallerySecondaryCity
+                    {galleryProfileData?.galleryPrimaryCity
+                      ? galleryProfileData?.galleryPrimaryCity
                       : 'Edit profile to add gallery address'}
                   </Typography>
-                  {galleryProfileData?.gallerySecondaryAddressLine1 && (
+                  {galleryProfileData?.galleryPrimaryAddressLine1 && (
                     <Typography sx={{color: PRIMARY_DARK_GREY}}>
-                      {galleryProfileData?.gallerySecondaryAddressLine1}
+                      {galleryProfileData?.galleryPrimaryAddressLine1}
                     </Typography>
                   )}
-                  {galleryProfileData?.gallerySecondaryAddressLine2 && (
+                  {galleryProfileData?.galleryPrimaryAddressLine2 && (
                     <Typography sx={{color: PRIMARY_DARK_GREY}}>
-                      {galleryProfileData?.gallerySecondaryAddressLine2}
+                      {galleryProfileData?.galleryPrimaryAddressLine2}
                     </Typography>
                   )}
                   <Typography sx={{color: PRIMARY_DARK_GREY}}>-</Typography>
                   {galleryProfileData?.galleryPrimaryState && (
                     <Typography sx={{color: PRIMARY_DARK_GREY}}>
-                      {galleryProfileData?.gallerySecondaryState}
+                      {galleryProfileData?.galleryPrimaryState}
                     </Typography>
                   )}
                   {galleryProfileData?.galleryPrimaryZip && (
                     <Typography sx={{color: PRIMARY_DARK_GREY}}>
-                      {galleryProfileData?.gallerySecondaryZip}
+                      {galleryProfileData?.galleryPrimaryZip}
                     </Typography>
                   )}
                 </Box>
-              )}
+
+                {galleryProfileData?.gallerySecondaryLocation && (
+                  <Box sx={profileStyles.galleryAddressContainer}>
+                    <Typography variant="h6" sx={{color: PRIMARY_DARK_GREY}}>
+                      {galleryProfileData?.gallerySecondaryCity
+                        ? galleryProfileData?.gallerySecondaryCity
+                        : 'Edit profile to add gallery address'}
+                    </Typography>
+                    {galleryProfileData?.gallerySecondaryAddressLine1 && (
+                      <Typography sx={{color: PRIMARY_DARK_GREY}}>
+                        {galleryProfileData?.gallerySecondaryAddressLine1}
+                      </Typography>
+                    )}
+                    {galleryProfileData?.gallerySecondaryAddressLine2 && (
+                      <Typography sx={{color: PRIMARY_DARK_GREY}}>
+                        {galleryProfileData?.gallerySecondaryAddressLine2}
+                      </Typography>
+                    )}
+                    <Typography sx={{color: PRIMARY_DARK_GREY}}>-</Typography>
+                    {galleryProfileData?.galleryPrimaryState && (
+                      <Typography sx={{color: PRIMARY_DARK_GREY}}>
+                        {galleryProfileData?.gallerySecondaryState}
+                      </Typography>
+                    )}
+                    {galleryProfileData?.galleryPrimaryZip && (
+                      <Typography sx={{color: PRIMARY_DARK_GREY}}>
+                        {galleryProfileData?.gallerySecondaryZip}
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+              </Box>
+              <Box sx={profileStyles.galleryBioContainer} />
             </Box>
-            <Box sx={profileStyles.galleryBioContainer}></Box>
+            <Box sx={profileStyles.editButton}>
+              <IconButton
+                onClick={() => setIsEditingProfile(!isEditingProfile)}
+                className="edit-profile-button">
+                <SettingsIcon sx={{color: PRIMARY_BLUE}} />
+              </IconButton>
+            </Box>
           </Box>
-          <Box sx={profileStyles.editButton}>
-            <IconButton onClick={() => setIsEditingProfile(!isEditingProfile)} className="edit-profile-button">
-              <SettingsIcon sx={{color: PRIMARY_BLUE}} />
-            </IconButton>
+          <Box>
+            <Typography variant="h6" sx={{color: PRIMARY_DARK_GREY}}>
+              hey
+            </Typography>
           </Box>
         </Box>
-        <Box>
-          <Typography variant="h6" sx={{color: PRIMARY_DARK_GREY}}>
-            hey
-          </Typography>
-        </Box>
-      </Box>
       </TourProvider>
     </>
   );

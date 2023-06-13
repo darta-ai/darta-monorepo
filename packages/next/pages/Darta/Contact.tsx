@@ -1,7 +1,8 @@
 // Importing necessary modules and components
-import React from 'react';
+import {Box, Container, Link, Typography} from '@mui/material';
 import Head from 'next/head';
-import {Container, Typography, Box, Link} from '@mui/material';
+import React from 'react';
+
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
 
 const useStyles = {
@@ -14,7 +15,7 @@ const useStyles = {
     my: 3,
     alignSelf: 'center',
     height: '100vh',
-    '@media (min-width: 800px)': {
+    '@media (minWidth: 800px)': {
       height: '100vh',
     },
   },
@@ -25,7 +26,7 @@ const useStyles = {
     alignItems: 'center',
     alignContent: 'center',
     gap: '7vh',
-    '@media (min-width: 800px)': {
+    '@media (minWidth: 800px)': {
       flexDirection: 'row',
       alignSelf: 'center',
       alignItems: 'center',
@@ -73,7 +74,7 @@ const useStyles = {
   },
 };
 
-const ContactElement = ({
+function ContactElement({
   title,
   blurb,
   email,
@@ -83,27 +84,25 @@ const ContactElement = ({
   blurb: string;
   email: string;
   dataTestId: string;
-}) => {
+}) {
   return (
-    <>
-      <Box sx={useStyles.contactElementContainer} data-testid={dataTestId}>
-        <Typography variant="h4" sx={useStyles.contact}>
-          {title}
-          <Link href={`mailto:${email}`} color="inherit"></Link>
-        </Typography>
-        <Typography sx={useStyles.contactText}>{blurb}</Typography>
-        <Typography sx={useStyles.reachOutText}>
-          <a href={`mailto: ${email}`}>reach out</a>
-        </Typography>
-      </Box>
-    </>
+    <Box sx={useStyles.contactElementContainer} data-testid={dataTestId}>
+      <Typography variant="h4" sx={useStyles.contact}>
+        {title}
+        <Link href={`mailto:${email}`} color="inherit" />
+      </Typography>
+      <Typography sx={useStyles.contactText}>{blurb}</Typography>
+      <Typography sx={useStyles.reachOutText}>
+        <a href={`mailto: ${email}`}>reach out</a>
+      </Typography>
+    </Box>
   );
-};
+}
 
 // Contact component
-const Contact = () => {
+function Contact() {
   return (
-    <React.Fragment>
+    <>
       <Head>
         <title>Darta | Contact</title>
         <meta name="description" content="Get in touch with Darta." />
@@ -141,8 +140,8 @@ const Contact = () => {
           />
         </Box>
       </Container>
-    </React.Fragment>
+    </>
   );
-};
+}
 
 export default Contact;

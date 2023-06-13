@@ -1,13 +1,13 @@
-import React from 'react';
-import {Typography, Box, Button} from '@mui/material';
+import {Box, Button} from '@mui/material';
 import Image from 'next/image';
-import Link from 'next/link';
 import {useRouter} from 'next/router';
-import {AuthEnum} from '../../Auth/types';
+import React from 'react';
+
 import {AuthContext} from '../../../../pages/_app';
+import {AuthEnum} from '../../Auth/types';
 import {headerStyles} from './styles';
 
-export const BaseHeader = () => {
+export function BaseHeader() {
   const router = useRouter();
   const {user} = React.useContext(AuthContext);
 
@@ -67,4 +67,4 @@ export const BaseHeader = () => {
       </Box>
     </Box>
   );
-};
+}

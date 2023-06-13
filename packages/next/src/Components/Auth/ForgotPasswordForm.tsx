@@ -1,14 +1,20 @@
-import React from 'react';
-import {Box} from '@mui/material';
-import {TextField, FormHelperText, Button, Typography} from '@mui/material';
-import {useForm} from 'react-hook-form';
+/* eslint-disable react/jsx-props-no-spreading */
 import {yupResolver} from '@hookform/resolvers/yup';
+import {
+  Box,
+  Button,
+  FormHelperText,
+  TextField,
+  Typography,
+} from '@mui/material';
+import React from 'react';
+import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
-import {AuthEnum} from './types';
-import {GoToSignIn} from '../Navigation/Auth';
+
 import {dartaForgotPassword} from '../../../API/AccountManagement';
+import {GoToSignIn, NeedAnAccount} from '../Navigation/Auth';
 import {authStyles} from './styles';
-import {NeedAnAccount} from '../Navigation/Auth';
+import {AuthEnum} from './types';
 
 const schema = yup
   .object({
@@ -26,7 +32,6 @@ export function ForgotPasswordForm({
   const {
     register,
     handleSubmit,
-    watch,
     formState: {errors},
   } = useForm({resolver: yupResolver(schema)});
   const handleForgotPassword = async (data: any) => {
@@ -50,7 +55,7 @@ export function ForgotPasswordForm({
         <Box sx={authStyles.signInFieldContainer}>
           <TextField
             variant="standard"
-            error={errors?.email?.message ? true : false}
+            error={!!errors?.email?.message}
             helperText={errors?.email?.message as string}
             label="email"
             {...register('email')}
