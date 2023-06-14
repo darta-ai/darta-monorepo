@@ -71,3 +71,5 @@ scratch*
 #data
 data/
 
+# Ignore DevSpace cache and log folders
+.devspace/
