@@ -1,4 +1,4 @@
-import {Box, Button, Typography} from '@mui/material';
+import {Box, Button} from '@mui/material';
 import Image from 'next/image';
 import {useRouter} from 'next/router';
 import React from 'react';
@@ -19,7 +19,7 @@ export function BaseHeader() {
 
   const showArtistLink =
     (userIsArtist && userIsAuthenticated) || !userIsAuthenticated;
-  const showGaleryLink =
+  const showGalleryLink =
     (!userIsArtist && userIsAuthenticated) || !userIsAuthenticated;
 
   return (
@@ -35,7 +35,7 @@ export function BaseHeader() {
           artists
         </Button>
       )}
-      {showGaleryLink && (
+      {showGalleryLink && (
         <Button
           onClick={async () => {
             await router.push(galleryRoute);

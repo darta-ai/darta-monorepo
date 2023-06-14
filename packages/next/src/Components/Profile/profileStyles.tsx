@@ -5,7 +5,7 @@ export const profileStyles = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    gap: '5%',
+    gap: '5vh',
     minWidth: '80vw',
     minHeight: '100vh',
     mt: '10vh',
@@ -18,7 +18,6 @@ export const profileStyles = {
       justifyContent: 'flex-start',
       gap: '5%',
       minWidth: '80vw',
-      minHeight: '100vh',
       alignSelf: 'center',
       '@media (max-width: 800px)': {
         flexDirection: 'row',
