@@ -12,7 +12,7 @@ import Document, {
 import * as React from 'react';
 
 import createEmotionCache from '../src/createEmotionCache';
-import theme, {ebGaramond} from '../src/theme';
+import theme from '../src/theme';
 import {MyAppProps} from './_app';
 
 interface MyDocumentProps extends DocumentProps {

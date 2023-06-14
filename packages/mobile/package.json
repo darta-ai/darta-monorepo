@@ -7,12 +7,10 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
+    "preinstall": "npx only-allow pnpm",
     "start": "react-native start",
     "test": "jest",
     "prettier": "npx prettier --write ."
-  },
-  "resolutions": {
-    "react-native-gesture-handler": ">=2.9.0"
   },
   "dependencies": {
     "@react-native-firebase/app": "17.4.2",

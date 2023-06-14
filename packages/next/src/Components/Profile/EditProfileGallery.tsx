@@ -101,7 +101,6 @@ export function EditProfileGallery({
             <DartaTextInput
               fieldName="galleryName"
               data={galleryProfileData.galleryName as PrivateFields}
-              defaultValue={galleryProfileData?.galleryName?.value}
               register={register}
               control={control}
               errors={errors}
@@ -121,7 +120,6 @@ export function EditProfileGallery({
               errors={errors}
               required={false}
               control={control}
-              defaultValue={galleryProfileData.galleryBio?.value}
               helperTextString={errors.galleryBio?.value?.message}
               inputAdornmentString="Bio"
               toolTips={toolTips}
@@ -137,7 +135,6 @@ export function EditProfileGallery({
               errors={errors}
               required={false}
               control={control}
-              defaultValue={galleryProfileData.galleryPrimaryLocation?.value}
               helperTextString={errors.galleryAddress?.value?.message}
               inputAdornmentString="Location"
               toolTips={toolTips}
@@ -153,7 +150,6 @@ export function EditProfileGallery({
               errors={errors}
               required={false}
               control={control}
-              defaultValue={galleryProfileData.primaryContact?.value}
               helperTextString={errors.primaryContact?.value?.message}
               inputAdornmentString="Contact"
               toolTips={toolTips}

@@ -22,7 +22,6 @@ export function DartaTextInput({
   data,
   register,
   control,
-  defaultValue,
   errors,
   helperTextString,
   required,
@@ -36,7 +35,6 @@ export function DartaTextInput({
   register: any;
   errors: any;
   control: any;
-  defaultValue: string | undefined;
   toolTips: any;
   required: boolean;
   multiline: boolean;

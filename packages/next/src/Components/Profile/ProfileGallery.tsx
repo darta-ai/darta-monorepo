@@ -6,44 +6,9 @@ import Head from 'next/head';
 import React from 'react';
 
 import {PRIMARY_BLUE} from '../../../styles';
-// import {InquiryTable} from '../Inquires/InquiryTable';
+import {InquiryTable} from '../Tables/InquiryTable';
 import {profileStyles} from './profileStyles';
 import {IGalleryProfileData} from './types';
-
-// type GalleryInquiryStats =
-//   | 'inquired'
-//   | 'responded to'
-//   | 'negotiation'
-//   | 'accepted'
-//   | 'Purchase Agreement Sent'
-//   | 'Payment Received'
-//   | 'declined'
-//   | 'archived';
-
-// const galleryInquiriesDummyData = {
-//   '0': {
-//     id: '1',
-//     artist: 'Jane Doe',
-//     workURL:
-//       'https://d32dm0rphc51dk.cloudfront.net/aY71CL0-0ktA3W2hIHV12g/larger.jpg',
-//     name: 'John Doe',
-//     contactInformation: 'JohnDoe@gmail.com',
-//     status: 'inquired',
-//     workId: '241204124',
-//     inquiredAt: '2021-10-10',
-//     updatedAt: '2021-10-10',
-//   },
-//   '1': {
-//     id: '1',
-//     artist: 'Jane Doe',
-//     workURL:
-//       'https://d32dm0rphc51dk.cloudfront.net/aY71CL0-0ktA3W2hIHV12g/larger.jpg',
-//     name: 'John Doe',
-//     contactInformation: 'JohnDoe@gmail.com',
-//     status: 'inquired',
-//     workId: '241204124',
-//   },
-// };
 
 export function ProfileGallery({
   isEditingProfile,
@@ -197,7 +162,9 @@ export function ProfileGallery({
             </Box>
           </Box>
         </Box>
-        <Box>{/* <InquiryTable /> */}</Box>
+        <Box>
+          <InquiryTable />
+        </Box>
       </Box>
     </>
   );
