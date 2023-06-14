@@ -8,4 +8,5 @@ export const config = {
     user: process.env.ARANGO_USER,
     database: process.env.ARANGO_DATABASE,
   },
+  port: process.env.PORT,
 };
