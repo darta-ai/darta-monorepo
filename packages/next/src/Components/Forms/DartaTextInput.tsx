@@ -47,9 +47,10 @@ export function DartaTextInput({
   const innerWidthMultiple = innerWidth > 800 ? 2 : 4;
   const rows = multiline ? innerWidthMultiple : 1;
   return (
-    <>
-      {innerWidth > 800 && (
+    <Box sx={formStyles.inputTextContainer}>
+      {innerWidth > 780 && (
         <Tooltip
+          sx={formStyles.toolTipContainer}
           title={
             <Typography sx={{textAlign: 'center'}}>
               {toolTips[fieldName]}
@@ -61,6 +62,10 @@ export function DartaTextInput({
           </IconButton>
         </Tooltip>
       )}
+      <InputAdornment sx={{width: '10vw', overflowX: 'clip'}} position="start">
+        {inputAdornmentString}
+      </InputAdornment>
+
       <TextField
         id="value"
         variant="standard"
@@ -73,77 +78,73 @@ export function DartaTextInput({
         multiline={multiline}
         defaultValue={data?.value!}
         rows={rows}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment
-              sx={{width: '12vw', overflowX: 'clip'}}
-              position="start">
-              {inputAdornmentString}
-            </InputAdornment>
-          ),
-        }}
       />
-      {allowPrivate && (
-        <Controller
-          control={control}
-          name={fieldName}
-          {...register(`${fieldName}.${'isPrivate'}`)}
-          defaultValue={data?.isPrivate}
-          render={({field}) => {
-            return (
-              <FormControlLabel
-                labelPlacement="bottom"
-                label={
-                  innerWidth > 800 ? (
-                    <Box sx={formStyles.toolTipContainer}>
-                      <Typography sx={formStyles.toolTip}>
-                        {isPrivate ? 'Private' : 'Public'}
-                      </Typography>
-                      <Tooltip
-                        title={
-                          <Typography sx={{textAlign: 'center', fontSize: 15}}>
-                            Private information is only visible to you and your
-                            team
-                          </Typography>
-                        }
-                        placement="bottom">
-                        <IconButton>
-                          <HelpOutlineIcon
-                            fontSize="small"
-                            sx={formStyles.helpIconTiny}
-                          />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  ) : (
-                    <Box sx={formStyles.toolTipContainer}>
-                      <Typography sx={formStyles.toolTip}>
-                        {isPrivate ? 'Private' : 'Public'}
-                      </Typography>
-                    </Box>
-                  )
-                }
-                control={
-                  <Switch
-                    color="secondary"
-                    value={data?.isPrivate}
-                    id="isPrivate"
-                    onChange={e => field.onChange(e.target.checked)}
-                    checked={field.value}
-                    onClick={() => {
-                      setIsPrivate(!isPrivate);
-                    }}
-                  />
-                }
-                sx={{
-                  width: '12vw',
-                  color: PRIMARY_DARK_GREY,
-                }}
-              />
-            );
-          }}
-        />
-      )}
-    </>
+      <InputAdornment sx={{width: '10vw'}} position="end">
+        {allowPrivate && (
+          <Controller
+            control={control}
+            name={fieldName}
+            sx={{alignSelf: 'flex-start'}}
+            {...register(`${fieldName}.${'isPrivate'}`)}
+            defaultValue={data?.isPrivate}
+            render={({field}) => {
+              return (
+                <FormControlLabel
+                  labelPlacement="bottom"
+                  label={
+                    innerWidth > 800 ? (
+                      <Box sx={formStyles.toolTipContainer}>
+                        <Typography sx={formStyles.toolTip}>
+                          {isPrivate ? 'Private' : 'Public'}
+                        </Typography>
+                        <Tooltip
+                          title={
+                            <Typography
+                              sx={{textAlign: 'center', fontSize: 15}}>
+                              Private information is only visible to you and
+                              your team
+                            </Typography>
+                          }
+                          placement="bottom">
+                          <IconButton>
+                            <HelpOutlineIcon
+                              fontSize="small"
+                              sx={formStyles.helpIconTiny}
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    ) : (
+                      <Box sx={formStyles.toolTipContainer}>
+                        <Typography sx={formStyles.toolTip}>
+                          {isPrivate ? 'Private' : 'Public'}
+                        </Typography>
+                      </Box>
+                    )
+                  }
+                  control={
+                    <Switch
+                      color="secondary"
+                      value={data?.isPrivate}
+                      size="small"
+                      id="isPrivate"
+                      onChange={e => field.onChange(e.target.checked)}
+                      checked={field.value}
+                      onClick={() => {
+                        setIsPrivate(!isPrivate);
+                      }}
+                    />
+                  }
+                  sx={{
+                    width: '12vw',
+                    color: PRIMARY_DARK_GREY,
+                  }}
+                />
+              );
+            }}
+          />
+        )}
+      </InputAdornment>
+    </Box>
   );
 }

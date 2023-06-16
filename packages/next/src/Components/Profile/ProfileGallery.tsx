@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/img-redundant-alt */
 import SettingsIcon from '@mui/icons-material/Settings';
 import {Box, Button, Typography} from '@mui/material';
 // import {TourProvider} from '@reactour/tour';
@@ -7,6 +6,7 @@ import React from 'react';
 
 import {PRIMARY_BLUE} from '../../../styles';
 import {InquiryTable} from '../Tables/InquiryTable';
+import {GalleryLocationComponent} from './GalleryLocationText';
 import {profileStyles} from './profileStyles';
 import {IGalleryProfileData} from './types';
 
@@ -41,7 +41,7 @@ export function ProfileGallery({
               {galleryProfileData?.galleryLogo ? (
                 <img
                   src={galleryProfileData?.galleryLogo.value}
-                  alt="upload image"
+                  alt="gallery logo"
                   style={profileStyles.profile.defaultImage}
                 />
               ) : (
@@ -72,80 +72,24 @@ export function ProfileGallery({
                 </Box>
               </Box>
               <Box sx={profileStyles.profile.galleryLocationContainer}>
-                <Box sx={profileStyles.profile.galleryAddressContainer}>
-                  <Typography
-                    variant="h6"
-                    sx={profileStyles.profile.addressText}>
-                    {galleryProfileData?.galleryPrimaryCity?.value
-                      ? galleryProfileData?.galleryPrimaryCity?.value
-                      : 'Your Gallery Address'}
-                    {galleryProfileData?.galleryPrimaryLocation?.isPrivate &&
-                      '*'}
-                  </Typography>
-                  {galleryProfileData?.galleryPrimaryAddressLine1?.value && (
-                    <Typography sx={profileStyles.profile.addressText}>
-                      {galleryProfileData?.galleryPrimaryAddressLine1?.value}
-                    </Typography>
-                  )}
-                  {galleryProfileData?.galleryPrimaryAddressLine2?.value && (
-                    <Typography sx={profileStyles.profile.addressText}>
-                      {galleryProfileData?.galleryPrimaryAddressLine2?.value}
-                    </Typography>
-                  )}
-                  <Typography sx={profileStyles.profile.addressText}>
-                    -
-                  </Typography>
-                  {galleryProfileData?.galleryPrimaryState?.value && (
-                    <Typography sx={profileStyles.profile.addressText}>
-                      {galleryProfileData?.galleryPrimaryState?.value}
-                    </Typography>
-                  )}
-                  {galleryProfileData?.galleryPrimaryZip?.value && (
-                    <Typography sx={profileStyles.profile.addressText}>
-                      {galleryProfileData?.galleryPrimaryZip?.value}
-                    </Typography>
-                  )}
-                </Box>
+                <GalleryLocationComponent
+                  galleryLocationString={
+                    galleryProfileData?.galleryPrimaryLocation?.value!
+                  }
+                  galleryLocationIsPrivate={
+                    galleryProfileData?.gallerySecondaryLocation?.isPrivate
+                  }
+                />
 
                 {galleryProfileData?.gallerySecondaryLocation?.value && (
-                  <Box sx={profileStyles.profile.galleryAddressContainer}>
-                    <Typography
-                      variant="h6"
-                      sx={profileStyles.profile.addressText}>
-                      {galleryProfileData?.gallerySecondaryCity?.value
-                        ? galleryProfileData?.gallerySecondaryCity?.value
-                        : 'Gallery Address'}
-                    </Typography>
-                    {galleryProfileData?.gallerySecondaryAddressLine1 && (
-                      <Typography sx={profileStyles.profile.addressText}>
-                        {
-                          galleryProfileData?.gallerySecondaryAddressLine1
-                            ?.value
-                        }
-                      </Typography>
-                    )}
-                    {galleryProfileData?.gallerySecondaryAddressLine2 && (
-                      <Typography sx={profileStyles.profile.addressText}>
-                        {
-                          galleryProfileData?.gallerySecondaryAddressLine2
-                            ?.value
-                        }
-                      </Typography>
-                    )}
-                    <Typography sx={profileStyles.profile.addressText}>
-                      -
-                    </Typography>
-                    {galleryProfileData?.galleryPrimaryState && (
-                      <Typography sx={profileStyles.profile.addressText}>
-                        {galleryProfileData?.gallerySecondaryState?.value}
-                      </Typography>
-                    )}
-                    {galleryProfileData?.galleryPrimaryZip && (
-                      <Typography sx={profileStyles.profile.addressText}>
-                        {galleryProfileData?.gallerySecondaryZip?.value}
-                      </Typography>
-                    )}
-                  </Box>
+                  <GalleryLocationComponent
+                    galleryLocationString={
+                      galleryProfileData?.gallerySecondaryLocation?.value
+                    }
+                    galleryLocationIsPrivate={
+                      galleryProfileData?.gallerySecondaryLocation?.isPrivate
+                    }
+                  />
                 )}
               </Box>
               <Box sx={profileStyles.profile.galleryBioContainer}>
@@ -162,9 +106,7 @@ export function ProfileGallery({
             </Box>
           </Box>
         </Box>
-        <Box>
-          <InquiryTable />
-        </Box>
+        <Box>{/* <InquiryTable /> */}</Box>
       </Box>
     </>
   );

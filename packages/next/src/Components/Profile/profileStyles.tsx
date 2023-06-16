@@ -43,7 +43,10 @@ export const profileStyles = {
       justifyContent: 'space-around',
       alignItems: 'center',
       alignSelf: 'center',
-      width: '80%',
+      width: '60%',
+      '@media (max-width: 790px)': {
+        width: '95%',
+      },
     },
     editButtonProfile: {
       color: PRIMARY_BLUE,
@@ -115,6 +118,24 @@ export const profileStyles = {
       minHeight: '10vh',
       width: '100%',
     },
+    imageContainer: {
+      alignSelf: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignContent: 'center',
+      gap: '5vh',
+      alignItems: 'space-between',
+      height: '40vh',
+      width: '40vw',
+    },
+    defaultImageEdit: {
+      marginTop: '1em',
+      width: '30vw',
+      alignSelf: 'center',
+      // height: '30vh',
+      borderWidth: 30,
+    },
     inputText: {
       display: 'flex',
       flexDirection: 'row',
@@ -125,7 +146,8 @@ export const profileStyles = {
     },
     saveButton: {
       color: PRIMARY_BLUE,
-      alignSelf: 'flex-end',
+      alignSelf: 'center',
+      m: 2,
     },
   },
 };
