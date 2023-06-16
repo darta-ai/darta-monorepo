@@ -29,7 +29,7 @@ const useStyles = {
   },
 };
 
-export function DartaImage({onDrop}: {onDrop: any}) {
+export function DartaImageInput({onDrop}: {onDrop: any}) {
   return (
     <Dropzone onDrop={onDrop}>
       {({getRootProps, getInputProps, isDragActive}) => (

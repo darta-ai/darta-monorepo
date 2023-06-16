@@ -217,7 +217,7 @@ export function DartaLocationLookup({
           );
 
           return (
-            <ListItem {...props}>
+            <ListItem {...(props as any)}>
               <Grid container alignItems="center">
                 <Grid item sx={{display: 'flex', width: 44}}>
                   <LocationOnIcon sx={{color: 'text.secondary'}} />
@@ -234,7 +234,15 @@ export function DartaLocationLookup({
                     </Box>
                   ))}
                   <Typography variant="body2" color="text.secondary">
-                    {option?.structured_formatting?.secondary_text}
+                    {option?.structured_formatting?.secondary_text && (
+                      <span
+                        // eslint-disable-next-line react/no-danger
+                        dangerouslySetInnerHTML={{
+                          __html: option?.structured_formatting
+                            ?.secondary_text as string,
+                        }}
+                      />
+                    )}
                   </Typography>
                 </Grid>
               </Grid>

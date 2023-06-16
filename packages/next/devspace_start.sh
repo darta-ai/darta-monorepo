@@ -8,7 +8,7 @@ if [ -f "yarn.lock" ]; then
 else 
    if [ -f "package.json" ]; then
       echo "Installing NPM Dependencies"
-      npm install
+      pnpm install
    fi
 fi
 

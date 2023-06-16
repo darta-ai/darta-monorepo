@@ -9,10 +9,14 @@ import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {PRIMARY_BLUE} from '../../../styles';
-import {DartaImage, DartaLocationLookup, DartaTextInput} from '../Forms/index';
+import {
+  DartaImageInput,
+  DartaLocationLookup,
+  DartaTextInput,
+} from '../FormComponents/index';
 // import {PlacesAutocomplete} from '../../../ThirdPartyAPIs/PlacesAutocomplete';
 // import {ImageUploadModal} from '../Modals/UploadImageModal';
-import {profileStyles} from './profileStyles';
+import {profileStyles} from './Components/profileStyles';
 import {IGalleryProfileData, PrivateFields} from './types';
 
 const galleryDataSchema = yup
@@ -126,7 +130,7 @@ export function EditProfileGallery({
         <Box sx={profileStyles.edit.imageContainer}>
           <Box style={profileStyles.edit.defaultImageEdit}>
             {editImage ? (
-              <DartaImage onDrop={handleDrop} />
+              <DartaImageInput onDrop={handleDrop} />
             ) : (
               <img
                 src={galleryProfileData?.galleryLogo?.value as string}

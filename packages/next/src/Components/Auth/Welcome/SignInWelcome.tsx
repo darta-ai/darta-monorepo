@@ -2,8 +2,8 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 import {Box, Typography} from '@mui/material';
 import * as React from 'react';
 
-import {welcomeStyles} from './styles';
-import {AuthEnum, WelcomeBack} from './types';
+import {welcomeStyles} from '../styles';
+import {AuthEnum, WelcomeBack} from '../types';
 
 export function SignInWelcome({
   welcomeBackData,
