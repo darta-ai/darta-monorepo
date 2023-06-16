@@ -1,6 +1,11 @@
 import {PRIMARY_BLUE, PRIMARY_GREY} from '../../../styles';
 
 export const formStyles = {
+  inputTextContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   helpIcon: {
     color: PRIMARY_GREY,
     height: '15px',
@@ -9,7 +14,7 @@ export const formStyles = {
     },
   },
   formTextField: {
-    width: '95%',
+    width: '50vw',
     margin: 2,
     fontSize: '2rem',
   },

@@ -1,10 +1,10 @@
 export interface PrivateFields {
-  value: string;
-  isPrivate: boolean;
+  value: string | null;
+  isPrivate: boolean | null;
 }
 
 export interface PublicFields {
-  value: string;
+  value: string | null;
 }
 
 interface GalleryFields {

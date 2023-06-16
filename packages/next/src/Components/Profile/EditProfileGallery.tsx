@@ -9,7 +9,7 @@ import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {PRIMARY_BLUE} from '../../../styles';
-import {DartaTextInput} from '../Forms/DartaTextInput';
+import {DartaImage, DartaLocationLookup, DartaTextInput} from '../Forms/index';
 // import {PlacesAutocomplete} from '../../../ThirdPartyAPIs/PlacesAutocomplete';
 // import {ImageUploadModal} from '../Modals/UploadImageModal';
 import {profileStyles} from './profileStyles';
@@ -28,7 +28,11 @@ const galleryDataSchema = yup
           'Please include a short bio - up to 500 characters - about your gallery.',
         ),
     }),
-    galleryLocation: yup.object().shape({
+    galleryPrimaryLocation: yup.object().shape({
+      value: yup.string().optional(),
+      isPrivate: yup.boolean().optional(),
+    }),
+    gallerySecondaryLocation: yup.object().shape({
       value: yup.string().optional(),
       isPrivate: yup.boolean().optional(),
     }),
@@ -45,8 +49,10 @@ const toolTips = {
     'Your gallery logo will appear on the splash page for your openings and artworks that you have uploaded.',
   galleryBio:
     'A short bio about your gallery will be associated with your openings and artworks.',
-  galleryLocation:
+  galleryPrimaryLocation:
     'The location of your gallery will help guide users to your openings.',
+  gallerySecondaryLocation:
+    'If you have a second address, please include it here. We only support two locations at this time.',
   primaryContact:
     'A primary email address allows users to reach out directly with questions. Typically, info@email.',
 };
@@ -74,10 +80,31 @@ export function EditProfileGallery({
     resolver: yupResolver(galleryDataSchema),
   });
 
+  const [editImage, setEditImage] = React.useState<boolean>(false);
+
   const onSubmit = (data: any) => {
-    console.log(data);
-    setGalleryProfileData(data);
+    const tempData = data;
+    if (
+      !tempData.galleryPrimaryLocation.value &&
+      tempData.gallerySecondaryLocation.value
+    ) {
+      tempData.galleryPrimaryLocation = data.gallerySecondaryLocation;
+      tempData.gallerySecondaryLocation = {};
+    }
+    setGalleryProfileData(tempData);
     setIsEditingProfile(!isEditingProfile);
+  };
+
+  const handleDrop = (acceptedFiles: any) => {
+    const file = acceptedFiles[0];
+    const previewURL = URL.createObjectURL(file);
+
+    setGalleryProfileData({
+      ...galleryProfileData,
+      galleryLogo: {value: previewURL},
+    });
+    // NEED API CALL TO UPLOAD IMAGE TO DATABASE
+    setEditImage(!editImage);
   };
 
   return (
@@ -95,6 +122,27 @@ export function EditProfileGallery({
             startIcon={<ArrowBackIcon sx={{color: PRIMARY_BLUE}} />}>
             Back
           </Button>
+        </Box>
+        <Box sx={profileStyles.edit.imageContainer}>
+          <Box style={profileStyles.edit.defaultImageEdit}>
+            {editImage ? (
+              <DartaImage onDrop={handleDrop} />
+            ) : (
+              <img
+                src={galleryProfileData?.galleryLogo?.value as string}
+                alt="gallery logo"
+                style={profileStyles.edit.defaultImageEdit}
+              />
+            )}
+          </Box>
+          <Box sx={{width: '10vw', alignSelf: 'center'}}>
+            <Button
+              sx={{width: '10vw', alignSelf: 'center'}}
+              onClick={() => setEditImage(!editImage)}
+              variant="contained">
+              {editImage ? 'Back' : 'Edit Image'}
+            </Button>
+          </Box>
         </Box>
         <Box sx={profileStyles.edit.inputTextContainer}>
           <Box key="galleryName" sx={profileStyles.edit.inputText}>
@@ -127,21 +175,44 @@ export function EditProfileGallery({
               allowPrivate={false}
             />
           </Box>
-          <Box key="galleryPrimaryLocation" sx={profileStyles.edit.inputText}>
-            <DartaTextInput
-              fieldName="galleryPrimaryLocation"
-              data={galleryProfileData.galleryPrimaryLocation}
-              register={register}
-              errors={errors}
-              required={false}
-              control={control}
-              helperTextString={errors.galleryAddress?.value?.message}
-              inputAdornmentString="Location"
-              toolTips={toolTips}
-              multiline={false}
-              allowPrivate={true}
-            />
-          </Box>
+          {galleryProfileData.galleryPrimaryLocation && (
+            <Box key="galleryPrimaryLocation" sx={profileStyles.edit.inputText}>
+              <DartaLocationLookup
+                toolTips={toolTips}
+                fieldName="galleryPrimaryLocation"
+                data={galleryProfileData.galleryPrimaryLocation}
+                register={register}
+                errors={errors}
+                required={false}
+                control={control}
+                helperTextString={errors.galleryPrimaryLocation?.value?.message}
+                inputAdornmentString="Location"
+                multiline={false}
+                allowPrivate={true}
+              />
+            </Box>
+          )}
+          {galleryProfileData.gallerySecondaryLocation && (
+            <Box
+              key="gallerySecondaryLocation"
+              sx={profileStyles.edit.inputText}>
+              <DartaLocationLookup
+                toolTips={toolTips}
+                fieldName="gallerySecondaryLocation"
+                data={galleryProfileData.gallerySecondaryLocation}
+                register={register}
+                errors={errors}
+                required={false}
+                control={control}
+                helperTextString={
+                  errors.gallerySecondaryLocation?.value?.message
+                }
+                inputAdornmentString="Alt Location"
+                multiline={false}
+                allowPrivate={true}
+              />
+            </Box>
+          )}
           <Box key="primaryContact" sx={profileStyles.edit.inputText}>
             <DartaTextInput
               fieldName="primaryContact"
