@@ -1,4 +1,4 @@
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../../styles';
+import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../../../styles';
 
 export const profileStyles = {
   container: {

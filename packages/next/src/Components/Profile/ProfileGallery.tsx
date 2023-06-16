@@ -5,9 +5,9 @@ import Head from 'next/head';
 import React from 'react';
 
 import {PRIMARY_BLUE} from '../../../styles';
-import {InquiryTable} from '../Tables/InquiryTable';
-import {GalleryLocationComponent} from './GalleryLocationText';
-import {profileStyles} from './profileStyles';
+// import {InquiryTable} from '../Tables/InquiryTable';
+import {GalleryLocationComponent} from './Components/GalleryLocationText';
+import {profileStyles} from './Components/profileStyles';
 import {IGalleryProfileData} from './types';
 
 export function ProfileGallery({
@@ -40,7 +40,7 @@ export function ProfileGallery({
             <Box sx={profileStyles.profile.imageBox}>
               {galleryProfileData?.galleryLogo ? (
                 <img
-                  src={galleryProfileData?.galleryLogo.value}
+                  src={galleryProfileData?.galleryLogo?.value as string}
                   alt="gallery logo"
                   style={profileStyles.profile.defaultImage}
                 />

@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/img-redundant-alt */
 import {Box, Typography} from '@mui/material';
 import React from 'react';
 

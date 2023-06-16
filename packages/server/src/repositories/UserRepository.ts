@@ -1,11 +1,12 @@
-import * as joi from '@hapi/joi';
 import 'joi-extract-type';
-import { inject } from 'inversify';
-import { Database } from 'arangojs';
 
-import { DocumentRepository, arangoDocumentSchema } from './ArangoRepository';
-import { createSchemaBase, updateSchemaBase } from './util';
-import { container } from '../container';
+import * as joi from '@hapi/joi';
+import {Database} from 'arangojs';
+import {inject} from 'inversify';
+
+import {container} from '../container';
+import {arangoDocumentSchema, DocumentRepository} from './ArangoRepository';
+import {createSchemaBase, updateSchemaBase} from './util';
 
 export const userSchemaBase = joi.object({
   username: joi.string().required(),

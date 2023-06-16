@@ -2,8 +2,8 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 import {Box, Typography} from '@mui/material';
 import React from 'react';
 
-import {welcomeStyles} from './styles';
-import {DartaBenefits} from './types';
+import {welcomeStyles} from '../styles';
+import {DartaBenefits} from '../types';
 
 export function SignUpWelcome({benefitsData}: {benefitsData: DartaBenefits}) {
   return (

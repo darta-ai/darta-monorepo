@@ -17,10 +17,10 @@ import React, {useState} from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {dartaSignUp} from '../../../API/AccountManagement';
-import {AlreadySignedUp} from '../Navigation/Auth';
-import {authStyles} from './styles';
-import {AuthEnum} from './types';
+import {dartaSignUp} from '../../../../API/AccountManagement';
+import {AlreadySignedUp} from '../../Navigation/Auth';
+import {authStyles} from '../styles';
+import {AuthEnum} from '../types';
 
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
