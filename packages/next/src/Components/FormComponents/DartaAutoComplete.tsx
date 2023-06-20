@@ -1,4 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
+
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {
   Box,
@@ -10,96 +11,87 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import React from 'react';
+import Autocomplete from '@mui/material/Autocomplete';
+import * as React from 'react';
 import {Controller} from 'react-hook-form';
 
 import {PRIMARY_DARK_GREY} from '../../../styles';
 import {PrivateFields} from '../Profile/types';
 import {formStyles} from './styles';
 
-type ToolTip = {
-  [key: string]: string;
-};
-
-export function DartaTextInput({
+export function DartaAutoComplete({
   fieldName,
   data,
   register,
   control,
-  errors,
-  helperTextString,
-  required,
-  inputAdornmentString,
   toolTips,
-  multiline,
   allowPrivate,
-  inputAdornmentValue,
+  label,
+  inputOptions,
+  inputAdornmentString,
+  required,
 }: {
   fieldName: string;
   data: PrivateFields | any;
   register: any;
-  errors: any;
   control: any;
-  toolTips: ToolTip | any;
+  toolTips: any;
+  label: string;
   required: boolean;
-  multiline: boolean;
-  helperTextString: string | undefined;
   inputAdornmentString: string;
   allowPrivate: boolean;
-  inputAdornmentValue: string | null;
+  inputOptions: Array<{
+    label: string;
+    value: number;
+    category?: string;
+  }>;
 }) {
   const [isPrivate, setIsPrivate] = React.useState<boolean>(data?.isPrivate!);
+
+  // const [value, setValue] = React.useState<PlaceType | null | undefined>(
+  //   data?.value as any,
+  // );
+  // const [inputValue, setInputValue] = React.useState('');
+
   const innerWidthRef = React.useRef(800);
   React.useEffect(() => {
     innerWidthRef.current = window.innerWidth;
   }, []);
-  const innerWidthMultiple = innerWidthRef.current > 800 ? 2 : 4;
-  const rows = multiline ? innerWidthMultiple : 1;
   return (
     <Box sx={formStyles.inputTextContainer}>
       <Box sx={formStyles.toolTipContainer}>
-        <Box>
-          {innerWidthRef.current > 780 && (
-            <Tooltip
-              title={
-                <Typography sx={{textAlign: 'center'}}>
-                  {toolTips[fieldName]}
-                </Typography>
-              }
-              placement="top">
-              <IconButton>
-                <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Box>
-        <Box>
-          <InputAdornment sx={{overflowX: 'clip'}} position="end">
-            {inputAdornmentString}
-            {required && '*'}
-          </InputAdornment>
-        </Box>
+        {innerWidthRef.current > 780 && (
+          <Tooltip
+            sx={formStyles.toolTipContainer}
+            title={
+              <Typography sx={{textAlign: 'center'}}>
+                {toolTips[fieldName]}
+              </Typography>
+            }
+            placement="top">
+            <IconButton>
+              <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
+            </IconButton>
+          </Tooltip>
+        )}
+        <InputAdornment sx={{overflowX: 'clip'}} position="end">
+          {inputAdornmentString}
+          {required && '*'}
+        </InputAdornment>
       </Box>
       <Box>
-        <TextField
-          id="value"
-          variant="standard"
-          error={!!errors[fieldName]}
-          {...register(`${fieldName}.${'value'}`)}
-          sx={formStyles.formTextField}
-          helperText={errors[fieldName]?.value && helperTextString}
-          fullWidth
-          required={required}
-          multiline={multiline}
-          defaultValue={data?.value!}
-          rows={rows}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                {inputAdornmentValue}
-              </InputAdornment>
-            ),
-          }}
+        <Autocomplete
+          freeSolo
+          id="autocomplete"
+          options={inputOptions}
+          sx={{...formStyles.formTextField, p: 5}}
+          renderInput={params => (
+            <TextField
+              {...(params as any)}
+              label={label}
+              {...register(`${fieldName}.${'value'}`)}
+            />
+          )}
         />
       </Box>
       <InputAdornment sx={{width: '10vw', alignSelf: 'center'}} position="end">

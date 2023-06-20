@@ -12,7 +12,11 @@ const useStyles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'center',
     cursor: 'pointer',
+    height: '100%',
+    padding: '2vh',
+    width: '100%',
     outline: 'none',
     transition: 'border .24s ease-in-out',
     '&:hover': {
@@ -29,18 +33,23 @@ const useStyles = {
   },
 };
 
-export function DartaImageInput({onDrop}: {onDrop: any}) {
+export function DartaImageInput({
+  onDrop,
+  instructions,
+}: {
+  onDrop: any;
+  instructions: string;
+}) {
   return (
     <Dropzone onDrop={onDrop}>
-      {({getRootProps, getInputProps, isDragActive}) => (
+      {({getRootProps, getInputProps}) => (
         <Box {...getRootProps()} sx={useStyles.dropzone}>
           <input {...getInputProps()} />
-          <CloudUploadIcon sx={useStyles.icon} />
-          <Typography variant="body1" component="p" sx={useStyles.text}>
-            {isDragActive
-              ? 'Drop the files here...'
-              : 'Drag and drop files here, or click to select files'}
+          <Typography sx={{textAlign: 'center'}} variant="h6">
+            {instructions}
           </Typography>
+          <CloudUploadIcon sx={useStyles.icon} />
+
           <Typography variant="caption" color="textSecondary">
             Only accept files with extensions: jpg, png, pdf
           </Typography>

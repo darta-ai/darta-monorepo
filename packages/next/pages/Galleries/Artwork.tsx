@@ -1,25 +1,34 @@
 import 'firebase/compat/auth';
 
-import {Box, Container, Typography} from '@mui/material';
-import {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {Container} from '@mui/material';
+import {GetStaticProps} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
+import {Artwork} from '../../globalTypes';
+import {CreateArtwork} from '../../src/Components/Artwork/CreateArtwork';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
-import {getAbout} from '../../ThirdPartyAPIs/firebaseDB';
 
 const aboutStyles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
+    justifyContent: 'center',
     gap: '5%',
-    width: '100%',
     mb: 5,
+    minWidth: '80vw',
     alignSelf: 'center',
     '@media (minWidth: 800px)': {
       paddingTop: '7vh',
     },
+  },
+  uploadImageContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    gap: '5%',
+    alignItems: 'center',
   },
   typographyTitle: {
     fontFamily: 'EB Garamond',
@@ -40,57 +49,107 @@ const aboutStyles = {
     },
     cursor: 'default',
   },
+  button: {
+    color: PRIMARY_BLUE,
+  },
+  inputTextContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  formTextField: {
+    width: '100%',
+  },
 };
 
-type AboutData = {
-  HeadTitle: string;
-  DartaCoreValue: string;
-  Headline: string;
-  WhoWeAre: string;
-  DartaBelief1?: string;
-  DartaBelief2?: string;
-  DartaBelief3?: string;
-  DartaBelief4?: string;
+const newArtwork: Artwork = {
+  artworkTitle: {
+    value: '',
+  },
+  artistName: {
+    value: '',
+  },
+  artworkImage: {
+    value: '',
+  },
+  artworkImagesArray: [],
+  medium: {
+    value: '',
+  },
+  materials: {
+    value: '',
+  },
+  price: {
+    value: '',
+    isPrivate: false,
+  },
+  currency: {
+    value: '',
+  },
+  canInquire: {
+    value: '',
+    isPrivate: false,
+  },
+  artworkDescription: {
+    value: '',
+  },
+  slug: '',
+  sold: {
+    value: '',
+    isPrivate: false,
+  },
+  artworkDimensions: {
+    height: {
+      value: '',
+    },
+    text: {
+      value: '',
+    },
+    width: {
+      value: '',
+    },
+    depth: {
+      value: '',
+    },
+  },
+  artworkCreatedYear: {
+    value: '',
+  },
 };
 
-// About component
-export default function GalleryArtworks({
-  data,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function GalleryProfile() {
+  const [createNewArtwork, setCreateNewArtwork] =
+    React.useState<Artwork>(newArtwork);
   return (
     <>
       <Head>
-        <title>{data.HeadTitle}</title>
+        <title>Darta | Gallery</title>
         <meta
           name="description"
-          content="Learn about Darta, your digital art advisor."
+          content="Your profile page for your gallery on Darta."
         />
       </Head>
 
       <SideNavigationWrapper>
         <Container maxWidth="md" sx={aboutStyles.container}>
-          <Box>
-            <Typography variant="h2" sx={aboutStyles.typographyTitle}>
-              Artworks
-            </Typography>
-          </Box>
+          <CreateArtwork
+            newArtwork={newArtwork}
+            setCreateNewArtwork={setCreateNewArtwork}
+          />
         </Container>
       </SideNavigationWrapper>
     </>
   );
 }
 
-type AboutDataFB = {
-  data: AboutData;
-};
-
 export const getStaticProps: GetStaticProps<{
   data: any;
 }> = async () => {
-  try {
-    const aboutData = (await getAbout()) as AboutDataFB;
-    return {props: {data: aboutData}};
-  } catch (e) {
-    return {props: {data: {data: null}}};
-  }
+  return {props: {data: {data: {}}}};
+  // try {
+  //   // const aboutData = (await getGallery()) as null;
+  // } catch (e) {
+  //   return {props: {data: {data: {}}}};
+  // }
 };

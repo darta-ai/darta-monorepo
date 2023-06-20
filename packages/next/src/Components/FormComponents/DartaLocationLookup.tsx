@@ -152,26 +152,31 @@ export function DartaLocationLookup({
       active = false;
     };
   }, [value, inputValue, fetch]);
-  const {innerWidth} = window;
+  const innerWidthRef = React.useRef(800);
+  React.useEffect(() => {
+    innerWidthRef.current = window.innerWidth;
+  }, []);
   return (
     <Box sx={formStyles.inputTextContainer}>
-      {innerWidth > 780 && (
-        <Tooltip
-          sx={formStyles.toolTipContainer}
-          title={
-            <Typography sx={{textAlign: 'center'}}>
-              {toolTips[fieldName]}
-            </Typography>
-          }
-          placement="top">
-          <IconButton>
-            <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
-          </IconButton>
-        </Tooltip>
-      )}
-      <InputAdornment sx={{width: '10vw', overflowX: 'clip'}} position="start">
-        {inputAdornmentString}
-      </InputAdornment>
+      <Box sx={formStyles.toolTipContainer}>
+        {innerWidthRef.current > 780 && (
+          <Tooltip
+            sx={formStyles.toolTipContainer}
+            title={
+              <Typography sx={{textAlign: 'center'}}>
+                {toolTips[fieldName]}
+              </Typography>
+            }
+            placement="top">
+            <IconButton>
+              <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
+            </IconButton>
+          </Tooltip>
+        )}
+        <InputAdornment sx={{overflowX: 'clip'}} position="end">
+          {inputAdornmentString}
+        </InputAdornment>
+      </Box>
       <Autocomplete
         id="value"
         sx={formStyles.formTextField}
@@ -250,7 +255,7 @@ export function DartaLocationLookup({
           );
         }}
       />
-      <InputAdornment sx={{width: '10vw'}} position="end">
+      <InputAdornment sx={{width: '10vw', alignSelf: 'center'}} position="end">
         {allowPrivate && (
           <Controller
             control={control}
@@ -263,19 +268,27 @@ export function DartaLocationLookup({
                 <FormControlLabel
                   labelPlacement="bottom"
                   label={
-                    innerWidth > 800 ? (
-                      <Box sx={formStyles.toolTipContainer}>
+                    innerWidthRef.current > 780 ? (
+                      <Box sx={formStyles.makePrivateContainer}>
                         <Typography sx={formStyles.toolTip}>
                           {isPrivate ? 'Private' : 'Public'}
                         </Typography>
                         <Tooltip
                           title={
-                            <Typography
-                              sx={{textAlign: 'center', fontSize: 15}}>
-                              {isPrivate
-                                ? 'Private information is only visible to you and your team.'
-                                : 'Public information is available to any user.'}
-                            </Typography>
+                            <>
+                              <Typography
+                                sx={{textAlign: 'center', fontSize: 15}}>
+                                {isPrivate
+                                  ? 'Private information is only visible to you and your team.'
+                                  : 'Public information is available to any user.'}
+                              </Typography>
+                              <IconButton>
+                                <HelpOutlineIcon
+                                  fontSize="small"
+                                  sx={formStyles.helpIconTiny}
+                                />
+                              </IconButton>
+                            </>
                           }
                           placement="bottom">
                           <IconButton>
@@ -287,7 +300,7 @@ export function DartaLocationLookup({
                         </Tooltip>
                       </Box>
                     ) : (
-                      <Box sx={formStyles.toolTipContainer}>
+                      <Box sx={formStyles.makePrivateContainer}>
                         <Typography sx={formStyles.toolTip}>
                           {isPrivate ? 'Private' : 'Public'}
                         </Typography>

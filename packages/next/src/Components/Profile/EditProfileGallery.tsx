@@ -1,5 +1,3 @@
-import 'firebase/compat/auth';
-
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {Box, Button} from '@mui/material';
@@ -33,10 +31,6 @@ const galleryDataSchema = yup
         ),
     }),
     galleryPrimaryLocation: yup.object().shape({
-      value: yup.string().optional(),
-      isPrivate: yup.boolean().optional(),
-    }),
-    gallerySecondaryLocation: yup.object().shape({
       value: yup.string().optional(),
       isPrivate: yup.boolean().optional(),
     }),
@@ -130,7 +124,10 @@ export function EditProfileGallery({
         <Box sx={profileStyles.edit.imageContainer}>
           <Box style={profileStyles.edit.defaultImageEdit}>
             {editImage ? (
-              <DartaImageInput onDrop={handleDrop} />
+              <DartaImageInput
+                onDrop={handleDrop}
+                instructions="Drag and drop your logo here or click to select a file to upload."
+              />
             ) : (
               <img
                 src={galleryProfileData?.galleryLogo?.value as string}
@@ -162,6 +159,7 @@ export function EditProfileGallery({
               toolTips={toolTips}
               multiline={false}
               allowPrivate={false}
+              inputAdornmentValue={null}
             />
           </Box>
           <Box key="galleryBio" sx={profileStyles.edit.inputText}>
@@ -177,6 +175,7 @@ export function EditProfileGallery({
               toolTips={toolTips}
               multiline={true}
               allowPrivate={false}
+              inputAdornmentValue={null}
             />
           </Box>
           {galleryProfileData.galleryPrimaryLocation && (
@@ -230,6 +229,7 @@ export function EditProfileGallery({
               toolTips={toolTips}
               multiline={false}
               allowPrivate={true}
+              inputAdornmentValue={null}
             />
           </Box>
           <Box sx={profileStyles.edit.saveButton}>

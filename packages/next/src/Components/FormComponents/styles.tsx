@@ -2,9 +2,14 @@ import {PRIMARY_BLUE, PRIMARY_GREY} from '../../../styles';
 
 export const formStyles = {
   inputTextContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
+    display: 'grid',
+    width: '100%',
+    gridTemplateColumns: '1.5fr 8fr 0.5fr',
+  },
+  toolTipContainer: {
+    display: 'grid',
+    placeItems: 'center',
+    gridTemplateColumns: '1fr 1fr',
   },
   helpIcon: {
     color: PRIMARY_GREY,
@@ -14,7 +19,7 @@ export const formStyles = {
     },
   },
   formTextField: {
-    width: '50vw',
+    width: '100%',
     margin: 2,
     fontSize: '2rem',
   },
@@ -25,11 +30,11 @@ export const formStyles = {
       height: '15px',
     },
   },
-  toolTipContainer: {
+  makePrivateContainer: {
     display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'column',
+    placeItems: 'center',
+    gridTemplateColumns: '1fr 1fr',
   },
   makePrivate: {
     color: PRIMARY_BLUE,
