@@ -4,10 +4,11 @@ export const createArtworkStyles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignContent: 'flex-start',
-    mt: '10vh',
+    m: '1vh',
+    border: '1px solid #eaeaea',
     alignSelf: 'center',
+    borderRadius: '0.5vw',
+    alignContent: 'center',
   },
   backButton: {
     color: PRIMARY_BLUE,
@@ -43,7 +44,7 @@ export const createArtworkStyles = {
   defaultImage: {
     marginTop: '1em',
     width: '100%',
-    height: '39vh',
+    maxHeight: '39vh',
     alignSelf: 'center',
     borderWidth: 30,
   },

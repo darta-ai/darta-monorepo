@@ -53,7 +53,7 @@ export function DartaTextInput({
   React.useEffect(() => {
     innerWidthRef.current = window.innerWidth;
   }, []);
-  const innerWidthMultiple = innerWidthRef.current > 800 ? 2 : 4;
+  const innerWidthMultiple = innerWidthRef.current > 800 ? 3 : 4;
   const rows = multiline ? innerWidthMultiple : 1;
   return (
     <Box sx={formStyles.inputTextContainer}>

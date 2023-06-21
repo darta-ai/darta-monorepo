@@ -54,16 +54,6 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
   {
-    id: 'artist',
-    date: false,
-    label: 'Artwork',
-  },
-  {
-    id: 'artwork',
-    date: false,
-    label: 'Artist',
-  },
-  {
     id: 'user',
     date: false,
     label: 'Inquirer Name',
@@ -83,10 +73,6 @@ const headCells: readonly HeadCell[] = [
 const galleryInquiriesDummyData: InputArtworkData = {
   '0': {
     id: '1',
-    artist: 'Clair Woods',
-    artwork: 'Raymond Pencil',
-    workURL:
-      'https://d32dm0rphc51dk.cloudfront.net/T4ufJz1YHzSW1h28wndn1Q/larger.jpg',
     user: 'Hannah Chinn',
     userContactEmail: 'JohnDoe@gmail.com',
     status: 'responded',
@@ -213,7 +199,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const {order, orderBy, onRequestSort} = props;
   const createSortHandler =
     (property: keyof ArtworkData) => (event: React.MouseEvent<unknown>) => {
-      console.log({property, event});
       onRequestSort(event, property);
     };
 
@@ -235,27 +220,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         ))}
       </TableRow>
     </TableHead>
-  );
-}
-
-function EnhancedTableToolbar() {
-  return (
-    <Toolbar
-      sx={{
-        pl: {sm: 2},
-        pr: {xs: 1, sm: 1},
-        ...(true && {
-          bgcolor: theme =>
-            alpha(
-              theme.palette.primary.main,
-              theme.palette.action.activatedOpacity,
-            ),
-        }),
-      }}>
-      <Typography variant="h6" id="tableTitle">
-        Inquiries
-      </Typography>
-    </Toolbar>
   );
 }
 
@@ -329,7 +293,6 @@ export function InquiryTable() {
   return (
     <Box sx={{width: '100%'}}>
       <Paper sx={{width: '100%', mb: 2}}>
-        <EnhancedTableToolbar />
         <TableContainer>
           <Table
             sx={{maxWidth: '100%', alignSelf: 'center'}}
@@ -341,8 +304,6 @@ export function InquiryTable() {
             />
             <TableBody>
               {visibleRows.map((row, index) => {
-                const labelId = `enhanced-table-checkbox-${index}`;
-
                 return (
                   <TableRow
                     hover
@@ -351,17 +312,6 @@ export function InquiryTable() {
                     key={row.id}
                     sx={{cursor: 'pointer'}}>
                     <TableCell padding="checkbox" />
-                    <TableCell
-                      align="left"
-                      id={labelId}
-                      sx={{maxWidth: '10vh'}}
-                      scope="row"
-                      padding="none">
-                      <Typography fontSize="medium">{row.artwork}</Typography>
-                    </TableCell>
-                    <TableCell sx={{maxWidth: '10vh'}} align="left">
-                      <Typography fontSize="medium">{row.artist}</Typography>
-                    </TableCell>
                     <TableCell sx={{maxWidth: '10vh'}} align="left">
                       <Typography fontSize="medium">
                         {row.user}{' '}

@@ -122,9 +122,6 @@ export type DataT = {
     slug: string;
     id: string;
   };
-  geneName: string[];
-  genes: Gene[];
-  iconicity: number;
   labels: string[];
   medium: string;
   price: string;

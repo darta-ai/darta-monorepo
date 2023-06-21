@@ -38,34 +38,46 @@ const createArtworkSchema = yup
     artworkDescription: yup.object().shape({
       value: yup.string().optional(),
     }),
-    price: yup.object().shape({
+    artworkPrice: yup.object().shape({
       value: yup.string().optional(),
       isPrivate: yup.boolean().optional(),
     }),
     canInquire: yup.object().shape({
       value: yup.string().required('An artwork image is required'),
     }),
+    artworkCreatedYear: yup.object().shape({
+      value: yup
+        .string()
+        .required('The year or years created is required')
+        .min(4, 'Must be exactly 4 digits')
+        .max(4, 'Must be exactly 4 digits'),
+    }),
+    artworkMedium: yup.object().shape({
+      value: yup.string().required('The medium of the artwork is required'),
+    }),
+    artworkDimensionsWidth: yup.object().shape({
+      value: yup
+        .string()
+        .required(
+          'An artwork width is required to display the artwork on the mobile app',
+        ),
+    }),
+    artworkDimensionsHeight: yup.object().shape({
+      value: yup
+        .string()
+        .required(
+          'An artwork height is required to display the artwork on the mobile app',
+        ),
+    }),
     artworkDimensions: yup.object().shape({
       height: yup.object().shape({
-        value: yup
-          .string()
-          .required(
-            'An artwork width is required to display the artwork on the mobile app',
-          ),
+        value: yup.string().optional(),
       }),
       width: yup.object().shape({
-        value: yup
-          .string()
-          .required(
-            'An artwork width is required to display the artwork on the mobile app',
-          ),
+        value: yup.string().optional(),
       }),
       depth: yup.object().shape({
-        value: yup
-          .string()
-          .required(
-            'An artwork width is required to display the artwork on the mobile app',
-          ),
+        value: yup.string().optional(),
       }),
     }),
   })
@@ -86,9 +98,9 @@ const toolTips = {
 };
 
 const artworkDimensionsToolTip = {
-  'artworkDimensions.height':
+  artworkDimensionsHeight:
     'Including accurate height is imperative to accurate display of this artwork on the app.',
-  'artworkDimensions.width':
+  artworkDimensionsWidth:
     'Including accurate width is imperative to accurate display of this artwork on the app.',
   'artworkDimensions.depth':
     'Depth of the artwork is generally reserved for sculptures.',
@@ -96,10 +108,12 @@ const artworkDimensionsToolTip = {
 
 export function CreateArtwork({
   newArtwork,
-  showCreateArt,
+  cancelAction,
+  saveArtwork,
 }: {
   newArtwork: Artwork;
-  setCreateNewArtwork: React.Dispatch<React.SetStateAction<boolean>>;
+  cancelAction: (arg0: boolean) => void;
+  saveArtwork: (arg0: Artwork) => void;
 }) {
   const [editImage, setEditImage] = React.useState<boolean>(true);
 
@@ -107,7 +121,7 @@ export function CreateArtwork({
     register,
     handleSubmit,
     control,
-    getValues,
+    setValue,
     formState: {errors},
   } = useForm({
     defaultValues: {
@@ -117,27 +131,62 @@ export function CreateArtwork({
   });
 
   const onSubmit = (data: any) => {
-    console.log('!!!DATA!!!');
-    console.log(data);
-  };
+    console.log('triggered');
+    const artist_name = data.artistName.value
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replaceAll('.', '');
+    const artwork_title = data.artworkTitle.value
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replaceAll('.', '');
+    const slug = `${artist_name}-${artwork_title}`;
+    setValue('slug.value', slug);
+    setValue(
+      'artworkDimensions.height.value',
+      data.artworkDimensionsHeight.value.toString(),
+    );
+    setValue(
+      'artworkDimensions.width.value',
+      data.artworkDimensionsWidth.value.toString(),
+    );
+    if (data.artworkDimensions.depth.value) {
+      setValue(
+        'artworkDimensions.text.value',
+        `${data.artworkDimensionsWidth.value}${data.artworkDimensions.unit.value} x 
+        ${data.artworkDimensionsHeight.value}${data.artworkDimensions.unit.value} x 
+        ${data.artworkDimensions.depth.value}${data.artworkDimensions.unit.value}`,
+      );
+    } else {
+      setValue(
+        'artworkDimensions.text.value',
+        `${data.artworkDimensionsWidth.value}${data.artworkDimensions.unit.value} x 
+        ${data.artworkDimensionsHeight.value}${data.artworkDimensions.unit.value}`,
+      );
+    }
 
-  const getVals = async () => {
-    const vals = getValues();
-    console.log(vals);
+    saveArtwork(data);
   };
 
   const [isInchesMeasurement, setIsInchesMeasurement] = React.useState(false);
-  const [tempImage, setTempImage] = React.useState<string | null>(null);
-  const [displayCurrency, setDisplayCurrency] = React.useState<string>('USD');
+  const [tempImage, setTempImage] = React.useState<string | null>(
+    newArtwork.artworkImage.value || null,
+  );
+  const [displayCurrency, setDisplayCurrency] = React.useState<string>('$');
 
   const handleMeasurementChange = (event: any) => {
     setIsInchesMeasurement(event.target.checked);
+    setValue(
+      'artworkDimensions.unit.value',
+      event.target.checked ? 'cm' : 'in',
+    );
   };
 
   const handleDrop = (acceptedFiles: any) => {
     const file = acceptedFiles[0];
     const previewURL = URL.createObjectURL(file);
     setTempImage(previewURL);
+    setValue('artworkImage.value', previewURL);
 
     // NEED API CALL TO UPLOAD IMAGE TO DATABASE
     setEditImage(!editImage);
@@ -154,13 +203,13 @@ export function CreateArtwork({
           <Button
             variant="outlined"
             sx={{color: PRIMARY_BLUE}}
-            onClick={() => getVals()}
+            onClick={() => cancelAction(false)}
             startIcon={<ArrowBackIcon sx={{color: PRIMARY_BLUE}} />}>
             Cancel
           </Button>
         </Box>
         <Box sx={createArtworkStyles.imageContainer}>
-          {editImage || !tempImage ? (
+          {!tempImage || editImage ? (
             <Box style={createArtworkStyles.defaultImageEdit}>
               <DartaImageInput
                 onDrop={handleDrop}
@@ -173,6 +222,13 @@ export function CreateArtwork({
               alt="artwork"
               style={createArtworkStyles.defaultImage}
             />
+          )}
+          {errors.artworkImage && (
+            <Typography
+              variant="body2"
+              sx={{color: 'red', alignSelf: 'center'}}>
+              {errors.artworkImage.value?.message}
+            </Typography>
           )}
 
           <Box sx={{width: '10vw', alignSelf: 'center'}}>
@@ -254,7 +310,7 @@ export function CreateArtwork({
             <Box>
               <DartaRadioButtonsGroup
                 toolTips={toolTips}
-                fieldName="currency"
+                fieldName="artworkCurrency"
                 inputAdornmentString=""
                 control={control}
                 defaultValue="USD"
@@ -266,13 +322,13 @@ export function CreateArtwork({
           <Box sx={createArtworkStyles.multiLineContainer}>
             <Box key="price" sx={createArtworkStyles.inputText}>
               <DartaTextInput
-                fieldName="price"
-                data={newArtwork.price?.value}
+                fieldName="artworkPrice"
+                data={newArtwork.artworkPrice?.value}
                 register={register}
                 errors={errors}
                 required={false}
                 control={control}
-                helperTextString={errors.price?.value?.message}
+                helperTextString={errors.artworkPrice?.value?.message}
                 inputAdornmentString="Price"
                 toolTips={toolTips}
                 multiline={false}
@@ -304,9 +360,10 @@ export function CreateArtwork({
           <Box sx={createArtworkStyles.multiLineContainer}>
             <Box key="medium" sx={createArtworkStyles.inputText}>
               <DartaAutoComplete
-                fieldName="medium"
-                data={newArtwork.medium}
+                fieldName="artworkMedium"
+                data={newArtwork.artworkMedium}
                 register={register}
+                errors={errors}
                 control={control}
                 required={true}
                 toolTips={toolTips}
@@ -361,11 +418,11 @@ export function CreateArtwork({
               key="artworkDimensionsHeight"
               sx={createArtworkStyles.inputText}>
               <DartaTextInput
-                fieldName="artworkDimensions.height"
-                data={newArtwork.artworkDimensions?.height?.value}
+                fieldName="artworkDimensionsHeight"
+                data={newArtwork.artworkDimensions?.height}
                 register={register}
                 errors={errors}
-                required={false}
+                required={true}
                 control={control}
                 helperTextString={
                   errors.artworkDimensions?.height?.value?.message
@@ -377,13 +434,15 @@ export function CreateArtwork({
                 inputAdornmentValue={isInchesMeasurement ? 'cm' : 'in'}
               />
             </Box>
-            <Box key="artworkDimensionWidth" sx={createArtworkStyles.inputText}>
+            <Box
+              key="artworkDimensionsWidth"
+              sx={createArtworkStyles.inputText}>
               <DartaTextInput
-                fieldName="artworkDimensions.width"
-                data={newArtwork.artworkDimensions?.width?.value}
+                fieldName="artworkDimensionsWidth"
+                data={newArtwork.artworkDimensions?.width}
                 register={register}
                 errors={errors}
-                required={false}
+                required={true}
                 control={control}
                 helperTextString={
                   errors.artworkDimensions?.width?.value?.message
@@ -398,7 +457,7 @@ export function CreateArtwork({
             <Box key="artworkDimensionDepth" sx={createArtworkStyles.inputText}>
               <DartaTextInput
                 fieldName="artworkDimensions.depth"
-                data={newArtwork.artworkDimensions?.width?.value}
+                data={newArtwork.artworkDimensions?.depth}
                 register={register}
                 errors={errors}
                 required={false}

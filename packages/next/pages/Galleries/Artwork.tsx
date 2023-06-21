@@ -1,22 +1,27 @@
 import 'firebase/compat/auth';
 
-import {Container} from '@mui/material';
+import {Box, Button, Container} from '@mui/material';
+import _ from 'lodash';
 import {GetStaticProps} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
 import {Artwork} from '../../globalTypes';
-import {CreateArtwork} from '../../src/Components/Artwork/CreateArtwork';
+import {ArtworkCard} from '../../src/Components/Artwork/index';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
+import {artwork1, artwork2} from '../../src/dummyData';
+import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../styles';
+import {AuthContext} from '../_app';
 
 const aboutStyles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
-    gap: '5%',
-    mb: 5,
+    alignContent: 'flex-start',
+    justifyContent: 'flex-start',
+    gap: '2vh',
+    my: 10,
+    minHeight: '100vh',
     minWidth: '80vw',
     alignSelf: 'center',
     '@media (minWidth: 800px)': {
@@ -63,7 +68,7 @@ const aboutStyles = {
   },
 };
 
-const newArtwork: Artwork = {
+const newArtworkShell: Artwork = {
   artworkTitle: {
     value: '',
   },
@@ -74,30 +79,24 @@ const newArtwork: Artwork = {
     value: '',
   },
   artworkImagesArray: [],
-  medium: {
+  artworkMedium: {
     value: '',
   },
-  materials: {
-    value: '',
-  },
-  price: {
+  artworkPrice: {
     value: '',
     isPrivate: false,
   },
-  currency: {
-    value: '',
+  artworkCurrency: {
+    value: 'USD',
   },
   canInquire: {
     value: '',
-    isPrivate: false,
   },
   artworkDescription: {
     value: '',
   },
-  slug: '',
-  sold: {
+  slug: {
     value: '',
-    isPrivate: false,
   },
   artworkDimensions: {
     height: {
@@ -112,6 +111,9 @@ const newArtwork: Artwork = {
     depth: {
       value: '',
     },
+    unit: {
+      value: 'in',
+    },
   },
   artworkCreatedYear: {
     value: '',
@@ -119,8 +121,24 @@ const newArtwork: Artwork = {
 };
 
 export default function GalleryProfile() {
-  const [createNewArtwork, setCreateNewArtwork] =
-    React.useState<Artwork>(newArtwork);
+  const [artworks, setArtworks] = React.useState<{[key: string]: Artwork}>({
+    ...artwork2,
+    ...artwork1,
+  });
+  const {user} = React.useContext(AuthContext);
+
+  const addNewArtwork = () => {
+    const newArtwork: Artwork = _.cloneDeep(newArtworkShell);
+    newArtwork.artworkId = crypto.randomUUID();
+    setArtworks({...artworks, [newArtwork.artworkId]: newArtwork});
+  };
+
+  const saveArtwork = (artworkId: string, updatedArtwork: Artwork) => {
+    const newArtwork: {[key: string]: Artwork} = _.cloneDeep(artworks);
+    newArtwork[artworkId] = updatedArtwork;
+    setArtworks({...newArtwork});
+  };
+
   return (
     <>
       <Head>
@@ -133,10 +151,24 @@ export default function GalleryProfile() {
 
       <SideNavigationWrapper>
         <Container maxWidth="md" sx={aboutStyles.container}>
-          <CreateArtwork
-            newArtwork={newArtwork}
-            setCreateNewArtwork={setCreateNewArtwork}
-          />
+          <Button
+            variant="contained"
+            data-testid="save-button"
+            type="submit"
+            onClick={() => addNewArtwork()}
+            sx={{
+              backgroundColor: PRIMARY_BLUE,
+              color: PRIMARY_MILK,
+              width: '50%',
+              alignSelf: 'center',
+            }}>
+            Create Artwork
+          </Button>
+          {Object.values(artworks).map(artwork => (
+            <Box>
+              <ArtworkCard artwork={artwork} saveArtwork={saveArtwork} />
+            </Box>
+          ))}
         </Container>
       </SideNavigationWrapper>
     </>
