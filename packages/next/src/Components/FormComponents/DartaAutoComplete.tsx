@@ -30,6 +30,7 @@ export function DartaAutoComplete({
   inputOptions,
   inputAdornmentString,
   required,
+  errors,
 }: {
   fieldName: string;
   data: PrivateFields | any;
@@ -40,6 +41,7 @@ export function DartaAutoComplete({
   required: boolean;
   inputAdornmentString: string;
   allowPrivate: boolean;
+  errors: any;
   inputOptions: Array<{
     label: string;
     value: number;
@@ -81,15 +83,16 @@ export function DartaAutoComplete({
       </Box>
       <Box>
         <Autocomplete
-          freeSolo
           id="autocomplete"
           options={inputOptions}
-          sx={{...formStyles.formTextField, p: 5}}
+          sx={{...formStyles.formTextField}}
+          defaultValue={data?.value!}
           renderInput={params => (
             <TextField
               {...(params as any)}
               label={label}
               {...register(`${fieldName}.${'value'}`)}
+              error={!!errors[fieldName]}
             />
           )}
         />

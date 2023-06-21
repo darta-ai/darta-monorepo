@@ -12,21 +12,21 @@ type Dimensions = {
   text: PublicFields;
   width: PublicFields;
   depth: PublicFields;
+  unit: {value: 'in' | 'cm'};
 };
 
 export type Artwork = {
   artworkImage: PublicFields;
-  artworkImagesArray?: PublicFields[];
+  artworkId?: string;
+  artworkImagesArray?: PublicFields[] | any[];
   artworkTitle: PublicFields;
   artistName: PublicFields;
   artworkDescription: PublicFields;
-  currency: PublicFields;
-  price: PrivateFields;
-  canInquire: PrivateFields;
-  sold: PrivateFields;
-  medium: PublicFields;
-  materials: PublicFields;
+  artworkCurrency: PublicFields;
+  artworkPrice: PrivateFields;
+  canInquire: PublicFields;
+  artworkMedium: PublicFields;
   artworkDimensions: Dimensions;
-  slug?: string;
+  slug?: PublicFields;
   artworkCreatedYear: PublicFields;
 };

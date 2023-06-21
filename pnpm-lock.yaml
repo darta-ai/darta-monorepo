@@ -239,6 +239,9 @@ importers:
       autosuggest-highlight:
         specifier: ^3.3.4
         version: 3.3.4
+      clsx:
+        specifier: ^1.2.1
+        version: 1.2.1
       firebase:
         specifier: ^9.22.1
         version: 9.22.1
@@ -251,6 +254,9 @@ importers:
       install:
         specifier: ^0.13.0
         version: 0.13.0
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       next:
         specifier: ^13.4.4
         version: 13.4.4(react-dom@18.2.0)(react@18.2.0)
