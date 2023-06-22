@@ -9,9 +9,14 @@ import React from 'react';
 import {Artwork} from '../../globalTypes';
 import {ArtworkCard} from '../../src/Components/Artwork/index';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
-import {artwork1, artwork2} from '../../src/dummyData';
+import {
+  artwork1,
+  artwork2,
+  artwork3,
+  galleryInquiriesDummyData,
+  InquiryArtworkData,
+} from '../../src/dummyData';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../styles';
-import {AuthContext} from '../_app';
 
 const aboutStyles = {
   container: {
@@ -72,6 +77,7 @@ const newArtworkShell: Artwork = {
   artworkTitle: {
     value: '',
   },
+  published: false,
   artistName: {
     value: '',
   },
@@ -120,15 +126,35 @@ const newArtworkShell: Artwork = {
   },
 };
 
+// need a function that gets all artworks
+// need a function that gets all inquiries for art
+
 export default function GalleryProfile() {
   const [artworks, setArtworks] = React.useState<{[key: string]: Artwork}>({
     ...artwork2,
     ...artwork1,
+    ...artwork3,
   });
-  const {user} = React.useContext(AuthContext);
+
+  const [inquiries, setInquiries] = React.useState<{
+    [key: string]: InquiryArtworkData[];
+  } | null>(null);
+
+  React.useEffect(() => {
+    const inquiriesArray = Object.values(galleryInquiriesDummyData);
+    const sortedInquiries: {[key: string]: InquiryArtworkData[]} = {};
+    inquiriesArray.forEach((inquiry: InquiryArtworkData) => {
+      if (sortedInquiries[inquiry.artworkId!]) {
+        sortedInquiries[inquiry.artworkId!].push(inquiry);
+      } else {
+        sortedInquiries[inquiry.artworkId!] = [inquiry];
+      }
+    });
+    setInquiries(sortedInquiries);
+  }, []);
 
   const addNewArtwork = () => {
-    const newArtwork: Artwork = _.cloneDeep(newArtworkShell);
+    const newArtwork: Artwork = _.deepClone(newArtworkShell);
     newArtwork.artworkId = crypto.randomUUID();
     setArtworks({...artworks, [newArtwork.artworkId]: newArtwork});
   };
@@ -164,11 +190,16 @@ export default function GalleryProfile() {
             }}>
             Create Artwork
           </Button>
-          {Object.values(artworks).map(artwork => (
-            <Box>
-              <ArtworkCard artwork={artwork} saveArtwork={saveArtwork} />
-            </Box>
-          ))}
+          {inquiries &&
+            Object.values(artworks).map(artwork => (
+              <Box>
+                <ArtworkCard
+                  artwork={artwork}
+                  saveArtwork={saveArtwork}
+                  inquiries={inquiries[artwork.artworkId as string]}
+                />
+              </Box>
+            ))}
         </Container>
       </SideNavigationWrapper>
     </>

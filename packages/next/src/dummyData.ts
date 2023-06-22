@@ -47,9 +47,10 @@ export type ArtworkObject = {[key: string]: Artwork};
 
 export const artwork1: ArtworkObject = {
   '5f92586d-b127-497e-ae96-20dc8c93ae1b': {
-    artworkId: '015241214',
+    published: false,
+    artworkId: '5f92586d-b127-497e-ae96-20dc8c93ae1b',
     artistName: {
-      value: 'Natalie Raskin',
+      value: 'NATALIE RASKIN',
     },
     artworkCreatedYear: {
       value: '2022',
@@ -98,8 +99,9 @@ export const artwork1: ArtworkObject = {
 
 export const artwork2: ArtworkObject = {
   'baac18b5-b40d-42fa-b2dc-a996758df0cd': {
+    published: true,
     artistName: {
-      value: 'Sabrina Ring',
+      value: 'SABRINA RING',
     },
     artworkCreatedYear: {value: '2024'},
     artworkCurrency: {value: 'USD'},
@@ -110,13 +112,14 @@ export const artwork2: ArtworkObject = {
     artworkDimensions: {
       depth: {value: ''},
       height: {value: '60'},
-      text: {value: '60in x \n        60in'},
+      text: {value: '60in x 60in'},
       unit: {value: 'in'},
       width: {value: '60'},
     },
     artworkId: 'baac18b5-b40d-42fa-b2dc-a996758df0cd',
     artworkImage: {
-      value: 'blob:http://localhost:3000/1cc62b32-cca2-49fc-a0ab-07476e0d307e',
+      value:
+        'https://dim.mcusercontent.com/cs/3fe7b9b4437e2d24806c132f1/images/8069de0c-8d29-c153-62d3-9a50ce1ddebf.jpg?w=294&dpr=2',
     },
     artworkImagesArray: [],
     artworkMedium: {value: 'Oil on canvas on panel'},
@@ -124,5 +127,180 @@ export const artwork2: ArtworkObject = {
     artworkTitle: {value: 'My Beautiful BFF'},
     canInquire: {value: 'Yes'},
     slug: {value: 'sabrina-ring-my-beautiful-bff'},
+  },
+};
+
+export const artwork3: ArtworkObject = {
+  'a7b6a571-b961-4b27-883b-ad1a91fc7ad3': {
+    artistName: {value: 'MARY GRIGORIADIS'},
+    artworkCreatedYear: {value: '2024'},
+    artworkCurrency: {value: 'USD'},
+    artworkDescription: {
+      value:
+        'Grigoriadis devised her methodical approach during…hese ideas to her own experiments on\nthe canvas. ',
+    },
+    artworkDimensions: {
+      height: {value: '66'},
+      text: {value: '66in x 66in'},
+      depth: {value: null},
+      width: {value: '66'},
+      unit: {value: 'in'},
+    },
+    artworkMedium: {value: 'Oil and acrylic on canvas'},
+    artworkPrice: {value: '5500', isPrivate: false},
+    artworkTitle: {value: 'Isfahan'},
+    canInquire: {value: 'Yes'},
+    artworkId: 'a7b6a571-b961-4b27-883b-ad1a91fc7ad3',
+    published: false,
+    slug: {value: 'mary-grigoriadis-isfahan'},
+    artworkImage: {
+      value:
+        'https://img.artlogic.net/w_1600,h_864,c_limit/exhibit-e/599f12405a4091c6048b4568/f2eee0b92bbbe41f28861a5b20f01436.jpeg',
+    },
+    artworkImagesArray: [],
+  },
+};
+
+type GalleryInquiryStats =
+  | 'inquired'
+  | 'responded'
+  | 'negotiation'
+  | 'accepted'
+  | 'purchase_agreement_sent'
+  | 'payment_received'
+  | 'declined'
+  | 'archived';
+
+export type InquiryArtworkData = {
+  id: string;
+  user: string;
+  userContactEmail?: string;
+  status: GalleryInquiryStats;
+  artworkId: string;
+  inquiredAt: string;
+  updatedAt: string;
+};
+
+type InputArtworkDataObject = {
+  [key: string]: InquiryArtworkData;
+};
+
+export const galleryInquiriesDummyData: InputArtworkDataObject = {
+  '0': {
+    id: '1',
+    user: 'Hannah Chinn',
+    userContactEmail: 'JohnDoe@gmail.com',
+    status: 'responded',
+    artworkId: 'baac18b5-b40d-42fa-b2dc-a996758df0cd',
+    inquiredAt: '2021-12-10',
+    updatedAt: '2021-11-10',
+  },
+  '1': {
+    id: '2',
+    user: 'John Doe',
+    userContactEmail: 'JamesDoe@gmail.com',
+    status: 'inquired',
+    artworkId: 'baac18b5-b40d-42fa-b2dc-a996758df0cd',
+    inquiredAt: '2021-10-10',
+    updatedAt: '2021-10-10',
+  },
+  '2': {
+    id: '3',
+    user: 'Dave Doe',
+    userContactEmail: 'JamesDoe@gmail.com',
+    status: 'inquired',
+    artworkId: 'a7b6a571-b961-4b27-883b-ad1a91fc7ad3',
+    inquiredAt: '2021-10-10',
+    updatedAt: '2023-08-10',
+  },
+  '3': {
+    id: '4',
+    user: 'This is a really long name for testing cell sizes',
+    userContactEmail: 'This is a really long name for testing cell size',
+    status: 'inquired',
+    artworkId: 'baac18b5-b40d-42fa-b2dc-a996758df0cd',
+    inquiredAt: '2022-10-10',
+    updatedAt: '2023-03-10',
+  },
+  '4': {
+    id: '5',
+    user: 'Jolene Doe',
+    userContactEmail: 'JamesDoe@gmail.com',
+    status: 'inquired',
+    artworkId: 'a7b6a571-b961-4b27-883b-ad1a91fc7ad3',
+    inquiredAt: '2021-09-10',
+    updatedAt: '2021-10-10',
+  },
+  '5': {
+    id: '6',
+    user: 'Jimmathy Doe',
+    userContactEmail: 'JimmaythyDoe@gmail.com',
+    status: 'inquired',
+    artworkId: 'baac18b5-b40d-42fa-b2dc-a996758df0cd',
+    inquiredAt: '2021-09-10',
+    updatedAt: '2021-10-10',
+  },
+  '6': {
+    id: '7',
+    user: 'Johnny Doe',
+    userContactEmail: 'JohnnyDoe@gmail.com',
+    status: 'inquired',
+    artworkId: 'baac18b5-b40d-42fa-b2dc-a996758df0cd',
+    inquiredAt: '2021-09-10',
+    updatedAt: '2021-10-10',
+  },
+  '7': {
+    id: '8',
+    user: 'Silly Doe',
+    userContactEmail: 'SillyDoe@gmail.com',
+    status: 'inquired',
+    artworkId: 'baac18b5-b40d-42fa-b2dc-a996758df0cd',
+    inquiredAt: '2021-09-10',
+    updatedAt: '2021-10-10',
+  },
+  '8': {
+    id: '9',
+    user: 'JP Doe',
+    userContactEmail: 'SillyDoe@gmail.com',
+    status: 'inquired',
+    artworkId: 'baac18b5-b40d-42fa-b2dc-a996758df0cd',
+    inquiredAt: '2021-09-10',
+    updatedAt: '2021-10-10',
+  },
+  '9': {
+    id: '10',
+    user: 'A Doe',
+    userContactEmail: 'SillyDoe@gmail.com',
+    status: 'inquired',
+    artworkId: 'baac18b5-b40d-42fa-b2dc-a996758df0cd',
+    inquiredAt: '2021-09-10',
+    updatedAt: '2021-10-10',
+  },
+  '10': {
+    id: '11',
+    user: 'Bordoux Doe',
+    userContactEmail: 'SillyDoe@gmail.com',
+    status: 'inquired',
+    artworkId: 'baac18b5-b40d-42fa-b2dc-a996758df0cd',
+    inquiredAt: '2021-09-10',
+    updatedAt: '2021-10-10',
+  },
+  '11': {
+    id: '12',
+    user: 'Jolean Doe',
+    userContactEmail: 'SillyDoe@gmail.com',
+    status: 'inquired',
+    artworkId: 'baac18b5-b40d-42fa-b2dc-a996758df0cd',
+    inquiredAt: '2021-09-10',
+    updatedAt: '2021-10-10',
+  },
+  '12': {
+    id: '13',
+    user: 'Jake Doe',
+    userContactEmail: 'SillyDoe@gmail.com',
+    status: 'inquired',
+    artworkId: 'baac18b5-b40d-42fa-b2dc-a996758df0cd',
+    inquiredAt: '2021-09-10',
+    updatedAt: '2021-10-10',
   },
 };

@@ -13,6 +13,7 @@ import {
 import React, {useState} from 'react';
 
 import {Artwork} from '../../../globalTypes';
+import {InquiryArtworkData} from '../../dummyData';
 import {InquiryTable} from '../Tables/InquiryTable';
 import {CreateArtwork} from './CreateArtwork';
 
@@ -33,6 +34,28 @@ const useStyles = {
   expandOpen: {
     transform: 'rotate(180deg)',
   },
+  cardContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    gap: '5%',
+    borderRadius: '0.5vw',
+    maxWidth: '80vw',
+    m: '1vh',
+    border: '1px solid #eaeaea',
+    alignItems: 'center',
+    '@media (min-width: 800px)': {
+      flexDirection: 'row',
+    },
+  },
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    '@media (min-width: 800px)': {
+      flexDirection: 'column',
+    },
+  },
 };
 
 type currencyConverterType = {
@@ -48,9 +71,11 @@ const currencyConverter: currencyConverterType = {
 export function ArtworkCard({
   artwork,
   saveArtwork,
+  inquiries,
 }: {
   artwork: Artwork;
   saveArtwork: (arg0: string, arg1: Artwork) => void;
+  inquiries: InquiryArtworkData[];
 }) {
   const [expanded, setExpanded] = useState(false);
   const [editArtwork, setEditArtwork] = useState<boolean>(false);
@@ -74,15 +99,7 @@ export function ArtworkCard({
         />
       ) : (
         <>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-              borderRadius: '0.5vw',
-              m: '1vh',
-              border: '1px solid #eaeaea',
-            }}>
+          <Box sx={useStyles.cardContainer}>
             <Box>
               <CardActionArea
                 onClick={handleExpandClick}
@@ -131,7 +148,7 @@ export function ArtworkCard({
               variant="contained"
               color="secondary"
               onClick={() => setEditArtwork(!editArtwork)}
-              sx={{alignSelf: 'center', margin: '2vh'}}>
+              sx={{alignSelf: 'center', m: '1vh'}}>
               <Typography>Edit</Typography>
             </Button>
           </Box>
@@ -161,7 +178,10 @@ export function ArtworkCard({
 
               <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
-                  <InquiryTable />
+                  <InquiryTable
+                    inquiryData={inquiries}
+                    artist={artwork.artistName.value as string}
+                  />
                 </CardContent>
               </Collapse>
             </>
