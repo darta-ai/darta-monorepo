@@ -18,6 +18,7 @@ type Dimensions = {
 export type Artwork = {
   artworkImage: PublicFields;
   artworkId?: string;
+  published: boolean;
   artworkImagesArray?: PublicFields[] | any[];
   artworkTitle: PublicFields;
   artistName: PublicFields;
