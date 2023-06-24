@@ -6,13 +6,9 @@ import {PRIMARY_BLUE, PRIMARY_LIGHTBLUE, PRIMARY_MILK} from '../../../styles';
 
 const styles = {
   footerBox: {
-    width: '120%',
+    width: '100%',
     height: '5vh',
     backgroundColor: PRIMARY_BLUE,
-    '@media (min-width:800px)': {
-      position: 'static',
-      width: '100%',
-    },
   },
   divider: {
     color: PRIMARY_MILK,

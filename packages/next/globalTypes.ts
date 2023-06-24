@@ -31,3 +31,15 @@ export type Artwork = {
   slug?: PublicFields;
   artworkCreatedYear: PublicFields;
 };
+
+export type Exhibition = {
+  exhibitionTitle: string;
+  pressRelease: string;
+  mediumsUsed: string[];
+  artists: string[];
+  exhibitionImages: string[];
+  artworks: {[key: string]: Artwork};
+  published: boolean;
+  slug: string;
+  exhibitionId: string;
+};

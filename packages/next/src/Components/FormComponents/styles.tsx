@@ -9,7 +9,7 @@ export const formStyles = {
   toolTipContainer: {
     display: 'grid',
     placeItems: 'center',
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: '1fr 1.5fr',
   },
   helpIcon: {
     color: PRIMARY_GREY,

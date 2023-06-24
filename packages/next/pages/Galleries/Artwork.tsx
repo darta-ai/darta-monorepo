@@ -1,6 +1,6 @@
 import 'firebase/compat/auth';
 
-import {Box, Button, Container} from '@mui/material';
+import {Box, Button, Typography} from '@mui/material';
 import _ from 'lodash';
 import {GetStaticProps} from 'next';
 import Head from 'next/head';
@@ -22,12 +22,11 @@ const aboutStyles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    alignContent: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'flex-start',
     gap: '2vh',
-    my: 10,
     minHeight: '100vh',
-    minWidth: '80vw',
+    minWidth: '70vw',
     alignSelf: 'center',
     '@media (minWidth: 800px)': {
       paddingTop: '7vh',
@@ -154,7 +153,7 @@ export default function GalleryProfile() {
   }, []);
 
   const addNewArtwork = () => {
-    const newArtwork: Artwork = _.deepClone(newArtworkShell);
+    const newArtwork: Artwork = _.cloneDeep(newArtworkShell);
     newArtwork.artworkId = crypto.randomUUID();
     setArtworks({...artworks, [newArtwork.artworkId]: newArtwork});
   };
@@ -162,6 +161,12 @@ export default function GalleryProfile() {
   const saveArtwork = (artworkId: string, updatedArtwork: Artwork) => {
     const newArtwork: {[key: string]: Artwork} = _.cloneDeep(artworks);
     newArtwork[artworkId] = updatedArtwork;
+    setArtworks({...newArtwork});
+  };
+
+  const deleteArtwork = (artworkId: string) => {
+    const newArtwork: {[key: string]: Artwork} = _.cloneDeep(artworks);
+    delete newArtwork[artworkId];
     setArtworks({...newArtwork});
   };
 
@@ -176,7 +181,12 @@ export default function GalleryProfile() {
       </Head>
 
       <SideNavigationWrapper>
-        <Container maxWidth="md" sx={aboutStyles.container}>
+        <Box sx={aboutStyles.container}>
+          <Box>
+            <Typography variant="h2" sx={aboutStyles.typographyTitle}>
+              Artwork
+            </Typography>
+          </Box>
           <Button
             variant="contained"
             data-testid="save-button"
@@ -196,11 +206,12 @@ export default function GalleryProfile() {
                 <ArtworkCard
                   artwork={artwork}
                   saveArtwork={saveArtwork}
+                  deleteArtwork={deleteArtwork}
                   inquiries={inquiries[artwork.artworkId as string]}
                 />
               </Box>
             ))}
-        </Container>
+        </Box>
       </SideNavigationWrapper>
     </>
   );
