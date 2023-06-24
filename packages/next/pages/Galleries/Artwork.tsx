@@ -1,25 +1,43 @@
 import 'firebase/compat/auth';
 
-import {Box, Container, Typography} from '@mui/material';
-import {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {Box, Button, Typography} from '@mui/material';
+import _ from 'lodash';
+import {GetStaticProps} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
-import {getAbout} from '../../browserFirebase/firebaseDB';
+import {Artwork} from '../../globalTypes';
+import {ArtworkCard} from '../../src/Components/Artwork/index';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
+import {
+  artwork1,
+  artwork2,
+  artwork3,
+  galleryInquiriesDummyData,
+  InquiryArtworkData,
+} from '../../src/dummyData';
+import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../styles';
 
 const aboutStyles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '5%',
-    width: '100%',
-    mb: 5,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    gap: '2vh',
+    minHeight: '100vh',
+    minWidth: '70vw',
     alignSelf: 'center',
     '@media (minWidth: 800px)': {
       paddingTop: '7vh',
     },
+  },
+  uploadImageContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    gap: '5%',
+    alignItems: 'center',
   },
   typographyTitle: {
     fontFamily: 'EB Garamond',
@@ -40,57 +58,172 @@ const aboutStyles = {
     },
     cursor: 'default',
   },
+  button: {
+    color: PRIMARY_BLUE,
+  },
+  inputTextContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  formTextField: {
+    width: '100%',
+  },
 };
 
-type AboutData = {
-  HeadTitle: string;
-  DartaCoreValue: string;
-  Headline: string;
-  WhoWeAre: string;
-  DartaBelief1?: string;
-  DartaBelief2?: string;
-  DartaBelief3?: string;
-  DartaBelief4?: string;
+const newArtworkShell: Artwork = {
+  artworkTitle: {
+    value: '',
+  },
+  published: false,
+  artistName: {
+    value: '',
+  },
+  artworkImage: {
+    value: '',
+  },
+  artworkImagesArray: [],
+  artworkMedium: {
+    value: '',
+  },
+  artworkPrice: {
+    value: '',
+    isPrivate: false,
+  },
+  artworkCurrency: {
+    value: 'USD',
+  },
+  canInquire: {
+    value: '',
+  },
+  artworkDescription: {
+    value: '',
+  },
+  slug: {
+    value: '',
+  },
+  artworkDimensions: {
+    height: {
+      value: '',
+    },
+    text: {
+      value: '',
+    },
+    width: {
+      value: '',
+    },
+    depth: {
+      value: '',
+    },
+    unit: {
+      value: 'in',
+    },
+  },
+  artworkCreatedYear: {
+    value: '',
+  },
 };
 
-// About component
-export default function GalleryArtworks({
-  data,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+// need a function that gets all artworks
+// need a function that gets all inquiries for art
+
+export default function GalleryProfile() {
+  const [artworks, setArtworks] = React.useState<{[key: string]: Artwork}>({
+    ...artwork2,
+    ...artwork1,
+    ...artwork3,
+  });
+
+  const [inquiries, setInquiries] = React.useState<{
+    [key: string]: InquiryArtworkData[];
+  } | null>(null);
+
+  React.useEffect(() => {
+    const inquiriesArray = Object.values(galleryInquiriesDummyData);
+    const sortedInquiries: {[key: string]: InquiryArtworkData[]} = {};
+    inquiriesArray.forEach((inquiry: InquiryArtworkData) => {
+      if (sortedInquiries[inquiry.artworkId!]) {
+        sortedInquiries[inquiry.artworkId!].push(inquiry);
+      } else {
+        sortedInquiries[inquiry.artworkId!] = [inquiry];
+      }
+    });
+    setInquiries(sortedInquiries);
+  }, []);
+
+  const addNewArtwork = () => {
+    const newArtwork: Artwork = _.cloneDeep(newArtworkShell);
+    newArtwork.artworkId = crypto.randomUUID();
+    setArtworks({...artworks, [newArtwork.artworkId]: newArtwork});
+  };
+
+  const saveArtwork = (artworkId: string, updatedArtwork: Artwork) => {
+    const newArtwork: {[key: string]: Artwork} = _.cloneDeep(artworks);
+    newArtwork[artworkId] = updatedArtwork;
+    setArtworks({...newArtwork});
+  };
+
+  const deleteArtwork = (artworkId: string) => {
+    const newArtwork: {[key: string]: Artwork} = _.cloneDeep(artworks);
+    delete newArtwork[artworkId];
+    setArtworks({...newArtwork});
+  };
+
   return (
     <>
       <Head>
-        <title>{data.HeadTitle}</title>
+        <title>Darta | Gallery</title>
         <meta
           name="description"
-          content="Learn about Darta, your digital art advisor."
+          content="Your profile page for your gallery on Darta."
         />
       </Head>
 
       <SideNavigationWrapper>
-        <Container maxWidth="md" sx={aboutStyles.container}>
+        <Box sx={aboutStyles.container}>
           <Box>
             <Typography variant="h2" sx={aboutStyles.typographyTitle}>
-              Artworks
+              Artwork
             </Typography>
           </Box>
-        </Container>
+          <Button
+            variant="contained"
+            data-testid="save-button"
+            type="submit"
+            onClick={() => addNewArtwork()}
+            sx={{
+              backgroundColor: PRIMARY_BLUE,
+              color: PRIMARY_MILK,
+              width: '50%',
+              alignSelf: 'center',
+            }}>
+            Create Artwork
+          </Button>
+          {inquiries &&
+            Object.values(artworks).map(artwork => (
+              <Box>
+                <ArtworkCard
+                  artwork={artwork}
+                  saveArtwork={saveArtwork}
+                  deleteArtwork={deleteArtwork}
+                  inquiries={inquiries[artwork.artworkId as string]}
+                />
+              </Box>
+            ))}
+        </Box>
       </SideNavigationWrapper>
     </>
   );
 }
 
-type AboutDataFB = {
-  data: AboutData;
-};
-
 export const getStaticProps: GetStaticProps<{
   data: any;
 }> = async () => {
-  try {
-    const aboutData = (await getAbout()) as AboutDataFB;
-    return {props: {data: aboutData}};
-  } catch (e) {
-    return {props: {data: {data: {}}}};
-  }
+  return {props: {data: {data: {}}}};
+  // try {
+  //   // const aboutData = (await getGallery()) as null;
+  // } catch (e) {
+  //   return {props: {data: {data: {}}}};
+  // }
 };

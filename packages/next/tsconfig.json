@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -21,7 +21,7 @@
     "**/*.ts",
     "**/*.tsx",
     "cypress/e2e/index.cy.js"
-  ],
+, "smartyStreets/smartyStreets.js"  ],
   "paths": {
     "react": [ "./node_modules/@types/react" ]
   },

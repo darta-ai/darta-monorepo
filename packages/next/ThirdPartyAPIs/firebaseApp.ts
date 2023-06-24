@@ -1,28 +1,58 @@
-import React from 'react';
-import {getFirestore} from 'firebase/firestore';
-import firebase, {initializeApp} from 'firebase/app';
+import {initializeApp} from 'firebase/app';
 import {
-  getAuth,
-  createUserWithEmailAndPassword,
   browserSessionPersistence,
-  updateProfile,
-  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  getAuth,
   sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  updateProfile,
 } from 'firebase/auth';
+import {getFirestore} from 'firebase/firestore';
+
+require('dotenv').config();
 
 export const firebaseConfig = {
-  apiKey: 'AIzaSyAjZz2ggOnHZJ-g0_8Nuz5bJFSVh756YB4',
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+  apiKey: process.env.NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_REACT_APP_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_REACT_APP_FIREBASE_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
+
+export const firebaseErrors = (message: string) => {
+  switch (message) {
+    case 'auth/invalid-email': {
+      return 'The email address is incorrect, please try again.';
+    }
+    case 'auth/user-not-found': {
+      return 'There is no user record corresponding to this email. Please double check or consider signing up.';
+    }
+    case 'auth/wrong-password': {
+      return 'The password you entered does not match our records.';
+    }
+    case 'auth/too-many-requests': {
+      return "You've attempted to log in too many times, please try again later";
+    }
+    case 'auth/email-already-exists': {
+      return 'The email address is already in use, please log in';
+    }
+    case 'auth/email-already-in-use': {
+      return 'The email address is already in use, please log in';
+    }
+    case 'auth/invalid-password': {
+      return 'Password is invalid, must be 6 characters';
+    }
+    default: {
+      return 'Something went wrong, please refresh and try again';
+    }
+  }
+};
 
 export async function firebaseSignUp(
   email: string,
@@ -50,7 +80,7 @@ export async function firebaseSignUp(
 }
 
 export async function isSignedIn() {
-  const currentUser = auth.currentUser;
+  const {currentUser} = auth;
   return currentUser != null;
 }
 
@@ -120,39 +150,4 @@ export type FirebaseFunctions = {
   isUserSignedIn: () => Promise<IsUserSignedInType>;
 };
 
-export {app, db, auth};
-
-export const firebaseErrors = (message: string) => {
-  switch (message) {
-    case 'auth/invalid-email': {
-      return 'The email address is incorrect, please try again.';
-    }
-    case 'auth/user-not-found': {
-      return 'There is no user record corresponding to this email. Please double check or consider signing up.';
-    }
-    case 'auth/wrong-password': {
-      return 'The password you entered does not match our records.';
-    }
-    case 'auth/too-many-requests': {
-      return "You've attempted to log in too many times, please try again later";
-    }
-    case 'auth/email-already-exists': {
-      return 'The email address is already in use, please log in';
-    }
-    case 'auth/email-already-in-use': {
-      return 'The email address is already in use, please log in';
-    }
-    case 'auth/invalid-email': {
-      return 'Email is invalid, or is already in use, please double check';
-    }
-    case 'auth/invalid-password': {
-      return 'Password is invalid, must be 6 characters';
-    }
-    case 'auth/too-many-requests': {
-      return "You've attempted to log in too many times, please try again later";
-    }
-    default: {
-      return 'Something went wrong, please refresh and try again';
-    }
-  }
-};
+export {app, auth, db};

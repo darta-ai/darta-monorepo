@@ -4,11 +4,11 @@ import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import Head from 'next/head';
 import * as React from 'react';
 
-import {getGalleryPamphlet} from '../../browserFirebase/firebaseDB';
 import {AuthEnum} from '../../src/Components/Auth/types';
 import {GalleryHeader} from '../../src/Components/Navigation/Headers/GalleryHeader';
 import {PamphletLeft} from '../../src/Components/Pamphlet/pamphletLeft';
 import {PamphletRight} from '../../src/Components/Pamphlet/pamphletRight';
+import {getGalleryPamphlet} from '../../ThirdPartyAPIs/firebaseDB';
 
 export default function Home({
   data,

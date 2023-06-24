@@ -8,7 +8,6 @@ const styles = {
   footerBox: {
     width: '100%',
     height: '5vh',
-    bottom: 0,
     backgroundColor: PRIMARY_BLUE,
   },
   divider: {

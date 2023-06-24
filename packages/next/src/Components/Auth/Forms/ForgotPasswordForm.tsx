@@ -11,10 +11,10 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {dartaForgotPassword} from '../../../API/AccountManagement';
-import {GoToSignIn, NeedAnAccount} from '../Navigation/Auth';
-import {authStyles} from './styles';
-import {AuthEnum} from './types';
+import {dartaForgotPassword} from '../../../../API/AccountManagement';
+import {GoToSignIn, NeedAnAccount} from '../../Navigation/Auth';
+import {authStyles} from '../styles';
+import {AuthEnum} from '../types';
 
 const schema = yup
   .object({

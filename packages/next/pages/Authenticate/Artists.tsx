@@ -2,10 +2,10 @@ import {Box} from '@mui/material';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import React from 'react';
 
-import {welcomeBack} from '../../browserFirebase/firebaseDB';
 import {SignInForm, SignInWelcome} from '../../src/Components/Auth';
 import {AuthEnum, WelcomeBack} from '../../src/Components/Auth/types';
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
+import {welcomeBack} from '../../ThirdPartyAPIs/firebaseDB';
 
 const styles = {
   container: {
@@ -49,8 +49,12 @@ type WelcomeBackData = {
 };
 
 export const getStaticProps: GetStaticProps<{
-  data: WelcomeBackData;
+  data: WelcomeBackData | null;
 }> = async () => {
-  const welcomeBackData = (await welcomeBack(userType)) as WelcomeBackData;
-  return {props: {data: welcomeBackData}};
+  try {
+    const welcomeBackData = (await welcomeBack(userType)) as WelcomeBackData;
+    return {props: {data: welcomeBackData}};
+  } catch (e) {
+    return {props: {data: null}};
+  }
 };
