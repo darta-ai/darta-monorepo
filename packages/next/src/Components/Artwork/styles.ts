@@ -4,7 +4,7 @@ export const createArtworkStyles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    m: '1vh',
+    m: '2vh',
     border: '1px solid #eaeaea',
     alignSelf: 'center',
     borderRadius: '0.5vw',
@@ -31,14 +31,16 @@ export const createArtworkStyles = {
     alignContent: 'center',
     gap: '5vh',
     alignItems: 'space-between',
-    height: '50vh',
+    '@media (max-width: 780px)': {
+      height: '50vh',
+    },
   },
   defaultImageEdit: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '40vh',
-    height: '40vh',
+    width: '40vw',
+    height: '30vh',
     alignSelf: 'center',
   },
   defaultImage: {
@@ -55,16 +57,17 @@ export const createArtworkStyles = {
     alignItems: 'center',
     width: '100%',
   },
-  saveButton: {
-    color: PRIMARY_BLUE,
+  saveButtonContainer: {
     alignSelf: 'center',
     m: 2,
+    display: 'flex',
+    gap: '2vw',
   },
   multiLineContainer: {
     my: 2,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     minHeight: '10vh',
     width: '100%',
     '@media (max-width: 780px)': {

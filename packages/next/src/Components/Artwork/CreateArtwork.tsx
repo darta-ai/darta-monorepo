@@ -22,6 +22,7 @@ import {
   DartaRadioButtonsGroup,
   DartaTextInput,
 } from '../FormComponents/index';
+import {DartaDialogue} from '../Modals/DartaDialogue';
 import {createArtworkStyles} from './styles';
 
 const createArtworkSchema = yup
@@ -110,10 +111,12 @@ export function CreateArtwork({
   newArtwork,
   cancelAction,
   saveArtwork,
+  handleDelete,
 }: {
   newArtwork: Artwork;
   cancelAction: (arg0: boolean) => void;
   saveArtwork: (arg0: Artwork) => void;
+  handleDelete: (arg0: string) => void;
 }) {
   const [editImage, setEditImage] = React.useState<boolean>(true);
 
@@ -190,6 +193,16 @@ export function CreateArtwork({
 
     // NEED API CALL TO UPLOAD IMAGE TO DATABASE
     setEditImage(!editImage);
+  };
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -473,7 +486,16 @@ export function CreateArtwork({
               />
             </Box>
           </Box>
-          <Box sx={createArtworkStyles.saveButton}>
+          <Box sx={createArtworkStyles.saveButtonContainer}>
+            <Button
+              variant="contained"
+              data-testid="delete-button"
+              color="error"
+              onClick={() => {
+                handleClickOpen();
+              }}>
+              Delete
+            </Button>
             <Button
               variant="contained"
               data-testid="save-button"
@@ -484,6 +506,14 @@ export function CreateArtwork({
             </Button>
           </Box>
         </Box>
+        <DartaDialogue
+          artworkTitle={newArtwork.artworkTitle.value || '____'}
+          artworkId={newArtwork.artworkId as string}
+          artistName={newArtwork.artistName.value || '____'}
+          open={open}
+          handleClose={handleClose}
+          handleDelete={handleDelete}
+        />
       </Box>
     </>
   );

@@ -119,32 +119,32 @@ export function DartaTextInput({
                       <Box sx={formStyles.makePrivateContainer}>
                         <Typography sx={formStyles.toolTip}>
                           {isPrivate ? 'Private' : 'Public'}
+                          <Tooltip
+                            title={
+                              <Box>
+                                <Typography
+                                  sx={{textAlign: 'center', fontSize: 15}}>
+                                  {isPrivate
+                                    ? 'Private information is only visible to you and your team.'
+                                    : 'Public information is available to any user.'}
+                                </Typography>
+                                <IconButton>
+                                  <HelpOutlineIcon
+                                    fontSize="small"
+                                    sx={formStyles.helpIconTiny}
+                                  />
+                                </IconButton>
+                              </Box>
+                            }
+                            placement="bottom">
+                            <IconButton>
+                              <HelpOutlineIcon
+                                fontSize="small"
+                                sx={formStyles.helpIconTiny}
+                              />
+                            </IconButton>
+                          </Tooltip>
                         </Typography>
-                        <Tooltip
-                          title={
-                            <>
-                              <Typography
-                                sx={{textAlign: 'center', fontSize: 15}}>
-                                {isPrivate
-                                  ? 'Private information is only visible to you and your team.'
-                                  : 'Public information is available to any user.'}
-                              </Typography>
-                              <IconButton>
-                                <HelpOutlineIcon
-                                  fontSize="small"
-                                  sx={formStyles.helpIconTiny}
-                                />
-                              </IconButton>
-                            </>
-                          }
-                          placement="bottom">
-                          <IconButton>
-                            <HelpOutlineIcon
-                              fontSize="small"
-                              sx={formStyles.helpIconTiny}
-                            />
-                          </IconButton>
-                        </Tooltip>
                       </Box>
                     ) : (
                       <Box sx={formStyles.makePrivateContainer}>

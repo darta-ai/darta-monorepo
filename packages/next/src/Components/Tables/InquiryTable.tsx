@@ -19,6 +19,14 @@ import * as React from 'react';
 
 import {InquiryArtworkData} from '../../dummyData';
 
+const tableStyles = {
+  container: {
+    '@media (min-width: 800px)': {
+      width: '80vw',
+    },
+  },
+};
+
 interface HeadCell {
   id: keyof InquiryArtworkData;
   label: string;
@@ -197,7 +205,7 @@ export function InquiryTable({
   );
 
   return (
-    <Box sx={{width: '100%', maxWidth: '80vw'}}>
+    <Box sx={tableStyles.container}>
       <Paper sx={{width: '100%', mb: 2}}>
         <TableContainer>
           <Table

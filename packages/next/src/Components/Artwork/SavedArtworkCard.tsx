@@ -21,6 +21,9 @@ const useStyles = {
   root: {
     minWidth: '80vw',
     alignItems: 'center',
+    flexDirection: 'column',
+    display: 'flex',
+
     margin: 'auto',
     border: '1px solid darkgrey',
   },
@@ -38,14 +41,14 @@ const useStyles = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-around',
-    gap: '5%',
+    gap: '1vh',
     borderRadius: '0.5vw',
-    maxWidth: '80vw',
     m: '1vh',
     border: '1px solid #eaeaea',
     alignItems: 'center',
     '@media (min-width: 800px)': {
       flexDirection: 'row',
+      width: '85vw',
     },
   },
   buttonContainer: {
@@ -71,10 +74,12 @@ const currencyConverter: currencyConverterType = {
 export function ArtworkCard({
   artwork,
   saveArtwork,
+  deleteArtwork,
   inquiries,
 }: {
   artwork: Artwork;
   saveArtwork: (arg0: string, arg1: Artwork) => void;
+  deleteArtwork: (arg0: string) => void;
   inquiries: InquiryArtworkData[];
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -89,6 +94,10 @@ export function ArtworkCard({
     setEditArtwork(!editArtwork);
   };
 
+  const handleDelete = (artworkId: string) => {
+    return deleteArtwork(artworkId);
+  };
+
   return (
     <Card sx={useStyles.root}>
       {editArtwork ? (
@@ -96,6 +105,7 @@ export function ArtworkCard({
           newArtwork={artwork}
           cancelAction={setEditArtwork}
           saveArtwork={handleSave}
+          handleDelete={handleDelete}
         />
       ) : (
         <>
@@ -154,7 +164,7 @@ export function ArtworkCard({
           </Box>
           {artwork.canInquire.value === 'Yes' && (
             <>
-              <CardActions disableSpacing>
+              <CardActions>
                 <Box
                   sx={{
                     flexDirection: 'row',
@@ -163,6 +173,7 @@ export function ArtworkCard({
                     justifyContent: 'center',
                     alignItems: 'center',
                     width: '100%',
+                    maxWidth: '80vw',
                   }}>
                   <Typography variant="h6" color="textSecondary">
                     Inquires
