@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, {Request, Response} from 'express';
 
 import {
   ArangoDocumentType,
@@ -17,17 +17,19 @@ interface ICrudService<
 export class CrudService<
   D extends ArangoDocumentType | ArangoEdgeType,
   C extends DocumentRepository<D> | EdgeRepository<D>,
-> implements ICrudService<D, C> {
+> implements ICrudService<D, C>
+{
   protected repository: C;
+
   public name: string;
 
   constructor(
     app: express.Application,
-    repository: any,// TODO proper types for containers
+    repository: any, // TODO proper types for containers
   ) {
     this.repository = repository;
     this.name = repository.name;
-    
+
     app.get(`/${this.name}/:id`, this.get.bind(this));
     app.post(`/${this.name}`, this.post.bind(this));
     app.put(`/${this.name}`, this.put.bind(this));
@@ -41,7 +43,6 @@ export class CrudService<
     try {
       const doc = await this.repository.read(id);
       res.json(doc);
-
     } catch (err: any) {
       if (err.code === 404) return res.status(404).send('Not found');
       res.status(500).send('Internal server error');
@@ -53,7 +54,6 @@ export class CrudService<
       const doc = req.body;
       const createdDoc = await this.repository.create(doc);
       res.status(201).json(createdDoc);
-
     } catch (err: any) {
       res.status(500).send('Internal server error');
     }
@@ -64,7 +64,6 @@ export class CrudService<
       const doc = req.body;
       const updatedDoc = await this.repository.update(doc);
       res.status(204).json(updatedDoc);
-
     } catch (err: any) {
       res.status(500).send('Internal server error');
     }
@@ -78,7 +77,6 @@ export class CrudService<
       }
       const deletedId = await this.repository.delete(id);
       res.status(204).json(deletedId);
-
     } catch (err: any) {
       res.status(500).send('Internal server error');
     }

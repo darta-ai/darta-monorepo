@@ -1,8 +1,7 @@
 {
-    "name": "darta",
-    "private": true,
-    "workspaces": [
-      "packages/*"
-    ]
+  "name": "darta",
+  "private": true,
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
   }
-  
+}

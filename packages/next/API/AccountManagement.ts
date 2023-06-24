@@ -2,7 +2,7 @@ import {
   firebaseForgotPassword,
   firebaseSignIn,
   firebaseSignUp,
-} from '../browserFirebase/firebaseApp';
+} from '../ThirdPartyAPIs/firebaseApp';
 
 export const dartaSignUp = async (user: any, signUpType: string) => {
   const firebaseCheck = await firebaseSignUp(

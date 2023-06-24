@@ -2,8 +2,8 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 import {Box, Typography} from '@mui/material';
 import React from 'react';
 
-import {welcomeStyles} from './styles';
-import {forgotPasswordText} from './types';
+import {welcomeStyles} from '../styles';
+import {forgotPasswordText} from '../types';
 
 export function ForgotPasswordWelcome() {
   return (
@@ -15,8 +15,8 @@ export function ForgotPasswordWelcome() {
           </Typography>
         </Box>
         {forgotPasswordText?.Field1 && (
-          <Box sx={welcomeStyles.checkBoxes}>
-            <Box>
+          <Box sx={welcomeStyles.displayTextContainer}>
+            <Box sx={{height: '100%'}}>
               <KeyboardDoubleArrowRightIcon sx={welcomeStyles.actionArrow} />
             </Box>
             <Box>
@@ -31,7 +31,7 @@ export function ForgotPasswordWelcome() {
         )}
 
         {forgotPasswordText?.Field2 && (
-          <Box sx={welcomeStyles.checkBoxes}>
+          <Box sx={welcomeStyles.displayTextContainer}>
             <Box>
               <KeyboardDoubleArrowRightIcon sx={welcomeStyles.actionArrow} />
             </Box>
@@ -46,7 +46,7 @@ export function ForgotPasswordWelcome() {
           </Box>
         )}
         {forgotPasswordText?.Field3 && (
-          <Box sx={welcomeStyles.checkBoxes}>
+          <Box sx={welcomeStyles.displayTextContainer}>
             <Box>
               <KeyboardDoubleArrowRightIcon sx={welcomeStyles.actionArrow} />
             </Box>
@@ -61,7 +61,7 @@ export function ForgotPasswordWelcome() {
           </Box>
         )}
         {forgotPasswordText?.Field4 && (
-          <Box sx={welcomeStyles.checkBoxes}>
+          <Box sx={welcomeStyles.displayTextContainer}>
             <Box>
               <KeyboardDoubleArrowRightIcon sx={welcomeStyles.actionArrow} />
             </Box>

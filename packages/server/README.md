@@ -9,6 +9,8 @@
 4. Run `./install_arango.sh`, which will install the ArangoDB Kubernetes operators and create a database cluster.
 
 A [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport) service called `arango-dev-cluster-ea` will have been created. You must find the port that it is exposed on. You can do this by running `kubectl get service arango-dev-cluster-ea -o yaml -n arango-cluster | grep nodePort`, or by examining it in [(Open)](https://github.com/MuhammedKalkan/OpenLens)[Lens](https://docs.k8slens.dev/getting-started/install-lens/). It will be 5 digits like `31420`, not ArangoDB's usual `8529`, which is only used internally within the cluster.
+    1a. If you are using Lens, you can also find the node cluster IP by clicking on the service and looking at the `Endpoints` tab.
+    2a. If you are using Lens, you can also find the service external port by clicking on the service and looking at the `Ports` tab.
 
 Visit `https://[[node cluster ip]]:[[service external port]]` in your browser (*note the `https`*) to see the ArangoDB web interface. The default credentials are `root` with no password. You can then set up user `darta` and database `darta` (be sure to specify the correct user, NOT `root`).
 

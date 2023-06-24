@@ -1,96 +1,94 @@
 import 'firebase/compat/auth';
 
-import {Box, Container, Typography} from '@mui/material';
-import {GetStaticProps, InferGetStaticPropsType} from 'next';
+import {Box, Button, Typography} from '@mui/material';
+import _ from 'lodash';
+import {GetStaticProps} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
-import {getAbout} from '../../browserFirebase/firebaseDB';
+import {Exhibition} from '../../globalTypes';
+import {ArtworkCard} from '../../src/Components/Artwork/index';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
+import {galleryStyles} from '../../styles/GalleryPageStyles';
 
-const aboutStyles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '5%',
-    width: '100%',
-    mb: 5,
-    alignSelf: 'center',
-    '@media (minWidth: 800px)': {
-      paddingTop: '7vh',
-    },
-  },
-  typographyTitle: {
-    fontFamily: 'EB Garamond',
-    color: PRIMARY_BLUE,
-    fontSize: '2rem',
-    my: '3vh',
-    '@media (min-width:800px)': {
-      fontSize: '2.5rem',
-    },
-    cursor: 'default',
-  },
-  typography: {
-    fontFamily: 'EB Garamond',
-    color: PRIMARY_DARK_GREY,
-    fontSize: '1rem',
-    '@media (minWidth: 800px)': {
-      fontSize: '1.3rem',
-    },
-    cursor: 'default',
-  },
+const newExhibitionShell: Exhibition = {
+  exhibitionTitle: '',
+  pressRelease: '',
+  mediumsUsed: [],
+  artists: [],
+  artworks: {},
+  published: false,
+  slug: '',
+  exhibitionId: '',
 };
 
-type AboutData = {
-  HeadTitle: string;
-  DartaCoreValue: string;
-  Headline: string;
-  WhoWeAre: string;
-  DartaBelief1?: string;
-  DartaBelief2?: string;
-  DartaBelief3?: string;
-  DartaBelief4?: string;
-};
+// need a function that gets all artworks
+// need a function that gets all inquiries for art
 
-// About component
-export default function GalleryCollections({
-  data,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function GalleryExhibitions() {
+  const [exhibitions, setNewExhibitions] = React.useState<{
+    [key: string]: Exhibition;
+  }>({});
+
+  const addNewExhibition = () => {
+    const newExhibition: Exhibition = _.cloneDeep(newExhibitionShell);
+    newExhibition.exhibitionId = crypto.randomUUID();
+    setNewExhibitions({
+      ...exhibitions,
+      [newExhibition.exhibitionId]: newExhibition,
+    });
+  };
+
+  // const saveArtwork = (artworkId: string, updatedArtwork: Artwork) => {
+  //   const newArtwork: {[key: string]: Artwork} = _.cloneDeep(artworks);
+  //   newArtwork[artworkId] = updatedArtwork;
+  //   setArtworks({...newArtwork});
+  // };
+
+  // const deleteArtwork = (artworkId: string) => {
+  //   const newArtwork: {[key: string]: Artwork} = _.cloneDeep(artworks);
+  //   delete newArtwork[artworkId];
+  //   setArtworks({...newArtwork});
+  // };
+
   return (
     <>
       <Head>
-        <title>{data.HeadTitle}</title>
+        <title>Darta | Gallery</title>
         <meta
           name="description"
-          content="Learn about Darta, your digital art advisor."
+          content="Your profile page for your gallery on Darta."
         />
       </Head>
 
       <SideNavigationWrapper>
-        <Container maxWidth="md" sx={aboutStyles.container}>
+        <Box sx={galleryStyles.container}>
           <Box>
-            <Typography variant="h2" sx={aboutStyles.typographyTitle}>
+            <Typography variant="h2" sx={galleryStyles.typographyTitle}>
               Exhibitions
             </Typography>
           </Box>
-        </Container>
+          <Button
+            variant="contained"
+            data-testid="save-button"
+            type="submit"
+            onClick={() => addNewExhibition()}
+            sx={galleryStyles.createNewButton}>
+            Create Exhibition
+          </Button>
+        </Box>
       </SideNavigationWrapper>
     </>
   );
 }
 
-type AboutDataFB = {
-  data: AboutData;
-};
-
 export const getStaticProps: GetStaticProps<{
   data: any;
 }> = async () => {
-  try {
-    const aboutData = (await getAbout()) as AboutDataFB;
-    return {props: {data: aboutData}};
-  } catch (e) {
-    return {props: {data: {data: {}}}};
-  }
+  return {props: {data: {data: {}}}};
+  // try {
+  //   // const aboutData = (await getGallery()) as null;
+  // } catch (e) {
+  //   return {props: {data: {data: {}}}};
+  // }
 };

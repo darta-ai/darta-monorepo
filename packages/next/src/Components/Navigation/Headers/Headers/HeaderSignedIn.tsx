@@ -3,7 +3,7 @@ import Image from 'next/image';
 import {useRouter} from 'next/router';
 import * as React from 'react';
 
-import {firebaseSignOut} from '../../../../../browserFirebase/firebaseApp';
+import {firebaseSignOut} from '../../../../../ThirdPartyAPIs/firebaseApp';
 import {AuthEnum} from '../../../Auth/types';
 import {headerStyles} from '../styles';
 
@@ -23,7 +23,7 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
         onClick={async () => {
           await handleSignOut();
         }}
-        sx={headerStyles.signOutButton}
+        sx={headerStyles.button}
         variant="contained"
         data-testid="header-navigation-signout-button">
         Sign Out
@@ -32,7 +32,7 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
         onClick={async () => {
           router.push(`/${authType}/Profile`);
         }}
-        sx={headerStyles.signOutButton}
+        sx={headerStyles.button}
         variant="contained"
         data-testid="header-navigation-signout-button">
         Dashboard
@@ -45,8 +45,8 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
         <Image
           src="/static/images/dartahouseblue.png"
           data-testid="header-image"
-          alt="me"
-          width="64"
+          alt="home"
+          width="80"
           height="64"
           onClick={() => router.push('/', undefined, {shallow: true})}
         />

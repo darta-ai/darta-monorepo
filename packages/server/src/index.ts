@@ -1,16 +1,17 @@
 import 'reflect-metadata';
-import express, { Request, Response } from 'express';
+
+import express, {Request, Response} from 'express';
 import http from 'http';
 
-import { config } from './config';
-import { container } from './container';
-import { startServices } from './services';
+import {config} from './config';
+import {container} from './container';
+import {startServices} from './services';
 
 container.bind<express.Application>('ExpressApp').toConstantValue(express());
 const app = container.get<express.Application>('ExpressApp');
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended: true}));
 
 const httpServer = http.createServer(app);
 

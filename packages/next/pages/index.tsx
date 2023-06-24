@@ -4,11 +4,11 @@ import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import Head from 'next/head';
 import * as React from 'react';
 
-import {getPamphlet} from '../browserFirebase/firebaseDB';
 import {AuthEnum} from '../src/Components/Auth/types';
 import {BaseHeader} from '../src/Components/Navigation/Headers/BaseHeader';
 import {PamphletLeft} from '../src/Components/Pamphlet/pamphletLeft';
 import {PamphletRight} from '../src/Components/Pamphlet/pamphletRight';
+import {getPamphlet} from '../ThirdPartyAPIs/firebaseDB';
 
 export default function Home({
   staticData,

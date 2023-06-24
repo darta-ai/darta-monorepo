@@ -10,15 +10,16 @@ import {ThemeProvider} from '@mui/material/styles';
 import {onAuthStateChanged} from 'firebase/auth';
 import {AppProps} from 'next/app';
 import Head from 'next/head';
+// import Script from 'next/script';
 import * as React from 'react';
 
-import {auth} from '../browserFirebase/firebaseApp';
 import {Footer} from '../src/Components/Navigation/Footer';
 import createEmotionCache from '../src/createEmotionCache';
 import theme from '../src/theme';
 import {PRIMARY_MILK} from '../styles';
+import {auth} from '../ThirdPartyAPIs/firebaseApp';
 
-export {app, auth, db} from '../browserFirebase/firebaseApp';
+export {app, auth, db} from '../ThirdPartyAPIs/firebaseApp';
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
