@@ -10,9 +10,9 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import {Artwork} from 'darta/globalTypes';
 import React, {useState} from 'react';
 
+import {Artwork} from '../../../globalTypes';
 import {InquiryArtworkData} from '../../dummyData';
 import {currencyConverter} from '../common/templates';
 import {InquiryTable} from '../Tables/InquiryTable';

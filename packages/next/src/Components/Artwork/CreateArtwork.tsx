@@ -8,13 +8,13 @@ import {
   Switch,
   Typography,
 } from '@mui/material';
-import {Artwork} from 'darta/globalTypes';
 import Head from 'next/head';
 import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {mediums} from '../../../data/medium';
+import {Artwork} from '../../../globalTypes';
 import {PRIMARY_BLUE} from '../../../styles';
 import {
   DartaAutoComplete,

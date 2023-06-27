@@ -57,7 +57,7 @@ export const profileStyles = {
       justifyContent: 'space-around',
       alignSelf: 'flex-start',
       height: '40%',
-      width: '100%',
+      width: '95%',
       '@media (max-width: 790px)': {
         flexDirection: 'column',
       },
@@ -67,7 +67,16 @@ export const profileStyles = {
       flexDirection: 'row',
       justifyContent: 'space-evenly',
       gap: '5%',
-      width: '100%',
+      width: '95%',
+      '@media (max-width: 790px)': {
+        flexDirection: 'column',
+      },
+    },
+    hoursOfOperationText: {
+      fontSize: '0.9rem',
+      '@media (max-width: 700px)': {
+        flexDirection: '0.7rem',
+      },
     },
     galleryContactHeadline: {
       textAlign: 'center',
@@ -83,7 +92,7 @@ export const profileStyles = {
     galleryAddressContainer: {
       display: 'column',
       flexDirection: 'row',
-      width: '100%',
+      width: '95%',
       alignItems: 'center',
       alignText: 'center',
     },
@@ -104,6 +113,7 @@ export const profileStyles = {
     addressText: {
       alignText: 'center',
       color: PRIMARY_DARK_GREY,
+      fontSize: '1.2rem',
     },
   },
   edit: {
@@ -144,7 +154,7 @@ export const profileStyles = {
       justifyContent: 'space-between',
       alignItems: 'center',
       minHeight: '10vh',
-      width: '100%',
+      width: '80%',
     },
     saveButton: {
       color: PRIMARY_BLUE,

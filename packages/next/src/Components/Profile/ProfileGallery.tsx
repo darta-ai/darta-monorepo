@@ -22,11 +22,7 @@ export function ProfileGallery({
   return (
     <>
       <Head>
-        {galleryProfileData?.galleryName?.value ? (
-          <title>{galleryProfileData?.galleryName?.value} | Profile</title>
-        ) : (
-          <title>Gallery | Profile</title>
-        )}
+        <title>Gallery | Profile</title>
         <meta name="description" content="Your darta profile." />
       </Head>
       <Box mb={2} sx={profileStyles.container}>
@@ -70,24 +66,28 @@ export function ProfileGallery({
                     : 'Your Gallery Name'}
                 </Typography>
                 <Box sx={profileStyles.profile.galleryBioStyles}>
-                  <Typography>
-                    {galleryProfileData?.galleryBio?.value}
-                  </Typography>
+                  <Box sx={{mx: 3}}>
+                    <Typography>
+                      {galleryProfileData?.galleryBio?.value}
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
             </Box>
           </Box>
         </Box>
-        <Typography variant="h5" sx={{textAlign: 'center'}}>
-          Contact
-          <Divider />
-        </Typography>
+        <Box sx={{width: '100%'}}>
+          <Typography variant="h5" sx={{textAlign: 'left'}}>
+            Contact
+            <Divider />
+          </Typography>
+        </Box>
         <Box sx={profileStyles.profile.galleryContactContainer}>
           <Box>
             <Typography
               variant="h6"
               sx={profileStyles.profile.galleryContactHeadline}>
-              Primary Contact
+              Email
               <Divider />
             </Typography>
             <Typography
@@ -143,7 +143,7 @@ export function ProfileGallery({
               <Typography
                 variant="h6"
                 sx={profileStyles.profile.galleryContactHeadline}>
-                Instagram Handle
+                Instagram
                 <Divider />
               </Typography>
               <Typography sx={{textAlign: 'center', my: '1vh'}}>
@@ -155,13 +155,13 @@ export function ProfileGallery({
             </Box>
           )}
         </Box>
-        <Box>
-          <Typography variant="h5" sx={{textAlign: 'center'}}>
+        <Box sx={{width: '100%'}}>
+          <Typography variant="h5" sx={{textAlign: 'left'}}>
             Locations
             <Divider />
           </Typography>
         </Box>
-        <Box>
+        <Box sx={{display: 'flex', flexDirection: 'column', gap: '5vh'}}>
           <Box sx={profileStyles.profile.galleryAddressContainer}>
             <GalleryLocationComponent
               galleryLocationData={galleryProfileData?.galleryLocation0}

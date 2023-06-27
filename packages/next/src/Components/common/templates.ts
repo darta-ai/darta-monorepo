@@ -1,4 +1,4 @@
-import {Artwork, CurrencyConverterType, Exhibition} from 'darta/globalTypes';
+import {Artwork, CurrencyConverterType, Exhibition} from '../../../globalTypes';
 
 export const newArtworkShell: Artwork = {
   artworkTitle: {
@@ -51,6 +51,8 @@ export const newArtworkShell: Artwork = {
   artworkCreatedYear: {
     value: '',
   },
+  createdAt: null,
+  updatedAt: null,
 };
 
 export const newExhibitionShell: Exhibition = {
@@ -59,13 +61,15 @@ export const newExhibitionShell: Exhibition = {
   mediumsUsed: [],
   artists: [],
   exhibitionImages: [],
-  artworks: {'05124124-1512412142-152412412': 'undefined'},
+  artworks: {'05124124-1512412142-152412412': {...newArtworkShell}},
   published: false,
   slug: {value: ''},
   exhibitionId: '',
   startDate: {value: null, isOngoing: false},
   endDate: {value: null, isOngoing: false},
   openingDate: {value: null, isOngoing: false},
+  exhibitionPrimaryImage: {value: ''},
+  pressReleaseImages: [],
 };
 
 export const currencyConverter: CurrencyConverterType = {

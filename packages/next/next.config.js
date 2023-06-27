@@ -1,5 +1,4 @@
 /** @type {import('next').NextConfig} */
-require('dotenv').config();
 const withVideos = require('next-videos');
 
 module.exports = {

@@ -123,7 +123,7 @@ export function DartaTextInput({
                                 <Typography
                                   sx={{textAlign: 'center', fontSize: 15}}>
                                   {isPrivate
-                                    ? 'Private information is only visible to you and your team.'
+                                    ? 'Private information is only visible to you and is not displayed on the app.'
                                     : 'Public information is available to any user.'}
                                 </Typography>
                                 <IconButton>

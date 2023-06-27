@@ -42,7 +42,7 @@ function InputDayContainer({
 }) {
   return (
     <Box sx={formStyles.formTextField} key={day}>
-      <Typography sx={{textAlign: 'center'}}>{day}</Typography>
+      <Typography sx={{textAlign: 'center'}}>{day.slice(0, 3)}</Typography>
       <Box sx={formStyles.hoursOfOperationInputContainer}>
         <TextField
           {...register(
@@ -148,7 +148,7 @@ export function DartaHoursOfOperation({
                                 <Typography
                                   sx={{textAlign: 'center', fontSize: 15}}>
                                   {isPrivate
-                                    ? 'Private information is only visible to you and your team.'
+                                    ? 'Private information is only visible to you and is not displayed on the app.'
                                     : 'Public information is available to any user.'}
                                 </Typography>
                                 <IconButton>
