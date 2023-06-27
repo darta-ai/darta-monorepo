@@ -9,8 +9,6 @@ import {
 } from 'firebase/auth';
 import {getFirestore} from 'firebase/firestore';
 
-require('dotenv').config();
-
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_REACT_APP_FIREBASE_AUTH_DOMAIN,

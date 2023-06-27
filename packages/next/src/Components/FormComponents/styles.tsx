@@ -54,7 +54,7 @@ export const formStyles = {
       gridTemplateColumns: 'repeat(7, 1fr)',
       gridTemplateRows: 'repeat(1, 1fr)',
     },
-    gridTemplateColumns: 'repeat(3, 1fr)',
+    gridTemplateColumns: 'repeat(2, 1fr)',
     gridTemplateRows: 'repeat(3, 1fr)',
   },
   hoursOfOperationInputContainer: {

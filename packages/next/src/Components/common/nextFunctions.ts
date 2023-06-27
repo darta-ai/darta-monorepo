@@ -5,8 +5,8 @@ const parseBusinessHours = (
   }[],
 ): {[key: string]: {open: {value: string}; close: {value: string}}} => {
   const convertTo12Hour = (time: string): string => {
-    const hours = parseInt(time.substring(0, 2), 10);
-    const minutes = time.substring(2);
+    const hours = parseInt(time?.substring(0, 2), 10);
+    const minutes = time?.substring(2);
     const period = hours >= 12 ? 'PM' : 'AM';
     const adjustedHours = hours > 12 ? hours - 12 : hours;
     return `${adjustedHours}:${minutes} ${period}`;
@@ -27,9 +27,9 @@ const parseBusinessHours = (
   } = {};
 
   exampleArray?.forEach(item => {
-    const day = dayMapping[item.open.day];
-    const open = convertTo12Hour(item.open.time);
-    const close = convertTo12Hour(item.close.time);
+    const day = dayMapping[item?.open?.day];
+    const open = convertTo12Hour(item?.open?.time);
+    const close = convertTo12Hour(item?.close?.time);
 
     parsedObject[day] = {open: {value: open}, close: {value: close}};
   });

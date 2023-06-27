@@ -6,9 +6,9 @@ import {
   CardContent,
   Typography,
 } from '@mui/material';
-import {Exhibition} from 'darta/globalTypes';
 import React, {useState} from 'react';
 
+import {Exhibition} from '../../../globalTypes';
 import {ExhibitionPressReleaseEdit} from './index';
 
 const useStyles = {
@@ -90,7 +90,7 @@ export function ExhibitionCard({
         <ExhibitionPressReleaseEdit
           newExhibition={exhibition}
           saveExhibition={handleSave}
-          cancelAction={arg0 => null}
+          cancelAction={() => null}
           handleDelete={handleDelete}
         />
       ) : (

@@ -1,4 +1,4 @@
-import {Box, Grid, Typography} from '@mui/material';
+import {Box, Divider, Grid, Typography} from '@mui/material';
 import React from 'react';
 
 import {IBusinessLocationData} from '../../../../globalTypes';
@@ -17,15 +17,21 @@ export function GalleryLocationComponent({
   const galleryLocationIsPrivate = locationString?.isPrivate;
   const hoursOfOperation = businessHours?.hoursOfOperation;
 
+  const innerWidthRef = React.useRef(800);
+  React.useEffect(() => {
+    innerWidthRef.current = window.innerWidth;
+  }, []);
+
   return (
     <Box sx={profileStyles.profile.galleryAddressContainer}>
       {galleryLocationArray && (
         <>
           <Typography variant="h5" sx={profileStyles.profile.addressText}>
-            {galleryCity ?? 'Your Gallery Address'}
+            {galleryCity !== undefined ? galleryCity : 'Your Gallery Address'}
             {galleryLocationIsPrivate && '*'}
+            <Divider sx={{width: '20%'}} />
           </Typography>
-          <Typography sx={profileStyles.profile.addressText}>
+          <Typography sx={{fontSize: '1rem'}}>
             {galleryLocationArray[0]}
             {galleryLocationArray[1]}
             {galleryLocationArray[2]}
@@ -34,94 +40,158 @@ export function GalleryLocationComponent({
           </Typography>
         </>
       )}
-      {businessHours && (
-        <Box sx={{my: 2}}>
-          <Typography variant="h5" sx={profileStyles.profile.addressText}>
-            Hours
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={1.5}>
-              <Typography />
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>Monday</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>Tuesday</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>Wednesday</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>Thursday</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>Friday</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>Saturday</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>Sunday</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>Open</Typography>
-            </Grid>
+      <Box sx={{my: 2}}>
+        {(galleryLocationArray ||
+          hoursOfOperation?.Monday?.open.value ||
+          hoursOfOperation?.Tuesday?.open.value ||
+          hoursOfOperation?.Wednesday?.open.value ||
+          hoursOfOperation?.Thursday?.open.value ||
+          hoursOfOperation?.Friday?.open.value ||
+          hoursOfOperation?.Saturday?.open.value ||
+          hoursOfOperation?.Sunday?.open.value) && (
+          <>
+            <Typography variant="h5" sx={profileStyles.profile.addressText}>
+              Hours
+            </Typography>
 
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Monday.open.value}</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Tuesday.open.value}</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Wednesday.open.value}</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Thursday.open.value}</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Friday.open.value}</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Saturday.open.value}</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Sunday.open.value}</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>Close</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Monday.close.value}</Typography>
-            </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={1.5}>
+                <Typography />
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  Mon
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  Tues
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  Wed
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  Thur
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  Fri
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  Sat
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  Sun
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography
+                  sx={{
+                    ...profileStyles.profile.hoursOfOperationText,
+                    fontWeight: 'bold',
+                  }}>
+                  Open
+                </Typography>
+              </Grid>
 
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Tuesday.close.value}</Typography>
-            </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Monday.open.value}
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Tuesday.open.value}
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Wednesday.open.value}
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Thursday.open.value}
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Friday.open.value}
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Saturday.open.value}
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Sunday.open.value}
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography
+                  sx={{
+                    ...profileStyles.profile.hoursOfOperationText,
+                    fontWeight: 'bold',
+                  }}>
+                  Close
+                </Typography>
+              </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Monday.close.value}
+                </Typography>
+              </Grid>
 
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Wednesday.close.value}</Typography>
-            </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Tuesday.close.value}
+                </Typography>
+              </Grid>
 
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Thursday.close.value}</Typography>
-            </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Wednesday.close.value}
+                </Typography>
+              </Grid>
 
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Friday.close.value}</Typography>
-            </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Thursday.close.value}
+                </Typography>
+              </Grid>
 
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Saturday.close.value}</Typography>
-            </Grid>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Friday.close.value}
+                </Typography>
+              </Grid>
 
-            <Grid item xs={1.5}>
-              <Typography>{hoursOfOperation?.Sunday.close.value}</Typography>
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Saturday.close.value}
+                </Typography>
+              </Grid>
+
+              <Grid item xs={1.5}>
+                <Typography sx={profileStyles.profile.hoursOfOperationText}>
+                  {hoursOfOperation?.Sunday.close.value}
+                </Typography>
+              </Grid>
             </Grid>
-          </Grid>
-        </Box>
-      )}
+          </>
+        )}
+      </Box>
     </Box>
   );
 }

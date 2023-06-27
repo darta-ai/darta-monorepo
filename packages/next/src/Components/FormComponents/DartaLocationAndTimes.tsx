@@ -273,7 +273,7 @@ export function DartaLocationAndTimes({
         key={`${locationNumber}.businessHours"`}
         sx={profileStyles.edit.inputText}>
         <DartaHoursOfOperation
-          fieldName={`${locationNumber}.businessHours"`}
+          fieldName={`${locationNumber}.businessHours`}
           dtoName={`${locationNumber}`}
           data={
             (getValues(

@@ -24,6 +24,8 @@ import {
 // import {ImageUploadModal} from '../Modals/UploadImageModal';
 import {profileStyles} from './Components/profileStyles';
 
+const INSTAGRAMREGEX =
+  /(?:^|[^\w])(?:@)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)/;
 const galleryDataSchema = yup
   .object({
     galleryName: yup.object().shape({
@@ -39,7 +41,7 @@ const galleryDataSchema = yup
     }),
     galleryLocation0: yup.object().shape({
       locationString: yup.object().shape({
-        value: yup.string().required(),
+        value: yup.string().optional(),
         isPrivate: yup.boolean().optional(),
       }),
     }),
@@ -49,6 +51,16 @@ const galleryDataSchema = yup
     }),
     galleryPhoneNumber: yup.object().shape({
       value: yup.string().optional(),
+      isPrivate: yup.boolean().optional(),
+    }),
+    galleryInstagram: yup.object().shape({
+      value: yup
+        .string()
+        .matches(INSTAGRAMREGEX, {
+          message: 'Please include a valid Instagram handle, such as @darta',
+          excludeEmptyString: true,
+        })
+        .optional(),
       isPrivate: yup.boolean().optional(),
     }),
   })
@@ -65,13 +77,32 @@ const toolTips = {
   gallerySecondaryLocation:
     'If you have a second address, please include it here. We only support two locations at this time.',
   primaryContact:
-    'A primary email address allows users to reach out directly with questions. Typically, info@email.',
+    'A primary email address lets users reach out directly with questions. Typically, info@email.',
   gallerySearch:
-    'Search for your gallery to see if it already exists on google maps. We will populate the data from google.',
+    'Search for your gallery to see if it already exists on google maps. We populate the data from google.',
   galleryPhone:
     'A phone number allows users to reach out directly with questions.',
   galleryWebsite: 'A website allows users to learn more about your gallery.',
   galleryInstagram: 'Your instagram handle will be displayed on your profile.',
+};
+
+const toolTipsLocations = {
+  'galleryLocation0.locationString': 'The primary location of your gallery.',
+  'galleryLocation0.businessHours':
+    'The hours of operation for your primary gallery location.',
+  'galleryLocation1.locationString': 'The secondary location of your gallery.',
+  'galleryLocation1.businessHours':
+    'The hours of operation for your secondary gallery location.',
+  'galleryLocation2.locationString': 'The third location of your gallery.',
+  'galleryLocation2.businessHours':
+    'The hours of operation for your third location.',
+  'galleryLocation3.locationString': 'The fourth location of your gallery.',
+  'galleryLocation3.businessHours':
+    'The hours of operation for your fourth location.',
+  'galleryLocation4.locationString':
+    'The fifth location of your gallery. Congrats.',
+  'galleryLocation4.businessHours':
+    'The hours of operation for your fifth location.',
 };
 
 export function EditProfileGallery({
@@ -259,7 +290,7 @@ export function EditProfileGallery({
               data={galleryProfileData.galleryName as PrivateFields}
               register={register}
               required={true}
-              inputAdornmentString="Search by name"
+              inputAdornmentString="Search"
               toolTips={toolTips}
               setAutofillDetails={setAutofillDetails}
               setPlaceId={setPlaceId}
@@ -326,7 +357,7 @@ export function EditProfileGallery({
               required={false}
               control={control}
               helperTextString={errors.galleryPhone?.value?.message}
-              inputAdornmentString="Phone Number"
+              inputAdornmentString="Phone"
               toolTips={toolTips}
               multiline={false}
               allowPrivate={true}
@@ -364,7 +395,7 @@ export function EditProfileGallery({
               required={false}
               control={control}
               helperTextString={errors.galleryInstagram?.value?.message}
-              inputAdornmentString="Instagram Handle"
+              inputAdornmentString="Instagram"
               toolTips={toolTips}
               multiline={false}
               allowPrivate={true}
@@ -387,7 +418,7 @@ export function EditProfileGallery({
               locationNumber="galleryLocation0"
               data={galleryProfileData.galleryLocation0 as any}
               register={register}
-              toolTips={toolTips}
+              toolTips={toolTipsLocations}
               getValues={getValues}
               setValue={setValue}
               removeLocation={removeLocation}
@@ -401,7 +432,7 @@ export function EditProfileGallery({
               locationNumber="galleryLocation1"
               data={galleryProfileData.galleryLocation1 as any}
               register={register}
-              toolTips={toolTips}
+              toolTips={toolTipsLocations}
               getValues={getValues}
               setValue={setValue}
               removeLocation={removeLocation}
@@ -415,7 +446,7 @@ export function EditProfileGallery({
               locationNumber="galleryLocation2"
               data={galleryProfileData.galleryLocation2 as any}
               register={register}
-              toolTips={toolTips}
+              toolTips={toolTipsLocations}
               getValues={getValues}
               removeLocation={removeLocation}
               setValue={setValue}
@@ -429,7 +460,7 @@ export function EditProfileGallery({
               locationNumber="galleryLocation3"
               data={galleryProfileData.galleryLocation3 as any}
               register={register}
-              toolTips={toolTips}
+              toolTips={toolTipsLocations}
               getValues={getValues}
               removeLocation={removeLocation}
               setValue={setValue}
@@ -443,7 +474,7 @@ export function EditProfileGallery({
               locationNumber="galleryLocation3"
               data={galleryProfileData.galleryLocation4 as any}
               register={register}
-              toolTips={toolTips}
+              toolTips={toolTipsLocations}
               getValues={getValues}
               removeLocation={removeLocation}
               setValue={setValue}

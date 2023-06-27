@@ -1,11 +1,11 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {Box, Button, Typography} from '@mui/material';
-import {Exhibition} from 'darta/globalTypes';
 import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
+import {Exhibition} from '../../../globalTypes';
 import {PRIMARY_BLUE} from '../../../styles';
 import {
   DartaDatePicker,

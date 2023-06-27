@@ -30,6 +30,7 @@ export function DartaRadioButtonsGroup({
   fieldName,
   inputAdornmentString,
   options,
+  defaultValue,
   control,
   setDisplayCurrency,
 }: {
@@ -37,6 +38,7 @@ export function DartaRadioButtonsGroup({
   fieldName: string;
   control: any;
   inputAdornmentString: string;
+  defaultValue: string;
   options: string[];
   setDisplayCurrency: any | null;
 }) {
@@ -80,6 +82,7 @@ export function DartaRadioButtonsGroup({
               row
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
+              defaultValue={defaultValue}
               {...field}>
               {options.map(option => {
                 return (
