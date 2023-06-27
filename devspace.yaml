@@ -42,6 +42,7 @@ deployments:
         service:
           ports:
             - port: 1160
+            - port: 1169
 
 # This is a list of `dev` containers that are based on the containers created by your deployments
 dev:
@@ -52,7 +53,20 @@ dev:
     devImage: ghcr.io/loft-sh/devspace-containers/typescript:18-alpine
     # Sync files between the local filesystem and the development container
     sync:
-      - path: ./
+      - path: ./packages
+        disableDownload: true
+        uploadExcludePaths:
+          - node_modules
+          - .next
+      # TODO deduplicate:
+      - path: ./package.json
+        disableDownload: true
+        uploadExcludePaths:
+          - node_modules
+      - path: ./pnpm-lock.yaml
+      - path: ./pnpm-workspace.yaml
+      - path: ./devspace_start.sh
+      - path: ./.env.local
     # Open a terminal and use the following command to start it
     terminal:
       command: ./devspace_start.sh
@@ -69,9 +83,10 @@ dev:
     ports:
       - port: "9229"
       - port: "1160"
+      - port: "1169"
     # Open the following URLs once they return an HTTP status code other than 502 or 503
     open:
-      - url: http://localhost:1160
+      - url: http://localhost:1169
 
 # Use the `commands` section to define repeatable dev workflows for this project 
 commands:
