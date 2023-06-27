@@ -49,7 +49,6 @@ export function DartaDropdown({
       <Box sx={formStyles.toolTipContainer}>
         {innerWidthRef.current > 780 && (
           <Tooltip
-            sx={formStyles.toolTipContainer}
             title={
               <Typography sx={{textAlign: 'center'}}>
                 {toolTips[fieldName]}
@@ -88,7 +87,6 @@ export function DartaDropdown({
               name={fieldName}
               sx={{alignSelf: 'flex-start'}}
               {...register(`${fieldName}.${'isPrivate'}`)}
-              defaultValue={data?.isPrivate}
               render={({field}) => {
                 return (
                   <FormControlLabel

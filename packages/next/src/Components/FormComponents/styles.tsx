@@ -47,4 +47,21 @@ export const formStyles = {
       fontSize: 15,
     },
   },
+  hoursOfOperationContainer: {
+    display: 'grid',
+    width: '100%',
+    '@media (min-width: 800px)': {
+      gridTemplateColumns: 'repeat(7, 1fr)',
+      gridTemplateRows: 'repeat(1, 1fr)',
+    },
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gridTemplateRows: 'repeat(3, 1fr)',
+  },
+  hoursOfOperationInputContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    m: 1,
+    gap: '1vh',
+    alignItems: 'center',
+  },
 };

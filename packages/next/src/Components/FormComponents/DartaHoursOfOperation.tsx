@@ -3,6 +3,7 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {
   Box,
   FormControlLabel,
+  FormHelperText,
   IconButton,
   InputAdornment,
   Switch,
@@ -21,40 +22,74 @@ type ToolTip = {
   [key: string]: string;
 };
 
-export function DartaTextInput({
+const days = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
+function InputDayContainer({
+  day,
+  register,
+  dtoName,
+}: {
+  day: string;
+  register: any;
+  dtoName: string;
+}) {
+  return (
+    <Box sx={formStyles.formTextField} key={day}>
+      <Typography sx={{textAlign: 'center'}}>{day}</Typography>
+      <Box sx={formStyles.hoursOfOperationInputContainer}>
+        <TextField
+          {...register(
+            `${dtoName}.businessHours.hoursOfOperation.${day}.open.value`,
+          )}
+          variant="standard"
+        />
+        <FormHelperText id="component-helper-text">Open</FormHelperText>
+        <TextField
+          {...register(
+            `${dtoName}.businessHours.hoursOfOperation.${day}.close.value`,
+          )}
+          variant="standard"
+        />
+        <FormHelperText id="component-helper-text">Close</FormHelperText>
+      </Box>
+    </Box>
+  );
+}
+
+export function DartaHoursOfOperation({
   fieldName,
   data,
   register,
   control,
-  errors,
-  helperTextString,
   required,
   inputAdornmentString,
   toolTips,
-  multiline,
   allowPrivate,
-  inputAdornmentValue,
+  dtoName,
 }: {
   fieldName: string;
   data: PrivateFields | any;
   register: any;
   control: any;
-  errors: any;
-  toolTips: ToolTip | any;
   required: boolean;
-  multiline: boolean;
-  helperTextString: string | undefined;
   inputAdornmentString: string;
+  toolTips: ToolTip | any;
   allowPrivate: boolean;
-  inputAdornmentValue: string | null;
+  dtoName: string;
 }) {
   const [isPrivate, setIsPrivate] = React.useState<boolean>(data?.isPrivate!);
   const innerWidthRef = React.useRef(800);
   React.useEffect(() => {
     innerWidthRef.current = window.innerWidth;
   }, []);
-  const innerWidthMultiple = innerWidthRef.current > 800 ? 3 : 4;
-  const rows = multiline ? innerWidthMultiple : 1;
+
   return (
     <Box sx={formStyles.inputTextContainer}>
       <Box sx={formStyles.toolTipContainer}>
@@ -80,26 +115,16 @@ export function DartaTextInput({
           </InputAdornment>
         </Box>
       </Box>
-      <Box>
-        <TextField
-          id="value"
-          variant="standard"
-          error={!!errors[fieldName]}
-          {...register(`${fieldName}.${'value'}`)}
-          sx={formStyles.formTextField}
-          helperText={errors[fieldName]?.value && helperTextString}
-          fullWidth
-          required={required}
-          multiline={multiline}
-          rows={rows}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                {inputAdornmentValue}
-              </InputAdornment>
-            ),
-          }}
-        />
+      <Box sx={formStyles.hoursOfOperationContainer}>
+        {days.map(day => (
+          <Box key={day}>
+            <InputDayContainer
+              day={day}
+              register={register}
+              dtoName={dtoName}
+            />
+          </Box>
+        ))}
       </Box>
       <InputAdornment sx={{width: '10vw', alignSelf: 'center'}} position="end">
         {allowPrivate && (

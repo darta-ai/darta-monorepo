@@ -5,10 +5,9 @@ export const profileStyles = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    gap: '5vh',
+    alignItems: 'center',
+    gap: '2vh',
     minWidth: '80vw',
-    minHeight: '100vh',
-    mt: '10vh',
     alignSelf: 'center',
   },
   profile: {
@@ -63,13 +62,15 @@ export const profileStyles = {
         flexDirection: 'column',
       },
     },
-    galleryLocationContainer: {
+    galleryContactContainer: {
       display: 'flex',
       flexDirection: 'row',
-      justifyContent: 'space-around',
+      justifyContent: 'space-evenly',
       gap: '5%',
-      width: '80%',
-      mt: 3,
+      width: '100%',
+    },
+    galleryContactHeadline: {
+      textAlign: 'center',
     },
     galleryBioContainer: {
       display: 'flex',
@@ -78,9 +79,10 @@ export const profileStyles = {
       justifyContent: 'flex-start',
       height: '0%',
     },
+
     galleryAddressContainer: {
-      display: 'flex',
-      flexDirection: 'column',
+      display: 'column',
+      flexDirection: 'row',
       width: '100%',
       alignItems: 'center',
       alignText: 'center',
@@ -147,7 +149,7 @@ export const profileStyles = {
     saveButton: {
       color: PRIMARY_BLUE,
       alignSelf: 'center',
-      m: 2,
+      m: 10,
     },
   },
 };

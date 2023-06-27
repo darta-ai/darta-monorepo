@@ -31,7 +31,6 @@ export function DartaRadioButtonsGroup({
   inputAdornmentString,
   options,
   control,
-  defaultValue,
   setDisplayCurrency,
 }: {
   toolTips: any;
@@ -39,7 +38,6 @@ export function DartaRadioButtonsGroup({
   control: any;
   inputAdornmentString: string;
   options: string[];
-  defaultValue: string;
   setDisplayCurrency: any | null;
 }) {
   const innerWidthRef = React.useRef(800);
@@ -82,7 +80,6 @@ export function DartaRadioButtonsGroup({
               row
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
-              defaultValue={defaultValue}
               {...field}>
               {options.map(option => {
                 return (

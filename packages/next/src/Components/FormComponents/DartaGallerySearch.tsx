@@ -4,24 +4,36 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import {
   Box,
-  FormControlLabel,
   IconButton,
   InputAdornment,
   ListItem,
-  Switch,
   TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid';
+import {debounce} from '@mui/material/utils';
 import parse from 'autosuggest-highlight/parse';
 import * as React from 'react';
-import {Controller} from 'react-hook-form';
 
-import {PRIMARY_DARK_GREY} from '../../../styles';
 import {PrivateFields} from '../Profile/types';
 import {formStyles} from './styles';
+
+function loadScript(src: string, position: HTMLElement | null, id: string) {
+  if (!position) {
+    return;
+  }
+
+  const script = document.createElement('script');
+  script.setAttribute('async', '');
+  script.setAttribute('id', id);
+  script.src = src;
+  position.appendChild(script);
+}
+
+const autocompleteService = {current: null};
+const businessDetailService = {current: null};
 
 interface MainTextMatchedSubstrings {
   offset: number;
@@ -38,44 +50,169 @@ interface PlaceType {
   place_id: string;
 }
 
-export function DartaLocationLookup({
+export function DartaGallerySearch({
   fieldName,
   data,
   register,
-  control,
   toolTips,
-  allowPrivate,
-  multiline,
-  errors,
-  helperTextString,
   required,
   inputAdornmentString,
-  options,
-  value,
-  setOptions,
-  setValue,
-  setInputValue,
+  setAutofillDetails,
+  placeId,
   setPlaceId,
 }: {
   fieldName: string;
   data: PrivateFields | undefined;
   register: any;
-  errors: any;
-  control: any;
   toolTips: any;
   required: boolean;
-  multiline: boolean;
-  helperTextString: string | undefined;
   inputAdornmentString: string;
-  allowPrivate: boolean;
-  options: readonly PlaceType[];
-  value: PlaceType | null | undefined;
-  setOptions: (options: readonly PlaceType[]) => void;
-  setValue: (value: PlaceType | null) => void;
-  setInputValue: (inputValue: string) => void;
-  setPlaceId(placeId: string): void;
+  placeId: string | null;
+  setAutofillDetails: (details: any) => void;
+  setPlaceId: (placeId: string) => void;
 }) {
-  const [isPrivate, setIsPrivate] = React.useState<boolean>(data?.isPrivate!);
+  const [value, setValue] = React.useState<PlaceType | null | undefined>(
+    data?.value as any,
+  );
+  const [inputValue, setInputValue] = React.useState('');
+  const [options, setOptions] = React.useState<readonly PlaceType[]>([]);
+  const loaded = React.useRef(false);
+
+  if (typeof window !== 'undefined' && !loaded.current) {
+    if (!document.querySelector('#google-maps')) {
+      loadScript(
+        `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`,
+        document.querySelector('head'),
+        'google-maps',
+      );
+    }
+
+    loaded.current = true;
+  }
+
+  const fetch = React.useMemo(
+    () =>
+      debounce(
+        (
+          request: {input: string},
+          callback: (results?: readonly PlaceType[]) => void,
+        ) => {
+          (autocompleteService.current as any).getPlacePredictions(
+            request,
+            callback,
+          );
+        },
+        400,
+      ),
+    [],
+  );
+
+  React.useEffect(() => {
+    let active = true;
+
+    if (!autocompleteService.current && (window as any).google) {
+      autocompleteService.current = new (
+        window as any
+      ).google.maps.places.AutocompleteService();
+    }
+    if (!autocompleteService.current) {
+      return undefined;
+    }
+
+    if (inputValue === '') {
+      setOptions(value ? [value] : []);
+      return undefined;
+    }
+
+    fetch({input: inputValue}, (results?: readonly PlaceType[]) => {
+      if (active) {
+        let newOptions: readonly PlaceType[] = [];
+
+        if (value) {
+          newOptions = [value];
+        }
+
+        if (results) {
+          newOptions = [...newOptions, ...results];
+        }
+        setOptions(newOptions);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [value, inputValue, fetch]);
+
+  const [placeDetails, setPlaceDetails] = React.useState<any>(null);
+
+  const fetchBusinessDetails = React.useMemo(
+    () =>
+      debounce(
+        (
+          request: {
+            placeId: string;
+            fields: string[];
+          },
+          callback: (results?: readonly PlaceType[]) => void,
+        ) => {
+          (businessDetailService.current as any).getDetails(request, callback);
+        },
+        400,
+      ),
+    [],
+  );
+
+  React.useEffect(() => {
+    const businessActive = {current: true};
+
+    if (!businessDetailService.current && (window as any).google) {
+      businessDetailService.current = new (
+        window as any
+      ).google.maps.places.PlacesService(document.createElement('div'));
+    }
+    if (!businessDetailService.current) {
+      return undefined;
+    }
+
+    if (placeId && businessActive.current) {
+      fetchBusinessDetails(
+        {
+          placeId,
+          fields: [
+            'opening_hours',
+            'geometry',
+            'name',
+            'website',
+            'formatted_phone_number',
+            'formatted_address',
+            'photos',
+            'url',
+          ],
+        },
+        (results?: readonly PlaceType[]) => {
+          if (businessActive.current) {
+            let newDetails: readonly PlaceType[] = [];
+
+            if (placeDetails) {
+              newDetails = placeDetails;
+            }
+
+            if (results) {
+              newDetails = results;
+            }
+            setPlaceDetails(newDetails);
+            setAutofillDetails(newDetails);
+          }
+        },
+      );
+    }
+    return () => {
+      businessActive.current = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [placeId, fetchBusinessDetails]);
+
   const innerWidthRef = React.useRef(800);
   React.useEffect(() => {
     innerWidthRef.current = window.innerWidth;
@@ -124,12 +261,9 @@ export function DartaLocationLookup({
         renderInput={params => (
           <TextField
             {...params}
-            {...register(`${fieldName}.value`)}
+            {...register(`${fieldName}.${'value'}`)}
             variant="standard"
-            error={!!errors[fieldName]}
-            helperText={errors[fieldName]?.value && helperTextString}
             required={required}
-            multiline={multiline}
           />
         )}
         renderOption={(props, option) => {
@@ -178,80 +312,10 @@ export function DartaLocationLookup({
           );
         }}
       />
-      <InputAdornment sx={{width: '10vw', alignSelf: 'center'}} position="end">
-        {allowPrivate && (
-          <Controller
-            control={control}
-            sx={{alignSelf: 'flex-start'}}
-            name={fieldName}
-            {...register(`${fieldName}.${'isPrivate'}`)}
-            render={({field}: {field: any}) => {
-              return (
-                <FormControlLabel
-                  labelPlacement="bottom"
-                  label={
-                    innerWidthRef.current > 780 ? (
-                      <Box sx={formStyles.makePrivateContainer}>
-                        <Typography sx={formStyles.toolTip}>
-                          {isPrivate ? 'Private' : 'Public'}
-                          <Tooltip
-                            title={
-                              <Box>
-                                <Typography
-                                  sx={{textAlign: 'center', fontSize: 15}}>
-                                  {isPrivate
-                                    ? 'Private information is only visible to you and your team.'
-                                    : 'Public information is available to any user.'}
-                                </Typography>
-                                <IconButton>
-                                  <HelpOutlineIcon
-                                    fontSize="small"
-                                    sx={formStyles.helpIconTiny}
-                                  />
-                                </IconButton>
-                              </Box>
-                            }
-                            placement="bottom">
-                            <IconButton>
-                              <HelpOutlineIcon
-                                fontSize="small"
-                                sx={formStyles.helpIconTiny}
-                              />
-                            </IconButton>
-                          </Tooltip>
-                        </Typography>
-                      </Box>
-                    ) : (
-                      <Box sx={formStyles.makePrivateContainer}>
-                        <Typography sx={formStyles.toolTip}>
-                          {isPrivate ? 'Private' : 'Public'}
-                        </Typography>
-                      </Box>
-                    )
-                  }
-                  control={
-                    <Switch
-                      color="secondary"
-                      value={data?.isPrivate}
-                      id="isPrivate"
-                      size="small"
-                      onChange={e => field.onChange(e.target.checked)}
-                      checked={field.value}
-                      onClick={() => {
-                        setIsPrivate(!isPrivate);
-                      }}
-                    />
-                  }
-                  sx={{
-                    width: '10vw',
-                    color: PRIMARY_DARK_GREY,
-                  }}
-                />
-              );
-            }}
-          />
-        )}
-      </InputAdornment>
+      <InputAdornment
+        sx={{width: '10vw', alignSelf: 'center'}}
+        position="end"
+      />
     </Box>
   );
 }
