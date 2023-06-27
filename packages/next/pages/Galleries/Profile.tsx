@@ -5,12 +5,9 @@ import {GetStaticProps} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
+import {IGalleryProfileData} from '../../globalTypes';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
-import {
-  EditProfileGallery,
-  IGalleryProfileData,
-  ProfileGallery,
-} from '../../src/Components/Profile';
+import {EditProfileGallery, ProfileGallery} from '../../src/Components/Profile';
 import {galleryProfileRawData} from '../../src/dummyData';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
 
@@ -18,15 +15,12 @@ const aboutStyles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     gap: '5%',
     width: '80vw',
-    minHeight: '100vh',
-    mb: 5,
+    minHeight: '90vh',
+    mt: 5,
     alignSelf: 'center',
-    '@media (minWidth: 800px)': {
-      paddingTop: '7vh',
-    },
   },
   uploadImageContainer: {
     display: 'flex',
@@ -89,19 +83,19 @@ export default function GalleryProfile() {
       </Head>
 
       <SideNavigationWrapper>
-        <Container maxWidth="md" sx={aboutStyles.container}>
+        <Container sx={aboutStyles.container}>
           {isEditingProfile ? (
             <EditProfileGallery
               isEditingProfile={isEditingProfile}
               setIsEditingProfile={setIsEditingProfile}
               setGalleryProfileData={setGalleryProfileData}
-              galleryProfileData={galleryProfileData}
+              galleryProfileData={galleryProfileData as IGalleryProfileData}
             />
           ) : (
             <ProfileGallery
               isEditingProfile={isEditingProfile}
               setIsEditingProfile={setIsEditingProfile}
-              galleryProfileData={galleryProfileData}
+              galleryProfileData={galleryProfileData as IGalleryProfileData}
             />
           )}
         </Container>

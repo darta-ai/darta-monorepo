@@ -1,14 +1,14 @@
 import SettingsIcon from '@mui/icons-material/Settings';
-import {Box, Button, Typography} from '@mui/material';
+import {Box, Button, Divider, Typography} from '@mui/material';
 // import {TourProvider} from '@reactour/tour';
 import Head from 'next/head';
 import React from 'react';
 
+import {IGalleryProfileData} from '../../../globalTypes';
 import {PRIMARY_BLUE} from '../../../styles';
 // import {InquiryTable} from '../Tables/InquiryTable';
 import {GalleryLocationComponent} from './Components/GalleryLocationText';
 import {profileStyles} from './Components/profileStyles';
-import {IGalleryProfileData} from './types';
 
 export function ProfileGallery({
   isEditingProfile,
@@ -22,7 +22,11 @@ export function ProfileGallery({
   return (
     <>
       <Head>
-        <title>Gallery | Profile</title>
+        {galleryProfileData?.galleryName?.value ? (
+          <title>{galleryProfileData?.galleryName?.value} | Profile</title>
+        ) : (
+          <title>Gallery | Profile</title>
+        )}
         <meta name="description" content="Your darta profile." />
       </Head>
       <Box mb={2} sx={profileStyles.container}>
@@ -71,42 +75,119 @@ export function ProfileGallery({
                   </Typography>
                 </Box>
               </Box>
-              <Box sx={profileStyles.profile.galleryLocationContainer}>
-                <GalleryLocationComponent
-                  galleryLocationString={
-                    galleryProfileData?.galleryPrimaryLocation?.value!
-                  }
-                  galleryLocationIsPrivate={
-                    galleryProfileData?.gallerySecondaryLocation?.isPrivate
-                  }
-                />
-
-                {galleryProfileData?.gallerySecondaryLocation?.value && (
-                  <GalleryLocationComponent
-                    galleryLocationString={
-                      galleryProfileData?.gallerySecondaryLocation?.value
-                    }
-                    galleryLocationIsPrivate={
-                      galleryProfileData?.gallerySecondaryLocation?.isPrivate
-                    }
-                  />
-                )}
-              </Box>
-              <Box sx={profileStyles.profile.galleryBioContainer}>
-                <Typography variant="h6" sx={{textAlign: 'center'}}>
-                  Primary Contact
-                </Typography>
-                <Typography sx={{textAlign: 'center'}}>
-                  {galleryProfileData?.primaryContact?.value
-                    ? galleryProfileData?.primaryContact?.value
-                    : 'Your Primary Contact'}
-                  {galleryProfileData?.primaryContact?.isPrivate && '*'}
-                </Typography>
-              </Box>
             </Box>
           </Box>
         </Box>
-        <Box>{/* <InquiryTable /> */}</Box>
+        <Typography variant="h5" sx={{textAlign: 'center'}}>
+          Contact
+          <Divider />
+        </Typography>
+        <Box sx={profileStyles.profile.galleryContactContainer}>
+          <Box>
+            <Typography
+              variant="h6"
+              sx={profileStyles.profile.galleryContactHeadline}>
+              Primary Contact
+              <Divider />
+            </Typography>
+            <Typography
+              sx={{textAlign: 'center', overflow: 'hidden', my: '1vh'}}>
+              {galleryProfileData?.primaryContact?.value
+                ? galleryProfileData?.primaryContact?.value
+                : 'N/A'}
+              {galleryProfileData?.primaryContact?.isPrivate && '*'}
+            </Typography>
+          </Box>
+          {galleryProfileData?.galleryPhone?.value && (
+            <Box>
+              <Typography
+                variant="h6"
+                sx={profileStyles.profile.galleryContactHeadline}>
+                Phone
+                <Divider />
+              </Typography>
+              <Typography sx={{textAlign: 'center', my: '1vh'}}>
+                {galleryProfileData?.galleryPhone?.value}
+                {galleryProfileData?.galleryPhone?.isPrivate && '*'}
+              </Typography>
+            </Box>
+          )}
+          {galleryProfileData?.galleryWebsite?.value && (
+            <Box>
+              <Typography
+                variant="h6"
+                sx={profileStyles.profile.galleryContactHeadline}>
+                Website
+                <Divider />
+              </Typography>
+              <Typography sx={{textAlign: 'center', my: '1vh'}}>
+                {galleryProfileData?.galleryWebsite?.value ? (
+                  <a
+                    target="_blank"
+                    href={galleryProfileData?.galleryWebsite?.value}
+                    rel="noreferrer">
+                    {galleryProfileData?.galleryWebsite?.value
+                      .replace('http://www.', '')
+                      .replace('https://www.', '')
+                      .replace('/', '')}
+                  </a>
+                ) : (
+                  'N/A'
+                )}
+                {galleryProfileData?.galleryWebsite?.isPrivate && '*'}
+              </Typography>
+            </Box>
+          )}
+          {galleryProfileData?.galleryInstagram?.value && (
+            <Box>
+              <Typography
+                variant="h6"
+                sx={profileStyles.profile.galleryContactHeadline}>
+                Instagram Handle
+                <Divider />
+              </Typography>
+              <Typography sx={{textAlign: 'center', my: '1vh'}}>
+                {galleryProfileData?.galleryInstagram?.value
+                  ? galleryProfileData?.galleryInstagram?.value
+                  : 'N/A'}
+                {galleryProfileData?.galleryInstagram?.isPrivate && '*'}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+        <Box>
+          <Typography variant="h5" sx={{textAlign: 'center'}}>
+            Locations
+            <Divider />
+          </Typography>
+        </Box>
+        <Box>
+          <Box sx={profileStyles.profile.galleryAddressContainer}>
+            <GalleryLocationComponent
+              galleryLocationData={galleryProfileData?.galleryLocation0}
+            />
+          </Box>
+          <Box sx={profileStyles.profile.galleryAddressContainer}>
+            <GalleryLocationComponent
+              galleryLocationData={galleryProfileData?.galleryLocation1}
+            />
+          </Box>
+          <Box sx={profileStyles.profile.galleryAddressContainer}>
+            <GalleryLocationComponent
+              galleryLocationData={galleryProfileData?.galleryLocation2}
+            />
+          </Box>
+          <Box sx={profileStyles.profile.galleryAddressContainer}>
+            <GalleryLocationComponent
+              galleryLocationData={galleryProfileData?.galleryLocation3}
+            />
+          </Box>
+          <Box sx={profileStyles.profile.galleryAddressContainer}>
+            <GalleryLocationComponent
+              galleryLocationData={galleryProfileData?.galleryLocation4}
+            />
+          </Box>
+        </Box>
       </Box>
     </>
   );

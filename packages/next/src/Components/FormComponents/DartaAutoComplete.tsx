@@ -50,11 +50,6 @@ export function DartaAutoComplete({
 }) {
   const [isPrivate, setIsPrivate] = React.useState<boolean>(data?.isPrivate!);
 
-  // const [value, setValue] = React.useState<PlaceType | null | undefined>(
-  //   data?.value as any,
-  // );
-  // const [inputValue, setInputValue] = React.useState('');
-
   const innerWidthRef = React.useRef(800);
   React.useEffect(() => {
     innerWidthRef.current = window.innerWidth;
@@ -64,7 +59,6 @@ export function DartaAutoComplete({
       <Box sx={formStyles.toolTipContainer}>
         {innerWidthRef.current > 780 && (
           <Tooltip
-            sx={formStyles.toolTipContainer}
             title={
               <Typography sx={{textAlign: 'center'}}>
                 {toolTips[fieldName]}
@@ -86,7 +80,6 @@ export function DartaAutoComplete({
           id="autocomplete"
           options={inputOptions}
           sx={{...formStyles.formTextField}}
-          defaultValue={data?.value!}
           renderInput={params => (
             <TextField
               {...(params as any)}
@@ -104,7 +97,6 @@ export function DartaAutoComplete({
             sx={{alignSelf: 'flex-start'}}
             name={fieldName}
             {...register(`${fieldName}.${'isPrivate'}`)}
-            defaultValue={data?.isPrivate}
             render={({field}: {field: any}) => {
               return (
                 <FormControlLabel

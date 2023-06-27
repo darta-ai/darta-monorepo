@@ -8,6 +8,7 @@ import React from 'react';
 
 import {Artwork} from '../../globalTypes';
 import {ArtworkCard} from '../../src/Components/Artwork/index';
+import {newArtworkShell} from '../../src/Components/common/templates';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {
   artwork1,
@@ -16,117 +17,8 @@ import {
   galleryInquiriesDummyData,
   InquiryArtworkData,
 } from '../../src/dummyData';
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../styles';
-
-const aboutStyles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    gap: '2vh',
-    minHeight: '100vh',
-    minWidth: '70vw',
-    alignSelf: 'center',
-    '@media (minWidth: 800px)': {
-      paddingTop: '7vh',
-    },
-  },
-  uploadImageContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    gap: '5%',
-    alignItems: 'center',
-  },
-  typographyTitle: {
-    fontFamily: 'EB Garamond',
-    color: PRIMARY_BLUE,
-    fontSize: '2rem',
-    my: '3vh',
-    '@media (min-width:800px)': {
-      fontSize: '2.5rem',
-    },
-    cursor: 'default',
-  },
-  typography: {
-    fontFamily: 'EB Garamond',
-    color: PRIMARY_DARK_GREY,
-    fontSize: '1rem',
-    '@media (minWidth: 800px)': {
-      fontSize: '1.3rem',
-    },
-    cursor: 'default',
-  },
-  button: {
-    color: PRIMARY_BLUE,
-  },
-  inputTextContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  formTextField: {
-    width: '100%',
-  },
-};
-
-const newArtworkShell: Artwork = {
-  artworkTitle: {
-    value: '',
-  },
-  published: false,
-  artistName: {
-    value: '',
-  },
-  artworkImage: {
-    value: '',
-  },
-  artworkImagesArray: [],
-  artworkMedium: {
-    value: '',
-  },
-  artworkPrice: {
-    value: '',
-    isPrivate: false,
-  },
-  artworkCurrency: {
-    value: 'USD',
-  },
-  canInquire: {
-    value: '',
-  },
-  artworkDescription: {
-    value: '',
-  },
-  slug: {
-    value: '',
-  },
-  artworkDimensions: {
-    height: {
-      value: '',
-    },
-    text: {
-      value: '',
-    },
-    width: {
-      value: '',
-    },
-    depth: {
-      value: '',
-    },
-    unit: {
-      value: 'in',
-    },
-  },
-  artworkCreatedYear: {
-    value: '',
-  },
-};
-
-// need a function that gets all artworks
-// need a function that gets all inquiries for art
+import {PRIMARY_BLUE, PRIMARY_MILK} from '../../styles';
+import {galleryStyles} from '../../styles/GalleryPageStyles';
 
 export default function GalleryProfile() {
   const [artworks, setArtworks] = React.useState<{[key: string]: Artwork}>({
@@ -155,6 +47,8 @@ export default function GalleryProfile() {
   const addNewArtwork = () => {
     const newArtwork: Artwork = _.cloneDeep(newArtworkShell);
     newArtwork.artworkId = crypto.randomUUID();
+    newArtwork.updatedAt = new Date().toISOString();
+    newArtwork.createdAt = new Date().toISOString();
     setArtworks({...artworks, [newArtwork.artworkId]: newArtwork});
   };
 
@@ -181,9 +75,9 @@ export default function GalleryProfile() {
       </Head>
 
       <SideNavigationWrapper>
-        <Box sx={aboutStyles.container}>
+        <Box sx={galleryStyles.container}>
           <Box>
-            <Typography variant="h2" sx={aboutStyles.typographyTitle}>
+            <Typography variant="h2" sx={galleryStyles.typographyTitle}>
               Artwork
             </Typography>
           </Box>
@@ -201,16 +95,26 @@ export default function GalleryProfile() {
             Create Artwork
           </Button>
           {inquiries &&
-            Object.values(artworks).map(artwork => (
-              <Box>
-                <ArtworkCard
-                  artwork={artwork}
-                  saveArtwork={saveArtwork}
-                  deleteArtwork={deleteArtwork}
-                  inquiries={inquiries[artwork.artworkId as string]}
-                />
-              </Box>
-            ))}
+            Object.values(artworks)
+              .sort((a, b) => {
+                const dateA = a?.createdAt
+                  ? new Date(a.createdAt)
+                  : new Date(0);
+                const dateB = b?.createdAt
+                  ? new Date(b.createdAt)
+                  : new Date(0);
+                return (dateB as any) - (dateA as any);
+              })
+              .map(artwork => (
+                <Box>
+                  <ArtworkCard
+                    artwork={artwork}
+                    saveArtwork={saveArtwork}
+                    deleteArtwork={deleteArtwork}
+                    inquiries={inquiries[artwork.artworkId as string]}
+                  />
+                </Box>
+              ))}
         </Box>
       </SideNavigationWrapper>
     </>
@@ -221,9 +125,7 @@ export const getStaticProps: GetStaticProps<{
   data: any;
 }> = async () => {
   return {props: {data: {data: {}}}};
-  // try {
-  //   // const aboutData = (await getGallery()) as null;
-  // } catch (e) {
-  //   return {props: {data: {data: {}}}};
-  // }
+  // TO DO
+  // need a function that gets all artworks
+  // need a function that gets all inquiries for art
 };

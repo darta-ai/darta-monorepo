@@ -8,13 +8,13 @@ import {
   Switch,
   Typography,
 } from '@mui/material';
+import {Artwork} from 'darta/globalTypes';
 import Head from 'next/head';
 import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {mediums} from '../../../data/medium';
-import {Artwork} from '../../../globalTypes';
 import {PRIMARY_BLUE} from '../../../styles';
 import {
   DartaAutoComplete,
@@ -134,7 +134,6 @@ export function CreateArtwork({
   });
 
   const onSubmit = (data: any) => {
-    console.log('triggered');
     const artist_name = data.artistName.value
       .toLowerCase()
       .replace(/\s+/g, '-')
@@ -240,7 +239,7 @@ export function CreateArtwork({
             <Typography
               variant="body2"
               sx={{color: 'red', alignSelf: 'center'}}>
-              {errors.artworkImage.value?.message}
+              {errors.artworkImage?.value?.message!}
             </Typography>
           )}
 
@@ -507,9 +506,8 @@ export function CreateArtwork({
           </Box>
         </Box>
         <DartaDialogue
-          artworkTitle={newArtwork.artworkTitle.value || '____'}
-          artworkId={newArtwork.artworkId as string}
-          artistName={newArtwork.artistName.value || '____'}
+          title={newArtwork.artworkTitle.value || '____'}
+          id={newArtwork.artworkId as string}
           open={open}
           handleClose={handleClose}
           handleDelete={handleDelete}
