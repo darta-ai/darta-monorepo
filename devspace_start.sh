@@ -1,12 +1,8 @@
 #!/bin/bash
 set +e  # Continue on errors
 
-# export NODE_ENV=development
-
-echo "Installing Yarn Dependencies"
-ln -s ../../yarn.lock yarn.lock
-yarn
-rm yarn.lock
+npm install -g pnpm
+pnpm install
 
 COLOR_BLUE="\033[0;94m"
 COLOR_GREEN="\033[0;92m"
@@ -26,11 +22,10 @@ echo -e "${COLOR_BLUE}
 
 Welcome to your development container!
 
-This is how you can work with it:
-- Files will be synchronized between your local machine and this container
-- Some ports will be forwarded, so you can access this container via localhost
-- Run \`${COLOR_GREEN}npm start${COLOR_RESET}\` to start the application
-"
+Navigate to either \`packages/next/\` or \`packages/server/\` and run \`pnpm dev\`.
+If you want to run the other one as well, run \`devspace enter\`.
+You can reach the NextJS frontend at \`locahost:1169\`
+and the Fastify API at \`locahost:1160\`."
 
 # Set terminal prompt
 export PS1="\[${COLOR_BLUE}\]devspace\[${COLOR_RESET}\] ./\W \[${COLOR_BLUE}\]\\$\[${COLOR_RESET}\] "
