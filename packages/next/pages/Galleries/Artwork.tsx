@@ -2,13 +2,13 @@ import 'firebase/compat/auth';
 
 import {Box, Button, Typography} from '@mui/material';
 import _ from 'lodash';
-import {GetStaticProps} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
 import {Artwork} from '../../globalTypes';
 import {ArtworkCard} from '../../src/Components/Artwork/index';
 import {newArtworkShell} from '../../src/Components/common/templates';
+import {UploadArtworksXlsModal} from '../../src/Components/Modals';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {
   artwork1,
@@ -30,6 +30,10 @@ export default function GalleryProfile() {
   const [inquiries, setInquiries] = React.useState<{
     [key: string]: InquiryArtworkData[];
   } | null>(null);
+
+  const handleBatchUpload = (uploadArtworks: {[key: string]: Artwork}) => {
+    setArtworks({...artworks, ...uploadArtworks});
+  };
 
   React.useEffect(() => {
     const inquiriesArray = Object.values(galleryInquiriesDummyData);
@@ -94,6 +98,7 @@ export default function GalleryProfile() {
             }}>
             Create Artwork
           </Button>
+          <UploadArtworksXlsModal handleBatchUpload={handleBatchUpload} />
           {inquiries &&
             Object.values(artworks)
               .sort((a, b) => {
@@ -120,12 +125,3 @@ export default function GalleryProfile() {
     </>
   );
 }
-
-export const getStaticProps: GetStaticProps<{
-  data: any;
-}> = async () => {
-  return {props: {data: {data: {}}}};
-  // TO DO
-  // need a function that gets all artworks
-  // need a function that gets all inquiries for art
-};

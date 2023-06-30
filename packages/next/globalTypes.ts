@@ -42,12 +42,15 @@ export interface CoordinateFields {
   googleMapsUrl: {value: string | null};
 }
 
-type Dimensions = {
-  height: PublicFields;
+export type Dimensions = {
+  heightIn: PublicFields;
   text: PublicFields;
-  width: PublicFields;
-  depth: PublicFields;
-  unit: {value: 'in' | 'cm'};
+  widthIn: PublicFields;
+  depthIn?: PublicFields;
+  depthCm?: PublicFields;
+  heightCm: PublicFields;
+  widthCm: PublicFields;
+  displayUnit: {value: 'in' | 'cm'};
 };
 
 interface GalleryFields {
@@ -60,6 +63,7 @@ interface GalleryFields {
   galleryPhone?: PrivateFields;
   galleryBusinessHours?: IBusinessHours;
   galleryInstagram?: PrivateFields;
+  isValidated?: boolean;
 }
 
 export interface IBusinessLocationData {
@@ -70,7 +74,7 @@ export interface IBusinessLocationData {
 }
 
 interface GalleryAddressFields {
-  galleryLocation0: IBusinessLocationData;
+  galleryLocation0?: IBusinessLocationData;
   galleryLocation1?: IBusinessLocationData;
   galleryLocation2?: IBusinessLocationData;
   galleryLocation3?: IBusinessLocationData;
@@ -83,19 +87,19 @@ export interface IGalleryProfileData
 
 export type Artwork = {
   artworkImage: PublicFields;
-  artworkId?: string;
-  published: boolean;
+  artworkId: string;
+  published?: boolean;
   artworkImagesArray?: PublicFields[] | any[];
   artworkTitle: PublicFields;
   artistName: PublicFields;
-  artworkDescription: PublicFields;
-  artworkCurrency: PublicFields;
-  artworkPrice: PrivateFields;
+  artworkDescription?: PublicFields;
+  artworkCurrency?: PublicFields;
+  artworkPrice?: PrivateFields;
   canInquire: PublicFields;
   artworkMedium: PublicFields;
   artworkDimensions: Dimensions;
   slug?: PublicFields;
-  artworkCreatedYear: PublicFields;
+  artworkCreatedYear?: PublicFields;
   createdAt: string | null;
   updatedAt: string | null;
 };
@@ -132,7 +136,7 @@ export type CurrencyConverterType = {
 
 export type GalleryState = {
   galleryProfile: IGalleryProfileData;
-  galleryArtworks: Artwork[];
-  galleryExhibitions: Exhibition[];
-  sessionToken: string | null;
+  galleryArtworks: {[key: string]: Artwork};
+  galleryExhibitions: {[key: string]: Exhibition};
+  accessToken: string | null;
 };

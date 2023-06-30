@@ -1,14 +1,16 @@
 import 'firebase/compat/auth';
 
 import {Container} from '@mui/material';
-import {GetStaticProps} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
 import {IGalleryProfileData} from '../../globalTypes';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {EditProfileGallery, ProfileGallery} from '../../src/Components/Profile';
-import {galleryProfileRawData} from '../../src/dummyData';
+import {
+  GalleryReducerActions,
+  useAppState,
+} from '../../src/Components/State/AppContext';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
 
 const aboutStyles = {
@@ -64,13 +66,32 @@ const aboutStyles = {
 
 // About component
 export default function GalleryProfile() {
+  const {state, dispatch} = useAppState();
   const [isEditingProfile, setIsEditingProfile] =
     React.useState<boolean>(false);
   const [galleryProfileData, setGalleryProfileData] = React.useState<
     IGalleryProfileData | {}
-  >({
-    ...galleryProfileRawData,
-  });
+  >({...state.galleryProfile, isValidated: true});
+  // React.useEffect(() => {
+  //   const tryBlank = true;
+  //   const isNotValidated = false;
+  //   if (tryBlank && !isNotValidated) {
+  //     setGalleryProfileData({isValidated: true});
+  //   } else if (!tryBlank && isNotValidated) {
+  //     setGalleryProfileData({...state.galleryProfile, isValidated: false});
+  //   } else {
+  //     setGalleryProfileData(state.galleryProfile);
+  //   }
+  // }, []);
+
+  React.useEffect(() => {
+    console.log('triggered');
+    dispatch({
+      type: GalleryReducerActions.SET_PROFILE,
+      payload: galleryProfileData,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [galleryProfileData]);
 
   return (
     <>
@@ -103,14 +124,3 @@ export default function GalleryProfile() {
     </>
   );
 }
-
-export const getStaticProps: GetStaticProps<{
-  data: any;
-}> = async () => {
-  return {props: {data: {data: {}}}};
-  // try {
-  //   // const aboutData = (await getGallery()) as null;
-  // } catch (e) {
-  //   return {props: {data: {data: {}}}};
-  // }
-};

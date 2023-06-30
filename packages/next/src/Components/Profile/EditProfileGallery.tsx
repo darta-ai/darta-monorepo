@@ -20,8 +20,6 @@ import {
   DartaLocationAndTimes,
   DartaTextInput,
 } from '../FormComponents/index';
-// import {PlacesAutocomplete} from '../../../ThirdPartyAPIs/PlacesAutocomplete';
-// import {ImageUploadModal} from '../Modals/UploadImageModal';
 import {profileStyles} from './Components/profileStyles';
 
 const INSTAGRAMREGEX =
@@ -130,7 +128,9 @@ export function EditProfileGallery({
     resolver: yupResolver(galleryDataSchema),
   });
   const [placeId, setPlaceId] = React.useState<any>(null);
-  const [editImage, setEditImage] = React.useState<boolean>(false);
+  const [editImage, setEditImage] = React.useState<boolean>(
+    !galleryProfileData?.galleryLogo?.value,
+  );
   const onSubmit = (data: any) => {
     const tempData = _.cloneDeep(data);
     if (
@@ -140,7 +140,7 @@ export function EditProfileGallery({
       tempData.galleryLocation0 = data.galleryLocation1;
       tempData.galleryLocation1 = {};
     }
-    setGalleryProfileData(tempData);
+    setGalleryProfileData({...galleryProfileData, ...tempData});
     setIsEditingProfile(!isEditingProfile);
   };
 
@@ -225,7 +225,6 @@ export function EditProfileGallery({
         },
       });
     } else if (!galleryProfileData?.galleryLocation4?.locationString?.value) {
-      console.log('here');
       return setGalleryProfileData({
         ...galleryProfileData,
         galleryLocation4: {
@@ -240,7 +239,9 @@ export function EditProfileGallery({
     if (galleryProfile[locationNumber]) {
       delete galleryProfile[locationNumber];
     }
-    setGalleryProfileData(galleryProfile);
+    console.log(galleryProfile);
+    setValue(`${locationNumber}`, undefined);
+    setGalleryProfileData({...galleryProfile});
   };
 
   return (
@@ -268,7 +269,7 @@ export function EditProfileGallery({
               />
             ) : (
               <img
-                src={galleryProfileData?.galleryLogo?.value as string}
+                src={(galleryProfileData?.galleryLogo?.value as string) || ''}
                 alt="gallery logo"
                 style={profileStyles.edit.defaultImageEdit}
               />
@@ -284,7 +285,9 @@ export function EditProfileGallery({
           </Box>
         </Box>
         <Box sx={profileStyles.edit.inputTextContainer}>
-          <Box key="gallerySearch" sx={profileStyles.edit.inputText}>
+          <Box
+            key="gallerySearch"
+            sx={{...profileStyles.edit.inputText, mt: 10}}>
             <DartaGallerySearch
               fieldName="gallerySearch"
               data={galleryProfileData.galleryName as PrivateFields}
@@ -413,20 +416,18 @@ export function EditProfileGallery({
               Add Location
             </Button>
           </Box>
-          {galleryProfileData.galleryLocation0 && (
-            <DartaLocationAndTimes
-              locationNumber="galleryLocation0"
-              data={galleryProfileData.galleryLocation0 as any}
-              register={register}
-              toolTips={toolTipsLocations}
-              getValues={getValues}
-              setValue={setValue}
-              removeLocation={removeLocation}
-              errors={errors}
-              control={control}
-              galleryProfileData={galleryProfileData}
-            />
-          )}
+          <DartaLocationAndTimes
+            locationNumber="galleryLocation0"
+            data={galleryProfileData.galleryLocation0 as any}
+            register={register}
+            toolTips={toolTipsLocations}
+            getValues={getValues}
+            setValue={setValue}
+            removeLocation={removeLocation}
+            errors={errors}
+            control={control}
+            galleryProfileData={galleryProfileData}
+          />
           {galleryProfileData.galleryLocation1 && (
             <DartaLocationAndTimes
               locationNumber="galleryLocation1"

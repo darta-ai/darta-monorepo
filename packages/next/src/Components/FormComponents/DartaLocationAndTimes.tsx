@@ -248,7 +248,7 @@ export function DartaLocationAndTimes({
           fieldName={`${locationNumber}.locationString`}
           data={
             (getValues(`${locationNumber}.locationString`) as any) ||
-            data.locationString
+            data?.locationString
           }
           register={register}
           control={control}
