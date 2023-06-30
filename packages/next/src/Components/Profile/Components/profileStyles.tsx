@@ -36,6 +36,11 @@ export const profileStyles = {
         width: 200,
       },
     },
+    image: {
+      width: `100%`,
+      height: 'unset',
+      alignSelf: 'center',
+    },
     galleryDetails: {
       display: 'flex',
       flexDirection: 'column',
@@ -43,6 +48,7 @@ export const profileStyles = {
       alignItems: 'center',
       alignSelf: 'center',
       width: '60%',
+      my: 5,
       '@media (max-width: 790px)': {
         width: '95%',
       },
@@ -115,6 +121,13 @@ export const profileStyles = {
       color: PRIMARY_DARK_GREY,
       fontSize: '1.2rem',
     },
+    imageSize: {
+      minWidth: '100%',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
   },
   edit: {
     backButton: {
@@ -126,6 +139,7 @@ export const profileStyles = {
       flexDirection: 'column',
       justifyContent: 'space-between',
       gap: '1vh',
+      mt: 10,
       alignItems: 'center',
       minHeight: '10vh',
       width: '100%',
@@ -138,14 +152,15 @@ export const profileStyles = {
       alignContent: 'center',
       gap: '5vh',
       alignItems: 'space-between',
-      height: '40vh',
-      width: '40vw',
+      maxHeight: '40vh',
+      mt: 7,
+      width: '100%',
     },
     defaultImageEdit: {
       marginTop: '1em',
-      width: '30vw',
+      width: '25vw',
       alignSelf: 'center',
-      // height: '30vh',
+      my: 12,
       borderWidth: 30,
     },
     inputText: {

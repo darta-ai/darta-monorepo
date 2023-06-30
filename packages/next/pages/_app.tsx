@@ -14,6 +14,7 @@ import Head from 'next/head';
 import * as React from 'react';
 
 import {Footer} from '../src/Components/Navigation/Footer';
+import {AppContextProvider} from '../src/Components/State/AppContext';
 import createEmotionCache from '../src/createEmotionCache';
 import theme from '../src/theme';
 import {PRIMARY_MILK} from '../styles';
@@ -57,7 +58,9 @@ export default function MyApp(props: MyAppProps) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthContext.Provider value={value}>
-          <Component {...pageProps} sx={{backgroundColor: PRIMARY_MILK}} />
+          <AppContextProvider>
+            <Component {...pageProps} sx={{backgroundColor: PRIMARY_MILK}} />
+          </AppContextProvider>
           <Footer />
         </AuthContext.Provider>
       </ThemeProvider>
