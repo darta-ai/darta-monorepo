@@ -7,7 +7,7 @@ import {
   IBusinessLocationData,
   IGalleryProfileData,
 } from '../../../globalTypes';
-import {googleMapsParser} from '../common/nextFunctions';
+import {googleMapsParser} from '../../common/nextFunctions';
 import {profileStyles} from '../Profile/Components/profileStyles';
 import {DartaHoursOfOperation, DartaLocationLookup} from './index';
 

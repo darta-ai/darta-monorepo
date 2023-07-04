@@ -79,15 +79,15 @@ function stableSort<T>(
   array: readonly T[],
   comparator: (a: T, b: T) => number,
 ) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
+  const stabilizedThis = array?.map((el, index) => [el, index] as [T, number]);
+  stabilizedThis?.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) {
       return order;
     }
     return a[1] - b[1];
   });
-  return stabilizedThis.map(el => el[0]);
+  return stabilizedThis?.map(el => el[0]);
 }
 
 interface EnhancedTableProps {
@@ -136,10 +136,14 @@ export function InquiryTable({
   inquiryData,
   artist,
 }: {
-  inquiryData: InquiryArtworkData[];
+  inquiryData: InquiryArtworkData[] | undefined;
   artist: string;
 }) {
-  const [rows, setRows] = React.useState<any[]>(Object.values(inquiryData));
+  let inquiryDataArray;
+  if (inquiryData) {
+    inquiryDataArray = Object.values(inquiryData);
+  }
+  const [rows] = React.useState<any[] | undefined>(inquiryDataArray);
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] =
     React.useState<keyof InquiryArtworkData>('updatedAt');
@@ -147,19 +151,22 @@ export function InquiryTable({
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleArtworkStatusChange = (event: SelectChangeEvent) => {
-    const {name, value} = event.target;
+    // const {name, value} = event.target;
+    console.log(event);
 
-    // NEED BACKEND CALL TO UPDATE STATUS
-    setRows(tableRows =>
-      tableRows.map(row =>
-        row.id === name
-          ? {
-              ...row,
-              status: value as String,
-            }
-          : row,
-      ),
-    );
+    // // NEED BACKEND CALL TO UPDATE STATUS
+    // if (tableRows) {
+    //   setRows(tableRows =>
+    //     tableRows.map(row =>
+    //       row.id === name
+    //         ? {
+    //             ...row,
+    //             status: value as String,
+    //           }
+    //         : row,
+    //     ),
+    //   );
+    // }
   };
 
   const handleRequestSort = (
@@ -193,11 +200,11 @@ export function InquiryTable({
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - (rows?.length || 0)) : 0;
 
   const visibleRows = React.useMemo(
     () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
+      stableSort(rows as any[], getComparator(order, orderBy)).slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
       ),
@@ -310,7 +317,7 @@ export function InquiryTable({
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={rows.length}
+          count={rows?.length as number}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

@@ -15,16 +15,16 @@ export function BaseHeader() {
   const userIsArtist = user?.displayName === AuthEnum.artists;
 
   const galleryRoute = `/Galleries/Home`;
-  const artistRoute = `/Artists/Home`;
+  // const artistRoute = `/Artists/Home`;
 
-  const showArtistLink =
-    (userIsArtist && userIsAuthenticated) || !userIsAuthenticated;
+  // const showArtistLink =
+  //   (userIsArtist && userIsAuthenticated) || !userIsAuthenticated;
   const showGalleryLink =
     (!userIsArtist && userIsAuthenticated) || !userIsAuthenticated;
 
   return (
     <Box sx={headerStyles.headerBox} data-testid="header-box">
-      {showArtistLink && (
+      {/* {showArtistLink && (
         <Button
           onClick={async () => {
             await router.push(artistRoute);
@@ -34,7 +34,7 @@ export function BaseHeader() {
           data-testid="header-link-artists">
           artists
         </Button>
-      )}
+      )} */}
       {showGalleryLink && (
         <Button
           onClick={async () => {

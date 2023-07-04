@@ -3,18 +3,18 @@
 import React, {createContext, ReactNode, useContext, useReducer} from 'react';
 
 import {
-  Artwork,
-  Exhibition,
+  ArtworkObject,
+  ExhibitionObject,
   GalleryState,
   IGalleryProfileData,
 } from '../../../globalTypes';
 import {AuthContext} from '../../../pages/_app';
 
 type Action =
-  | {type: 'SET_ARTWORKS'; payload: Artwork}
+  | {type: 'SET_ARTWORKS'; payload: ArtworkObject}
   | {type: 'SET_PROFILE'; payload: IGalleryProfileData}
-  | {type: 'SET_EXHIBITIONS'; payload: Exhibition}
-  | {type: 'SET_ACCESS_TOKEN'; payload: string};
+  | {type: 'SET_EXHIBITIONS'; payload: ExhibitionObject}
+  | {type: 'SET_ACCESS_TOKEN'; payload: string | null};
 
 // Define the shape of your state
 const initialState: GalleryState = {
@@ -43,7 +43,7 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
           ...state,
           galleryArtworks: {
             ...state.galleryArtworks,
-            [artworkId as string]: action.payload,
+            ...action.payload,
           },
         };
       } else {
@@ -58,7 +58,7 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
           ...state,
           galleryExhibitions: {
             ...state.galleryExhibitions,
-            [exhibitionId as string]: action.payload,
+            ...action.payload,
           },
         };
       } else {
@@ -81,7 +81,6 @@ type AppContextProviderProps = {
 export function AppContextProvider({children}: AppContextProviderProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const {user} = React.useContext(AuthContext);
-  console.log({user});
   React.useEffect(() => {
     dispatch({
       type: GalleryReducerActions.SET_ACCESS_TOKEN,

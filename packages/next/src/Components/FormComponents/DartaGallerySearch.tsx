@@ -312,10 +312,6 @@ export function DartaGallerySearch({
           );
         }}
       />
-      <InputAdornment
-        sx={{width: '10vw', alignSelf: 'center'}}
-        position="end"
-      />
     </Box>
   );
 }

@@ -42,7 +42,7 @@ export function DartaTextInput({
   errors: any;
   toolTips: ToolTip | any;
   required: boolean;
-  multiline: boolean;
+  multiline: boolean | number;
   helperTextString: string | undefined;
   inputAdornmentString: string;
   allowPrivate: boolean;
@@ -53,8 +53,6 @@ export function DartaTextInput({
   React.useEffect(() => {
     innerWidthRef.current = window.innerWidth;
   }, []);
-  const innerWidthMultiple = innerWidthRef.current > 800 ? 3 : 4;
-  const rows = multiline ? innerWidthMultiple : 1;
   return (
     <Box sx={formStyles.inputTextContainer}>
       <Box sx={formStyles.toolTipContainer}>
@@ -91,7 +89,7 @@ export function DartaTextInput({
           fullWidth
           required={required}
           multiline={multiline}
-          rows={rows}
+          rows={multiline}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -101,8 +99,10 @@ export function DartaTextInput({
           }}
         />
       </Box>
-      <InputAdornment sx={{width: '10vw', alignSelf: 'center'}} position="end">
-        {allowPrivate && (
+      {allowPrivate && (
+        <InputAdornment
+          sx={{width: '10vw', alignSelf: 'center'}}
+          position="end">
           <Controller
             control={control}
             sx={{alignSelf: 'flex-start'}}
@@ -173,8 +173,8 @@ export function DartaTextInput({
               );
             }}
           />
-        )}
-      </InputAdornment>
+        </InputAdornment>
+      )}
     </Box>
   );
 }

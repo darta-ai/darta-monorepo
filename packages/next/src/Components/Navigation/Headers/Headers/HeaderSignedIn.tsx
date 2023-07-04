@@ -34,7 +34,7 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
         }}
         sx={headerStyles.button}
         variant="contained"
-        data-testid="header-navigation-signout-button">
+        data-testid="header-navigation-dashboard-button">
         Dashboard
       </Button>
       <div />

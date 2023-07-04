@@ -11,7 +11,7 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {dartaForgotPassword} from '../../../../API/AccountManagement';
+import {dartaForgotPassword} from '../../../../API/FirebaseAccountManagement';
 import {GoToSignIn, NeedAnAccount} from '../../Navigation/Auth';
 import {authStyles} from '../styles';
 import {AuthEnum} from '../types';

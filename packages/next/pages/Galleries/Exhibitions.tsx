@@ -7,7 +7,7 @@ import Head from 'next/head';
 import React from 'react';
 
 import {Exhibition} from '../../globalTypes';
-import {newExhibitionShell} from '../../src/Components/common/templates';
+import {newExhibitionShell} from '../../src/common/templates';
 import {ExhibitionCard} from '../../src/Components/Exhibitions/index';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {galleryStyles} from '../../styles/GalleryPageStyles';

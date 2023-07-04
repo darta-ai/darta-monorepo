@@ -72,20 +72,8 @@ export default function GalleryProfile() {
   const [galleryProfileData, setGalleryProfileData] = React.useState<
     IGalleryProfileData | {}
   >({...state.galleryProfile, isValidated: true});
-  // React.useEffect(() => {
-  //   const tryBlank = true;
-  //   const isNotValidated = false;
-  //   if (tryBlank && !isNotValidated) {
-  //     setGalleryProfileData({isValidated: true});
-  //   } else if (!tryBlank && isNotValidated) {
-  //     setGalleryProfileData({...state.galleryProfile, isValidated: false});
-  //   } else {
-  //     setGalleryProfileData(state.galleryProfile);
-  //   }
-  // }, []);
 
   React.useEffect(() => {
-    console.log('triggered');
     dispatch({
       type: GalleryReducerActions.SET_PROFILE,
       payload: galleryProfileData,

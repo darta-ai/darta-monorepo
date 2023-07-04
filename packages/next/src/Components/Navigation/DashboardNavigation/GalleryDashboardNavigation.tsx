@@ -23,6 +23,7 @@ import * as React from 'react';
 import {AuthContext} from '../../../../pages/_app';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../../styles';
 import {AuthEnum} from '../../Auth/types';
+import {GalleryReducerActions, useAppState} from '../../State/AppContext';
 import {HeaderSignedIn} from '../Headers/Headers/HeaderSignedIn';
 
 const drawerWidth = 240;
@@ -104,6 +105,15 @@ function MiniDrawer() {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
   const {user} = React.useContext(AuthContext);
+  const {state, dispatch} = useAppState();
+  const hasToken = !!state.accessToken;
+
+  if (!hasToken && user?.accessToken) {
+    dispatch({
+      type: GalleryReducerActions.SET_ACCESS_TOKEN,
+      payload: user.accessToken,
+    });
+  }
 
   const navTo = user?.displayName;
 
@@ -166,6 +176,7 @@ function MiniDrawer() {
             <ListItemButton
               data-testid="galleryButton"
               sx={sideNavigationStyles.listItemButton}
+              disabled={!hasToken}
               onClick={() => {
                 router.push(`/${navTo}/Profile`);
               }}>
@@ -182,6 +193,7 @@ function MiniDrawer() {
             <ListItemButton
               data-testid="exhibitionsButton"
               sx={sideNavigationStyles.listItemButton}
+              disabled={!hasToken}
               onClick={() => {
                 router.push(`/${navTo}/Exhibitions`);
               }}>
@@ -198,6 +210,7 @@ function MiniDrawer() {
             <ListItemButton
               data-testid="artworkButton"
               sx={sideNavigationStyles.listItemButton}
+              disabled={!hasToken}
               onClick={() => {
                 router.push(`/${navTo}/Artwork`);
               }}>
