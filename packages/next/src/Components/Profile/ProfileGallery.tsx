@@ -16,7 +16,7 @@ function GalleryStatus({
 }) {
   if (!galleryProfileData?.isValidated) {
     return (
-      <Box>
+      <Box data-testid="gallery-under-review">
         <Typography variant="h4" sx={{color: 'red', textAlign: 'center'}}>
           Gallery Under Review
         </Typography>
@@ -40,7 +40,7 @@ function GalleryStatus({
     );
   } else if (galleryProfileData?.galleryName?.value) {
     return (
-      <Box>
+      <Box data-testid="gallery-name-display">
         <Typography
           variant="h4"
           sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
@@ -48,14 +48,16 @@ function GalleryStatus({
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
           <Box sx={{mx: 3}}>
-            <Typography>{galleryProfileData?.galleryBio?.value}</Typography>
+            <Typography data-testid="gallery-profile-name-data">
+              {galleryProfileData?.galleryBio?.value}
+            </Typography>
           </Box>
         </Box>
       </Box>
     );
   } else {
     return (
-      <Box>
+      <Box data-testid="gallery-start-editing">
         <Typography
           variant="h4"
           sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
@@ -143,7 +145,10 @@ export function ProfileGallery({
         <title>Gallery | Profile</title>
         <meta name="description" content="Your darta profile." />
       </Head>
-      <Box mb={2} sx={profileStyles.container}>
+      <Box
+        mb={2}
+        sx={profileStyles.container}
+        data-testid="profile-gallery-container">
         <Box sx={profileStyles.profile.editButtonProfile}>
           <GalleryEditButton
             isEditingProfile={isEditingProfile}
@@ -153,13 +158,16 @@ export function ProfileGallery({
         </Box>
         <Box sx={profileStyles.profile.galleryInfoContainer}>
           <Box sx={profileStyles.profile.galleryHeaderContainer}>
-            <Box sx={profileStyles.profile.imageBox}>
+            <Box
+              sx={profileStyles.profile.imageBox}
+              data-testid="profile-gallery-image-box">
               {galleryProfileData?.galleryLogo ? (
                 <Box>
                   <img
                     src={galleryProfileData?.galleryLogo?.value as string}
                     alt="gallery logo"
                     style={profileStyles.profile.defaultImage}
+                    data-testid="profile-gallery-logo"
                   />
                 </Box>
               ) : (
@@ -169,6 +177,7 @@ export function ProfileGallery({
                       src={png}
                       alt="info"
                       style={profileStyles.profile.image}
+                      data-testid="profile-image-display"
                     />
                   </div>
                 </Box>
@@ -185,7 +194,9 @@ export function ProfileGallery({
           galleryProfileData?.galleryWebsite?.value ||
           galleryProfileData?.galleryInstagram?.value) && (
           <>
-            <Box sx={{width: '100%', mt: 5}}>
+            <Box
+              sx={{width: '100%', mt: 5}}
+              data-testid="profile-contact-section">
               <Typography variant="h5" sx={{textAlign: 'left'}}>
                 Contact
                 <Divider />
@@ -195,11 +206,13 @@ export function ProfileGallery({
               <Box>
                 <Typography
                   variant="h6"
+                  data-testid="profile-contact-email"
                   sx={profileStyles.profile.galleryContactHeadline}>
                   Email
                   <Divider />
                 </Typography>
                 <Typography
+                  data-testid="profile-contact-email-data"
                   sx={{textAlign: 'center', overflow: 'hidden', my: '1vh'}}>
                   {galleryProfileData?.primaryContact?.value
                     ? galleryProfileData?.primaryContact?.value
@@ -211,11 +224,14 @@ export function ProfileGallery({
                 <Box>
                   <Typography
                     variant="h6"
+                    data-testid="profile-contact-phone"
                     sx={profileStyles.profile.galleryContactHeadline}>
                     Phone
                     <Divider />
                   </Typography>
-                  <Typography sx={{textAlign: 'center', my: '1vh'}}>
+                  <Typography
+                    data-testid="profile-contact-phone-data"
+                    sx={{textAlign: 'center', my: '1vh'}}>
                     {galleryProfileData?.galleryPhone?.value}
                     {galleryProfileData?.galleryPhone?.isPrivate && '*'}
                   </Typography>
@@ -225,11 +241,14 @@ export function ProfileGallery({
                 <Box>
                   <Typography
                     variant="h6"
+                    data-testid="profile-contact-website"
                     sx={profileStyles.profile.galleryContactHeadline}>
                     Website
                     <Divider />
                   </Typography>
-                  <Typography sx={{textAlign: 'center', my: '1vh'}}>
+                  <Typography
+                    sx={{textAlign: 'center', my: '1vh'}}
+                    data-testid="profile-contact-website-data">
                     {galleryProfileData?.galleryWebsite?.value ? (
                       <a
                         target="_blank"
@@ -251,11 +270,14 @@ export function ProfileGallery({
                 <Box>
                   <Typography
                     variant="h6"
+                    data-testid="profile-contact-instagram"
                     sx={profileStyles.profile.galleryContactHeadline}>
                     Instagram
                     <Divider />
                   </Typography>
-                  <Typography sx={{textAlign: 'center', my: '1vh'}}>
+                  <Typography
+                    sx={{textAlign: 'center', my: '1vh'}}
+                    data-testid="profile-contact-instagram-data">
                     {galleryProfileData?.galleryInstagram?.value
                       ? galleryProfileData?.galleryInstagram?.value
                       : 'N/A'}
@@ -278,26 +300,31 @@ export function ProfileGallery({
               <Box sx={profileStyles.profile.galleryAddressContainer}>
                 <GalleryLocationComponent
                   galleryLocationData={galleryProfileData?.galleryLocation0}
+                  testIdData="galleryLocation0"
                 />
               </Box>
               <Box sx={profileStyles.profile.galleryAddressContainer}>
                 <GalleryLocationComponent
                   galleryLocationData={galleryProfileData?.galleryLocation1}
+                  testIdData="galleryLocation1"
                 />
               </Box>
               <Box sx={profileStyles.profile.galleryAddressContainer}>
                 <GalleryLocationComponent
                   galleryLocationData={galleryProfileData?.galleryLocation2}
+                  testIdData="galleryLocation2"
                 />
               </Box>
               <Box sx={profileStyles.profile.galleryAddressContainer}>
                 <GalleryLocationComponent
                   galleryLocationData={galleryProfileData?.galleryLocation3}
+                  testIdData="galleryLocation3"
                 />
               </Box>
               <Box sx={profileStyles.profile.galleryAddressContainer}>
                 <GalleryLocationComponent
                   galleryLocationData={galleryProfileData?.galleryLocation4}
+                  testIdData="galleryLocation4"
                 />
               </Box>
             </Box>

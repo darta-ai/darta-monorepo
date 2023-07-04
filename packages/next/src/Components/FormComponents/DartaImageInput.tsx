@@ -30,6 +30,12 @@ const useStyles = {
   },
   text: {
     marginBottom: '2vh',
+    fontSize: '1.5rem',
+    textAlign: 'center',
+  },
+  fileAcceptanceText: {
+    fontSize: '0.75rem',
+    color: 'textSecondary',
   },
 };
 
@@ -45,13 +51,13 @@ export function DartaImageInput({
       {({getRootProps, getInputProps}) => (
         <Box {...getRootProps()} sx={useStyles.dropzone}>
           <input {...getInputProps()} />
-          <Typography sx={{textAlign: 'center'}} variant="h6">
+          <Typography sx={useStyles.text} variant="h6">
             {instructions}
           </Typography>
           <CloudUploadIcon sx={useStyles.icon} />
 
-          <Typography variant="caption" color="textSecondary">
-            Only accept files with extensions: jpg, png, pdf
+          <Typography variant="caption" sx={useStyles.fileAcceptanceText}>
+            Only accept files with extensions: jpg, jpeg,png, pdf
           </Typography>
         </Box>
       )}

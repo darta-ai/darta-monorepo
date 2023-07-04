@@ -12,12 +12,12 @@ import {
   Typography,
 } from '@mui/material';
 import Image from 'next/image';
-import React, {ChangeEvent, useState} from 'react';
+import React from 'react';
 import * as XLSX from 'xlsx';
 
 import {Artwork} from '../../../globalTypes';
 import {PRIMARY_MILK} from '../../../styles';
-import {parseExcelArtworkData} from '../common/nextFunctions';
+import {parseExcelArtworkData} from '../../common/nextFunctions';
 
 const excelPNG = require(`../../../public/static/images/excelExample.png`);
 const artLogicPNG = require(`../../../public/static/images/artLogicInstructions.png`);
@@ -83,7 +83,7 @@ const instructionsCarouselStyles = {
 };
 
 function InstructionsCarousel() {
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = React.useState(0);
   const maxSteps = tutorialSteps.length;
 
   const handleNext = () => {
@@ -176,9 +176,9 @@ interface UploadArtworksXlsModalProps {
 export function UploadArtworksXlsModal({
   handleBatchUpload,
 }: UploadArtworksXlsModalProps) {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
 
   const handleOpen = () => {
     setOpen(true);
@@ -189,7 +189,7 @@ export function UploadArtworksXlsModal({
     setOpen(false);
   };
 
-  const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
     const file = event.target.files![0];
     const reader = new FileReader();

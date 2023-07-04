@@ -133,11 +133,6 @@ export const mediums: Medium[] = [
     value: 'C-print on Dibond',
   },
   {
-    label: 'Archival inkjet print',
-    category: 'Photography',
-    value: 'Archival inkjet print',
-  },
-  {
     label: 'Mixed media on gauze',
     category: 'Mixed Media',
     value: 'Mixed media on gauze',
@@ -440,11 +435,6 @@ export const mediums: Medium[] = [
     label: 'Charcoal on canvas',
     category: 'Sculpture',
     value: 'Charcoal on canvas',
-  },
-  {
-    label: 'Archival inkjet print, framed',
-    category: 'Photography',
-    value: 'Archival inkjet print, framed',
   },
   {
     label: 'Video stiil/digital inkjet',

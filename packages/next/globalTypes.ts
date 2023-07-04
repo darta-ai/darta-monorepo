@@ -102,7 +102,10 @@ export type Artwork = {
   artworkCreatedYear?: PublicFields;
   createdAt: string | null;
   updatedAt: string | null;
+  collection?: PublicFields;
 };
+
+export type ArtworkObject = {[key: string]: Artwork};
 
 export type BusinessAddressType =
   | 'galleryLocation0'
@@ -129,6 +132,8 @@ export type Exhibition = {
   endDate: DateFields;
   openingDate: DateFields;
 };
+
+export type ExhibitionObject = {[key: string]: Exhibition};
 
 export type CurrencyConverterType = {
   [key: string]: '$' | '€' | '£';

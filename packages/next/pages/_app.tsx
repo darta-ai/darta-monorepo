@@ -8,10 +8,10 @@ import {CacheProvider, EmotionCache} from '@emotion/react';
 import CssBaseline from '@mui/material/CssBaseline';
 import {ThemeProvider} from '@mui/material/styles';
 import {onAuthStateChanged} from 'firebase/auth';
-import {AppProps} from 'next/app';
+import type {AppProps} from 'next/app';
 import Head from 'next/head';
 // import Script from 'next/script';
-import * as React from 'react';
+import React from 'react';
 
 import {Footer} from '../src/Components/Navigation/Footer';
 import {AppContextProvider} from '../src/Components/State/AppContext';
@@ -27,14 +27,19 @@ const clientSideEmotionCache = createEmotionCache();
 export interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
-
-export const AuthContext = React.createContext<{
+interface IAuthContext {
   user: any | null;
   setUser: (user: any | null) => void;
-}>({
+}
+
+export const AuthContext = React.createContext<IAuthContext>({
   user: null,
   setUser: () => {},
 });
+
+// Declares a module and modifies the ElementType of the JSX namespace.
+// This is an advanced TypeScript feature where you can declare new types or modify existing ones.
+// It's often used for augmenting types when using third-party libraries that don't have perfect TypeScript support.
 
 export default function MyApp(props: MyAppProps) {
   const {Component, emotionCache = clientSideEmotionCache, pageProps} = props;

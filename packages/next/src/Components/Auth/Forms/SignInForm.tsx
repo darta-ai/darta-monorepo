@@ -17,7 +17,7 @@ import React, {useState} from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {dartaSignIn} from '../../../../API/AccountManagement';
+import {dartaSignIn} from '../../../../API/FirebaseAccountManagement';
 import {ForgotPassword, NeedAnAccount} from '../../Navigation/Auth';
 import {authStyles} from '../styles';
 import {AuthEnum} from '../types';
@@ -46,7 +46,7 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
       if (error) {
         setFirebaseError(errorMessage);
       } else if (user?.displayName) {
-        router.push(`/${user?.displayName}/Home`);
+        router.push(`/${user?.displayName}/LoadProfile`);
       } else {
         router.push(`/`);
       }

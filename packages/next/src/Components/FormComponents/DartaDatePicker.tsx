@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react/jsx-props-no-spreading */
 
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';

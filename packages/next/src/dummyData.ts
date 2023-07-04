@@ -1,4 +1,4 @@
-import {Artwork, IGalleryProfileData} from '../globalTypes';
+import {ArtworkObject, IGalleryProfileData} from '../globalTypes';
 
 export const galleryProfileRawData: IGalleryProfileData = {
   galleryName: {value: 'Pat Kirts Gallery 2000'},
@@ -32,8 +32,6 @@ export const galleryProfileRawData: IGalleryProfileData = {
   },
 };
 
-export type ArtworkObject = {[key: string]: Artwork};
-
 export const artwork1: ArtworkObject = {
   '5f92586d-b127-497e-ae96-20dc8c93ae1b': {
     published: false,
@@ -52,11 +50,14 @@ export const artwork1: ArtworkObject = {
         'Natalie Raskin’s painting waiting room for real life depicts a poetically disorienting, dystopian scene in which figures occupy a liminal space of placelessness, and the sense of the seemingly unending passage of time is marked by a clock. Despite this endlessness, the painting is anything but stagnant; instead, it points to a larger imagined narrative of the possibilities that lay beyond the waiting room – what came before, and what comes after. The work’s title points to simultaneously childlike and existential wondering of what “real life” might look like in the future, even though we are always already there.',
     },
     artworkDimensions: {
-      depth: {value: '2'},
-      height: {value: '60'},
+      depthIn: {value: '2'},
+      heightIn: {value: '60'},
       text: {value: '60in x 50in x 2in'},
-      unit: {value: 'in'},
-      width: {value: '50'},
+      displayUnit: {value: 'in'},
+      widthIn: {value: '50'},
+      heightCm: {value: '152.4'},
+      widthCm: {value: '127'},
+      depthCm: {value: '5.08'},
     },
     artworkImage: {
       value:
@@ -101,11 +102,14 @@ export const artwork2: ArtworkObject = {
         'Sabrina Ring’s My Beautiful BFF reference what they call “early 2000s little girl’s media” to challenge its embedded cis-hetero-normativity and eurocentricity by blending it with queer and trans aesthetics.',
     },
     artworkDimensions: {
-      depth: {value: ''},
-      height: {value: '60'},
-      text: {value: '60in x 60in'},
-      unit: {value: 'in'},
-      width: {value: '60'},
+      depthIn: {value: '2'},
+      heightIn: {value: '60'},
+      text: {value: '60in x 50in x 2in'},
+      displayUnit: {value: 'in'},
+      widthIn: {value: '50'},
+      heightCm: {value: '152.4'},
+      widthCm: {value: '127'},
+      depthCm: {value: '5.08'},
     },
     artworkId: 'baac18b5-b40d-42fa-b2dc-a996758df0cd',
     artworkImage: {
@@ -130,14 +134,17 @@ export const artwork3: ArtworkObject = {
     artworkCurrency: {value: 'USD'},
     artworkDescription: {
       value:
-        'Grigoriadis devised her methodical approach during…hese ideas to her own experiments on\nthe canvas. ',
+        'Grigoriadis devised her methodical approach during… These ideas to her own experiments on\nthe canvas. ',
     },
     artworkDimensions: {
-      height: {value: '66'},
-      text: {value: '66in x 66in'},
-      depth: {value: null},
-      width: {value: '66'},
-      unit: {value: 'in'},
+      depthIn: {value: '2'},
+      heightIn: {value: '60'},
+      text: {value: '60in x 50in x 2in'},
+      displayUnit: {value: 'in'},
+      widthIn: {value: '50'},
+      heightCm: {value: '152.4'},
+      widthCm: {value: '127'},
+      depthCm: {value: '5.08'},
     },
     artworkMedium: {value: 'Oil and acrylic on canvas'},
     artworkPrice: {value: '5500', isPrivate: false},

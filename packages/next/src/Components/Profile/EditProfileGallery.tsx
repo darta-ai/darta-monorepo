@@ -13,7 +13,7 @@ import {
   PrivateFields,
 } from '../../../globalTypes';
 import {PRIMARY_BLUE} from '../../../styles';
-import {googleMapsParser} from '../common/nextFunctions';
+import {googleMapsParser} from '../../common/nextFunctions';
 import {
   DartaGallerySearch,
   DartaImageInput,
