@@ -79,7 +79,6 @@ const parseDimensions = (dimensions: string): Dimensions => {
   const matches = removedSlashR.match(
     /((\d+\s)?(\d+\/\d+)?\s*x\s*(\d+\s)?(\d+\/\d+)?) in\s*;\s*((\d+(\.\d+)?) x (\d+(\.\d+)?)) cm/,
   );
-  console.log('matches', matches, removedSlashR);
   if (matches) {
     return {
       heightIn: {value: matches[1]},

@@ -18,12 +18,16 @@ import {
   DartaGallerySearch,
   DartaImageInput,
   DartaLocationAndTimes,
+  DartaPhoneNumber,
   DartaTextInput,
 } from '../FormComponents/index';
 import {profileStyles} from './Components/profileStyles';
 
 const INSTAGRAMREGEX =
   /(?:^|[^\w])(?:@)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)/;
+
+const phoneRegExp = /^(\+?\d{1,4}[\s-])?(?!0+\s+,?$)\d{10}\s*,?$/;
+
 const galleryDataSchema = yup
   .object({
     galleryName: yup.object().shape({
@@ -47,8 +51,21 @@ const galleryDataSchema = yup
       value: yup.string().email('A valid email address is required'),
       isPrivate: yup.boolean().optional(),
     }),
-    galleryPhoneNumber: yup.object().shape({
-      value: yup.string().optional(),
+    galleryPhone: yup.object().shape({
+      value: yup.string().matches(phoneRegExp, {
+        message: 'A valid phone number is required (e.g., +1 (216) 633-7221)',
+        excludeEmptyString: true,
+      }),
+      isPrivate: yup.boolean().optional(),
+    }),
+    galleryWebsite: yup.object().shape({
+      value: yup
+        .string()
+        .url(
+          'Invalid URL. Please enter a valid URL (i.e., begins with http://www).',
+        )
+        .nullable()
+        .notRequired(),
       isPrivate: yup.boolean().optional(),
     }),
     galleryInstagram: yup.object().shape({
@@ -239,7 +256,6 @@ export function EditProfileGallery({
     if (galleryProfile[locationNumber]) {
       delete galleryProfile[locationNumber];
     }
-    console.log(galleryProfile);
     setValue(`${locationNumber}`, undefined);
     setGalleryProfileData({...galleryProfile});
   };
@@ -254,6 +270,7 @@ export function EditProfileGallery({
         <Box sx={profileStyles.edit.backButton}>
           <Button
             variant="outlined"
+            data-testid="edit-profile-back-button"
             sx={{color: PRIMARY_BLUE}}
             onClick={() => setIsEditingProfile(!isEditingProfile)}
             startIcon={<ArrowBackIcon sx={{color: PRIMARY_BLUE}} />}>
@@ -279,6 +296,7 @@ export function EditProfileGallery({
             <Button
               sx={{width: '10vw', alignSelf: 'center'}}
               onClick={() => setEditImage(!editImage)}
+              data-testid="edit-image-button"
               variant="contained">
               {editImage ? 'Back' : 'Edit Image'}
             </Button>
@@ -351,8 +369,8 @@ export function EditProfileGallery({
               inputAdornmentValue={null}
             />
           </Box>
-          <Box key="galleryPhoneNumber" sx={profileStyles.edit.inputText}>
-            <DartaTextInput
+          <Box key="galleryPhone" sx={profileStyles.edit.inputText}>
+            <DartaPhoneNumber
               fieldName="galleryPhone"
               data={galleryProfileData.galleryPhone}
               register={register}
@@ -362,7 +380,6 @@ export function EditProfileGallery({
               helperTextString={errors.galleryPhone?.value?.message}
               inputAdornmentString="Phone"
               toolTips={toolTips}
-              multiline={false}
               allowPrivate={true}
               inputAdornmentValue={null}
             />
@@ -378,7 +395,7 @@ export function EditProfileGallery({
               errors={errors}
               required={false}
               control={control}
-              helperTextString={errors.galleryPhone?.value?.message}
+              helperTextString={errors.galleryWebsite?.value?.message}
               inputAdornmentString="Website"
               toolTips={toolTips}
               multiline={false}
@@ -412,7 +429,10 @@ export function EditProfileGallery({
               justifyContent: 'space-around',
             }}>
             <Typography variant="h5">Locations</Typography>
-            <Button variant="contained" onClick={() => addLocation()}>
+            <Button
+              variant="contained"
+              data-testid="add-location"
+              onClick={() => addLocation()}>
               Add Location
             </Button>
           </Box>
@@ -472,7 +492,7 @@ export function EditProfileGallery({
           )}
           {galleryProfileData.galleryLocation4 && (
             <DartaLocationAndTimes
-              locationNumber="galleryLocation3"
+              locationNumber="galleryLocation4"
               data={galleryProfileData.galleryLocation4 as any}
               register={register}
               toolTips={toolTipsLocations}
@@ -488,8 +508,8 @@ export function EditProfileGallery({
           <Box sx={profileStyles.edit.saveButton}>
             <Button
               variant="contained"
-              data-testid="save-button"
               type="submit"
+              data-testid="save-profile-edit-button"
               sx={{backgroundColor: PRIMARY_BLUE}}
               onClick={handleSubmit(onSubmit)}>
               Save

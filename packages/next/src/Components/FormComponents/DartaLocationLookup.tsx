@@ -80,23 +80,29 @@ export function DartaLocationLookup({
   React.useEffect(() => {
     innerWidthRef.current = window.innerWidth;
   }, []);
+  const testIdValue = fieldName.replace('.', '-');
   return (
     <Box sx={formStyles.inputTextContainer}>
       <Box sx={formStyles.toolTipContainer}>
         {innerWidthRef.current > 780 && (
           <Tooltip
             title={
-              <Typography sx={{textAlign: 'center'}}>
+              <Typography
+                sx={{textAlign: 'center'}}
+                data-testid={`${testIdValue}-tooltip-text`}>
                 {toolTips[fieldName]}
               </Typography>
             }
             placement="top">
-            <IconButton>
+            <IconButton data-testid={`${testIdValue}-tooltip-button`}>
               <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
             </IconButton>
           </Tooltip>
         )}
-        <InputAdornment sx={{overflowX: 'clip'}} position="end">
+        <InputAdornment
+          sx={{overflowX: 'clip'}}
+          position="end"
+          data-testid={`${testIdValue}-input-adornment-string`}>
           {inputAdornmentString}
         </InputAdornment>
       </Box>
@@ -112,6 +118,7 @@ export function DartaLocationLookup({
         includeInputInList
         filterSelectedOptions
         value={value}
+        data-testid={`${testIdValue}-input-field`}
         noOptionsText="No locations"
         onChange={(event: any, newValue: PlaceType | null) => {
           setOptions(newValue ? [newValue, ...options] : options);
@@ -190,7 +197,7 @@ export function DartaLocationLookup({
                 <FormControlLabel
                   labelPlacement="bottom"
                   label={
-                    innerWidthRef.current > 780 ? (
+                    innerWidthRef.current > 600 ? (
                       <Box sx={formStyles.makePrivateContainer}>
                         <Typography sx={formStyles.toolTip}>
                           {isPrivate ? 'Private' : 'Public'}
@@ -222,8 +229,10 @@ export function DartaLocationLookup({
                         </Typography>
                       </Box>
                     ) : (
-                      <Box sx={formStyles.makePrivateContainer}>
-                        <Typography sx={formStyles.toolTip}>
+                      <Box>
+                        <Typography
+                          sx={formStyles.toolTip}
+                          data-testid={`${testIdValue}-privacy-display`}>
                           {isPrivate ? 'Private' : 'Public'}
                         </Typography>
                       </Box>
@@ -235,6 +244,7 @@ export function DartaLocationLookup({
                       value={data?.isPrivate}
                       id="isPrivate"
                       size="small"
+                      data-testid={`${testIdValue}-privacy-switch`}
                       onChange={e => field.onChange(e.target.checked)}
                       checked={field.value}
                       onClick={() => {

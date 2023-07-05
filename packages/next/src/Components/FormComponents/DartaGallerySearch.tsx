@@ -223,17 +223,22 @@ export function DartaGallerySearch({
         {innerWidthRef.current > 780 && (
           <Tooltip
             title={
-              <Typography sx={{textAlign: 'center'}}>
+              <Typography
+                data-testid={`${fieldName}-tooltip-text`}
+                sx={{textAlign: 'center'}}>
                 {toolTips[fieldName]}
               </Typography>
             }
             placement="top">
-            <IconButton>
+            <IconButton data-testid={`${fieldName}-tooltip-button`}>
               <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
             </IconButton>
           </Tooltip>
         )}
-        <InputAdornment sx={{overflowX: 'clip'}} position="end">
+        <InputAdornment
+          data-testid={`${fieldName}-input-adornment-string`}
+          sx={{overflowX: 'clip'}}
+          position="end">
           {inputAdornmentString}
         </InputAdornment>
       </Box>
@@ -262,6 +267,7 @@ export function DartaGallerySearch({
           <TextField
             {...params}
             {...register(`${fieldName}.${'value'}`)}
+            data-testid={`${fieldName}-input-field`}
             variant="standard"
             required={required}
           />
@@ -290,6 +296,7 @@ export function DartaGallerySearch({
                   {parts.map((part: any) => (
                     <Box
                       key={part.text}
+                      data-testid={`${part.text}-option`}
                       component="span"
                       sx={{fontWeight: part?.highlight ? 'bold' : 'regular'}}>
                       {part.text}

@@ -8,7 +8,7 @@ import React from 'react';
 
 import {Exhibition} from '../../globalTypes';
 import {newExhibitionShell} from '../../src/common/templates';
-import {ExhibitionCard} from '../../src/Components/Exhibitions/index';
+// import {ExhibitionCard} from '../../src/Components/Exhibitions/index';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {galleryStyles} from '../../styles/GalleryPageStyles';
 
@@ -29,15 +29,15 @@ export default function GalleryExhibitions() {
     });
   };
 
-  const saveExhibition = (
-    exhibitionId: string,
-    updatedExhibition: Exhibition,
-  ) => {
-    const newExhibitions: {[key: string]: Exhibition} =
-      _.cloneDeep(exhibitions);
-    newExhibitions[exhibitionId] = updatedExhibition;
-    setNewExhibitions({...newExhibitions});
-  };
+  // const saveExhibition = (
+  //   exhibitionId: string,
+  //   updatedExhibition: Exhibition,
+  // ) => {
+  //   const newExhibitions: {[key: string]: Exhibition} =
+  //     _.cloneDeep(exhibitions);
+  //   newExhibitions[exhibitionId] = updatedExhibition;
+  //   setNewExhibitions({...newExhibitions});
+  // };
 
   // const deleteArtwork = (artworkId: string) => {
   //   const newArtwork: {[key: string]: Artwork} = _.cloneDeep(artworks);
@@ -71,12 +71,12 @@ export default function GalleryExhibitions() {
             Create Exhibition
           </Button>
           {exhibitions &&
-            Object.values(exhibitions).map(exhibition => (
+            Object.values(exhibitions).map(() => (
               <Box>
-                <ExhibitionCard
+                {/* <ExhibitionCard
                   exhibition={exhibition}
                   saveExhibition={saveExhibition}
-                />
+                /> */}
               </Box>
             ))}
         </Box>

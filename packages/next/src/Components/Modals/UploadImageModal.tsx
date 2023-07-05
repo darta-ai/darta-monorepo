@@ -73,10 +73,9 @@ export function ImageUploadModal({
   const handleUpload = () => {
     if (selectedFile) {
       // Implement your own image upload logic here
-      console.log(selectedFile);
       setOpen(false);
     } else {
-      console.log('No file selected');
+      // console.log('No file selected');
     }
   };
 

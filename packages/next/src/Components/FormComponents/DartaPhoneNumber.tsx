@@ -3,7 +3,6 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {
   Box,
   FormControlLabel,
-  FormHelperText,
   IconButton,
   InputAdornment,
   Switch,
@@ -13,6 +12,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 import {Controller} from 'react-hook-form';
+import {PatternFormat} from 'react-number-format';
 
 import {PRIMARY_DARK_GREY} from '../../../styles';
 import {PrivateFields} from '../Profile/types';
@@ -22,79 +22,54 @@ type ToolTip = {
   [key: string]: string;
 };
 
-const days = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
-function InputDayContainer({
-  day,
-  register,
-  dtoName,
-  testIdValue,
-}: {
-  day: string;
-  register: any;
-  dtoName: string;
-  testIdValue: string;
-}) {
+function PhoneNumberFormat(props: any) {
+  const {onChange, ...other} = props;
   return (
-    <Box sx={formStyles.formTextField} key={day}>
-      <Typography sx={{textAlign: 'center'}}>{day.slice(0, 3)}</Typography>
-      <Box sx={formStyles.hoursOfOperationInputContainer}>
-        <TextField
-          {...register(
-            `${dtoName}.businessHours.hoursOfOperation.${day}.open.value`,
-          )}
-          variant="standard"
-          data-testid={`${testIdValue}-${day}-open`}
-        />
-        <FormHelperText id="component-helper-text">Open</FormHelperText>
-        <TextField
-          {...register(
-            `${dtoName}.businessHours.hoursOfOperation.${day}.close.value`,
-          )}
-          variant="standard"
-          data-testid={`${testIdValue}-${day}-close`}
-        />
-        <FormHelperText id="component-helper-text">Close</FormHelperText>
-      </Box>
-    </Box>
+    <PatternFormat
+      {...other}
+      onValueChange={values => {
+        onChange({
+          target: {
+            value: values.value,
+          },
+        });
+      }}
+      format="+1 (###) ###-####"
+      mask="_"
+    />
   );
 }
 
-export function DartaHoursOfOperation({
+export function DartaPhoneNumber({
   fieldName,
   data,
   register,
   control,
+  errors,
+  helperTextString,
   required,
   inputAdornmentString,
   toolTips,
   allowPrivate,
-  dtoName,
+  inputAdornmentValue,
 }: {
   fieldName: string;
   data: PrivateFields | any;
   register: any;
   control: any;
-  required: boolean;
-  inputAdornmentString: string;
+  errors: any;
   toolTips: ToolTip | any;
+  required: boolean;
+  helperTextString: string | undefined;
+  inputAdornmentString: string;
   allowPrivate: boolean;
-  dtoName: string;
+  inputAdornmentValue: string | null;
 }) {
   const [isPrivate, setIsPrivate] = React.useState<boolean>(data?.isPrivate!);
   const innerWidthRef = React.useRef(800);
   React.useEffect(() => {
     innerWidthRef.current = window.innerWidth;
   }, []);
-  const testIdValue = fieldName.replace('.', '-');
-
   return (
     <Box sx={formStyles.inputTextContainer}>
       <Box sx={formStyles.toolTipContainer}>
@@ -103,42 +78,72 @@ export function DartaHoursOfOperation({
             <Tooltip
               title={
                 <Typography
-                  sx={{textAlign: 'center'}}
-                  data-testid={`${testIdValue}-tooltip-text`}>
+                  data-testid={`${fieldName}-tooltip-text`}
+                  sx={{textAlign: 'center'}}>
                   {toolTips[fieldName]}
                 </Typography>
               }
               placement="top">
-              <IconButton data-testid={`${testIdValue}-tooltip-button`}>
-                <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
+              <IconButton>
+                <HelpOutlineIcon
+                  data-testid={`${fieldName}-tooltip-button`}
+                  fontSize="medium"
+                  sx={formStyles.helpIcon}
+                />
               </IconButton>
             </Tooltip>
           )}
         </Box>
         <Box>
           <InputAdornment
+            data-testid={`${fieldName}-input-adornment-string`}
             sx={{overflowX: 'clip'}}
-            position="end"
-            data-testid={`${testIdValue}-input-adornment-string`}>
+            position="end">
             {inputAdornmentString}
             {required && '*'}
           </InputAdornment>
         </Box>
       </Box>
-      <Box sx={formStyles.hoursOfOperationContainer}>
-        {days.map(day => (
-          <Box key={day}>
-            <InputDayContainer
-              day={day}
-              register={register}
-              dtoName={dtoName}
-              testIdValue={testIdValue}
+      <Box>
+        <Controller
+          control={control}
+          name={fieldName}
+          {...register(`${fieldName}.${'value'}`)}
+          render={({field}) => (
+            <TextField
+              {...field}
+              id="value"
+              variant="standard"
+              error={!!errors[fieldName]}
+              sx={formStyles.formTextField}
+              helperText={
+                errors[fieldName]?.value && (
+                  <Typography
+                    data-testid={`${fieldName}-text-error-field`}
+                    sx={{color: 'red'}}>
+                    {helperTextString}
+                  </Typography>
+                )
+              }
+              fullWidth
+              required={required}
+              data-testid={`${fieldName}-input-field`}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    {inputAdornmentValue}
+                  </InputAdornment>
+                ),
+                inputComponent: PhoneNumberFormat,
+              }}
             />
-          </Box>
-        ))}
+          )}
+        />
       </Box>
-      <InputAdornment sx={{width: '10vw', alignSelf: 'center'}} position="end">
-        {allowPrivate && (
+      {allowPrivate && (
+        <InputAdornment
+          sx={{width: '10vw', alignSelf: 'center'}}
+          position="end">
           <Controller
             control={control}
             sx={{alignSelf: 'flex-start'}}
@@ -149,15 +154,17 @@ export function DartaHoursOfOperation({
                 <FormControlLabel
                   labelPlacement="bottom"
                   label={
-                    innerWidthRef.current > 780 ? (
+                    innerWidthRef.current > 600 ? (
                       <Box sx={formStyles.makePrivateContainer}>
-                        <Typography sx={formStyles.toolTip}>
+                        <Typography
+                          sx={formStyles.toolTip}
+                          data-testid={`${fieldName}-privacy-display`}>
                           {isPrivate ? 'Private' : 'Public'}
                           <Tooltip
                             title={
                               <Box>
                                 <Typography
-                                  sx={{textAlign: 'center', fontSize: 15}}>
+                                  sx={{textAlign: 'center', fontSize: 10}}>
                                   {isPrivate
                                     ? 'Private information is only visible to you and is not displayed on the app.'
                                     : 'Public information is available to any user.'}
@@ -181,10 +188,10 @@ export function DartaHoursOfOperation({
                         </Typography>
                       </Box>
                     ) : (
-                      <Box sx={formStyles.makePrivateContainer}>
+                      <Box>
                         <Typography
                           sx={formStyles.toolTip}
-                          data-testid={`${testIdValue}-privacy-display`}>
+                          data-testid={`${fieldName}-privacy-display`}>
                           {isPrivate ? 'Private' : 'Public'}
                         </Typography>
                       </Box>
@@ -196,7 +203,7 @@ export function DartaHoursOfOperation({
                       value={data?.isPrivate}
                       id="isPrivate"
                       size="small"
-                      data-testid={`${testIdValue}-privacy-switch`}
+                      data-testid={`${fieldName}-privacy-switch`}
                       onChange={e => field.onChange(e.target.checked)}
                       checked={field.value}
                       onClick={() => {
@@ -212,8 +219,8 @@ export function DartaHoursOfOperation({
               );
             }}
           />
-        )}
-      </InputAdornment>
+        </InputAdornment>
+      )}
     </Box>
   );
 }

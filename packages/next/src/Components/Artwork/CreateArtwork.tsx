@@ -18,7 +18,7 @@ import {PRIMARY_BLUE} from '../../../styles';
 import {
   convertCentimetersToInches,
   convertInchesToCentimeters,
-} from '../../common/utils/converter';
+} from '../../common/utils/unitConverter';
 import {
   DartaAutoComplete,
   DartaImageInput,

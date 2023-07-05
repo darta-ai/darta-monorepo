@@ -94,8 +94,6 @@ function InstructionsCarousel() {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
-  console.log(tutorialSteps[activeStep]);
-
   return (
     <Box sx={instructionsCarouselStyles.root}>
       <Paper square elevation={0.5} sx={instructionsCarouselStyles.header}>

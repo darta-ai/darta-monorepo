@@ -6,6 +6,7 @@ import React from 'react';
 
 import {IGalleryProfileData} from '../../../globalTypes';
 import {PRIMARY_BLUE} from '../../../styles';
+import {phoneNumberConverter} from '../../common/utils/phoneNumberConverter';
 import {GalleryLocationComponent} from './Components/GalleryLocationText';
 import {profileStyles} from './Components/profileStyles';
 
@@ -40,15 +41,16 @@ function GalleryStatus({
     );
   } else if (galleryProfileData?.galleryName?.value) {
     return (
-      <Box data-testid="gallery-name-display">
+      <Box>
         <Typography
           variant="h4"
+          data-testid="gallery-name-display"
           sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
           {galleryProfileData?.galleryName?.value}
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
           <Box sx={{mx: 3}}>
-            <Typography data-testid="gallery-profile-name-data">
+            <Typography data-testid="gallery-bio-display">
               {galleryProfileData?.galleryBio?.value}
             </Typography>
           </Box>
@@ -99,6 +101,7 @@ function GalleryEditButton({
           variant="outlined"
           sx={{color: PRIMARY_BLUE}}
           onClick={() => setIsEditingProfile(!isEditingProfile)}
+          data-testid="edit-profile-button"
           startIcon={<SettingsIcon sx={{color: PRIMARY_BLUE}} />}>
           Edit
         </Button>
@@ -114,6 +117,7 @@ function GalleryEditButton({
         <Button
           variant="outlined"
           sx={{color: PRIMARY_BLUE}}
+          data-testid="edit-profile-button"
           onClick={() => setIsEditingProfile(!isEditingProfile)}
           startIcon={<SettingsIcon sx={{color: PRIMARY_BLUE}} />}>
           Edit
@@ -197,7 +201,10 @@ export function ProfileGallery({
             <Box
               sx={{width: '100%', mt: 5}}
               data-testid="profile-contact-section">
-              <Typography variant="h5" sx={{textAlign: 'left'}}>
+              <Typography
+                variant="h5"
+                sx={{textAlign: 'left'}}
+                data-testid="profile-contact-display">
                 Contact
                 <Divider />
               </Typography>
@@ -206,13 +213,12 @@ export function ProfileGallery({
               <Box>
                 <Typography
                   variant="h6"
-                  data-testid="profile-contact-email"
                   sx={profileStyles.profile.galleryContactHeadline}>
                   Email
                   <Divider />
                 </Typography>
                 <Typography
-                  data-testid="profile-contact-email-data"
+                  data-testid="profile-contact-email"
                   sx={{textAlign: 'center', overflow: 'hidden', my: '1vh'}}>
                   {galleryProfileData?.primaryContact?.value
                     ? galleryProfileData?.primaryContact?.value
@@ -224,15 +230,16 @@ export function ProfileGallery({
                 <Box>
                   <Typography
                     variant="h6"
-                    data-testid="profile-contact-phone"
                     sx={profileStyles.profile.galleryContactHeadline}>
                     Phone
                     <Divider />
                   </Typography>
                   <Typography
-                    data-testid="profile-contact-phone-data"
+                    data-testid="profile-contact-phone"
                     sx={{textAlign: 'center', my: '1vh'}}>
-                    {galleryProfileData?.galleryPhone?.value}
+                    {phoneNumberConverter(
+                      galleryProfileData?.galleryPhone?.value,
+                    )}
                     {galleryProfileData?.galleryPhone?.isPrivate && '*'}
                   </Typography>
                 </Box>
@@ -241,14 +248,13 @@ export function ProfileGallery({
                 <Box>
                   <Typography
                     variant="h6"
-                    data-testid="profile-contact-website"
                     sx={profileStyles.profile.galleryContactHeadline}>
                     Website
                     <Divider />
                   </Typography>
                   <Typography
                     sx={{textAlign: 'center', my: '1vh'}}
-                    data-testid="profile-contact-website-data">
+                    data-testid="profile-contact-website">
                     {galleryProfileData?.galleryWebsite?.value ? (
                       <a
                         target="_blank"
@@ -270,14 +276,13 @@ export function ProfileGallery({
                 <Box>
                   <Typography
                     variant="h6"
-                    data-testid="profile-contact-instagram"
                     sx={profileStyles.profile.galleryContactHeadline}>
                     Instagram
                     <Divider />
                   </Typography>
                   <Typography
                     sx={{textAlign: 'center', my: '1vh'}}
-                    data-testid="profile-contact-instagram-data">
+                    data-testid="profile-contact-instagram">
                     {galleryProfileData?.galleryInstagram?.value
                       ? galleryProfileData?.galleryInstagram?.value
                       : 'N/A'}

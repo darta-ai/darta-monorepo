@@ -6,5 +6,6 @@ export {DartaHoursOfOperation} from './DartaHoursOfOperation';
 export {DartaImageInput} from './DartaImageInput';
 export {DartaLocationAndTimes} from './DartaLocationAndTimes';
 export {DartaLocationLookup} from './DartaLocationLookup';
+export {DartaPhoneNumber} from './DartaPhoneNumber';
 export {DartaRadioButtonsGroup} from './DartaRadio';
 export {DartaTextInput} from './DartaTextInput';

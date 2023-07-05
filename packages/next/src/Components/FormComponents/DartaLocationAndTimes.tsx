@@ -195,7 +195,6 @@ export function DartaLocationAndTimes({
             if (results) {
               newDetails = results;
             }
-            console.log('newDetails', newDetails, placeId);
             setPlaceDetails(newDetails);
           }
         },
@@ -292,6 +291,7 @@ export function DartaLocationAndTimes({
         <Button
           variant="contained"
           color="error"
+          data-testid={`${locationNumber}-remove-location-button`}
           onClick={() => removeLocation(locationNumber)}>
           Remove Location
         </Button>
