@@ -5,6 +5,10 @@ on: push
 jobs:
   cypress-run:
     runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: [1, 2, 3, 4] # number of containers to run tests in
     container: cypress/browsers:node16.16.0-chrome107-ff107-edge
     steps:
       - name: Checkout
@@ -16,6 +20,14 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
+          record: true # enable Cypress Dashboard recording
+          parallel: true # enable parallelization
+          group: 'Group Name' # name of the group the test run belongs to
           build: pnpm run build
           start: pnpm start
           browser: chrome
+          config-file: cypress.json
+          tag: ${{ github.event_name }},${{ github.ref }}
+        env:
+          # pass the Dashboard record key as an environment variable
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
