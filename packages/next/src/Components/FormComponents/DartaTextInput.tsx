@@ -60,19 +60,28 @@ export function DartaTextInput({
           {innerWidthRef.current > 780 && (
             <Tooltip
               title={
-                <Typography sx={{textAlign: 'center'}}>
+                <Typography
+                  data-testid={`${fieldName}-tooltip-text`}
+                  sx={{textAlign: 'center'}}>
                   {toolTips[fieldName]}
                 </Typography>
               }
               placement="top">
               <IconButton>
-                <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
+                <HelpOutlineIcon
+                  data-testid={`${fieldName}-tooltip-button`}
+                  fontSize="medium"
+                  sx={formStyles.helpIcon}
+                />
               </IconButton>
             </Tooltip>
           )}
         </Box>
         <Box>
-          <InputAdornment sx={{overflowX: 'clip'}} position="end">
+          <InputAdornment
+            data-testid={`${fieldName}-input-adornment-string`}
+            sx={{overflowX: 'clip'}}
+            position="end">
             {inputAdornmentString}
             {required && '*'}
           </InputAdornment>
@@ -85,10 +94,19 @@ export function DartaTextInput({
           error={!!errors[fieldName]}
           {...register(`${fieldName}.${'value'}`)}
           sx={formStyles.formTextField}
-          helperText={errors[fieldName]?.value && helperTextString}
+          helperText={
+            errors[fieldName]?.value && (
+              <Typography
+                data-testid={`${fieldName}-text-error-field`}
+                sx={{color: 'red'}}>
+                {helperTextString}
+              </Typography>
+            )
+          }
           fullWidth
           required={required}
           multiline={multiline}
+          data-testid={`${fieldName}-input-field`}
           rows={multiline}
           InputProps={{
             startAdornment: (
@@ -113,9 +131,11 @@ export function DartaTextInput({
                 <FormControlLabel
                   labelPlacement="bottom"
                   label={
-                    innerWidthRef.current > 780 ? (
+                    innerWidthRef.current > 600 ? (
                       <Box sx={formStyles.makePrivateContainer}>
-                        <Typography sx={formStyles.toolTip}>
+                        <Typography
+                          sx={formStyles.toolTip}
+                          data-testid={`${fieldName}-privacy-display`}>
                           {isPrivate ? 'Private' : 'Public'}
                           <Tooltip
                             title={
@@ -145,8 +165,10 @@ export function DartaTextInput({
                         </Typography>
                       </Box>
                     ) : (
-                      <Box sx={formStyles.makePrivateContainer}>
-                        <Typography sx={formStyles.toolTip}>
+                      <Box>
+                        <Typography
+                          sx={formStyles.toolTip}
+                          data-testid={`${fieldName}-privacy-display`}>
                           {isPrivate ? 'Private' : 'Public'}
                         </Typography>
                       </Box>
@@ -158,6 +180,7 @@ export function DartaTextInput({
                       value={data?.isPrivate}
                       id="isPrivate"
                       size="small"
+                      data-testid={`${fieldName}-privacy-switch`}
                       onChange={e => field.onChange(e.target.checked)}
                       checked={field.value}
                       onClick={() => {

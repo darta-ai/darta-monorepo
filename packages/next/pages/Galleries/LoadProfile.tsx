@@ -22,7 +22,6 @@ export default function LoadProfile() {
   const {user} = React.useContext(AuthContext);
 
   React.useEffect(() => {
-    console.log(user);
     if (user?.accessToken) {
       const {galleryProfile, galleryArtworks, galleryExhibitions, accessToken} =
         retrieveAllGalleryData(user.accessToken);

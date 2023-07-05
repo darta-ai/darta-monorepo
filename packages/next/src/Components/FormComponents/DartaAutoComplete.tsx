@@ -63,7 +63,6 @@ export function DartaAutoComplete({
   }, []);
 
   const handleAddNewOption = () => {
-    console.log('triggered');
     const newOption = {
       label: inputValue.trim(),
       value: inputValue.trim(),

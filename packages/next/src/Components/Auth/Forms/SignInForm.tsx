@@ -51,7 +51,7 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
         router.push(`/`);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

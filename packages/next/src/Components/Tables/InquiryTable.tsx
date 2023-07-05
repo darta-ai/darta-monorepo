@@ -5,7 +5,7 @@ import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -150,24 +150,24 @@ export function InquiryTable({
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const handleArtworkStatusChange = (event: SelectChangeEvent) => {
-    // const {name, value} = event.target;
-    console.log(event);
-
-    // // NEED BACKEND CALL TO UPDATE STATUS
-    // if (tableRows) {
-    //   setRows(tableRows =>
-    //     tableRows.map(row =>
-    //       row.id === name
-    //         ? {
-    //             ...row,
-    //             status: value as String,
-    //           }
-    //         : row,
-    //     ),
-    //   );
-    // }
-  };
+  const handleArtworkStatusChange = () =>
+    // event: SelectChangeEvent
+    {
+      // const {name, value} = event.target;
+      // // NEED BACKEND CALL TO UPDATE STATUS
+      // if (tableRows) {
+      //   setRows(tableRows =>
+      //     tableRows.map(row =>
+      //       row.id === name
+      //         ? {
+      //             ...row,
+      //             status: value as String,
+      //           }
+      //         : row,
+      //     ),
+      //   );
+      // }
+    };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -192,9 +192,8 @@ export function InquiryTable({
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      console.log('Text copied to clipboard');
     } catch (err) {
-      console.error('Failed to copy text: ', err);
+      // console.error('Failed to copy text: ', err);
     }
   };
 

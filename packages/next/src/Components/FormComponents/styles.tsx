@@ -25,7 +25,7 @@ export const formStyles = {
   },
   helpIconTiny: {
     color: PRIMARY_GREY,
-    height: '0px',
+    height: '10px',
     '@media (min-width: 800px)': {
       height: '15px',
     },

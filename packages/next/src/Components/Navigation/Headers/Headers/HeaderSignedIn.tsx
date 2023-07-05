@@ -14,7 +14,7 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
       await firebaseSignOut();
       router.push('/');
     } catch (err) {
-      console.log(err);
+      // console.log(err);
     }
   };
   return (
