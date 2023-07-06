@@ -18,8 +18,11 @@ jobs:
         run: npm install -g pnpm
 
       - name: Install dependencies
-        run: pnpm --prefix ./packages/next install
+        run: pnpm install
         working-directory: ./packages/next
+
+      - name: Install cypress
+        run: pnpm add cypress
     
       - name: Set up environment variables
         run: |
