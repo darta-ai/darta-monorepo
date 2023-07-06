@@ -22,7 +22,7 @@ jobs:
         working-directory: ./packages/next
     
       - name: Set up environment variables
-        run: echo NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY=${{ secrets.REACT_APP_FIREBASE_API_KEY }} >> .env
+        run: echo NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY=${{ secrets.NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY }} >> .env
              echo REACT_APP_FIREBASE_API_KEY=${{ secrets.REACT_APP_FIREBASE_API_KEY }} >> .env
 
       - name: Build app
