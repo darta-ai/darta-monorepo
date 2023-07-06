@@ -19,7 +19,7 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-        working-directory: ./packages/next/my-cypress-tests
+        working-directory: ./packages/next/cypress
 
       - name: Cypress run
         # Uses the official Cypress GitHub action https://github.com/cypress-io/github-action
