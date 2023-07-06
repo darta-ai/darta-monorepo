@@ -23,7 +23,7 @@ import {
 } from '../FormComponents/index';
 import {profileStyles} from './Components/profileStyles';
 
-const INSTAGRAMREGEX =
+const instagramREGEX =
   /(?:^|[^\w])(?:@)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)/;
 
 const phoneRegExp = /^(\+?\d{1,4}[\s-])?(?!0+\s+,?$)\d{10}\s*,?$/;
@@ -71,7 +71,7 @@ const galleryDataSchema = yup
     galleryInstagram: yup.object().shape({
       value: yup
         .string()
-        .matches(INSTAGRAMREGEX, {
+        .matches(instagramREGEX, {
           message: 'Please include a valid Instagram handle, such as @darta',
           excludeEmptyString: true,
         })

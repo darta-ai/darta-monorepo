@@ -51,7 +51,6 @@ export const getStaticProps: GetStaticProps<{
     const welcomeBackData = (await welcomeBack(userType)) as WelcomeBackData;
     return {props: {data: welcomeBackData}};
   } catch (e) {
-    console.log(e);
     return {props: {data: {data: {}}}};
   }
 };
