@@ -20,7 +20,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install
         working-directory: ./packages/next/cypress
-
+    
+      - name: Set up environment variables
+        run: echo NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY=${{ secrets.REACT_APP_FIREBASE_API_KEY }} > .env
+        
       - name: Build app
         run: pnpm --prefix ./packages/next run build
     
