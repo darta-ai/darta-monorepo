@@ -22,7 +22,7 @@ jobs:
         working-directory: ./packages/next
 
       - name: Install cypress
-        run: pnpm add cypress
+        run: pnpm --prefix ./packages/next add -D cypress
     
       - name: Set up environment variables
         run: |
