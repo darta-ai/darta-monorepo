@@ -1,32 +1,28 @@
 import 'firebase/compat/auth';
 
 import {Container} from '@mui/material';
-import {GetStaticProps} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
+import {IGalleryProfileData} from '../../globalTypes';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
+import {EditProfileGallery, ProfileGallery} from '../../src/Components/Profile';
 import {
-  EditProfileGallery,
-  IGalleryProfileData,
-  ProfileGallery,
-} from '../../src/Components/Profile';
-import {galleryProfileRawData} from '../../src/dummyData';
+  GalleryReducerActions,
+  useAppState,
+} from '../../src/Components/State/AppContext';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
 
 const aboutStyles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     gap: '5%',
     width: '80vw',
-    minHeight: '100vh',
-    mb: 5,
+    minHeight: '90vh',
+    mt: 5,
     alignSelf: 'center',
-    '@media (minWidth: 800px)': {
-      paddingTop: '7vh',
-    },
   },
   uploadImageContainer: {
     display: 'flex',
@@ -70,13 +66,20 @@ const aboutStyles = {
 
 // About component
 export default function GalleryProfile() {
+  const {state, dispatch} = useAppState();
   const [isEditingProfile, setIsEditingProfile] =
     React.useState<boolean>(false);
   const [galleryProfileData, setGalleryProfileData] = React.useState<
     IGalleryProfileData | {}
-  >({
-    ...galleryProfileRawData,
-  });
+  >({...state.galleryProfile, isValidated: true});
+
+  React.useEffect(() => {
+    dispatch({
+      type: GalleryReducerActions.SET_PROFILE,
+      payload: galleryProfileData,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [galleryProfileData]);
 
   return (
     <>
@@ -89,19 +92,19 @@ export default function GalleryProfile() {
       </Head>
 
       <SideNavigationWrapper>
-        <Container maxWidth="md" sx={aboutStyles.container}>
+        <Container sx={aboutStyles.container}>
           {isEditingProfile ? (
             <EditProfileGallery
               isEditingProfile={isEditingProfile}
               setIsEditingProfile={setIsEditingProfile}
               setGalleryProfileData={setGalleryProfileData}
-              galleryProfileData={galleryProfileData}
+              galleryProfileData={galleryProfileData as IGalleryProfileData}
             />
           ) : (
             <ProfileGallery
               isEditingProfile={isEditingProfile}
               setIsEditingProfile={setIsEditingProfile}
-              galleryProfileData={galleryProfileData}
+              galleryProfileData={galleryProfileData as IGalleryProfileData}
             />
           )}
         </Container>
@@ -109,14 +112,3 @@ export default function GalleryProfile() {
     </>
   );
 }
-
-export const getStaticProps: GetStaticProps<{
-  data: any;
-}> = async () => {
-  return {props: {data: {data: {}}}};
-  // try {
-  //   // const aboutData = (await getGallery()) as null;
-  // } catch (e) {
-  //   return {props: {data: {data: {}}}};
-  // }
-};

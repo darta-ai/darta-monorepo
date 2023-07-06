@@ -5,10 +5,9 @@ export const profileStyles = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    gap: '5vh',
+    alignItems: 'center',
+    gap: '2vh',
     minWidth: '80vw',
-    minHeight: '100vh',
-    mt: '10vh',
     alignSelf: 'center',
   },
   profile: {
@@ -37,6 +36,11 @@ export const profileStyles = {
         width: 200,
       },
     },
+    image: {
+      width: `100%`,
+      height: 'unset',
+      alignSelf: 'center',
+    },
     galleryDetails: {
       display: 'flex',
       flexDirection: 'column',
@@ -44,6 +48,7 @@ export const profileStyles = {
       alignItems: 'center',
       alignSelf: 'center',
       width: '60%',
+      my: 5,
       '@media (max-width: 790px)': {
         width: '95%',
       },
@@ -58,18 +63,29 @@ export const profileStyles = {
       justifyContent: 'space-around',
       alignSelf: 'flex-start',
       height: '40%',
-      width: '100%',
+      width: '95%',
       '@media (max-width: 790px)': {
         flexDirection: 'column',
       },
     },
-    galleryLocationContainer: {
+    galleryContactContainer: {
       display: 'flex',
       flexDirection: 'row',
-      justifyContent: 'space-around',
+      justifyContent: 'space-evenly',
       gap: '5%',
-      width: '80%',
-      mt: 3,
+      width: '95%',
+      '@media (max-width: 790px)': {
+        flexDirection: 'column',
+      },
+    },
+    hoursOfOperationText: {
+      fontSize: '0.9rem',
+      '@media (max-width: 700px)': {
+        flexDirection: '0.7rem',
+      },
+    },
+    galleryContactHeadline: {
+      textAlign: 'center',
     },
     galleryBioContainer: {
       display: 'flex',
@@ -78,10 +94,11 @@ export const profileStyles = {
       justifyContent: 'flex-start',
       height: '0%',
     },
+
     galleryAddressContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      width: '100%',
+      display: 'column',
+      flexDirection: 'row',
+      width: '95%',
       alignItems: 'center',
       alignText: 'center',
     },
@@ -102,6 +119,14 @@ export const profileStyles = {
     addressText: {
       alignText: 'center',
       color: PRIMARY_DARK_GREY,
+      fontSize: '1.2rem',
+    },
+    imageSize: {
+      minWidth: '100%',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
   },
   edit: {
@@ -114,6 +139,7 @@ export const profileStyles = {
       flexDirection: 'column',
       justifyContent: 'space-between',
       gap: '1vh',
+      mt: 10,
       alignItems: 'center',
       minHeight: '10vh',
       width: '100%',
@@ -126,14 +152,15 @@ export const profileStyles = {
       alignContent: 'center',
       gap: '5vh',
       alignItems: 'space-between',
-      height: '40vh',
-      width: '40vw',
+      maxHeight: '40vh',
+      mt: 7,
+      width: '100%',
     },
     defaultImageEdit: {
       marginTop: '1em',
-      width: '30vw',
+      width: '25vw',
       alignSelf: 'center',
-      // height: '30vh',
+      my: 12,
       borderWidth: 30,
     },
     inputText: {
@@ -142,12 +169,12 @@ export const profileStyles = {
       justifyContent: 'space-between',
       alignItems: 'center',
       minHeight: '10vh',
-      width: '100%',
+      width: '80%',
     },
     saveButton: {
       color: PRIMARY_BLUE,
       alignSelf: 'center',
-      m: 2,
+      m: 10,
     },
   },
 };

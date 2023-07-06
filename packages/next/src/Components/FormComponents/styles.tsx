@@ -25,7 +25,7 @@ export const formStyles = {
   },
   helpIconTiny: {
     color: PRIMARY_GREY,
-    height: '0px',
+    height: '10px',
     '@media (min-width: 800px)': {
       height: '15px',
     },
@@ -46,5 +46,22 @@ export const formStyles = {
     '@media (min-width: 800px)': {
       fontSize: 15,
     },
+  },
+  hoursOfOperationContainer: {
+    display: 'grid',
+    width: '100%',
+    '@media (min-width: 800px)': {
+      gridTemplateColumns: 'repeat(7, 1fr)',
+      gridTemplateRows: 'repeat(1, 1fr)',
+    },
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gridTemplateRows: 'repeat(3, 1fr)',
+  },
+  hoursOfOperationInputContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    m: 1,
+    gap: '1vh',
+    alignItems: 'center',
   },
 };

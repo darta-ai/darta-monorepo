@@ -58,4 +58,15 @@ export const galleryStyles = {
   formTextField: {
     width: '100%',
   },
+  divider: {width: '50%', alignSelf: 'center', margin: '2'},
+  filterContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: '4vh',
+    '@media (minWidth: 800px)': {
+      fontSize: '1.3rem',
+      flexDirection: 'column',
+    },
+  },
 };

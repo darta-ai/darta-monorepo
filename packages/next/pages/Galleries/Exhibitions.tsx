@@ -7,20 +7,10 @@ import Head from 'next/head';
 import React from 'react';
 
 import {Exhibition} from '../../globalTypes';
-import {ArtworkCard} from '../../src/Components/Artwork/index';
+import {newExhibitionShell} from '../../src/common/templates';
+// import {ExhibitionCard} from '../../src/Components/Exhibitions/index';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {galleryStyles} from '../../styles/GalleryPageStyles';
-
-const newExhibitionShell: Exhibition = {
-  exhibitionTitle: '',
-  pressRelease: '',
-  mediumsUsed: [],
-  artists: [],
-  artworks: {},
-  published: false,
-  slug: '',
-  exhibitionId: '',
-};
 
 // need a function that gets all artworks
 // need a function that gets all inquiries for art
@@ -39,10 +29,14 @@ export default function GalleryExhibitions() {
     });
   };
 
-  // const saveArtwork = (artworkId: string, updatedArtwork: Artwork) => {
-  //   const newArtwork: {[key: string]: Artwork} = _.cloneDeep(artworks);
-  //   newArtwork[artworkId] = updatedArtwork;
-  //   setArtworks({...newArtwork});
+  // const saveExhibition = (
+  //   exhibitionId: string,
+  //   updatedExhibition: Exhibition,
+  // ) => {
+  //   const newExhibitions: {[key: string]: Exhibition} =
+  //     _.cloneDeep(exhibitions);
+  //   newExhibitions[exhibitionId] = updatedExhibition;
+  //   setNewExhibitions({...newExhibitions});
   // };
 
   // const deleteArtwork = (artworkId: string) => {
@@ -76,6 +70,15 @@ export default function GalleryExhibitions() {
             sx={galleryStyles.createNewButton}>
             Create Exhibition
           </Button>
+          {exhibitions &&
+            Object.values(exhibitions).map(() => (
+              <Box>
+                {/* <ExhibitionCard
+                  exhibition={exhibition}
+                  saveExhibition={saveExhibition}
+                /> */}
+              </Box>
+            ))}
         </Box>
       </SideNavigationWrapper>
     </>
@@ -92,3 +95,71 @@ export const getStaticProps: GetStaticProps<{
   //   return {props: {data: {data: {}}}};
   // }
 };
+
+// if (typeof window !== 'undefined' && !loaded.current) {
+//   if (!document.querySelector('#google-maps')) {
+//     loadScript(
+//       `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`,
+//       document.querySelector('head'),
+//       'google-maps',
+//     );
+//   }
+
+//   loaded.current = true;
+// }
+
+// const fetch = React.useMemo(
+//   () =>
+//     debounce(
+//       (
+//         request: {input: string},
+//         callback: (results?: readonly PlaceType[]) => void,
+//       ) => {
+//         (autocompleteService.current as any).getPlacePredictions(
+//           request,
+//           callback,
+//         );
+//       },
+//       400,
+//     ),
+//   [],
+// );
+
+// React.useEffect(() => {
+//   let active = true;
+
+//   if (!autocompleteService.current && (window as any).google) {
+//     autocompleteService.current = new (
+//       window as any
+//     ).google.maps.places.AutocompleteService();
+//   }
+//   if (!autocompleteService.current) {
+//     return undefined;
+//   }
+
+//   if (inputValue === '') {
+//     setOptions(value ? [value] : []);
+//     return undefined;
+//   }
+
+//   fetch({input: inputValue}, (results?: readonly PlaceType[]) => {
+//     if (active) {
+//       let newOptions: readonly PlaceType[] = [];
+
+//       if (value) {
+//         newOptions = [value];
+//       }
+
+//       console.log(results);
+//       if (results) {
+//         newOptions = [...newOptions, ...results];
+//       }
+
+//       setOptions(newOptions);
+//     }
+//   });
+
+//   return () => {
+//     active = false;
+//   };
+// }, [value, inputValue, fetch]);

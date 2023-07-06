@@ -38,11 +38,11 @@ export function DartaTextInput({
   fieldName: string;
   data: PrivateFields | any;
   register: any;
-  errors: any;
   control: any;
+  errors: any;
   toolTips: ToolTip | any;
   required: boolean;
-  multiline: boolean;
+  multiline: boolean | number;
   helperTextString: string | undefined;
   inputAdornmentString: string;
   allowPrivate: boolean;
@@ -53,8 +53,6 @@ export function DartaTextInput({
   React.useEffect(() => {
     innerWidthRef.current = window.innerWidth;
   }, []);
-  const innerWidthMultiple = innerWidthRef.current > 800 ? 3 : 4;
-  const rows = multiline ? innerWidthMultiple : 1;
   return (
     <Box sx={formStyles.inputTextContainer}>
       <Box sx={formStyles.toolTipContainer}>
@@ -62,19 +60,28 @@ export function DartaTextInput({
           {innerWidthRef.current > 780 && (
             <Tooltip
               title={
-                <Typography sx={{textAlign: 'center'}}>
+                <Typography
+                  data-testid={`${fieldName}-tooltip-text`}
+                  sx={{textAlign: 'center'}}>
                   {toolTips[fieldName]}
                 </Typography>
               }
               placement="top">
               <IconButton>
-                <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
+                <HelpOutlineIcon
+                  data-testid={`${fieldName}-tooltip-button`}
+                  fontSize="medium"
+                  sx={formStyles.helpIcon}
+                />
               </IconButton>
             </Tooltip>
           )}
         </Box>
         <Box>
-          <InputAdornment sx={{overflowX: 'clip'}} position="end">
+          <InputAdornment
+            data-testid={`${fieldName}-input-adornment-string`}
+            sx={{overflowX: 'clip'}}
+            position="end">
             {inputAdornmentString}
             {required && '*'}
           </InputAdornment>
@@ -87,12 +94,20 @@ export function DartaTextInput({
           error={!!errors[fieldName]}
           {...register(`${fieldName}.${'value'}`)}
           sx={formStyles.formTextField}
-          helperText={errors[fieldName]?.value && helperTextString}
+          helperText={
+            errors[fieldName]?.value && (
+              <Typography
+                data-testid={`${fieldName}-text-error-field`}
+                sx={{color: 'red'}}>
+                {helperTextString}
+              </Typography>
+            )
+          }
           fullWidth
           required={required}
           multiline={multiline}
-          defaultValue={data?.value!}
-          rows={rows}
+          data-testid={`${fieldName}-input-field`}
+          rows={multiline}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -102,22 +117,25 @@ export function DartaTextInput({
           }}
         />
       </Box>
-      <InputAdornment sx={{width: '10vw', alignSelf: 'center'}} position="end">
-        {allowPrivate && (
+      {allowPrivate && (
+        <InputAdornment
+          sx={{width: '10vw', alignSelf: 'center'}}
+          position="end">
           <Controller
             control={control}
             sx={{alignSelf: 'flex-start'}}
             name={fieldName}
             {...register(`${fieldName}.${'isPrivate'}`)}
-            defaultValue={data?.isPrivate}
             render={({field}: {field: any}) => {
               return (
                 <FormControlLabel
                   labelPlacement="bottom"
                   label={
-                    innerWidthRef.current > 780 ? (
+                    innerWidthRef.current > 600 ? (
                       <Box sx={formStyles.makePrivateContainer}>
-                        <Typography sx={formStyles.toolTip}>
+                        <Typography
+                          sx={formStyles.toolTip}
+                          data-testid={`${fieldName}-privacy-display`}>
                           {isPrivate ? 'Private' : 'Public'}
                           <Tooltip
                             title={
@@ -125,7 +143,7 @@ export function DartaTextInput({
                                 <Typography
                                   sx={{textAlign: 'center', fontSize: 15}}>
                                   {isPrivate
-                                    ? 'Private information is only visible to you and your team.'
+                                    ? 'Private information is only visible to you and is not displayed on the app.'
                                     : 'Public information is available to any user.'}
                                 </Typography>
                                 <IconButton>
@@ -147,8 +165,10 @@ export function DartaTextInput({
                         </Typography>
                       </Box>
                     ) : (
-                      <Box sx={formStyles.makePrivateContainer}>
-                        <Typography sx={formStyles.toolTip}>
+                      <Box>
+                        <Typography
+                          sx={formStyles.toolTip}
+                          data-testid={`${fieldName}-privacy-display`}>
                           {isPrivate ? 'Private' : 'Public'}
                         </Typography>
                       </Box>
@@ -160,6 +180,7 @@ export function DartaTextInput({
                       value={data?.isPrivate}
                       id="isPrivate"
                       size="small"
+                      data-testid={`${fieldName}-privacy-switch`}
                       onChange={e => field.onChange(e.target.checked)}
                       checked={field.value}
                       onClick={() => {
@@ -175,8 +196,8 @@ export function DartaTextInput({
               );
             }}
           />
-        )}
-      </InputAdornment>
+        </InputAdornment>
+      )}
     </Box>
   );
 }

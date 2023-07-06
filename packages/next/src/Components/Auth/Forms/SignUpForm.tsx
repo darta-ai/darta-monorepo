@@ -17,7 +17,7 @@ import React, {useState} from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {dartaSignUp} from '../../../../API/AccountManagement';
+import {dartaSignUp} from '../../../../API/FirebaseAccountManagement';
 import {AlreadySignedUp} from '../../Navigation/Auth';
 import {authStyles} from '../styles';
 import {AuthEnum} from '../types';
@@ -35,6 +35,11 @@ const schema = yup
       .string()
       .matches(phoneRegExp, 'please double check your phone number')
       .optional(),
+    galleryName: yup
+      .string()
+      .required(
+        'please include a gallery name to speed up the approval process',
+      ),
     password: yup
       .string()
       .min(8, 'password must be at least 8 characters')
@@ -65,7 +70,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
         if (error) {
           setFirebaseError(errorMessage);
         } else if (user?.displayName) {
-          router.push(`/${signUpType}/Home`);
+          router.push(`/${signUpType}/LoadProfile`);
         } else {
           router.push(`/`);
         }
@@ -80,6 +85,20 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
   const [toggleConfirmPasswordView, setToggleConfirmPasswordView] =
     useState<boolean>(false);
 
+  const [emailInput, setEmailInput] = useState<string | undefined>('');
+  const [emailError, setEmailError] = useState<string | undefined>('');
+
+  React.useEffect(() => {
+    const regex = /\b[A-Za-z0-9._%+-]+@gmail\.com\b/g;
+    if (emailInput?.match(regex)) {
+      setEmailError(
+        'Using an @gmail account to register an account will require longer to approve. If you have a business email address related to this gallery we recommend you use that.',
+      );
+    } else {
+      setEmailError('');
+    }
+  }, [emailInput]);
+
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
@@ -92,7 +111,26 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
         sx={authStyles.signInFieldContainer}
         data-testid="signInFieldContainer">
         <FormControl variant="outlined" required>
-          <InputLabel htmlFor="outlined-adornment-password">email</InputLabel>
+          <InputLabel htmlFor="outlined-adornment-password">
+            gallery name
+          </InputLabel>
+          <Input
+            error={!!errors?.phoneNumber?.message}
+            {...register('galleryName')}
+            id="galleryName"
+            color="info"
+            aria-describedby="galleryName"
+            data-testid="galleryNameInput"
+          />
+          <FormHelperText
+            id="galleryNameHelperText"
+            data-testid="galleryName-helper-text"
+            sx={authStyles.warningText}>
+            {errors?.galleryName?.message as string}
+          </FormHelperText>
+        </FormControl>
+        <FormControl variant="outlined" required>
+          <InputLabel htmlFor="outlined-adornment-email">email</InputLabel>
           <Input
             error={!!errors?.email?.message}
             {...register('email')}
@@ -101,13 +139,19 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             color="info"
             required
             data-testid="emailInput"
+            onChange={event => {
+              setEmailInput(event.target.value);
+            }}
           />
-          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
-            {errors?.email?.message as string}
+          <FormHelperText
+            id="emailHelperText"
+            data-testid="emailInput-helper-text"
+            sx={authStyles.warningText}>
+            {(errors?.email?.message as string) || emailError}
           </FormHelperText>
         </FormControl>
         <FormControl variant="outlined" required>
-          <InputLabel htmlFor="outlined-adornment-password">
+          <InputLabel htmlFor="outlined-adornment-phone">
             phone number
           </InputLabel>
           <Input
@@ -118,10 +162,14 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             aria-describedby="phoneNumber"
             data-testid="phoneNumberInput"
           />
-          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
+          <FormHelperText
+            id="phoneHelperText"
+            data-testid="phoneNumber-helper-text"
+            sx={authStyles.warningText}>
             {errors?.phoneNumber?.message as string}
           </FormHelperText>
         </FormControl>
+
         {!errors?.password?.message && (
           <FormHelperText id="phoneHelperText" sx={authStyles.formHelperText}>
             For account management purposes.
@@ -151,8 +199,11 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             }
             data-testid="passwordInput"
           />
-          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
-            {errors?.email?.message as string}
+          <FormHelperText
+            data-testid="password-helper-text"
+            id="phoneHelperText"
+            sx={authStyles.warningText}>
+            {errors?.password?.message as string}
           </FormHelperText>
         </FormControl>
         <FormControl variant="outlined" required>
@@ -187,12 +238,15 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             }
             data-testid="confirmPasswordInput"
           />
-          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
+          <FormHelperText
+            id="confirmPasswordHelperText"
+            data-testid="password-confirm-helper-text"
+            sx={authStyles.warningText}>
             {errors?.confirmPassword?.message as string}
           </FormHelperText>
         </FormControl>
         <FormControl variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-password">website</InputLabel>
+          <InputLabel htmlFor="outlined-adornment-website">website</InputLabel>
           <Input
             error={!!errors?.website?.message}
             {...register('website')}
@@ -206,7 +260,10 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
           </FormHelperText>
         </FormControl>
         {firebaseError && (
-          <FormHelperText id="phoneHelperText" sx={authStyles.warningTextLarge}>
+          <FormHelperText
+            id="websiteHelperText"
+            data-testid="website-helper-text"
+            sx={authStyles.warningTextLarge}>
             {firebaseError as string}
           </FormHelperText>
         )}

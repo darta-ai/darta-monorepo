@@ -30,16 +30,16 @@ export function DartaRadioButtonsGroup({
   fieldName,
   inputAdornmentString,
   options,
-  control,
   defaultValue,
+  control,
   setDisplayCurrency,
 }: {
   toolTips: any;
   fieldName: string;
   control: any;
   inputAdornmentString: string;
-  options: string[];
   defaultValue: string;
+  options: string[];
   setDisplayCurrency: any | null;
 }) {
   const innerWidthRef = React.useRef(800);

@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import createEmotionServer from '@emotion/server/create-instance';
-import {AppType} from 'next/app';
+import {AppType} from 'next/dist/shared/lib/utils';
 import Document, {
   DocumentContext,
   DocumentProps,
@@ -84,10 +84,17 @@ MyDocument.getInitialProps = async (ctx: DocumentContext) => {
       enhanceApp: (
         App: React.ComponentType<React.ComponentProps<AppType> & MyAppProps>,
       ) =>
-        function EnhanceApp(props) {
+        function EnhanceApp(props: MyAppProps) {
           return <App emotionCache={cache} {...props} />;
         },
     });
+
+  // enhanceApp: (
+  //   App: ,
+  // ) =>
+  //   function EnhanceApp(props) {
+  //     return <App emotionCache={cache} {...props} />;
+  //   },
 
   const initialProps = await Document.getInitialProps(ctx);
   // This is important. It prevents Emotion to render invalid HTML.

@@ -10,16 +10,14 @@ export function DartaDialogue({
   open,
   handleClose,
   handleDelete,
-  artworkTitle,
-  artworkId,
-  artistName,
+  title,
+  id,
 }: {
   open: boolean;
   handleClose: () => void;
   handleDelete: (arg0: string) => void;
-  artworkTitle: string;
-  artworkId: string;
-  artistName: string;
+  title: string;
+  id: string;
 }) {
   return (
     <div>
@@ -33,7 +31,7 @@ export function DartaDialogue({
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {`You are about to delete ${artworkTitle} by ${artistName} from darta. This action cannot be undone.`}
+            {`You are about to delete ${title} from darta. This action cannot be undone.`}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -44,7 +42,7 @@ export function DartaDialogue({
             variant="contained"
             color="error"
             onClick={() => {
-              handleDelete(artworkId);
+              handleDelete(id);
               handleClose();
             }}
             autoFocus>
