@@ -7,8 +7,8 @@ export default defineConfig({
       // implement node event listeners here
     },
   },
-
   component: {
+    setupNodeEvents(on, config) {},
     devServer: {
       framework: 'next',
       bundler: 'webpack',
