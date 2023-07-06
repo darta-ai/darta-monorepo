@@ -2,21 +2,8 @@
 
 import React from 'react';
 
-import {EditProfileGallery} from '../../../src/Components/Profile/EditProfileGallery';
+import {EditProfileGallery} from '../../src/Components/Profile/EditProfileGallery';
 
-describe('<EditProfileGallery />', () => {
-  it('renders', () => {
-    // see: https://on.cypress.io/mounting-react
-    cy.mount(
-      <EditProfileGallery
-        isEditingProfile={false}
-        setIsEditingProfile={cy.stub().as('setIsEditingProfile')}
-        setGalleryProfileData={cy.stub().as('setGalleryProfileData')}
-        galleryProfileData={{}}
-      />,
-    );
-  });
-});
 describe('EditProfileGallery.cy.tsx', () => {
   beforeEach(() => {
     cy.mount(
@@ -225,18 +212,5 @@ describe('EditProfileGallery.cy.tsx', () => {
     cy.get('[data-testid=galleryInstagram-input-field]').contains(
       'Please include a valid Instagram handle, such as',
     );
-
-    // galleryLocation
-    // cy.get('[data-testid=galleryLocation0-locationString-input-field]').type(
-    //   'Location',
-    // );
-
-    // Hours
-    // cy.get('[data-testid=galleryLocation0-businessHours-Monday-open]').type(
-    //   '1 PM',
-    // );
-    // cy.get('[data-testid=galleryLocation0-businessHours-Sunday-close]').type(
-    //   '6 PM',
-    // );
   });
 });
