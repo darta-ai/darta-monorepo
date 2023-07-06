@@ -1,6 +1,7 @@
+/* eslint-disable no-undef */
 import React from 'react';
 
-import {EditProfileGallery} from '../../src/Components/Profile/EditProfileGallery';
+import {EditProfileGallery} from '../../../src/Components/Profile/EditProfileGallery';
 
 describe('EditProfileGallery.cy.tsx', () => {
   beforeEach(() => {
