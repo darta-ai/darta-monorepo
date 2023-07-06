@@ -49,7 +49,6 @@ export const getStaticProps: GetStaticProps<{
     const benefitsData = (await signUpBenefits(userType)) as BenefitsData;
     return {props: {data: benefitsData}};
   } catch (e) {
-    console.log(e);
     return {props: {data: {data: {}}}};
   }
 };
