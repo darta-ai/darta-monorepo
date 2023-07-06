@@ -7,11 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "cypress": "cypress run",
+    "cypress": "cypress run --config-file ./cypress/cypress.config.ts",
+    "cypress-open": "cypress open --config-file ./cypress/cypress.config.ts",
     "prettier": "npx prettier --write .",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
+    "@cypress/react": "^7.0.3",
     "@emotion/cache": "11.11.0",
     "@emotion/react": "11.11.0",
     "@emotion/server": "11.11.0",

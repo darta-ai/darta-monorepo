@@ -38,7 +38,7 @@ describe('Gallery Create Profile', () => {
       '[data-testid=galleryLocation1-locationString-tooltip-button]',
     ).should('not.exist');
   });
-  it.only('Should populate the gallery profile screen', () => {
+  it('Should populate the gallery profile screen', () => {
     cy.visit('http://localhost:3000/');
 
     cy.get('[data-testid=header-link-gallery]').click();
@@ -57,7 +57,9 @@ describe('Gallery Create Profile', () => {
 
     cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
 
-    cy.get('[data-testid=galleryButton]', {timeout: 4000}).click();
+    cy.wait(3500);
+
+    cy.get('[data-testid=galleryButton]').click();
     cy.url().should('include', '/Profile');
     cy.get('[data-testid=edit-profile-button]').click();
 
@@ -71,10 +73,12 @@ describe('Gallery Create Profile', () => {
     cy.get('[data-testid=primaryContact-input-field]').type('TJ@darta.works');
 
     // galleryPhone
-    cy.get('[data-testid=galleryPhone-input-field]').type('Gallery Phone');
+    cy.get('[data-testid=galleryPhone-input-field]').type('4156137221');
 
     // galleryWebsite
-    cy.get('[data-testid=galleryWebsite-input-field]').type('Gallery Website');
+    cy.get('[data-testid=galleryWebsite-input-field]').type(
+      'https://www.Gallery.Website',
+    );
 
     // galleryInstagram
     cy.get('[data-testid=galleryInstagram-input-field]').type('@darta.works');
@@ -106,10 +110,10 @@ describe('Gallery Create Profile', () => {
     cy.get('[data-testid=profile-contact-email]').contains('TJ@darta.works');
 
     // galleryPhone
-    cy.get('[data-testid=profile-contact-phone]').contains('Gallery Phone');
+    cy.get('[data-testid=profile-contact-phone]').contains('+1 (415) 613 7221');
 
     // galleryWebsite
-    cy.get('[data-testid=profile-contact-website]').contains('Gallery Website');
+    cy.get('[data-testid=profile-contact-website]').contains('Gallery.Website');
 
     // galleryInstagram
     cy.get('[data-testid=profile-contact-instagram]').contains('@darta.works');

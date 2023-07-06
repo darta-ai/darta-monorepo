@@ -1,12 +1,24 @@
-/* eslint-disable no-undef */
+/// <reference types="cypress" />
+
 import React from 'react';
 
 import {EditProfileGallery} from '../../../src/Components/Profile/EditProfileGallery';
 
+describe('<EditProfileGallery />', () => {
+  it('renders', () => {
+    // see: https://on.cypress.io/mounting-react
+    cy.mount(
+      <EditProfileGallery
+        isEditingProfile={false}
+        setIsEditingProfile={cy.stub().as('setIsEditingProfile')}
+        setGalleryProfileData={cy.stub().as('setGalleryProfileData')}
+        galleryProfileData={{}}
+      />,
+    );
+  });
+});
 describe('EditProfileGallery.cy.tsx', () => {
   beforeEach(() => {
-    // The mount function is provided by @cypress/react
-    // and helps mount your component in the DOM for testing.
     cy.mount(
       <EditProfileGallery
         isEditingProfile={false}
@@ -149,7 +161,7 @@ describe('EditProfileGallery.cy.tsx', () => {
       '6 PM',
     );
   });
-  it.only('Handles common errors', () => {
+  it('Handles common errors', () => {
     // Gallery Name
     cy.get('[data-testid=galleryName-input-field]').type('Gallery Name');
 

@@ -18,7 +18,7 @@ jobs:
         run: npm install -g pnpm
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm --prefix ./packages/next install
         working-directory: ./packages/next
     
       - name: Set up environment variables
