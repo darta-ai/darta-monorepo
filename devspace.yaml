@@ -42,7 +42,7 @@ deployments:
         service:
           ports:
             - port: 1160
-            - port: 1169
+            - port: 1170
 
 # This is a list of `dev` containers that are based on the containers created by your deployments
 dev:
@@ -83,10 +83,10 @@ dev:
     ports:
       - port: "9229"
       - port: "1160"
-      - port: "1169"
+      - port: "1170"
     # Open the following URLs once they return an HTTP status code other than 502 or 503
     open:
-      - url: http://localhost:1169
+      - url: http://localhost:1170
 
 # Use the `commands` section to define repeatable dev workflows for this project 
 commands:

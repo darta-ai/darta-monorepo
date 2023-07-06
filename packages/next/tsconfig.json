@@ -20,8 +20,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "cypress/e2e/index.cy.js"
-, "smartyStreets/smartyStreets.js"  ],
+    "globalTypes.ts", 
+  ],
   "paths": {
     "react": [ "./node_modules/@types/react" ]
   },

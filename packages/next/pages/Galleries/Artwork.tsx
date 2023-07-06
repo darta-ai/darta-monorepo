@@ -1,140 +1,58 @@
 import 'firebase/compat/auth';
 
-import {Box, Button, Typography} from '@mui/material';
+import {Box, Button, Divider, Typography} from '@mui/material';
 import _ from 'lodash';
-import {GetStaticProps} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
+import {retrieveGalleryArtworks} from '../../API/DartaGETrequests';
 import {Artwork} from '../../globalTypes';
+import {newArtworkShell} from '../../src/common/templates';
 import {ArtworkCard} from '../../src/Components/Artwork/index';
+import {DartaRadioFilter, DartaTextFilter} from '../../src/Components/Filters';
+import {UploadArtworksXlsModal} from '../../src/Components/Modals';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {
-  artwork1,
-  artwork2,
-  artwork3,
+  GalleryReducerActions,
+  useAppState,
+} from '../../src/Components/State/AppContext';
+import {
   galleryInquiriesDummyData,
   InquiryArtworkData,
 } from '../../src/dummyData';
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../styles';
-
-const aboutStyles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    gap: '2vh',
-    minHeight: '100vh',
-    minWidth: '70vw',
-    alignSelf: 'center',
-    '@media (minWidth: 800px)': {
-      paddingTop: '7vh',
-    },
-  },
-  uploadImageContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    gap: '5%',
-    alignItems: 'center',
-  },
-  typographyTitle: {
-    fontFamily: 'EB Garamond',
-    color: PRIMARY_BLUE,
-    fontSize: '2rem',
-    my: '3vh',
-    '@media (min-width:800px)': {
-      fontSize: '2.5rem',
-    },
-    cursor: 'default',
-  },
-  typography: {
-    fontFamily: 'EB Garamond',
-    color: PRIMARY_DARK_GREY,
-    fontSize: '1rem',
-    '@media (minWidth: 800px)': {
-      fontSize: '1.3rem',
-    },
-    cursor: 'default',
-  },
-  button: {
-    color: PRIMARY_BLUE,
-  },
-  inputTextContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  formTextField: {
-    width: '100%',
-  },
-};
-
-const newArtworkShell: Artwork = {
-  artworkTitle: {
-    value: '',
-  },
-  published: false,
-  artistName: {
-    value: '',
-  },
-  artworkImage: {
-    value: '',
-  },
-  artworkImagesArray: [],
-  artworkMedium: {
-    value: '',
-  },
-  artworkPrice: {
-    value: '',
-    isPrivate: false,
-  },
-  artworkCurrency: {
-    value: 'USD',
-  },
-  canInquire: {
-    value: '',
-  },
-  artworkDescription: {
-    value: '',
-  },
-  slug: {
-    value: '',
-  },
-  artworkDimensions: {
-    height: {
-      value: '',
-    },
-    text: {
-      value: '',
-    },
-    width: {
-      value: '',
-    },
-    depth: {
-      value: '',
-    },
-    unit: {
-      value: 'in',
-    },
-  },
-  artworkCreatedYear: {
-    value: '',
-  },
-};
-
-// need a function that gets all artworks
-// need a function that gets all inquiries for art
+import {PRIMARY_BLUE, PRIMARY_MILK} from '../../styles';
+import {galleryStyles} from '../../styles/GalleryPageStyles';
+import {AuthContext} from '../_app';
 
 export default function GalleryProfile() {
+  const {state, dispatch} = useAppState();
+  const {user} = React.useContext(AuthContext);
   const [artworks, setArtworks] = React.useState<{[key: string]: Artwork}>({
-    ...artwork2,
-    ...artwork1,
-    ...artwork3,
+    ...state?.galleryArtworks,
   });
+  React.useEffect(() => {
+    const getArtworkData = async () => {
+      if (
+        Object?.values(state?.galleryArtworks).length === 0 &&
+        Object?.keys(artworks).length === 0
+      ) {
+        if (state?.accessToken || user?.accessToken) {
+          const {galleryArtworks} = await retrieveGalleryArtworks(
+            state?.accessToken || user?.accessToken,
+          );
+          dispatch({
+            type: GalleryReducerActions.SET_ARTWORKS,
+            payload: {...galleryArtworks},
+          });
+          setArtworks({...galleryArtworks});
+        }
+      }
+    };
+    getArtworkData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
+  const [displayArtworks, setDisplayArtworks] = React.useState<Artwork[]>();
   const [inquiries, setInquiries] = React.useState<{
     [key: string]: InquiryArtworkData[];
   } | null>(null);
@@ -150,11 +68,30 @@ export default function GalleryProfile() {
       }
     });
     setInquiries(sortedInquiries);
+
+    if (!artworks) {
+      setDisplayArtworks(Object?.values(artworks));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  React.useEffect(() => {
+    dispatch({
+      type: GalleryReducerActions.SET_ARTWORKS,
+      payload: artworks,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [artworks]);
+
+  const handleBatchUpload = (uploadArtworks: {[key: string]: Artwork}) => {
+    setArtworks({...artworks, ...uploadArtworks});
+  };
 
   const addNewArtwork = () => {
     const newArtwork: Artwork = _.cloneDeep(newArtworkShell);
     newArtwork.artworkId = crypto.randomUUID();
+    newArtwork.updatedAt = new Date().toISOString();
+    newArtwork.createdAt = new Date().toISOString();
     setArtworks({...artworks, [newArtwork.artworkId]: newArtwork});
   };
 
@@ -170,6 +107,90 @@ export default function GalleryProfile() {
     setArtworks({...newArtwork});
   };
 
+  const [croppingModalOpen, setCroppingModalOpen] = React.useState(true);
+
+  const [searchString, setSearchString] = React.useState<string | undefined>();
+  const [filterString, setFilterString] = React.useState<string | undefined>();
+  const [
+    isSortedAscending,
+    // setIsSortedAscending
+  ] = React.useState<boolean>(true);
+
+  const searchByString = (
+    query: string | undefined,
+    currentArtworks = artworks,
+  ): Artwork[] | unknown[] => {
+    if (!query) return Object.values(currentArtworks);
+    let results = Object.values(currentArtworks);
+    if (displayArtworks) {
+      results = Object.values(displayArtworks).filter((item: Artwork) => {
+        const {artistName, artworkTitle} = item;
+        const medium = item?.artworkMedium;
+        const lowercaseQuery = query.toLowerCase();
+        const lowercaseMedium = medium?.value?.toLowerCase();
+        const lowercaseArtistName = artistName?.value?.toLowerCase();
+        const lowercaseArtworkTitle = artworkTitle?.value?.toLowerCase();
+
+        return (
+          lowercaseMedium?.includes(lowercaseQuery) ||
+          lowercaseArtistName?.includes(lowercaseQuery) ||
+          lowercaseArtworkTitle?.includes(lowercaseQuery)
+        );
+      });
+    }
+
+    return results;
+  };
+
+  const filterByInquiry = (query: string | unknown): void => {
+    let results;
+    if (!inquiries) return;
+    const artworksWithInquiriesIds = Object?.keys(inquiries);
+    switch (query) {
+      case 'All':
+        results = searchByString(searchString);
+        if (!results) return;
+        return setDisplayArtworks(results as Artwork[]);
+      case 'Has Inquiries':
+        results = Object.values(artworks)?.filter(artwork =>
+          artworksWithInquiriesIds.includes(artwork.artworkId),
+        );
+        return setDisplayArtworks(results);
+      case 'No Inquiries':
+        results = Object.values(artworks)?.filter(
+          artwork => !artworksWithInquiriesIds.includes(artwork.artworkId),
+        );
+        return setDisplayArtworks(results);
+      default:
+    }
+  };
+
+  React.useEffect(() => {
+    if (searchString) {
+      const searchResults = searchByString(searchString);
+      if (searchResults) {
+        setDisplayArtworks(searchResults as Artwork[]);
+      }
+    } else {
+      setDisplayArtworks(Object?.values(artworks));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchString]);
+
+  React.useEffect(() => {
+    filterByInquiry(filterString);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterString]);
+
+  React.useEffect(() => {
+    setDisplayArtworks(Object?.values(artworks));
+  }, [artworks]);
+
+  const toolTips = {
+    filterBy: "Filter by the status of the artwork's inquiries.",
+    searchBy: "Search by the artwork's title, artist, or medium.",
+  };
+
   return (
     <>
       <Head>
@@ -181,9 +202,9 @@ export default function GalleryProfile() {
       </Head>
 
       <SideNavigationWrapper>
-        <Box sx={aboutStyles.container}>
+        <Box sx={galleryStyles.container}>
           <Box>
-            <Typography variant="h2" sx={aboutStyles.typographyTitle}>
+            <Typography variant="h2" sx={galleryStyles.typographyTitle}>
               Artwork
             </Typography>
           </Box>
@@ -200,30 +221,86 @@ export default function GalleryProfile() {
             }}>
             Create Artwork
           </Button>
-          {inquiries &&
-            Object.values(artworks).map(artwork => (
-              <Box>
-                <ArtworkCard
-                  artwork={artwork}
-                  saveArtwork={saveArtwork}
-                  deleteArtwork={deleteArtwork}
-                  inquiries={inquiries[artwork.artworkId as string]}
-                />
-              </Box>
-            ))}
+          <UploadArtworksXlsModal handleBatchUpload={handleBatchUpload} />
+          <Divider variant="middle" style={galleryStyles.divider} flexItem>
+            Filters
+          </Divider>
+          <Box sx={galleryStyles.filterContainer}>
+            <Box>
+              <DartaTextFilter
+                toolTips={toolTips}
+                fieldName="searchBy"
+                value={searchString}
+                handleInputChange={setSearchString}
+              />
+            </Box>
+            <Box>
+              <DartaRadioFilter
+                toolTips={toolTips}
+                fieldName="filterBy"
+                options={['All', 'Has Inquiries', 'No Inquiries']}
+                defaultValue="All"
+                handleRadioFilter={setFilterString}
+              />
+            </Box>
+          </Box>
+          {inquiries && displayArtworks && (
+            <Box sx={{display: 'flex', gap: '1vh', flexDirection: 'column'}}>
+              {isSortedAscending
+                ? displayArtworks
+                    ?.sort((a, b) => {
+                      const dateA = a?.createdAt
+                        ? new Date(a.createdAt)
+                        : new Date(0);
+                      const dateB = b?.createdAt
+                        ? new Date(b.createdAt)
+                        : new Date(0);
+                      return (dateB as any) - (dateA as any);
+                    })
+                    .map(artwork => (
+                      <Box>
+                        <ArtworkCard
+                          artwork={artwork as Artwork}
+                          saveArtwork={saveArtwork}
+                          deleteArtwork={deleteArtwork}
+                          croppingModalOpen={croppingModalOpen}
+                          setCroppingModalOpen={setCroppingModalOpen}
+                          inquiries={
+                            inquiries[artwork?.artworkId] ??
+                            ([] as InquiryArtworkData[])
+                          }
+                        />
+                      </Box>
+                    ))
+                : displayArtworks
+                    ?.sort((a, b) => {
+                      const dateA = a?.createdAt
+                        ? new Date(a.createdAt)
+                        : new Date(0);
+                      const dateB = b?.createdAt
+                        ? new Date(b.createdAt)
+                        : new Date(0);
+                      return (dateA as any) - (dateB as any);
+                    })
+                    .map(artwork => (
+                      <Box>
+                        <ArtworkCard
+                          artwork={artwork as Artwork}
+                          saveArtwork={saveArtwork}
+                          deleteArtwork={deleteArtwork}
+                          croppingModalOpen={croppingModalOpen}
+                          setCroppingModalOpen={setCroppingModalOpen}
+                          inquiries={
+                            inquiries[artwork?.artworkId] ??
+                            ([] as InquiryArtworkData[])
+                          }
+                        />
+                      </Box>
+                    ))}
+            </Box>
+          )}
         </Box>
       </SideNavigationWrapper>
     </>
   );
 }
-
-export const getStaticProps: GetStaticProps<{
-  data: any;
-}> = async () => {
-  return {props: {data: {data: {}}}};
-  // try {
-  //   // const aboutData = (await getGallery()) as null;
-  // } catch (e) {
-  //   return {props: {data: {data: {}}}};
-  // }
-};

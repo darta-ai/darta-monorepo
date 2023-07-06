@@ -1,0 +1,13 @@
+current directory: /Users/tj.wetmore/Code/darta/frontend/frontendV1/vendor/bundle/ruby/2.7.0/gems/json-2.6.3/ext/json
+/Users/tj.wetmore/.rbenv/versions/2.7.6/bin/ruby -I /Users/tj.wetmore/.rbenv/versions/2.7.6/lib/ruby/2.7.0 -r ./siteconf20230203-96713-abx1y9.rb extconf.rb
+creating Makefile
+
+current directory: /Users/tj.wetmore/Code/darta/frontend/frontendV1/vendor/bundle/ruby/2.7.0/gems/json-2.6.3/ext/json
+make "DESTDIR=" clean
+
+current directory: /Users/tj.wetmore/Code/darta/frontend/frontendV1/vendor/bundle/ruby/2.7.0/gems/json-2.6.3/ext/json
+make "DESTDIR="
+make: Nothing to be done for `all'.
+
+current directory: /Users/tj.wetmore/Code/darta/frontend/frontendV1/vendor/bundle/ruby/2.7.0/gems/json-2.6.3/ext/json
+make "DESTDIR=" install
