@@ -50,7 +50,7 @@ jobs:
           # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
           start: pnpm --prefix ./packages/next dev
           wait-on: 'http://localhost:3000' # Waits for above
-          command: $(pnpm bin)/cypress run
+          command: npx cypress run
           # Records to Cypress Cloud 
           # https://docs.cypress.io/guides/cloud/projects#Set-up-a-project-to-record
           record: true
