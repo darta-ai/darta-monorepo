@@ -37,7 +37,11 @@ jobs:
 
       - name: Build app
         run: pnpm --prefix ./packages/next run build
-    
+
+      - name: Check Cypress Installation
+        run: npx cypress version
+        working-directory: ./packages/next
+  
       - name: Cypress run
         # Uses the official Cypress GitHub action https://github.com/cypress-io/github-action
         uses: cypress-io/github-action@v4
@@ -46,7 +50,7 @@ jobs:
           # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
           start: pnpm --prefix ./packages/next start
           wait-on: 'http://localhost:3000' # Waits for above
-          command: pnpm --prefix ./packages/next run cypress
+          command: $(pnpm bin)/cypress run
           # Records to Cypress Cloud 
           # https://docs.cypress.io/guides/cloud/projects#Set-up-a-project-to-record
           record: true
