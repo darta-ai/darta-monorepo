@@ -3,7 +3,6 @@ import {
   browserSessionPersistence,
   createUserWithEmailAndPassword,
   getAuth,
-  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   updateProfile,
