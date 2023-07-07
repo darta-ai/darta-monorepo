@@ -1,4 +1,4 @@
-name: Cypress Tests
+name: Cypress E2E Tests
 on: [push]
 jobs:
   cypress-run:
@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false # https://github.com/cypress-io/github-action/issues/48
       matrix:
-        containers: [1] # Uses 1 parallel instances
+        containers: [1, 2, 3, 4] # Uses 1 parallel instances
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -20,9 +20,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
         working-directory: ./packages/next
-
-      - name: Install cypress
-        run: pnpm --prefix ./packages/next add -D cypress
     
       - name: Set up environment variables
         run: |

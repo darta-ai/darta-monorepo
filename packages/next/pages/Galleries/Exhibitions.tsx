@@ -8,6 +8,7 @@ import React from 'react';
 
 import {Exhibition} from '../../globalTypes';
 import {newExhibitionShell} from '../../src/common/templates';
+import authRequired from '../../src/Components/AuthRequired/AuthRequired';
 // import {ExhibitionCard} from '../../src/Components/Exhibitions/index';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {galleryStyles} from '../../styles/GalleryPageStyles';
@@ -15,7 +16,7 @@ import {galleryStyles} from '../../styles/GalleryPageStyles';
 // need a function that gets all artworks
 // need a function that gets all inquiries for art
 
-export default function GalleryExhibitions() {
+function GalleryExhibitions() {
   const [exhibitions, setNewExhibitions] = React.useState<{
     [key: string]: Exhibition;
   }>({});
@@ -163,3 +164,5 @@ export const getStaticProps: GetStaticProps<{
 //     active = false;
 //   };
 // }, [value, inputValue, fetch]);
+
+export default authRequired(GalleryExhibitions);

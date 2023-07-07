@@ -23,7 +23,9 @@ describe('Gallery Create Profile', () => {
 
     cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
 
-    cy.get('[data-testid=galleryButton]', {timeout: 4000}).click();
+    cy.get('[data-testid=gallery-navigation-profile-button]', {
+      timeout: 4000,
+    }).click();
     cy.url().should('include', '/Profile');
     cy.get('[data-testid=edit-profile-button]').click();
 
@@ -59,7 +61,7 @@ describe('Gallery Create Profile', () => {
 
     cy.wait(3500);
 
-    cy.get('[data-testid=galleryButton]').click();
+    cy.get('[data-testid=gallery-navigation-profile-button]').click();
     cy.url().should('include', '/Profile');
     cy.get('[data-testid=edit-profile-button]').click();
 

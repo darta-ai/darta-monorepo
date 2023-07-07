@@ -48,6 +48,7 @@ export function DartaTextFilter({
         <TextField
           id="value"
           variant="standard"
+          data-testid={`${fieldName}-text-input`}
           sx={filterStyles.formTextField}
           fullWidth
           value={value}
