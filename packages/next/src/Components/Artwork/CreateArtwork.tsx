@@ -587,7 +587,7 @@ export function CreateArtwork({
         <Box sx={createArtworkStyles.saveButtonContainer}>
           <Button
             variant="contained"
-            data-testid="delete-button"
+            data-testid="delete-artwork-button"
             color="error"
             onClick={() => {
               handleClickOpen();
@@ -596,7 +596,7 @@ export function CreateArtwork({
           </Button>
           <Button
             variant="contained"
-            data-testid="save-button"
+            data-testid="save-artwork-button"
             type="submit"
             sx={{backgroundColor: PRIMARY_BLUE}}
             onClick={handleSubmit(onSubmit)}>

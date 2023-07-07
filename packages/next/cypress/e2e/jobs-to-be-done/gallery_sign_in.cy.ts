@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /// <reference types="cypress" />
 
 export const e2eEmail = 'cypress.test@darta.works';
@@ -46,7 +45,7 @@ describe('Gallery Sign In Flow', () => {
     cy.get('[data-testid=exhibitionsButton]', {timeout: 4000}).click();
     cy.url().should('include', '/Exhibitions');
 
-    cy.get('[data-testid=galleryButton]').click();
+    cy.get('[data-testid=gallery-navigation-profile-button]').click();
     cy.url().should('include', '/Profile');
 
     cy.get('[data-testid=artworkButton]').click();

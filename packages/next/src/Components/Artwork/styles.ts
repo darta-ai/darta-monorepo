@@ -11,14 +11,13 @@ export const createArtworkStyles = {
     gap: '1vh',
     alignContent: 'center',
     '@media (min-width: 800px)': {
-      width: '85vw',
+      width: '80vw',
     },
   },
   backButton: {
     color: PRIMARY_BLUE,
     alignSelf: 'flex-start',
-    mx: 2,
-    my: 1,
+    m: 2,
   },
   imageArtworkContainer: {
     display: 'flex',

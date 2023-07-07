@@ -1,12 +1,16 @@
 import {GalleryState} from '../globalTypes';
 import {artwork1, artwork2, artwork3} from '../src/dummyData';
 
+const preloadArtwork = {
+  // ...artwork1, ...artwork2, ...artwork3
+};
+
 export const retrieveAllGalleryData = (accessToken: string): GalleryState => {
   // NEED ENDPOINTS HERE
 
   return {
     galleryProfile: {},
-    galleryArtworks: {...artwork1, ...artwork2, ...artwork3},
+    galleryArtworks: {...preloadArtwork},
     galleryExhibitions: {},
     accessToken,
   };
@@ -18,7 +22,7 @@ export const retrieveGalleryArtworks = (
   // NEED ENDPOINTS HERE
 
   return {
-    galleryArtworks: {...artwork1, ...artwork2, ...artwork3},
+    galleryArtworks: {...preloadArtwork},
     accessToken,
   };
 };

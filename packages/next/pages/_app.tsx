@@ -5,6 +5,7 @@ import '@fontsource/eb-garamond/500.css';
 import '@fontsource/eb-garamond/700.css';
 
 import {CacheProvider, EmotionCache} from '@emotion/react';
+import {Box, CircularProgress} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import {ThemeProvider} from '@mui/material/styles';
 import {onAuthStateChanged} from 'firebase/auth';
@@ -23,6 +24,22 @@ import {auth} from '../ThirdPartyAPIs/firebaseApp';
 export {app, auth, db} from '../ThirdPartyAPIs/firebaseApp';
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
+
+export const baseStyles = {
+  container: {
+    display: 'flex',
+    height: '100vh',
+    width: '100vw',
+    border: '1px solid #eaeaea',
+    alignSelf: 'center',
+    borderRadius: '0.5vw',
+    gap: '1vh',
+    alignContent: 'center',
+    '@media (min-width: 800px)': {
+      width: '80vw',
+    },
+  },
+};
 
 export interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -44,10 +61,12 @@ export const AuthContext = React.createContext<IAuthContext>({
 export default function MyApp(props: MyAppProps) {
   const {Component, emotionCache = clientSideEmotionCache, pageProps} = props;
   const [user, setUser] = React.useState<any | null>(null);
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
   React.useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u: any) => {
       setUser(u);
+      setIsLoading(false);
     });
 
     return () => unsubscribe();
@@ -64,7 +83,13 @@ export default function MyApp(props: MyAppProps) {
         <CssBaseline />
         <AuthContext.Provider value={value}>
           <AppContextProvider>
-            <Component {...pageProps} sx={{backgroundColor: PRIMARY_MILK}} />
+            {isLoading ? (
+              <Box sx={baseStyles.container}>
+                <CircularProgress />
+              </Box>
+            ) : (
+              <Component {...pageProps} sx={{backgroundColor: PRIMARY_MILK}} />
+            )}
           </AppContextProvider>
           <Footer />
         </AuthContext.Provider>

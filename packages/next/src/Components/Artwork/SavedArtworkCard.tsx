@@ -20,7 +20,7 @@ import {CreateArtwork} from './CreateArtwork';
 
 const useStyles = {
   root: {
-    minWidth: '80vw',
+    minWidth: '85vw',
     alignItems: 'center',
     flexDirection: 'column',
     display: 'flex',
@@ -30,9 +30,6 @@ const useStyles = {
     border: '1px solid darkgrey',
   },
   media: {
-    // height: '15vh',
-    // maxWidth: '40%',
-    // minWidth: '20vh',
     minHeight: '15vh',
     '@media (min-width: 800px)': {
       minHeight: '50vh',
@@ -113,7 +110,7 @@ export function ArtworkCard({
     !artwork?.artworkDimensions?.heightIn.value;
 
   return (
-    <Card sx={useStyles.root}>
+    <Card sx={useStyles.root} data-testid="artwork-card">
       <Box
         sx={{
           ...useStyles.cardContainer,
@@ -123,7 +120,8 @@ export function ArtworkCard({
         <Box sx={{minWidth: '25vw'}}>
           <CardActionArea
             onClick={handleExpandClick}
-            sx={{display: 'flex', flexDirection: 'column', maxHeight: '15vh'}}>
+            sx={{display: 'flex', flexDirection: 'column', maxHeight: '15vh'}}
+            data-testid="artwork-card-image">
             <img
               src={artwork?.artworkImage?.value as string}
               alt={artwork?.artworkTitle?.value as string}
@@ -142,30 +140,37 @@ export function ArtworkCard({
             <Typography
               variant="h5"
               component="h2"
+              data-testid="artwork-card-artist-name"
               sx={{textOverflow: 'ellipsis'}}>
               {artwork?.artistName?.value}
             </Typography>
-            <Typography variant="h6" color="textSecondary">
+            <Typography
+              data-testid="artwork-card-artwork-title"
+              variant="h6"
+              color="textSecondary">
               {artwork?.artworkTitle?.value}
             </Typography>
-            <Typography paragraph color="textSecondary">
+            <Typography
+              paragraph
+              data-testid="artwork-card-medium"
+              color="textSecondary">
               Medium: {artwork?.artworkMedium?.value}
             </Typography>
           </CardContent>
         </Box>
         <CardContent sx={{alignSelf: 'center', minWidth: '35vw'}}>
           {artwork?.artworkPrice?.value && (
-            <Typography paragraph>
+            <Typography paragraph data-testid="artwork-card-price">
               Price:{' '}
               {artwork?.artworkCurrency?.value &&
                 currencyConverter[artwork.artworkCurrency.value]}
               {Number(artwork?.artworkPrice?.value).toLocaleString() as string}
             </Typography>
           )}
-          <Typography paragraph>
+          <Typography paragraph data-testid="artwork-card-can-inquire">
             Can Inquire: {artwork?.canInquire?.value}
           </Typography>
-          <Typography>
+          <Typography data-testid="artwork-card-dimensions">
             Dimensions: {artwork?.artworkDimensions?.text?.value}
           </Typography>
         </CardContent>
@@ -173,6 +178,7 @@ export function ArtworkCard({
       <Box>
         {displayRed && (
           <Typography
+            data-testid="artwork-card-additional-information-warning"
             sx={{textAlign: 'center', color: 'red', fontWeight: 'bold'}}>
             Additional Information Required. Please Edit.
           </Typography>
@@ -183,7 +189,8 @@ export function ArtworkCard({
           variant="contained"
           color={displayRed ? 'warning' : 'secondary'}
           onClick={() => setEditArtwork(!editArtwork)}
-          sx={{alignSelf: 'center', m: '1vh'}}>
+          sx={{alignSelf: 'center', m: '1vh'}}
+          data-testid="artwork-card-edit-button">
           <Typography sx={{fontWeight: 'bold'}}>Edit</Typography>
         </Button>
       </Box>
@@ -202,7 +209,10 @@ export function ArtworkCard({
                   width: '100%',
                   maxWidth: '80vw',
                 }}>
-                <Typography variant="h6" color="textSecondary">
+                <Typography
+                  variant="h6"
+                  color="textSecondary"
+                  data-testid="artwork-card-inquiries-label">
                   Inquires
                 </Typography>
                 <IconButton

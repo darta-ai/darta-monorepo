@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "cypress": "cypress run --config-file ./cypress/cypress.config.ts",
-    "cypress-open": "cypress open --config-file ./cypress/cypress.config.ts",
+    "cypress": "cypress run",
+    "cypress-open": "cypress open --config-file ./cypress.config.ts",
     "prettier": "npx prettier --write .",
     "preinstall": "npx only-allow pnpm"
   },

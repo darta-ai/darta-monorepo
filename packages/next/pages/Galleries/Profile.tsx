@@ -5,6 +5,7 @@ import Head from 'next/head';
 import React from 'react';
 
 import {IGalleryProfileData} from '../../globalTypes';
+import authRequired from '../../src/Components/AuthRequired/AuthRequired';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {EditProfileGallery, ProfileGallery} from '../../src/Components/Profile';
 import {
@@ -65,7 +66,7 @@ const aboutStyles = {
 };
 
 // About component
-export default function GalleryProfile() {
+function GalleryProfile() {
   const {state, dispatch} = useAppState();
   const [isEditingProfile, setIsEditingProfile] =
     React.useState<boolean>(false);
@@ -112,3 +113,5 @@ export default function GalleryProfile() {
     </>
   );
 }
+
+export default authRequired(GalleryProfile);
