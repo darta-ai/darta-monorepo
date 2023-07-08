@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /// <reference types="cypress" />
 
 describe('Gallery Sign Up Flow', () => {
@@ -32,7 +31,7 @@ describe('Gallery Sign Up Flow', () => {
     cy.get('[data-testid=signUpButton]').should('be.visible');
     cy.get('[data-testid=alreadyHaveAccount]').should('be.visible');
   });
-  it('should handle common sign-in errors', () => {
+  it('should handle common sign-up errors', () => {
     // Start from the index page
     cy.visit('http://localhost:3000/');
 

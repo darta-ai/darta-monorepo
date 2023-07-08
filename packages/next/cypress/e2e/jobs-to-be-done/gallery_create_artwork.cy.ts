@@ -3,6 +3,18 @@
 export const e2eEmail = 'cypress.test@darta.works';
 export const e2ePass = '(cypress.test)';
 
+const artworkData = {
+  artworkName: 'Madonna',
+  artistName: 'Andy Warhol',
+  artworkDescription: 'Artwork description',
+  artworkMedium: 'heyyy gobba gool',
+  artworkCreatedYear: '2023',
+  artworkPrice: '2000',
+  artworkHeightIn: '50',
+  artworkWidthIn: '25',
+  artworkDepthIn: '2',
+};
+
 describe('Gallery Create Profile', () => {
   it('Should be able to add and remove artwork', () => {
     // GIVEN (setup)
@@ -19,14 +31,17 @@ describe('Gallery Create Profile', () => {
     cy.get('[data-testid=signin-password-input]').type(e2ePass);
     cy.get('[data-testid=signin-button]').click();
 
+    cy.wait(1000);
+
     cy.url().should('include', '/Galleries/LoadProfile');
     cy.url().should('not.include', '/Authenticate');
 
     cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
 
     cy.get('[data-testid=gallery-navigation-artwork-button]', {
-      timeout: 4000,
+      timeout: 1000,
     }).click();
+
     cy.url().should('include', '/Galleries/Artwork');
     cy.get('[data-testid=artwork-card]').should('not.exist');
 
@@ -61,24 +76,9 @@ describe('Gallery Create Profile', () => {
       'not.exist',
     );
   });
-  it.only('Edited artwork should populate a card', () => {
-    cy.visit('http://localhost:3000/Galleries/Artwork');
-
-    // WHEN USER CREATES NEW ARTWORK
-    cy.get('[data-testid=create-new-artwork-button]').click();
-
-    // THEN
-    cy.get('[data-testid=artwork-card]').should('exist');
-    cy.get('[data-testid=artwork-card-additional-information-warning]').should(
-      'exist',
-    );
-
-    // WHEN USER CLICKS EDIT FOR THE FIRST TIME
-    cy.get('[data-testid=artwork-card-edit-button]').click();
-
-    // THEN THE CROPPING MATTERS MODAL EXISTS
-    cy.get('[data-testid=cropping-matters-modal]').should('exist');
-    cy.get('[data-testid=dismiss-cropping-matters-modal]').click();
+  it('Edited artwork should populate a card', () => {
+    // GIVEN (setup)
+    cy.visit('http://localhost:3000/');
 
     cy.get('[data-testid=header-link-gallery]').click();
 
@@ -91,76 +91,79 @@ describe('Gallery Create Profile', () => {
     cy.get('[data-testid=signin-password-input]').type(e2ePass);
     cy.get('[data-testid=signin-button]').click();
 
+    cy.wait(1000);
+
     cy.url().should('include', '/Galleries/LoadProfile');
     cy.url().should('not.include', '/Authenticate');
 
     cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
 
-    cy.wait(3500);
+    cy.get('[data-testid=gallery-navigation-artwork-button]', {
+      timeout: 2000,
+    }).click();
 
-    cy.get('[data-testid=gallery-navigation-profile-button]').click();
-    cy.url().should('include', '/Profile');
-    cy.get('[data-testid=edit-profile-button]').click();
-
-    // Gallery Name
-    cy.get('[data-testid=galleryName-input-field]').type('Gallery Name');
-
-    // Gallery Bio
-    cy.get('[data-testid=galleryBio-input-field]').type('Gallery Bio');
-
-    // primaryContact
-    cy.get('[data-testid=primaryContact-input-field]').type('TJ@darta.works');
-
-    // galleryPhone
-    cy.get('[data-testid=galleryPhone-input-field]').type('4156137221');
-
-    // galleryWebsite
-    cy.get('[data-testid=galleryWebsite-input-field]').type(
-      'https://www.Gallery.Website',
-    );
-
-    // galleryInstagram
-    cy.get('[data-testid=galleryInstagram-input-field]').type('@darta.works');
-
-    // galleryLocation
-    cy.get('[data-testid=galleryLocation0-locationString-input-field]').type(
-      'Location',
-    );
-
-    // Hours
-    cy.get('[data-testid=galleryLocation0-businessHours-Monday-open]').type(
-      '1 PM',
-    );
-    cy.get('[data-testid=galleryLocation0-businessHours-Sunday-close]').type(
-      '6 PM',
-    );
-
-    // When
-    cy.get('[data-testid=save-profile-edit-button]').click();
+    // WHEN USER CREATES NEW ARTWORK
+    cy.get('[data-testid=create-new-artwork-button]').click();
 
     // THEN
-    // Gallery Name
-    cy.get('[data-testid=gallery-name-display]').contains('Gallery Name');
-
-    // Gallery Bio
-    cy.get('[data-testid=gallery-bio-display]').contains('Gallery Bio');
-
-    // primaryContact
-    cy.get('[data-testid=profile-contact-email]').contains('TJ@darta.works');
-
-    // galleryPhone
-    cy.get('[data-testid=profile-contact-phone]').contains('+1 (415) 613 7221');
-
-    // galleryWebsite
-    cy.get('[data-testid=profile-contact-website]').contains('Gallery.Website');
-
-    // galleryInstagram
-    cy.get('[data-testid=profile-contact-instagram]').contains('@darta.works');
-
-    // Hours
-    cy.get('[data-testid=galleryLocation0-hours-monday-open]').contains('1 PM');
-    cy.get('[data-testid=galleryLocation0-hours-sunday-close]').contains(
-      '6 PM',
+    cy.get('[data-testid=artwork-card]').should('exist');
+    cy.get('[data-testid=artwork-card-additional-information-warning]').should(
+      'exist',
     );
+    cy.get('[data-testid=artwork-card-edit-button]').click();
+    cy.get('[data-testid=cropping-matters-modal]').should('exist');
+    cy.get('[data-testid=dismiss-cropping-matters-modal]').click();
+
+    // USER INPUTS
+    cy.get('[data-testid=artworkTitle-input-field]').type(
+      artworkData.artworkName,
+    );
+    cy.get('[data-testid=artistName-input-field]').type(artworkData.artistName);
+    cy.get('[data-testid=artworkDescription-input-field]').type(
+      artworkData.artworkDescription,
+    );
+    cy.get('[data-testid=artworkMedium-input-field]').type(
+      artworkData.artworkMedium,
+    );
+    cy.get('[data-testid=artworkCreatedYear-input-field]').type(
+      artworkData.artworkCreatedYear,
+    );
+    cy.get('[data-testid=artworkPrice-input-field]').type(
+      artworkData.artworkPrice,
+    );
+    cy.get('[data-testid=artworkDimensions-heightIn-input-field]').type(
+      artworkData.artworkHeightIn,
+    );
+    cy.get('[data-testid=artworkDimensions-widthIn-input-field]').type(
+      artworkData.artworkWidthIn,
+    );
+    cy.get('[data-testid=artworkDimensions-depthIn-input-field]').type(
+      artworkData.artworkDepthIn,
+    );
+    cy.get('[data-testid=imageDropZone]').selectFile(
+      'public/static/images/dartahouse.png',
+      {
+        force: true,
+      },
+    );
+    cy.get('[data-testid=canInquire-input-Yes]').click();
+
+    // WHEN
+    cy.get('[data-testid=save-artwork-button]').click();
+
+    // THEN
+    cy.get('[data-testid=artwork-card-artist-name]').contains(
+      artworkData.artistName,
+    );
+    cy.get('[data-testid=artwork-card-artwork-title]').contains(
+      artworkData.artworkName,
+    );
+    cy.get('[data-testid=artwork-card-medium]').contains(
+      artworkData.artworkMedium,
+    );
+    cy.get('[data-testid=artwork-card-price]').contains(
+      Number(artworkData.artworkPrice).toLocaleString(),
+    );
+    cy.get('[data-testid=artwork-card-can-inquire]').contains('Yes');
   });
 });

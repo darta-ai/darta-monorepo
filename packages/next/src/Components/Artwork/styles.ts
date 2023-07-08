@@ -8,7 +8,7 @@ export const createArtworkStyles = {
     border: '1px solid #eaeaea',
     alignSelf: 'center',
     borderRadius: '0.5vw',
-    gap: '1vh',
+    gap: '2vh',
     alignContent: 'center',
     '@media (min-width: 800px)': {
       width: '80vw',
@@ -54,7 +54,7 @@ export const createArtworkStyles = {
     alignSelf: 'center',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignContent: 'center',
     maxWidth: '40vw',
     minHeight: '100%',
