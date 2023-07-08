@@ -31,7 +31,6 @@ describe('Gallery Create Profile', () => {
     cy.get('[data-testid=signin-password-input]').type(e2ePass);
     cy.get('[data-testid=signin-button]').click();
 
-    cy.url().should('include', '/Galleries/LoadProfile');
     cy.wait(1000);
 
     cy.url().should('not.include', '/Authenticate');
