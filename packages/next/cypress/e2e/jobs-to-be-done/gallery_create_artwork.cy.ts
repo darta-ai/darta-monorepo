@@ -1,8 +1,5 @@
 /// <reference types="cypress" />
 
-export const e2eEmail = 'cypress.test@darta.works';
-export const e2ePass = '(cypress.test)';
-
 const artworkData = {
   artworkName: 'Madonna',
   artistName: 'Andy Warhol',
@@ -18,32 +15,13 @@ const artworkData = {
 describe('Gallery Create Profile', () => {
   it('Should be able to add and remove artwork', () => {
     // GIVEN (setup)
-    cy.visit('http://localhost:3000/');
-
-    cy.get('[data-testid=header-link-gallery]').click();
-
-    cy.url().should('include', '/Galleries/Home');
-    cy.get('[data-testid=header-navigation-signIn-button]').click();
-
-    cy.get('[data-testid=header]').contains('Welcome back to darta');
-
-    cy.get('[data-testid=signin-email-input]').type(e2eEmail);
-    cy.get('[data-testid=signin-password-input]').type(e2ePass);
-    cy.get('[data-testid=signin-button]').click();
-
-    cy.wait(1000);
-
-    cy.url().should('not.include', '/Authenticate');
-
-    cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
-
+    cy.login();
     cy.get('[data-testid=gallery-navigation-artwork-button]', {
       timeout: 2000,
     }).click();
 
     cy.url().should('include', '/Galleries/Artwork');
     cy.get('[data-testid=artwork-card]').should('not.exist');
-
     // WHEN USER CREATES NEW ARTWORK
     cy.get('[data-testid=create-new-artwork-button]').click();
 
@@ -77,32 +55,13 @@ describe('Gallery Create Profile', () => {
   });
   it('Edited artwork should populate a card', () => {
     // GIVEN (setup)
-    cy.visit('http://localhost:3000/');
-
-    cy.get('[data-testid=header-link-gallery]').click();
-
-    cy.url().should('include', '/Galleries/Home');
-    cy.get('[data-testid=header-navigation-signIn-button]').click();
-
-    cy.get('[data-testid=header]').contains('Welcome back to darta');
-
-    cy.get('[data-testid=signin-email-input]').type(e2eEmail);
-    cy.get('[data-testid=signin-password-input]').type(e2ePass);
-    cy.get('[data-testid=signin-button]').click();
-
-    cy.wait(1000);
-
-    cy.url().should('not.include', '/Authenticate');
-
-    cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
-
+    cy.login();
     cy.get('[data-testid=gallery-navigation-artwork-button]', {
       timeout: 2000,
     }).click();
 
     cy.url().should('include', '/Galleries/Artwork');
     cy.get('[data-testid=artwork-card]').should('not.exist');
-
     // WHEN USER CREATES NEW ARTWORK
     cy.get('[data-testid=create-new-artwork-button]').click();
 
