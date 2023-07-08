@@ -1,15 +1,8 @@
 name: Cypress Tests
 on: [push]
 jobs:
-  cypress-run:
+  e2e-tests:
     runs-on: ubuntu-latest
-    # Runs tests in parallel with matrix strategy https://docs.cypress.io/guides/guides/parallelization
-    # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
-    # Also see warning here https://github.com/cypress-io/github-action#parallel
-    strategy:
-      fail-fast: true # https://github.com/cypress-io/github-action/issues/48
-      matrix:
-        containers: [1] # Uses 1 parallel instances
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -35,46 +28,48 @@ jobs:
       - name: Build app
         run: pnpm --prefix ./packages/next run build
 
-      - name: Check Cypress Installation
-        run: npx cypress version
-        working-directory: ./packages/next
-  
       - name: Cypress run e2e
-        # Uses the official Cypress GitHub action https://github.com/cypress-io/github-action
         uses: cypress-io/github-action@v5
         with:
-          # Starts web server for E2E tests - replace with your own server invocation
-          # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
           start: pnpm --prefix ./packages/next start
-          wait-on: 'http://localhost:3000' # Waits for above
+          wait-on: 'http://localhost:3000'
           command: pnpm --prefix ./packages/next run cy-e2e
-          # Records to Cypress Cloud 
-          # https://docs.cypress.io/guides/cloud/projects#Set-up-a-project-to-record
-          record: true
-          parallel: false # Runs test in parallel using settings above
         env:
-          # For recording and parallelization to work you must set your CYPRESS_RECORD_KEY
-          # in GitHub repo → Settings → Secrets → Actions
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          # Creating a token https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  component-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: ./packages/next
+    
+      - name: Set up environment variables
+        run: |
+            echo NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY=${{ secrets.NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY }} >> packages/next/.env
+            echo NEXT_PUBLIC_REACT_APP_FIREBASE_AUTH_DOMAIN=${{ secrets.NEXT_PUBLIC_REACT_APP_FIREBASE_AUTH_DOMAIN }} >> packages/next/.env
+            echo NEXT_PUBLIC_REACT_APP_PROJECT_ID=${{ secrets.NEXT_PUBLIC_REACT_APP_PROJECT_ID }} >> packages/next/.env
+            echo NEXT_PUBLIC_REACT_APP_FIREBASE_STORAGE_BUCKET=${{ secrets.NEXT_PUBLIC_REACT_APP_FIREBASE_STORAGE_BUCKET }} >> packages/next/.env
+            echo NEXT_PUBLIC_REACT_APP_FIREBASE_SENDER_ID=${{ secrets.NEXT_PUBLIC_REACT_APP_FIREBASE_SENDER_ID }} >> packages/next/.env
+            echo NEXT_PUBLIC_REACT_APP_FIREBASE_APP_ID=${{ secrets.NEXT_PUBLIC_REACT_APP_FIREBASE_APP_ID }} >> packages/next/.env
+            echo NEXT_PUBLIC_REACT_APP_FIREBASE_MEASUREMENT_ID=${{ secrets.NEXT_PUBLIC_REACT_APP_FIREBASE_MEASUREMENT_ID }} >> packages/next/.env
+            echo NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }} >> packages/next/.env
+
+      - name: Build app
+        run: pnpm --prefix ./packages/next run build
 
       - name: Cypress run component
-          # Uses the official Cypress GitHub action https://github.com/cypress-io/github-action
         uses: cypress-io/github-action@v5
         with:
-            # Starts web server for E2E tests - replace with your own server invocation
-            # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
           start: pnpm --prefix ./packages/next start
-          wait-on: 'http://localhost:3001' # Waits for above
+          wait-on: 'http://localhost:3000'
           command: pnpm --prefix ./packages/next run cy-component
-            # Records to Cypress Cloud 
-            # https://docs.cypress.io/guides/cloud/projects#Set-up-a-project-to-record
-          record: true
-          parallel: false # Runs test in parallel using settings above
         env:
-            # For recording and parallelization to work you must set your CYPRESS_RECORD_KEY
-            # in GitHub repo → Settings → Secrets → Actions
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-            # Creating a token https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
