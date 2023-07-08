@@ -65,20 +65,15 @@ export function SignUpWelcome({benefitsData}: {benefitsData: DartaBenefits}) {
           <Box
             sx={welcomeStyles.displayTextContainer}
             data-testid="checkboxes-3">
-            <Box data-testid="icon-box-3">
+            <Box data-testid="icon-box-3" sx={{height: '100%'}}>
               <KeyboardDoubleArrowRightIcon sx={welcomeStyles.actionArrow} />
             </Box>
-            <Box data-testid="text-box-3" sx={{height: '100%'}}>
+            <Box data-testid="text-box-3">
               <Typography
                 sx={welcomeStyles.typographyTitle}
                 data-testid="typography-title-3">
                 {benefitsData.Field3}
               </Typography>
-              {/* <Typography
-                sx={welcomeStyles.typography}
-                data-testid="typography-subset-3">
-                {benefitsData.Field3Subset}
-              </Typography> */}
             </Box>
           </Box>
         )}

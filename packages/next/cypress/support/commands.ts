@@ -25,13 +25,37 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 //
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+
+// cypress/support/commands.js
+
+export const e2eEmail = 'cypress.test@darta.works';
+export const e2ePass = '(cypress.test)';
+
+Cypress.Commands.add('login' as any, () => {
+  cy.visit('http://localhost:3000/');
+
+  cy.get('[data-testid=header-link-gallery]').click();
+
+  cy.url().should('include', '/Galleries/Home');
+  cy.get('[data-testid=header-navigation-signIn-button]').click();
+
+  cy.get('[data-testid=header]').contains('Welcome back to darta');
+
+  cy.get('[data-testid=signin-email-input]').type(e2eEmail);
+  cy.get('[data-testid=signin-password-input]').type(e2ePass);
+  cy.get('[data-testid=signin-button]').click();
+
+  cy.wait(1000);
+
+  cy.url().should('not.include', '/Authenticate');
+
+  cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
+});
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      login(): Chainable<void>;
+    }
+  }
+}

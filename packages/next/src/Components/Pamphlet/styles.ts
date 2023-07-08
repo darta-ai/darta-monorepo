@@ -8,9 +8,10 @@ export const styles = {
     '@media (min-width:800px)': {
       width: '60vw',
       height: '30vh',
+      flexDirection: 'row',
     },
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     gap: '5%',
@@ -77,5 +78,21 @@ export const styles = {
       fontSize: '1.2rem',
     },
     cursor: 'default',
+  },
+  pamphletRightTopDisplay: {
+    flex: 1,
+    width: '60vw',
+    display: 'flex',
+    '@media (min-width:800px)': {
+      display: 'none',
+    },
+  },
+  pamphletRightBottomDisplay: {
+    flex: 1,
+    width: '60vw',
+    display: 'none',
+    '@media (min-width:800px)': {
+      display: 'flex',
+    },
   },
 };

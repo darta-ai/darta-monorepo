@@ -36,6 +36,17 @@ export function PamphletRight({
   }
   return (
     <Box sx={styles.container}>
+      <Box sx={styles.pamphletRightTopDisplay}>
+        {png ? (
+          <div style={styles.imageSize}>
+            <Image src={png} alt="info" style={styles.image} />
+          </div>
+        ) : (
+          <Box sx={styles.videoContainer}>
+            <Image src={video} alt="my gif" />
+          </Box>
+        )}
+      </Box>
       <Box sx={styles.textContainer}>
         <Typography variant="h1" sx={styles.typographyTitle}>
           {headline}
@@ -53,7 +64,7 @@ export function PamphletRight({
           {line3}
         </Typography>
       </Box>
-      <Box sx={{flex: 1}}>
+      <Box sx={styles.pamphletRightBottomDisplay}>
         {png ? (
           <div style={styles.imageSize}>
             <Image src={png} alt="info" style={styles.image} />
