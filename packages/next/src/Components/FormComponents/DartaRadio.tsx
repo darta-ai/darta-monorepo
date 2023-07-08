@@ -33,6 +33,9 @@ export function DartaRadioButtonsGroup({
   defaultValue,
   control,
   setDisplayCurrency,
+  errors,
+  helperTextString,
+  required,
 }: {
   toolTips: any;
   fieldName: string;
@@ -40,12 +43,17 @@ export function DartaRadioButtonsGroup({
   inputAdornmentString: string;
   defaultValue: string;
   options: string[];
+  helperTextString: string | undefined;
+  errors: any;
   setDisplayCurrency: any | null;
+  required: boolean;
 }) {
   const innerWidthRef = React.useRef(800);
   React.useEffect(() => {
     innerWidthRef.current = window.innerWidth;
   }, []);
+  const testIdValue = fieldName.replace('.', '-');
+
   return (
     <Box
       sx={{
@@ -58,18 +66,28 @@ export function DartaRadioButtonsGroup({
           {innerWidthRef.current > 780 && (
             <Tooltip
               title={
-                <Typography sx={{textAlign: 'center'}}>
+                <Typography
+                  sx={{textAlign: 'center'}}
+                  data-testid={`${testIdValue}-tooltip-text`}>
                   {toolTips[fieldName]}
                 </Typography>
               }
               placement="top">
               <IconButton>
-                <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
+                <HelpOutlineIcon
+                  data-testid={`${testIdValue}-tooltip-button`}
+                  fontSize="medium"
+                  sx={formStyles.helpIcon}
+                />
               </IconButton>
             </Tooltip>
           )}
-          <InputAdornment sx={{overflowX: 'clip'}} position="end">
+          <InputAdornment
+            data-testid={`${testIdValue}-input-adornment-string`}
+            sx={{overflowX: 'clip'}}
+            position="end">
             {inputAdornmentString}
+            {required && '*'}
           </InputAdornment>
         </Box>
       )}
@@ -101,6 +119,13 @@ export function DartaRadioButtonsGroup({
             </RadioGroup>
           )}
         />
+        {errors[fieldName]?.value && (
+          <Typography
+            data-testid={`${testIdValue}-text-error-field`}
+            sx={{color: 'red'}}>
+            {helperTextString}
+          </Typography>
+        )}
       </Box>
     </Box>
   );
