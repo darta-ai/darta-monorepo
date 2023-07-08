@@ -90,15 +90,18 @@ describe('Gallery Create Profile', () => {
     cy.get('[data-testid=signin-password-input]').type(e2ePass);
     cy.get('[data-testid=signin-button]').click();
 
-    cy.wait(2000);
+    cy.wait(1000);
 
     cy.url().should('not.include', '/Authenticate');
 
     cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
 
     cy.get('[data-testid=gallery-navigation-artwork-button]', {
-      timeout: 2500,
+      timeout: 2000,
     }).click();
+
+    cy.url().should('include', '/Galleries/Artwork');
+    cy.get('[data-testid=artwork-card]').should('not.exist');
 
     // WHEN USER CREATES NEW ARTWORK
     cy.get('[data-testid=create-new-artwork-button]').click();
