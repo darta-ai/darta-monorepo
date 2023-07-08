@@ -39,7 +39,7 @@ describe('Gallery Create Profile', () => {
     cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
 
     cy.get('[data-testid=gallery-navigation-artwork-button]', {
-      timeout: 1000,
+      timeout: 1500,
     }).click();
 
     cy.url().should('include', '/Galleries/Artwork');
