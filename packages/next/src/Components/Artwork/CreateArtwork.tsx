@@ -105,7 +105,8 @@ const toolTips = {
     'An artwork description helps improve user experience. Optional.',
   galleryPrimaryLocation:
     'The location of your gallery will help guide users to your openings.',
-  price: 'Optional field. If you do not wish to include a price, leave blank.',
+  artworkPrice:
+    'Optional field. If you do not wish to include a price, leave blank.',
   canInquire:
     'Allow users to inquire about the artwork. If you do not wish to allow users to inquire, select "No".',
   medium: 'The medium of the artwork.',
@@ -113,12 +114,18 @@ const toolTips = {
 };
 
 const artworkDimensionsToolTip = {
-  artworkDimensionsHeight:
-    'Accurate height is required for accurate display of this artwork on the app.',
-  artworkDimensionsWidth:
+  'artworkDimensions.depthCm':
+    'Depth of the artwork is generally reserved for sculptures and is optional.',
+  'artworkDimensions.depthIn':
+    'Depth of the artwork is generally reserved for sculptures and is optional.',
+  'artworkDimensions.widthCm':
     'Accurate width is required for accurate display of this artwork on the app.',
-  'artworkDimensions.depth':
-    'Depth of the artwork is generally reserved for sculptures.',
+  'artworkDimensions.widthIn':
+    'Accurate width is required for accurate display of this artwork on the app.',
+  'artworkDimensions.heightCm':
+    'Accurate width is required for accurate display of this artwork on the app.',
+  'artworkDimensions.heightIn':
+    'Accurate width is required for accurate display of this artwork on the app.',
 };
 
 export function CreateArtwork({
@@ -226,7 +233,7 @@ export function CreateArtwork({
     const slug = `${artist_name}-${artwork_title}`;
     setValue('slug.value', slug);
     if (
-      data.artworkDimensions.depthIn.value ||
+      data.artworkDimensions.depthIn.value &&
       data.artworkDimensions.depthCm.value
     ) {
       setValue(
@@ -324,6 +331,7 @@ export function CreateArtwork({
             {errors.artworkImage && (
               <Typography
                 variant="body2"
+                data-testid="artwork-image-error"
                 sx={{color: 'red', alignSelf: 'center'}}>
                 {errors.artworkImage?.value?.message!}
               </Typography>
@@ -587,7 +595,7 @@ export function CreateArtwork({
         <Box sx={createArtworkStyles.saveButtonContainer}>
           <Button
             variant="contained"
-            data-testid="delete-button"
+            data-testid="delete-artwork-button"
             color="error"
             onClick={() => {
               handleClickOpen();
@@ -596,7 +604,7 @@ export function CreateArtwork({
           </Button>
           <Button
             variant="contained"
-            data-testid="save-button"
+            data-testid="save-artwork-button"
             type="submit"
             sx={{backgroundColor: PRIMARY_BLUE}}
             onClick={handleSubmit(onSubmit)}>

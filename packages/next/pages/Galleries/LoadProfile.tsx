@@ -44,7 +44,7 @@ export default function LoadProfile() {
       const timer = setTimeout(() => {
         // redirect to the new page
         router.push('/Galleries/Profile');
-      }, 2000);
+      }, 1000);
 
       return () => clearTimeout(timer);
     }

@@ -50,7 +50,7 @@ export function DartaImageInput({
     <Dropzone onDrop={onDrop}>
       {({getRootProps, getInputProps}) => (
         <Box {...getRootProps()} sx={useStyles.dropzone}>
-          <input {...getInputProps()} />
+          <input {...getInputProps()} data-testid="imageDropZone" />
           <Typography sx={useStyles.text} variant="h6">
             {instructions}
           </Typography>

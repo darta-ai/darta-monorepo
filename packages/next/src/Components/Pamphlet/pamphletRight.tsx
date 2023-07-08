@@ -30,7 +30,7 @@ export function PamphletRight({
     png = null;
   }
   try {
-    video = require(`../../../public/static/Home/${authType}/${index}.mp4`);
+    video = require(`../../../public/static/Home/${authType}/${index}.gif`);
   } catch (e) {
     video = null;
   }
@@ -61,7 +61,7 @@ export function PamphletRight({
         ) : (
           <Box sx={styles.videoContainer}>
             <video title={headline} muted playsInline style={styles.videoStyle}>
-              <source src={video} type="video/mp4" />
+              <img src={video} width="250" alt="gif" />
             </video>
           </Box>
         )}

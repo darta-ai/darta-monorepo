@@ -37,6 +37,7 @@
     ],
     "no-use-before-define": "off",
     "no-restricted-syntax": "off",
+    "no-console": 2,
     "react/prop-types": "off",
     "guard-for-in": "off",
     "simple-import-sort/imports": "error",

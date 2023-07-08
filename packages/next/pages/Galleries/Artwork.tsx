@@ -9,6 +9,7 @@ import {retrieveGalleryArtworks} from '../../API/DartaGETrequests';
 import {Artwork} from '../../globalTypes';
 import {newArtworkShell} from '../../src/common/templates';
 import {ArtworkCard} from '../../src/Components/Artwork/index';
+import authRequired from '../../src/Components/AuthRequired/AuthRequired';
 import {DartaRadioFilter, DartaTextFilter} from '../../src/Components/Filters';
 import {UploadArtworksXlsModal} from '../../src/Components/Modals';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
@@ -24,7 +25,7 @@ import {PRIMARY_BLUE, PRIMARY_MILK} from '../../styles';
 import {galleryStyles} from '../../styles/GalleryPageStyles';
 import {AuthContext} from '../_app';
 
-export default function GalleryProfile() {
+function GalleryProfile() {
   const {state, dispatch} = useAppState();
   const {user} = React.useContext(AuthContext);
   const [artworks, setArtworks] = React.useState<{[key: string]: Artwork}>({
@@ -210,7 +211,7 @@ export default function GalleryProfile() {
           </Box>
           <Button
             variant="contained"
-            data-testid="save-button"
+            data-testid="create-new-artwork-button"
             type="submit"
             onClick={() => addNewArtwork()}
             sx={{
@@ -304,3 +305,5 @@ export default function GalleryProfile() {
     </>
   );
 }
+
+export default authRequired(GalleryProfile);
