@@ -112,7 +112,9 @@ export function DartaTextInput({
           rows={multiline}
           InputProps={{
             startAdornment: (
-              <InputAdornment position="start">
+              <InputAdornment
+                data-testid={`${testIdValue}-text-input-adornment`}
+                position="start">
                 {inputAdornmentValue}
               </InputAdornment>
             ),

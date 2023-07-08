@@ -31,6 +31,7 @@ export function DartaAutoComplete({
   inputAdornmentString,
   required,
   errors,
+  helperTextString,
 }: {
   fieldName: string;
   data: PrivateFields | any;
@@ -42,6 +43,7 @@ export function DartaAutoComplete({
   inputAdornmentString: string;
   allowPrivate: boolean;
   errors: any;
+  helperTextString: string | undefined;
   inputOptions: Array<{
     label: string;
     value: string;
@@ -72,23 +74,33 @@ export function DartaAutoComplete({
       setOptions([...options, newOption]);
     }
   };
+  const testIdValue = fieldName.replace('.', '-');
   return (
     <Box sx={formStyles.inputTextContainer}>
       <Box sx={formStyles.toolTipContainer}>
         {innerWidthRef.current > 780 && (
           <Tooltip
             title={
-              <Typography sx={{textAlign: 'center'}}>
+              <Typography
+                sx={{textAlign: 'center'}}
+                data-testid={`${testIdValue}-tooltip-text`}>
                 {toolTips[fieldName]}
               </Typography>
             }
             placement="top">
             <IconButton>
-              <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
+              <HelpOutlineIcon
+                data-testid={`${testIdValue}-tooltip-button`}
+                fontSize="medium"
+                sx={formStyles.helpIcon}
+              />
             </IconButton>
           </Tooltip>
         )}
-        <InputAdornment sx={{overflowX: 'clip'}} position="end">
+        <InputAdornment
+          data-testid={`${testIdValue}-input-adornment-string`}
+          sx={{overflowX: 'clip'}}
+          position="end">
           {inputAdornmentString}
           {required && '*'}
         </InputAdornment>
@@ -113,6 +125,13 @@ export function DartaAutoComplete({
           )}
           onBlur={handleAddNewOption}
         />
+        {errors[fieldName]?.value && (
+          <Typography
+            data-testid={`${testIdValue}-text-error-field`}
+            sx={{color: 'red'}}>
+            {helperTextString}
+          </Typography>
+        )}
       </Box>
       {allowPrivate && (
         <InputAdornment
@@ -130,7 +149,9 @@ export function DartaAutoComplete({
                   label={
                     innerWidthRef.current > 780 ? (
                       <Box sx={formStyles.makePrivateContainer}>
-                        <Typography sx={formStyles.toolTip}>
+                        <Typography
+                          sx={formStyles.toolTip}
+                          data-testid={`${testIdValue}-privacy-display`}>
                           {isPrivate ? 'Private' : 'Public'}
                         </Typography>
                         <Tooltip
