@@ -10,7 +10,7 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import React, {useState} from 'react';
+import React from 'react';
 
 import {Artwork} from '../../../globalTypes';
 import {currencyConverter} from '../../common/templates';
@@ -83,8 +83,8 @@ export function ArtworkCard({
   croppingModalOpen?: boolean;
   setCroppingModalOpen?: (arg0: boolean) => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const [editArtwork, setEditArtwork] = useState<boolean>(false);
+  const [expanded, setExpanded] = React.useState(false);
+  const [editArtwork, setEditArtwork] = React.useState<boolean>(false);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -117,7 +117,7 @@ export function ArtworkCard({
           borderColor: displayRed ? 'orange' : null,
           borderWidth: displayRed ? '0.2vh' : null,
         }}>
-        <Box sx={{minWidth: '25vw'}}>
+        <Box sx={{width: '25vw'}}>
           <CardActionArea
             onClick={handleExpandClick}
             sx={{display: 'flex', flexDirection: 'column', maxHeight: '15vh'}}
@@ -132,7 +132,7 @@ export function ArtworkCard({
         <Box
           sx={{
             alignSelf: 'center',
-            minWidth: '35vw',
+            width: '35vw',
             textOverflow: 'ellipsis',
             textAlign: 'start',
           }}>
@@ -158,7 +158,7 @@ export function ArtworkCard({
             </Typography>
           </CardContent>
         </Box>
-        <CardContent sx={{alignSelf: 'center', minWidth: '35vw'}}>
+        <CardContent sx={{alignSelf: 'center', width: '35vw'}}>
           {artwork?.artworkPrice?.value && (
             <Typography paragraph data-testid="artwork-card-price">
               Price:{' '}

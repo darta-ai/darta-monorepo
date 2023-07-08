@@ -108,6 +108,7 @@ export function DartaAutoComplete({
               {...register(`${fieldName}.${'value'}`)}
               error={!!errors[fieldName]}
               variant="outlined"
+              data-testId={`${fieldName}-input-field`}
             />
           )}
           onBlur={handleAddNewOption}

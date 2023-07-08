@@ -42,13 +42,16 @@ describe('Gallery Sign In Flow', () => {
 
     cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
 
-    cy.get('[data-testid=exhibitionsButton]', {timeout: 4000}).click();
+    cy.wait(1500);
+    cy.get('[data-testid=gallery-navigation-exhibitions-button]', {
+      timeout: 4000,
+    }).click();
     cy.url().should('include', '/Exhibitions');
 
     cy.get('[data-testid=gallery-navigation-profile-button]').click();
     cy.url().should('include', '/Profile');
 
-    cy.get('[data-testid=artworkButton]').click();
+    cy.get('[data-testid=gallery-navigation-artwork-button]').click();
     cy.url().should('include', '/Artwork');
   });
 });

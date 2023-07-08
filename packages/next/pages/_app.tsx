@@ -5,7 +5,7 @@ import '@fontsource/eb-garamond/500.css';
 import '@fontsource/eb-garamond/700.css';
 
 import {CacheProvider, EmotionCache} from '@emotion/react';
-import {Box, CircularProgress} from '@mui/material';
+import {Box, CircularProgress, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import {ThemeProvider} from '@mui/material/styles';
 import {onAuthStateChanged} from 'firebase/auth';
@@ -25,19 +25,15 @@ export {app, auth, db} from '../ThirdPartyAPIs/firebaseApp';
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
-export const baseStyles = {
+const baseStyles = {
   container: {
     display: 'flex',
     height: '100vh',
     width: '100vw',
-    border: '1px solid #eaeaea',
-    alignSelf: 'center',
-    borderRadius: '0.5vw',
     gap: '1vh',
     alignContent: 'center',
-    '@media (min-width: 800px)': {
-      width: '80vw',
-    },
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 };
 
@@ -85,7 +81,8 @@ export default function MyApp(props: MyAppProps) {
           <AppContextProvider>
             {isLoading ? (
               <Box sx={baseStyles.container}>
-                <CircularProgress />
+                <CircularProgress color="secondary" />
+                <Typography>Loading...</Typography>
               </Box>
             ) : (
               <Component {...pageProps} sx={{backgroundColor: PRIMARY_MILK}} />

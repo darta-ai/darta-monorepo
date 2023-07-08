@@ -18,13 +18,15 @@ describe('Gallery Create Profile', () => {
     cy.get('[data-testid=signin-password-input]').type(e2ePass);
     cy.get('[data-testid=signin-button]').click();
 
+    cy.wait(1000);
+
     cy.url().should('include', '/Galleries/LoadProfile');
     cy.url().should('not.include', '/Authenticate');
 
     cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
 
     cy.get('[data-testid=gallery-navigation-profile-button]', {
-      timeout: 4000,
+      timeout: 1500,
     }).click();
     cy.url().should('include', '/Profile');
     cy.get('[data-testid=edit-profile-button]').click();
