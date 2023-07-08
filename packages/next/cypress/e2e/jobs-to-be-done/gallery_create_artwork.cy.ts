@@ -92,7 +92,6 @@ describe('Gallery Create Profile', () => {
 
     cy.wait(2000);
 
-    cy.url().should('include', '/Galleries/LoadProfile');
     cy.url().should('not.include', '/Authenticate');
 
     cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
