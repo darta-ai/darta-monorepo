@@ -32,7 +32,6 @@ import {
 import {CroppingMattersModal, DartaDialogue} from '../Modals/index';
 import {createArtworkStyles} from './styles';
 
-const numberCheck = /^[1-9][0-9]*$/;
 const createArtworkSchema = yup
   .object({
     artworkTitle: yup.object().shape({
