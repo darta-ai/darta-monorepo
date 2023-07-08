@@ -39,7 +39,7 @@ jobs:
         run: npx cypress version
         working-directory: ./packages/next
   
-      - name: Cypress run
+      - name: Cypress run e2e
         # Uses the official Cypress GitHub action https://github.com/cypress-io/github-action
         uses: cypress-io/github-action@v5
         with:
@@ -47,7 +47,7 @@ jobs:
           # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
           start: pnpm --prefix ./packages/next start
           wait-on: 'http://localhost:3000' # Waits for above
-          command: pnpm --prefix ./packages/next run cypress
+          command: pnpm --prefix ./packages/next run cy-e2e
           # Records to Cypress Cloud 
           # https://docs.cypress.io/guides/cloud/projects#Set-up-a-project-to-record
           record: true
@@ -58,3 +58,23 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # Creating a token https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cypress run component
+          # Uses the official Cypress GitHub action https://github.com/cypress-io/github-action
+        uses: cypress-io/github-action@v5
+        with:
+            # Starts web server for E2E tests - replace with your own server invocation
+            # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
+          start: pnpm --prefix ./packages/next start
+          wait-on: 'http://localhost:3000' # Waits for above
+          command: pnpm --prefix ./packages/next run cy-component
+            # Records to Cypress Cloud 
+            # https://docs.cypress.io/guides/cloud/projects#Set-up-a-project-to-record
+          record: true
+          parallel: false # Runs test in parallel using settings above
+        env:
+            # For recording and parallelization to work you must set your CYPRESS_RECORD_KEY
+            # in GitHub repo → Settings → Secrets → Actions
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+            # Creating a token https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    

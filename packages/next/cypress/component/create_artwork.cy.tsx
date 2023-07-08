@@ -186,22 +186,22 @@ describe('EditProfileGallery.cy.tsx', () => {
 
     // dimensions
     cy.get('[data-testid=dimensions-text-error-field]').contains(
-      'An artwork height must be a number and is required.',
+      'Artwork height must be a positive number and is required.',
     );
     cy.get('[data-testid=artworkDimensions-heightIn-input-field]').type('cats');
     cy.get('[data-testid=dimensions-text-error-field]').contains(
-      'An artwork height must be a number and is required.',
+      'Artwork height must be a positive number and is required.',
     );
     cy.get('[data-testid=artworkDimensions-heightIn-input-field]').type(
       '{backspace}{backspace}{backspace}{backspace} 14',
     );
     cy.get('[data-testid=save-artwork-button]').click();
     cy.get('[data-testid=dimensions-text-error-field]').contains(
-      'An artwork width must be a number and is required.',
+      'Artwork width must be a positive number and is required.',
     );
     cy.get('[data-testid=artworkDimensions-widthIn-input-field]').type('cats');
     cy.get('[data-testid=dimensions-text-error-field]').contains(
-      'An artwork width must be a number and is required.',
+      'Artwork width must be a positive number and is required.',
     );
     cy.get('[data-testid=artworkDimensions-widthIn-input-field]').type(
       '{backspace}{backspace}{backspace}{backspace} 22',
