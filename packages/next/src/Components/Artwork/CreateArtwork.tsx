@@ -32,6 +32,7 @@ import {
 import {CroppingMattersModal, DartaDialogue} from '../Modals/index';
 import {createArtworkStyles} from './styles';
 
+const numberCheck = /^[1-9][0-9]*$/;
 const createArtworkSchema = yup
   .object({
     artworkTitle: yup.object().shape({
@@ -73,51 +74,35 @@ const createArtworkSchema = yup
       .object()
       .shape({
         heightIn: yup.object().shape({
-          value: yup
-            .number()
-            .nullable()
-            .typeError('You must provide a number')
-            .positive('The number must be greater than 0'),
+          value: yup.string().nullable(),
         }),
         widthIn: yup.object().shape({
-          value: yup
-            .number()
-            .nullable()
-            .typeError('You must provide a number')
-            .positive('The number must be greater than 0'),
+          value: yup.string().nullable(),
         }),
         depthIn: yup.object().shape({
-          value: yup.number().optional(),
+          value: yup.string().optional(),
         }),
         heightCm: yup.object().shape({
-          value: yup
-            .number()
-            .nullable()
-            .typeError('You must provide a number')
-            .positive('The number must be greater than 0'),
+          value: yup.string().nullable(),
         }),
         widthCm: yup.object().shape({
-          value: yup
-            .number()
-            .nullable()
-            .typeError('You must provide a number')
-            .positive('The number must be greater than 0'),
+          value: yup.string().nullable(),
         }),
         depthCm: yup.object().shape({
-          value: yup.number().optional(),
+          value: yup.string().optional(),
         }),
         displayUnit: yup.object().shape({
-          value: yup.number().optional(),
+          value: yup.string().optional(),
         }),
       })
       .test(
         'either-or-height',
-        'An artwork height must be a number and is required.',
+        'Artwork height must be a positive number and is required.',
         value => !!(value?.heightIn?.value || value?.heightCm?.value),
       )
       .test(
         'either-or-width',
-        'An artwork width must be a number and is required.',
+        'Artwork width must be a positive number and is required.',
         value => !!(value?.widthIn?.value || value?.widthCm?.value),
       ),
   })
