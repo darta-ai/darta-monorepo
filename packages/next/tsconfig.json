@@ -23,6 +23,8 @@
     "**/*.ts",
     "**/*.tsx",
     "globalTypes.ts", 
+    "../node_modules/cypress",
+    "./cypress/support/*.ts",
   ],
   "paths": {
     "react": [ "./node_modules/@types/react" ]

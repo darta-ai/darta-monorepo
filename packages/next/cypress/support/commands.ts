@@ -25,16 +25,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 //
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+
 // cypress/support/commands.js
 
 export const e2eEmail = 'cypress.test@darta.works';
@@ -60,3 +51,11 @@ Cypress.Commands.add('login' as any, () => {
 
   cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
 });
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      login(): Chainable<void>;
+    }
+  }
+}
