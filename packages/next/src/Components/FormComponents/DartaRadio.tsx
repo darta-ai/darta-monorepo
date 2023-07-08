@@ -88,6 +88,7 @@ export function DartaRadioButtonsGroup({
                 return (
                   <FormControlLabel
                     value={option}
+                    data-testid={`${fieldName}-input-${option}`}
                     onClick={() => {
                       setDisplayCurrency &&
                         setDisplayCurrency(currencyConverter[option]);

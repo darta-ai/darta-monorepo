@@ -30,7 +30,7 @@ export function PamphletLeft({
     png = null;
   }
   try {
-    video = require(`../../../public/static/Home/${authType}/${index}.mp4`);
+    video = require(`../../../public/static/Home/${authType}/${index}.gif`);
   } catch (e) {
     video = null;
   }
@@ -43,16 +43,7 @@ export function PamphletLeft({
           </div>
         ) : (
           <Box sx={styles.videoContainer}>
-            <video
-              controls
-              controlsList="nodownload noremoteplayback noplaybackrate foobar"
-              title={headline}
-              loop
-              muted
-              playsInline
-              style={styles.videoStyle}>
-              <source src={video} type="video/mp4" />
-            </video>
+            <Image src={video} alt="my gif" />
           </Box>
         )}
       </Box>

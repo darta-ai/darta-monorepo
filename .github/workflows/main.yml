@@ -1,4 +1,4 @@
-name: Cypress Tests
+name: Cypress E2E Tests
 on: [push]
 jobs:
   cypress-run:
@@ -20,9 +20,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
         working-directory: ./packages/next
-
-      - name: Install cypress
-        run: pnpm --prefix ./packages/next add -D cypress
     
       - name: Set up environment variables
         run: |

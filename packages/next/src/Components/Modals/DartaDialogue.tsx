@@ -20,36 +20,36 @@ export function DartaDialogue({
   id: string;
 }) {
   return (
-    <div>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">
-          Are you sure you want to delete this artwork from darta?
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {`You are about to delete ${title} from darta. This action cannot be undone.`}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="secondary" onClick={handleClose}>
-            Do not delete
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDelete(id);
-              handleClose();
-            }}
-            autoFocus>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+      data-testid="confirm-delete-artwork-modal">
+      <DialogTitle id="alert-dialog-title">
+        Are you sure you want to delete this artwork from darta?
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          {`You are about to delete ${title} from darta. This action cannot be undone.`}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button variant="contained" color="secondary" onClick={handleClose}>
+          Do not delete
+        </Button>
+        <Button
+          variant="contained"
+          color="error"
+          data-testid="confirm-delete-artwork-button"
+          onClick={() => {
+            handleDelete(id);
+            handleClose();
+          }}
+          autoFocus>
+          Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }

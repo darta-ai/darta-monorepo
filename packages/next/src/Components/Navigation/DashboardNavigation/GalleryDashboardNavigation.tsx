@@ -174,7 +174,7 @@ function MiniDrawer() {
         <List data-testid="mainList">
           <ListItem key="Gallery" disablePadding>
             <ListItemButton
-              data-testid="galleryButton"
+              data-testid="gallery-navigation-profile-button"
               sx={sideNavigationStyles.listItemButton}
               disabled={!hasToken}
               onClick={() => {
@@ -191,7 +191,7 @@ function MiniDrawer() {
           </ListItem>
           <ListItem key="Exhibitions" disablePadding>
             <ListItemButton
-              data-testid="exhibitionsButton"
+              data-testid="gallery-navigation-exhibitions-button"
               sx={sideNavigationStyles.listItemButton}
               disabled={!hasToken}
               onClick={() => {
@@ -208,7 +208,7 @@ function MiniDrawer() {
           </ListItem>
           <ListItem key="Artwork" disablePadding>
             <ListItemButton
-              data-testid="artworkButton"
+              data-testid="gallery-navigation-artwork-button"
               sx={sideNavigationStyles.listItemButton}
               disabled={!hasToken}
               onClick={() => {

@@ -15,12 +15,17 @@ export function CroppingMattersModal({
     <Dialog
       open={open}
       onClose={onClose}
+      data-testid="cropping-matters-modal"
       sx={{minHeight: '60vh', minWidth: '60vw'}}>
       <DialogContent>
         <Image src={croppingMatters} width={550} alt="Modal Image" />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary" variant="contained">
+        <Button
+          onClick={onClose}
+          color="secondary"
+          variant="contained"
+          data-testid="dismiss-cropping-matters-modal">
           Got it!
         </Button>
       </DialogActions>
