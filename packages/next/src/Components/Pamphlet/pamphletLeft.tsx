@@ -34,9 +34,13 @@ export function PamphletLeft({
   } catch (e) {
     video = null;
   }
+  const innerWidthRef = React.useRef(800);
+  React.useEffect(() => {
+    innerWidthRef.current = window.innerWidth;
+  }, []);
   return (
     <Box sx={styles.container}>
-      <Box sx={{flex: 1}}>
+      <Box sx={{flex: 1, width: '60vw'}}>
         {png ? (
           <div style={styles.imageSize}>
             <Image src={png} alt="info" style={styles.image} />

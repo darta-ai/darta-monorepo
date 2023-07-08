@@ -5,30 +5,10 @@ export const e2ePass = '(cypress.test)';
 
 describe('Gallery Create Profile', () => {
   it('Should be able to add and remove gallery locations ', () => {
-    cy.visit('http://localhost:3000/');
+    // GIVEN (setup)
+    cy.login();
 
-    cy.get('[data-testid=header-link-gallery]').click();
-
-    cy.url().should('include', '/Galleries/Home');
-    cy.get('[data-testid=header-navigation-signIn-button]').click();
-
-    cy.get('[data-testid=header]').contains('Welcome back to darta');
-
-    cy.get('[data-testid=signin-email-input]').type(e2eEmail);
-    cy.get('[data-testid=signin-password-input]').type(e2ePass);
-    cy.get('[data-testid=signin-button]').click();
-
-    cy.wait(1000);
-
-    cy.url().should('include', '/Galleries/LoadProfile');
-    cy.url().should('not.include', '/Authenticate');
-
-    cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
-
-    cy.get('[data-testid=gallery-navigation-profile-button]', {
-      timeout: 1500,
-    }).click();
-    cy.url().should('include', '/Profile');
+    // When
     cy.get('[data-testid=edit-profile-button]').click();
 
     // Component text takes care of all the rendering checks
@@ -43,28 +23,8 @@ describe('Gallery Create Profile', () => {
     ).should('not.exist');
   });
   it('Should populate the gallery profile screen', () => {
-    cy.visit('http://localhost:3000/');
-
-    cy.get('[data-testid=header-link-gallery]').click();
-
-    cy.url().should('include', '/Galleries/Home');
-    cy.get('[data-testid=header-navigation-signIn-button]').click();
-
-    cy.get('[data-testid=header]').contains('Welcome back to darta');
-
-    cy.get('[data-testid=signin-email-input]').type(e2eEmail);
-    cy.get('[data-testid=signin-password-input]').type(e2ePass);
-    cy.get('[data-testid=signin-button]').click();
-
-    cy.url().should('include', '/Galleries/LoadProfile');
-    cy.url().should('not.include', '/Authenticate');
-
-    cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
-
-    cy.wait(3500);
-
-    cy.get('[data-testid=gallery-navigation-profile-button]').click();
-    cy.url().should('include', '/Profile');
+    // GIVEN (setup)
+    cy.login();
     cy.get('[data-testid=edit-profile-button]').click();
 
     // Gallery Name
