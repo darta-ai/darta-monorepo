@@ -1,4 +1,4 @@
-import {ArtworkObject, IGalleryProfileData} from '../globalTypes';
+import {ArtworkObject, Exhibition, IGalleryProfileData} from '../globalTypes';
 
 export const galleryProfileRawData: IGalleryProfileData = {
   galleryName: {value: 'Pat Kirts Gallery 2000'},
@@ -27,8 +27,9 @@ export const galleryProfileRawData: IGalleryProfileData = {
     coordinates: {
       latitude: {value: null},
       longitude: {value: null},
-      googleMapsUrl: {value: null},
+      googleMapsPlaceId: {value: null},
     },
+    locationId: '2ce62a12-a2b2-47b1-86b1-a396f30cb2b2',
   },
 };
 
@@ -305,4 +306,101 @@ export const galleryInquiriesDummyData: InputArtworkDataObject = {
     inquiredAt: '2021-09-10',
     updatedAt: '2021-10-10',
   },
+};
+
+export const soteGalleryProfile: IGalleryProfileData = {
+  galleryBio: {value: 'Sprit of the Earth BABYYYYY'},
+  galleryInstagram: {value: '', isPrivate: false},
+  galleryLocation0: {
+    businessHours: {
+      isPrivate: false,
+      hoursOfOperation: {
+        Friday: {close: {value: '6:00 PM'}, open: {value: '11:00 AM'}},
+        Monday: {close: {value: '6:00 PM'}, open: {value: '11:00 AM'}},
+        Saturday: {close: {value: '6:00 PM'}, open: {value: '11:00 AM'}},
+        Sunday: {close: {value: '5:00 PM'}, open: {value: '12:00 PM'}},
+        Thursday: {close: {value: '6:00 PM'}, open: {value: '11:00 AM'}},
+        Tuesday: {close: {value: '6:00 PM'}, open: {value: '11:00 AM'}},
+        Wednesday: {close: {value: '6:00 PM'}, open: {value: '11:00 AM'}},
+      },
+    },
+    coordinates: {
+      latitude: {value: '35.687528'},
+      longitude: {value: '-105.9405632'},
+      googleMapsPlaceId: {
+        value:
+          'EiUyOCBHYWxpc3RlbyBTdHJlZXQsIFNhbnRhIEZlLCBOTSwgVV…BQGIcRWycIkJE4v5QQHCoUChIJ9ffZ545QGIcRsr3W8PTupg4',
+      },
+    },
+    locationString: {
+      value: '28 Galisteo St, Santa Fe, NM 87501, USA',
+      isPrivate: false,
+    },
+    locationId: '2ce62a12-a2b2-47b1-86b1-a396f30cb2b2',
+  },
+  galleryLocation1: {
+    businessHours: {
+      isPrivate: false,
+      hoursOfOperation: {
+        Friday: {close: {value: '6:00 PM'}, open: {value: '11:00 AM'}},
+        Monday: {close: {value: '6:00 PM'}, open: {value: '11:00 AM'}},
+        Saturday: {close: {value: '6:00 PM'}, open: {value: '11:00 AM'}},
+        Sunday: {close: {value: '5:00 PM'}, open: {value: '12:00 PM'}},
+        Thursday: {close: {value: '6:00 PM'}, open: {value: '11:00 AM'}},
+        Tuesday: {close: {value: '6:00 PM'}, open: {value: '11:00 AM'}},
+        Wednesday: {close: {value: '6:00 PM'}, open: {value: '11:00 AM'}},
+      },
+    },
+    coordinates: {
+      latitude: {value: '40.715851'},
+      longitude: {value: '-73.9981815'},
+      googleMapsPlaceId: {value: 'ChIJi1uKBSdawokRkpa4_J0ZOm0'},
+    },
+    locationString: {
+      isPrivate: false,
+      value: '58 Mott St, New York, NY 10013, USA',
+    },
+    locationId: '35aa9f8b-71e9-4c49-a6ae-3bc0df7bb30e',
+  },
+  galleryLogo: {
+    value: 'blob:http://localhost:3000/730c1d74-d956-48cc-bc65-9b95bd417742',
+  },
+  galleryName: {value: 'SOTE | Spirit of the Earth'},
+  galleryPhone: {value: '5059889558', isPrivate: false},
+  galleryWebsite: {value: 'http://www.spiritoftheearth.com/', isPrivate: false},
+  isValidated: true,
+  primaryContact: {value: '', isPrivate: false},
+};
+
+export const dummyExhibition: Exhibition = {
+  artworks: {...artwork1},
+  exhibitionEndDate: {
+    isOngoing: false,
+    value: 'Fri Jul 28 2023 00:00:00 GMT-0400 (Eastern Daylight Time)',
+  },
+  exhibitionId: '02003454-b638-44a6-bb38-d418d8390729',
+  exhibitionLocation: {
+    exhibitionLocationString: {
+      value: '28 Galisteo St, Santa Fe, NM 87501, USA',
+    },
+    isPrivate: false,
+  },
+  exhibitionPressRelease: {value: 'This is a description of the opening'},
+  exhibitionStartDate: {
+    isOngoing: false,
+    value: 'Fri Jul 14 2023 00:00:00 GMT-0400 (Eastern Daylight Time)',
+  },
+  exhibitionTitle: {value: 'Americana'},
+  hasReception: true,
+  receptionEndTime: {
+    value: 'Fri Jul 14 2023 21:00:00 GMT-0400 (Eastern Daylight Time)',
+  },
+  receptionStartTime: {
+    value: 'Fri Jul 14 2023 19:00:00 GMT-0400 (Eastern Daylight Time)',
+  },
+  exhibitionPrimaryImage: {
+    value:
+      'https://dim.mcusercontent.com/cs/3fe7b9b4437e2d24806c132f1/images/c35fb2db-532b-101a-0eb2-775b2f222515.jpg?w=281&dpr=2',
+  },
+  published: false,
 };

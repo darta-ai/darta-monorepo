@@ -45,14 +45,14 @@ export function DartaAutoComplete({
   errors: any;
   helperTextString: string | undefined;
   inputOptions: Array<{
-    label: string;
-    value: string;
+    label?: string;
+    value?: string;
     category?: string;
   }>;
 }) {
   const [isPrivate, setIsPrivate] = React.useState<boolean>(data?.isPrivate!);
   const [options, setOptions] = React.useState([...inputOptions]);
-  const [inputValue, setInputValue] = React.useState(data.value || '');
+  const [inputValue, setInputValue] = React.useState(data?.value || '');
 
   const handleInputChange = (event: any, value: string) => {
     event.preventDefault;
@@ -106,24 +106,33 @@ export function DartaAutoComplete({
         </InputAdornment>
       </Box>
       <Box>
-        <Autocomplete
-          freeSolo
-          id="autocomplete"
-          inputValue={inputValue}
-          options={inputOptions}
-          sx={{...formStyles.formTextField}}
-          onInputChange={handleInputChange}
-          renderInput={params => (
-            <TextField
-              {...(params as any)}
-              label={label}
+        <Controller
+          control={control}
+          name={`${fieldName}.${'value'}`}
+          render={({field}) => (
+            <Autocomplete
+              freeSolo
+              id="autocomplete"
+              inputValue={field.value}
+              options={inputOptions}
+              sx={formStyles.formTextField}
               {...register(`${fieldName}.${'value'}`)}
-              error={!!errors[fieldName]}
-              variant="outlined"
-              data-testId={`${fieldName}-input-field`}
+              onInputChange={(event, newValue) => {
+                field.onChange(newValue);
+                handleInputChange(event, newValue);
+              }}
+              onBlur={handleAddNewOption}
+              renderInput={params => (
+                <TextField
+                  {...(params as any)}
+                  label={label}
+                  error={!!errors[fieldName]}
+                  variant="outlined"
+                  data-testid={`${fieldName}-input-field`}
+                />
+              )}
             />
           )}
-          onBlur={handleAddNewOption}
         />
         {errors[fieldName]?.value && (
           <Typography
@@ -133,6 +142,7 @@ export function DartaAutoComplete({
           </Typography>
         )}
       </Box>
+
       {allowPrivate && (
         <InputAdornment
           sx={{width: '10vw', alignSelf: 'center'}}

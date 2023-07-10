@@ -157,7 +157,9 @@ export function EditProfileGallery({
       tempData.galleryLocation0 = data.galleryLocation1;
       tempData.galleryLocation1 = {};
     }
-    setGalleryProfileData({...galleryProfileData, ...tempData});
+    if (tempData.galleryLocation0 && !tempData?.galleryLocation0?.locationId)
+      tempData.galleryLocation0.locationId = crypto.randomUUID();
+
     setIsEditingProfile(!isEditingProfile);
   };
 
@@ -200,7 +202,10 @@ export function EditProfileGallery({
         setValue('galleryLocation0.coordinates.longitude.value', lng);
       }
       if (mapsUrl) {
-        setValue('galleryLocation0.coordinates.googleMapsUrl.value', mapsUrl);
+        setValue(
+          'galleryLocation0.coordinates.googleMapsPlaceId.value',
+          mapsUrl,
+        );
       }
       setValue('galleryLocation0.googleMapsPlaceId.value', placeId);
       if (openHours) {
@@ -225,6 +230,7 @@ export function EditProfileGallery({
         ...galleryProfileData,
         galleryLocation1: {
           locationString: {value: null, isPrivate: false},
+          locationId: crypto.randomUUID(),
         },
       });
     } else if (!galleryProfileData?.galleryLocation2?.locationString?.value) {
@@ -232,6 +238,7 @@ export function EditProfileGallery({
         ...galleryProfileData,
         galleryLocation2: {
           locationString: {value: null, isPrivate: false},
+          locationId: crypto.randomUUID(),
         },
       });
     } else if (!galleryProfileData?.galleryLocation3?.locationString?.value) {
@@ -239,6 +246,7 @@ export function EditProfileGallery({
         ...galleryProfileData,
         galleryLocation3: {
           locationString: {value: null, isPrivate: false},
+          locationId: crypto.randomUUID(),
         },
       });
     } else if (!galleryProfileData?.galleryLocation4?.locationString?.value) {
@@ -246,6 +254,7 @@ export function EditProfileGallery({
         ...galleryProfileData,
         galleryLocation4: {
           locationString: {value: null, isPrivate: false},
+          locationId: crypto.randomUUID(),
         },
       });
     }

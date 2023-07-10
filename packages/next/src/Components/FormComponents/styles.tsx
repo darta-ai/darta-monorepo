@@ -64,4 +64,16 @@ export const formStyles = {
     gap: '1vh',
     alignItems: 'center',
   },
+  datePicker: {
+    width: '60vw',
+    '@media (min-width: 800px)': {
+      width: '25vw',
+    },
+  },
+  dropDown: {
+    width: '60vw',
+    '@media (min-width: 800px)': {
+      width: '60vw',
+    },
+  },
 };

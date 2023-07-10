@@ -15,16 +15,6 @@ import {Controller} from 'react-hook-form';
 
 import {formStyles} from './styles';
 
-type currencyConverterType = {
-  [key: string]: string;
-};
-
-const currencyConverter: currencyConverterType = {
-  USD: '$',
-  EUR: '€',
-  GBP: '£',
-};
-
 export function DartaRadioButtonsGroup({
   toolTips,
   fieldName,
@@ -32,10 +22,11 @@ export function DartaRadioButtonsGroup({
   options,
   defaultValue,
   control,
-  setDisplayCurrency,
+  setHigherLevelState,
   errors,
   helperTextString,
   required,
+  value,
 }: {
   toolTips: any;
   fieldName: string;
@@ -45,8 +36,9 @@ export function DartaRadioButtonsGroup({
   options: string[];
   helperTextString: string | undefined;
   errors: any;
-  setDisplayCurrency: any | null;
+  setHigherLevelState: any | null;
   required: boolean;
+  value: string | undefined | null;
 }) {
   const innerWidthRef = React.useRef(800);
   React.useEffect(() => {
@@ -57,8 +49,8 @@ export function DartaRadioButtonsGroup({
   return (
     <Box
       sx={{
+        ...formStyles.inputTextContainer,
         display: 'flex',
-        width: '100%',
         alignContent: 'center',
       }}>
       {inputAdornmentString !== '' && (
@@ -101,6 +93,7 @@ export function DartaRadioButtonsGroup({
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
               defaultValue={defaultValue}
+              value={value}
               {...field}>
               {options.map(option => {
                 return (
@@ -108,8 +101,7 @@ export function DartaRadioButtonsGroup({
                     value={option}
                     data-testid={`${fieldName}-input-${option}`}
                     onClick={() => {
-                      setDisplayCurrency &&
-                        setDisplayCurrency(currencyConverter[option]);
+                      setHigherLevelState && setHigherLevelState(option);
                     }}
                     control={<Radio color="secondary" />}
                     label={option}

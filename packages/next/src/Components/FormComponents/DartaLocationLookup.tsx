@@ -64,7 +64,7 @@ export function DartaLocationLookup({
   control: any;
   toolTips: any;
   required: boolean;
-  multiline: boolean;
+  multiline: boolean | number;
   helperTextString: string | undefined;
   inputAdornmentString: string;
   allowPrivate: boolean;

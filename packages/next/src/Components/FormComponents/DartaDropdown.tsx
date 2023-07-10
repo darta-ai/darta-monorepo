@@ -26,6 +26,10 @@ export function DartaDropdown({
   inputAdornmentString,
   allowPrivate,
   register,
+  control,
+  required,
+  helperTextString,
+  value,
 }: {
   data: PrivateFields | any;
   options: string[];
@@ -36,6 +40,10 @@ export function DartaDropdown({
   register: any;
   allowPrivate: boolean;
   inputAdornmentString: string;
+  control: any;
+  required: boolean;
+  helperTextString: string | undefined;
+  value: string | null | undefined;
 }) {
   const innerWidthRef = React.useRef(800);
   React.useEffect(() => {
@@ -43,42 +51,70 @@ export function DartaDropdown({
   }, []);
 
   const [isPrivate, setIsPrivate] = React.useState<boolean>(data?.isPrivate!);
+  const testIdValue = fieldName.replace('.', '-');
 
   return (
     <Box sx={formStyles.inputTextContainer}>
       <Box sx={formStyles.toolTipContainer}>
-        {innerWidthRef.current > 780 && (
-          <Tooltip
-            title={
-              <Typography sx={{textAlign: 'center'}}>
-                {toolTips[fieldName]}
-              </Typography>
-            }
-            placement="top">
-            <IconButton>
-              <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
-            </IconButton>
-          </Tooltip>
-        )}
-        <InputAdornment sx={{mr: '1vw', overflowX: 'clip'}} position="end">
+        <Box>
+          {innerWidthRef.current > 780 && (
+            <Tooltip
+              title={
+                <Typography
+                  sx={{textAlign: 'center'}}
+                  data-testid={`${testIdValue}-tooltip-text`}>
+                  {toolTips[fieldName]}
+                </Typography>
+              }
+              placement="top">
+              <IconButton>
+                <HelpOutlineIcon
+                  data-testid={`${testIdValue}-tooltip-button`}
+                  fontSize="medium"
+                  sx={formStyles.helpIcon}
+                />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
+        <InputAdornment
+          data-testid={`${testIdValue}-input-adornment-string`}
+          sx={{overflowX: 'clip'}}
+          position="end">
           {inputAdornmentString}
+          {required && '*'}
         </InputAdornment>
       </Box>
       <Box>
         <Controller
-          name="dropdownValue"
+          control={control}
+          name={`${fieldName}.${'value'}`}
           render={({field}) => (
             <Select
-              sx={{width: '15vw', alignSelf: 'flex-start'}}
+              id="autocomplete"
+              inputValue={field.value}
+              sx={formStyles.dropDown}
+              value={value}
               {...(field as any)}>
               {options.map(option => (
-                <MenuItem key={option} value={option}>
+                <MenuItem
+                  key={option}
+                  {...register(`${fieldName}.${'value'}`)}
+                  value={option}
+                  data-testid={`${fieldName}-input-field-option`}>
                   {option}
                 </MenuItem>
               ))}
             </Select>
           )}
         />
+        {helperTextString && (
+          <Typography
+            data-testid={`${testIdValue}-text-error-field`}
+            sx={{color: 'red', textAlign: 'center'}}>
+            {helperTextString}
+          </Typography>
+        )}
       </Box>
       <Box>
         {allowPrivate && (
