@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 1169",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 1169",
     "lint": "next lint",
     "cy-e2e": "cypress run --e2e --config-file ./cypress/cypress.config.ts",
     "cy-component": "cypress run --component --config-file ./cypress/cypress.config.ts",
