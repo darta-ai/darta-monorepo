@@ -10,13 +10,15 @@ export function DartaDialogue({
   open,
   handleClose,
   handleDelete,
-  title,
+  identifier,
+  deleteType,
   id,
 }: {
   open: boolean;
   handleClose: () => void;
   handleDelete: (arg0: string) => void;
-  title: string;
+  identifier: string;
+  deleteType: string;
   id: string;
 }) {
   return (
@@ -27,11 +29,11 @@ export function DartaDialogue({
       aria-describedby="alert-dialog-description"
       data-testid="confirm-delete-artwork-modal">
       <DialogTitle id="alert-dialog-title">
-        Are you sure you want to delete this artwork from darta?
+        {`Are you sure you want to delete this ${deleteType} from darta?`}
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          {`You are about to delete ${title} from darta. This action cannot be undone.`}
+          {`You are about to delete ${identifier} from darta. This action cannot be undone.`}
         </DialogContentText>
       </DialogContent>
       <DialogActions>

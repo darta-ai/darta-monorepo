@@ -65,6 +65,7 @@ export const createArtworkStyles = {
   },
   multiLineContainer: {
     my: 2,
+    gap: '3vh',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',

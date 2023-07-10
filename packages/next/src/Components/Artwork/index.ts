@@ -1,2 +1,2 @@
+export {ArtworkCard} from './ArtworkCard';
 export {CreateArtwork} from './CreateArtwork';
-export {ArtworkCard} from './SavedArtworkCard';

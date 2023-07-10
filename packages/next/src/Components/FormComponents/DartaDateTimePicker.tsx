@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
-import {DatePicker} from '@mui/x-date-pickers/DatePicker';
+import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
 import * as React from 'react';
@@ -20,24 +20,28 @@ type ToolTip = {
   [key: string]: string;
 };
 
-export function DartaDatePicker({
+export function DartaDateTimePicker({
   label,
   toolTips,
-  control,
   fieldName,
-  canEdit,
+  control,
+  errors,
+  helperTextString,
   register,
+  canEdit,
   setHigherLevelState,
-  minDate,
+  minTime,
   value,
 }: {
   label: string;
   toolTips: ToolTip | any;
   fieldName: string;
-  register: any;
   control: any;
+  register: any;
+  errors: any;
+  helperTextString: string | undefined;
   canEdit?: boolean;
-  minDate?: string | any;
+  minTime?: string | any;
   setHigherLevelState?: (arg0: string | null) => void;
   value: string | undefined | null;
 }) {
@@ -45,14 +49,12 @@ export function DartaDatePicker({
   React.useEffect(() => {
     innerWidthRef.current = window.innerWidth;
   }, []);
-
   const testIdValue = fieldName.replace('.', '-');
-
   return (
     <>
       <Box>
-        {innerWidthRef.current > 780 && (
-          <Box>
+        <Box>
+          {innerWidthRef.current > 780 && (
             <Tooltip
               title={
                 <Typography
@@ -70,28 +72,28 @@ export function DartaDatePicker({
                 />
               </IconButton>
             </Tooltip>
-          </Box>
-        )}
+          )}
+        </Box>
       </Box>
       <Box>
         <Controller
-          name={`${fieldName}.${'value'}`}
+          name={fieldName}
           control={control}
-          defaultValue={minDate}
           {...register(`${fieldName}.${'value'}`)}
           render={({field}) => (
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
+              <DateTimePicker
                 {...field}
-                minDate={minDate}
-                views={['year', 'month', 'day']}
+                data-testid={`${testIdValue}-timePicker`}
                 sx={formStyles.datePicker}
                 label={label}
-                value={dayjs(value)}
+                minDateTime={dayjs(minTime) ?? dayjs()}
+                views={['year', 'month', 'day', 'hours', 'minutes']}
                 disabled={canEdit}
-                data-testid={`${testIdValue}-datePicker`}
+                value={dayjs(value)}
                 onChange={(newValue: any) => {
-                  field.onChange(newValue.toDate());
+                  const date = newValue.toDate();
+                  field.onChange(date);
                   if (setHigherLevelState) {
                     setHigherLevelState(newValue);
                   }
@@ -100,14 +102,21 @@ export function DartaDatePicker({
             </LocalizationProvider>
           )}
         />
+        {errors[fieldName]?.value && (
+          <Typography
+            data-testid={`${testIdValue}-text-error-field`}
+            sx={{color: 'red'}}>
+            {helperTextString}
+          </Typography>
+        )}
       </Box>
       <InputAdornment sx={{width: '5vw', alignSelf: 'center'}} position="end" />
     </>
   );
 }
 
-DartaDatePicker.defaultProps = {
+DartaDateTimePicker.defaultProps = {
   canEdit: false,
-  minDate: '',
+  minTime: null,
   setHigherLevelState: () => {},
 };

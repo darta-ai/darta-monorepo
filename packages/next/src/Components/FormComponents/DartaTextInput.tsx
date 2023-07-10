@@ -34,6 +34,7 @@ export function DartaTextInput({
   multiline,
   allowPrivate,
   inputAdornmentValue,
+  switchStringValue,
 }: {
   fieldName: string;
   data: PrivateFields | any;
@@ -47,6 +48,7 @@ export function DartaTextInput({
   inputAdornmentString: string;
   allowPrivate: boolean;
   inputAdornmentValue: string | null;
+  switchStringValue?: string;
 }) {
   const [isPrivate, setIsPrivate] = React.useState<boolean>(data?.isPrivate!);
   const innerWidthRef = React.useRef(800);
@@ -129,7 +131,7 @@ export function DartaTextInput({
             control={control}
             sx={{alignSelf: 'flex-start'}}
             name={fieldName}
-            {...register(`${testIdValue}.${'isPrivate'}`)}
+            {...register(`${testIdValue}.${switchStringValue}`)}
             render={({field}: {field: any}) => {
               return (
                 <FormControlLabel
@@ -205,3 +207,7 @@ export function DartaTextInput({
     </Box>
   );
 }
+
+DartaTextInput.defaultProps = {
+  switchStringValue: 'isPrivate',
+};

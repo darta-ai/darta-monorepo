@@ -38,7 +38,7 @@ function GalleryProfile() {
         Object?.keys(artworks).length === 0
       ) {
         if (state?.accessToken || user?.accessToken) {
-          const {galleryArtworks} = await retrieveGalleryArtworks(
+          const {galleryArtworks} = retrieveGalleryArtworks(
             state?.accessToken || user?.accessToken,
           );
           dispatch({
