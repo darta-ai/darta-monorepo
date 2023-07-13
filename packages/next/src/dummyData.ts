@@ -38,7 +38,7 @@ export const artwork1: ArtworkObject = {
     published: false,
     artworkId: '5f92586d-b127-497e-ae96-20dc8c93ae1b',
     artistName: {
-      value: 'NATALIE RASKIN',
+      value: 'RACHEL MARINO',
     },
     artworkCreatedYear: {
       value: '2022',
@@ -62,7 +62,7 @@ export const artwork1: ArtworkObject = {
     },
     artworkImage: {
       value:
-        'https://dim.mcusercontent.com/cs/3fe7b9b4437e2d24806c132f1/images/ed178a6b-917f-2c25-0842-d83eea48835c.jpeg?w=564&dpr=2',
+        'https://img.artlogic.net/w_1600,h_864,c_limit/exhibit-e/5b6b5f6d6aa72c4f430fcc53/ee82e13df905dd7acba7872af3e2b616.jpeg',
     },
     artworkImagesArray: [
       {
@@ -74,19 +74,20 @@ export const artwork1: ArtworkObject = {
     },
     artworkPrice: {
       isPrivate: false,
-      value: '2500',
+      value: '',
     },
     artworkTitle: {
-      value: 'a waiting room for real life',
+      value: 'A hard time at the beach',
     },
     canInquire: {
-      value: 'No',
+      value: 'Yes',
     },
     slug: {
-      value: 'natalie-raskin-a-waiting-room-for-real-life',
+      value: 'rachel-marino-a-hard-time-at-the-beach',
     },
     createdAt: '2023-02-24T18:00:00.000Z',
     updatedAt: '2023-02-24T18:00:00.000Z',
+    exhibitionOrder: 2,
   },
 };
 
@@ -125,6 +126,7 @@ export const artwork2: ArtworkObject = {
     slug: {value: 'sabrina-ring-my-beautiful-bff'},
     createdAt: '2021-08-24T18:00:00.000Z',
     updatedAt: '2021-08-24T18:00:00.000Z',
+    exhibitionOrder: 1,
   },
 };
 
@@ -161,6 +163,7 @@ export const artwork3: ArtworkObject = {
     artworkImagesArray: [],
     createdAt: '2022-08-24T18:00:00.000Z',
     updatedAt: '2022-08-24T18:00:00.000Z',
+    exhibitionOrder: 0,
   },
 };
 
@@ -363,7 +366,8 @@ export const soteGalleryProfile: IGalleryProfileData = {
     locationId: '35aa9f8b-71e9-4c49-a6ae-3bc0df7bb30e',
   },
   galleryLogo: {
-    value: 'blob:http://localhost:3000/730c1d74-d956-48cc-bc65-9b95bd417742',
+    value:
+      'https://s3.amazonaws.com/files.collageplatform.com.prod/application/599f12405a4091c6048b4568/f1a52b7879c8792b9f00686cca0b86f1.png',
   },
   galleryName: {value: 'SOTE | Spirit of the Earth'},
   galleryPhone: {value: '5059889558', isPrivate: false},
@@ -373,10 +377,17 @@ export const soteGalleryProfile: IGalleryProfileData = {
 };
 
 export const dummyExhibition: Exhibition = {
-  artworks: {...artwork1},
-  exhibitionEndDate: {
-    isOngoing: false,
-    value: 'Fri Jul 28 2023 00:00:00 GMT-0400 (Eastern Daylight Time)',
+  artworks: {...artwork1, ...artwork2, ...artwork3},
+  exhibitionDates: {
+    exhibitionEndDate: {
+      isOngoing: false,
+      value: 'Fri Jul 28 2023 00:00:00 GMT-0400 (Eastern Daylight Time)',
+    },
+    exhibitionStartDate: {
+      isOngoing: false,
+      value: 'Fri Jul 14 2023 00:00:00 GMT-0400 (Eastern Daylight Time)',
+    },
+    exhibitionDuration: {value: 'Temporary'},
   },
   exhibitionId: '02003454-b638-44a6-bb38-d418d8390729',
   exhibitionLocation: {
@@ -386,21 +397,21 @@ export const dummyExhibition: Exhibition = {
     isPrivate: false,
   },
   exhibitionPressRelease: {value: 'This is a description of the opening'},
-  exhibitionStartDate: {
-    isOngoing: false,
-    value: 'Fri Jul 14 2023 00:00:00 GMT-0400 (Eastern Daylight Time)',
-  },
+
   exhibitionTitle: {value: 'Americana'},
-  hasReception: true,
-  receptionEndTime: {
-    value: 'Fri Jul 14 2023 21:00:00 GMT-0400 (Eastern Daylight Time)',
-  },
-  receptionStartTime: {
-    value: 'Fri Jul 14 2023 19:00:00 GMT-0400 (Eastern Daylight Time)',
+  receptionDates: {
+    hasReception: {value: 'Yes'},
+    receptionEndTime: {
+      value: 'Fri Jul 14 2023 21:00:00 GMT-0400 (Eastern Daylight Time)',
+    },
+    receptionStartTime: {
+      value: 'Fri Jul 14 2023 19:00:00 GMT-0400 (Eastern Daylight Time)',
+    },
   },
   exhibitionPrimaryImage: {
     value:
       'https://dim.mcusercontent.com/cs/3fe7b9b4437e2d24806c132f1/images/c35fb2db-532b-101a-0eb2-775b2f222515.jpg?w=281&dpr=2',
   },
   published: false,
+  createdAt: 'Fri Jul 14 2023 21:00:00 GMT-0400 (Eastern Daylight Time)',
 };

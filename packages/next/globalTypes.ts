@@ -109,6 +109,19 @@ export type Artwork = {
   createdAt: string | null;
   updatedAt: string | null;
   collection?: PublicFields;
+  exhibitionOrder?: number;
+};
+
+export type ExhibitionDates = {
+  exhibitionStartDate: DateFields;
+  exhibitionEndDate: DateFields;
+  exhibitionDuration: {value: 'Temporary' | 'Ongoing/Indefinite'};
+};
+
+export type ReceptionDates = {
+  hasReception: {value: 'Yes' | 'No'};
+  receptionStartTime: PublicFields;
+  receptionEndTime: PublicFields;
 };
 
 export type ArtworkObject = {[key: string]: Artwork};
@@ -131,15 +144,14 @@ export type Exhibition = {
   artists?: PublicFields[] | undefined[];
   pressReleaseImages?: PublicFields[] | undefined[];
   exhibitionImages?: PublicFields[] | undefined[];
-  artworks: {[key: string]: Artwork} | {[key: string]: undefined};
+  artworks?: {[key: string]: Artwork} | {[key: string]: undefined};
   published: boolean;
   slug?: PublicFields;
   exhibitionId: string;
-  exhibitionStartDate: DateFields;
-  exhibitionEndDate: DateFields;
-  hasReception: string;
-  receptionStartTime: PublicFields;
-  receptionEndTime: PublicFields;
+  exhibitionDates: ExhibitionDates;
+  receptionDates: ReceptionDates;
+  createdAt: string | null;
+  updatedAt?: string | null;
 };
 
 export type ExhibitionObject = {[key: string]: Exhibition};

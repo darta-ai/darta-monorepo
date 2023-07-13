@@ -228,9 +228,15 @@ export function UploadArtworksXlsModal({
   };
 
   return (
-    <Box>
-      <Button variant="contained" color="primary" onClick={handleOpen}>
-        Upload Artwork From Excel
+    <>
+      <Button
+        className="upload-new-artwork"
+        variant="contained"
+        color="primary"
+        onClick={handleOpen}>
+        <Typography sx={{fontWeight: 'bold', fontSize: '0.8rem'}}>
+          Upload Artwork From Excel
+        </Typography>
       </Button>
       <Modal
         aria-labelledby="transition-modal-title"
@@ -280,6 +286,6 @@ export function UploadArtworksXlsModal({
           </Box>
         </Fade>
       </Modal>
-    </Box>
+    </>
   );
 }

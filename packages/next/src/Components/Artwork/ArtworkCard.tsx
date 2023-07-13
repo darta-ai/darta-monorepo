@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Card,
-  CardActionArea,
   CardActions,
   CardContent,
   Collapse,
@@ -13,60 +12,11 @@ import {
 import React from 'react';
 
 import {Artwork} from '../../../globalTypes';
+import {cardStyles} from '../../../styles/CardStyles';
 import {currencyConverter} from '../../common/templates';
 import {InquiryArtworkData} from '../../dummyData';
 import {InquiryTable} from '../Tables/InquiryTable';
 import {CreateArtwork} from './CreateArtwork';
-
-const useStyles = {
-  root: {
-    minWidth: '85vw',
-    alignItems: 'center',
-    flexDirection: 'column',
-    display: 'flex',
-    minHeight: '20vh',
-    maxWidth: '70vw',
-    margin: 'auto',
-    border: '1px solid darkgrey',
-  },
-  media: {
-    minHeight: '15vh',
-    '@media (min-width: 800px)': {
-      minHeight: '50vh',
-    },
-  },
-  expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-  },
-  expandOpen: {
-    transform: 'rotate(180deg)',
-  },
-  cardContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    gap: '1vh',
-    borderRadius: '0.5vw',
-    m: '1vh',
-    border: '1px solid #eaeaea',
-    // minHeight: '50vh',
-    alignItems: 'center',
-    '@media (min-width: 800px)': {
-      flexDirection: 'row',
-      width: '85vw',
-      minHeight: '15vh',
-    },
-  },
-  buttonContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    '@media (min-width: 800px)': {
-      flexDirection: 'column',
-    },
-  },
-};
 
 export function ArtworkCard({
   artwork,
@@ -110,32 +60,38 @@ export function ArtworkCard({
     !artwork?.artworkDimensions?.heightIn.value;
 
   return (
-    <Card sx={useStyles.root} data-testid="artwork-card">
+    <Card
+      sx={cardStyles.root}
+      data-testid="artwork-card"
+      className="artwork-card">
       <Box
         sx={{
-          ...useStyles.cardContainer,
+          ...cardStyles.cardContainer,
           borderColor: displayRed ? 'orange' : null,
           borderWidth: displayRed ? '0.2vh' : null,
         }}>
-        <Box sx={{width: '25vw'}}>
-          <CardActionArea
+        <Box sx={{width: '25vw', m: 1}}>
+          <Box
             onClick={handleExpandClick}
-            sx={{display: 'flex', flexDirection: 'column', maxHeight: '15vh'}}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              maxHeight: '15vh',
+              minWidth: '25vw',
+              alignItems: 'center',
+              justifyContent: 'center',
+              alignContent: 'center',
+            }}
             data-testid="artwork-card-image">
-            <img
+            <Box
+              component="img"
               src={artwork?.artworkImage?.value as string}
               alt={artwork?.artworkTitle?.value as string}
-              style={useStyles.media}
+              style={cardStyles.media}
             />
-          </CardActionArea>
+          </Box>
         </Box>
-        <Box
-          sx={{
-            alignSelf: 'center',
-            width: '35vw',
-            textOverflow: 'ellipsis',
-            textAlign: 'start',
-          }}>
+        <Box sx={cardStyles.informationContainer}>
           <CardContent>
             <Typography
               variant="h5"
@@ -158,22 +114,28 @@ export function ArtworkCard({
             </Typography>
           </CardContent>
         </Box>
-        <CardContent sx={{alignSelf: 'center', width: '35vw'}}>
-          {artwork?.artworkPrice?.value && (
-            <Typography paragraph data-testid="artwork-card-price">
-              Price:{' '}
-              {artwork?.artworkCurrency?.value &&
-                currencyConverter[artwork.artworkCurrency.value]}
-              {Number(artwork?.artworkPrice?.value).toLocaleString() as string}
+        <Box sx={cardStyles.informationContainer}>
+          <CardContent sx={{alignSelf: 'center', width: '35vw'}}>
+            {artwork?.artworkPrice?.value && (
+              <Typography paragraph data-testid="artwork-card-price">
+                Price:{' '}
+                {artwork?.artworkCurrency?.value &&
+                  currencyConverter[artwork.artworkCurrency.value]}
+                {
+                  Number(
+                    artwork?.artworkPrice?.value,
+                  ).toLocaleString() as string
+                }
+              </Typography>
+            )}
+            <Typography paragraph data-testid="artwork-card-can-inquire">
+              Can Inquire: {artwork?.canInquire?.value}
             </Typography>
-          )}
-          <Typography paragraph data-testid="artwork-card-can-inquire">
-            Can Inquire: {artwork?.canInquire?.value}
-          </Typography>
-          <Typography data-testid="artwork-card-dimensions">
-            Dimensions: {artwork?.artworkDimensions?.text?.value}
-          </Typography>
-        </CardContent>
+            <Typography data-testid="artwork-card-dimensions">
+              Dimensions: {artwork?.artworkDimensions?.text?.value}
+            </Typography>
+          </CardContent>
+        </Box>
       </Box>
       <Box>
         {displayRed && (
@@ -190,6 +152,7 @@ export function ArtworkCard({
           color={displayRed ? 'warning' : 'secondary'}
           onClick={() => setEditArtwork(!editArtwork)}
           sx={{alignSelf: 'center', m: '1vh'}}
+          className="artwork-card-edit"
           data-testid="artwork-card-edit-button">
           <Typography sx={{fontWeight: 'bold'}}>Edit</Typography>
         </Button>
@@ -236,7 +199,13 @@ export function ArtworkCard({
         )}
       <Collapse in={editArtwork}>
         {editArtwork ? (
-          <Box>
+          <Box
+            sx={{
+              display: 'flex',
+              alignContent: 'center',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
             <CreateArtwork
               newArtwork={artwork}
               cancelAction={setEditArtwork}

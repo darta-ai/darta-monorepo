@@ -60,6 +60,7 @@ export const newArtworkShell: Artwork = {
   createdAt: null,
   updatedAt: null,
   artworkId: '',
+  exhibitionOrder: 0,
 };
 
 export const newExhibitionShell: Exhibition = {
@@ -72,15 +73,22 @@ export const newExhibitionShell: Exhibition = {
   mediumsUsed: [],
   artists: [],
   exhibitionImages: [],
-  artworks: {'05124124-1512412142-152412412': {...newArtworkShell}},
+  artworks: {},
   published: false,
   slug: {value: ''},
   exhibitionId: '',
-  exhibitionStartDate: {value: null, isOngoing: false},
-  exhibitionEndDate: {value: null, isOngoing: false},
-  receptionStartTime: {value: null},
-  receptionEndTime: {value: null},
-  hasReception: false,
+  exhibitionDates: {
+    exhibitionDuration: {value: 'Temporary'},
+    exhibitionStartDate: {value: null, isOngoing: false},
+    exhibitionEndDate: {value: null, isOngoing: false},
+  },
+  receptionDates: {
+    receptionStartTime: {value: null},
+    receptionEndTime: {value: null},
+    hasReception: {value: 'Yes'},
+  },
+  createdAt: null,
+  updatedAt: null,
 };
 
 export const currencyConverter: CurrencyConverterType = {

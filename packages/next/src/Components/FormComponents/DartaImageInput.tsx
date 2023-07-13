@@ -30,12 +30,18 @@ const useStyles = {
   },
   text: {
     marginBottom: '2vh',
-    fontSize: '1.5rem',
+    fontSize: '1rem',
     textAlign: 'center',
+    '@media (min-width: 800px)': {
+      fontSize: '1.5rem',
+    },
   },
   fileAcceptanceText: {
     fontSize: '0.75rem',
     color: 'textSecondary',
+    '@media (min-width: 800px)': {
+      fontSize: '0.5rem',
+    },
   },
 };
 

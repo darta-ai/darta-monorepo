@@ -222,25 +222,24 @@ export function CreateArtwork({
     const slug = `${artist_name}-${artwork_title}`;
     setValue('slug.value', slug);
     if (
-      data.artworkDimensions.depthIn.value &&
-      data.artworkDimensions.depthCm.value
+      Number(data.artworkDimensions.depthIn.value) &&
+      Number(data.artworkDimensions.depthCm.value)
     ) {
       setValue(
         'artworkDimensions.text.value',
-        `${data.artworkDimensions.widthIn.value}in x 
-        ${data.artworkDimensions.heightIn.value}in x 
-        ${data.artworkDimensions.depthIn?.value}in; 
-        ${data.artworkDimensions.widthCm.value}cm x 
-        ${data.artworkDimensions.heightCm.value}cm x 
-        ${data.artworkDimensions.depthCm?.value}cm
-        `,
+        `${data.artworkDimensions.widthIn.value} x 
+        ${data.artworkDimensions.heightIn.value} x
+        ${data.artworkDimensions.depthIn?.value}in;
+        ${data.artworkDimensions.widthCm.value} x 
+        ${data.artworkDimensions.heightCm.value} x
+         ${data.artworkDimensions.depthCm?.value}cm`,
       );
     } else {
       setValue(
         'artworkDimensions.text.value',
-        `${data.artworkDimensions.widthIn.value}in x 
+        `${data.artworkDimensions.widthIn.value} x 
         ${data.artworkDimensions.heightIn.value}in;
-        ${data.artworkDimensions.widthCm.value}cm x 
+        ${data.artworkDimensions.widthCm.value} x 
         ${data.artworkDimensions.heightCm.value}cm 
         `,
       );
@@ -294,7 +293,8 @@ export function CreateArtwork({
             flexDirection: 'column',
             height: '100%',
             justifyContent: 'center',
-            width: '30vw',
+            width: '100%',
+            m: 2,
           }}>
           <Box sx={createArtworkStyles.imageContainer}>
             <Box>
@@ -326,9 +326,9 @@ export function CreateArtwork({
             </Box>
           </Box>
 
-          <Box sx={{width: '20vw', alignSelf: 'center'}}>
+          <Box sx={{width: '30vw', alignSelf: 'center'}}>
             <Button
-              sx={{width: '20vw'}}
+              sx={{width: '30vw'}}
               onClick={() => setEditImage(!editImage)}
               variant="contained">
               <Typography sx={{fontSize: '0.8rem'}}>
@@ -358,7 +358,7 @@ export function CreateArtwork({
               helperTextString={errors.artworkTitle?.value?.message}
               inputAdornmentString="Title"
               toolTips={createArtworkToolTips}
-              multiline={false}
+              multiline={1}
               allowPrivate={false}
               inputAdornmentValue={null}
             />
@@ -374,7 +374,7 @@ export function CreateArtwork({
               helperTextString={errors.artistName?.value?.message}
               inputAdornmentString="Artist"
               toolTips={createArtworkToolTips}
-              multiline={false}
+              multiline={1}
               allowPrivate={false}
               inputAdornmentValue={null}
             />
@@ -395,7 +395,6 @@ export function CreateArtwork({
               inputAdornmentValue={null}
             />
           </Box>
-
           <Box key="medium" sx={createArtworkStyles.inputText}>
             <DartaAutoComplete
               fieldName="artworkMedium"
@@ -421,7 +420,7 @@ export function CreateArtwork({
               required={true}
               errors={errors}
               toolTips={createArtworkToolTips}
-              multiline={false}
+              multiline={1}
               allowPrivate={false}
               helperTextString={errors.artworkCreatedYear?.value?.message}
               inputAdornmentString="Year Created"
@@ -430,187 +429,198 @@ export function CreateArtwork({
           </Box>
         </Box>
       </Box>
-      <Box sx={createArtworkStyles.inputTextContainer}>
+      <Box sx={createArtworkStyles.dimensionsAndPricingContainer}>
+        <Box sx={createArtworkStyles.inputTextContainer}>
+          <Box
+            key="pricing"
+            sx={{
+              ...createArtworkStyles.inputText,
+              flexDirection: 'column',
+              textAlign: 'center',
+            }}>
+            <Typography variant="h6">Pricing</Typography>
+            <Box>
+              <DartaRadioButtonsGroup
+                toolTips={createArtworkToolTips}
+                fieldName="artworkCurrency"
+                inputAdornmentString="Currency"
+                control={control}
+                required={true}
+                defaultValue={currencies[0]}
+                options={currencies}
+                setHigherLevelState={handleDisplayCurrency}
+                helperTextString={errors.artworkCurrency?.value?.message}
+                errors={errors}
+                value={
+                  getValues('artworkCurrency.value') ||
+                  newArtwork?.artworkCurrency?.value
+                }
+              />
+            </Box>
+          </Box>
+        </Box>
+        <Box sx={createArtworkStyles.multiLineContainer}>
+          <Box key="price" sx={createArtworkStyles.inputText}>
+            <DartaTextInput
+              fieldName="artworkPrice"
+              data={newArtwork?.artworkPrice?.value}
+              register={register}
+              errors={errors}
+              required={false}
+              control={control}
+              helperTextString={errors.artworkPrice?.value?.message}
+              inputAdornmentString="Price"
+              toolTips={createArtworkToolTips}
+              multiline={1}
+              allowPrivate={true}
+              inputAdornmentValue={displayCurrency as string}
+            />
+          </Box>
+          <Box key="canInquire" sx={createArtworkStyles.inputText}>
+            <DartaRadioButtonsGroup
+              toolTips={createArtworkToolTips}
+              fieldName="canInquire"
+              inputAdornmentString="Users Can Inquire?"
+              control={control}
+              defaultValue="Yes"
+              required={true}
+              helperTextString={errors.canInquire?.value?.message}
+              errors={errors}
+              options={['Yes', 'No']}
+              setHigherLevelState={null}
+              value={
+                getValues('canInquire.value') || newArtwork?.canInquire?.value
+              }
+            />
+          </Box>
+        </Box>
         <Box
-          key="pricing"
+          key="artworkDimensions"
           sx={{
             ...createArtworkStyles.inputText,
             flexDirection: 'column',
             textAlign: 'center',
           }}>
-          <Typography variant="h6">Pricing</Typography>
-          <Box>
-            <DartaRadioButtonsGroup
-              toolTips={createArtworkToolTips}
-              fieldName="artworkCurrency"
-              inputAdornmentString=""
-              control={control}
-              required={true}
-              defaultValue={currencies[0]}
-              options={currencies}
-              setHigherLevelState={handleDisplayCurrency}
-              helperTextString={errors.artworkCurrency?.value?.message}
+          <Typography
+            data-testid="artwork-dimensions-heading"
+            variant="h6">{`Artwork Dimensions (${
+            isInchesMeasurement ? 'cm' : 'in'
+          })`}</Typography>
+          <FormGroup>
+            <FormControlLabel
+              data-testid="measurement-change"
+              control={
+                <Switch color="secondary" onChange={handleMeasurementChange} />
+              }
+              label="centimeters"
+              labelPlacement="start"
+            />
+          </FormGroup>
+        </Box>
+        <Box sx={createArtworkStyles.multiLineContainer}>
+          <Box key="artworkDimensionsHeight" sx={createArtworkStyles.inputText}>
+            <DartaTextInput
+              fieldName={
+                getValues('artworkDimensions.displayUnit.value') === 'cm'
+                  ? 'artworkDimensions.heightCm'
+                  : 'artworkDimensions.heightIn'
+              }
+              data={
+                getValues('artworkDimensions.displayUnit.value') === 'cm'
+                  ? newArtwork?.artworkDimensions?.heightCm
+                  : newArtwork?.artworkDimensions?.heightIn
+              }
+              register={register}
               errors={errors}
+              required={true}
+              control={control}
+              helperTextString={errors.artworkDimensions?.message}
+              inputAdornmentString="height"
+              toolTips={createArtworkDimensionsToolTip}
+              multiline={1}
+              allowPrivate={false}
+              inputAdornmentValue={isInchesMeasurement ? 'cm' : 'in'}
             />
           </Box>
+          <Box key="artworkDimensionsWidth" sx={createArtworkStyles.inputText}>
+            <DartaTextInput
+              fieldName={
+                getValues('artworkDimensions.displayUnit.value') === 'cm'
+                  ? 'artworkDimensions.widthCm'
+                  : 'artworkDimensions.widthIn'
+              }
+              data={
+                getValues('artworkDimensions.displayUnit.value') === 'cm'
+                  ? newArtwork?.artworkDimensions?.widthCm
+                  : newArtwork?.artworkDimensions?.widthIn
+              }
+              register={register}
+              errors={errors}
+              required={true}
+              control={control}
+              helperTextString={errors.artworkDimensions?.message}
+              inputAdornmentString="width"
+              toolTips={createArtworkDimensionsToolTip}
+              multiline={1}
+              allowPrivate={false}
+              inputAdornmentValue={isInchesMeasurement ? 'cm' : 'in'}
+            />
+          </Box>
+          <Box key="artworkDimensionDepth" sx={createArtworkStyles.inputText}>
+            <DartaTextInput
+              fieldName={
+                getValues('artworkDimensions.displayUnit.value') === 'cm'
+                  ? 'artworkDimensions.depthCm'
+                  : 'artworkDimensions.depthIn'
+              }
+              data={
+                getValues('artworkDimensions.displayUnit.value') === 'cm'
+                  ? newArtwork?.artworkDimensions?.depthCm
+                  : newArtwork?.artworkDimensions?.depthIn
+              }
+              register={register}
+              errors={errors}
+              required={false}
+              control={control}
+              helperTextString={
+                getValues('artworkDimensions.displayUnit.value') === 'cm'
+                  ? errors.artworkDimensions?.depthCm?.value?.message
+                  : errors.artworkDimensions?.depthIn?.value?.message
+              }
+              inputAdornmentString="depth"
+              toolTips={createArtworkDimensionsToolTip}
+              multiline={1}
+              allowPrivate={false}
+              inputAdornmentValue={isInchesMeasurement ? 'cm' : 'in'}
+            />
+          </Box>
+          <Typography
+            sx={{color: 'red', textAlign: 'center'}}
+            data-testid="dimensions-text-error-field">
+            {errors?.artworkDimensions?.message}
+          </Typography>
         </Box>
       </Box>
-      <Box sx={createArtworkStyles.multiLineContainer}>
-        <Box key="price" sx={createArtworkStyles.inputText}>
-          <DartaTextInput
-            fieldName="artworkPrice"
-            data={newArtwork?.artworkPrice?.value}
-            register={register}
-            errors={errors}
-            required={false}
-            control={control}
-            helperTextString={errors.artworkPrice?.value?.message}
-            inputAdornmentString="Price"
-            toolTips={createArtworkToolTips}
-            multiline={false}
-            allowPrivate={true}
-            inputAdornmentValue={displayCurrency as string}
-          />
+      <Box sx={createArtworkStyles.inputTextContainer}>
+        <Box sx={createArtworkStyles.saveButtonContainer}>
+          <Button
+            variant="contained"
+            data-testid="delete-artwork-button"
+            color="error"
+            onClick={() => {
+              handleClickOpen();
+            }}>
+            <Typography sx={{fontWeight: 'bold'}}>Delete</Typography>
+          </Button>
+          <Button
+            variant="contained"
+            data-testid="save-artwork-button"
+            type="submit"
+            sx={{backgroundColor: PRIMARY_BLUE}}
+            onClick={handleSubmit(onSubmit)}>
+            <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
+          </Button>
         </Box>
-        <Box key="canInquire" sx={createArtworkStyles.inputText}>
-          <DartaRadioButtonsGroup
-            toolTips={createArtworkToolTips}
-            fieldName="canInquire"
-            inputAdornmentString="Users Can Inquire?"
-            control={control}
-            defaultValue="Yes"
-            required={true}
-            helperTextString={errors.canInquire?.value?.message}
-            errors={errors}
-            options={['Yes', 'No']}
-            setHigherLevelState={null}
-          />
-        </Box>
-      </Box>
-      <Box
-        key="artworkDimensions"
-        sx={{
-          ...createArtworkStyles.inputText,
-          flexDirection: 'column',
-          textAlign: 'center',
-        }}>
-        <Typography
-          data-testid="artwork-dimensions-heading"
-          variant="h6">{`Artwork Dimensions (${
-          isInchesMeasurement ? 'cm' : 'in'
-        })`}</Typography>
-        <FormGroup>
-          <FormControlLabel
-            data-testid="measurement-change"
-            control={
-              <Switch color="secondary" onChange={handleMeasurementChange} />
-            }
-            label="centimeters"
-            labelPlacement="start"
-          />
-        </FormGroup>
-      </Box>
-      <Box sx={createArtworkStyles.multiLineContainer}>
-        <Box key="artworkDimensionsHeight" sx={createArtworkStyles.inputText}>
-          <DartaTextInput
-            fieldName={
-              getValues('artworkDimensions.displayUnit.value') === 'cm'
-                ? 'artworkDimensions.heightCm'
-                : 'artworkDimensions.heightIn'
-            }
-            data={
-              getValues('artworkDimensions.displayUnit.value') === 'cm'
-                ? newArtwork?.artworkDimensions?.heightCm
-                : newArtwork?.artworkDimensions?.heightIn
-            }
-            register={register}
-            errors={errors}
-            required={true}
-            control={control}
-            helperTextString={errors.artworkDimensions?.message}
-            inputAdornmentString="height"
-            toolTips={createArtworkDimensionsToolTip}
-            multiline={false}
-            allowPrivate={false}
-            inputAdornmentValue={isInchesMeasurement ? 'cm' : 'in'}
-          />
-        </Box>
-        <Box key="artworkDimensionsWidth" sx={createArtworkStyles.inputText}>
-          <DartaTextInput
-            fieldName={
-              getValues('artworkDimensions.displayUnit.value') === 'cm'
-                ? 'artworkDimensions.widthCm'
-                : 'artworkDimensions.widthIn'
-            }
-            data={
-              getValues('artworkDimensions.displayUnit.value') === 'cm'
-                ? newArtwork?.artworkDimensions?.widthCm
-                : newArtwork?.artworkDimensions?.widthIn
-            }
-            register={register}
-            errors={errors}
-            required={true}
-            control={control}
-            helperTextString={errors.artworkDimensions?.message}
-            inputAdornmentString="width"
-            toolTips={createArtworkDimensionsToolTip}
-            multiline={false}
-            allowPrivate={false}
-            inputAdornmentValue={isInchesMeasurement ? 'cm' : 'in'}
-          />
-        </Box>
-        <Box key="artworkDimensionDepth" sx={createArtworkStyles.inputText}>
-          <DartaTextInput
-            fieldName={
-              getValues('artworkDimensions.displayUnit.value') === 'cm'
-                ? 'artworkDimensions.depthCm'
-                : 'artworkDimensions.depthIn'
-            }
-            data={
-              getValues('artworkDimensions.displayUnit.value') === 'cm'
-                ? newArtwork?.artworkDimensions?.depthCm
-                : newArtwork?.artworkDimensions?.depthIn
-            }
-            register={register}
-            errors={errors}
-            required={false}
-            control={control}
-            helperTextString={
-              getValues('artworkDimensions.displayUnit.value') === 'cm'
-                ? errors.artworkDimensions?.depthCm?.value?.message
-                : errors.artworkDimensions?.depthIn?.value?.message
-            }
-            inputAdornmentString="depth"
-            toolTips={createArtworkDimensionsToolTip}
-            multiline={false}
-            allowPrivate={false}
-            inputAdornmentValue={isInchesMeasurement ? 'cm' : 'in'}
-          />
-        </Box>
-      </Box>
-      <Typography
-        sx={{color: 'red', textAlign: 'center'}}
-        data-testid="dimensions-text-error-field">
-        {errors?.artworkDimensions?.message}
-      </Typography>
-      <Box sx={createArtworkStyles.saveButtonContainer}>
-        <Button
-          variant="contained"
-          data-testid="delete-artwork-button"
-          color="error"
-          onClick={() => {
-            handleClickOpen();
-          }}>
-          <Typography sx={{fontWeight: 'bold'}}>Delete</Typography>
-        </Button>
-        <Button
-          variant="contained"
-          data-testid="save-artwork-button"
-          type="submit"
-          sx={{backgroundColor: PRIMARY_BLUE}}
-          onClick={handleSubmit(onSubmit)}>
-          <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
-        </Button>
       </Box>
 
       <DartaDialogue
