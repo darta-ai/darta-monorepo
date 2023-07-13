@@ -45,7 +45,7 @@ export function DartaLocationLookup({
   control,
   toolTips,
   allowPrivate,
-  multiline,
+
   errors,
   helperTextString,
   required,
@@ -64,7 +64,7 @@ export function DartaLocationLookup({
   control: any;
   toolTips: any;
   required: boolean;
-  multiline: boolean | number;
+
   helperTextString: string | undefined;
   inputAdornmentString: string;
   allowPrivate: boolean;
@@ -136,7 +136,6 @@ export function DartaLocationLookup({
             error={!!errors[fieldName]}
             helperText={errors[fieldName]?.value && helperTextString}
             required={required}
-            multiline={multiline}
           />
         )}
         renderOption={(props, option) => {
@@ -191,6 +190,7 @@ export function DartaLocationLookup({
             control={control}
             sx={{alignSelf: 'flex-start'}}
             name={fieldName}
+            key={fieldName}
             {...register(`${fieldName}.${'isPrivate'}`)}
             render={({field}: {field: any}) => {
               return (

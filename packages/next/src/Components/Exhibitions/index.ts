@@ -1,2 +1,2 @@
+export {CreateExhibition} from './CreateExhibition';
 export {ExhibitionCard} from './ExhibitionCard';
-export {ExhibitionPressReleaseEdit} from './ExhibitionPressReleaseEdit';

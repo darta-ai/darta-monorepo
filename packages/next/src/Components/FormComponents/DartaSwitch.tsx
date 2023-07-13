@@ -44,24 +44,24 @@ export function DartaSwitch({
 }) {
   const testIdValue = fieldName.replace('.', '-');
   return (
-    <Box
-      sx={{
-        ...formStyles.inputTextContainer,
-        display: 'flex',
-        width: '100%',
-        alignContent: 'center',
-      }}>
+    <Box sx={formStyles.underHeadingContainer}>
       <Box sx={formStyles.toolTipContainer}>
         <Box>
           <Tooltip
             title={
-              <Typography sx={{textAlign: 'center'}}>
+              <Typography
+                data-testid={`${testIdValue}-tooltip-text`}
+                sx={{textAlign: 'center'}}>
                 {toolTips[fieldName]}
               </Typography>
             }
             placement="top">
             <IconButton>
-              <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
+              <HelpOutlineIcon
+                data-testid={`${testIdValue}-tooltip-button`}
+                fontSize="medium"
+                sx={formStyles.helpIcon}
+              />
             </IconButton>
           </Tooltip>
         </Box>
@@ -72,10 +72,9 @@ export function DartaSwitch({
           {inputAdornmentString}
         </InputAdornment>
       </Box>
-      <InputAdornment sx={{width: '10vw', alignSelf: 'center'}} position="end">
+      <Box>
         <Controller
           control={control}
-          sx={{alignSelf: 'flex-start'}}
           name={fieldName}
           {...register(`${fieldName}.${'isOngoing'}`)}
           render={({field}: {field: any}) => {
@@ -84,7 +83,7 @@ export function DartaSwitch({
                 labelPlacement="bottom"
                 label={
                   <Box sx={formStyles.makePrivateContainer}>
-                    <Typography sx={formStyles.toolTip}>
+                    <Typography sx={formStyles.rawToolTip}>
                       {switchState ? trueStatement : falseStatement}
                     </Typography>
                   </Box>
@@ -110,7 +109,7 @@ export function DartaSwitch({
             );
           }}
         />
-      </InputAdornment>
+      </Box>
     </Box>
   );
 }

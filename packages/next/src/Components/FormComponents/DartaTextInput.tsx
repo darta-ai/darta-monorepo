@@ -43,7 +43,7 @@ export function DartaTextInput({
   errors: any;
   toolTips: ToolTip | any;
   required: boolean;
-  multiline: boolean | number;
+  multiline: number;
   helperTextString: string | undefined;
   inputAdornmentString: string;
   allowPrivate: boolean;
@@ -61,25 +61,23 @@ export function DartaTextInput({
     <Box sx={formStyles.inputTextContainer}>
       <Box sx={formStyles.toolTipContainer}>
         <Box>
-          {innerWidthRef.current > 780 && (
-            <Tooltip
-              title={
-                <Typography
-                  data-testid={`${testIdValue}-tooltip-text`}
-                  sx={{textAlign: 'center'}}>
-                  {toolTips[fieldName]}
-                </Typography>
-              }
-              placement="top">
-              <IconButton>
-                <HelpOutlineIcon
-                  data-testid={`${testIdValue}-tooltip-button`}
-                  fontSize="medium"
-                  sx={formStyles.helpIcon}
-                />
-              </IconButton>
-            </Tooltip>
-          )}
+          <Tooltip
+            title={
+              <Typography
+                data-testid={`${testIdValue}-tooltip-text`}
+                sx={{textAlign: 'center'}}>
+                {toolTips[fieldName]}
+              </Typography>
+            }
+            placement="top">
+            <IconButton>
+              <HelpOutlineIcon
+                data-testid={`${testIdValue}-tooltip-button`}
+                fontSize="medium"
+                sx={formStyles.helpIcon}
+              />
+            </IconButton>
+          </Tooltip>
         </Box>
         <Box>
           <InputAdornment
@@ -91,13 +89,12 @@ export function DartaTextInput({
           </InputAdornment>
         </Box>
       </Box>
-      <Box>
+      <Box sx={formStyles.formTextField}>
         <TextField
           id="value"
           variant="standard"
           error={!!errors[fieldName]}
           {...register(`${fieldName}.${'value'}`)}
-          sx={formStyles.formTextField}
           helperText={
             errors[fieldName]?.value && (
               <Typography
@@ -109,7 +106,7 @@ export function DartaTextInput({
           }
           fullWidth
           required={required}
-          multiline={multiline}
+          multiline={true}
           data-testid={`${testIdValue}-input-field`}
           rows={multiline}
           InputProps={{

@@ -253,7 +253,7 @@ export function DartaLocationAndTimes({
           control={control}
           toolTips={toolTips}
           allowPrivate={true}
-          multiline={false}
+          multiline={1}
           errors={errors}
           helperTextString={
             errors.galleryLocation0?.locationString?.value?.message as string

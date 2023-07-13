@@ -50,4 +50,6 @@ export const exhibitionPressReleaseToolTip = {
     'The end time and date of the reception. Disabled if there is no reception.',
   'exhibitionLocation.exhibitionLocationString':
     'Required. Please select the location of your opening.',
+  hasReception:
+    'If your exhibition does not have a reception, please select "no". ',
 };

@@ -6,6 +6,7 @@ import React from 'react';
 
 import {IGalleryProfileData} from '../../globalTypes';
 import authRequired from '../../src/Components/AuthRequired/AuthRequired';
+import {DartaJoyride} from '../../src/Components/Navigation/DartaJoyride';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {EditProfileGallery, ProfileGallery} from '../../src/Components/Profile';
 import {
@@ -14,6 +15,29 @@ import {
 } from '../../src/Components/State/AppContext';
 import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
 
+// Reactour steps
+const profileSteps = [
+  {
+    target: '.profile-gallery-container',
+    content: 'This is your profile for your gallery.',
+  },
+  {
+    target: '.edit-profile-button',
+    content:
+      'Click Edit to add your gallery name, locations, and contact information.',
+  },
+  {
+    target: '.gallery-navigation-exhibitions',
+    content:
+      "When you're ready, you can create and edit your exhibitions here.",
+  },
+  {
+    target: '.gallery-navigation-artwork',
+    content:
+      'Otherwise, you can add artworks to the Darta platform by clicking here.',
+  },
+];
+
 const aboutStyles = {
   container: {
     display: 'flex',
@@ -21,7 +45,7 @@ const aboutStyles = {
     justifyContent: 'flex-start',
     gap: '5%',
     width: '80vw',
-    minHeight: '90vh',
+    minHeight: '100vh',
     mt: 5,
     alignSelf: 'center',
   },
@@ -82,6 +106,11 @@ function GalleryProfile() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [galleryProfileData]);
 
+  const [stepIndex, setStepIndex] = React.useState(0);
+  const [run, setRun] = React.useState(
+    !state?.galleryProfile?.galleryName?.value,
+  );
+
   return (
     <>
       <Head>
@@ -93,6 +122,13 @@ function GalleryProfile() {
       </Head>
 
       <SideNavigationWrapper>
+        <DartaJoyride
+          steps={profileSteps}
+          run={run}
+          setRun={setRun}
+          stepIndex={stepIndex}
+          setStepIndex={setStepIndex}
+        />
         <Container sx={aboutStyles.container}>
           {isEditingProfile ? (
             <EditProfileGallery

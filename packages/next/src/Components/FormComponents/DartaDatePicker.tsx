@@ -41,37 +41,29 @@ export function DartaDatePicker({
   setHigherLevelState?: (arg0: string | null) => void;
   value: string | undefined | null;
 }) {
-  const innerWidthRef = React.useRef(800);
-  React.useEffect(() => {
-    innerWidthRef.current = window.innerWidth;
-  }, []);
-
   const testIdValue = fieldName.replace('.', '-');
-
   return (
     <>
       <Box>
-        {innerWidthRef.current > 780 && (
-          <Box>
-            <Tooltip
-              title={
-                <Typography
-                  data-testid={`${testIdValue}-tooltip-text`}
-                  sx={{textAlign: 'center'}}>
-                  {toolTips[fieldName]}
-                </Typography>
-              }
-              placement="top">
-              <IconButton>
-                <HelpOutlineIcon
-                  data-testid={`${testIdValue}-tooltip-button`}
-                  fontSize="medium"
-                  sx={formStyles.helpIcon}
-                />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        )}
+        <Box>
+          <Tooltip
+            title={
+              <Typography
+                data-testid={`${testIdValue}-tooltip-text`}
+                sx={{textAlign: 'center'}}>
+                {toolTips[fieldName]}
+              </Typography>
+            }
+            placement="top">
+            <IconButton>
+              <HelpOutlineIcon
+                data-testid={`${testIdValue}-tooltip-button`}
+                fontSize="medium"
+                sx={formStyles.helpIcon}
+              />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
       <Box>
         <Controller

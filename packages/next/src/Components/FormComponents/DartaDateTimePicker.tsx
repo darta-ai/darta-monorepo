@@ -25,8 +25,6 @@ export function DartaDateTimePicker({
   toolTips,
   fieldName,
   control,
-  errors,
-  helperTextString,
   register,
   canEdit,
   setHigherLevelState,
@@ -38,45 +36,38 @@ export function DartaDateTimePicker({
   fieldName: string;
   control: any;
   register: any;
-  errors: any;
-  helperTextString: string | undefined;
   canEdit?: boolean;
   minTime?: string | any;
   setHigherLevelState?: (arg0: string | null) => void;
   value: string | undefined | null;
 }) {
-  const innerWidthRef = React.useRef(800);
-  React.useEffect(() => {
-    innerWidthRef.current = window.innerWidth;
-  }, []);
   const testIdValue = fieldName.replace('.', '-');
   return (
     <>
       <Box>
         <Box>
-          {innerWidthRef.current > 780 && (
-            <Tooltip
-              title={
-                <Typography
-                  data-testid={`${testIdValue}-tooltip-text`}
-                  sx={{textAlign: 'center'}}>
-                  {toolTips[fieldName]}
-                </Typography>
-              }
-              placement="top">
-              <IconButton>
-                <HelpOutlineIcon
-                  data-testid={`${testIdValue}-tooltip-button`}
-                  fontSize="medium"
-                  sx={formStyles.helpIcon}
-                />
-              </IconButton>
-            </Tooltip>
-          )}
+          <Tooltip
+            title={
+              <Typography
+                data-testid={`${testIdValue}-tooltip-text`}
+                sx={{textAlign: 'center'}}>
+                {toolTips[fieldName]}
+              </Typography>
+            }
+            placement="top">
+            <IconButton>
+              <HelpOutlineIcon
+                data-testid={`${testIdValue}-tooltip-button`}
+                fontSize="medium"
+                sx={formStyles.helpIcon}
+              />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Box>
       <Box>
         <Controller
+          key={fieldName}
           name={fieldName}
           control={control}
           {...register(`${fieldName}.${'value'}`)}
@@ -102,13 +93,6 @@ export function DartaDateTimePicker({
             </LocalizationProvider>
           )}
         />
-        {errors[fieldName]?.value && (
-          <Typography
-            data-testid={`${testIdValue}-text-error-field`}
-            sx={{color: 'red'}}>
-            {helperTextString}
-          </Typography>
-        )}
       </Box>
       <InputAdornment sx={{width: '5vw', alignSelf: 'center'}} position="end" />
     </>

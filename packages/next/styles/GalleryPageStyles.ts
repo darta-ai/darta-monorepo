@@ -14,6 +14,17 @@ export const galleryStyles = {
       paddingTop: '7vh',
     },
   },
+  artworkDisplayValues: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    gap: '2vh',
+    alignSelf: 'center',
+    '@media (minWidth: 800px)': {
+      paddingTop: '7vh',
+    },
+  },
   uploadImageContainer: {
     display: 'flex',
     flexDirection: 'column',
@@ -28,6 +39,16 @@ export const galleryStyles = {
     my: '3vh',
     '@media (min-width:800px)': {
       fontSize: '2.5rem',
+    },
+    cursor: 'default',
+  },
+  artworkHeader: {
+    fontFamily: 'EB Garamond',
+    color: PRIMARY_BLUE,
+    fontSize: '1.5rem',
+    my: '3vh',
+    '@media (min-width:800px)': {
+      fontSize: '2rem',
     },
     cursor: 'default',
   },
@@ -58,15 +79,16 @@ export const galleryStyles = {
   formTextField: {
     width: '100%',
   },
-  divider: {width: '50%', alignSelf: 'center', margin: '2'},
+  divider: {width: '50%', alignSelf: 'center', margin: '4'},
   filterContainer: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     gap: '4vh',
-    '@media (minWidth: 800px)': {
+    width: '100%',
+    '@media (min-width: 800px)': {
       fontSize: '1.3rem',
-      flexDirection: 'column',
+      flexDirection: 'row',
     },
   },
 };

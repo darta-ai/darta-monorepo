@@ -20,7 +20,7 @@ const styles = {
     alignContent: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: '3vh',
+    gap: '2vh',
     '@media (min-width:800px)': {
       gap: '7vh',
     },

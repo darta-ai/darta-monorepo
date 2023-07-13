@@ -20,10 +20,8 @@ import Toolbar from '@mui/material/Toolbar';
 import {useRouter} from 'next/router';
 import * as React from 'react';
 
-import {AuthContext} from '../../../../pages/_app';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../../styles';
 import {AuthEnum} from '../../Auth/types';
-import {GalleryReducerActions, useAppState} from '../../State/AppContext';
 import {HeaderSignedIn} from '../Headers/Headers/HeaderSignedIn';
 
 const drawerWidth = 240;
@@ -104,25 +102,22 @@ function MiniDrawer() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
-  const {user} = React.useContext(AuthContext);
-  const {state, dispatch} = useAppState();
-  const hasToken = !!state.accessToken;
 
-  if (!hasToken && user?.accessToken) {
-    dispatch({
-      type: GalleryReducerActions.SET_ACCESS_TOKEN,
-      payload: user.accessToken,
-    });
-  }
-
-  const navTo = user?.displayName;
+  const innerWidthRef = React.useRef(800);
+  React.useEffect(() => {
+    innerWidthRef.current = window.innerWidth;
+  }, []);
 
   const handleDrawerOpen = () => {
-    setOpen(true);
+    if (innerWidthRef.current > 800) {
+      setOpen(true);
+    }
   };
 
   const handleDrawerClose = () => {
-    setOpen(false);
+    if (innerWidthRef.current > 800) {
+      setOpen(false);
+    }
   };
 
   const sideNavigationStyles = {
@@ -143,19 +138,21 @@ function MiniDrawer() {
       <CssBaseline />
       <AppBar position="fixed" open={open} data-testid="appBar">
         <Toolbar>
-          <IconButton
-            data-testid="menuButton"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{
-              marginRight: 5,
-              color: PRIMARY_MILK,
-              ...(open && {display: 'none'}),
-            }}>
-            <MenuIcon />
-          </IconButton>
+          {innerWidthRef.current > 800 && (
+            <IconButton
+              data-testid="menuButton"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              sx={{
+                marginRight: 5,
+                color: PRIMARY_MILK,
+                ...(open && {display: 'none'}),
+              }}>
+              <MenuIcon />
+            </IconButton>
+          )}
           <HeaderSignedIn authType={AuthEnum.galleries} />
         </Toolbar>
       </AppBar>
@@ -175,10 +172,10 @@ function MiniDrawer() {
           <ListItem key="Gallery" disablePadding>
             <ListItemButton
               data-testid="gallery-navigation-profile-button"
+              className="gallery-navigation-profile"
               sx={sideNavigationStyles.listItemButton}
-              disabled={!hasToken}
               onClick={() => {
-                router.push(`/${navTo}/Profile`);
+                router.push(`/Galleries/Profile`);
               }}>
               <ListItemIcon sx={sideNavigationStyles.listItemIcon}>
                 <AccountCircleIcon />
@@ -193,9 +190,9 @@ function MiniDrawer() {
             <ListItemButton
               data-testid="gallery-navigation-exhibitions-button"
               sx={sideNavigationStyles.listItemButton}
-              disabled={!hasToken}
+              className="gallery-navigation-exhibitions"
               onClick={() => {
-                router.push(`/${navTo}/Exhibitions`);
+                router.push(`/Galleries/Exhibitions`);
               }}>
               <ListItemIcon sx={sideNavigationStyles.listItemIcon}>
                 <WorkspacesIcon />
@@ -209,10 +206,10 @@ function MiniDrawer() {
           <ListItem key="Artwork" disablePadding>
             <ListItemButton
               data-testid="gallery-navigation-artwork-button"
+              className="gallery-navigation-artwork"
               sx={sideNavigationStyles.listItemButton}
-              disabled={!hasToken}
               onClick={() => {
-                router.push(`/${navTo}/Artwork`);
+                router.push(`/Galleries/Artwork`);
               }}>
               <ListItemIcon sx={sideNavigationStyles.listItemIcon}>
                 <ArtTrackIcon />

@@ -108,6 +108,7 @@ export function DartaPhoneNumber({
         <Controller
           control={control}
           name={fieldName}
+          key={fieldName}
           {...register(`${fieldName}.${'value'}`)}
           render={({field}) => (
             <TextField

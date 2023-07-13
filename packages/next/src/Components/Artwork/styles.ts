@@ -4,14 +4,17 @@ export const createArtworkStyles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    width: '100%',
+    width: '95%',
     border: '1px solid #eaeaea',
     alignSelf: 'center',
     borderRadius: '0.5vw',
     gap: '2vh',
     alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
     '@media (min-width: 800px)': {
-      width: '80vw',
+      width: '95%',
+      gap: '5vh',
     },
   },
   backButton: {
@@ -26,21 +29,34 @@ export const createArtworkStyles = {
     alignContent: 'center',
     alignItems: 'center',
     minWidth: '50%',
-    my: 2,
     '@media (min-width: 700px)': {
-      width: '85vw',
+      width: '100%',
       flexDirection: 'row',
     },
   },
+  dimensionsAndPricingContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    alignContent: 'center',
+    alignItems: 'center',
+    width: '90%',
+    gap: '2rem',
+    height: '100%',
+    '@media (min-width: 780px)': {
+      maxWidth: '90%',
+    },
+  },
   artworkDetailsContainer: {
-    maxWidth: '100%',
+    width: '80%',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     height: '100%',
     gap: '2rem',
+    justifyContent: 'center',
     '@media (min-width: 780px)': {
-      maxWidth: '50%',
+      maxWidth: '90%',
     },
   },
   inputTextContainer: {
@@ -60,6 +76,18 @@ export const createArtworkStyles = {
     minHeight: '100%',
     '@media (min-width: 780px)': {
       minHeight: '45vh',
+    },
+  },
+  imageContainerExhibitions: {
+    alignSelf: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+    maxWidth: '40vw',
+    minHeight: '100%',
+    '@media (min-width: 780px)': {
+      minHeight: '30vh',
     },
   },
   defaultImageEdit: {
@@ -84,8 +112,11 @@ export const createArtworkStyles = {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    textAlign: 'center',
     width: '90%',
+    m: 2,
   },
+
   saveButtonContainer: {
     alignSelf: 'center',
     m: 2,
@@ -95,12 +126,12 @@ export const createArtworkStyles = {
     justifyContent: 'space-between',
   },
   multiLineContainer: {
-    my: 2,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     minHeight: '10vh',
-    width: '90%',
+    height: '100%',
+    width: '100%',
     '@media (max-width: 780px)': {
       flexDirection: 'column',
     },

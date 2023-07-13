@@ -1,6 +1,6 @@
 import 'firebase/compat/auth';
 
-import {Box, Button, Typography} from '@mui/material';
+import {Box, Button, Divider, Typography} from '@mui/material';
 import _ from 'lodash';
 import {GetStaticProps} from 'next';
 import Head from 'next/head';
@@ -21,7 +21,7 @@ import {AuthContext} from '../_app';
 // need a function that gets all artworks
 // need a function that gets all inquiries for art
 
-const getGalleryLocations = (state: GalleryState): string[] => {
+export const getGalleryLocations = (state: GalleryState): string[] => {
   const galleryLocations = [];
 
   if (state?.galleryProfile?.galleryLocation0?.locationString?.value) {
@@ -87,6 +87,7 @@ function GalleryExhibitions() {
   const addNewExhibition = () => {
     const newExhibition: Exhibition = _.cloneDeep(newExhibitionShell);
     newExhibition.exhibitionId = crypto.randomUUID();
+    newExhibition.createdAt = new Date().toISOString();
     dispatch({
       type: GalleryReducerActions.SAVE_EXHIBITION,
       payload: newExhibition,
@@ -114,6 +115,10 @@ function GalleryExhibitions() {
       type: GalleryReducerActions.SAVE_EXHIBITION,
       payload: exhibition,
       exhibitionId,
+    });
+    dispatch({
+      type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
+      payload: exhibition.artworks as any,
     });
   };
 
@@ -149,17 +154,23 @@ function GalleryExhibitions() {
             sx={galleryStyles.createNewButton}>
             Create Exhibition
           </Button>
+          <Divider variant="middle" style={galleryStyles.divider} flexItem>
+            Filters
+          </Divider>
           {state.galleryExhibitions &&
-            Object.values(state.galleryExhibitions).map((exhibition: any) => (
-              <Box>
-                <ExhibitionCard
-                  exhibition={exhibition}
-                  saveExhibition={saveExhibition}
-                  galleryLocations={galleryLocations}
-                  deleteExhibition={deleteExhibition}
-                />
-              </Box>
-            ))}
+            Object.values(state.galleryExhibitions).map(
+              (exhibition: Exhibition) => (
+                <Box key={exhibition.exhibitionId}>
+                  <ExhibitionCard
+                    exhibition={exhibition}
+                    saveExhibition={saveExhibition}
+                    galleryLocations={galleryLocations}
+                    deleteExhibition={deleteExhibition}
+                    exhibitionId={exhibition?.exhibitionId}
+                  />
+                </Box>
+              ),
+            )}
         </Box>
       </SideNavigationWrapper>
     </>

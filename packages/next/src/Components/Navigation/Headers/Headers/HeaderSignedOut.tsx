@@ -30,8 +30,6 @@ export function HeaderSignedOut({authType}: {authType: AuthEnum}) {
       </Button>
       <div />
       <div />
-      <div />
-      <div />
       <Box data-testid="header-navigation-image-box">
         <Image
           src="/static/images/dartahouseblue.png"

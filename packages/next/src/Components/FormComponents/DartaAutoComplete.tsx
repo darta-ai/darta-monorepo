@@ -107,6 +107,7 @@ export function DartaAutoComplete({
       </Box>
       <Box>
         <Controller
+          key={fieldName}
           control={control}
           name={`${fieldName}.${'value'}`}
           render={({field}) => (
@@ -115,7 +116,7 @@ export function DartaAutoComplete({
               id="autocomplete"
               inputValue={field.value}
               options={inputOptions}
-              sx={formStyles.formTextField}
+              sx={formStyles.autoComplete}
               {...register(`${fieldName}.${'value'}`)}
               onInputChange={(event, newValue) => {
                 field.onChange(newValue);
@@ -125,6 +126,7 @@ export function DartaAutoComplete({
               renderInput={params => (
                 <TextField
                   {...(params as any)}
+                  key={params.id}
                   label={label}
                   error={!!errors[fieldName]}
                   variant="outlined"

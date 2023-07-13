@@ -14,6 +14,10 @@ import {AuthContext} from '../../../pages/_app';
 
 type Action =
   | {type: 'SET_ARTWORKS'; payload: ArtworkObject}
+  | {
+      type: 'SAVE_NEW_ARTWORKS_FROM_EXHIBITION';
+      payload: ArtworkObject;
+    }
   | {type: 'SET_PROFILE'; payload: IGalleryProfileData}
   | {type: 'SET_EXHIBITIONS'; payload: ExhibitionObject}
   | {type: 'SAVE_EXHIBITION'; payload: Exhibition; exhibitionId: string}
@@ -30,6 +34,7 @@ const initialState: GalleryState = {
 
 export enum GalleryReducerActions {
   SET_ARTWORKS = 'SET_ARTWORKS',
+  SAVE_NEW_ARTWORKS = 'SAVE_NEW_ARTWORKS_FROM_EXHIBITION',
   SET_PROFILE = 'SET_PROFILE',
   SET_EXHIBITIONS = 'SET_EXHIBITIONS',
   SAVE_EXHIBITION = 'SAVE_EXHIBITION',
@@ -50,6 +55,19 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
           galleryArtworks: {
             ...state.galleryArtworks,
             ...action.payload,
+          },
+        };
+      } else {
+        return state;
+      }
+    case GalleryReducerActions.SAVE_NEW_ARTWORKS:
+      const payloadArtworks = action.payload;
+      if (payloadArtworks) {
+        return {
+          ...state,
+          galleryArtworks: {
+            ...state.galleryArtworks,
+            ...payloadArtworks,
           },
         };
       } else {

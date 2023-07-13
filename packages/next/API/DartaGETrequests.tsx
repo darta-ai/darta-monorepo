@@ -17,10 +17,14 @@ export const retrieveAllGalleryData = (accessToken: string): GalleryState => {
   // NEED ENDPOINTS HERE
 
   return {
-    galleryProfile: {...soteGalleryProfile},
-    galleryArtworks: {...preloadArtwork},
+    galleryProfile: {
+      // ...soteGalleryProfile
+    },
+    galleryArtworks: {
+      // ...preloadArtwork
+    },
     galleryExhibitions: {
-      '02003454-b638-44a6-bb38-d418d8390729': dummyExhibition,
+      // '02003454-b638-44a6-bb38-d418d8390729': dummyExhibition,
     },
     accessToken,
   };
@@ -32,7 +36,9 @@ export const retrieveGalleryArtworks = (
   // NEED ENDPOINTS HERE
 
   return {
-    galleryArtworks: {...preloadArtwork},
+    galleryArtworks: {
+      // ...preloadArtwork
+    },
     accessToken,
   };
 };
@@ -55,7 +61,7 @@ export const retrieveGalleryExhibitions = (
 
   return {
     galleryExhibitions: {
-      '02003454-b638-44a6-bb38-d418d8390729': dummyExhibition,
+      // '02003454-b638-44a6-bb38-d418d8390729': dummyExhibition,
     },
     accessToken,
   };

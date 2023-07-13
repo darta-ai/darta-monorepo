@@ -2,14 +2,47 @@ import {PRIMARY_BLUE, PRIMARY_GREY} from '../../../styles';
 
 export const formStyles = {
   inputTextContainer: {
-    display: 'grid',
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: '50%',
+    gap: '1vw',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
     width: '100%',
-    gridTemplateColumns: '1.5fr 8fr 0.5fr',
+    '@media (min-width: 780px)': {
+      display: 'grid',
+      width: '100%',
+      gridTemplateColumns: '1.5fr 8fr 0.5fr',
+    },
+  },
+  underHeadingContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: '1vw',
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    mx: 2,
+    justifyContent: 'center',
+  },
+  dropDownContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
+    gridTemplateColumns: '1fr',
+    '@media (min-width: 780px)': {
+      display: 'grid',
+      gridTemplateColumns: '1.5fr 8fr 0.5fr',
+    },
   },
   toolTipContainer: {
-    display: 'grid',
-    placeItems: 'center',
-    gridTemplateColumns: '1fr 1.5fr',
+    display: 'flex',
+    flexDirection: 'row',
+    alignSelf: 'center',
+    alignItems: 'center',
   },
   helpIcon: {
     color: PRIMARY_GREY,
@@ -19,9 +52,11 @@ export const formStyles = {
     },
   },
   formTextField: {
-    width: '100%',
+    width: '90%',
     margin: 2,
     fontSize: '2rem',
+    alignItems: 'center',
+    alignSelf: 'center',
   },
   helpIconTiny: {
     color: PRIMARY_GREY,
@@ -41,6 +76,13 @@ export const formStyles = {
     fontSize: 15,
   },
   toolTip: {
+    fontSize: 10,
+    textAlign: 'center',
+    '@media (min-width: 800px)': {
+      fontSize: 15,
+    },
+  },
+  rawToolTip: {
     fontSize: 10,
     textAlign: 'center',
     '@media (min-width: 800px)': {
@@ -67,13 +109,39 @@ export const formStyles = {
   datePicker: {
     width: '60vw',
     '@media (min-width: 800px)': {
-      width: '25vw',
+      width: '20vw',
+    },
+  },
+  dropDownTextContainer: {
+    width: '100%',
+    alignSelf: 'center',
+    '@media (min-width: 800px)': {
+      width: '100%',
+    },
+  },
+  autocompleteTextContainer: {
+    width: '100%',
+    my: 2,
+    '@media (min-width: 750px)': {
+      width: 'auto',
     },
   },
   dropDown: {
     width: '60vw',
     '@media (min-width: 800px)': {
-      width: '60vw',
+      width: '50vw',
+    },
+  },
+  autoComplete: {
+    width: '60vw',
+    my: 2,
+    '@media (min-width: 800px)': {
+      width: 'auto',
+    },
+  },
+  hiddenOnMobile: {
+    '@media (max-width: 780px)': {
+      display: 'none',
     },
   },
 };

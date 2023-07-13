@@ -1,5 +1,48 @@
 import {Artwork, Dimensions} from '../../globalTypes';
 
+function fractionToDecimal(str: string) {
+  if (!str) return null;
+  if (!str.includes('/')) return str;
+  const parts = str.split(' ');
+
+  let i = 0;
+  while (parts[i] === '') {
+    i++;
+  }
+  const wholeNumber = parts[i];
+  const fraction = parts[i + 1];
+
+  if (fraction) {
+    const [numerator, denominator] = fraction.split('/');
+    const decimal = parseInt(numerator) / parseInt(denominator);
+    return (parseFloat(wholeNumber) + decimal).toString();
+  } else {
+    return wholeNumber;
+  }
+}
+
+export const createDimensionsString = ({
+  depthIn,
+  depthCm,
+  widthIn,
+  heightIn,
+  widthCm,
+  heightCm,
+}: {
+  depthIn: string;
+  depthCm: string;
+  widthIn: string;
+  heightIn: string;
+  widthCm: string;
+  heightCm: string;
+}) => {
+  if (Number(depthIn) && Number(depthCm)) {
+    return `${heightIn} x ${widthIn} x ${depthIn}in; ${heightCm} x ${widthCm} x ${depthCm}cm`;
+  } else {
+    return `${heightIn} x ${widthIn}in; ${heightCm} x ${widthCm}cm`;
+  }
+};
+
 const parseBusinessHours = (
   exampleArray: {
     close: {day: number; time: string; hours: number; minutes: number};
@@ -76,17 +119,60 @@ type ReturnArtworkObject = {
 
 const parseDimensions = (dimensions: string): Dimensions => {
   const removedSlashR = dimensions.replace(/\r/g, '');
-  const matches = removedSlashR.match(
-    /((\d+\s)?(\d+\/\d+)?\s*x\s*(\d+\s)?(\d+\/\d+)?) in\s*;\s*((\d+(\.\d+)?) x (\d+(\.\d+)?)) cm/,
-  );
-  if (matches) {
+  const slicedArray = removedSlashR.split(';');
+  const inches = slicedArray[0].replace('in', '');
+  const cms = slicedArray[1].replace('cm', '');
+  const slicedInches = inches.split('x');
+  const slicedCm = cms.split('x');
+  const heightIn = fractionToDecimal(slicedInches[0])!;
+  const widthIn = fractionToDecimal(slicedInches[1])!;
+  const depthIn = fractionToDecimal(slicedInches[2])!;
+  const heightCm = fractionToDecimal(slicedCm[0])!;
+  const widthCm = fractionToDecimal(slicedCm[1])!;
+  const depthCm = fractionToDecimal(slicedCm[2])!;
+
+  const stringPayload = {
+    depthIn,
+    depthCm,
+    widthIn,
+    heightIn,
+    widthCm,
+    heightCm,
+  };
+
+  const text = createDimensionsString(stringPayload);
+
+  if (slicedInches && slicedCm) {
     return {
-      heightIn: {value: matches[1]},
-      widthIn: {value: matches[3]},
+      heightIn: {value: heightIn},
+      widthIn: {value: widthIn},
+      depthIn: {value: depthIn ?? 0},
+      displayUnit: {value: 'in'},
+      text: {value: text},
+      heightCm: {value: heightCm},
+      widthCm: {value: widthCm},
+      depthCm: {value: depthCm ?? 0},
+    };
+  } else if (slicedInches) {
+    return {
+      heightIn: {value: heightIn},
+      widthIn: {value: widthIn},
+      depthIn: {value: depthIn ?? 0},
+      displayUnit: {value: 'in'},
+      text: {value: text},
+      heightCm: {value: ''},
+      widthCm: {value: ''},
+      depthCm: {value: ''},
+    };
+  } else if (slicedCm) {
+    return {
+      heightIn: {value: ''},
+      widthIn: {value: ''},
       displayUnit: {value: 'cm'},
-      text: {value: removedSlashR},
-      heightCm: {value: matches[8]},
-      widthCm: {value: matches[10]},
+      text: {value: text},
+      heightCm: {value: heightCm},
+      widthCm: {value: widthCm},
+      depthCm: {value: depthCm ?? 0},
     };
   } else {
     return {
@@ -118,6 +204,7 @@ export const parseExcelArtworkData = (
       canInquire: {value: 'Yes'},
       artworkDimensions: parseDimensions(item?.Dimensions),
       artworkPrice: {value: item?.Price, isPrivate: false},
+      artworkCurrency: {value: 'USD'},
       artworkCreatedYear: {value: item?.Year},
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

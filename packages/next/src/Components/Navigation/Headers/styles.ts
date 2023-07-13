@@ -49,4 +49,20 @@ export const headerStyles = {
       fontSize: '1rem',
     },
   },
+  imageBoxContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignImages: 'center',
+    justifyContent: 'space-between',
+    width: '40vw',
+    '@media (min-width:750px)': {
+      width: '18vw',
+    },
+  },
+  imageBox: {
+    height: '6vh',
+  },
+  dartaImageBox: {
+    height: '6vh',
+  },
 };
