@@ -64,88 +64,96 @@ export function ArtworkCard({
       sx={cardStyles.root}
       data-testid="artwork-card"
       className="artwork-card">
-      <Box
-        sx={{
-          ...cardStyles.cardContainer,
-          borderColor: displayRed ? 'orange' : null,
-          borderWidth: displayRed ? '0.2vh' : null,
-        }}>
-        <Box sx={{width: '25vw', m: 1}}>
-          <Box
-            onClick={handleExpandClick}
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              maxHeight: '15vh',
-              minWidth: '25vw',
-              alignItems: 'center',
-              justifyContent: 'center',
-              alignContent: 'center',
-            }}
-            data-testid="artwork-card-image">
-            <Box
-              component="img"
-              src={artwork?.artworkImage?.value as string}
-              alt={artwork?.artworkTitle?.value as string}
-              style={cardStyles.media}
-            />
-          </Box>
-        </Box>
-        <Box sx={cardStyles.informationContainer}>
-          <CardContent>
-            <Typography
-              variant="h5"
-              component="h2"
-              data-testid="artwork-card-artist-name"
-              sx={{textOverflow: 'ellipsis'}}>
-              {artwork?.artistName?.value}
-            </Typography>
-            <Typography
-              data-testid="artwork-card-artwork-title"
-              variant="h6"
-              color="textSecondary">
-              {artwork?.artworkTitle?.value}
-            </Typography>
-            <Typography
-              paragraph
-              data-testid="artwork-card-medium"
-              color="textSecondary">
-              Medium: {artwork?.artworkMedium?.value}
-            </Typography>
-          </CardContent>
-        </Box>
-        <Box sx={cardStyles.informationContainer}>
-          <CardContent sx={{alignSelf: 'center', width: '35vw'}}>
-            {artwork?.artworkPrice?.value && (
-              <Typography paragraph data-testid="artwork-card-price">
-                Price:{' '}
-                {artwork?.artworkCurrency?.value &&
-                  currencyConverter[artwork.artworkCurrency.value]}
-                {
-                  Number(
-                    artwork?.artworkPrice?.value,
-                  ).toLocaleString() as string
-                }
-              </Typography>
-            )}
-            <Typography paragraph data-testid="artwork-card-can-inquire">
-              Can Inquire: {artwork?.canInquire?.value}
-            </Typography>
-            <Typography data-testid="artwork-card-dimensions">
-              Dimensions: {artwork?.artworkDimensions?.text?.value}
-            </Typography>
-          </CardContent>
-        </Box>
-      </Box>
-      <Box>
-        {displayRed && (
+      {displayRed ? (
+        <Box
+          sx={{
+            ...cardStyles.cardContainer,
+            borderColor: 'orange',
+            borderWidth: '0.2vh',
+            justifyContent: 'center',
+          }}>
           <Typography
             data-testid="artwork-card-additional-information-warning"
             sx={{textAlign: 'center', color: 'red', fontWeight: 'bold'}}>
             Additional Information Required. Please Edit.
           </Typography>
-        )}
-      </Box>
+        </Box>
+      ) : (
+        <Box sx={cardStyles.cardContainer}>
+          <Box sx={{width: '25vw', m: 1}}>
+            <Box
+              onClick={handleExpandClick}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                maxHeight: '15vh',
+                minWidth: '25vw',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignContent: 'center',
+              }}
+              data-testid="artwork-card-image">
+              <Box
+                component="img"
+                src={artwork?.artworkImage?.value as string}
+                alt={artwork?.artworkTitle?.value as string}
+                style={cardStyles.media}
+              />
+            </Box>
+          </Box>
+
+          <Box sx={cardStyles.informationContainer}>
+            <CardContent>
+              <Typography
+                variant="h5"
+                component="h2"
+                data-testid="artwork-card-artist-name"
+                sx={{textOverflow: 'ellipsis'}}>
+                {artwork?.artistName?.value}
+              </Typography>
+              <Typography
+                data-testid="artwork-card-artwork-title"
+                variant="h6"
+                color="textSecondary">
+                {artwork?.artworkTitle?.value}
+              </Typography>
+              <Typography
+                paragraph
+                data-testid="artwork-card-medium"
+                color="textSecondary">
+                Medium: {artwork?.artworkMedium?.value}
+              </Typography>
+            </CardContent>
+          </Box>
+
+          <Box sx={cardStyles.informationContainer}>
+            <CardContent sx={{alignSelf: 'center', width: '35vw'}}>
+              {artwork?.artworkPrice?.value && (
+                <Typography paragraph data-testid="artwork-card-price">
+                  Price:{' '}
+                  {artwork?.artworkCurrency?.value &&
+                    currencyConverter[artwork.artworkCurrency.value]}
+                  {
+                    Number(
+                      artwork?.artworkPrice?.value,
+                    ).toLocaleString() as string
+                  }
+                </Typography>
+              )}
+              {artwork?.canInquire?.value && (
+                <Typography paragraph data-testid="artwork-card-can-inquire">
+                  Can Inquire: {artwork?.canInquire?.value}
+                </Typography>
+              )}
+              {artwork?.canInquire?.value && (
+                <Typography data-testid="artwork-card-dimensions">
+                  Dimensions: {artwork?.artworkDimensions?.text?.value}
+                </Typography>
+              )}
+            </CardContent>
+          </Box>
+        </Box>
+      )}
       <Box>
         <Button
           variant="contained"

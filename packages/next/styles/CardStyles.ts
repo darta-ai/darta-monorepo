@@ -10,13 +10,16 @@ export const cardStyles = {
     margin: 'auto',
     border: '1px solid darkgrey',
     backgroundColor: PRIMARY_DARK_MILK,
+    '@media (min-width: 800px)': {
+      width: '75vw',
+    },
   },
   exhibitionRoot: {
     alignItems: 'center',
     flexDirection: 'column',
     display: 'flex',
     minHeight: '20vh',
-    width: '75vw',
+    width: '85vw',
     margin: 'auto',
     border: '1px solid darkgrey',
     backgroundColor: PRIMARY_DARK_MILK,

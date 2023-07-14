@@ -1,5 +1,5 @@
 import React from 'react';
-import Joyride, {ACTIONS, EVENTS, STATUS, Step} from 'react-joyride';
+import Joyride, {ACTIONS, EVENTS, STATUS} from 'react-joyride';
 
 import {PRIMARY_BLUE} from '../../../styles/index';
 

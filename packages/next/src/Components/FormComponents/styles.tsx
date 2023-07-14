@@ -5,16 +5,38 @@ export const formStyles = {
     display: 'flex',
     flexDirection: 'column',
     minWidth: '50%',
-    gap: '1vw',
+    gap: '4vw',
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
     '@media (min-width: 780px)': {
       display: 'grid',
       width: '100%',
-      gridTemplateColumns: '1.5fr 8fr 0.5fr',
+      height: '15vh',
+      gridTemplateColumns: '5vw 5vw 1fr',
     },
+  },
+  inputTextContainerTwoColumns: {
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: '50%',
+    gap: '2vw',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '@media (min-width: 780px)': {
+      display: 'grid',
+      minHeight: '15vh',
+      minWidth: '100%',
+      gridTemplateColumns: '10vw 2fr',
+    },
+  },
+  dartaLocationContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '55vh',
+    justifyContent: 'center',
+    alignContent: 'center',
   },
   underHeadingContainer: {
     display: 'flex',
@@ -52,11 +74,16 @@ export const formStyles = {
     },
   },
   formTextField: {
-    width: '90%',
-    margin: 2,
+    width: '60vw',
+
     fontSize: '2rem',
+    display: 'flex',
+    justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
+    '@media (min-width: 800px)': {
+      width: '100%',
+    },
   },
   helpIconTiny: {
     color: PRIMARY_GREY,
@@ -65,11 +92,23 @@ export const formStyles = {
       height: '15px',
     },
   },
-  makePrivateContainer: {
+  makePrivateContainerMobile: {
+    display: 'none',
+    flexDirection: 'column',
+    placeItems: 'center',
+    gridTemplateColumns: '1fr 1fr',
+    '@media (min-width: 800px)': {
+      display: 'flex',
+    },
+  },
+  makePrivateContainerDesktop: {
     display: 'flex',
     flexDirection: 'column',
     placeItems: 'center',
     gridTemplateColumns: '1fr 1fr',
+    '@media (min-width: 800px)': {
+      display: 'none',
+    },
   },
   makePrivate: {
     color: PRIMARY_BLUE,
@@ -96,7 +135,7 @@ export const formStyles = {
       gridTemplateColumns: 'repeat(7, 1fr)',
       gridTemplateRows: 'repeat(1, 1fr)',
     },
-    gridTemplateColumns: 'repeat(2, 1fr)',
+    gridTemplateColumns: 'repeat(1, 1fr)',
     gridTemplateRows: 'repeat(3, 1fr)',
   },
   hoursOfOperationInputContainer: {

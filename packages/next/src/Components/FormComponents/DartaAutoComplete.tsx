@@ -1,22 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
 
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import {
-  Box,
-  FormControlLabel,
-  IconButton,
-  InputAdornment,
-  Switch,
-  TextField,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import {Box, TextField, Typography} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import * as React from 'react';
 import {Controller} from 'react-hook-form';
 
-import {PRIMARY_DARK_GREY} from '../../../styles';
 import {PrivateFields} from '../Profile/types';
+import {DartaInputAdornment, DartaPrivateFieldHelper} from './Components';
 import {formStyles} from './styles';
 
 export function DartaAutoComplete({
@@ -76,35 +66,33 @@ export function DartaAutoComplete({
   };
   const testIdValue = fieldName.replace('.', '-');
   return (
-    <Box sx={formStyles.inputTextContainer}>
-      <Box sx={formStyles.toolTipContainer}>
-        {innerWidthRef.current > 780 && (
-          <Tooltip
-            title={
-              <Typography
-                sx={{textAlign: 'center'}}
-                data-testid={`${testIdValue}-tooltip-text`}>
-                {toolTips[fieldName]}
-              </Typography>
-            }
-            placement="top">
-            <IconButton>
-              <HelpOutlineIcon
-                data-testid={`${testIdValue}-tooltip-button`}
-                fontSize="medium"
-                sx={formStyles.helpIcon}
-              />
-            </IconButton>
-          </Tooltip>
-        )}
-        <InputAdornment
-          data-testid={`${testIdValue}-input-adornment-string`}
-          sx={{overflowX: 'clip'}}
-          position="end">
-          {inputAdornmentString}
-          {required && '*'}
-        </InputAdornment>
-      </Box>
+    <Box
+      sx={
+        allowPrivate
+          ? formStyles.inputTextContainer
+          : formStyles.inputTextContainerTwoColumns
+      }>
+      {' '}
+      <DartaInputAdornment
+        fieldName={fieldName}
+        required={required}
+        inputAdornmentString={inputAdornmentString}
+        toolTips={toolTips}
+        testIdValue={testIdValue}
+      />
+      {allowPrivate && (
+        <DartaPrivateFieldHelper
+          fieldName={fieldName}
+          data={data}
+          register={register}
+          control={control}
+          allowPrivate={allowPrivate}
+          isPrivate={isPrivate}
+          testIdValue={testIdValue}
+          setIsPrivate={setIsPrivate}
+          switchStringValue="isPrivate"
+        />
+      )}
       <Box>
         <Controller
           key={fieldName}
@@ -116,22 +104,23 @@ export function DartaAutoComplete({
               id="autocomplete"
               inputValue={field.value}
               options={inputOptions}
-              sx={formStyles.autoComplete}
-              {...register(`${fieldName}.${'value'}`)}
               onInputChange={(event, newValue) => {
                 field.onChange(newValue);
                 handleInputChange(event, newValue);
               }}
               onBlur={handleAddNewOption}
               renderInput={params => (
-                <TextField
-                  {...(params as any)}
-                  key={params.id}
-                  label={label}
-                  error={!!errors[fieldName]}
-                  variant="outlined"
-                  data-testid={`${fieldName}-input-field`}
-                />
+                <Box sx={formStyles.formTextField}>
+                  <TextField
+                    {...(params as any)}
+                    key={params.id}
+                    label={label}
+                    {...register(`${fieldName}.${'value'}`)}
+                    error={!!errors[fieldName]}
+                    variant="outlined"
+                    data-testid={`${fieldName}-input-field`}
+                  />
+                </Box>
               )}
             />
           )}
@@ -144,85 +133,6 @@ export function DartaAutoComplete({
           </Typography>
         )}
       </Box>
-
-      {allowPrivate && (
-        <InputAdornment
-          sx={{width: '10vw', alignSelf: 'center'}}
-          position="end">
-          <Controller
-            control={control}
-            sx={{alignSelf: 'flex-start'}}
-            name={fieldName}
-            {...register(`${fieldName}.${'isPrivate'}`)}
-            render={({field}: {field: any}) => {
-              return (
-                <FormControlLabel
-                  labelPlacement="bottom"
-                  label={
-                    innerWidthRef.current > 780 ? (
-                      <Box sx={formStyles.makePrivateContainer}>
-                        <Typography
-                          sx={formStyles.toolTip}
-                          data-testid={`${testIdValue}-privacy-display`}>
-                          {isPrivate ? 'Private' : 'Public'}
-                        </Typography>
-                        <Tooltip
-                          title={
-                            <>
-                              <Typography
-                                sx={{textAlign: 'center', fontSize: 15}}>
-                                {isPrivate
-                                  ? 'Private information is only visible to you and is not displayed on the app.'
-                                  : 'Public information is available to any user.'}
-                              </Typography>
-                              <IconButton>
-                                <HelpOutlineIcon
-                                  fontSize="small"
-                                  sx={formStyles.helpIconTiny}
-                                />
-                              </IconButton>
-                            </>
-                          }
-                          placement="bottom">
-                          <IconButton>
-                            <HelpOutlineIcon
-                              fontSize="small"
-                              sx={formStyles.helpIconTiny}
-                            />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-                    ) : (
-                      <Box sx={formStyles.makePrivateContainer}>
-                        <Typography sx={formStyles.toolTip}>
-                          {isPrivate ? 'Private' : 'Public'}
-                        </Typography>
-                      </Box>
-                    )
-                  }
-                  control={
-                    <Switch
-                      color="secondary"
-                      value={data?.isPrivate}
-                      id="isPrivate"
-                      size="small"
-                      onChange={e => field.onChange(e.target.checked)}
-                      checked={field.value}
-                      onClick={() => {
-                        setIsPrivate(!isPrivate);
-                      }}
-                    />
-                  }
-                  sx={{
-                    width: '10vw',
-                    color: PRIMARY_DARK_GREY,
-                  }}
-                />
-              );
-            }}
-          />
-        </InputAdornment>
-      )}
     </Box>
   );
 }

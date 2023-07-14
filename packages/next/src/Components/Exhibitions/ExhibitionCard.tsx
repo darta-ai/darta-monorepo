@@ -117,17 +117,26 @@ export function ExhibitionCard({
       exhibition?.exhibitionLocation?.exhibitionLocationString?.value,
     ];
   } else {
-    locations = ['no location'];
+    locations = ['edit profile to add gallery locations'];
   }
   return (
-    <Box>
-      <Card sx={cardStyles.exhibitionRoot} data-testid="exhibition-card">
+    <Card sx={cardStyles.root} data-testid="exhibition-card">
+      {displayRed ? (
         <Box
           sx={{
             ...cardStyles.cardContainer,
-            borderColor: displayRed ? 'orange' : null,
-            borderWidth: displayRed ? '0.2vh' : null,
+            borderColor: 'orange',
+            borderWidth: '0.2vh',
+            justifyContent: 'center',
           }}>
+          <Typography
+            data-testid="artwork-card-additional-information-warning"
+            sx={{textAlign: 'center', color: 'red', fontWeight: 'bold'}}>
+            Additional Information Required. Please Edit.
+          </Typography>
+        </Box>
+      ) : (
+        <Box sx={cardStyles.cardContainer}>
           <Box sx={{width: '35vw', m: 1}}>
             <Box
               onClick={handleExpandClick}
@@ -195,14 +204,14 @@ export function ExhibitionCard({
             </CardContent>
           </Box>
         </Box>
-        {displayRed && (
-          <Typography
-            data-testid="artwork-card-additional-information-warning"
-            sx={{textAlign: 'center', color: 'red', fontWeight: 'bold'}}>
-            Additional Information Required. Please Edit.
-          </Typography>
-        )}
-        <Box>
+      )}
+      <Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+          }}>
           <Button
             variant="contained"
             color={displayRed ? 'warning' : 'secondary'}
@@ -242,8 +251,7 @@ export function ExhibitionCard({
           saveExhibition={saveExhibition}
           exhibitionId={exhibitionId}
         />
-      </Card>
-      <Box />
-    </Box>
+      </Box>
+    </Card>
   );
 }

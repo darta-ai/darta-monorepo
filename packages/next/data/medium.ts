@@ -289,11 +289,6 @@ export const mediums: Medium[] = [
     value: 'Glazed stoneware',
   },
   {
-    label: 'Archival Inkject',
-    category: 'Photography',
-    value: 'Archival Inkject',
-  },
-  {
     label: 'Plaster, cotton',
     category: 'Sculpture',
     value: 'Plaster, cotton',
@@ -327,11 +322,6 @@ export const mediums: Medium[] = [
     label: 'Acrylic on fiberboard',
     category: 'Other',
     value: 'Acrylic on fiberboard',
-  },
-  {
-    label: 'Acrylic on fiberbord',
-    category: 'Other',
-    value: 'Acrylic on fiberbord',
   },
   {
     label: 'Cotton, felt, signage, acrylic',
@@ -437,9 +427,9 @@ export const mediums: Medium[] = [
     value: 'Charcoal on canvas',
   },
   {
-    label: 'Video stiil/digital inkjet',
+    label: 'Video still/digital inkjet',
     category: 'Photography',
-    value: 'Video stiil/digital inkjet',
+    value: 'Video still/digital inkjet',
   },
   {
     label: 'Stoneware, glaze, hardware',
@@ -792,7 +782,6 @@ export const mediums: Medium[] = [
     category: 'Sculpture',
     value: 'Painted bronze fountain',
   },
-  {label: 'Litografia', category: 'Print', value: 'Litografia'},
   {
     label: 'Oil and vinyl on canvas',
     category: 'Painting',
@@ -1065,11 +1054,6 @@ export const mediums: Medium[] = [
     label: 'Ink on Lana paper',
     category: 'Drawing, Collage or other Work on Paper',
     value: 'Ink on Lana paper',
-  },
-  {
-    label: 'Atchival pigment print',
-    category: 'Photography',
-    value: 'Atchival pigment print',
   },
   {
     label: 'Graphite on paper',

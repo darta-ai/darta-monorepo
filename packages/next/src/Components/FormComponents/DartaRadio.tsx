@@ -1,18 +1,15 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {
   Box,
   FormControlLabel,
-  IconButton,
-  InputAdornment,
   Radio,
   RadioGroup,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import * as React from 'react';
 import {Controller} from 'react-hook-form';
 
+import {DartaInputAdornment} from './Components';
 import {formStyles} from './styles';
 
 export function DartaRadioButtonsGroup({
@@ -42,34 +39,14 @@ export function DartaRadioButtonsGroup({
 
   return (
     <Box sx={formStyles.underHeadingContainer}>
-      <Box sx={formStyles.toolTipContainer}>
-        <Tooltip
-          title={
-            <Typography
-              sx={{textAlign: 'center'}}
-              data-testid={`${testIdValue}-tooltip-text`}>
-              {toolTips[fieldName]}
-            </Typography>
-          }
-          placement="top">
-          <IconButton>
-            <HelpOutlineIcon
-              data-testid={`${testIdValue}-tooltip-button`}
-              fontSize="medium"
-              sx={formStyles.helpIcon}
-            />
-          </IconButton>
-        </Tooltip>
-
-        <InputAdornment
-          data-testid={`${testIdValue}-input-adornment-string`}
-          sx={{overflowX: 'clip'}}
-          position="end">
-          {inputAdornmentString}
-          {required && '*'}
-        </InputAdornment>
-      </Box>
-      <Box>
+      <DartaInputAdornment
+        fieldName={fieldName}
+        required={required}
+        inputAdornmentString={inputAdornmentString}
+        toolTips={toolTips}
+        testIdValue={testIdValue}
+      />
+      <Box sx={{ml: 3}}>
         <Controller
           control={control}
           name={`${fieldName}.${'value'}`}
