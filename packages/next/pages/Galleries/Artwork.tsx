@@ -229,8 +229,8 @@ function GalleryArtwork() {
     searchBy: "Search by the artwork's title, artist, or medium.",
   };
 
-  const runJoyride = Object.keys(state?.galleryArtworks).length;
   const [stepIndex, setStepIndex] = React.useState(0);
+  const runJoyride = Object.keys(state?.galleryArtworks).length;
   const [run, setRun] = React.useState(runJoyride === 0);
 
   return (

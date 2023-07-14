@@ -1,12 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import {
-  Box,
-  IconButton,
-  InputAdornment,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
@@ -30,6 +24,7 @@ export function DartaDateTimePicker({
   setHigherLevelState,
   minTime,
   value,
+  error,
 }: {
   label: string;
   toolTips: ToolTip | any;
@@ -40,6 +35,7 @@ export function DartaDateTimePicker({
   minTime?: string | any;
   setHigherLevelState?: (arg0: string | null) => void;
   value: string | undefined | null;
+  error: boolean;
 }) {
   const testIdValue = fieldName.replace('.', '-');
   return (
@@ -82,6 +78,11 @@ export function DartaDateTimePicker({
                 views={['year', 'month', 'day', 'hours', 'minutes']}
                 disabled={canEdit}
                 value={dayjs(value)}
+                slotProps={{
+                  textField: {
+                    error,
+                  },
+                }}
                 onChange={(newValue: any) => {
                   const date = newValue.toDate();
                   field.onChange(date);
@@ -94,7 +95,6 @@ export function DartaDateTimePicker({
           )}
         />
       </Box>
-      <InputAdornment sx={{width: '5vw', alignSelf: 'center'}} position="end" />
     </>
   );
 }

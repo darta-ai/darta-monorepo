@@ -1,4 +1,4 @@
-import {PRIMARY_BLUE} from '../../../styles';
+import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 
 export const createArtworkStyles = {
   container: {
@@ -8,6 +8,7 @@ export const createArtworkStyles = {
     border: '1px solid #eaeaea',
     alignSelf: 'center',
     borderRadius: '0.5vw',
+    backgroundColor: PRIMARY_MILK,
     gap: '2vh',
     alignContent: 'center',
     justifyContent: 'center',
@@ -119,16 +120,17 @@ export const createArtworkStyles = {
 
   saveButtonContainer: {
     alignSelf: 'center',
-    m: 2,
+    alignContent: 'center',
     display: 'flex',
     gap: '2vw',
     width: '90%',
-    justifyContent: 'space-between',
+    mb: 2,
+    justifyContent: 'space-around',
   },
   multiLineContainer: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     minHeight: '10vh',
     height: '100%',
     width: '100%',

@@ -1,12 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import {
-  Box,
-  IconButton,
-  InputAdornment,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
@@ -30,6 +24,7 @@ export function DartaDatePicker({
   setHigherLevelState,
   minDate,
   value,
+  error,
 }: {
   label: string;
   toolTips: ToolTip | any;
@@ -40,6 +35,7 @@ export function DartaDatePicker({
   minDate?: string | any;
   setHigherLevelState?: (arg0: string | null) => void;
   value: string | undefined | null;
+  error: boolean;
 }) {
   const testIdValue = fieldName.replace('.', '-');
   return (
@@ -67,23 +63,29 @@ export function DartaDatePicker({
       </Box>
       <Box>
         <Controller
-          name={`${fieldName}.${'value'}`}
+          key={fieldName}
+          name={fieldName}
           control={control}
-          defaultValue={minDate}
           {...register(`${fieldName}.${'value'}`)}
           render={({field}) => (
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 {...field}
-                minDate={minDate}
-                views={['year', 'month', 'day']}
+                data-testid={`${testIdValue}-timePicker`}
                 sx={formStyles.datePicker}
                 label={label}
-                value={dayjs(value)}
+                minDate={dayjs(minDate) ?? dayjs()}
+                views={['year', 'month', 'day']}
                 disabled={canEdit}
-                data-testid={`${testIdValue}-datePicker`}
+                value={dayjs(value)}
+                slotProps={{
+                  textField: {
+                    error,
+                  },
+                }}
                 onChange={(newValue: any) => {
-                  field.onChange(newValue.toDate());
+                  const date = newValue.toDate();
+                  field.onChange(date);
                   if (setHigherLevelState) {
                     setHigherLevelState(newValue);
                   }
@@ -93,7 +95,6 @@ export function DartaDatePicker({
           )}
         />
       </Box>
-      <InputAdornment sx={{width: '5vw', alignSelf: 'center'}} position="end" />
     </>
   );
 }

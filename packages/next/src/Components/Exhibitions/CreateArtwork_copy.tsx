@@ -301,28 +301,26 @@ export function CreateExhibition({
       </Box>
       <Box sx={createArtworkStyles.imageContainer}>
         <Box style={createArtworkStyles.defaultImageEdit}>
-          <Box>
-            {editPressRelease ? (
-              <DartaImageInput
-                onDrop={handleDrop}
-                instructions="Drag and drop the main image of your exhibition here, or click to select an image to upload."
-              />
-            ) : (
-              <img
-                src={tempImage as string}
-                alt="exhibition"
-                style={createArtworkStyles.defaultImage}
-              />
-            )}
-            {errors.exhibitionPrimaryImage && (
-              <Typography
-                data-testid="exhibition-image-error"
-                variant="body2"
-                sx={{color: 'red', alignSelf: 'center', textAlign: 'center'}}>
-                {errors.exhibitionPrimaryImage.value?.message}
-              </Typography>
-            )}
-          </Box>
+          {editPressRelease ? (
+            <DartaImageInput
+              onDrop={handleDrop}
+              instructions="Drag and drop the main image of your exhibition here, or click to select an image to upload."
+            />
+          ) : (
+            <img
+              src={tempImage as string}
+              alt="exhibition"
+              style={createArtworkStyles.defaultImage}
+            />
+          )}
+          {errors.exhibitionPrimaryImage && (
+            <Typography
+              data-testid="exhibition-image-error"
+              variant="body2"
+              sx={{color: 'red', alignSelf: 'center', textAlign: 'center'}}>
+              {errors.exhibitionPrimaryImage.value?.message}
+            </Typography>
+          )}
         </Box>
         <Box sx={{alignSelf: 'center'}}>
           <Button
@@ -340,14 +338,14 @@ export function CreateExhibition({
       </Box>
       <Box sx={createArtworkStyles.inputTextContainer}>
         <Box
+          key="artwork"
           sx={{
             ...createArtworkStyles.inputText,
             flexDirection: 'column',
             justifyContent: 'space-around',
             textAlign: 'center',
-          }}
-          key="exhibition-data">
-          <Typography variant="h6" data-testid="exhibition-page-title">
+          }}>
+          <Typography variant="h6" data-testid="artwork-page-title">
             Exhibition
           </Typography>
         </Box>
@@ -383,94 +381,92 @@ export function CreateExhibition({
             inputAdornmentValue={null}
           />
         </Box>
-        <Box
-          key="location"
-          sx={{
-            ...createArtworkStyles.inputText,
-            flexDirection: 'column',
-            textAlign: 'center',
-          }}>
+        <Box key="location" sx={createArtworkStyles.inputText}>
           <Typography variant="h6">Location</Typography>
-          <Box sx={createArtworkStyles.multiLineContainer}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignContent: 'center',
-              }}>
-              <DartaSwitch
-                toolTips={exhibitionPressReleaseToolTip}
-                control={control}
-                register={register}
-                fieldName="exhibitionLocation.isPrivate"
-                inputAdornmentString="Location Visibility"
-                data={newExhibition.exhibitionLocation?.isPrivate}
-                switchState={keepLocationPrivate}
-                handleSwitchStateChange={setKeepLocationPrivate}
-                trueStatement="Private"
-                falseStatement="Public"
-              />
-            </Box>
-          </Box>
-          <Box key="price" sx={createArtworkStyles.inputText}>
-            <DartaDropdown
-              fieldName="exhibitionLocation.exhibitionLocationString"
-              register={register}
-              control={control}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              alignContent: 'center',
+            }}>
+            <DartaSwitch
               toolTips={exhibitionPressReleaseToolTip}
-              options={galleryLocations ?? ['edit profile to add locations']}
-              value={
-                getValues(
-                  'exhibitionLocation.exhibitionLocationString.value',
-                ) ??
-                newExhibition?.exhibitionLocation?.exhibitionLocationString
-                  ?.value
-              }
-              helperTextString={
-                errors.exhibitionLocation?.exhibitionLocationString?.value
-                  ?.message
-              }
+              control={control}
+              register={register}
+              fieldName="exhibitionLocation.isPrivate"
+              inputAdornmentString="Location Visibility"
+              data={newExhibition.exhibitionLocation?.isPrivate}
+              switchState={keepLocationPrivate}
+              handleSwitchStateChange={setKeepLocationPrivate}
+              trueStatement="Private"
+              falseStatement="Public"
             />
           </Box>
-        </Box>
-        <Box
-          key="location"
-          sx={{
-            ...createArtworkStyles.inputText,
-            flexDirection: 'column',
-            textAlign: 'center',
-          }}>
-          <Typography variant="h6">Exhibition Dates</Typography>
-          <Box sx={createArtworkStyles.multiLineContainer}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignContent: 'center',
-              }}>
-              <DartaRadioButtonsGroup
-                toolTips={exhibitionPressReleaseToolTip}
-                fieldName="exhibitionDates.exhibitionDuration"
-                inputAdornmentString="Duration"
+          <Box sx={createArtworkStyles.inputText}>
+            <Box>
+              <DartaDropdown
+                fieldName="exhibitionLocation.exhibitionLocationString"
+                register={register}
                 control={control}
-                required={false}
-                options={durationValues}
-                setHigherLevelState={handleOngoingDuration}
-                helperTextString=""
-                errors={errors}
+                toolTips={exhibitionPressReleaseToolTip}
+                options={galleryLocations ?? ['edit profile to add locations']}
                 value={
-                  getValues('exhibitionDates.exhibitionDuration.value') ||
-                  newExhibition?.exhibitionDates.exhibitionDuration
+                  getValues(
+                    'exhibitionLocation.exhibitionLocationString.value',
+                  ) ??
+                  newExhibition?.exhibitionLocation?.exhibitionLocationString
+                    ?.value
+                }
+                helperTextString={
+                  errors.exhibitionLocation?.exhibitionLocationString?.value
+                    ?.message
                 }
               />
             </Box>
           </Box>
-        </Box>
-        <Box sx={{...createArtworkStyles.inputText}}>
+          <Box
+            key="artworkDimensions"
+            sx={{
+              ...createArtworkStyles.inputText,
+              flexDirection: 'column',
+              textAlign: 'center',
+            }}>
+            <Typography data-testid="artwork-dimensions-heading" variant="h6">
+              Exhibition Dates
+            </Typography>
+          </Box>
+          <Box sx={createArtworkStyles.multiLineContainer}>
+            <Box
+              key="artworkDimensionsHeight"
+              sx={createArtworkStyles.inputText}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                }}>
+                <DartaRadioButtonsGroup
+                  toolTips={exhibitionPressReleaseToolTip}
+                  fieldName="exhibitionDates.exhibitionDuration"
+                  inputAdornmentString="Duration"
+                  control={control}
+                  required={false}
+                  options={durationValues}
+                  setHigherLevelState={handleOngoingDuration}
+                  helperTextString=""
+                  errors={errors}
+                  value={
+                    getValues('exhibitionDates.exhibitionDuration.value') ||
+                    newExhibition?.exhibitionDates.exhibitionDuration
+                  }
+                />
+              </Box>
+            </Box>
+          </Box>
           <Box sx={createArtworkStyles.multiLineContainer}>
             <Box key="exhibitionStartDate" sx={createArtworkStyles.inputText}>
               <DartaDatePicker
@@ -505,116 +501,110 @@ export function CreateExhibition({
                 error={!!errors?.exhibitionDates?.message}
               />
             </Box>
+            {errors?.exhibitionDates?.message && (
+              <Typography
+                data-testid="exhibitionDates-text-error-field"
+                sx={{color: 'red', textAlign: 'center'}}>
+                {errors?.exhibitionDates?.message}
+              </Typography>
+            )}
+          </Box>
+          <Box sx={createArtworkStyles.dimensionsAndPricingContainer}>
+            <Box key="dates" sx={createArtworkStyles.inputText}>
+              <Box sx={createArtworkStyles.inputTextContainer}>
+                <Typography variant="h6">Opening Reception</Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                  }}>
+                  <DartaRadioButtonsGroup
+                    toolTips={exhibitionPressReleaseToolTip}
+                    control={control}
+                    fieldName="receptionDates.hasReception"
+                    inputAdornmentString="Has Reception?"
+                    required={false}
+                    options={hasReceptionValues}
+                    setHigherLevelState={handleHasReception}
+                    helperTextString=""
+                    errors={errors}
+                    value={
+                      getValues('receptionDates.hasReception.value') ||
+                      newExhibition?.receptionDates?.hasReception?.value
+                    }
+                  />
+                </Box>
+              </Box>
+            </Box>
+            <Box sx={createArtworkStyles.multiLineContainer}>
+              <Box key="receptionTimeStart" sx={createArtworkStyles.inputText}>
+                <DartaDateTimePicker
+                  label="Reception Start"
+                  toolTips={exhibitionPressReleaseToolTip}
+                  control={control}
+                  register={register}
+                  fieldName="receptionDates.receptionStartTime"
+                  canEdit={!hasReception}
+                  setHigherLevelState={handleMinTime}
+                  minTime={dayjs(minDate)}
+                  error={!!errors?.receptionDates?.message}
+                  value={
+                    getValues('receptionDates.receptionStartTime.value') ||
+                    newExhibition?.receptionDates?.receptionStartTime?.value
+                  }
+                />
+              </Box>
+              <Box key="receptionTimeEnd" sx={createArtworkStyles.inputText}>
+                <DartaDateTimePicker
+                  label="Reception End"
+                  toolTips={exhibitionPressReleaseToolTip}
+                  control={control}
+                  register={register}
+                  fieldName="receptionDates.receptionEndTime"
+                  canEdit={!hasReception}
+                  minTime={dayjs(minTime)}
+                  error={!!errors?.receptionDates?.message}
+                  value={
+                    getValues('receptionDates.receptionEndTime.value') ||
+                    newExhibition?.receptionDates?.receptionEndTime?.value
+                  }
+                />
+              </Box>
+            </Box>
+            {errors?.receptionDates?.message && (
+              <Typography
+                data-testid="receptionDates-text-error-field"
+                sx={{color: 'red', textAlign: 'center'}}>
+                {errors?.receptionDates?.message}
+              </Typography>
+            )}
           </Box>
         </Box>
-        {errors?.exhibitionDates?.message && (
-          <Typography
-            data-testid="exhibitionDates-text-error-field"
-            sx={{color: 'red', textAlign: 'center'}}>
-            {errors?.exhibitionDates?.message}
-          </Typography>
-        )}
-        <Box
-          key="location"
-          sx={{
-            ...createArtworkStyles.inputText,
-            flexDirection: 'column',
-            textAlign: 'center',
-          }}>
-          <Typography variant="h6">Opening Reception</Typography>
-          <Box sx={createArtworkStyles.multiLineContainer}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignContent: 'center',
-              }}>
-              <DartaRadioButtonsGroup
-                toolTips={exhibitionPressReleaseToolTip}
-                control={control}
-                fieldName="receptionDates.hasReception"
-                inputAdornmentString="Has Reception?"
-                required={false}
-                options={hasReceptionValues}
-                setHigherLevelState={handleHasReception}
-                helperTextString=""
-                errors={errors}
-                value={
-                  getValues('receptionDates.hasReception.value') ||
-                  newExhibition?.receptionDates?.hasReception?.value
-                }
-              />
-            </Box>
-          </Box>
-        </Box>
-        <Box sx={{...createArtworkStyles.inputText}}>
-          <Box sx={createArtworkStyles.multiLineContainer}>
-            <Box key="receptionTimeStart" sx={createArtworkStyles.inputText}>
-              <DartaDateTimePicker
-                label="Reception Start"
-                toolTips={exhibitionPressReleaseToolTip}
-                control={control}
-                register={register}
-                fieldName="receptionDates.receptionStartTime"
-                canEdit={!hasReception}
-                setHigherLevelState={handleMinTime}
-                minTime={dayjs(minDate)}
-                error={!!errors?.receptionDates?.message}
-                value={
-                  getValues('receptionDates.receptionStartTime.value') ||
-                  newExhibition?.receptionDates?.receptionStartTime?.value
-                }
-              />
-            </Box>
-            <Box key="receptionTimeEnd" sx={createArtworkStyles.inputText}>
-              <DartaDateTimePicker
-                label="Reception End"
-                toolTips={exhibitionPressReleaseToolTip}
-                control={control}
-                register={register}
-                fieldName="receptionDates.receptionEndTime"
-                canEdit={!hasReception}
-                minTime={dayjs(minTime)}
-                error={!!errors?.receptionDates?.message}
-                value={
-                  getValues('receptionDates.receptionEndTime.value') ||
-                  newExhibition?.receptionDates?.receptionEndTime?.value
-                }
-              />
-            </Box>
-          </Box>
-        </Box>
-        {errors?.receptionDates?.message && (
-          <Typography
-            data-testid="receptionDates-text-error-field"
-            sx={{color: 'red', textAlign: 'center'}}>
-            {errors?.receptionDates?.message}
-          </Typography>
-        )}
-        <Box sx={createArtworkStyles.inputTextContainer}>
-          <Box sx={createArtworkStyles.saveButtonContainer}>
-            <Button
-              variant="contained"
-              data-testid="delete-exhibition-button"
-              color="error"
-              onClick={() => {
-                handleClickOpen();
-              }}>
-              <Typography sx={{fontWeight: 'bold'}}>Delete</Typography>
-            </Button>
-            <Button
-              variant="contained"
-              data-testid="save-exhibition-button"
-              type="submit"
-              sx={{backgroundColor: PRIMARY_BLUE}}
-              onClick={handleSubmit(onSubmit)}>
-              <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
-            </Button>
-          </Box>
+
+        <Box sx={createArtworkStyles.saveButtonContainer}>
+          <Button
+            variant="contained"
+            data-testid="delete-exhibition-button"
+            color="error"
+            onClick={() => {
+              handleClickOpen();
+            }}>
+            <Typography sx={{fontWeight: 'bold'}}>Delete</Typography>
+          </Button>
+          <Button
+            variant="contained"
+            data-testid="save-exhibition-button"
+            type="submit"
+            sx={{backgroundColor: PRIMARY_BLUE}}
+            onClick={handleSubmit(onSubmit)}>
+            <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
+          </Button>
         </Box>
       </Box>
+
       <DartaDialogue
         identifier={newExhibition?.exhibitionTitle?.value || '____'}
         deleteType="exhibition"

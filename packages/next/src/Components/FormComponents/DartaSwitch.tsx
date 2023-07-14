@@ -82,7 +82,7 @@ export function DartaSwitch({
               <FormControlLabel
                 labelPlacement="bottom"
                 label={
-                  <Box sx={formStyles.makePrivateContainer}>
+                  <Box>
                     <Typography sx={formStyles.rawToolTip}>
                       {switchState ? trueStatement : falseStatement}
                     </Typography>

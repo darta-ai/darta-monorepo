@@ -34,22 +34,20 @@ export const exhibitionPressReleaseToolTip = {
     'An exhibition description or press release text helps improve user experience. Optional.',
   'exhibitionLocation.locationString':
     'The location of the exhibition will help guide users to your openings.',
-  privateLocation:
+  'exhibitionLocation.isPrivate':
     'If you do not want users to see the location of your exhibition, mark as private.',
-  exhibitionStartDate:
+  'exhibitionDates.exhibitionStartDate':
     'The start date of the exhibition. Required if the exhibition duration is set to temporary. Disabled for ongoing exhibitions.',
-  exhibitionEndDate:
+  'exhibitionDates.exhibitionEndDate':
     'The end date of the exhibition. Required if the exhibition duration is set to temporary. Disabled for ongoing exhibitions.',
-  exhibitionDuration:
+  'exhibitionDates.exhibitionDuration':
     "If the exhibition is ongoing with no planned closing date, please select 'Ongoing/Indefinite'.",
-  openingDate:
-    'The date of the opening reception for the exhibition. Disabled if there is no reception.',
-  receptionStartTime:
+  'receptionDates.hasReception':
+    'If your exhibition does not have a reception, please select "no".',
+  'receptionDates.receptionStartTime':
     'The start time and date of the reception. Disabled if there is no reception.',
-  receptionEndTime:
+  'receptionDates.receptionEndTime':
     'The end time and date of the reception. Disabled if there is no reception.',
   'exhibitionLocation.exhibitionLocationString':
     'Required. Please select the location of your opening.',
-  hasReception:
-    'If your exhibition does not have a reception, please select "no". ',
 };

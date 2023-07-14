@@ -32,7 +32,7 @@ export const e2eEmail = 'cypress.test@darta.works';
 export const e2ePass = '(cypress.test)';
 
 Cypress.Commands.add('login' as any, () => {
-  cy.visit('http://localhost:3000/');
+  cy.visit('http://localhost:1169/');
 
   cy.get('[data-testid=header-link-gallery]').click();
 

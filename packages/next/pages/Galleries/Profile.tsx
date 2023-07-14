@@ -94,22 +94,25 @@ function GalleryProfile() {
   const {state, dispatch} = useAppState();
   const [isEditingProfile, setIsEditingProfile] =
     React.useState<boolean>(false);
-  const [galleryProfileData, setGalleryProfileData] = React.useState<
-    IGalleryProfileData | {}
-  >({...state.galleryProfile, isValidated: true});
 
-  React.useEffect(() => {
+  const setGalleryProfileData = (galleryProfileData: IGalleryProfileData) => {
     dispatch({
       type: GalleryReducerActions.SET_PROFILE,
       payload: galleryProfileData,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [galleryProfileData]);
+  };
 
   const [stepIndex, setStepIndex] = React.useState(0);
   const [run, setRun] = React.useState(
     !state?.galleryProfile?.galleryName?.value,
   );
+
+  React.useEffect(() => {
+    if (!state?.galleryProfile?.galleryName?.value && isEditingProfile) {
+      setRun(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditingProfile]);
 
   return (
     <>
@@ -135,13 +138,23 @@ function GalleryProfile() {
               isEditingProfile={isEditingProfile}
               setIsEditingProfile={setIsEditingProfile}
               setGalleryProfileData={setGalleryProfileData}
-              galleryProfileData={galleryProfileData as IGalleryProfileData}
+              galleryProfileData={
+                {
+                  ...state.galleryProfile,
+                  isValidated: true,
+                } as IGalleryProfileData
+              }
             />
           ) : (
             <ProfileGallery
               isEditingProfile={isEditingProfile}
               setIsEditingProfile={setIsEditingProfile}
-              galleryProfileData={galleryProfileData as IGalleryProfileData}
+              galleryProfileData={
+                {
+                  ...state.galleryProfile,
+                  isValidated: true,
+                } as IGalleryProfileData
+              }
             />
           )}
         </Container>

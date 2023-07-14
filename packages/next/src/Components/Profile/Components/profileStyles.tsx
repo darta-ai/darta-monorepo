@@ -7,7 +7,7 @@ export const profileStyles = {
     justifyContent: 'flex-start',
     alignItems: 'center',
     gap: '2vh',
-    minWidth: '80vw',
+    maxWidth: '80vw',
     alignSelf: 'center',
   },
   profile: {
@@ -162,6 +162,10 @@ export const profileStyles = {
       alignSelf: 'center',
       my: 12,
       borderWidth: 30,
+      minWidth: '10vw',
+      '@media (min-width: 700px)': {
+        minWidth: '60vw',
+      },
     },
     inputText: {
       display: 'flex',
