@@ -5,7 +5,7 @@ export const e2ePass = '(cypress.test)';
 
 describe('Gallery Sign In Flow', () => {
   it('should navigate from the home page to gallery sign in and sign in', () => {
-    cy.visit('http://localhost:3000/');
+    cy.visit('http://localhost:1169/');
 
     cy.get('[data-testid=header-link-gallery]').click();
 
