@@ -3,7 +3,7 @@
 describe('Gallery Sign Up Flow', () => {
   it('should navigate from the home page to the sign up flow', () => {
     // Start from the index page
-    cy.visit('http://localhost:3000/');
+    cy.visit('http://localhost:1169/');
 
     cy.get('[data-testid=header-link-gallery]').click();
 
@@ -33,7 +33,7 @@ describe('Gallery Sign Up Flow', () => {
   });
   it('should handle common sign-up errors', () => {
     // Start from the index page
-    cy.visit('http://localhost:3000/');
+    cy.visit('http://localhost:1169/');
 
     cy.get('[data-testid=header-link-gallery]').click();
 
