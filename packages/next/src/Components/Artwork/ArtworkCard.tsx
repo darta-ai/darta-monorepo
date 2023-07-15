@@ -80,7 +80,7 @@ export function ArtworkCard({
         </Box>
       ) : (
         <Box sx={cardStyles.cardContainer}>
-          <Box sx={{width: '25vw', m: 1}}>
+          <Box sx={{width: '30vw', m: 1}}>
             <Box
               onClick={handleExpandClick}
               sx={{
@@ -97,7 +97,7 @@ export function ArtworkCard({
                 component="img"
                 src={artwork?.artworkImage?.value as string}
                 alt={artwork?.artworkTitle?.value as string}
-                style={cardStyles.media}
+                style={cardStyles.mediaExhibition}
               />
             </Box>
           </Box>
@@ -127,7 +127,7 @@ export function ArtworkCard({
           </Box>
 
           <Box sx={cardStyles.informationContainer}>
-            <CardContent sx={{alignSelf: 'center', width: '35vw'}}>
+            <CardContent sx={{alignSelf: 'center'}}>
               {artwork?.artworkPrice?.value && (
                 <Typography paragraph data-testid="artwork-card-price">
                   Price:{' '}

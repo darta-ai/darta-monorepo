@@ -12,7 +12,7 @@ type ToolTip = {
   [key: string]: string;
 };
 
-function PhoneNumberFormat(props: any) {
+export function PhoneNumberFormat(props: any) {
   const {onChange, ...other} = props;
   return (
     <PatternFormat

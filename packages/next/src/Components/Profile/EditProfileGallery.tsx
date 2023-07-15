@@ -283,7 +283,7 @@ export function EditProfileGallery({
         </Button>
       </Box>
       <Box sx={createArtworkStyles.imageContainer}>
-        <Box style={createArtworkStyles.defaultImageEdit}>
+        <Box sx={createArtworkStyles.defaultImageEdit}>
           {editImage ? (
             <DartaImageInput
               onDrop={handleDrop}
@@ -301,15 +301,19 @@ export function EditProfileGallery({
             />
           )}
         </Box>
-        <Box sx={{alignSelf: 'center'}}>
-          <Button
-            sx={{width: '40vw', alignSelf: 'center'}}
-            onClick={() => setEditImage(!editImage)}
-            data-testid="edit-image-button"
-            variant="contained">
+      </Box>
+      <Box sx={{alignSelf: 'center'}}>
+        <Button
+          sx={{width: '40vw', alignSelf: 'center'}}
+          onClick={() => setEditImage(!editImage)}
+          data-testid="edit-image-button"
+          variant="contained">
+          <Typography
+            sx={{fontSize: '0.8rem'}}
+            data-testid="create-gallery-image-back-button-test">
             {editImage ? 'Back' : 'Edit Image'}
-          </Button>
-        </Box>
+          </Typography>
+        </Button>
       </Box>
       <Box sx={createArtworkStyles.inputTextContainer}>
         <Box
@@ -440,7 +444,7 @@ export function EditProfileGallery({
           />
         </Box>
         <Box
-          key="gallerySocialMedia"
+          key="galleryLocations"
           sx={{
             ...createArtworkStyles.inputText,
             justifyContent: 'space-around',
@@ -455,7 +459,7 @@ export function EditProfileGallery({
             Add Location
           </Button>
         </Box>
-        <Box key="galleryInstagram" sx={createArtworkStyles.inputText}>
+        <Box key="galleryLocation" sx={createArtworkStyles.inputText}>
           <DartaLocationAndTimes
             locationNumber="galleryLocation0"
             data={galleryProfileData.galleryLocation0 as any}

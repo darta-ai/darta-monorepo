@@ -45,7 +45,7 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
       <Box
         sx={headerStyles.imageBoxContainer}
         onClick={() => router.push(`/${authType}/Profile`)}>
-        {image && (
+        {image ? (
           <>
             <Box
               component="img"
@@ -53,8 +53,15 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
               sx={headerStyles.imageBox}
               data-testid="header-image"
             />
-            <Box>
+            <Box sx={{alignSelf: 'center'}}>
               <Typography variant="h4">+</Typography>
+            </Box>
+          </>
+        ) : (
+          <>
+            <Box sx={headerStyles.imageBox} />
+            <Box sx={{alignSelf: 'center'}}>
+              <Typography variant="h4" />
             </Box>
           </>
         )}

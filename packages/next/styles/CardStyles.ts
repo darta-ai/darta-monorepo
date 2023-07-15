@@ -10,9 +10,6 @@ export const cardStyles = {
     margin: 'auto',
     border: '1px solid darkgrey',
     backgroundColor: PRIMARY_DARK_MILK,
-    '@media (min-width: 800px)': {
-      width: '75vw',
-    },
   },
   exhibitionRoot: {
     alignItems: 'center',
@@ -30,12 +27,23 @@ export const cardStyles = {
       minHeight: '50vh',
     },
   },
+  mediaExhibition: {
+    maxHeight: '15vh',
+    maxWidth: '40vw',
+  },
   expand: {
     transform: 'rotate(0deg)',
     marginLeft: 'auto',
   },
   expandOpen: {
     transform: 'rotate(180deg)',
+  },
+  textAreaAutosize: {
+    width: '30vw',
+    fontSize: '1rem',
+    fontFamily: 'EB Garamond',
+    backgroundColor: PRIMARY_MILK,
+    border: `1px solid ${PRIMARY_MILK}`,
   },
   cardContainer: {
     display: 'flex',
@@ -50,7 +58,7 @@ export const cardStyles = {
     backgroundColor: PRIMARY_MILK,
     '@media (min-width: 800px)': {
       flexDirection: 'row',
-      width: '85vw',
+      width: '75vw',
       minHeight: '15vh',
     },
   },
