@@ -39,6 +39,7 @@ const useStyles = {
   fileAcceptanceText: {
     fontSize: '0.75rem',
     color: 'textSecondary',
+    textAlign: 'center',
     '@media (min-width: 800px)': {
       fontSize: '0.5rem',
     },

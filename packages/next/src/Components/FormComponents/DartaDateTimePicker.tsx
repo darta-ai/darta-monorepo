@@ -77,6 +77,7 @@ export function DartaDateTimePicker({
                 minDateTime={dayjs(minTime) ?? dayjs()}
                 views={['year', 'month', 'day', 'hours', 'minutes']}
                 disabled={canEdit}
+                defaultValue={minTime}
                 value={dayjs(value)}
                 slotProps={{
                   textField: {

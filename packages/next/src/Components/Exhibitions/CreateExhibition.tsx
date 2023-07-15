@@ -6,7 +6,7 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {Exhibition} from '../../../globalTypes';
+import {Artwork, Exhibition} from '../../../globalTypes';
 import {PRIMARY_BLUE} from '../../../styles';
 import {exhibitionPressReleaseToolTip} from '../../common/ToolTips/toolTips';
 import {createArtworkStyles} from '../Artwork/styles';
@@ -30,6 +30,8 @@ export const createExhibitionErrors = {
   exhibitionLocationString: 'Please include the location of the opening.',
   exhibitionStartDate: 'Start date is required.',
   exhibitionEndDate: 'End date is required.',
+  exhibitionEndTimeMismatch:
+    'Opening end date must be after opening start date.',
   hasReception: 'Reception status is required.',
   receptionStartTime: 'Reception start time is required.',
   receptionEndTime: 'Reception end time is required.',
@@ -103,12 +105,13 @@ const createExhibitionSchema = yup
       )
       .test(
         'exhibition-end-date-test',
-        createExhibitionErrors.receptionEndTimeMismatch,
+        createExhibitionErrors.exhibitionEndTimeMismatch,
         value => {
           if (
             value?.exhibitionEndDate?.value &&
             value?.exhibitionStartDate?.value &&
-            value?.exhibitionEndDate?.value > value?.exhibitionStartDate?.value
+            new Date(value?.exhibitionEndDate?.value) <
+              new Date(value?.exhibitionStartDate?.value)
           ) {
             return false; // validation fails
           }
@@ -180,14 +183,18 @@ export function CreateExhibition({
   saveExhibition,
   handleDelete,
   galleryLocations,
+  galleryName,
 }: {
   newExhibition: Exhibition;
   cancelAction: (arg0: boolean) => void;
   saveExhibition: (arg0: Exhibition) => void;
   handleDelete: (arg0: string) => void;
   galleryLocations: string[];
+  galleryName: string;
 }) {
-  const [editPressRelease, setEditPressRelease] = React.useState<boolean>(true);
+  const [editPressRelease, setEditPressRelease] = React.useState<boolean>(
+    !newExhibition?.exhibitionPrimaryImage?.value,
+  );
 
   const {
     register,
@@ -204,6 +211,32 @@ export function CreateExhibition({
   });
 
   const onSubmit = (data: any) => {
+    const galleryNameHashified = galleryName.replaceAll(' ', '-');
+    const exhibitionNameHashified = data.exhibitionTitle.value.replaceAll(
+      ' ',
+      '-',
+    );
+    const slug = `${galleryNameHashified}-${exhibitionNameHashified}`;
+    setValue('slug.value', slug);
+
+    const array = Object.values(data?.artworks).map((item: unknown) => {
+      if (
+        'artistName' in (item as Artwork) &&
+        (item as Artwork).artistName?.value
+      ) {
+        return (item as Artwork).artistName.value;
+      } else {
+        return null;
+      }
+    });
+
+    console.log(array); // Outputs: [ 'Artist1', 'Artist2', 'Artist3' ]
+
+    const artistNames = [...new Set(data.artwork)];
+
+    if (artistNames) {
+      setValue('artists', artistNames as any);
+    }
     saveExhibition(data);
   };
 
@@ -305,11 +338,15 @@ export function CreateExhibition({
             {editPressRelease ? (
               <DartaImageInput
                 onDrop={handleDrop}
-                instructions="Drag and drop the main image of your exhibition here, or click to select an image to upload."
+                instructions="Drag and drop the main image of your exhibition or click to select an image to upload."
               />
             ) : (
               <img
-                src={tempImage as string}
+                src={
+                  tempImage ??
+                  (newExhibition?.exhibitionPrimaryImage?.value as string) ??
+                  ''
+                }
                 alt="exhibition"
                 style={createArtworkStyles.defaultImage}
               />
@@ -324,19 +361,19 @@ export function CreateExhibition({
             )}
           </Box>
         </Box>
-        <Box sx={{alignSelf: 'center'}}>
-          <Button
-            sx={{width: '30vw'}}
-            data-testid="create-exhibition-image-back-button"
-            onClick={() => setEditPressRelease(!editPressRelease)}
-            variant="contained">
-            <Typography
-              sx={{fontSize: '0.8rem'}}
-              data-testid="create-exhibition-image-back-button-test">
-              {editPressRelease ? 'Back' : 'Edit Image'}
-            </Typography>
-          </Button>
-        </Box>
+      </Box>
+      <Box sx={{alignSelf: 'center'}}>
+        <Button
+          sx={{width: '30vw'}}
+          data-testid="create-exhibition-image-back-button"
+          onClick={() => setEditPressRelease(!editPressRelease)}
+          variant="contained">
+          <Typography
+            sx={{fontSize: '0.8rem'}}
+            data-testid="create-exhibition-image-back-button-test">
+            {editPressRelease ? 'Back' : 'Edit Image'}
+          </Typography>
+        </Button>
       </Box>
       <Box sx={createArtworkStyles.inputTextContainer}>
         <Box
@@ -436,7 +473,7 @@ export function CreateExhibition({
           </Box>
         </Box>
         <Box
-          key="location"
+          key="exhibitionDates"
           sx={{
             ...createArtworkStyles.inputText,
             flexDirection: 'column',
@@ -515,7 +552,7 @@ export function CreateExhibition({
           </Typography>
         )}
         <Box
-          key="location"
+          key="openingReception"
           sx={{
             ...createArtworkStyles.inputText,
             flexDirection: 'column',
@@ -589,7 +626,7 @@ export function CreateExhibition({
         {errors?.receptionDates?.message && (
           <Typography
             data-testid="receptionDates-text-error-field"
-            sx={{color: 'red', textAlign: 'center'}}>
+            sx={{color: 'red', textAlign: 'center', mb: 3}}>
             {errors?.receptionDates?.message}
           </Typography>
         )}

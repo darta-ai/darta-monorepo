@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {
   Box,
   Button,
@@ -5,11 +6,11 @@ import {
   CardContent,
   Collapse,
   Divider,
+  TextField,
   Typography,
 } from '@mui/material';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import Image from 'next/image';
 import React from 'react';
 
 import {Artwork, Exhibition} from '../../../globalTypes';
@@ -21,18 +22,22 @@ import {useAppState} from '../State/AppContext';
 import {ExhibitionArtworkList} from './ExhibitionArtworkList';
 import {CreateExhibition} from './index';
 
+const ariaLabel = {'aria-label': 'description'};
+
 export function ExhibitionCard({
   exhibition,
   saveExhibition,
   galleryLocations,
   deleteExhibition,
   exhibitionId,
+  galleryName,
 }: {
   exhibition: Exhibition;
   saveExhibition: (arg0: string, arg1: Exhibition) => void;
   galleryLocations: string[];
   deleteExhibition: (arg0: string) => void;
   exhibitionId: string;
+  galleryName: string;
 }) {
   const [expanded, setExpanded] = React.useState(false);
   const [editExhibition, setEditExhibition] = React.useState<boolean>(false);
@@ -74,7 +79,6 @@ export function ExhibitionCard({
   };
 
   const handleBatchUpload = (uploadArtworks: {[key: string]: Artwork}) => {
-    // setArtworks({...artworks, ...uploadArtworks});
     const newExhibition: Exhibition = _.cloneDeep(
       state?.galleryExhibitions[exhibitionId],
     );
@@ -105,20 +109,6 @@ export function ExhibitionCard({
     !exhibition?.exhibitionDates?.exhibitionStartDate?.value ||
     !exhibition?.exhibitionDates?.exhibitionEndDate?.value;
 
-  let locations = galleryLocations;
-  if (
-    exhibition?.exhibitionLocation?.exhibitionLocationString?.value &&
-    !galleryLocations.includes(
-      exhibition?.exhibitionLocation?.exhibitionLocationString?.value,
-    )
-  ) {
-    locations = [
-      ...galleryLocations,
-      exhibition?.exhibitionLocation?.exhibitionLocationString?.value,
-    ];
-  } else {
-    locations = ['edit profile to add gallery locations'];
-  }
   return (
     <Card sx={cardStyles.root} data-testid="exhibition-card">
       {displayRed ? (
@@ -150,12 +140,11 @@ export function ExhibitionCard({
               }}
               data-testid="exhibition-card-image">
               <Box>
-                <Image
-                  width={100}
-                  height={100}
+                <Box
+                  component="img"
                   src={exhibition?.exhibitionPrimaryImage?.value as string}
                   alt={exhibition?.exhibitionTitle?.value as string}
-                  style={cardStyles.media}
+                  style={cardStyles.mediaExhibition}
                 />
               </Box>
             </Box>
@@ -187,21 +176,39 @@ export function ExhibitionCard({
                 paragraph
                 data-testid="artwork-card-exhibition-location-string"
                 color="textSecondary">
-                {
-                  exhibition?.exhibitionLocation?.exhibitionLocationString
-                    ?.value
-                }
+                {exhibition?.exhibitionLocation?.locationString?.value}
               </Typography>
             </CardContent>
           </Box>
           <Box sx={cardStyles.informationContainer}>
-            <CardContent sx={{alignSelf: 'center', width: '35vw'}}>
-              {exhibition?.exhibitionPressRelease?.value && (
-                <Typography paragraph>
-                  {exhibition?.exhibitionPressRelease?.value}
+            {exhibition?.exhibitionPressRelease?.value && (
+              <Box
+                style={{
+                  marginRight: '1vw',
+                }}>
+                <Typography color="textSecondary" sx={{textAlign: 'center'}}>
+                  Press Release
                 </Typography>
-              )}
-            </CardContent>
+                <TextField
+                  hiddenLabel
+                  fullWidth
+                  multiline
+                  rows={6}
+                  sx={{
+                    '& .MuiInputBase-input.Mui-disabled': {
+                      WebkitTextFillColor: '#000000',
+                      fontSize: '1rem',
+                      fontFamily: 'EB Garamond',
+                    },
+                  }}
+                  minRows={3}
+                  disabled={true}
+                  inputProps={ariaLabel}
+                  maxRows={8}
+                  value={exhibition?.exhibitionPressRelease?.value}
+                />
+              </Box>
+            )}
           </Box>
         </Box>
       )}
@@ -222,6 +229,37 @@ export function ExhibitionCard({
             </Typography>
           </Button>
         </Box>
+        <Collapse in={editExhibition}>
+          {editExhibition && galleryName && (
+            <Box>
+              <CreateExhibition
+                newExhibition={exhibition}
+                saveExhibition={handleSave}
+                cancelAction={setEditExhibition}
+                handleDelete={handleDelete}
+                galleryLocations={galleryLocations}
+                galleryName={galleryName}
+              />
+            </Box>
+          )}
+          {!galleryName && (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}>
+              <Typography variant="h5">
+                You must create a gallery profile before you can create an
+                exhibition.
+              </Typography>
+              <Typography variant="h6">
+                Click <a href="/Galleries/Profile">here</a> to go to your
+                profile page.
+              </Typography>
+            </Box>
+          )}
+        </Collapse>
         <Box>
           <Divider variant="middle" sx={{m: 2}} flexItem>
             Artworks
@@ -231,21 +269,7 @@ export function ExhibitionCard({
             handleBatchUpload={handleBatchUpload}
           />
         </Box>
-        <Collapse in={editExhibition}>
-          {editExhibition ? (
-            <Box>
-              <CreateExhibition
-                newExhibition={exhibition}
-                saveExhibition={handleSave}
-                cancelAction={setEditExhibition}
-                handleDelete={handleDelete}
-                galleryLocations={locations}
-              />
-            </Box>
-          ) : (
-            <Box />
-          )}
-        </Collapse>
+
         <ExhibitionArtworkList
           artworks={exhibition.artworks}
           saveExhibition={saveExhibition}

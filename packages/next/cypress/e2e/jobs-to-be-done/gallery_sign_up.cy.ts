@@ -76,7 +76,7 @@ describe('Gallery Sign Up Flow', () => {
     cy.get('[data-testid=signUpButton]').click();
 
     cy.get('[data-testid=emailInput-helper-text]').contains(
-      'Using an @gmail account to register an account will require longer to approve. If you have a business email address related to this gallery we recommend you use that.',
+      'Using an @gmail account to register will result in a longer to approve. If you have a business email address related to this gallery and your gallery is on the pre-approved list, you will automatically be authorized.',
     );
   });
 });

@@ -68,27 +68,30 @@ function GalleryArtwork() {
   const [artworks, setArtworks] = React.useState<{[key: string]: Artwork}>({
     ...state?.galleryArtworks,
   });
-  React.useEffect(() => {
-    const getArtworkData = async () => {
-      if (
-        Object?.values(state?.galleryArtworks).length === 0 &&
-        Object?.keys(artworks).length === 0
-      ) {
-        if (state?.accessToken || user?.accessToken) {
-          const {galleryArtworks} = retrieveGalleryArtworks(
-            state?.accessToken || user?.accessToken,
-          );
-          dispatch({
-            type: GalleryReducerActions.SET_ARTWORKS,
-            payload: {...galleryArtworks},
-          });
-          setArtworks({...galleryArtworks});
-        }
-      }
-    };
-    getArtworkData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+
+  console.log({state});
+
+  // React.useEffect(() => {
+  //   const getArtworkData = async () => {
+  //     if (
+  //       Object?.values(state?.galleryArtworks).length === 0 &&
+  //       Object?.keys(artworks).length === 0
+  //     ) {
+  //       if (state?.accessToken || user?.accessToken) {
+  //         const {galleryArtworks} = retrieveGalleryArtworks(
+  //           state?.accessToken || user?.accessToken,
+  //         );
+  //         dispatch({
+  //           type: GalleryReducerActions.SET_ARTWORKS,
+  //           payload: {...galleryArtworks},
+  //         });
+  //         setArtworks({...galleryArtworks});
+  //       }
+  //     }
+  //   };
+  //   getArtworkData();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [user]);
 
   const [displayArtworks, setDisplayArtworks] = React.useState<Artwork[]>();
   const [inquiries, setInquiries] = React.useState<{

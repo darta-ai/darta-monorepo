@@ -53,16 +53,17 @@ export const headerStyles = {
     display: 'flex',
     flexDirection: 'row',
     alignImages: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     width: '40vw',
+    gap: '1vw',
     '@media (min-width:750px)': {
       width: '18vw',
     },
   },
   imageBox: {
-    height: '6vh',
+    height: '3vh',
   },
   dartaImageBox: {
-    height: '6vh',
+    height: '3vh',
   },
 };

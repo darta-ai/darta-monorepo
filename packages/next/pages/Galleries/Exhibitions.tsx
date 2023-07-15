@@ -6,7 +6,7 @@ import {GetStaticProps} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
-import {retrieveAllGalleryData} from '../../API/DartaGETrequests';
+// import {retrieveAllGalleryData} from '../../API/DartaGETrequests';
 import {Exhibition, GalleryState} from '../../globalTypes';
 import {newExhibitionShell} from '../../src/common/templates';
 import authRequired from '../../src/Components/AuthRequired/AuthRequired';
@@ -17,12 +17,15 @@ import {
   useAppState,
 } from '../../src/Components/State/AppContext';
 import {galleryStyles} from '../../styles/GalleryPageStyles';
-import {AuthContext} from '../_app';
+// import {AuthContext} from '../_app';
 // need a function that gets all artworks
 // need a function that gets all inquiries for art
 
 export const getGalleryLocations = (state: GalleryState): string[] => {
   const galleryLocations = [];
+
+  if (!state?.galleryProfile?.galleryLocation0?.locationString?.value)
+    return ['edit profile to add gallery locations'];
 
   if (state?.galleryProfile?.galleryLocation0?.locationString?.value) {
     galleryLocations.push(
@@ -55,32 +58,15 @@ export const getGalleryLocations = (state: GalleryState): string[] => {
 
 function GalleryExhibitions() {
   const {state, dispatch} = useAppState();
-
-  const {user} = React.useContext(AuthContext);
+  console.log({state});
 
   const [galleryLocations, setGalleryLocations] = React.useState<string[]>([]);
-
+  const [galleryName, setGalleryName] = React.useState<string | null>();
   React.useEffect(() => {
-    const {galleryProfile, galleryArtworks, galleryExhibitions, accessToken} =
-      retrieveAllGalleryData(user.accessToken);
-
-    dispatch({
-      type: GalleryReducerActions.SET_ACCESS_TOKEN,
-      payload: accessToken,
-    });
-    dispatch({
-      type: GalleryReducerActions.SET_PROFILE,
-      payload: galleryProfile,
-    });
-    dispatch({
-      type: GalleryReducerActions.SET_ARTWORKS,
-      payload: {...galleryArtworks},
-    });
-    dispatch({
-      type: GalleryReducerActions.SET_EXHIBITIONS,
-      payload: galleryExhibitions,
-    });
     setGalleryLocations(getGalleryLocations(state));
+
+    const galName = state?.galleryProfile?.galleryName?.value;
+    setGalleryName(galName);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -167,6 +153,7 @@ function GalleryExhibitions() {
                     galleryLocations={galleryLocations}
                     deleteExhibition={deleteExhibition}
                     exhibitionId={exhibition?.exhibitionId}
+                    galleryName={galleryName as string}
                   />
                 </Box>
               ),

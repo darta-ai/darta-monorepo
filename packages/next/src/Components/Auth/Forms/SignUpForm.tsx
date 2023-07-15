@@ -18,12 +18,10 @@ import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {dartaSignUp} from '../../../../API/FirebaseAccountManagement';
+import {PhoneNumberFormat} from '../../FormComponents/DartaPhoneNumber';
 import {AlreadySignedUp} from '../../Navigation/Auth';
 import {authStyles} from '../styles';
 import {AuthEnum} from '../types';
-
-const phoneRegExp =
-  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const websiteRegExp =
   /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/;
@@ -33,7 +31,7 @@ const schema = yup
     email: yup.string().required('please include an email address').email(),
     phoneNumber: yup
       .string()
-      .matches(phoneRegExp, 'please double check your phone number')
+      .min(10, 'please double check your phone number')
       .optional(),
     galleryName: yup
       .string()
@@ -92,7 +90,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
     const regex = /\b[A-Za-z0-9._%+-]+@gmail\.com\b/g;
     if (emailInput?.match(regex)) {
       setEmailError(
-        'Using an @gmail account to register an account will require longer to approve. If you have a business email address related to this gallery we recommend you use that.',
+        'Using an @gmail account to register will result in a longer to approve. If you have a business email address related to this gallery and your gallery is on the pre-approved list, you will automatically be authorized.',
       );
     } else {
       setEmailError('');
@@ -103,6 +101,12 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
     event.preventDefault();
+  };
+
+  const [phoneNumber, setPhoneNumber] = React.useState('');
+
+  const handlePhoneChange = (event: any) => {
+    setPhoneNumber(event.target.value);
   };
 
   return (
@@ -161,6 +165,9 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             color="info"
             aria-describedby="phoneNumber"
             data-testid="phoneNumberInput"
+            value={phoneNumber}
+            onChange={handlePhoneChange}
+            inputComponent={PhoneNumberFormat}
           />
           <FormHelperText
             id="phoneHelperText"

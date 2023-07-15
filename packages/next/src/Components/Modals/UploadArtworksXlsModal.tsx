@@ -95,7 +95,7 @@ function InstructionsCarousel() {
 
   return (
     <Box sx={instructionsCarouselStyles.root}>
-      <Paper square elevation={0.5} sx={instructionsCarouselStyles.header}>
+      <Paper square elevation={1} sx={instructionsCarouselStyles.header}>
         <Typography sx={instructionsCarouselStyles.callToAction}>
           {tutorialSteps[activeStep].label}
         </Typography>

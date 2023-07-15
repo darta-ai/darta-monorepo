@@ -114,6 +114,8 @@ function GalleryProfile() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditingProfile]);
 
+  console.log({state});
+
   return (
     <>
       <Head>
