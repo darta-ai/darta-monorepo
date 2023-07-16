@@ -1,3 +1,4 @@
 .devspace/
+.env*
 node_modules/
 scratch*

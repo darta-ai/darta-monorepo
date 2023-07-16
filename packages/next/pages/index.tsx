@@ -2,13 +2,14 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import Head from 'next/head';
-import * as React from 'react';
 
 import {AuthEnum} from '../src/Components/Auth/types';
 import {BaseHeader} from '../src/Components/Navigation/Headers/BaseHeader';
 import {PamphletLeft} from '../src/Components/Pamphlet/pamphletLeft';
 import {PamphletRight} from '../src/Components/Pamphlet/pamphletRight';
 import {getPamphlet} from '../ThirdPartyAPIs/firebaseDB';
+
+// import {Hello} from '@/components';
 
 export default function Home({
   staticData,
@@ -27,13 +28,14 @@ export default function Home({
       <Container maxWidth="lg">
         {pamphletData && (
           <Box
-            sx={{
-              my: 10,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+          sx={{
+            my: 10,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            {/* <Hello /> */}
             {pamphletData &&
               pamphletData.map((data: any, index: number) => {
                 const isEven = index % 2 === 0;
