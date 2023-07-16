@@ -11,6 +11,7 @@ const useStyles = {
     flexDirection: 'column',
     gap: '2%',
     justifyContent: 'space-around',
+    width: '100%',
     my: 3,
     alignSelf: 'center',
     height: '100vh',
