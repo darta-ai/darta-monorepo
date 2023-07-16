@@ -25,7 +25,7 @@ export default function Home({
         />
       </Head>
       <BaseHeader />
-      <Container maxWidth="lg">
+      <Container maxWidth="xl" sx={{mt: '20vh'}}>
         {pamphletData && (
           <Box
           sx={{

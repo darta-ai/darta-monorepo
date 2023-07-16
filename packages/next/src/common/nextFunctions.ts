@@ -14,7 +14,7 @@ function fractionToDecimal(str: string) {
 
   if (fraction) {
     const [numerator, denominator] = fraction.split('/');
-    const decimal = parseInt(numerator) / parseInt(denominator);
+    const decimal = parseInt(numerator, 10) / parseInt(denominator, 10);
     return (parseFloat(wholeNumber) + decimal).toString();
   } else {
     return wholeNumber;

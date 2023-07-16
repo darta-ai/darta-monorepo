@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import {
   Box,
   Card,
@@ -10,7 +11,6 @@ import {
 } from '@mui/material';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import Head from 'next/head';
-import Image from 'next/image';
 import React from 'react';
 
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
@@ -25,28 +25,28 @@ const aboutStyles = {
     width: '100%',
     mb: 5,
     alignSelf: 'center',
-    '@media (minWidth: 800px)': {
+    '@media (min-width: 800px)': {
       paddingTop: '7vh',
     },
   },
   imageContainer: {
-    minWidth: '20vh',
+    minWidth: '25vh',
     display: 'flex',
     alignItems: 'center',
     alignSelf: 'flex-end',
     justifyContent: 'center',
-    '@media (minWidth: 800px)': {
+    '@media (min-width: 800px)': {
       height: '15vh',
       width: '10vh',
     },
   },
   imageSize: {
-    minWidth: '20vh',
+    minWidth: '25vh',
     height: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    '@media (minWidth: 800px)': {
+    '@media (min-width: 800px)': {
       minWidth: '100%',
       height: '100%',
     },
@@ -70,20 +70,31 @@ const aboutStyles = {
   typography: {
     fontFamily: 'EB Garamond',
     color: PRIMARY_DARK_GREY,
-    fontSize: '1rem',
-    '@media (minWidth: 800px)': {
-      fontSize: '1.3rem',
-    },
+    fontSize: '1.3rem',
+    '@media (min-width: 800px)': {},
     cursor: 'default',
   },
   typographyH3: {
     fontFamily: 'EB Garamond',
     color: PRIMARY_DARK_GREY,
     fontSize: '1.2rem',
-    '@media (minWidth: 800px)': {
+    '@media (min-width: 800px)': {
       fontSize: '1.75rem',
     },
     cursor: 'default',
+  },
+  peopleContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    '@media (min-width: 760px)': {
+      flexDirection: 'row',
+    },
+  },
+  card: {
+    width: '90vw',
+    '@media (min-width: 800px)': {
+      width: '20vw',
+    },
   },
 };
 
@@ -102,10 +113,23 @@ type AboutData = {
 export default function About({
   data,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const beliefs = Object.keys(data).filter(key => key.includes('DartaBelief'));
-  const values = Object.keys(data).filter(key =>
-    key.includes('DartaCoreValue'),
-  );
+  const beliefs = Object.keys(data)
+    .filter(key => key.includes('DartaBelief'))
+    .sort((a, b) => {
+      const numA = parseInt(a.replace('DartaBelief', ''), 10);
+      const numB = parseInt(b.replace('DartaBelief', ''), 10);
+
+      return numA - numB;
+    });
+  const values = Object.keys(data)
+    .filter(key => key.includes('DartaCoreValue'))
+    .sort((a, b) => {
+      const numA = parseInt(a.replace('DartaCoreValue', ''), 10);
+      const numB = parseInt(b.replace('DartaCoreValue', ''), 10);
+
+      return numA - numB;
+    });
+
   return (
     <>
       <Head>
@@ -129,8 +153,11 @@ export default function About({
           </Typography>
           <Box component="span" m={1} data-testid="values-list">
             {values.map((value, index) => (
-              <ListItem data-testid={`value-item-${index}`}>
+              <ListItem
+                data-testid={`value-item-${index}`}
+                key={`value-item-${index}`}>
                 <Typography
+                  paragraph
                   sx={aboutStyles.typography}
                   data-testid={`value-item-text-${index}`}>
                   {data[value]}
@@ -148,7 +175,9 @@ export default function About({
           </Typography>
           <List sx={{listStyleType: 'disc', pl: 3}} data-testid="beliefs-list">
             {beliefs.map((belief, index) => (
-              <Box key={belief} data-testid={`belief-box-${index}`}>
+              <Box
+                data-testid={`belief-box-${index}`}
+                key={`belief-box-${index}`}>
                 <ListItem
                   sx={{display: 'list-item'}}
                   data-testid={`belief-item-${index}`}>
@@ -170,22 +199,25 @@ export default function About({
             Who we are
           </Typography>
           <Typography
-            sx={{...aboutStyles.typography, marginTop: '3%'}}
+            sx={{...aboutStyles.typography, my: '5%'}}
             data-testid="who-we-are-text">
             {data.WhoWeAre}
           </Typography>
         </Box>
-        <Grid container spacing={6} data-testid="founders-grid">
-          <Grid item xs={12} sm={3} data-testid="founder-1-grid">
-            <Card data-testid="founder-1-card">
+        <Grid
+          container
+          sx={aboutStyles.peopleContainer}
+          spacing={12}
+          data-testid="founders-grid">
+          <Grid item data-testid="founder-1-grid">
+            <Card sx={aboutStyles.card} data-testid="founder-1-card">
               <div
                 style={aboutStyles.imageSize}
                 data-testid="founder-1-image-container">
-                <Image
-                  src="/static/images/About/Founder1.jpeg" // Replace with your actual image path
+                <Box
+                  component="img"
+                  src="/static/images/About/Founder1.jpeg"
                   title="Founder 1"
-                  width={150}
-                  height={150}
                   style={aboutStyles.image}
                   alt="Founder 1"
                   data-testid="founder-1-image"
@@ -212,15 +244,14 @@ export default function About({
             </Card>
           </Grid>
           <Grid item xs={12} sm={3} data-testid="founder-2-grid">
-            <Card data-testid="founder-2-card">
+            <Card sx={aboutStyles.card} data-testid="founder-2-card">
               <div
                 style={aboutStyles.imageSize}
                 data-testid="founder-2-image-container">
-                <Image
+                <Box
+                  component="img"
                   src="/static/images/About/Founder2.jpeg"
-                  title="Founder 1"
-                  width={150}
-                  height={150}
+                  title="Founder 2"
                   style={aboutStyles.image}
                   alt="Founder 2"
                   data-testid="founder-2-image"
