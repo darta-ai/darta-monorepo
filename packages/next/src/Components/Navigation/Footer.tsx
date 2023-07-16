@@ -37,10 +37,9 @@ const styles = {
       fontSize: '0.9rem',
     },
     '&:hover': {
-      backgroundColor: PRIMARY_LIGHTBLUE,
+      color: PRIMARY_LIGHTBLUE,
       opacity: [0.9, 0.9, 0.9],
     },
-    cursor: 'default',
   },
 };
 
