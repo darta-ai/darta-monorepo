@@ -1,6 +1,6 @@
-import { Application } from 'express';
-import { CrudService } from './CrudService';
-import * as repositories from '../repositories';
+import {Application} from 'express';
+import {repositories} from '@/graph';
+import {CrudService} from './CrudService';
 
 export function startServices(app: Application): void {
   Object.values(repositories).forEach((repository) => {
