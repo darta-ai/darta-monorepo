@@ -18,5 +18,5 @@
     "emitDecoratorMetadata": true,
     "jsx": "react-jsx" // TODO we want "preserve" generally?
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "scratch*"]
 }
