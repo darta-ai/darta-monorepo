@@ -10,6 +10,7 @@
     "cy-e2e": "cypress run --e2e --config-file ./cypress/cypress.config.ts",
     "cy-component": "cypress run --component --config-file ./cypress/cypress.config.ts",
     "cy-open": "cypress open --config-file ./cypress/cypress.config.ts",
+    "cy": "pnpm cy-e2e && pnpm cy-component",
     "prettier": "npx prettier --write .",
     "preinstall": "npx only-allow pnpm"
   },
@@ -39,6 +40,7 @@
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.43.9",
+    "react-joyride": "^2.5.4",
     "react-number-format": "^5.2.2",
     "sharp": "^0.32.1",
     "xlsx": "^0.18.5",

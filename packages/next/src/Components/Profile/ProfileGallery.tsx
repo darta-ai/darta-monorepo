@@ -49,7 +49,7 @@ function GalleryStatus({
           {galleryProfileData?.galleryName?.value}
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
-          <Box sx={{mx: 3}}>
+          <Box sx={{m: 2}}>
             <Typography data-testid="gallery-bio-display">
               {galleryProfileData?.galleryBio?.value}
             </Typography>
@@ -102,6 +102,7 @@ function GalleryEditButton({
           sx={{color: PRIMARY_BLUE}}
           onClick={() => setIsEditingProfile(!isEditingProfile)}
           data-testid="edit-profile-button"
+          className="edit-profile-button"
           startIcon={<SettingsIcon sx={{color: PRIMARY_BLUE}} />}>
           Edit
         </Button>
@@ -118,6 +119,7 @@ function GalleryEditButton({
           variant="outlined"
           sx={{color: PRIMARY_BLUE}}
           data-testid="edit-profile-button"
+          className="edit-profile-button"
           onClick={() => setIsEditingProfile(!isEditingProfile)}
           startIcon={<SettingsIcon sx={{color: PRIMARY_BLUE}} />}>
           Edit
@@ -152,7 +154,8 @@ export function ProfileGallery({
       <Box
         mb={2}
         sx={profileStyles.container}
-        data-testid="profile-gallery-container">
+        data-testid="profile-gallery-container"
+        className="profile-gallery-container">
         <Box sx={profileStyles.profile.editButtonProfile}>
           <GalleryEditButton
             isEditingProfile={isEditingProfile}

@@ -1,23 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
-
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import {
-  Box,
-  FormControlLabel,
-  IconButton,
-  InputAdornment,
-  Switch,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import dayjs from 'dayjs';
 import * as React from 'react';
 import {Controller} from 'react-hook-form';
 
-import {PRIMARY_DARK_GREY} from '../../../styles';
-import {DateFields} from '../Profile/types';
 import {formStyles} from './styles';
 
 type ToolTip = {
@@ -28,92 +18,90 @@ export function DartaDatePicker({
   label,
   toolTips,
   control,
-  data,
-  register,
   fieldName,
-  allowOngoing,
+  canEdit,
+  register,
+  setHigherLevelState,
+  minDate,
+  value,
+  error,
 }: {
   label: string;
   toolTips: ToolTip | any;
   fieldName: string;
-  data: DateFields;
-  allowOngoing: boolean;
   register: any;
   control: any;
+  canEdit?: boolean;
+  minDate?: string | any;
+  setHigherLevelState?: (arg0: string | null) => void;
+  value: string | undefined | null;
+  error: boolean;
 }) {
-  const innerWidthRef = React.useRef(800);
-  React.useEffect(() => {
-    innerWidthRef.current = window.innerWidth;
-  }, []);
-  const [isOngoing, setIsOngoing] = React.useState<boolean>(data?.isOngoing!);
-
+  const testIdValue = fieldName.replace('.', '-');
   return (
     <>
-      <Box sx={formStyles.toolTipContainer}>
+      <Box>
         <Box>
-          {innerWidthRef.current > 780 && (
-            <Tooltip
-              title={
-                <Typography sx={{textAlign: 'center'}}>
-                  {toolTips[fieldName]}
-                </Typography>
-              }
-              placement="top">
-              <IconButton>
-                <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
-              </IconButton>
-            </Tooltip>
-          )}
+          <Tooltip
+            title={
+              <Typography
+                data-testid={`${testIdValue}-tooltip-text`}
+                sx={{textAlign: 'center'}}>
+                {toolTips[fieldName]}
+              </Typography>
+            }
+            placement="top">
+            <IconButton>
+              <HelpOutlineIcon
+                data-testid={`${testIdValue}-tooltip-button`}
+                fontSize="medium"
+                sx={formStyles.helpIcon}
+              />
+            </IconButton>
+          </Tooltip>
         </Box>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker label={label} disabled={isOngoing} />
-        </LocalizationProvider>
       </Box>
-      <InputAdornment sx={{width: '10vw', alignSelf: 'center'}} position="end">
-        {allowOngoing && (
-          <Controller
-            control={control}
-            sx={{alignSelf: 'flex-start'}}
-            name={fieldName}
-            {...register(`${fieldName}.${'isOngoing'}`)}
-            render={({field}: {field: any}) => {
-              return (
-                <FormControlLabel
-                  labelPlacement="bottom"
-                  label={
-                    innerWidthRef.current > 780 ? (
-                      <Box sx={formStyles.makePrivateContainer}>
-                        <Typography sx={formStyles.toolTip}>Ongoing</Typography>
-                      </Box>
-                    ) : (
-                      <Box sx={formStyles.makePrivateContainer}>
-                        <Typography sx={formStyles.toolTip}>Ongoing</Typography>
-                      </Box>
-                    )
+      <Box>
+        <Controller
+          key={fieldName}
+          name={fieldName}
+          control={control}
+          data-testid={`${testIdValue}-timePicker`}
+          {...register(`${fieldName}.${'value'}`)}
+          render={({field}) => (
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                {...field}
+                data-testid={`${testIdValue}-timePicker`}
+                sx={formStyles.datePicker}
+                label={label}
+                minDate={dayjs(minDate) ?? dayjs()}
+                views={['year', 'month', 'day']}
+                disabled={canEdit}
+                value={dayjs(value)}
+                slotProps={{
+                  textField: {
+                    error,
+                  },
+                }}
+                onChange={(newValue: any) => {
+                  const date = newValue.toDate();
+                  field.onChange(date);
+                  if (setHigherLevelState) {
+                    setHigherLevelState(newValue);
                   }
-                  control={
-                    <Switch
-                      color="secondary"
-                      value={data?.isOngoing}
-                      id="isPrivate"
-                      size="small"
-                      onChange={e => field.onChange(e.target.checked)}
-                      checked={field.value}
-                      onClick={() => {
-                        setIsOngoing(!isOngoing);
-                      }}
-                    />
-                  }
-                  sx={{
-                    width: '10vw',
-                    color: PRIMARY_DARK_GREY,
-                  }}
-                />
-              );
-            }}
-          />
-        )}
-      </InputAdornment>
+                }}
+              />
+            </LocalizationProvider>
+          )}
+        />
+      </Box>
     </>
   );
 }
+
+DartaDatePicker.defaultProps = {
+  canEdit: false,
+  minDate: '',
+  setHigherLevelState: () => {},
+};

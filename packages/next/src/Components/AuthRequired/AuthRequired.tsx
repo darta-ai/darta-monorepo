@@ -22,6 +22,7 @@ export default function authRequired(WrappedComponent: any) {
   return function (props: any) {
     const Router = useRouter();
     const {user} = React.useContext(AuthContext);
+
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
     useEffect(() => {

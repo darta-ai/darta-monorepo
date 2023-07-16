@@ -19,6 +19,14 @@ app.get('/', (req: Request, res: Response) => {
   res.send(`${++n}`);
 });
 
+app.get('/ping', (req: Request, res: Response) => {
+  res.send('pong');
+});
+
+app.get('/pong', (req: Request, res: Response) => {
+  res.send('ping');
+});
+
 startServices(app);
 
 httpServer.listen(port, () => {

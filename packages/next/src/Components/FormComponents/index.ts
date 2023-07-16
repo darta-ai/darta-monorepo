@@ -1,5 +1,6 @@
 export {DartaAutoComplete} from './DartaAutoComplete';
 export {DartaDatePicker} from './DartaDatePicker';
+export {DartaDateTimePicker} from './DartaDateTimePicker';
 export {DartaDropdown} from './DartaDropdown';
 export {DartaGallerySearch} from './DartaGallerySearch';
 export {DartaHoursOfOperation} from './DartaHoursOfOperation';
@@ -8,4 +9,5 @@ export {DartaLocationAndTimes} from './DartaLocationAndTimes';
 export {DartaLocationLookup} from './DartaLocationLookup';
 export {DartaPhoneNumber} from './DartaPhoneNumber';
 export {DartaRadioButtonsGroup} from './DartaRadio';
+export {DartaSwitch} from './DartaSwitch';
 export {DartaTextInput} from './DartaTextInput';

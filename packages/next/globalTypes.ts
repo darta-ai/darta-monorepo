@@ -39,7 +39,7 @@ export interface DateFields {
 export interface CoordinateFields {
   latitude: {value: string | null};
   longitude: {value: string | null};
-  googleMapsUrl: {value: string | null};
+  googleMapsPlaceId: {value: string | null};
 }
 
 export type Dimensions = {
@@ -69,8 +69,14 @@ interface GalleryFields {
 export interface IBusinessLocationData {
   businessHours?: IBusinessHours;
   locationString?: PrivateFields;
+  exhibitionLocationString?: PublicFields;
   coordinates?: CoordinateFields;
   googleMapsPlaceId?: PublicFields;
+  locationId?: string;
+}
+
+export interface IOpeningLocationData extends IBusinessLocationData {
+  isPrivate: boolean;
 }
 
 interface GalleryAddressFields {
@@ -103,6 +109,19 @@ export type Artwork = {
   createdAt: string | null;
   updatedAt: string | null;
   collection?: PublicFields;
+  exhibitionOrder?: number;
+};
+
+export type ExhibitionDates = {
+  exhibitionStartDate: DateFields;
+  exhibitionEndDate: DateFields;
+  exhibitionDuration: {value: 'Temporary' | 'Ongoing/Indefinite'};
+};
+
+export type ReceptionDates = {
+  hasReception: {value: 'Yes' | 'No'};
+  receptionStartTime: PublicFields;
+  receptionEndTime: PublicFields;
 };
 
 export type ArtworkObject = {[key: string]: Artwork};
@@ -118,19 +137,21 @@ export type BusinessAddressType =
 
 export type Exhibition = {
   exhibitionTitle: PublicFields;
-  pressRelease: PublicFields;
+  exhibitionPressRelease: PublicFields;
   exhibitionPrimaryImage: PublicFields;
-  mediumsUsed: PublicFields[] | undefined[];
-  artists: PublicFields[] | undefined[];
-  pressReleaseImages: PublicFields[] | undefined[];
-  exhibitionImages: PublicFields[] | undefined[];
-  artworks: {[key: string]: Artwork} | {[key: string]: undefined};
+  exhibitionLocation: IOpeningLocationData;
+  mediumsUsed?: PublicFields[] | undefined[];
+  artists?: PublicFields[] | undefined[];
+  pressReleaseImages?: PublicFields[] | undefined[];
+  exhibitionImages?: PublicFields[] | undefined[];
+  artworks?: {[key: string]: Artwork} | {[key: string]: undefined};
   published: boolean;
   slug?: PublicFields;
-  exhibitionId: string | undefined;
-  startDate: DateFields;
-  endDate: DateFields;
-  openingDate: DateFields;
+  exhibitionId: string;
+  exhibitionDates: ExhibitionDates;
+  receptionDates: ReceptionDates;
+  createdAt: string | null;
+  updatedAt?: string | null;
 };
 
 export type ExhibitionObject = {[key: string]: Exhibition};
@@ -145,3 +166,9 @@ export type GalleryState = {
   galleryExhibitions: {[key: string]: Exhibition};
   accessToken: string | null;
 };
+
+type GalleryDisplayValues = {
+  label: string; // or any other type
+  value: string; // or any other type
+};
+export type GalleryDropdownDisplay = GalleryDisplayValues[];

@@ -1,5 +1,11 @@
 import {GalleryState} from '../globalTypes';
-import {artwork1, artwork2, artwork3} from '../src/dummyData';
+import {
+  artwork1,
+  artwork2,
+  artwork3,
+  dummyExhibition,
+  soteGalleryProfile,
+} from '../src/dummyData';
 
 const preloadArtwork = {
   // ...artwork1,
@@ -11,9 +17,15 @@ export const retrieveAllGalleryData = (accessToken: string): GalleryState => {
   // NEED ENDPOINTS HERE
 
   return {
-    galleryProfile: {},
-    galleryArtworks: {...preloadArtwork},
-    galleryExhibitions: {},
+    galleryProfile: {
+      // ...soteGalleryProfile
+    },
+    galleryArtworks: {
+      // ...preloadArtwork
+    },
+    galleryExhibitions: {
+      // '02003454-b638-44a6-bb38-d418d8390729': dummyExhibition,
+    },
     accessToken,
   };
 };
@@ -24,7 +36,9 @@ export const retrieveGalleryArtworks = (
   // NEED ENDPOINTS HERE
 
   return {
-    galleryArtworks: {...preloadArtwork},
+    galleryArtworks: {
+      // ...preloadArtwork
+    },
     accessToken,
   };
 };
@@ -46,7 +60,9 @@ export const retrieveGalleryExhibitions = (
   // NEED ENDPOINTS HERE
 
   return {
-    galleryExhibitions: {},
+    galleryExhibitions: {
+      // '02003454-b638-44a6-bb38-d418d8390729': dummyExhibition,
+    },
     accessToken,
   };
 };
