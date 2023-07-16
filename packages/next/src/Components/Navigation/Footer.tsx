@@ -6,7 +6,7 @@ import {PRIMARY_BLUE, PRIMARY_LIGHTBLUE, PRIMARY_MILK} from '../../../styles';
 
 const styles = {
   footerBox: {
-    width: '105%',
+    width: '100%',
     height: '5vh',
     zIndex: 1,
     backgroundColor: PRIMARY_BLUE,

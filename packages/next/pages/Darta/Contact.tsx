@@ -15,7 +15,7 @@ const useStyles = {
     my: 3,
     alignSelf: 'center',
     height: '100vh',
-    '@media (minWidth: 800px)': {
+    '@media (min-width: 800px)': {
       height: '100vh',
     },
   },
@@ -26,7 +26,7 @@ const useStyles = {
     alignItems: 'center',
     alignContent: 'center',
     gap: '7vh',
-    '@media (minWidth: 800px)': {
+    '@media (min-width: 800px)': {
       flexDirection: 'row',
       alignSelf: 'center',
       alignItems: 'center',

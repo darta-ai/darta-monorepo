@@ -23,7 +23,7 @@ export default function Home({
         />
       </Head>
       <GalleryHeader />
-      <Container maxWidth="lg">
+      <Container maxWidth="xl" sx={{mt: '20vh'}}>
         {pamphletData && (
           <Box
             sx={{
