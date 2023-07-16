@@ -73,11 +73,11 @@ export const createArtworkStyles = {
     flexDirection: 'column',
     justifyContent: 'center',
     alignContent: 'center',
-    maxWidth: '100vw',
+    maxWidth: '85vw',
     minHeight: '100%',
     '@media (min-width: 780px)': {
-      minHeight: '40vh',
-      maxWidth: '30vw',
+      minHeight: '35vh',
+      maxWidth: '35vw',
     },
   },
   imageContainerExhibitions: {
@@ -96,10 +96,9 @@ export const createArtworkStyles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    maxWidth: '60vw',
-    // minHeight: '40vw',
+    maxHeight: '25vh',
     '@media (min-width: 780px)': {
-      maxHeight: '38vh',
+      maxHeight: '30vh',
     },
     alignSelf: 'center',
   },

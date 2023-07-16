@@ -6,7 +6,7 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {Artwork, Exhibition} from '../../../globalTypes';
+import {Exhibition} from '../../../globalTypes';
 import {PRIMARY_BLUE} from '../../../styles';
 import {exhibitionPressReleaseToolTip} from '../../common/ToolTips/toolTips';
 import {createArtworkStyles} from '../Artwork/styles';
@@ -218,25 +218,6 @@ export function CreateExhibition({
     );
     const slug = `${galleryNameHashified}-${exhibitionNameHashified}`;
     setValue('slug.value', slug);
-
-    const array = Object.values(data?.artworks).map((item: unknown) => {
-      if (
-        'artistName' in (item as Artwork) &&
-        (item as Artwork).artistName?.value
-      ) {
-        return (item as Artwork).artistName.value;
-      } else {
-        return null;
-      }
-    });
-
-    console.log(array); // Outputs: [ 'Artist1', 'Artist2', 'Artist3' ]
-
-    const artistNames = [...new Set(data.artwork)];
-
-    if (artistNames) {
-      setValue('artists', artistNames as any);
-    }
     saveExhibition(data);
   };
 
@@ -308,8 +289,16 @@ export function CreateExhibition({
     newExhibition?.exhibitionDates?.exhibitionStartDate?.value || dayjs(),
   );
 
+  const [maxDate, setMaxDate] = React.useState<any>(
+    newExhibition?.exhibitionDates?.exhibitionEndDate?.value || dayjs(),
+  );
+
   const handleMinDate = (date: any) => {
     setMinDate(date);
+  };
+
+  const handleMaxDate = (date: any) => {
+    setMaxDate(date);
   };
 
   const [minTime, setMinTime] = React.useState<any>(
@@ -453,17 +442,14 @@ export function CreateExhibition({
           </Box>
           <Box key="price" sx={createArtworkStyles.inputText}>
             <DartaDropdown
-              fieldName="exhibitionLocation.exhibitionLocationString"
+              fieldName="exhibitionLocation.locationString"
               register={register}
               control={control}
               toolTips={exhibitionPressReleaseToolTip}
               options={galleryLocations ?? ['edit profile to add locations']}
               value={
-                getValues(
-                  'exhibitionLocation.exhibitionLocationString.value',
-                ) ??
-                newExhibition?.exhibitionLocation?.exhibitionLocationString
-                  ?.value
+                getValues('exhibitionLocation.locationString.value') ??
+                newExhibition?.exhibitionLocation?.locationString?.value
               }
               helperTextString={
                 errors.exhibitionLocation?.exhibitionLocationString?.value
@@ -535,6 +521,7 @@ export function CreateExhibition({
                 fieldName="exhibitionDates.exhibitionEndDate"
                 canEdit={!isOngoingExhibition}
                 minDate={dayjs(minDate) || dayjs()}
+                setHigherLevelState={handleMaxDate}
                 value={
                   getValues('exhibitionDates.exhibitionEndDate.value') ||
                   newExhibition?.exhibitionDates?.exhibitionStartDate?.value
@@ -597,7 +584,8 @@ export function CreateExhibition({
                 fieldName="receptionDates.receptionStartTime"
                 canEdit={!hasReception}
                 setHigherLevelState={handleMinTime}
-                minTime={dayjs(minDate)}
+                minTime={dayjs(minTime)}
+                maxTime={dayjs(maxDate)}
                 error={!!errors?.receptionDates?.message}
                 value={
                   getValues('receptionDates.receptionStartTime.value') ||
@@ -614,6 +602,7 @@ export function CreateExhibition({
                 fieldName="receptionDates.receptionEndTime"
                 canEdit={!hasReception}
                 minTime={dayjs(minTime)}
+                maxTime={dayjs(maxDate)}
                 error={!!errors?.receptionDates?.message}
                 value={
                   getValues('receptionDates.receptionEndTime.value') ||

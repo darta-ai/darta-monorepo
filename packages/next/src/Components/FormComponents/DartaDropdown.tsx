@@ -38,7 +38,6 @@ export function DartaDropdown({
   }, []);
 
   const testIdValue = fieldName.replace('.', '-');
-
   return (
     <Box
       sx={{
@@ -82,14 +81,14 @@ export function DartaDropdown({
         <Box sx={formStyles.dropDown}>
           <Controller
             control={control}
-            name={`${fieldName}.${'value'}`}
+            name={`${fieldName}`}
             key={fieldName}
             render={({field}) => (
               <Select
                 id="autocomplete"
                 inputvalue={field.value}
                 key={field.value}
-                value={value}
+                defaultValue={value}
                 sx={formStyles.dropDown}
                 data-testid={`${testIdValue}-select-field`}
                 {...(field as any)}>

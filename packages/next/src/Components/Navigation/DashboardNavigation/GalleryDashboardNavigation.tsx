@@ -1,9 +1,9 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import ArtTrackIcon from '@mui/icons-material/ArtTrack';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import EventIcon from '@mui/icons-material/Event';
+import ImageIcon from '@mui/icons-material/Image';
 import MenuIcon from '@mui/icons-material/Menu';
-import WorkspacesIcon from '@mui/icons-material/Workspaces';
 import MuiAppBar, {AppBarProps as MuiAppBarProps} from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -124,7 +124,6 @@ function MiniDrawer() {
     listItemButton: {
       minHeight: 48,
       justifyContent: open ? 'initial' : 'center',
-      px: 2.5,
     },
     listItemIcon: {
       minWidth: 0,
@@ -195,7 +194,7 @@ function MiniDrawer() {
                 router.push(`/Galleries/Exhibitions`);
               }}>
               <ListItemIcon sx={sideNavigationStyles.listItemIcon}>
-                <WorkspacesIcon />
+                <EventIcon />
               </ListItemIcon>
               <ListItemText
                 sx={{opacity: open ? 1 : 0, fontFamily: 'EB Garamond'}}
@@ -212,7 +211,7 @@ function MiniDrawer() {
                 router.push(`/Galleries/Artwork`);
               }}>
               <ListItemIcon sx={sideNavigationStyles.listItemIcon}>
-                <ArtTrackIcon />
+                <ImageIcon />
               </ListItemIcon>
               <ListItemText
                 sx={{opacity: open ? 1 : 0, fontFamily: 'EB Garamond'}}

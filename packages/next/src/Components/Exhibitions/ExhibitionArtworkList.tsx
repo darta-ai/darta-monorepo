@@ -86,7 +86,9 @@ function DartaListItem({
   return (
     <Box key={artwork?.artworkTitle?.value}>
       <ListItem>
-        <Box sx={dartaListDisplay.toggleContainer}>
+        <Box
+          sx={dartaListDisplay.toggleContainer}
+          className="edit-artwork-order">
           <Box>
             <IconButton
               disabled={index === 0}
@@ -164,6 +166,7 @@ function DartaListItem({
               color: PRIMARY_MILK,
               alignSelf: 'center',
             }}
+            className="exhibition-artwork-edit"
             onClick={() => setEditArtwork(!editArtwork)}
             color="secondary"
             variant="contained">
@@ -292,7 +295,9 @@ export function ExhibitionArtworkList({
   };
 
   return (
-    <List sx={{width: '100%', bgcolor: PRIMARY_MILK}}>
+    <List
+      sx={{width: '100%', bgcolor: PRIMARY_MILK}}
+      className="exhibition-artwork-list">
       {mappedArtworks.map((artwork: any, index: number) => (
         <DartaListItem
           artwork={artwork}

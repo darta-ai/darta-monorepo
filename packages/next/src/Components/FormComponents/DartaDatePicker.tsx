@@ -66,6 +66,7 @@ export function DartaDatePicker({
           key={fieldName}
           name={fieldName}
           control={control}
+          data-testid={`${testIdValue}-timePicker`}
           {...register(`${fieldName}.${'value'}`)}
           render={({field}) => (
             <LocalizationProvider dateAdapter={AdapterDayjs}>

@@ -5,7 +5,6 @@ import _ from 'lodash';
 import Head from 'next/head';
 import React from 'react';
 
-import {retrieveGalleryArtworks} from '../../API/DartaGETrequests';
 import {Artwork} from '../../globalTypes';
 import {newArtworkShell} from '../../src/common/templates';
 import {ArtworkCard} from '../../src/Components/Artwork/index';
@@ -25,7 +24,6 @@ import {
 } from '../../src/dummyData';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../styles';
 import {galleryStyles} from '../../styles/GalleryPageStyles';
-import {AuthContext} from '../_app';
 
 // Reactour steps
 const artworkSteps = [
@@ -64,34 +62,9 @@ const artworkSteps = [
 
 function GalleryArtwork() {
   const {state, dispatch} = useAppState();
-  const {user} = React.useContext(AuthContext);
   const [artworks, setArtworks] = React.useState<{[key: string]: Artwork}>({
     ...state?.galleryArtworks,
   });
-
-  console.log({state});
-
-  // React.useEffect(() => {
-  //   const getArtworkData = async () => {
-  //     if (
-  //       Object?.values(state?.galleryArtworks).length === 0 &&
-  //       Object?.keys(artworks).length === 0
-  //     ) {
-  //       if (state?.accessToken || user?.accessToken) {
-  //         const {galleryArtworks} = retrieveGalleryArtworks(
-  //           state?.accessToken || user?.accessToken,
-  //         );
-  //         dispatch({
-  //           type: GalleryReducerActions.SET_ARTWORKS,
-  //           payload: {...galleryArtworks},
-  //         });
-  //         setArtworks({...galleryArtworks});
-  //       }
-  //     }
-  //   };
-  //   getArtworkData();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [user]);
 
   const [displayArtworks, setDisplayArtworks] = React.useState<Artwork[]>();
   const [inquiries, setInquiries] = React.useState<{

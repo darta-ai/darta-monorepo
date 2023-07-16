@@ -11,7 +11,7 @@ export const profileStyles = {
     justifyContent: 'flex-start',
     alignItems: 'center',
     gap: '2vh',
-    maxWidth: '80vw',
+    maxWidth: '85vw',
     alignSelf: 'center',
     background: PRIMARY_MILK,
   },

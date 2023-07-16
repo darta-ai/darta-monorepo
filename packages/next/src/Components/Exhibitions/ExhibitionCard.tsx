@@ -110,7 +110,10 @@ export function ExhibitionCard({
     !exhibition?.exhibitionDates?.exhibitionEndDate?.value;
 
   return (
-    <Card sx={cardStyles.root} data-testid="exhibition-card">
+    <Card
+      sx={cardStyles.root}
+      data-testid="exhibition-card"
+      className="artwork-card">
       {displayRed ? (
         <Box
           sx={{
@@ -154,6 +157,7 @@ export function ExhibitionCard({
               <Typography
                 variant="h5"
                 component="h2"
+                sx={{fontStyle: 'italic'}}
                 data-testid="artwork-card-exhibition-title">
                 {exhibition?.exhibitionTitle?.value}
               </Typography>
@@ -201,10 +205,8 @@ export function ExhibitionCard({
                       fontFamily: 'EB Garamond',
                     },
                   }}
-                  minRows={3}
                   disabled={true}
                   inputProps={ariaLabel}
-                  maxRows={8}
                   value={exhibition?.exhibitionPressRelease?.value}
                 />
               </Box>
@@ -221,6 +223,7 @@ export function ExhibitionCard({
           }}>
           <Button
             variant="contained"
+            className="exhibition-edit-button"
             color={displayRed ? 'warning' : 'secondary'}
             onClick={() => setEditExhibition(!editExhibition)}
             sx={{alignSelf: 'center', m: '1vh'}}>
