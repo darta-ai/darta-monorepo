@@ -11,15 +11,57 @@ import {Exhibition, GalleryState} from '../../globalTypes';
 import {newExhibitionShell} from '../../src/common/templates';
 import authRequired from '../../src/Components/AuthRequired/AuthRequired';
 import {ExhibitionCard} from '../../src/Components/Exhibitions/index';
+import {DartaJoyride} from '../../src/Components/Navigation/DartaJoyride';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {
   GalleryReducerActions,
   useAppState,
 } from '../../src/Components/State/AppContext';
+import {dummyExhibition} from '../../src/dummyData';
 import {galleryStyles} from '../../styles/GalleryPageStyles';
 // import {AuthContext} from '../_app';
 // need a function that gets all artworks
 // need a function that gets all inquiries for art
+
+// Joyride steps
+const exhibitionSteps = [
+  {
+    target: '.gallery-exhibition-container',
+    content: 'This is your exhibition page.',
+  },
+  {
+    target: '.create-new-exhibition',
+    content: 'Click here to create a new exhibition.',
+  },
+  {
+    target: '.artwork-card',
+    content: 'When an exhibition is created, it will appear here.',
+  },
+  {
+    target: '.exhibition-edit-button',
+    content: 'You can edit the details of the exhibition here.',
+  },
+  {
+    target: '.create-new-artwork',
+    content: 'You can add artworks to the exhibition by clicking here.',
+  },
+  {
+    target: '.upload-new-artwork',
+    content: 'Alternatively, you can batch upload by clicking here.',
+  },
+  {
+    target: '.exhibition-artwork-list',
+    content: 'The artworks in your exhibition will appear here.',
+  },
+  {
+    target: '.exhibition-artwork-edit',
+    content: 'Edit your artworks here.',
+  },
+  {
+    target: '.edit-artwork-order',
+    content: 'Change the ordering of your artworks by clicking here.',
+  },
+];
 
 export const getGalleryLocations = (state: GalleryState): string[] => {
   const galleryLocations = [];
@@ -58,7 +100,6 @@ export const getGalleryLocations = (state: GalleryState): string[] => {
 
 function GalleryExhibitions() {
   const {state, dispatch} = useAppState();
-  console.log({state});
 
   const [galleryLocations, setGalleryLocations] = React.useState<string[]>([]);
   const [galleryName, setGalleryName] = React.useState<string | null>();
@@ -115,6 +156,10 @@ function GalleryExhibitions() {
     });
   };
 
+  const [stepIndex, setStepIndex] = React.useState(0);
+  const runJoyride = Object.keys(state?.galleryExhibitions).length;
+  const [run, setRun] = React.useState(runJoyride === 0);
+
   return (
     <>
       <Head>
@@ -126,6 +171,13 @@ function GalleryExhibitions() {
       </Head>
 
       <SideNavigationWrapper>
+        <DartaJoyride
+          steps={exhibitionSteps}
+          run={run}
+          setRun={setRun}
+          stepIndex={stepIndex}
+          setStepIndex={setStepIndex}
+        />
         <Box sx={galleryStyles.container}>
           <Box>
             <Typography variant="h2" sx={galleryStyles.typographyTitle}>
@@ -135,17 +187,30 @@ function GalleryExhibitions() {
           <Button
             variant="contained"
             data-testid="save-button"
+            className="create-new-exhibition"
             type="submit"
             onClick={() => addNewExhibition()}
             sx={galleryStyles.createNewButton}>
             Create Exhibition
           </Button>
-          <Divider variant="middle" style={galleryStyles.divider} flexItem>
-            Filters
-          </Divider>
+          <Divider
+            className="gallery-exhibition-container"
+            variant="middle"
+            style={galleryStyles.divider}
+            flexItem
+          />
           {state.galleryExhibitions &&
-            Object.values(state.galleryExhibitions).map(
-              (exhibition: Exhibition) => (
+            Object.values(state.galleryExhibitions)
+              .sort((a, b) => {
+                const dateA = a?.createdAt
+                  ? new Date(a.createdAt)
+                  : new Date(0);
+                const dateB = b?.createdAt
+                  ? new Date(b.createdAt)
+                  : new Date(0);
+                return (dateB as any) - (dateA as any);
+              })
+              .map((exhibition: Exhibition) => (
                 <Box key={exhibition.exhibitionId}>
                   <ExhibitionCard
                     exhibition={exhibition}
@@ -156,8 +221,19 @@ function GalleryExhibitions() {
                     galleryName={galleryName as string}
                   />
                 </Box>
-              ),
-            )}
+              ))}
+          {stepIndex >= 2 && run && (
+            <Box>
+              <ExhibitionCard
+                exhibition={dummyExhibition}
+                saveExhibition={saveExhibition}
+                galleryLocations={galleryLocations}
+                deleteExhibition={deleteExhibition}
+                exhibitionId="00000-00000-0000"
+                galleryName={galleryName as string}
+              />
+            </Box>
+          )}
         </Box>
       </SideNavigationWrapper>
     </>

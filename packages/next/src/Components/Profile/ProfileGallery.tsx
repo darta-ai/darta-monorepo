@@ -49,7 +49,7 @@ function GalleryStatus({
           {galleryProfileData?.galleryName?.value}
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
-          <Box sx={{mx: 3}}>
+          <Box sx={{m: 2}}>
             <Typography data-testid="gallery-bio-display">
               {galleryProfileData?.galleryBio?.value}
             </Typography>

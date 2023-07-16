@@ -290,14 +290,15 @@ export function EditProfileGallery({
               instructions="Drag and drop your logo here or click to select a file to upload."
             />
           ) : (
-            <img
+            <Box
+              component="img"
               src={
-                (galleryProfileData?.galleryLogo?.value as string) ??
                 tempImage ??
+                (galleryProfileData?.galleryLogo?.value as string) ??
                 ''
               }
               alt="gallery logo"
-              style={createArtworkStyles.defaultImageEdit}
+              sx={createArtworkStyles.defaultImageEdit}
             />
           )}
         </Box>

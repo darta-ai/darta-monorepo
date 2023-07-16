@@ -6,6 +6,7 @@ import {useRouter} from 'next/router';
 import * as React from 'react';
 
 import {retrieveAllGalleryData} from '../../API/DartaGETrequests';
+import authRequired from '../../src/Components/AuthRequired/AuthRequired';
 import {GalleryHeader} from '../../src/Components/Navigation/Headers/GalleryHeader';
 import {
   GalleryReducerActions,
@@ -13,7 +14,7 @@ import {
 } from '../../src/Components/State/AppContext';
 import {AuthContext} from '../_app';
 
-export default function LoadProfile() {
+export function LoadProfile() {
   const router = useRouter();
   const {dispatch} = useAppState();
   const {user} = React.useContext(AuthContext);
@@ -41,7 +42,7 @@ export default function LoadProfile() {
       const timer = setTimeout(() => {
         // redirect to the new page
         router.push('/Galleries/Profile');
-      }, 1000);
+      }, 500);
 
       return () => clearTimeout(timer);
     }
@@ -75,3 +76,5 @@ export default function LoadProfile() {
     </>
   );
 }
+
+export default authRequired(LoadProfile);

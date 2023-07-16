@@ -23,6 +23,7 @@ export function DartaDateTimePicker({
   canEdit,
   setHigherLevelState,
   minTime,
+  maxTime,
   value,
   error,
 }: {
@@ -33,6 +34,7 @@ export function DartaDateTimePicker({
   register: any;
   canEdit?: boolean;
   minTime?: string | any;
+  maxTime?: string | any;
   setHigherLevelState?: (arg0: string | null) => void;
   value: string | undefined | null;
   error: boolean;
@@ -75,6 +77,7 @@ export function DartaDateTimePicker({
                 sx={formStyles.datePicker}
                 label={label}
                 minDateTime={dayjs(minTime) ?? dayjs()}
+                maxDateTime={dayjs(maxTime) ?? dayjs()}
                 views={['year', 'month', 'day', 'hours', 'minutes']}
                 disabled={canEdit}
                 defaultValue={minTime}
@@ -103,5 +106,6 @@ export function DartaDateTimePicker({
 DartaDateTimePicker.defaultProps = {
   canEdit: false,
   minTime: null,
+  maxTime: null,
   setHigherLevelState: () => {},
 };
