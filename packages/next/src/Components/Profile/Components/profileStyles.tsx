@@ -1,4 +1,8 @@
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../../../styles';
+import {
+  PRIMARY_BLUE,
+  PRIMARY_DARK_GREY,
+  PRIMARY_MILK,
+} from '../../../../styles';
 
 export const profileStyles = {
   container: {
@@ -7,8 +11,9 @@ export const profileStyles = {
     justifyContent: 'flex-start',
     alignItems: 'center',
     gap: '2vh',
-    minWidth: '80vw',
+    maxWidth: '85vw',
     alignSelf: 'center',
+    background: PRIMARY_MILK,
   },
   profile: {
     galleryInfoContainer: {
@@ -162,6 +167,10 @@ export const profileStyles = {
       alignSelf: 'center',
       my: 12,
       borderWidth: 30,
+      minWidth: '10vw',
+      '@media (min-width: 700px)': {
+        minWidth: '60vw',
+      },
     },
     inputText: {
       display: 'flex',

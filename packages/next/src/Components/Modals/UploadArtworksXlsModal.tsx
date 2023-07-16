@@ -26,7 +26,7 @@ const tutorialSteps = [
   {
     label:
       'Create an excel with "Artist", "Title", "Year", "Medium", "Dimensions", "Main image URL" as COLUMN HEADERS. "Display price ex tax" is optional.',
-    callToActionText: 'Click here to download a template',
+    callToActionText: '',
     callToActionLink: '',
     imgPath: excelPNG,
     alt: 'Excel example template.',
@@ -45,13 +45,12 @@ const tutorialSteps = [
 const instructionsCarouselStyles = {
   root: {
     flexGrow: 1,
-    height: '40vh',
+    height: '50vh',
     width: '80vw',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-around',
     '@media (min-width: 800px)': {
-      height: '40vh',
       width: '50vw',
     },
   },
@@ -96,7 +95,7 @@ function InstructionsCarousel() {
 
   return (
     <Box sx={instructionsCarouselStyles.root}>
-      <Paper square elevation={0.5} sx={instructionsCarouselStyles.header}>
+      <Paper square elevation={1} sx={instructionsCarouselStyles.header}>
         <Typography sx={instructionsCarouselStyles.callToAction}>
           {tutorialSteps[activeStep].label}
         </Typography>
@@ -105,8 +104,7 @@ function InstructionsCarousel() {
         style={{...instructionsCarouselStyles.img}}
         src={tutorialSteps[activeStep].imgPath}
         width={200}
-        height={200}
-        // src={excelPNG}
+        height={300}
         alt={tutorialSteps[activeStep].alt}
       />
       {tutorialSteps[activeStep]?.callToActionText && (
@@ -230,9 +228,15 @@ export function UploadArtworksXlsModal({
   };
 
   return (
-    <Box>
-      <Button variant="contained" color="primary" onClick={handleOpen}>
-        Upload Artwork From Excel
+    <>
+      <Button
+        className="upload-new-artwork"
+        variant="contained"
+        color="primary"
+        onClick={handleOpen}>
+        <Typography sx={{fontWeight: 'bold', fontSize: '0.8rem'}}>
+          Upload Artwork From Excel
+        </Typography>
       </Button>
       <Modal
         aria-labelledby="transition-modal-title"
@@ -282,6 +286,6 @@ export function UploadArtworksXlsModal({
           </Box>
         </Fade>
       </Modal>
-    </Box>
+    </>
   );
 }

@@ -45,7 +45,7 @@ describe('EditProfileGallery.cy.tsx', () => {
 
     // primaryContact
     cy.get('[data-testid=primaryContact-input-adornment-string]').contains(
-      'Contact',
+      'Email',
     );
     cy.get('[data-testid=primaryContact-tooltip-button]').click();
     cy.get('[data-testid=primaryContact-tooltip-text]').contains(
@@ -166,7 +166,11 @@ describe('EditProfileGallery.cy.tsx', () => {
     cy.get('[data-testid=primaryContact-input-field]').contains(
       'A valid email address is required',
     );
-    cy.get('[data-testid=primaryContact-input-field]').clear();
+    cy.get('[data-testid=primaryContact-input-field]')
+      .click()
+      .type(
+        '{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}',
+      );
     cy.get('[data-testid=primaryContact-input-field]').type(
       'Gallery@Contact.com',
     );

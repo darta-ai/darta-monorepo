@@ -1,4 +1,4 @@
-import {Box, Button} from '@mui/material';
+import {Box, Button, Divider} from '@mui/material';
 import {debounce} from '@mui/material/utils';
 import * as React from 'react';
 
@@ -8,8 +8,8 @@ import {
   IGalleryProfileData,
 } from '../../../globalTypes';
 import {googleMapsParser} from '../../common/nextFunctions';
-import {profileStyles} from '../Profile/Components/profileStyles';
 import {DartaHoursOfOperation, DartaLocationLookup} from './index';
+import {formStyles} from './styles';
 
 function loadScript(src: string, position: HTMLElement | null, id: string) {
   if (!position) {
@@ -52,6 +52,7 @@ export function DartaLocationAndTimes({
   errors,
   control,
   galleryProfileData,
+  locationDisplay,
 }: {
   locationNumber: BusinessAddressType;
   data: IBusinessLocationData;
@@ -62,6 +63,7 @@ export function DartaLocationAndTimes({
   errors: any;
   control: any;
   galleryProfileData: IGalleryProfileData;
+  locationDisplay: string;
   setValue: any;
 }) {
   const [value, setLocalValue] = React.useState<PlaceType | null | undefined>(
@@ -239,10 +241,26 @@ export function DartaLocationAndTimes({
       : undefined;
 
   return (
-    <>
+    <Box sx={formStyles.dartaLocationContainer}>
+      <Divider>{locationDisplay}</Divider>
       <Box
-        key={`${locationNumber}.locationString"`}
-        sx={profileStyles.edit.inputText}>
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          m: 2,
+        }}>
+        {locationNumber !== 'galleryLocation0' && (
+          <Button
+            variant="contained"
+            color="error"
+            data-testid={`${locationNumber}-remove-location-button`}
+            onClick={() => removeLocation(locationNumber)}>
+            Remove Location
+          </Button>
+        )}
+      </Box>
+      <Box key={`${locationNumber}.locationString"`}>
         <DartaLocationLookup
           fieldName={`${locationNumber}.locationString`}
           data={
@@ -253,7 +271,6 @@ export function DartaLocationAndTimes({
           control={control}
           toolTips={toolTips}
           allowPrivate={true}
-          multiline={false}
           errors={errors}
           helperTextString={
             errors.galleryLocation0?.locationString?.value?.message as string
@@ -268,9 +285,7 @@ export function DartaLocationAndTimes({
           setPlaceId={setPlaceId}
         />
       </Box>
-      <Box
-        key={`${locationNumber}.businessHours"`}
-        sx={profileStyles.edit.inputText}>
+      <Box key={`${locationNumber}.businessHours"`}>
         <DartaHoursOfOperation
           fieldName={`${locationNumber}.businessHours`}
           dtoName={`${locationNumber}`}
@@ -287,15 +302,6 @@ export function DartaLocationAndTimes({
           control={control}
         />
       </Box>
-      {locationNumber !== 'galleryLocation0' && (
-        <Button
-          variant="contained"
-          color="error"
-          data-testid={`${locationNumber}-remove-location-button`}
-          onClick={() => removeLocation(locationNumber)}>
-          Remove Location
-        </Button>
-      )}
-    </>
+    </Box>
   );
 }

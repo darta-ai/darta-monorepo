@@ -27,6 +27,7 @@ class UserRepository extends DocumentRepository<UserBase> {
   constructor(@inject('Database') db: Database) {
     super(db, 'users', userSchemaBase);
   }
+  // add some functions.
 }
 
 container.bind<UserRepository>(UserRepository).toSelf();

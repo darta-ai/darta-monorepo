@@ -3,6 +3,7 @@ import {
   browserSessionPersistence,
   createUserWithEmailAndPassword,
   getAuth,
+  getIdTokenResult,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   updateProfile,
@@ -122,6 +123,18 @@ export async function firebaseForgotPassword(
     return {success: false, errorMessage: firebaseErrors(errorCode)};
   }
 }
+
+export async function firebaseVerifyTest(user: any) {
+  try {
+    const results = await getIdTokenResult(user);
+    return {success: true, errorMessage: ''};
+  } catch (error: any) {
+    const errorCode = error.code;
+    return {success: false, errorMessage: firebaseErrors(errorCode)};
+  }
+}
+
+// getIdTokenResult
 
 const db: any = getFirestore(app);
 

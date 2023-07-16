@@ -1,16 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import {
-  Box,
-  IconButton,
-  InputAdornment,
-  ListItem,
-  TextField,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import {Box, ListItem, TextField, Typography} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid';
 import {debounce} from '@mui/material/utils';
@@ -18,6 +9,7 @@ import parse from 'autosuggest-highlight/parse';
 import * as React from 'react';
 
 import {PrivateFields} from '../Profile/types';
+import {DartaInputAdornment} from './Components';
 import {formStyles} from './styles';
 
 function loadScript(src: string, position: HTMLElement | null, id: string) {
@@ -217,34 +209,19 @@ export function DartaGallerySearch({
   React.useEffect(() => {
     innerWidthRef.current = window.innerWidth;
   }, []);
+  const testIdValue = fieldName.replace('.', '-');
+
   return (
-    <Box sx={formStyles.inputTextContainer}>
-      <Box sx={formStyles.toolTipContainer}>
-        {innerWidthRef.current > 780 && (
-          <Tooltip
-            title={
-              <Typography
-                data-testid={`${fieldName}-tooltip-text`}
-                sx={{textAlign: 'center'}}>
-                {toolTips[fieldName]}
-              </Typography>
-            }
-            placement="top">
-            <IconButton data-testid={`${fieldName}-tooltip-button`}>
-              <HelpOutlineIcon fontSize="medium" sx={formStyles.helpIcon} />
-            </IconButton>
-          </Tooltip>
-        )}
-        <InputAdornment
-          data-testid={`${fieldName}-input-adornment-string`}
-          sx={{overflowX: 'clip'}}
-          position="end">
-          {inputAdornmentString}
-        </InputAdornment>
-      </Box>
+    <Box sx={formStyles.inputTextContainerTwoColumns}>
+      <DartaInputAdornment
+        fieldName={fieldName}
+        required={required}
+        inputAdornmentString={inputAdornmentString}
+        toolTips={toolTips}
+        testIdValue={testIdValue}
+      />
       <Autocomplete
         id="value"
-        sx={formStyles.formTextField}
         getOptionLabel={option =>
           typeof option === 'string' ? option : option.description
         }
@@ -264,13 +241,15 @@ export function DartaGallerySearch({
           setInputValue(newInputValue);
         }}
         renderInput={params => (
-          <TextField
-            {...params}
-            {...register(`${fieldName}.${'value'}`)}
-            data-testid={`${fieldName}-input-field`}
-            variant="standard"
-            required={required}
-          />
+          <Box sx={formStyles.formTextField}>
+            <TextField
+              {...params}
+              {...register(`${fieldName}.${'value'}`)}
+              data-testid={`${fieldName}-input-field`}
+              variant="standard"
+              required={required}
+            />
+          </Box>
         )}
         renderOption={(props, option) => {
           const matches =
@@ -287,7 +266,7 @@ export function DartaGallerySearch({
           return (
             <ListItem {...(props as any)}>
               <Grid container alignItems="center">
-                <Grid item sx={{display: 'flex', width: 44}}>
+                <Grid item sx={{display: 'flex'}}>
                   <LocationOnIcon sx={{color: 'text.secondary'}} />
                 </Grid>
                 <Grid

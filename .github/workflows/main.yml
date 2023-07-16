@@ -32,7 +32,7 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           start: pnpm --prefix ./packages/next start
-          wait-on: 'http://localhost:3000'
+          wait-on: 'http://localhost:1169'
           command: pnpm --prefix ./packages/next run cy-e2e
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -68,7 +68,7 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           start: pnpm --prefix ./packages/next start
-          wait-on: 'http://localhost:3000'
+          wait-on: 'http://localhost:1169'
           command: pnpm --prefix ./packages/next run cy-component
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
