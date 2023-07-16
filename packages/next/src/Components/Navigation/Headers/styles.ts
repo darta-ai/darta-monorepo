@@ -61,9 +61,9 @@ export const headerStyles = {
     },
   },
   imageBox: {
-    height: '3vh',
+    height: '5vh',
   },
   dartaImageBox: {
-    height: '3vh',
+    height: '5vh',
   },
 };
