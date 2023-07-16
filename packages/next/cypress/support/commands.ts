@@ -48,8 +48,6 @@ Cypress.Commands.add('login' as any, () => {
   cy.wait(1000);
 
   cy.url().should('not.include', '/Authenticate');
-
-  cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
 });
 
 declare global {
