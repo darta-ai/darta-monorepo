@@ -1,14 +1,15 @@
-import {Box, Button} from '@mui/material';
-import Image from 'next/image';
+import {Box, Button, Typography} from '@mui/material';
 import {useRouter} from 'next/router';
 import * as React from 'react';
 
 import {firebaseSignOut} from '../../../../../ThirdPartyAPIs/firebaseApp';
 import {AuthEnum} from '../../../Auth/types';
+import {useAppState} from '../../../State/AppContext';
 import {headerStyles} from '../styles';
 
 export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
   const router = useRouter();
+  const {state} = useAppState();
   const handleSignOut = async () => {
     try {
       await firebaseSignOut();
@@ -17,6 +18,8 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
       // console.log(err);
     }
   };
+
+  const image = state?.galleryProfile?.galleryLogo?.value ?? '';
   return (
     <Box sx={headerStyles.headerBox} data-testid="header-navigation-box">
       <Button
@@ -28,27 +31,46 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
         data-testid="header-navigation-signOut-button">
         Sign Out
       </Button>
-      <Button
+      {/* <Button
         onClick={async () => {
-          router.push(`/${authType}/Profile`);
+          
         }}
         sx={headerStyles.button}
         variant="contained"
         data-testid="header-navigation-dashboard-button">
         Dashboard
-      </Button>
+      </Button> */}
       <div />
       <div />
-      <div />
-      <div />
-      <Box data-testid="header-navigation-image-box">
-        <Image
+      <Box
+        sx={headerStyles.imageBoxContainer}
+        onClick={() => router.push(`/${authType}/Profile`)}>
+        {image ? (
+          <>
+            <Box
+              component="img"
+              src={image}
+              sx={headerStyles.imageBox}
+              data-testid="header-image"
+            />
+            <Box sx={{alignSelf: 'center'}}>
+              <Typography variant="h4">+</Typography>
+            </Box>
+          </>
+        ) : (
+          <>
+            <Box sx={headerStyles.imageBox} />
+            <Box sx={{alignSelf: 'center'}}>
+              <Typography variant="h4" />
+            </Box>
+          </>
+        )}
+        <Box
+          component="img"
+          sx={headerStyles.dartaImageBox}
           src="/static/images/dartahouseblue.png"
           data-testid="header-image"
-          alt="home"
-          width="80"
-          height="64"
-          onClick={() => router.push('/', undefined, {shallow: true})}
+          alt="logo"
         />
       </Box>
     </Box>

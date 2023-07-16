@@ -6,9 +6,13 @@ import {PRIMARY_BLUE, PRIMARY_LIGHTBLUE, PRIMARY_MILK} from '../../../styles';
 
 const styles = {
   footerBox: {
-    width: '100%',
+    width: '105%',
     height: '5vh',
+    zIndex: 1,
     backgroundColor: PRIMARY_BLUE,
+    '@media (min-width:800px)': {
+      width: '100%',
+    },
   },
   divider: {
     color: PRIMARY_MILK,
@@ -20,7 +24,7 @@ const styles = {
     alignContent: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: '3vh',
+    gap: '2vh',
     '@media (min-width:800px)': {
       gap: '7vh',
     },

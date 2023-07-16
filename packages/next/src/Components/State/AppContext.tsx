@@ -1,9 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-case-declarations */
+import _ from 'lodash';
 import React, {createContext, ReactNode, useContext, useReducer} from 'react';
 
 import {
   ArtworkObject,
+  Exhibition,
   ExhibitionObject,
   GalleryState,
   IGalleryProfileData,
@@ -12,8 +14,14 @@ import {AuthContext} from '../../../pages/_app';
 
 type Action =
   | {type: 'SET_ARTWORKS'; payload: ArtworkObject}
+  | {
+      type: 'SAVE_NEW_ARTWORKS_FROM_EXHIBITION';
+      payload: ArtworkObject;
+    }
   | {type: 'SET_PROFILE'; payload: IGalleryProfileData}
   | {type: 'SET_EXHIBITIONS'; payload: ExhibitionObject}
+  | {type: 'SAVE_EXHIBITION'; payload: Exhibition; exhibitionId: string}
+  | {type: 'DELETE_EXHIBITION'; exhibitionId: string}
   | {type: 'SET_ACCESS_TOKEN'; payload: string | null};
 
 // Define the shape of your state
@@ -26,8 +34,11 @@ const initialState: GalleryState = {
 
 export enum GalleryReducerActions {
   SET_ARTWORKS = 'SET_ARTWORKS',
+  SAVE_NEW_ARTWORKS = 'SAVE_NEW_ARTWORKS_FROM_EXHIBITION',
   SET_PROFILE = 'SET_PROFILE',
   SET_EXHIBITIONS = 'SET_EXHIBITIONS',
+  SAVE_EXHIBITION = 'SAVE_EXHIBITION',
+  DELETE_EXHIBITION = 'DELETE_EXHIBITION',
   SET_ACCESS_TOKEN = 'SET_ACCESS_TOKEN',
 }
 
@@ -49,16 +60,48 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
       } else {
         return state;
       }
+    case GalleryReducerActions.SAVE_NEW_ARTWORKS:
+      const payloadArtworks = action.payload;
+      if (payloadArtworks) {
+        return {
+          ...state,
+          galleryArtworks: {
+            ...state.galleryArtworks,
+            ...payloadArtworks,
+          },
+        };
+      } else {
+        return state;
+      }
     case GalleryReducerActions.SET_PROFILE:
       return {...state, galleryProfile: action.payload};
     case GalleryReducerActions.SET_EXHIBITIONS:
-      const exhibitionId = action.payload?.exhibitionId;
-      if (exhibitionId) {
+      return {
+        ...state,
+        galleryExhibitions: {
+          ...action.payload,
+        },
+      };
+    case GalleryReducerActions.SAVE_EXHIBITION:
+      if (action?.exhibitionId) {
         return {
           ...state,
           galleryExhibitions: {
             ...state.galleryExhibitions,
-            ...action.payload,
+            [action?.exhibitionId]: action.payload,
+          },
+        };
+      } else {
+        return state;
+      }
+    case GalleryReducerActions.DELETE_EXHIBITION:
+      if (action?.exhibitionId) {
+        const galleryExhibitionsClone = _.cloneDeep(state.galleryExhibitions);
+        delete galleryExhibitionsClone[action.exhibitionId];
+        return {
+          ...state,
+          galleryExhibitions: {
+            ...galleryExhibitionsClone,
           },
         };
       } else {

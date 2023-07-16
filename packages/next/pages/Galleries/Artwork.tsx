@@ -5,53 +5,66 @@ import _ from 'lodash';
 import Head from 'next/head';
 import React from 'react';
 
-import {retrieveGalleryArtworks} from '../../API/DartaGETrequests';
 import {Artwork} from '../../globalTypes';
 import {newArtworkShell} from '../../src/common/templates';
 import {ArtworkCard} from '../../src/Components/Artwork/index';
 import authRequired from '../../src/Components/AuthRequired/AuthRequired';
 import {DartaRadioFilter, DartaTextFilter} from '../../src/Components/Filters';
 import {UploadArtworksXlsModal} from '../../src/Components/Modals';
+import {DartaJoyride} from '../../src/Components/Navigation/DartaJoyride';
 import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
 import {
   GalleryReducerActions,
   useAppState,
 } from '../../src/Components/State/AppContext';
 import {
+  artwork1,
   galleryInquiriesDummyData,
   InquiryArtworkData,
 } from '../../src/dummyData';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../styles';
 import {galleryStyles} from '../../styles/GalleryPageStyles';
-import {AuthContext} from '../_app';
 
-function GalleryProfile() {
+// Reactour steps
+const artworkSteps = [
+  {
+    target: '.gallery-artwork-container',
+    content: 'This is your artwork page.',
+  },
+  {
+    target: '.create-new-artwork',
+    content: 'Click here to create a new artwork.',
+  },
+  {
+    target: '.upload-new-artwork',
+    content:
+      'Alternatively, you can batch upload artwork from an excel. Please read the instructions carefully, as this feature is temperamental.',
+  },
+  {
+    target: '.search-artworks',
+    content:
+      'You can search for individual artworks by artist or artwork name.',
+  },
+  {
+    target: '.search-has-inquiries',
+    content:
+      'When an artwork has inquiries from users, you will be able to filter by artworks that have inquiries.',
+  },
+  {
+    target: '.artwork-card',
+    content: 'When an artwork is created, it will appear here.',
+  },
+  {
+    target: '.artwork-card-edit',
+    content: 'You can edit the details of the artwork here.',
+  },
+];
+
+function GalleryArtwork() {
   const {state, dispatch} = useAppState();
-  const {user} = React.useContext(AuthContext);
   const [artworks, setArtworks] = React.useState<{[key: string]: Artwork}>({
     ...state?.galleryArtworks,
   });
-  React.useEffect(() => {
-    const getArtworkData = async () => {
-      if (
-        Object?.values(state?.galleryArtworks).length === 0 &&
-        Object?.keys(artworks).length === 0
-      ) {
-        if (state?.accessToken || user?.accessToken) {
-          const {galleryArtworks} = await retrieveGalleryArtworks(
-            state?.accessToken || user?.accessToken,
-          );
-          dispatch({
-            type: GalleryReducerActions.SET_ARTWORKS,
-            payload: {...galleryArtworks},
-          });
-          setArtworks({...galleryArtworks});
-        }
-      }
-    };
-    getArtworkData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
 
   const [displayArtworks, setDisplayArtworks] = React.useState<Artwork[]>();
   const [inquiries, setInquiries] = React.useState<{
@@ -157,7 +170,7 @@ function GalleryProfile() {
           artworksWithInquiriesIds.includes(artwork.artworkId),
         );
         return setDisplayArtworks(results);
-      case 'No Inquiries':
+      case 'None':
         results = Object.values(artworks)?.filter(
           artwork => !artworksWithInquiriesIds.includes(artwork.artworkId),
         );
@@ -192,6 +205,10 @@ function GalleryProfile() {
     searchBy: "Search by the artwork's title, artist, or medium.",
   };
 
+  const [stepIndex, setStepIndex] = React.useState(0);
+  const runJoyride = Object.keys(state?.galleryArtworks).length;
+  const [run, setRun] = React.useState(runJoyride === 0);
+
   return (
     <>
       <Head>
@@ -203,48 +220,63 @@ function GalleryProfile() {
       </Head>
 
       <SideNavigationWrapper>
+        <DartaJoyride
+          steps={artworkSteps}
+          run={run}
+          setRun={setRun}
+          stepIndex={stepIndex}
+          setStepIndex={setStepIndex}
+        />
         <Box sx={galleryStyles.container}>
-          <Box>
-            <Typography variant="h2" sx={galleryStyles.typographyTitle}>
-              Artwork
-            </Typography>
+          <Box
+            sx={galleryStyles.artworkDisplayValues}
+            className="gallery-artwork-container">
+            <Box>
+              <Typography variant="h2" sx={galleryStyles.typographyTitle}>
+                Artwork
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              data-testid="create-new-artwork-button"
+              type="submit"
+              onClick={() => addNewArtwork()}
+              className="create-new-artwork"
+              sx={{
+                backgroundColor: PRIMARY_BLUE,
+                color: PRIMARY_MILK,
+                width: '50%',
+                alignSelf: 'center',
+              }}>
+              Create Artwork
+            </Button>
+            <UploadArtworksXlsModal handleBatchUpload={handleBatchUpload} />
+            <Divider variant="middle" style={galleryStyles.divider} flexItem>
+              Filters
+            </Divider>
+            <Box sx={galleryStyles.filterContainer}>
+              <Box className="search-artworks">
+                <DartaTextFilter
+                  toolTips={toolTips}
+                  fieldName="searchBy"
+                  value={searchString}
+                  handleInputChange={setSearchString}
+                />
+              </Box>
+              <Box className="search-has-inquiries">
+                <DartaRadioFilter
+                  toolTips={toolTips}
+                  fieldName="filterBy"
+                  options={['All', 'Has Inquiries', 'None']}
+                  defaultValue="All"
+                  handleRadioFilter={setFilterString}
+                />
+              </Box>
+            </Box>
           </Box>
-          <Button
-            variant="contained"
-            data-testid="create-new-artwork-button"
-            type="submit"
-            onClick={() => addNewArtwork()}
-            sx={{
-              backgroundColor: PRIMARY_BLUE,
-              color: PRIMARY_MILK,
-              width: '50%',
-              alignSelf: 'center',
-            }}>
-            Create Artwork
-          </Button>
-          <UploadArtworksXlsModal handleBatchUpload={handleBatchUpload} />
           <Divider variant="middle" style={galleryStyles.divider} flexItem>
-            Filters
+            Artworks
           </Divider>
-          <Box sx={galleryStyles.filterContainer}>
-            <Box>
-              <DartaTextFilter
-                toolTips={toolTips}
-                fieldName="searchBy"
-                value={searchString}
-                handleInputChange={setSearchString}
-              />
-            </Box>
-            <Box>
-              <DartaRadioFilter
-                toolTips={toolTips}
-                fieldName="filterBy"
-                options={['All', 'Has Inquiries', 'No Inquiries']}
-                defaultValue="All"
-                handleRadioFilter={setFilterString}
-              />
-            </Box>
-          </Box>
           {inquiries && displayArtworks && (
             <Box sx={{display: 'flex', gap: '1vh', flexDirection: 'column'}}>
               {isSortedAscending
@@ -300,10 +332,22 @@ function GalleryProfile() {
                     ))}
             </Box>
           )}
+          {stepIndex >= 5 && run && (
+            <Box>
+              <ArtworkCard
+                artwork={Object.values({...artwork1})[0] as Artwork}
+                saveArtwork={saveArtwork}
+                deleteArtwork={deleteArtwork}
+                croppingModalOpen={croppingModalOpen}
+                setCroppingModalOpen={setCroppingModalOpen}
+                inquiries={[] as InquiryArtworkData[]}
+              />
+            </Box>
+          )}
         </Box>
       </SideNavigationWrapper>
     </>
   );
 }
 
-export default authRequired(GalleryProfile);
+export default authRequired(GalleryArtwork);
