@@ -1,115 +1,72 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {
   Box,
   FormControlLabel,
-  IconButton,
-  InputAdornment,
   Radio,
   RadioGroup,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import * as React from 'react';
 import {Controller} from 'react-hook-form';
 
+import {DartaInputAdornment} from './Components';
 import {formStyles} from './styles';
-
-type currencyConverterType = {
-  [key: string]: string;
-};
-
-const currencyConverter: currencyConverterType = {
-  USD: '$',
-  EUR: '€',
-  GBP: '£',
-};
 
 export function DartaRadioButtonsGroup({
   toolTips,
   fieldName,
   inputAdornmentString,
   options,
-  defaultValue,
   control,
-  setDisplayCurrency,
+  setHigherLevelState,
   errors,
   helperTextString,
   required,
+  value,
 }: {
   toolTips: any;
   fieldName: string;
   control: any;
   inputAdornmentString: string;
-  defaultValue: string;
   options: string[];
   helperTextString: string | undefined;
   errors: any;
-  setDisplayCurrency: any | null;
+  setHigherLevelState: any | null;
   required: boolean;
+  value: string | undefined | null;
 }) {
-  const innerWidthRef = React.useRef(800);
-  React.useEffect(() => {
-    innerWidthRef.current = window.innerWidth;
-  }, []);
   const testIdValue = fieldName.replace('.', '-');
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        width: '100%',
-        alignContent: 'center',
-      }}>
-      {inputAdornmentString !== '' && (
-        <Box sx={formStyles.toolTipContainer}>
-          {innerWidthRef.current > 780 && (
-            <Tooltip
-              title={
-                <Typography
-                  sx={{textAlign: 'center'}}
-                  data-testid={`${testIdValue}-tooltip-text`}>
-                  {toolTips[fieldName]}
-                </Typography>
-              }
-              placement="top">
-              <IconButton>
-                <HelpOutlineIcon
-                  data-testid={`${testIdValue}-tooltip-button`}
-                  fontSize="medium"
-                  sx={formStyles.helpIcon}
-                />
-              </IconButton>
-            </Tooltip>
-          )}
-          <InputAdornment
-            data-testid={`${testIdValue}-input-adornment-string`}
-            sx={{overflowX: 'clip'}}
-            position="end">
-            {inputAdornmentString}
-            {required && '*'}
-          </InputAdornment>
-        </Box>
-      )}
-      <Box sx={{...formStyles.formTextField, alignSelf: 'center'}}>
+    <Box sx={formStyles.underHeadingContainer}>
+      <DartaInputAdornment
+        fieldName={fieldName}
+        required={required}
+        inputAdornmentString={inputAdornmentString}
+        toolTips={toolTips}
+        testIdValue={testIdValue}
+      />
+      <Box sx={{ml: 3}}>
         <Controller
           control={control}
           name={`${fieldName}.${'value'}`}
+          key={fieldName}
           render={({field}: {field: any}) => (
             <RadioGroup
               row
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
-              defaultValue={defaultValue}
+              value={value}
+              sx={{alignSelf: 'center'}}
               {...field}>
               {options.map(option => {
                 return (
                   <FormControlLabel
                     value={option}
+                    key={option}
                     data-testid={`${fieldName}-input-${option}`}
                     onClick={() => {
-                      setDisplayCurrency &&
-                        setDisplayCurrency(currencyConverter[option]);
+                      setHigherLevelState && setHigherLevelState(option);
                     }}
                     control={<Radio color="secondary" />}
                     label={option}
