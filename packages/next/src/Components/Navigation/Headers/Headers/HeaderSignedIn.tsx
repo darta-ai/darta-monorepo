@@ -54,7 +54,7 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
               data-testid="header-image"
             />
             <Box sx={{alignSelf: 'center'}}>
-              <Typography variant="h4">+</Typography>
+              <Typography variant="h5">+</Typography>
             </Box>
           </>
         ) : (

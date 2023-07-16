@@ -137,7 +137,7 @@ function MiniDrawer() {
       <CssBaseline />
       <AppBar position="fixed" open={open} data-testid="appBar">
         <Toolbar>
-          {innerWidthRef.current > 800 && (
+          {innerWidthRef.current >= 800 && (
             <IconButton
               data-testid="menuButton"
               color="inherit"
