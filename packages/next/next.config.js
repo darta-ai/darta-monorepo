@@ -1,15 +1,6 @@
-/** @type {import('next').NextConfig} */
+const withTM = require('next-transpile-modules')(['../components']);
 
-module.exports = {
-  images: {
-    loader: 'imgix',
-    path: 'https://s3.amazonaws.com',
-    domains: [
-      'lh3.googleusercontent.com',
-      's3.amazonaws.com',
-      'http://s3.amazonaws',
-    ],
-    unoptimized: true,
-    reactStrictMode: true,
-  },
-};
+/** @type {import('next').NextConfig} */
+const nextConfig = withTM({});
+
+module.exports = nextConfig;
