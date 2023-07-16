@@ -137,21 +137,22 @@ function MiniDrawer() {
       <CssBaseline />
       <AppBar position="fixed" open={open} data-testid="appBar">
         <Toolbar>
-          {innerWidthRef.current >= 800 && (
-            <IconButton
-              data-testid="menuButton"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              sx={{
-                marginRight: 5,
-                color: PRIMARY_MILK,
-                ...(open && {display: 'none'}),
-              }}>
-              <MenuIcon />
-            </IconButton>
-          )}
+          <IconButton
+            data-testid="menuButton"
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{
+              marginRight: 5,
+              color: PRIMARY_MILK,
+              '@media (max-width: 800px)': {
+                display: 'none',
+              },
+              ...(open && {display: 'none'}),
+            }}>
+            <MenuIcon />
+          </IconButton>
           <HeaderSignedIn authType={AuthEnum.galleries} />
         </Toolbar>
       </AppBar>
