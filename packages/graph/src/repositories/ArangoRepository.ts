@@ -1,23 +1,53 @@
-import { injectable, inject } from 'inversify';
-import { Database } from 'arangojs';
-import { DocumentCollection, EdgeCollection } from 'arangojs/collection';
+import {injectable, inject} from 'inversify';
+import {Database} from 'arangojs';
+import {DocumentCollection, EdgeCollection} from 'arangojs/collection';
 import * as joi from '@hapi/joi';
-import 'joi-extract-type';
 
-import { NotEmptyObject } from './util';
+type NotEmptyObject<T=any> = { [K in string]: T };
 
-export const arangoDocumentSchema = joi.object({
+export interface ArangoCreateType {
+  _key: string;
+};
+
+export interface ArangoUpdateType {
+  _key: string;
+};
+
+export interface ArangoDocumentType extends ArangoCreateType {
+  _id: string;
+  _rev: string;
+};
+
+export interface ArangoEdgeType extends ArangoDocumentType {
+  _from: string;
+  _to: string;
+};
+
+export const createDocumentSchema = joi.object({
   _key: joi.string().required(),
+  // createdAt: joi.date()//.timesateSchemaBasetamp().default(Date.now, 'time of creation'),
+});
+
+export const updateDocumentSchema = joi.object({
+  _key: joi.string().required(),
+  _id: joi.string(),
+  _rev: joi.string().forbidden(),
+  // updatedAt: joi.date()//.forbidden().default(Date.now, 'time of update'),
+});
+
+export const documentSchema = createDocumentSchema.keys({
   _id: joi.string().required(),
   _rev: joi.string().required(),
 });
-export type ArangoDocumentType = joi.extractType<typeof arangoDocumentSchema>;
 
-export const arangoEdgeSchema = arangoDocumentSchema.keys({
+const edgeSchemaBase = joi.object({
   _from: joi.string().required(),
   _to: joi.string().required(),
 });
-export type ArangoEdgeType = joi.extractType<typeof arangoEdgeSchema>;
+
+export const createEdgeSchema = createDocumentSchema.concat(edgeSchemaBase);
+export const updateEdgeSchema = updateDocumentSchema.concat(edgeSchemaBase);
+export const edgeSchema = createEdgeSchema.concat(edgeSchemaBase);
 
 interface IArangoCollection<
   T = ArangoDocumentType | ArangoEdgeType,
@@ -54,7 +84,7 @@ abstract class ArangoRepository<
     this.name = collectionName;
     this.collection = this.getCollection(db, collectionName);
     this.schema = schema;
-    this.fullSchema = schema.concat(this.isEdgeCollection ? arangoEdgeSchema : arangoDocumentSchema);
+    this.fullSchema = schema.concat(this.isEdgeCollection ? edgeSchema : documentSchema);
   }
 
   // Abstract method to be implemented in the child classes
