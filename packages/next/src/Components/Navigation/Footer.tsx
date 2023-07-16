@@ -6,7 +6,7 @@ import {PRIMARY_BLUE, PRIMARY_LIGHTBLUE, PRIMARY_MILK} from '../../../styles';
 
 const styles = {
   footerBox: {
-    width: '105%',
+    width: '100%',
     height: '5vh',
     zIndex: 1,
     backgroundColor: PRIMARY_BLUE,
@@ -37,10 +37,9 @@ const styles = {
       fontSize: '0.9rem',
     },
     '&:hover': {
-      backgroundColor: PRIMARY_LIGHTBLUE,
+      color: PRIMARY_LIGHTBLUE,
       opacity: [0.9, 0.9, 0.9],
     },
-    cursor: 'default',
   },
 };
 

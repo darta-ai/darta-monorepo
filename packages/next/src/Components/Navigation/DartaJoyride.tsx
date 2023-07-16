@@ -34,6 +34,7 @@ export function DartaJoyride({
       scrollToFirstStep
       showProgress
       showSkipButton
+      disableOverlayClose
       disableScrolling
       stepIndex={stepIndex}
       steps={steps}
