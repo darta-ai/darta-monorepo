@@ -1,15 +1,14 @@
-import 'reflect-metadata';
-
+import * as dotenv from 'dotenv';
 import express, {Request, Response} from 'express';
 import http from 'http';
 
-import {config} from './config';
-import {container} from './container';
 import {startServices} from './services';
 
-container.bind<express.Application>('ExpressApp').toConstantValue(express());
-const app = container.get<express.Application>('ExpressApp');
+dotenv.config();
 
+const {PORT: port} = process.env;
+
+const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
@@ -30,7 +29,6 @@ app.get('/pong', (req: Request, res: Response) => {
 
 startServices(app);
 
-httpServer.listen(config.port, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Listening on port ${config.port}`);
+httpServer.listen(port, () => {
+  console.log(`Listening on port ${port}`);
 });
