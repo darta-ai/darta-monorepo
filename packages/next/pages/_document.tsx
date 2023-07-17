@@ -89,13 +89,6 @@ MyDocument.getInitialProps = async (ctx: DocumentContext) => {
         },
     });
 
-  // enhanceApp: (
-  //   App: ,
-  // ) =>
-  //   function EnhanceApp(props) {
-  //     return <App emotionCache={cache} {...props} />;
-  //   },
-
   const initialProps = await Document.getInitialProps(ctx);
   // This is important. It prevents Emotion to render invalid HTML.
   // See https://github.com/mui/material-ui/issues/26561#issuecomment-855286153
