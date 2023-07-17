@@ -43,7 +43,7 @@ export function BaseHeader() {
           sx={headerStyles.button}
           variant="contained"
           data-testid="header-link-gallery">
-          galleries
+          for galleries
         </Button>
       )}
       {/* <Link href={`/Authenticate/${AuthEnum.curators}`}>

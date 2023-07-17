@@ -306,14 +306,14 @@ export function CreateArtwork({
               style={createArtworkStyles.defaultImage}
             />
           )}
-          {errors.artworkImage && (
-            <Typography
-              data-testid="artwork-image-error"
-              sx={{color: 'red', alignSelf: 'center', textAlign: 'center'}}>
-              {errors.artworkImage?.value?.message!}
-            </Typography>
-          )}
         </Box>
+        {errors.artworkImage && (
+          <Typography
+            data-testid="artwork-image-error"
+            sx={{color: 'red', alignSelf: 'center', textAlign: 'center'}}>
+            {errors.artworkImage?.value?.message!}
+          </Typography>
+        )}
         <Box sx={{alignSelf: 'center'}}>
           <Button
             sx={{width: '40vw', alignSelf: 'center'}}
@@ -429,7 +429,7 @@ export function CreateArtwork({
           }}>
           <Typography variant="h6">Pricing & Inquires</Typography>
           <Box sx={createArtworkStyles.multiLineContainer}>
-            <Box>
+            <Box sx={{my: 2}}>
               <DartaRadioButtonsGroup
                 toolTips={createArtworkToolTips}
                 fieldName="artworkCurrency"
@@ -472,7 +472,7 @@ export function CreateArtwork({
               inputAdornmentString="Users Can Inquire?"
               control={control}
               required={true}
-              helperTextString={errors.canInquire?.value?.message}
+              helperTextString=""
               errors={errors}
               options={['Yes', 'No']}
               setHigherLevelState={null}
@@ -482,6 +482,17 @@ export function CreateArtwork({
             />
           </Box>
         </Box>
+        {errors?.canInquire && (
+          <Typography
+            data-testid="artwork-image-error"
+            sx={{
+              color: 'red',
+              alignSelf: 'center',
+              textAlign: 'center',
+            }}>
+            {errors.canInquire?.value?.message!}
+          </Typography>
+        )}
         <Box
           key="artworkDimensions"
           sx={{
@@ -582,12 +593,12 @@ export function CreateArtwork({
               inputAdornmentValue={isInchesMeasurement ? 'cm' : 'in'}
             />
           </Box>
-          <Typography
-            sx={{color: 'red', textAlign: 'center'}}
-            data-testid="dimensions-text-error-field">
-            {errors?.artworkDimensions?.message}
-          </Typography>
         </Box>
+        <Typography
+          sx={{color: 'red', textAlign: 'center', mb: 2}}
+          data-testid="dimensions-text-error-field">
+          {errors?.artworkDimensions?.message}
+        </Typography>
         <Box sx={createArtworkStyles.saveButtonContainer}>
           <Button
             variant="contained"

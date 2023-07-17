@@ -5,12 +5,13 @@ export const authStyles = {
     flex: 3,
     border: '1px solid',
     borderColor: PRIMARY_BLUE,
-    height: '100%',
     borderTopRightRadius: '0px',
     borderTopLeftRadius: '0px',
     borderBottomLeftRadius: '30px',
     borderBottomRightRadius: '30px',
+    height: '50vh',
     '@media (min-width:800px)': {
+      height: '100%',
       borderTopRightRadius: '30px',
       borderBottomRightRadius: '30px',
       borderTopLeftRadius: '0px',
@@ -70,7 +71,7 @@ export const welcomeStyles = {
   },
   introContainer: {
     flex: 4,
-    height: '100%',
+    height: '50vh',
     backgroundColor: PRIMARY_BLUE,
     borderTopLeftRadius: '30px',
     borderTopRightRadius: '30px',
@@ -78,6 +79,7 @@ export const welcomeStyles = {
       borderTopLeftRadius: '30px',
       borderBottomLeftRadius: '30px',
       borderTopRightRadius: '0px',
+      height: '100%',
     },
   },
   headerContainer: {
@@ -101,13 +103,13 @@ export const welcomeStyles = {
     height: '10%',
   },
   header: {
-    fontFamily: 'EB Garamond',
+    fontFamily: 'Nunito Sans',
     alignText: 'center',
     color: PRIMARY_MILK,
-    fontSize: '2rem',
+    fontSize: '1.5rem',
     alignSelf: 'center',
     '@media (min-width:800px)': {
-      fontSize: '2rem',
+      fontSize: '1.8rem',
     },
   },
   footerContainer: {
@@ -118,8 +120,11 @@ export const welcomeStyles = {
   },
   typographyTitle: {
     color: PRIMARY_MILK,
-    fontSize: '1.5rem',
+    fontSize: '1.1rem',
     alignSelf: 'center',
+    '@media (min-width:800px)': {
+      fontSize: '1.4rem',
+    },
   },
   typography: {
     color: PRIMARY_DARK_GREY,
@@ -135,6 +140,8 @@ export const welcomeStyles = {
   footerText: {
     color: PRIMARY_MILK,
     fontSize: '1rem',
+    textAlign: 'center',
+    my: 2,
     '@media (min-width:800px)': {
       fontSize: '1.2rem',
     },
@@ -145,13 +152,11 @@ export const welcomeStyles = {
   },
   displayTextContainer: {
     flexDirection: 'row',
-    height: '10vh',
     width: '95%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-start',
     alignContent: 'center',
-    gap: '2%',
   },
   icon: {
     color: 'blue',
