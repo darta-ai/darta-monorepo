@@ -67,6 +67,7 @@ dev:
       - path: ./pnpm-workspace.yaml
       - path: ./devspace_start.sh
       - path: ./.env.local
+      - path: ./tsconfig.json
     # Open a terminal and use the following command to start it
     terminal:
       command: ./devspace_start.sh

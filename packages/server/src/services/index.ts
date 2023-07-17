@@ -1,6 +1,5 @@
 import {Application} from 'express';
-
-import * as repositories from '../repositories';
+import {repositories} from '@/graph';
 import {CrudService} from './CrudService';
 
 export function startServices(app: Application): void {

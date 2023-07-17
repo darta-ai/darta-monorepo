@@ -5,11 +5,13 @@ export URLPREFIX=https://github.com/arangodb/kube-arangodb/releases/download/$VE
 
 # Check if namespace already exists
 if ! kubectl get namespace "$NAMESPACE" > /dev/null 2>&1; then
+  echo "Creating namespace $NAMESPACE"
   kubectl create namespace "$NAMESPACE"
 fi
 
 # Check if helm CRD chart is already installed
 if ! helm list -n "$NAMESPACE" | grep kube-arangodb-crd > /dev/null 2>&1; then
+  echo "Installing helm ArangoDB CRD chart"
   helm install kube-arangodb-crd "$URLPREFIX/kube-arangodb-crd-$VERSION.tgz" --namespace "$NAMESPACE"
 fi
 
