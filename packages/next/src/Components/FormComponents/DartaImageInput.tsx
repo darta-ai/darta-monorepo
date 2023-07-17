@@ -14,9 +14,10 @@ const useStyles = {
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'pointer',
-    height: '100%',
+    height: '80%',
+    m: 1,
     padding: '2vh',
-    width: '100%',
+    width: '80%',
     outline: 'none',
     transition: 'border .24s ease-in-out',
     '&:hover': {

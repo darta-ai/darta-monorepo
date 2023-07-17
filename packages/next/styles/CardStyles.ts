@@ -41,7 +41,7 @@ export const cardStyles = {
   textAreaAutosize: {
     width: '30vw',
     fontSize: '1rem',
-    fontFamily: 'EB Garamond',
+    fontFamily: 'Nunito Sans',
     backgroundColor: PRIMARY_MILK,
     border: `1px solid ${PRIMARY_MILK}`,
   },

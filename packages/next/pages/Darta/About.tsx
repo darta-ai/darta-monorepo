@@ -58,7 +58,7 @@ const aboutStyles = {
     borderRadius: 20,
   },
   typographyTitle: {
-    fontFamily: 'EB Garamond',
+    fontFamily: 'Nunito Sans',
     color: PRIMARY_BLUE,
     fontSize: '2rem',
     my: '3vh',
@@ -68,14 +68,14 @@ const aboutStyles = {
     cursor: 'default',
   },
   typography: {
-    fontFamily: 'EB Garamond',
+    fontFamily: 'Nunito Sans',
     color: PRIMARY_DARK_GREY,
     fontSize: '1.3rem',
     '@media (min-width: 800px)': {},
     cursor: 'default',
   },
   typographyH3: {
-    fontFamily: 'EB Garamond',
+    fontFamily: 'Nunito Sans',
     color: PRIMARY_DARK_GREY,
     fontSize: '1.2rem',
     '@media (min-width: 800px)': {
