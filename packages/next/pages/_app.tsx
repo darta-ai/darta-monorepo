@@ -85,7 +85,9 @@ export default function MyApp(props: MyAppProps) {
                 <Typography>Loading...</Typography>
               </Box>
             ) : (
-              <Component {...pageProps} sx={{backgroundColor: PRIMARY_MILK}} />
+              <Box sx={{backgroundColor: PRIMARY_MILK}}>
+                <Component {...pageProps} />
+              </Box>
             )}
           </AppContextProvider>
           <Footer />
