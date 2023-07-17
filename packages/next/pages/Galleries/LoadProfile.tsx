@@ -3,7 +3,7 @@ import Container from '@mui/material/Container';
 import LinearProgress from '@mui/material/LinearProgress';
 import Head from 'next/head';
 import {useRouter} from 'next/router';
-import * as React from 'react';
+import React from 'react';
 
 import {retrieveAllGalleryData} from '../../API/DartaGETrequests';
 import authRequired from '../../src/Components/AuthRequired/AuthRequired';

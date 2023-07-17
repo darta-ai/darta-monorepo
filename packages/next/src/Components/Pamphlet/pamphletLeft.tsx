@@ -2,7 +2,7 @@
 /* eslint-disable global-require */
 import {Box, Typography} from '@mui/material';
 import Image from 'next/image';
-import * as React from 'react';
+import React from 'react';
 
 import {AuthEnum} from '../Auth/types';
 import {styles} from './styles';

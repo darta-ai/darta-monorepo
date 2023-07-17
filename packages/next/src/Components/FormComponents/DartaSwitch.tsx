@@ -9,7 +9,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import * as React from 'react';
+import React from 'react';
 import {Controller} from 'react-hook-form';
 
 import {PRIMARY_DARK_GREY} from '../../../styles';

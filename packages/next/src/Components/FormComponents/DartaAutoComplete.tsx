@@ -2,7 +2,7 @@
 
 import {Box, TextField, Typography} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
-import * as React from 'react';
+import React from 'react';
 import {Controller} from 'react-hook-form';
 
 import {PrivateFields} from '../Profile/types';
