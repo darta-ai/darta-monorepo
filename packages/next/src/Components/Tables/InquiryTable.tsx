@@ -15,7 +15,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Typography from '@mui/material/Typography';
-import * as React from 'react';
+import React from 'react';
 
 import {InquiryArtworkData} from '../../dummyData';
 

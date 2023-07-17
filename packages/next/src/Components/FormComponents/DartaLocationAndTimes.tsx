@@ -1,6 +1,6 @@
 import {Box, Button, Divider} from '@mui/material';
 import {debounce} from '@mui/material/utils';
-import * as React from 'react';
+import React from 'react';
 
 import {
   BusinessAddressType,

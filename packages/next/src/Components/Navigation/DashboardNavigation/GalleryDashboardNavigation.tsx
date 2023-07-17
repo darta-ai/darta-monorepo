@@ -18,7 +18,7 @@ import ListItemText from '@mui/material/ListItemText';
 import {CSSObject, styled, Theme, useTheme} from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import {useRouter} from 'next/router';
-import * as React from 'react';
+import React from 'react';
 
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../../styles';
 import {AuthEnum} from '../../Auth/types';

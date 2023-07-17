@@ -9,7 +9,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import * as React from 'react';
+import React from 'react';
 
 import {filterStyles} from './styles';
 

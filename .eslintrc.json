@@ -40,6 +40,7 @@
     "no-console": 2,
     "react/prop-types": "off",
     "guard-for-in": "off",
+    "react/react-in-jsx-scope": "warn",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
     "@typescript-eslint/no-use-before-define": ["error"],

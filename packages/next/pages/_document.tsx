@@ -9,7 +9,7 @@ import Document, {
   Main,
   NextScript,
 } from 'next/document';
-import * as React from 'react';
+import React from 'react';
 
 import createEmotionCache from '../src/createEmotionCache';
 import theme from '../src/theme';
@@ -88,13 +88,6 @@ MyDocument.getInitialProps = async (ctx: DocumentContext) => {
           return <App emotionCache={cache} {...props} />;
         },
     });
-
-  // enhanceApp: (
-  //   App: ,
-  // ) =>
-  //   function EnhanceApp(props) {
-  //     return <App emotionCache={cache} {...props} />;
-  //   },
 
   const initialProps = await Document.getInitialProps(ctx);
   // This is important. It prevents Emotion to render invalid HTML.

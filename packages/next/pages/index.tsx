@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import Head from 'next/head';
+import React from 'react';
 
 import {AuthEnum} from '../src/Components/Auth/types';
 import {BaseHeader} from '../src/Components/Navigation/Headers/BaseHeader';
@@ -28,13 +29,13 @@ export default function Home({
       <Container maxWidth="xl" sx={{mt: '20vh'}}>
         {pamphletData && (
           <Box
-          sx={{
-            my: 10,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+            sx={{
+              my: 10,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             {/* <Hello /> */}
             {pamphletData &&
               pamphletData.map((data: any, index: number) => {

@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from '@mui/material';
 import Image from 'next/image';
-import * as React from 'react';
+import React from 'react';
 
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 

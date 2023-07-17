@@ -6,7 +6,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid';
 import {debounce} from '@mui/material/utils';
 import parse from 'autosuggest-highlight/parse';
-import * as React from 'react';
+import React from 'react';
 
 import {PrivateFields} from '../Profile/types';
 import {DartaInputAdornment} from './Components';

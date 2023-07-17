@@ -4,7 +4,7 @@ import {Box, ListItem, TextField, Typography} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid';
 import parse from 'autosuggest-highlight/parse';
-import * as React from 'react';
+import React from 'react';
 
 import {PrivateFields} from '../Profile/types';
 import {DartaInputAdornment, DartaPrivateFieldHelper} from './Components';
