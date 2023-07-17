@@ -5,13 +5,16 @@ import {
   ArangoEdgeType,
   DocumentRepository,
   EdgeRepository,
-} from '../repositories/ArangoRepository';
+} from '@/graph';
 
 // TODO is an interface (or class) even needed here? Just functions?
 interface ICrudService<
   D extends ArangoDocumentType | ArangoEdgeType,
   C extends DocumentRepository<D> | EdgeRepository<D>,
-> {}
+> {
+  name: string;
+  // TODO
+}
 
 // TODO think through all error possiblities
 export class CrudService<
