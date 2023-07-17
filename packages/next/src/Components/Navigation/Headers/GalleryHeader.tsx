@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import {AuthContext} from '../../../../pages/_app';
 import {AuthEnum} from '../../Auth/types';

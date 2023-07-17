@@ -1,6 +1,6 @@
 // import { useIsFocused } from '@react-navigation/core';
 // import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-// import * as React from 'react';
+// import React from 'react';
 // import {
 //   useCallback,
 //   useEffect,

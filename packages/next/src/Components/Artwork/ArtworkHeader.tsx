@@ -1,5 +1,5 @@
 import {Box, Button, Typography} from '@mui/material';
-import * as React from 'react';
+import React from 'react';
 
 import {Artwork} from '../../../globalTypes';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles/index';
