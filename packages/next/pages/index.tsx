@@ -10,6 +10,8 @@ import {PamphletLeft} from '../src/Components/Pamphlet/pamphletLeft';
 import {PamphletRight} from '../src/Components/Pamphlet/pamphletRight';
 import {getPamphlet} from '../ThirdPartyAPIs/firebaseDB';
 
+// import {Hello} from '@/components';
+
 export default function Home({
   staticData,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
@@ -34,6 +36,7 @@ export default function Home({
               justifyContent: 'center',
               alignItems: 'center',
             }}>
+            {/* <Hello /> */}
             {pamphletData &&
               pamphletData.map((data: any, index: number) => {
                 const isEven = index % 2 === 0;

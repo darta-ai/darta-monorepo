@@ -1,7 +1,5 @@
 packages:
   # include packages in subfolders (e.g. apps/ and packages/)
-  - 'packages/next'
-  - 'packages/mobile'
-  - 'packages/server'
+  - 'packages/**'
   # if required, exclude some directories
   # - '!**/test/**'
