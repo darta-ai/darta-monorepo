@@ -484,7 +484,7 @@ export function CreateArtwork({
         </Box>
         {errors?.canInquire && (
           <Typography
-            data-testid="artwork-image-error"
+            data-testid="canInquire-text-error-field"
             sx={{
               color: 'red',
               alignSelf: 'center',
