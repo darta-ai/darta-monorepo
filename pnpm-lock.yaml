@@ -183,8 +183,8 @@ importers:
         specifier: ^29.2.1
         version: 29.5.2
       '@types/react':
-        specifier: 18.0.29
-        version: 18.0.29
+        specifier: ^18.2.15
+        version: 18.2.15
       '@types/react-test-renderer':
         specifier: ^18.0.0
         version: 18.0.0
@@ -4196,7 +4196,7 @@ packages:
   /@types/react-native-snap-carousel@3.8.5(react-native@0.71.2):
     resolution: {integrity: sha512-EMBwQo/om2HZM/J6u8Bvz7i0BEO/v6frrpmlvUQ579CMsgYQPlYzQ1ne4KDdRq08+yDSG8/8AwIi1R+185ROsg==}
     dependencies:
-      '@types/react': 18.2.14
+      '@types/react': 18.2.15
       '@types/react-native': 0.72.2(react-native@0.71.2)
     transitivePeerDependencies:
       - react-native
@@ -4227,7 +4227,7 @@ packages:
   /@types/react-test-renderer@18.0.0:
     resolution: {integrity: sha512-C7/5FBJ3g3sqUahguGi03O79b8afNeSD6T8/GU50oQrJCU0bVCCGQHaGKUbg2Ce8VQEEqTw8/HiS6lXHHdgkdQ==}
     dependencies:
-      '@types/react': 18.2.14
+      '@types/react': 18.2.15
     dev: true
 
   /@types/react-transition-group@4.4.6:
@@ -4235,21 +4235,6 @@ packages:
     dependencies:
       '@types/react': 18.2.15
     dev: false
-
-  /@types/react@18.0.29:
-    resolution: {integrity: sha512-wXHktgUABxplw1+UnljseDq4+uztQyp2tlWZRIxHlpchsCFqiYkvaDS8JR7eKOQm8wziTH/el5qL7D6gYNkYcw==}
-    dependencies:
-      '@types/prop-types': 15.7.5
-      '@types/scheduler': 0.16.3
-      csstype: 3.1.2
-    dev: true
-
-  /@types/react@18.2.14:
-    resolution: {integrity: sha512-A0zjq+QN/O0Kpe30hA1GidzyFjatVvrpIvWLxD+xv67Vt91TWWgco9IvrJBkeyHm1trGaFS/FSGqPlhyeZRm0g==}
-    dependencies:
-      '@types/prop-types': 15.7.5
-      '@types/scheduler': 0.16.3
-      csstype: 3.1.2
 
   /@types/react@18.2.15:
     resolution: {integrity: sha512-oEjE7TQt1fFTFSbf8kkNuc798ahTUzn3Le67/PWjE8MAfYAD/qB7O8hSTcromLFqHCt9bcdOg5GXMokzTjJ5SA==}
