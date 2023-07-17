@@ -291,7 +291,7 @@ function GalleryArtwork() {
                       return (dateB as any) - (dateA as any);
                     })
                     .map(artwork => (
-                      <Box>
+                      <Box key={artwork.artworkId}>
                         <ArtworkCard
                           artwork={artwork as Artwork}
                           saveArtwork={saveArtwork}

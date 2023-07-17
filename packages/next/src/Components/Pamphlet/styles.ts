@@ -21,6 +21,11 @@ export const styles = {
     flexDirection: 'column',
     flex: 3,
     minWidth: '60%',
+    alignContent: 'center',
+    alignItems: 'center',
+    '@media (min-width:800px)': {
+      alignItems: 'flex-start',
+    },
   },
   imageContainer: {
     minWidth: '50%',
@@ -63,9 +68,11 @@ export const styles = {
     height: 'unset',
   },
   typographyTitle: {
-    fontFamily: 'EB Garamond',
+    fontFamily: 'Nunito Sans',
     color: PRIMARY_BLUE,
-    fontSize: '2rem',
+    my: 2,
+    fontSize: '1.8rem',
+    alignText: 'center',
     '@media (min-width:800px)': {
       fontSize: '2.5rem',
     },
@@ -74,6 +81,7 @@ export const styles = {
   typography: {
     color: PRIMARY_DARK_GREY,
     fontSize: '1rem',
+    width: '100%',
     '@media (min-width:800px)': {
       fontSize: '1.2rem',
     },

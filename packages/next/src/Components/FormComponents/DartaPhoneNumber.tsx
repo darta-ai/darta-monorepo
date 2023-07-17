@@ -56,10 +56,7 @@ export function DartaPhoneNumber({
   inputAdornmentValue: string | null;
 }) {
   const [isPrivate, setIsPrivate] = React.useState<boolean>(data?.isPrivate!);
-  const innerWidthRef = React.useRef(800);
-  React.useEffect(() => {
-    innerWidthRef.current = window.innerWidth;
-  }, []);
+
   const testIdValue = fieldName.replace('.', '-');
 
   return (

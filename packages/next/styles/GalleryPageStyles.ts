@@ -9,6 +9,7 @@ export const galleryStyles = {
     gap: '2vh',
     minHeight: '100vh',
     minWidth: '70vw',
+    mt: 3,
     alignSelf: 'center',
     '@media (minWidth: 800px)': {
       paddingTop: '7vh',
@@ -33,7 +34,7 @@ export const galleryStyles = {
     alignItems: 'center',
   },
   typographyTitle: {
-    fontFamily: 'EB Garamond',
+    fontFamily: 'Nunito Sans',
     color: PRIMARY_BLUE,
     fontSize: '2rem',
     my: '3vh',
@@ -43,7 +44,7 @@ export const galleryStyles = {
     cursor: 'default',
   },
   artworkHeader: {
-    fontFamily: 'EB Garamond',
+    fontFamily: 'Nunito Sans',
     color: PRIMARY_BLUE,
     fontSize: '1.5rem',
     my: '3vh',
@@ -53,7 +54,7 @@ export const galleryStyles = {
     cursor: 'default',
   },
   typography: {
-    fontFamily: 'EB Garamond',
+    fontFamily: 'Nunito Sans',
     color: PRIMARY_DARK_GREY,
     fontSize: '1rem',
     '@media (minWidth: 800px)': {

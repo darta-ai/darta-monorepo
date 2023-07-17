@@ -11,7 +11,7 @@ export const profileStyles = {
     justifyContent: 'flex-start',
     alignItems: 'center',
     gap: '2vh',
-    maxWidth: '85vw',
+    maxWidth: '80vw',
     alignSelf: 'center',
     background: PRIMARY_MILK,
   },
@@ -21,7 +21,7 @@ export const profileStyles = {
       flexDirection: 'column',
       justifyContent: 'flex-start',
       gap: '5%',
-      minWidth: '80vw',
+      minWidth: '75vw',
       alignSelf: 'center',
       '@media (max-width: 800px)': {
         flexDirection: 'row',

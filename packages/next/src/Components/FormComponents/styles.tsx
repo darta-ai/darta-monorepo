@@ -183,4 +183,15 @@ export const formStyles = {
       display: 'none',
     },
   },
+  dartaRadioText: {
+    fontSize: '0.8rem',
+    '& .MuiTypography-root': {
+      fontFamily: 'Nunito Sans',
+      fontWeight: 'normal',
+      fontSize: '1rem',
+      '@media (max-width: 780px)': {
+        fontSize: '0.8rem',
+      },
+    },
+  },
 };
