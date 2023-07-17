@@ -11,13 +11,12 @@ const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    height: '180vh',
+    height: '100vh',
     alignSelf: 'center',
     padding: '2vh',
     '@media (min-width:800px)': {
       padding: '10vh',
       flexDirection: 'row',
-      height: '100vh',
     },
 
     boarderRadius: '30px',

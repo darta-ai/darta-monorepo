@@ -10,7 +10,7 @@ export const styles = {
   },
   typography: {
     color: PRIMARY_BLUE,
-    fontSize: '0.75rem',
+    fontSize: '1rem',
     '@media (min-width:800px)': {
       fontSize: '1.1em',
     },

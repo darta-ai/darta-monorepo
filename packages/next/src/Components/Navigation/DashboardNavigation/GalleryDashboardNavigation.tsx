@@ -181,7 +181,7 @@ function MiniDrawer() {
                 <AccountCircleIcon />
               </ListItemIcon>
               <ListItemText
-                sx={{opacity: open ? 1 : 0, fontFamily: 'EB Garamond'}}
+                sx={{opacity: open ? 1 : 0, fontFamily: 'Nunito Sans'}}
                 primary="Gallery"
               />
             </ListItemButton>
@@ -198,7 +198,7 @@ function MiniDrawer() {
                 <EventIcon />
               </ListItemIcon>
               <ListItemText
-                sx={{opacity: open ? 1 : 0, fontFamily: 'EB Garamond'}}
+                sx={{opacity: open ? 1 : 0, fontFamily: 'Nunito Sans'}}
                 primary="Exhibitions"
               />
             </ListItemButton>
@@ -215,7 +215,7 @@ function MiniDrawer() {
                 <ImageIcon />
               </ListItemIcon>
               <ListItemText
-                sx={{opacity: open ? 1 : 0, fontFamily: 'EB Garamond'}}
+                sx={{opacity: open ? 1 : 0, fontFamily: 'Nunito Sans'}}
                 primary="Artwork"
               />
             </ListItemButton>

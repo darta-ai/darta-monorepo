@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   legend: {
     borderRadius: 20,
     top: -10,
-    fontFamily: 'EB Garamond',
+    fontFamily: 'Nunito Sans',
   },
 });
 

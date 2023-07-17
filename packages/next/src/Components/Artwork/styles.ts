@@ -66,6 +66,10 @@ export const createArtworkStyles = {
     justifyContent: 'space-around',
     alignItems: 'center',
     alignContent: 'center',
+    gap: '3vh',
+    '@media (min-width: 780px)': {
+      gap: '1vh',
+    },
   },
   imageContainer: {
     alignSelf: 'center',
@@ -74,6 +78,7 @@ export const createArtworkStyles = {
     justifyContent: 'center',
     alignContent: 'center',
     maxWidth: '85vw',
+    gap: '1vh',
     minHeight: '100%',
     '@media (min-width: 780px)': {
       minHeight: '35vh',
@@ -96,7 +101,7 @@ export const createArtworkStyles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    maxHeight: '25vh',
+    maxHeight: '40vh',
     '@media (min-width: 780px)': {
       maxHeight: '30vh',
     },
@@ -135,6 +140,7 @@ export const createArtworkStyles = {
     minHeight: '10vh',
     height: '100%',
     width: '100%',
+    gap: '10vh',
     '@media (max-width: 780px)': {
       flexDirection: 'column',
     },

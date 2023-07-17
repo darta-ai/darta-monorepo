@@ -30,7 +30,7 @@ const styles = {
     },
   },
   typography: {
-    fontFamily: 'EB Garamond',
+    fontFamily: 'Nunito Sans',
     color: PRIMARY_MILK,
     fontSize: '0.75rem',
     '@media (min-width:800px)': {

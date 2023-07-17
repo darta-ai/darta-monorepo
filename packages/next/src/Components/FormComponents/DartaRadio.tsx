@@ -64,6 +64,7 @@ export function DartaRadioButtonsGroup({
                   <FormControlLabel
                     value={option}
                     key={option}
+                    sx={formStyles.dartaRadioText}
                     data-testid={`${fieldName}-input-${option}`}
                     onClick={() => {
                       setHigherLevelState && setHigherLevelState(option);

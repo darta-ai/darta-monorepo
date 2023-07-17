@@ -202,7 +202,7 @@ export function ExhibitionCard({
                     '& .MuiInputBase-input.Mui-disabled': {
                       WebkitTextFillColor: '#000000',
                       fontSize: '1rem',
-                      fontFamily: 'EB Garamond',
+                      fontFamily: 'Nunito Sans',
                     },
                   }}
                   disabled={true}

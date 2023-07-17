@@ -29,7 +29,7 @@ export const headerStyles = {
     padding: 0,
   },
   typography: {
-    fontFamily: 'EB Garamond',
+    fontFamily: 'Nunito Sans',
     color: PRIMARY_MILK,
     fontSize: '1.2rem',
     '@media (min-width:800px)': {
