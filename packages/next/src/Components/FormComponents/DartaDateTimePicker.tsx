@@ -5,7 +5,7 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
-import * as React from 'react';
+import React from 'react';
 import {Controller} from 'react-hook-form';
 
 import {formStyles} from './styles';

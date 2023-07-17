@@ -15,7 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import _ from 'lodash';
-import * as React from 'react';
+import React from 'react';
 
 import {Artwork, Exhibition} from '../../../globalTypes';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';

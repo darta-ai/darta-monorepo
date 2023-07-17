@@ -1,6 +1,6 @@
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import {Box, Typography} from '@mui/material';
-import * as React from 'react';
+import React from 'react';
 
 import {welcomeStyles} from '../styles';
 import {AuthEnum, WelcomeBack} from '../types';
