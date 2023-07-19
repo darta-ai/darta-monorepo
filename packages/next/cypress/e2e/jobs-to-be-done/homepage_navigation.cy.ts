@@ -3,7 +3,7 @@
 describe('Homepage navigation', () => {
   it('should navigate from the Home page to the Contact page', () => {
     // Start from the index page
-    cy.visit(`http://localhost:${process.env.PORT}`);
+    cy.visit('http://localhost:1169');
 
     // Find a link with an href attribute containing "about" and click it
 
@@ -20,7 +20,7 @@ describe('Homepage navigation', () => {
   });
   it('should navigate from the Home page to the About page', () => {
     // Start from the index page
-    cy.visit(`http://localhost:${process.env.PORT}`);
+    cy.visit('http://localhost:1169');
 
     cy.get('[data-testid=contact-link]').click();
     cy.url().should('include', '/Contact');
@@ -37,7 +37,7 @@ describe('Homepage navigation', () => {
   });
   it('should navigate from the Home page to the Gallery Sign In page', () => {
     // Start from the index page
-    cy.visit(`http://localhost:${process.env.PORT}`);
+    cy.visit('http://localhost:1169');
 
     // Find a link with an href attribute containing "about" and click it
     cy.get('a[href*="/Darta/Contact"]').click();

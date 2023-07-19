@@ -18,6 +18,7 @@ type Action =
       type: 'SAVE_NEW_ARTWORKS_FROM_EXHIBITION';
       payload: ArtworkObject;
     }
+  | {type: 'DELETE_ARTWORK'; artworkId: string}
   | {type: 'SET_PROFILE'; payload: IGalleryProfileData}
   | {type: 'SET_EXHIBITIONS'; payload: ExhibitionObject}
   | {type: 'SAVE_EXHIBITION'; payload: Exhibition; exhibitionId: string}
@@ -34,6 +35,7 @@ const initialState: GalleryState = {
 
 export enum GalleryReducerActions {
   SET_ARTWORKS = 'SET_ARTWORKS',
+  DELETE_ARTWORKS = 'DELETE_ARTWORK',
   SAVE_NEW_ARTWORKS = 'SAVE_NEW_ARTWORKS_FROM_EXHIBITION',
   SET_PROFILE = 'SET_PROFILE',
   SET_EXHIBITIONS = 'SET_EXHIBITIONS',
@@ -69,6 +71,17 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
             ...state.galleryArtworks,
             ...payloadArtworks,
           },
+        };
+      } else {
+        return state;
+      }
+    case GalleryReducerActions.DELETE_ARTWORKS:
+      if (action?.artworkId) {
+        const galleryArtworks = _.cloneDeep(state.galleryArtworks);
+        delete galleryArtworks[action.artworkId];
+        return {
+          ...state,
+          galleryArtworks,
         };
       } else {
         return state;

@@ -2,20 +2,13 @@ import {Box, Typography} from '@mui/material';
 import Container from '@mui/material/Container';
 import LinearProgress from '@mui/material/LinearProgress';
 import Head from 'next/head';
-import {useRouter} from 'next/router';
 import React from 'react';
 
-import {retrieveAllGalleryData} from '../../API/DartaGETrequests';
-import authRequired from '../../src/Components/AuthRequired/AuthRequired';
-import {GalleryHeader} from '../../src/Components/Navigation/Headers/GalleryHeader';
-import {
-  GalleryReducerActions,
-  useAppState,
-} from '../../src/Components/State/AppContext';
-import {AuthContext} from '../_app';
+import {retrieveAllGalleryData} from '../../../API/DartaGETrequests';
+import {AuthContext} from '../../../pages/_app';
+import {GalleryReducerActions, useAppState} from '../State/AppContext';
 
 export function LoadProfile() {
-  const router = useRouter();
   const {dispatch} = useAppState();
   const {user} = React.useContext(AuthContext);
 
@@ -39,12 +32,6 @@ export function LoadProfile() {
         type: GalleryReducerActions.SET_EXHIBITIONS,
         payload: {...galleryExhibitions},
       });
-      const timer = setTimeout(() => {
-        // redirect to the new page
-        router.push('/Galleries/Profile');
-      }, 500);
-
-      return () => clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -56,7 +43,6 @@ export function LoadProfile() {
           content="Learn about Darta, your digital art advisor."
         />
       </Head>
-      <GalleryHeader />
       <Box
         sx={{
           minHeight: '90vh',
@@ -76,5 +62,3 @@ export function LoadProfile() {
     </>
   );
 }
-
-export default authRequired(LoadProfile);

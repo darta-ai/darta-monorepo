@@ -27,7 +27,7 @@ export function DartaTextFilter({
     innerWidthRef.current = window.innerWidth;
   }, []);
   return (
-    <Box sx={filterStyles.inputTextContainer}>
+    <Box sx={{...filterStyles.inputTextContainer, ml: 0.5}}>
       <Box sx={{alignSelf: 'center'}}>
         {innerWidthRef.current > 780 && (
           <Tooltip
