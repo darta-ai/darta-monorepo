@@ -279,7 +279,7 @@ export function EditProfileGallery({
           sx={{color: PRIMARY_BLUE}}
           onClick={() => setIsEditingProfile(!isEditingProfile)}
           startIcon={<ArrowBackIcon sx={{color: PRIMARY_BLUE}} />}>
-          Back
+          Cancel
         </Button>
       </Box>
       <Box sx={createArtworkStyles.imageContainer}>
@@ -375,74 +375,78 @@ export function EditProfileGallery({
           }}>
           <Typography variant="h5">Contact</Typography>
         </Box>
-        <Box key="primaryContact" sx={createArtworkStyles.inputText}>
-          <DartaTextInput
-            fieldName="primaryContact"
-            data={galleryProfileData.primaryContact}
-            register={register}
-            errors={errors}
-            required={false}
-            control={control}
-            helperTextString={errors.primaryContact?.value?.message}
-            inputAdornmentString="Email"
-            toolTips={toolTips}
-            multiline={1}
-            allowPrivate={true}
-            inputAdornmentValue={null}
-          />
+        <Box key="primaryContact" sx={createArtworkStyles.multiLineContainer}>
+          <Box key="galleryPhone" sx={createArtworkStyles.inputText}>
+            <DartaTextInput
+              fieldName="primaryContact"
+              data={galleryProfileData.primaryContact}
+              register={register}
+              errors={errors}
+              required={false}
+              control={control}
+              helperTextString={errors.primaryContact?.value?.message}
+              inputAdornmentString="Email"
+              toolTips={toolTips}
+              multiline={1}
+              allowPrivate={true}
+              inputAdornmentValue={null}
+            />
+          </Box>
+          <Box key="galleryPhone" sx={createArtworkStyles.inputText}>
+            <DartaPhoneNumber
+              fieldName="galleryPhone"
+              data={galleryProfileData.galleryPhone}
+              register={register}
+              errors={errors}
+              required={false}
+              control={control}
+              helperTextString={errors.galleryPhone?.value?.message}
+              inputAdornmentString="Phone"
+              toolTips={toolTips}
+              allowPrivate={true}
+              inputAdornmentValue={null}
+            />
+          </Box>
         </Box>
-        <Box key="galleryPhone" sx={createArtworkStyles.inputText}>
-          <DartaPhoneNumber
-            fieldName="galleryPhone"
-            data={galleryProfileData.galleryPhone}
-            register={register}
-            errors={errors}
-            required={false}
-            control={control}
-            helperTextString={errors.galleryPhone?.value?.message}
-            inputAdornmentString="Phone"
-            toolTips={toolTips}
-            allowPrivate={true}
-            inputAdornmentValue={null}
-          />
-        </Box>
-        <Box key="galleryWebsite" sx={createArtworkStyles.inputText}>
-          <DartaTextInput
-            fieldName="galleryWebsite"
-            data={
-              (getValues('galleryWebsite') as PrivateFields) ||
-              galleryProfileData.galleryWebsite
-            }
-            register={register}
-            errors={errors}
-            required={false}
-            control={control}
-            helperTextString={errors.galleryWebsite?.value?.message}
-            inputAdornmentString="Website"
-            toolTips={toolTips}
-            multiline={1}
-            allowPrivate={true}
-            inputAdornmentValue={null}
-          />
-        </Box>
-        <Box key="galleryInstagram" sx={createArtworkStyles.inputText}>
-          <DartaTextInput
-            fieldName="galleryInstagram"
-            data={
-              (getValues('galleryInstagram') as PrivateFields) ||
-              galleryProfileData.galleryInstagram
-            }
-            register={register}
-            errors={errors}
-            required={false}
-            control={control}
-            helperTextString={errors.galleryInstagram?.value?.message}
-            inputAdornmentString="Instagram"
-            toolTips={toolTips}
-            multiline={1}
-            allowPrivate={true}
-            inputAdornmentValue={null}
-          />
+        <Box key="primaryContact" sx={createArtworkStyles.multiLineContainer}>
+          <Box key="galleryWebsite" sx={createArtworkStyles.inputText}>
+            <DartaTextInput
+              fieldName="galleryWebsite"
+              data={
+                (getValues('galleryWebsite') as PrivateFields) ||
+                galleryProfileData.galleryWebsite
+              }
+              register={register}
+              errors={errors}
+              required={false}
+              control={control}
+              helperTextString={errors.galleryWebsite?.value?.message}
+              inputAdornmentString="Website"
+              toolTips={toolTips}
+              multiline={1}
+              allowPrivate={true}
+              inputAdornmentValue={null}
+            />
+          </Box>
+          <Box key="galleryInstagram" sx={createArtworkStyles.inputText}>
+            <DartaTextInput
+              fieldName="galleryInstagram"
+              data={
+                (getValues('galleryInstagram') as PrivateFields) ||
+                galleryProfileData.galleryInstagram
+              }
+              register={register}
+              errors={errors}
+              required={false}
+              control={control}
+              helperTextString={errors.galleryInstagram?.value?.message}
+              inputAdornmentString="Instagram"
+              toolTips={toolTips}
+              multiline={1}
+              allowPrivate={true}
+              inputAdornmentValue={null}
+            />
+          </Box>
         </Box>
         <Box
           key="galleryLocations"
@@ -476,64 +480,72 @@ export function EditProfileGallery({
           />
         </Box>
         {galleryProfileData.galleryLocation1 && (
-          <DartaLocationAndTimes
-            locationNumber="galleryLocation1"
-            data={galleryProfileData.galleryLocation1 as any}
-            register={register}
-            toolTips={toolTipsLocations}
-            getValues={getValues}
-            setValue={setValue}
-            removeLocation={removeLocation}
-            errors={errors}
-            control={control}
-            galleryProfileData={galleryProfileData}
-            locationDisplay="Location 2"
-          />
+          <Box key="galleryLocation" sx={createArtworkStyles.inputText}>
+            <DartaLocationAndTimes
+              locationNumber="galleryLocation1"
+              data={galleryProfileData.galleryLocation1 as any}
+              register={register}
+              toolTips={toolTipsLocations}
+              getValues={getValues}
+              setValue={setValue}
+              removeLocation={removeLocation}
+              errors={errors}
+              control={control}
+              galleryProfileData={galleryProfileData}
+              locationDisplay="Location 2"
+            />
+          </Box>
         )}
         {galleryProfileData.galleryLocation2 && (
-          <DartaLocationAndTimes
-            locationNumber="galleryLocation2"
-            data={galleryProfileData.galleryLocation2 as any}
-            register={register}
-            toolTips={toolTipsLocations}
-            getValues={getValues}
-            removeLocation={removeLocation}
-            setValue={setValue}
-            errors={errors}
-            control={control}
-            galleryProfileData={galleryProfileData}
-            locationDisplay="Location 3"
-          />
+          <Box key="galleryLocation" sx={createArtworkStyles.inputText}>
+            <DartaLocationAndTimes
+              locationNumber="galleryLocation2"
+              data={galleryProfileData.galleryLocation2 as any}
+              register={register}
+              toolTips={toolTipsLocations}
+              getValues={getValues}
+              removeLocation={removeLocation}
+              setValue={setValue}
+              errors={errors}
+              control={control}
+              galleryProfileData={galleryProfileData}
+              locationDisplay="Location 3"
+            />
+          </Box>
         )}
         {galleryProfileData.galleryLocation3 && (
-          <DartaLocationAndTimes
-            locationNumber="galleryLocation3"
-            data={galleryProfileData.galleryLocation3 as any}
-            register={register}
-            toolTips={toolTipsLocations}
-            getValues={getValues}
-            removeLocation={removeLocation}
-            setValue={setValue}
-            errors={errors}
-            control={control}
-            galleryProfileData={galleryProfileData}
-            locationDisplay="Location 4"
-          />
+          <Box key="galleryLocation" sx={createArtworkStyles.inputText}>
+            <DartaLocationAndTimes
+              locationNumber="galleryLocation3"
+              data={galleryProfileData.galleryLocation3 as any}
+              register={register}
+              toolTips={toolTipsLocations}
+              getValues={getValues}
+              removeLocation={removeLocation}
+              setValue={setValue}
+              errors={errors}
+              control={control}
+              galleryProfileData={galleryProfileData}
+              locationDisplay="Location 4"
+            />
+          </Box>
         )}
         {galleryProfileData.galleryLocation4 && (
-          <DartaLocationAndTimes
-            locationNumber="galleryLocation4"
-            data={galleryProfileData.galleryLocation4 as any}
-            register={register}
-            toolTips={toolTipsLocations}
-            getValues={getValues}
-            removeLocation={removeLocation}
-            setValue={setValue}
-            errors={errors}
-            control={control}
-            galleryProfileData={galleryProfileData}
-            locationDisplay="Location 5"
-          />
+          <Box key="galleryLocation" sx={createArtworkStyles.inputText}>
+            <DartaLocationAndTimes
+              locationNumber="galleryLocation4"
+              data={galleryProfileData.galleryLocation4 as any}
+              register={register}
+              toolTips={toolTipsLocations}
+              getValues={getValues}
+              removeLocation={removeLocation}
+              setValue={setValue}
+              errors={errors}
+              control={control}
+              galleryProfileData={galleryProfileData}
+              locationDisplay="Location 5"
+            />
+          </Box>
         )}
 
         <Box

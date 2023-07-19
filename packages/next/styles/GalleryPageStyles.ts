@@ -1,4 +1,4 @@
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '.';
+import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_GREY, PRIMARY_MILK} from '.';
 
 export const galleryStyles = {
   container: {
@@ -8,23 +8,56 @@ export const galleryStyles = {
     justifyContent: 'flex-start',
     gap: '2vh',
     minHeight: '100vh',
-    minWidth: '70vw',
+    minWidth: '100%',
     mt: 3,
     alignSelf: 'center',
-    '@media (minWidth: 800px)': {
-      paddingTop: '7vh',
+  },
+  pageNavigationContainer: {
+    borderTopLeftRadius: '0px',
+    width: '100%',
+    minHeight: '90vh',
+    borderTop: `0px`,
+    alignContent: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    borderLeft: `0px`,
+    '@media (min-width: 800px)': {
+      borderTop: `1px solid ${PRIMARY_GREY}`,
+      borderLeft: `1px solid ${PRIMARY_GREY}`,
+      borderTopLeftRadius: '10px',
+    },
+  },
+  navigationHeader: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    alignItems: 'center',
+    alignContent: 'center',
+    justifyContent: 'flex-start',
+    gap: '2vh',
+    '@media (min-width: 800px)': {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    },
+  },
+  navigationButtonContainer: {
+    display: 'flex',
+    width: '100 %',
+    flexDirection: 'row',
+    gap: '3vw',
+    justifyContent: 'space-around',
+    '@media (min-width: 800px)': {
+      width: '50%',
     },
   },
   artworkDisplayValues: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    width: '100%',
     justifyContent: 'flex-start',
     gap: '2vh',
     alignSelf: 'center',
-    '@media (minWidth: 800px)': {
-      paddingTop: '7vh',
-    },
   },
   uploadImageContainer: {
     display: 'flex',
@@ -81,10 +114,11 @@ export const galleryStyles = {
     width: '100%',
   },
   divider: {width: '50%', alignSelf: 'center', margin: '4'},
+  headingDivider: {width: '100%', alignSelf: 'center', margin: '4'},
   filterContainer: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     gap: '4vh',
     width: '100%',
     '@media (min-width: 800px)': {

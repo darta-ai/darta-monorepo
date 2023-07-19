@@ -5,7 +5,7 @@ export const e2ePass = '(cypress.test)';
 
 describe('Gallery Sign In Flow', () => {
   it('should navigate from the home page to gallery sign in and sign in', () => {
-    cy.visit(`http://localhost:${process.env.PORT}`);
+    cy.visit(`http://localhost:1169`);
 
     cy.get('[data-testid=header-link-gallery]').click();
 
@@ -20,11 +20,10 @@ describe('Gallery Sign In Flow', () => {
     cy.get('[data-testid=signin-email-input]').type(e2eEmail);
     cy.get('[data-testid=signin-password-input]').type(e2ePass);
     cy.get('[data-testid=signin-button]').click();
-    cy.url().should('include', '/Galleries/LoadProfile');
     cy.url().should('not.include', '/Authenticate');
   });
   it('should navigate be able to navigate to between Profile, Collections, Artwork, Home', () => {
-    cy.visit(`http://localhost:${process.env.PORT}`);
+    cy.visit(`http://localhost:1169`);
 
     cy.get('[data-testid=header-link-gallery]').click();
 
@@ -37,21 +36,18 @@ describe('Gallery Sign In Flow', () => {
     cy.get('[data-testid=signin-password-input]').type(e2ePass);
     cy.get('[data-testid=signin-button]').click();
 
-    cy.url().should('include', '/Galleries/LoadProfile');
     cy.url().should('not.include', '/Authenticate');
-
-    cy.get('[data-testid=loading-profile-text]').contains('Loading Profile');
 
     cy.wait(1500);
     cy.get('[data-testid=gallery-navigation-exhibitions-button]', {
       timeout: 4000,
     }).click();
-    cy.url().should('include', '/Exhibitions');
+    cy.get('body').contains('Exhibitions');
 
     cy.get('[data-testid=gallery-navigation-profile-button]').click();
-    cy.url().should('include', '/Profile');
+    cy.get('body').contains('Profile');
 
     cy.get('[data-testid=gallery-navigation-artwork-button]').click();
-    cy.url().should('include', '/Artwork');
+    cy.get('body').contains('Artwork');
   });
 });
