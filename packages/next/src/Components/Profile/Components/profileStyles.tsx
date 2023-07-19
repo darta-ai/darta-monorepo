@@ -20,6 +20,7 @@ export const profileStyles = {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'flex-start',
+      alignContent: 'flex-start',
       gap: '5%',
       minWidth: '75vw',
       alignSelf: 'center',
@@ -29,8 +30,8 @@ export const profileStyles = {
       },
     },
     imageBox: {
-      height: 400,
-      width: 400,
+      maxHeight: '30vh',
+      maxWidth: '30vw',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
@@ -118,8 +119,9 @@ export const profileStyles = {
     },
     defaultImage: {
       marginTop: '1em',
-      maxWidth: '100%',
-      borderWidth: 30,
+      maxWidth: '30vw',
+      maxHeight: '30vh',
+      // borderWidth: 30,
     },
     addressText: {
       alignText: 'center',

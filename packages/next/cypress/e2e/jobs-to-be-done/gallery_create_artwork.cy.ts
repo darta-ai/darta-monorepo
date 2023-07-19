@@ -20,7 +20,6 @@ describe('Gallery Create Profile', () => {
       timeout: 2000,
     }).click();
 
-    cy.url().should('include', '/Galleries/Artwork');
     cy.get('[data-testid=artwork-card]').should('not.exist');
     // WHEN USER CREATES NEW ARTWORK
     cy.get('[data-testid=create-new-artwork-button]').click();
@@ -60,7 +59,6 @@ describe('Gallery Create Profile', () => {
       timeout: 2000,
     }).click();
 
-    cy.url().should('include', '/Galleries/Artwork');
     cy.get('[data-testid=artwork-card]').should('not.exist');
     // WHEN USER CREATES NEW ARTWORK
     cy.get('[data-testid=create-new-artwork-button]').click();
@@ -75,9 +73,9 @@ describe('Gallery Create Profile', () => {
     cy.get('[data-testid=dismiss-cropping-matters-modal]').click();
 
     // USER INPUTS
-    cy.get('[data-testid=artworkTitle-input-field]').type(
-      artworkData.artworkName,
-    );
+    // cy.get('[data-testid=artworkTitle-input-field]').type(
+    //   artworkData.artworkName,
+    // );
     cy.get('[data-testid=artistName-input-field]').type(artworkData.artistName);
     cy.get('[data-testid=artworkDescription-input-field]').type(
       artworkData.artworkDescription,

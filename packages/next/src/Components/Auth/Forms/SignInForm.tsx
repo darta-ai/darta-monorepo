@@ -46,7 +46,7 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
       if (error) {
         setFirebaseError(errorMessage);
       } else if (user?.displayName) {
-        router.push(`/${user?.displayName}/LoadProfile`);
+        router.push(`/${user?.displayName}/Profile`);
       } else {
         router.push(`/`);
       }

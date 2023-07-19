@@ -34,7 +34,7 @@ export const formStyles = {
   dartaLocationContainer: {
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '55vh',
+    minHeight: '50vh',
     justifyContent: 'center',
     alignContent: 'center',
   },

@@ -17,9 +17,9 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import {CSSObject, styled, Theme, useTheme} from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
-import {useRouter} from 'next/router';
 import React from 'react';
 
+import {EGalleryDisplay} from '../../../../pages/Galleries/Profile';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../../styles';
 import {AuthEnum} from '../../Auth/types';
 import {HeaderSignedIn} from '../Headers/Headers/HeaderSignedIn';
@@ -49,7 +49,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
   },
 });
 
-const DrawerHeader = styled('div')(({theme}) => ({
+export const DrawerHeader = styled('div')(({theme}) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-end',
@@ -98,10 +98,13 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-function MiniDrawer() {
+export function MiniDrawer({
+  setCurrentDisplay,
+}: {
+  setCurrentDisplay: (arg0: EGalleryDisplay) => void;
+}) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const router = useRouter();
 
   const innerWidthRef = React.useRef(800);
   React.useEffect(() => {
@@ -174,9 +177,7 @@ function MiniDrawer() {
               data-testid="gallery-navigation-profile-button"
               className="gallery-navigation-profile"
               sx={sideNavigationStyles.listItemButton}
-              onClick={() => {
-                router.push(`/Galleries/Profile`);
-              }}>
+              onClick={() => setCurrentDisplay(EGalleryDisplay.Profile)}>
               <ListItemIcon sx={sideNavigationStyles.listItemIcon}>
                 <AccountCircleIcon />
               </ListItemIcon>
@@ -191,9 +192,7 @@ function MiniDrawer() {
               data-testid="gallery-navigation-exhibitions-button"
               sx={sideNavigationStyles.listItemButton}
               className="gallery-navigation-exhibitions"
-              onClick={() => {
-                router.push(`/Galleries/Exhibitions`);
-              }}>
+              onClick={() => setCurrentDisplay(EGalleryDisplay.Exhibitions)}>
               <ListItemIcon sx={sideNavigationStyles.listItemIcon}>
                 <EventIcon />
               </ListItemIcon>
@@ -208,9 +207,7 @@ function MiniDrawer() {
               data-testid="gallery-navigation-artwork-button"
               className="gallery-navigation-artwork"
               sx={sideNavigationStyles.listItemButton}
-              onClick={() => {
-                router.push(`/Galleries/Artwork`);
-              }}>
+              onClick={() => setCurrentDisplay(EGalleryDisplay.Artwork)}>
               <ListItemIcon sx={sideNavigationStyles.listItemIcon}>
                 <ImageIcon />
               </ListItemIcon>
@@ -227,14 +224,20 @@ function MiniDrawer() {
 }
 
 // here is a wrapper component that will be used to wrap the pages that need to be protected by MiniDrawer
-export function SideNavigationWrapper({children}: {children: any}) {
-  return (
-    <Box sx={{display: 'flex'}}>
-      <MiniDrawer />
-      <Box component="main" sx={{flexGrow: 1, p: 3}}>
-        <DrawerHeader />
-        {children}
-      </Box>
-    </Box>
-  );
-}
+// export function SideNavigationWrapper({
+//   children,
+//   setCurrentDisplay,
+// }: {
+//   children: any;
+//   setCurrentDisplay: (arg0: EGalleryDisplay) => void;
+// }) {
+//   return (
+//     <Box sx={{display: 'flex'}}>
+//       <MiniDrawer setCurrentDisplay={setCurrentDisplay} />
+//       <Box component="main" sx={{flexGrow: 1, p: 3}}>
+//         <DrawerHeader />
+//         {children}
+//       </Box>
+//     </Box>
+//   );
+// }

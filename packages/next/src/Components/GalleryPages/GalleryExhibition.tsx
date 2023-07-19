@@ -1,25 +1,18 @@
 import 'firebase/compat/auth';
 
-import {Box, Button, Divider, Typography} from '@mui/material';
+import {Box, Button, Typography} from '@mui/material';
 import _ from 'lodash';
-import {GetStaticProps} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
-// import {retrieveAllGalleryData} from '../../API/DartaGETrequests';
-import {Exhibition, GalleryState} from '../../globalTypes';
-import {newExhibitionShell} from '../../src/common/templates';
-import authRequired from '../../src/Components/AuthRequired/AuthRequired';
-import {ExhibitionCard} from '../../src/Components/Exhibitions/index';
-import {DartaJoyride} from '../../src/Components/Navigation/DartaJoyride';
-import {SideNavigationWrapper} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
-import {
-  GalleryReducerActions,
-  useAppState,
-} from '../../src/Components/State/AppContext';
-import {dummyExhibition} from '../../src/dummyData';
-import {galleryStyles} from '../../styles/GalleryPageStyles';
-// import {AuthContext} from '../_app';
+import {Exhibition, GalleryState} from '../../../globalTypes';
+import {galleryStyles} from '../../../styles/GalleryPageStyles';
+import {newExhibitionShell} from '../../common/templates';
+import {dummyExhibition} from '../../dummyData';
+import {ExhibitionCard} from '../Exhibitions/index';
+import {DartaJoyride} from '../Navigation/DartaJoyride';
+import {GalleryReducerActions, useAppState} from '../State/AppContext';
+
 // need a function that gets all artworks
 // need a function that gets all inquiries for art
 
@@ -98,7 +91,7 @@ export const getGalleryLocations = (state: GalleryState): string[] => {
   return galleryLocations;
 };
 
-function GalleryExhibitions() {
+export function GalleryExhibition() {
   const {state, dispatch} = useAppState();
 
   const [galleryLocations, setGalleryLocations] = React.useState<string[]>([]);
@@ -160,45 +153,51 @@ function GalleryExhibitions() {
   const runJoyride = Object.keys(state?.galleryExhibitions).length;
   const [run, setRun] = React.useState(runJoyride === 0);
 
+  React.useEffect(() => {
+    const letTempJR = Object.keys(state?.galleryExhibitions).length;
+    setRun(letTempJR === 0);
+  }, [state?.galleryExhibitions]);
+
   return (
     <>
       <Head>
-        <title>Darta | Gallery</title>
+        <title>Darta | Exhibition</title>
         <meta
           name="description"
           content="Your profile page for your gallery on Darta."
         />
       </Head>
 
-      <SideNavigationWrapper>
-        <DartaJoyride
-          steps={exhibitionSteps}
-          run={run}
-          setRun={setRun}
-          stepIndex={stepIndex}
-          setStepIndex={setStepIndex}
-        />
-        <Box sx={galleryStyles.container}>
-          <Box>
-            <Typography variant="h2" sx={galleryStyles.typographyTitle}>
+      <DartaJoyride
+        steps={exhibitionSteps}
+        run={run}
+        setRun={setRun}
+        stepIndex={stepIndex}
+        setStepIndex={setStepIndex}
+      />
+      <Box sx={galleryStyles.container}>
+        <Box sx={galleryStyles.navigationHeader}>
+          <Box sx={{alignItems: 'flex-start'}}>
+            <Typography
+              variant="h2"
+              className="gallery-exhibition-container"
+              sx={galleryStyles.typographyTitle}>
               Exhibitions
             </Typography>
           </Box>
-          <Button
-            variant="contained"
-            data-testid="save-button"
-            className="create-new-exhibition"
-            type="submit"
-            onClick={() => addNewExhibition()}
-            sx={galleryStyles.createNewButton}>
-            Create Exhibition
-          </Button>
-          <Divider
-            className="gallery-exhibition-container"
-            variant="middle"
-            style={galleryStyles.divider}
-            flexItem
-          />
+          <Box sx={galleryStyles.navigationButtonContainer}>
+            <Button
+              variant="contained"
+              data-testid="save-button"
+              className="create-new-exhibition"
+              type="submit"
+              onClick={() => addNewExhibition()}
+              sx={galleryStyles.createNewButton}>
+              Create Exhibition
+            </Button>
+          </Box>
+        </Box>
+        <Box sx={galleryStyles.pageNavigationContainer}>
           {state.galleryExhibitions &&
             Object.values(state.galleryExhibitions)
               .sort((a, b) => {
@@ -235,20 +234,7 @@ function GalleryExhibitions() {
             </Box>
           )}
         </Box>
-      </SideNavigationWrapper>
+      </Box>
     </>
   );
 }
-
-export const getStaticProps: GetStaticProps<{
-  data: any;
-}> = async () => {
-  return {props: {data: {data: {}}}};
-  // try {
-  //   // const aboutData = (await getGallery()) as null;
-  // } catch (e) {
-  //   return {props: {data: {data: {}}}};
-  // }
-};
-
-export default authRequired(GalleryExhibitions);
