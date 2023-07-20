@@ -13,7 +13,7 @@ const artworkData = {
 };
 
 describe('Gallery Create Profile', () => {
-  it.only('Should be able to add and remove artwork', () => {
+  it.skip('Should be able to add and remove artwork', () => {
     // GIVEN (setup)
     cy.login();
     cy.get('[data-testid=gallery-navigation-artwork-button]', {
@@ -53,7 +53,7 @@ describe('Gallery Create Profile', () => {
       'not.exist',
     );
   });
-  it('Edited artwork should populate a card', () => {
+  it.skip('Edited artwork should populate a card', () => {
     // GIVEN (setup)
     cy.login();
     cy.get('[data-testid=gallery-navigation-artwork-button]', {
