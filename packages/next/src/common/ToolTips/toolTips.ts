@@ -11,6 +11,8 @@ export const createArtworkToolTips = {
     'Allow users to inquire about the artwork. If you do not wish to allow users to inquire, select "No".',
   artworkMedium: 'The medium of the artwork.',
   artworkCreatedYear: 'The year the artwork was created.',
+  artworkCurrency:
+    'The currency you are selling the artwork in. Defaults to USD.',
 };
 
 export const createArtworkDimensionsToolTip = {
