@@ -13,7 +13,7 @@ const artworkData = {
 };
 
 describe('Gallery Create Profile', () => {
-  it('Should be able to add and remove artwork', () => {
+  it.only('Should be able to add and remove artwork', () => {
     // GIVEN (setup)
     cy.login();
     cy.get('[data-testid=gallery-navigation-artwork-button]', {
@@ -35,8 +35,9 @@ describe('Gallery Create Profile', () => {
 
     // THEN THE CROPPING MATTERS MODAL EXISTS
     cy.get('[data-testid=cropping-matters-modal]').should('exist');
-    cy.get('[data-testid=dismiss-cropping-matters-modal]').click();
+    // cy.get('[data-testid=dismiss-cropping-matters-modal]').click();
 
+    // cy.wait(500);
     // WHEN USER CLICKS DELETE
     cy.get('[data-testid=delete-artwork-button]').click();
 
@@ -73,9 +74,9 @@ describe('Gallery Create Profile', () => {
     cy.get('[data-testid=dismiss-cropping-matters-modal]').click();
 
     // USER INPUTS
-    // cy.get('[data-testid=artworkTitle-input-field]').type(
-    //   artworkData.artworkName,
-    // );
+    cy.get('[data-testid=artworkTitle-input-field]').type(
+      artworkData.artworkName,
+    );
     cy.get('[data-testid=artistName-input-field]').type(artworkData.artistName);
     cy.get('[data-testid=artworkDescription-input-field]').type(
       artworkData.artworkDescription,
