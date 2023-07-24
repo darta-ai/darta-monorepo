@@ -34,7 +34,7 @@ const dartaListDisplay = {
     width: '5vw',
   },
   displayComponentShowMobile: {
-    width: '10vw',
+    width: '12vw',
     fontSize: '0.8rem',
     '@media (min-width: 780px)': {
       width: '6vw',
@@ -233,11 +233,13 @@ export function ExhibitionArtworkList({
     const tempExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
 
     let artwork;
-    if (tempExhibition?.artworks && tempExhibition?.artworks[artworkId]) {
-      artwork = tempExhibition?.artworks[artworkId];
+    if (tempExhibition?.artworks && tempExhibition.artworks[artworkId]) {
+      artwork = tempExhibition.artworks[artworkId];
     }
 
-    if (!artwork || !tempExhibition || tempExhibition?.artworks) return false;
+    if (!artwork || !tempExhibition || !tempExhibition?.artworks) {
+      return false;
+    }
 
     if (tempExhibition?.artworks && tempExhibition?.artworks[artworkId]) {
       delete tempExhibition?.artworks[artworkId];
