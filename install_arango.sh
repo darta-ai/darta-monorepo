@@ -16,11 +16,12 @@ if ! helm list -n "$NAMESPACE" | grep kube-arangodb-crd > /dev/null 2>&1; then
 fi
 
 # Check if helm chart is already installed
-if ! helm list -n "$NAMESPACE" | grep kube-arangodb > /dev/null 2>&1; then
+# if ! helm list -n "$NAMESPACE" | grep kube-arangodb > /dev/null 2>&1; then
   helm install kube-arangodb "$URLPREFIX/kube-arangodb-$VERSION.tgz" --namespace "$NAMESPACE" --set "operator.features.storage=true" --set "operator.architectures={amd64,arm64}"
-fi
+# fi
 
 # Check if ArangoDB Deployment already exists
-if ! kubectl -n "$NAMESPACE" get ArangoDeployment arango-dev-cluster > /dev/null 2>&1; then
-  kubectl apply -f charts/arango-dev-cluster.yaml
+if ! kubectl -n "$NAMESPACE" get ArangoDeployment arango-gke-cluster > /dev/null 2>&1; then
+  kubectl apply -f charts/arango-gke-cluster.yaml
 fi
+# 

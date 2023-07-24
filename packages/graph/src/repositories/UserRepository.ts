@@ -1,32 +1,34 @@
+import './UserRepository.test';
+
 import joi from '@hapi/joi';
 import {Database} from 'arangojs';
 import {inject} from 'inversify';
 
 import {container} from '../container';
 import {
+  ArangoCreateType,
+  ArangoDocumentType,
+  ArangoUpdateType,
+  createDocumentSchema,
   DocumentRepository,
   documentSchema,
-  createDocumentSchema,
   updateDocumentSchema,
-  ArangoCreateType,
-  ArangoUpdateType,
-  ArangoDocumentType,
 } from './ArangoRepository';
 
 interface UserBase {
   username?: string;
   name?: string;
-};
+}
 
 export interface UserCreateType extends ArangoCreateType, UserBase {
   username: string;
   // TODO what properties are required for a user?
-};
+}
 
 export interface UserUpdateType extends ArangoUpdateType, UserBase {
   _key: string;
   // TODO should `_id` be allowed?
-};
+}
 
 export interface UserType extends ArangoDocumentType, UserCreateType {}
 
@@ -47,5 +49,3 @@ class UserRepository extends DocumentRepository<UserBase> {
 
 container.bind<UserRepository>(UserRepository).toSelf();
 export const userRepository = container.get<UserRepository>(UserRepository);
-
-import './UserRepository.test'

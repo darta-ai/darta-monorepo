@@ -48,13 +48,14 @@ export class CrudService<
       res.json(doc);
     } catch (err: any) {
       if (err.code === 404) return res.status(404).send('Not found');
-      res.status(500).send('Internal server error');
+      res.status(500).send(`Internal server error, ${err}`);
     }
   }
 
   private async post(req: Request, res: Response) {
     try {
       const doc = req.body;
+      console.log({doc});
       const createdDoc = await this.repository.create(doc);
       res.status(201).json(createdDoc);
     } catch (err: any) {

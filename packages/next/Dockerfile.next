@@ -1,0 +1,35 @@
+# Start from the image defined in the root Dockerfile
+FROM gcr.io/darta-dev/darta-root AS deps
+
+WORKDIR /app/packages/next
+
+# Copy package.json and other files for the next package
+COPY ./package.json ./pnpm-lock.yaml ./tsconfig.json ./
+
+# We can skip the installation of pnpm here because it's already installed in the base image
+# Install the dependencies for the next package
+RUN pnpm install
+
+# Rebuild the source code only when needed
+FROM deps AS builder
+
+# Copy the rest of the application code for the next package
+COPY . .
+
+# Build the application
+RUN pnpm run build
+
+# Production image, copy all the files and run next
+FROM node:alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+
+COPY --from=builder /app/packages/next/.next ./.next
+COPY --from=builder /app/packages/next/public ./public
+COPY --from=builder /app/packages/next/node_modules ./node_modules
+COPY ./package.json ./  
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

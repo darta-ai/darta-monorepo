@@ -1,5 +1,8 @@
+/* eslint-disable no-new */
 import {Application} from 'express';
+
 import {repositories} from '@/graph';
+
 import {CrudService} from './CrudService';
 
 export function startServices(app: Application): void {

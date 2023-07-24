@@ -9,7 +9,7 @@ export default function Custom500() {
   useEffect(() => {
     setTimeout(() => {
       router.push('/');
-    }, 5000);
+    }, 4000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

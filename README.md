@@ -19,3 +19,10 @@ Visit `https://[[node cluster ip]]:[[service external port]]` in your browser (*
 ## Development
 
 Run `devspace dev` (remember to create a namespace like `darta` first and run `devspace use namespace`). It will print further instructions once you enter your development session.
+
+## Deployment 
+Make sure you're connected to the the GCP account. Pat you've been invited. 
+
+We're working on image gcr.io/darta-dev/darta-dev
+
+Run `devspace build`. If that is successful, `devspace deploy`
