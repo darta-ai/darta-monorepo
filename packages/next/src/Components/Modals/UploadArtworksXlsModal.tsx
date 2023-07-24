@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import {
@@ -103,7 +102,7 @@ function InstructionsCarousel() {
       <Image
         style={{...instructionsCarouselStyles.img}}
         src={tutorialSteps[activeStep].imgPath}
-        width={200}
+        width={300}
         height={300}
         alt={tutorialSteps[activeStep].alt}
       />
@@ -235,7 +234,7 @@ export function UploadArtworksXlsModal({
         color="primary"
         onClick={handleOpen}>
         <Typography sx={{fontWeight: 'bold', fontSize: '0.8rem'}}>
-          Upload Artwork From Excel
+          Upload Artwork From .xls File
         </Typography>
       </Button>
       <Modal
@@ -277,14 +276,21 @@ export function UploadArtworksXlsModal({
                     <Button
                       variant="contained"
                       color="secondary"
+                      disabled={loading}
+                      sx={{width: '50vw', height: '5vh'}}
                       component="span">
-                      Click Here To Upload Excel
+                      {loading ? (
+                        <CircularProgress color="secondary" size={20} />
+                      ) : (
+                        <Typography>
+                          Click Here To Upload From .xls File
+                        </Typography>
+                      )}
                     </Button>
                   </label>
                 </Fade>
               )}
             </Box>
-            {loading && <CircularProgress />}
           </Box>
         </Fade>
       </Modal>
