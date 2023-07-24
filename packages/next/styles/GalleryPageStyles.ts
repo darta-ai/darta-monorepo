@@ -20,6 +20,7 @@ export const galleryStyles = {
     alignContent: 'center',
     display: 'flex',
     flexDirection: 'column',
+    gap: '2vw',
     borderLeft: `0px`,
     '@media (min-width: 800px)': {
       borderTop: `1px solid ${PRIMARY_GREY}`,
