@@ -91,11 +91,11 @@ export function DartaDropdown({
                 defaultValue={value}
                 sx={formStyles.dropDown}
                 data-testid={`${testIdValue}-select-field`}
+                {...register(`${fieldName}.${'value'}`)}
                 {...(field as any)}>
                 {options.map((option, index) => (
                   <MenuItem
                     key={option}
-                    {...register(`${fieldName}.${'value'}`)}
                     value={option}
                     data-testid={`${fieldName}-input-field-option-${index}`}>
                     {option}
