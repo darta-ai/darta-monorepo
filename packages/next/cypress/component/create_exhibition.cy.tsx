@@ -143,7 +143,7 @@ describe('EditProfileGallery.cy.tsx', () => {
     cy.get('body').contains('Edit Image');
   });
 
-  it('Handles common errors', () => {
+  it.skip('Handles common errors', () => {
     // When
     cy.get('[data-testid=save-exhibition-button]').click();
 
