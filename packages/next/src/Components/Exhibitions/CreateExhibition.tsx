@@ -55,7 +55,7 @@ const createExhibitionSchema = yup
         .required(createExhibitionErrors.exhibitionPressRelease),
     }),
     exhibitionLocation: yup.object().shape({
-      exhibitionLocationString: yup.object().shape({
+      locationString: yup.object().shape({
         value: yup
           .string()
           .required(createExhibitionErrors.exhibitionLocationString),
@@ -323,20 +323,26 @@ export function CreateExhibition({
       </Box>
       <Box sx={createArtworkStyles.imageContainer}>
         <Box style={createArtworkStyles.defaultImageEdit}>
-          <Box>
+          <Box
+            sx={{
+              alignSelf: 'center',
+              alignContent: 'center',
+              justifyContent: 'center',
+            }}>
             {editPressRelease ? (
               <DartaImageInput
                 onDrop={handleDrop}
                 instructions="Drag and drop the main image of your exhibition or click to select an image to upload."
               />
             ) : (
+              // eslint-disable-next-line jsx-a11y/img-redundant-alt
               <img
                 src={
                   tempImage ??
                   (newExhibition?.exhibitionPrimaryImage?.value as string) ??
                   ''
                 }
-                alt="exhibition"
+                alt="exhibition main image"
                 style={createArtworkStyles.defaultImage}
               />
             )}

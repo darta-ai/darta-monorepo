@@ -98,14 +98,10 @@ export const createArtworkStyles = {
     },
   },
   defaultImageEdit: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
     maxHeight: '40vh',
     '@media (min-width: 780px)': {
       maxHeight: '30vh',
     },
-    alignSelf: 'center',
   },
   defaultImage: {
     marginTop: '1em',
