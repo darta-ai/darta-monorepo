@@ -15,9 +15,8 @@ const useStyles = {
     justifyContent: 'center',
     cursor: 'pointer',
     height: '80%',
-    m: 1,
     padding: '2vh',
-    width: '80%',
+    width: '100%',
     outline: 'none',
     transition: 'border .24s ease-in-out',
     '&:hover': {

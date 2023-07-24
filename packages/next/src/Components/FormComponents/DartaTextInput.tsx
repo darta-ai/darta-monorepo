@@ -83,10 +83,11 @@ export function DartaTextInput({
           }
           fullWidth
           required={required}
-          multiline={true}
+          multiline
           data-testid={`${testIdValue}-input-field`}
           rows={multiline}
           InputProps={{
+            style: {display: 'inline'},
             startAdornment: (
               <InputAdornment
                 data-testid={`${testIdValue}-text-input-adornment`}
