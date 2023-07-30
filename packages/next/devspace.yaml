@@ -20,9 +20,14 @@ images:
     image: gcr.io/darta-dev/darta-root/next
     dockerfile: ./Dockerfile
     context: ../..
+    buildKit: {}
+    docker:
+      args:
+      - "--no-cache"
+      - "--compress"
 
 deployments:
-  api:
+  next:
     helm:
       chart:
         name: component-chart
@@ -30,9 +35,29 @@ deployments:
       values:
         containers:
         - image: gcr.io/darta-dev/darta-root/next
+        buildKit: {}
         service:
           ports:
           - port: 1169
+          annotations:
+            traefik.ingress.kubernetes.io/router.entrypoints: web
+            traefik.ingress.kubernetes.io/router.middlewares: redirect-https@kubernetescrd
+            traefik.ingress.kubernetes.io/router.tls: "true"
+
+  traefik:
+    helm:
+      chart:
+        name: traefik
+        version: 23.2.0
+        repo: "https://helm.traefik.io/traefik"
+      values:
+        service:
+          type: LoadBalancer
+
+  ingress:
+    kubectl:
+      manifests:
+      - ../../charts/ingress-route.yaml
 
 dev:
   app:

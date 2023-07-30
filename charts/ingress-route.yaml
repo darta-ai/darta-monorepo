@@ -1,0 +1,14 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: my-ingressroute
+spec:
+  entryPoints:
+  - web
+  routes:
+  - match: Host(`darta.works`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: next
+      port: 1169
+  tls: {}
