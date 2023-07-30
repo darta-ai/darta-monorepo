@@ -51,8 +51,6 @@ export function ImageUploadModal({
   const [selectedFile, setSelectedFile] = React.useState(null);
   const [previewUrl, setPreviewUrl] = React.useState('');
 
-  const backupImage = require(`../../../public/static/images/UploadImage.png`);
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -90,7 +88,7 @@ export function ImageUploadModal({
           <DialogContentText>{dialogueText}</DialogContentText>
           <Box>
             <Image
-              src={previewUrl || backupImage}
+              src={previewUrl}
               alt="upload image"
               style={modalStyles.defaultImage}
               height={400}

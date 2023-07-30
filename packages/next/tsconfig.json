@@ -34,5 +34,5 @@
   "paths": {
     "react": ["./node_modules/@types/react"]
   },
-  "exclude": ["node_modules", "cypress/**/*", "cypress.config.ts"]
+  "exclude": ["node_modules"]
 }

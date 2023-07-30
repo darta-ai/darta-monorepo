@@ -1,38 +1,52 @@
-# Step 1: Build the nextjs application
+# syntax=docker/dockerfile:1.4
 
-# We'll use a multi-stage build process. Starting with a Node.js image.
-FROM node:20 as builder
+FROM node:20-alpine AS base
+
+
+FROM base as deps 
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
-
-RUN corepack enable pnpm
 
 # Copy over the necessary files
-COPY ./pnpm-workspace.yaml ./pnpm-workspace.yaml
-COPY ./packages/next/tsconfig.json ./packages/next/tsconfig.json 
-COPY ./tsconfig.json ./tsconfig.json 
-COPY ./pnpm-lock.yaml ./pnpm-lock.yaml
-COPY ./packages/next/package.json ./packages/next/package.json  
+COPY ./pnpm-workspace.yaml .
+COPY ./tsconfig.json .
+COPY ./pnpm-lock.yaml .
 COPY ./packages/next ./packages/next
-COPY ./packages/components ./packages/components
+COPY ./packages/next/package.json ./packages/next/package.json
+COPY ./packages/components/src ./packages/components/src
+COPY ./packages/components/package.json ./packages/components/package.json
 
-# Install all the dependencies
+FROM deps AS builder
+
 WORKDIR /app/packages/next
-RUN apt-get update && apt-get install -y libc6
-RUN corepack enable && corepack prepare pnpm@8.6.2 --activate
-RUN pnpm install typescript @types/node
-RUN pnpm install
 
-# Build the nextjs application
-RUN pnpm run build
+# Install pnpm, dependencies and build in one layer
+RUN corepack enable && corepack prepare pnpm@8.6.2 --activate && \
+    pnpm install && \
+    pnpm run build && \
+    pnpm prune --prod
 
-# Remove dev dependencies
-RUN pnpm prune --prod
+FROM base AS runner
 
-# Step 2: Run the nextjs application
-FROM node:20
-WORKDIR /app
+ENV NODE_ENV production
 
-COPY --from=builder /app/packages/next ./
+# Install pnpm in runner stage
+RUN addgroup --system --gid 1001 nodejs \
+    && adduser --system --uid 1001 nextjs 
 
-# Run the application
-CMD [ "pnpm", "run", "start" ]
+COPY --from=builder --chown=1001:1001 /app/node_modules ./node_modules
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=1001:1001 /app/packages/next/.next/standalone ./
+COPY --from=builder --chown=1001:1001 /app/packages/next/.next/static ./.next/static
+COPY --from=builder --chown=1001:1001 /app/packages/next/public ./public
+
+USER nextjs
+
+EXPOSE 1169
+ENV PORT 1169
+ENV HOSTNAME localhost
+
+CMD ["node", "./packages/next/server.js"]
+
