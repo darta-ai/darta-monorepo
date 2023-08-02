@@ -20,5 +20,5 @@ Visit `https://[[node cluster ip]]:[[service external port]]` in your browser (*
 
 Run `devspace dev` (remember to create a namespace like `darta` first and run `devspace use namespace`). It will print further instructions once you enter your development session.
 
-## Build Next JS
-docker buildx build --platform linux/amd64 -t gcr.io/darta-dev/darta-next -f packages/next/Dockerfile --push .
+## Deployment
+Each individual, deployable, package has its own docker file and .devspace file. In Lens or OpenLens, navigate to the file and run `devspace deploy`. In the future, we will have github actions trigger a build. 
