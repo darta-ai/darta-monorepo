@@ -5,10 +5,7 @@ node_modules
 .gitignore
 *.md
 dist
-
+../graph
+../mobile
+../server
 Dockerfile
-.dockerignore
-node_modules
-npm-debug.log
-README.md
-.next

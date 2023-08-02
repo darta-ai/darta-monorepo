@@ -17,10 +17,11 @@ pipelines:
 
 images:
   next:
-    image: gcr.io/darta-dev/darta-root/next
+    image: gcr.io/darta-dev/darta-next
     dockerfile: ./Dockerfile
     context: ../..
-    buildKit: {}
+    buildKit:
+      args: ["--platform", "linux/amd64"]
     docker:
       args:
       - "--no-cache"
@@ -34,8 +35,9 @@ deployments:
         repo: https://charts.devspace.sh
       values:
         containers:
-        - image: gcr.io/darta-dev/darta-root/next
-        buildKit: {}
+        - image: gcr.io/darta-dev/darta-next
+        buildKit:
+          args: ["--platform linux/amd64"]
         service:
           ports:
           - port: 1169

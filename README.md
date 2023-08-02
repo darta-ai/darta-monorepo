@@ -19,3 +19,6 @@ Visit `https://[[node cluster ip]]:[[service external port]]` in your browser (*
 ## Development
 
 Run `devspace dev` (remember to create a namespace like `darta` first and run `devspace use namespace`). It will print further instructions once you enter your development session.
+
+## Build Next JS
+docker buildx build --platform linux/amd64 -t gcr.io/darta-dev/darta-next -f packages/next/Dockerfile --push .
