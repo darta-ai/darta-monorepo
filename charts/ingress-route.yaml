@@ -5,10 +5,19 @@ metadata:
 spec:
   entryPoints:
   - web
+  - websecure
   routes:
   - match: Host(`darta.works`) && PathPrefix(`/`)
     kind: Rule
     services:
     - name: next
+      namespace: darta-next
       port: 1169
-  tls: {}
+  - match: Host(`www.darta.works`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: next
+      namespace: darta-next
+      port: 1169
+  tls:
+    secretName: my-tls-secret
