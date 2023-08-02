@@ -1,11 +1,12 @@
 /** @type {import('next').NextConfig} */
-const withTM = require('next-transpile-modules')(['../../packages/components']);
-
-const nextConfig = withTM({});
 const path = require('path')
+// const withTM = require('next-transpile-modules')([path.resolve(__dirname, '../../packages/components')]);
+
+// const nextConfig = withTM({});
 
 module.exports = {
-    // ...nextConfig,
+    // see docs: https://nextjs.org/docs/app/api-reference/next-config-js/transpilePackages
+    transpilePackages: [path.resolve(__dirname, '../../packages/components')],
     output: 'standalone',
     experimental: {
         // this includes files from the monorepo base two directories up
