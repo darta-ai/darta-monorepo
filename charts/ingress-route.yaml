@@ -13,11 +13,15 @@ spec:
     - name: next
       namespace: darta-next
       port: 1169
+    middlewares:
+    - name: https-redirect
   - match: Host(`www.darta.works`) && PathPrefix(`/`)
     kind: Rule
     services:
     - name: next
       namespace: darta-next
       port: 1169
+    middlewares:
+    - name: https-redirect
   tls:
     secretName: my-tls-secret

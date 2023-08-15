@@ -1,7 +1,13 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "rootDir": "src",
+        "rootDir": "./src",
+        "baseUrl": "./packages/graph", 
+        "outDir": "./dist",
+        "composite": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
     },
-    "include": ["src/**/*.ts"]
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules"]
 }

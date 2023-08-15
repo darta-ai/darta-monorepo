@@ -1,4 +1,15 @@
 import * as dotenv from 'dotenv';
+import * as tsconfigPaths from 'tsconfig-paths';
+
+const baseUrl = '.'; // This should match the baseUrl in your tsconfig.json
+
+tsconfigPaths.register({
+  baseUrl,
+  paths: {
+    "@/graph": ["../graph/src/"] // Adjust this path as needed based on your tsconfig.json
+  }
+});
+
 import express, {Request, Response} from 'express';
 import http from 'http';
 
