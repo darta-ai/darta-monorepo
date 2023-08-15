@@ -6,14 +6,6 @@ import { Container } from 'inversify';
 
 import { config } from './config';
 
-// const privateKey = fs.readFileSync(
-//   path.join(__dirname, `/ssl/private-key.pem`),
-//   'utf8',
-// );
-// const certificate = fs.readFileSync(
-//   path.join(__dirname, `/ssl/certificate.pem`),
-//   'utf8',
-// );
 const agent = new https.Agent({
   rejectUnauthorized: false,
 });
@@ -28,11 +20,6 @@ const arangoContainer = container.bind<Database>('Database').toConstantValue(
       username: config.arango.user!,
       password: '',
     },
-    // agentOptions: {
-    //   key: privateKey,
-    //   cert: certificate,
-    //   passphrase: 'darta',
-    // },
     agent,
   }),
 );

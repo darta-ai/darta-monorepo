@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
 
-FROM node:17-slim AS base
+FROM node:20-slim AS base
 
 
 FROM base as deps 
@@ -47,7 +47,6 @@ COPY --from=builder --link /app/packages/next/package.json \
 
 # You only need to copy next.config.js if you are NOT using the default configuration
 COPY --from=builder --chown=1001:1001 /app/packages/next/next.config.js ./
-
 COPY --from=builder --chown=1001:1001 /app/packages/next/.next/standalone ./
 COPY --from=builder --chown=1001:1001 /app/packages/next/.next/static ./packages/next/.next/static
 COPY --from=builder --chown=1001:1001 /app/packages/next/public ./packages/next/public

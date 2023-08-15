@@ -16,7 +16,7 @@ interface ICrudService<
   // TODO
 }
 
-// TODO think through all error possiblities
+// TODO think through all error possibilities
 export class CrudService<
   D extends ArangoDocumentType | ArangoEdgeType,
   C extends DocumentRepository<D> | EdgeRepository<D>,
