@@ -23,5 +23,14 @@ spec:
       port: 1169
     middlewares:
     - name: https-redirect
+  # Adding a new rule for the API
+  - match: Host(`api.darta.works`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: api-server
+      namespace: darta-api
+      port: 1160
+    middlewares:
+    - name: https-redirect
   tls:
     secretName: my-tls-secret

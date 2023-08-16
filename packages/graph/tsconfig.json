@@ -3,7 +3,7 @@
     "compilerOptions": {
         "rootDir": "./src",
         "baseUrl": "./packages/graph", 
-        "outDir": "./dist",
+        // "outDir": "./dist",
         "composite": true,
         "esModuleInterop": true,
         "moduleResolution": "node",

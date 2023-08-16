@@ -3,8 +3,6 @@ import * as dotenv from 'dotenv';
 import express, {Request, Response} from 'express';
 import http from 'http';
 
-import {startServices} from './services';
-
 dotenv.config();
 
 const {PORT: port} = process.env;
@@ -27,8 +25,6 @@ app.get('/ping', (req: Request, res: Response) => {
 app.get('/pong', (req: Request, res: Response) => {
   res.send('ping');
 });
-
-startServices(app);
 
 httpServer.listen(port, () => {
   console.log(`Listening on port ${port}`);

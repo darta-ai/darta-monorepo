@@ -1,7 +1,7 @@
-#!/bin/bash
-export NAMESPACE=arango-cluster-dev
-export VERSION=1.2.26
+export NAMESPACE=arango-deployment-cluster-2
+export VERSION=1.2.32
 export URLPREFIX=https://github.com/arangodb/kube-arangodb/releases/download/$VERSION
+
 
 # Check if namespace already exists
 if ! kubectl get namespace "$NAMESPACE" > /dev/null 2>&1; then
@@ -12,15 +12,17 @@ fi
 # Check if helm CRD chart is already installed
 if ! helm list -n "$NAMESPACE" | grep kube-arangodb-crd > /dev/null 2>&1; then
   echo "Installing helm ArangoDB CRD chart"
-  helm install kube-arangodb-crd "$URLPREFIX/kube-arangodb-crd-$VERSION.tgz" --namespace "$NAMESPACE"
+  helm install $URLPREFIX/kube-arangodb-crd-$VERSION.tgz --namespace "$NAMESPACE" --generate-name
 fi
 
 # Check if helm chart is already installed
 if ! helm list -n "$NAMESPACE" | grep kube-arangodb > /dev/null 2>&1; then
-  helm install kube-arangodb "$URLPREFIX/kube-arangodb-$VERSION.tgz" --namespace "$NAMESPACE" --set "operator.features.storage=true" --set "operator.architectures={amd64,arm64}"
+    helm install $URLPREFIX/kube-arangodb-$VERSION.tgz --namespace "$NAMESPACE" --generate-name
+    helm install $URLPREFIX/kube-arangodb-$VERSION.tgz --set "operator.features.storage=true" --namespace "$NAMESPACE" --generate-name
 fi
 
 # Check if ArangoDB Deployment already exists
-if ! kubectl -n "$NAMESPACE" get ArangoDeployment arango-dev-cluster > /dev/null 2>&1; then
-  kubectl apply -f charts/arango-dev-cluster.yaml
+if ! kubectl -n "$NAMESPACE" get ArangoDeployment $NAMESPACE > /dev/null 2>&1; then
+  kubectl apply -f charts/$NAMESPACE.yaml
 fi
+
