@@ -13,13 +13,7 @@
     "incremental": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "@/graph": ["../graph/dist"] // Adjust this path as needed
-    },
   },
-  "references": [
-    { "path": "../graph/" }
-],
   "include": ["./src/**/*.ts"],
   "exclude": ["node_modules"]
 }
