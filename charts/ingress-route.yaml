@@ -27,8 +27,8 @@ spec:
   - match: Host(`api.darta.works`) && PathPrefix(`/`)
     kind: Rule
     services:
-    - name: api-server
-      namespace: darta-api
+    - name: darta-api
+      namespace: darta-next
       port: 1160
     middlewares:
     - name: https-redirect
