@@ -29,7 +29,7 @@ images:
 
 deployments:
   darta-api:
-    namespace: darta-api
+    namespace: darta-next
     helm:
       chart:
         name: component-chart
