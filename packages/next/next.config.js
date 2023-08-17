@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const path = require('path')
+// TO-DO: This isn't working
 // const withTM = require('next-transpile-modules')([path.resolve(__dirname, '../../packages/components')]);
 
 // const nextConfig = withTM({});

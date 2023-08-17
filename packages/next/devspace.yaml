@@ -20,8 +20,8 @@ images:
     image: gcr.io/darta-dev/darta-next
     dockerfile: ./Dockerfile
     context: ../..
-    buildKit:
-      args: ["--platform", "linux/amd64"]
+    # buildKit:
+    #   args: ["--platform", "linux/amd64"]
     docker:
       args:
       - "--no-cache"
@@ -36,8 +36,8 @@ deployments:
       values:
         containers:
         - image: gcr.io/darta-dev/darta-next
-        buildKit:
-          args: ["--platform linux/amd64"]
+        # buildKit:
+        #   args: ["--platform", "linux/amd64"]
         service:
           ports:
           - port: 1169
