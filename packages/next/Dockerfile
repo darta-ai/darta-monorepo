@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
 
-FROM node:20-slim AS base
+FROM --platform=linux/amd64 node:18-alpine as base
 
 
 FROM base as deps 

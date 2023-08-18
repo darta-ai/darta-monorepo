@@ -12,7 +12,7 @@ pipelines:
     run: |-
       run_dependencies --all
       ensure_pull_secrets --all
-      build_images --all -t $(git describe --always)
+      build_images --all -t ${DEVSPACE_GIT_COMMIT}-$(date +%s)
       create_deployments --all
 
 images:
@@ -20,8 +20,8 @@ images:
     image: gcr.io/darta-dev/darta-next
     dockerfile: ./Dockerfile
     context: ../..
-    # buildKit:
-    #   args: ["--platform", "linux/amd64"]
+    buildKit:
+      args: ["--platform=linux/amd64"]
     docker:
       args:
       - "--no-cache"
@@ -29,6 +29,7 @@ images:
 
 deployments:
   next:
+    namespace: darta-next
     helm:
       chart:
         name: component-chart
@@ -36,8 +37,12 @@ deployments:
       values:
         containers:
         - image: gcr.io/darta-dev/darta-next
-        # buildKit:
-        #   args: ["--platform", "linux/amd64"]
+        buildKit:
+          args: []
+        docker:
+          args:
+          - "--no-cache"
+          - "--compress"
         service:
           ports:
           - port: 1169
@@ -60,6 +65,11 @@ deployments:
     kubectl:
       manifests:
       - ../../charts/ingress-route.yaml
+  https-redirect:
+    kubectl:
+      manifests:
+      - ../../charts/https-redirect-middleware.yaml
+
 
 dev:
   app:
