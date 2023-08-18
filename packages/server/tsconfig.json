@@ -1,4 +1,25 @@
 {
-    "extends": "../../tsconfig.json",
-    "include": ["src/**/*.ts"]
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".", 
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "typeRoots": ["./node_modules/@types"],
+    "declaration": true,
+    "strict": true,
+    "incremental": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@/graph": ["../graph/dist"] // Adjust this path as needed
+    },
+  },
+  "references": [
+    { "path": "../graph/" }
+],
+  "include": ["./src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

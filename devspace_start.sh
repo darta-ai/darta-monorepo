@@ -22,7 +22,8 @@ echo -e "${COLOR_BLUE}
 
 Welcome to your development container!
 
-Navigate to either \`packages/next/\` or \`packages/server/\` and run \`pnpm dev\`.
+Navigate to \`packages/next/\` and run \`pnpm dev\`.
+Navigate to \`packages/graphserver/\` and run  \`pnpm dev\`.
 If you want to run the other one as well, run \`devspace enter\`.
 You can reach the NextJS frontend at \`locahost:1169\`
 and the Fastify API at \`locahost:1160\`."

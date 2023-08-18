@@ -1,0 +1,90 @@
+version: v2beta1
+name: darta-graph-server
+
+pipelines:
+  dev:
+    run: |-
+      run_dependencies --all
+      ensure_pull_secrets --all
+      create_deployments --all
+      start_dev app
+  deploy:
+    run: |-
+      run_dependencies --all
+      ensure_pull_secrets --all
+      build_images --all -t $(git describe --always)
+      create_deployments --all
+
+images:
+  darta-api:
+    image: gcr.io/darta-dev/darta-api
+    dockerfile: ./Dockerfile
+    context: ../..
+    buildKit:
+      args: ["--platform", "linux/amd64"]
+    docker:
+      args:
+      - "--no-cache"
+      - "--compress"
+
+deployments:
+  darta-api:
+    namespace: darta-next
+    helm:
+      chart:
+        name: component-chart
+        repo: https://charts.devspace.sh
+      values:
+        containers:
+        - image: gcr.io/darta-dev/darta-api
+        buildKit:
+          args: ["--platform linux/amd64"]
+        service:
+          ports:
+          - port: 1160
+
+  traefik:
+    helm:
+      chart:
+        name: traefik
+        version: 23.2.0
+        repo: "https://helm.traefik.io/traefik"
+      values:
+        service:
+          type: LoadBalancer
+
+  ingress:
+    kubectl:
+      manifests:
+      - ../../charts/ingress-route.yaml
+
+dev:
+  app:
+    imageSelector: gcr.io/darta-dev/darta-root/next
+    devImage: ghcr.io/loft-sh/devspace-containers/typescript:18-alpine
+    sync:
+    - path: ./packages/next
+      uploadExcludePaths:
+      - node_modules
+      - .next
+    - path: ./packages/next/package.json
+      uploadExcludePaths:
+      - node_modules
+    - path: ./packages/next/tsconfig.json
+    ssh:
+      enabled: true
+    proxyCommands:
+    - command: devspace
+    - command: kubectl
+    - command: helm
+    - gitCredentials: true
+    ports:
+    - port: "1169"
+    open:
+    - url: http://localhost:1169
+
+commands:
+  migrate-db:
+    command: |-
+      echo 'This is a cross-platform, shared command that can be used to codify any kind of dev task.'
+      echo 'Anyone using this project can invoke it via "devspace run migrate-db"'
