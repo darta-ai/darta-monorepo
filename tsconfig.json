@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["packages/*/src"]
-    },
     "allowSyntheticDefaultImports": true,
     "target": "es6",
+    // "preserveSymlinks": true,
     "allowJs": true,
-    // "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
+    "paths": {
+      "@/graph": ["./packages/graph/src"]
+  },
+    "noEmit": false,
     "esModuleInterop": true,
     "module": "commonjs",
     "moduleResolution": "node",
@@ -18,5 +18,9 @@
     "emitDecoratorMetadata": true,
     "jsx": "react-jsx" // TODO we want "preserve" generally?
   },
-  "exclude": ["node_modules", "scratch*"]
+  "references": [
+    { "path": "./packages/graph" }
+],
+  "exclude": ["node_modules", "scratch*"],
+  "composite": true,
 }

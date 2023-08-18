@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "es6",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["cypress", "node"],
+    "types": ["cypress"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -27,7 +27,6 @@
     "**/*.ts",
     "**/*.tsx",
     "globalTypes.ts",
-
     "../node_modules/cypress",
     "./cypress/support/*.ts"
   ],

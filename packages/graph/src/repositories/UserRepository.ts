@@ -1,4 +1,4 @@
-import joi from '@hapi/joi';
+import * as joi from 'joi';
 import {Database} from 'arangojs';
 import {inject} from 'inversify';
 

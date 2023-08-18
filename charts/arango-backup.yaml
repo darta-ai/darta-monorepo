@@ -1,0 +1,8 @@
+apiVersion: "backup.arangodb.com/v1"
+kind: "ArangoBackup"
+metadata:
+  name: "example-arangodb-backup"
+  namespace: "arangodb"
+spec:
+  deployment:
+    name: "my-deployment"

@@ -1,7 +1,9 @@
 import {injectable, inject} from 'inversify';
 import {Database} from 'arangojs';
 import {DocumentCollection, EdgeCollection} from 'arangojs/collection';
-import * as joi from '@hapi/joi';
+import * as joi from 'joi';
+
+
 
 type NotEmptyObject<T=any> = { [K in string]: T };
 

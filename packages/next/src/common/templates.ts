@@ -57,8 +57,8 @@ export const newArtworkShell: Artwork = {
   artworkCreatedYear: {
     value: '',
   },
-  createdAt: null,
-  updatedAt: null,
+  createdAt: '',
+  updatedAt: '',
   artworkId: '',
   exhibitionOrder: 0,
 };
@@ -68,6 +68,7 @@ export const newExhibitionShell: Exhibition = {
   exhibitionPressRelease: {value: ''},
   exhibitionPrimaryImage: {value: ''},
   exhibitionLocation: {
+    locationString: {value: '', isPrivate: false},
     isPrivate: false,
   },
   mediumsUsed: [],

@@ -1,5 +1,5 @@
 #!/bin/bash
-export NAMESPACE=arango-cluster
+export NAMESPACE=arango-cluster-dev
 export VERSION=1.2.26
 export URLPREFIX=https://github.com/arangodb/kube-arangodb/releases/download/$VERSION
 

@@ -46,20 +46,20 @@ const currencyConverter: currencyConverterType = {
 const createArtworkSchema = yup
   .object({
     artworkTitle: yup.object().shape({
-      value: yup.string().required('An artwork title is required.'),
+      value: yup.string().nullable().required('An artwork title is required.'),
     }),
     artistName: yup.object().shape({
-      value: yup.string().required('An artist name is required.'),
+      value: yup.string().nullable().required('An artist name is required.'),
     }),
     artworkImage: yup.object().shape({
-      value: yup.string().required('An artwork image is required.'),
+      value: yup.string().nullable().required('An artwork image is required.'),
     }),
     artworkDescription: yup.object().shape({
       value: yup.string().optional(),
     }),
     artworkPrice: yup.object().shape({
       value: yup.string().optional(),
-      isPrivate: yup.boolean().optional(),
+      isPrivate: yup.boolean().nullable().optional(),
     }),
     artworkCurrency: yup.object().shape({
       value: yup.string().optional(),
@@ -67,18 +67,23 @@ const createArtworkSchema = yup
     canInquire: yup.object().shape({
       value: yup
         .string()
+        .nullable()
         .required('Do you want users to be able to inquire about the art?'),
     }),
     artworkCreatedYear: yup.object().shape({
       value: yup
         .string()
+        .nullable()
         .matches(/^(19[0-9]{2}|[2-9][0-9]{3})$/, 'Must be a valid year.')
         .required('The year or years created is required.')
         .min(4, 'Must be exactly 4 digits.')
         .max(4, 'Must be exactly 4 digits.'),
     }),
     artworkMedium: yup.object().shape({
-      value: yup.string().required('The medium of the artwork is required.'),
+      value: yup
+        .string()
+        .nullable()
+        .required('The medium of the artwork is required.'),
     }),
     artworkDimensions: yup
       .object()
@@ -108,12 +113,14 @@ const createArtworkSchema = yup
       .test(
         'either-or-height',
         'Artwork height must be a positive number and is required.',
-        value => !!(value?.heightIn?.value || value?.heightCm?.value),
+        (value: {heightIn: {value?: string | null | undefined}; heightCm: {value?: string | null | undefined}}) =>
+          !!(value.heightIn.value || value.heightCm.value),
       )
       .test(
         'either-or-width',
         'Artwork width must be a positive number and is required.',
-        value => !!(value?.widthIn?.value || value?.widthCm?.value),
+        (value: {widthIn: {value?: string | null | undefined}; widthCm: {value?: string | null | undefined}}) =>
+          !!(value.widthIn.value || value.widthCm.value),
       ),
   })
   .required();
@@ -300,7 +307,8 @@ export function CreateArtwork({
               />
             </>
           ) : (
-            <img
+            <Box
+              component="img"
               src={tempImage as string}
               alt="artwork"
               style={createArtworkStyles.defaultImage}
