@@ -12,7 +12,7 @@ pipelines:
     run: |-
       run_dependencies --all
       ensure_pull_secrets --all
-      build_images --all -t $(git describe --always)
+      build_images --all -t ${DEVSPACE_GIT_COMMIT}-$(date +%s)
       create_deployments --all
 
 images:
