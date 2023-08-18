@@ -21,7 +21,7 @@ images:
     dockerfile: ./Dockerfile
     context: ../..
     buildKit:
-      args: ["--platform", "linux/amd64"]
+      args: ["--platform=linux/amd64"]
     docker:
       args:
       - "--no-cache"
@@ -38,7 +38,7 @@ deployments:
         containers:
         - image: gcr.io/darta-dev/darta-api
         buildKit:
-          args: ["--platform linux/amd64"]
+          args: ["--platform=linux/amd64"]
         service:
           ports:
           - port: 1160
