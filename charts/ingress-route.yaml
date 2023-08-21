@@ -14,7 +14,7 @@ spec:
       namespace: darta-next
       port: 1169
     middlewares:
-    - name: https-redirect
+    - name: "https-redirect"
   - match: Host(`www.darta.works`) && PathPrefix(`/`)
     kind: Rule
     services:
@@ -22,7 +22,7 @@ spec:
       namespace: darta-next
       port: 1169
     middlewares:
-    - name: https-redirect
+    - name: "https-redirect"
   # Adding a new rule for the API
   - match: Host(`api.darta.works`) && PathPrefix(`/`)
     kind: Rule
@@ -30,7 +30,5 @@ spec:
     - name: darta-api
       namespace: darta-next
       port: 1160
-    middlewares:
-    - name: https-redirect
   tls:
     secretName: my-tls-secret
