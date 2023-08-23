@@ -1,11 +1,11 @@
-import {GalleryState} from '../globalTypes';
+import {GalleryState} from '../../globalTypes';
 import {
   artwork1,
   artwork2,
   artwork3,
   dummyExhibition,
   soteGalleryProfile,
-} from '../src/dummyData';
+} from '../dummyData';
 
 const preloadArtwork = {
   // ...artwork1,

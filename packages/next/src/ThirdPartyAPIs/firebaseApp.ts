@@ -102,7 +102,8 @@ export async function firebaseSignIn(
     await updateProfile(userCredential.user, {
       displayName: signInType,
     });
-    return {error: false, user: userCredential.user, errorMessage: ''};
+    const idToken = auth.currentUser?.getIdToken()
+    return {error: false, user: userCredential.user, errorMessage: '', idToken};
   } catch (error: any) {
     return {
       error: true,

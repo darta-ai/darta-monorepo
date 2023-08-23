@@ -5,7 +5,7 @@ import React from 'react';
 import {SignInForm, SignInWelcome} from '../../src/Components/Auth';
 import {AuthEnum, WelcomeBack} from '../../src/Components/Auth/types';
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
-import {welcomeBack} from '../../ThirdPartyAPIs/firebaseDB';
+import {welcomeBack} from '../../src/ThirdPartyAPIs/firebaseDB';
 
 const styles = {
   container: {

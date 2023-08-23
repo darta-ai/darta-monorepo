@@ -17,7 +17,7 @@ import React, {useState} from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {dartaSignUp} from '../../../../API/FirebaseAccountManagement';
+import {dartaSignUp} from '../../../API/FirebaseAccountManagement';
 import {PhoneNumberFormat} from '../../FormComponents/DartaPhoneNumber';
 import {AlreadySignedUp} from '../../Navigation/Auth';
 import {authStyles} from '../styles';
