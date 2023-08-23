@@ -1,6 +1,6 @@
 import {collection, doc, getDoc, getDocs} from 'firebase/firestore';
 
-import {db} from '../pages/_app';
+import {db} from '../../pages/_app';
 
 // Get all the pamphlets data from the database
 export async function getPamphlet() {

@@ -17,10 +17,11 @@ import React, {useState} from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {dartaSignIn} from '../../../../API/FirebaseAccountManagement';
+import {dartaSignIn} from '../../../API/FirebaseAccountManagement';
 import {ForgotPassword, NeedAnAccount} from '../../Navigation/Auth';
 import {authStyles} from '../styles';
 import {AuthEnum} from '../types';
+import { galleryPostUUID } from 'packages/next/src/API/galleries/galleries';
 
 const schema = yup
   .object({
@@ -42,10 +43,12 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
   } = useForm({resolver: yupResolver(schema)});
   const handleSignIn = async (data: any) => {
     try {
-      const {error, user, errorMessage} = await dartaSignIn(data, signInType);
+      const {error, user, errorMessage}: {error: any, user: any, errorMessage: string} = await dartaSignIn(data, signInType);
       if (error) {
         setFirebaseError(errorMessage);
       } else if (user?.displayName) {
+        const uuid = await galleryPostUUID()
+        console.log({uuid})
         router.push(`/${user?.displayName}/Profile`);
       } else {
         router.push(`/`);

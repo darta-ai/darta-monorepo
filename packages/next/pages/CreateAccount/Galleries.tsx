@@ -6,7 +6,7 @@ import {SignUpForm} from '../../src/Components/Auth/Forms/SignUpForm';
 import {AuthEnum, DartaBenefits} from '../../src/Components/Auth/types';
 import {SignUpWelcome} from '../../src/Components/Auth/Welcome/SignUpWelcome';
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
-import {signUpBenefits} from '../../ThirdPartyAPIs/firebaseDB';
+import {signUpBenefits} from '../../src/ThirdPartyAPIs/firebaseDB';
 
 const styles = {
   container: {

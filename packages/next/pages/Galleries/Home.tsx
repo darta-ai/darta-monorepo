@@ -8,7 +8,7 @@ import {AuthEnum} from '../../src/Components/Auth/types';
 import {GalleryHeader} from '../../src/Components/Navigation/Headers/GalleryHeader';
 import {PamphletLeft} from '../../src/Components/Pamphlet/pamphletLeft';
 import {PamphletRight} from '../../src/Components/Pamphlet/pamphletRight';
-import {getGalleryPamphlet} from '../../ThirdPartyAPIs/firebaseDB';
+import {getGalleryPamphlet} from '../../src/ThirdPartyAPIs/firebaseDB';
 
 export default function Home({
   data,

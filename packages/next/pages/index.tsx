@@ -8,7 +8,7 @@ import {AuthEnum} from '../src/Components/Auth/types';
 import {BaseHeader} from '../src/Components/Navigation/Headers/BaseHeader';
 import {PamphletLeft} from '../src/Components/Pamphlet/pamphletLeft';
 import {PamphletRight} from '../src/Components/Pamphlet/pamphletRight';
-import {getPamphlet} from '../ThirdPartyAPIs/firebaseDB';
+import {getPamphlet} from '../src/ThirdPartyAPIs/firebaseDB';
 
 // import {Hello} from '@/components';
 

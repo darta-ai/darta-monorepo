@@ -3,6 +3,7 @@
 import {Box, Typography} from '@mui/material';
 import Image from 'next/image';
 import React from 'react';
+import { getGallery } from '../../API/artworks/dartaArtworkRoutes';
 
 import {AuthEnum} from '../Auth/types';
 import {styles} from './styles';

@@ -4,7 +4,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Head from 'next/head';
 import React from 'react';
 
-import {retrieveAllGalleryData} from '../../../API/DartaGETrequests';
+import {retrieveAllGalleryData} from '../../API/DartaGETrequests';
 import {AuthContext} from '../../../pages/_app';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
 

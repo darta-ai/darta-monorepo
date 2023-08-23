@@ -1,6 +1,6 @@
 export type Node = {
     id: string;
-    properties: Record<string, any>;
+    properties?: Record<string, any>;
   };
   
   export type Edge = {
