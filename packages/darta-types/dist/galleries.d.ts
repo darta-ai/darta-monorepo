@@ -49,8 +49,8 @@ interface GalleryAddressFields {
 export interface GalleryBase {
     galleryName?: PublicFields;
     isValidated?: boolean;
-    primaryOwnerPhone: string;
-    primaryOwnerEmail: string;
+    primaryOwnerPhone?: string;
+    primaryOwnerEmail?: string;
     signUpWebsite?: string;
     primaryUUIDPhone?: string;
     primaryUUID?: string;

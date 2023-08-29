@@ -37,12 +37,11 @@ export class GalleryController {
     }
   }
 
-  @httpPost('/updateProfile', verifyToken)
-  public async updateProfile(@request() req: Request, @response() res: Response): Promise<void> {
+  @httpPost('/editProfile', verifyToken)
+  public async editProfile(@request() req: Request, @response() res: Response): Promise<void> {
     const user = (req as any).user;
-    const email = user?.email;
     try{
-      const gallery = await this.service.createGalleryProfile(req.body)
+      const gallery = await this.service.editGalleryProfile({user, data: req.body})
       res.json(gallery);
     } catch (error: any) {
       res.status(500).send(error.message);
