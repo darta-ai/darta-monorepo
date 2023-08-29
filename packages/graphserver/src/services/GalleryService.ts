@@ -2,17 +2,28 @@ import { injectable, inject } from 'inversify';
 import { Database } from 'arangojs';
 import { IGalleryService } from './IGalleryService';
 import { Gallery } from 'src/models/GalleryModel';
-
+import { GalleryBase } from '@darta/types';
 
 @injectable()
 export class GalleryService implements IGalleryService {
   constructor(@inject('Database') private readonly db: Database) {}
 
-  public async createGalleryProfile(uuid: string): Promise<void> {
+  public async createGalleryProfile(
+    { primaryUUID,
+    primaryOwnerPhone,
+    galleryName, 
+    signUpWebsite,
+    primaryOwnerEmail, 
+    isValidated } : GalleryBase): Promise<void> {
     const galleryCollection = this.db.collection('galleries');
     const newGallery: any = {
-        uuids: [uuid], 
-        primaryUUID: uuid,
+        uuids: [primaryUUID], 
+        primaryUUID,
+        primaryOwnerPhone,
+        primaryOwnerEmail,
+        galleryName,
+        signUpWebsite, 
+        isValidated
       };
     
       const metaData = await galleryCollection.save(newGallery);
@@ -36,21 +47,48 @@ export class GalleryService implements IGalleryService {
 
   }
 
-  public async verifyQualifyingGallery(domain: string): Promise<boolean>{
-    const query = `
-        FOR gallery IN galleries-approved
-        FILTER @domain IN approved
+  public async verifyQualifyingGallery(email: string): Promise<boolean> {
+      const isGmail = email.endsWith('@gmail.com');
+      const domain = isGmail ? email : email.substring(email.lastIndexOf("@") + 1);
+    try {
+      // Define the query for checking the approved array
+      const query = `
+        FOR gallery IN galleryApprovals
+        FILTER @domain IN gallery.approved
         RETURN gallery
-    `;
-    const cursor = await this.db.query(query, { domain });
-    const isApproved: boolean | null = await cursor.next(); // Get the first result
-
-    if (isApproved){
-        return true
+      `;
+      const cursor = await this.db.query(query, { domain });
+      const isValidated: boolean | null = await cursor.next(); // Get the first result
+      if (isValidated) {
+        return true;
+      } else {
+        // Define the query for checking the awaiting approval array
+        const query2 = `
+          FOR gallery IN galleryApprovals
+          FILTER @domain IN gallery.${isGmail ? 'awaitingApprovalGmail' : 'awaitingApproval'}
+          RETURN gallery
+        `;
+        const cursor2 = await this.db.query(query2, { domain });
+        const isAwaiting: boolean | null = await cursor2.next(); // Get the first result
+        if (isAwaiting) {
+          return false;
+        } else {
+          // Save the domain to the awaiting approval array
+          const awaitingApprovalField = isGmail ? 'awaitingApprovalGmail' : 'awaitingApproval';
+          const query3 = `
+            FOR gallery IN galleryApprovals
+            UPDATE gallery WITH { ${awaitingApprovalField}: PUSH(gallery.${awaitingApprovalField}, @domain) } INTO galleryApprovals
+          `;
+          await this.db.query(query3, { domain });
+          console.log('sent!', query3, domain)
+          return false;
+        }
+      }
+    } catch (error: any) {
+      console.log(error);
+      return false;
     }
-    return false
-  }
-
+  }  
 }
 
 

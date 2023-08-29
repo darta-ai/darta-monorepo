@@ -2,7 +2,7 @@ import {Box, Divider, Typography} from '@mui/material';
 import Image from 'next/image';
 import React from 'react';
 
-import {IGalleryProfileData} from '../../../globalTypes';
+import {IGalleryProfileData} from "@darta/types"
 import {PRIMARY_BLUE} from '../../../styles';
 import {phoneNumberConverter} from '../../common/utils/phoneNumberConverter';
 import {GalleryLocationComponent} from './Components/GalleryLocationText';
@@ -37,7 +37,7 @@ function GalleryStatus({
         </Box>
       </Box>
     );
-  } else if (galleryProfileData?.galleryName?.value) {
+  } else if (galleryProfileData?.galleryBio?.value) {
     return (
       <Box>
         <Typography
@@ -55,7 +55,34 @@ function GalleryStatus({
         </Box>
       </Box>
     );
-  } else {
+  } else if (galleryProfileData?.galleryName?.value) {
+    return (
+      <Box data-testid="gallery-start-editing">
+        <Typography
+          variant="h4"
+          sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
+          {galleryProfileData?.galleryName?.value}
+        </Typography>
+        <Typography
+          variant="h6"
+          sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
+          Click EDIT to get started.
+        </Typography>
+        <Box sx={profileStyles.profile.galleryBioStyles}>
+          <Box sx={{mx: 3}}>
+            <Typography>
+              This will be your gallery bio. Click EDIT to get started.
+            </Typography>
+          </Box>
+          <Box sx={{mx: 3, my: 3}}>
+            <Typography>
+              If you believe this is an error, please refresh the page.
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    );
+  } else if (galleryProfileData?.galleryName?.value) {
     return (
       <Box data-testid="gallery-start-editing">
         <Typography

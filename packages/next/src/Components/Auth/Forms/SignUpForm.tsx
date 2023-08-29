@@ -22,6 +22,7 @@ import {PhoneNumberFormat} from '../../FormComponents/DartaPhoneNumber';
 import {AlreadySignedUp} from '../../Navigation/Auth';
 import {authStyles} from '../styles';
 import {AuthEnum} from '../types';
+import { createGalleryProfile } from 'packages/next/src/API/galleries/galleries';
 
 const websiteRegExp =
   /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/;
@@ -68,7 +69,13 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
         if (error) {
           setFirebaseError(errorMessage);
         } else if (user?.displayName) {
-          router.push(`/${signUpType}/LoadProfile`);
+          await createGalleryProfile({
+            galleryName: { value: data?.galleryName}, 
+            signUpWebsite: data?.website, 
+            primaryOwnerPhone: data?.phoneNumber, 
+            primaryOwnerEmail: data?.email
+          })
+          router.push(`/${signUpType}/Profile`);
         } else {
           router.push(`/`);
         }

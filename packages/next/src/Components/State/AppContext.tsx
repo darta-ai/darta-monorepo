@@ -7,9 +7,9 @@ import {
   ArtworkObject,
   Exhibition,
   ExhibitionObject,
-  GalleryState,
-  IGalleryProfileData,
+  GalleryState
 } from '../../../globalTypes';
+import {IGalleryProfileData} from '@darta/types'
 import {AuthContext} from '../../../pages/_app';
 
 type Action =

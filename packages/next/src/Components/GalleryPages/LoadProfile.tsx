@@ -7,32 +7,37 @@ import React from 'react';
 import {retrieveAllGalleryData} from '../../API/DartaGETrequests';
 import {AuthContext} from '../../../pages/_app';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
+import { IGalleryProfileData } from '@darta/types';
 
 export function LoadProfile() {
   const {dispatch} = useAppState();
   const {user} = React.useContext(AuthContext);
 
   React.useEffect(() => {
-    if (user?.accessToken) {
-      const {galleryProfile, galleryArtworks, galleryExhibitions, accessToken} =
-        retrieveAllGalleryData(user.accessToken);
-      dispatch({
-        type: GalleryReducerActions.SET_ACCESS_TOKEN,
-        payload: accessToken,
-      });
-      dispatch({
-        type: GalleryReducerActions.SET_PROFILE,
-        payload: galleryProfile,
-      });
-      dispatch({
-        type: GalleryReducerActions.SET_ARTWORKS,
-        payload: {...galleryArtworks},
-      });
-      dispatch({
-        type: GalleryReducerActions.SET_EXHIBITIONS,
-        payload: {...galleryExhibitions},
-      });
+    const fetchData = async () => {
+      if (user?.accessToken) {
+        const {galleryProfile, galleryArtworks, galleryExhibitions} =
+          await retrieveAllGalleryData(user.accessToken);
+        dispatch({
+          type: GalleryReducerActions.SET_ACCESS_TOKEN,
+          payload: user?.accessToken,
+        });
+        console.log('dispatching state')
+        dispatch({
+          type: GalleryReducerActions.SET_PROFILE,
+          payload: galleryProfile as IGalleryProfileData,
+        });
+        dispatch({
+          type: GalleryReducerActions.SET_ARTWORKS,
+          payload: {...galleryArtworks},
+        });
+        dispatch({
+          type: GalleryReducerActions.SET_EXHIBITIONS,
+          payload: {...galleryExhibitions},
+        });
+      }
     }
+    fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
   return (

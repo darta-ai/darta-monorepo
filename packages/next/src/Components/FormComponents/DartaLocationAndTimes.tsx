@@ -5,8 +5,8 @@ import React from 'react';
 import {
   BusinessAddressType,
   IBusinessLocationData,
-  IGalleryProfileData,
 } from '../../../globalTypes';
+import {IGalleryProfileData} from "@darta/types"
 import {googleMapsParser} from '../../common/nextFunctions';
 import {DartaHoursOfOperation, DartaLocationLookup} from './index';
 import {formStyles} from './styles';

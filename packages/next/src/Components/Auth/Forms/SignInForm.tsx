@@ -21,7 +21,6 @@ import {dartaSignIn} from '../../../API/FirebaseAccountManagement';
 import {ForgotPassword, NeedAnAccount} from '../../Navigation/Auth';
 import {authStyles} from '../styles';
 import {AuthEnum} from '../types';
-import { galleryPostUUID } from 'packages/next/src/API/galleries/galleries';
 
 const schema = yup
   .object({
@@ -47,8 +46,6 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
       if (error) {
         setFirebaseError(errorMessage);
       } else if (user?.displayName) {
-        const uuid = await galleryPostUUID()
-        console.log({uuid})
         router.push(`/${user?.displayName}/Profile`);
       } else {
         router.push(`/`);

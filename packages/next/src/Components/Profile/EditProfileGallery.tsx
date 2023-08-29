@@ -8,9 +8,9 @@ import * as yup from 'yup';
 
 import {
   BusinessAddressType,
-  IGalleryProfileData,
   PrivateFields,
 } from '../../../globalTypes';
+import {IGalleryProfileData} from '@darta/types'
 import {PRIMARY_BLUE} from '../../../styles';
 import {googleMapsParser} from '../../common/nextFunctions';
 import {createArtworkStyles} from '../Artwork/styles';
@@ -322,7 +322,7 @@ export function EditProfileGallery({
           sx={{...createArtworkStyles.inputText, mt: 10}}>
           <DartaGallerySearch
             fieldName="gallerySearch"
-            data={galleryProfileData.galleryName as PrivateFields}
+            data={"" as any}
             register={register}
             required={true}
             inputAdornmentString="Search"
@@ -376,7 +376,7 @@ export function EditProfileGallery({
           <Typography variant="h5">Contact</Typography>
         </Box>
         <Box key="primaryContact" sx={createArtworkStyles.multiLineContainer}>
-          <Box key="galleryPhone" sx={createArtworkStyles.inputText}>
+          <Box key="inputText" sx={createArtworkStyles.inputText}>
             <DartaTextInput
               fieldName="primaryContact"
               data={galleryProfileData.primaryContact}
