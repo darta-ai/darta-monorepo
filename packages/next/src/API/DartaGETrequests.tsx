@@ -6,6 +6,7 @@ import {
   dummyExhibition,
   soteGalleryProfile,
 } from '../dummyData';
+import { getGalleryProfile } from './galleries/galleries';
 
 const preloadArtwork = {
   // ...artwork1,
@@ -13,13 +14,12 @@ const preloadArtwork = {
   // ...artwork3,
 };
 
-export const retrieveAllGalleryData = (accessToken: string): GalleryState => {
-  // NEED ENDPOINTS HERE
+export const retrieveAllGalleryData = async (accessToken: string): Promise<GalleryState> => {
+  const galleryProfile = await getGalleryProfile()
+  console.log(galleryProfile)
 
   return {
-    galleryProfile: {
-      // ...soteGalleryProfile
-    },
+    galleryProfile: galleryProfile.data,
     galleryArtworks: {
       // ...preloadArtwork
     },

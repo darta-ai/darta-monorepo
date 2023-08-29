@@ -4,7 +4,7 @@ import {Box, Button, Typography} from '@mui/material';
 import Head from 'next/head';
 import React from 'react';
 
-import {IGalleryProfileData} from '../../../globalTypes';
+import {IGalleryProfileData} from "@darta/types"
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {EditProfileGallery, ProfileGallery} from '../Profile';
@@ -115,8 +115,7 @@ export function GalleryProfile() {
             <ProfileGallery
               galleryProfileData={
                 {
-                  ...state.galleryProfile,
-                  isValidated: true,
+                  ...state.galleryProfile
                 } as IGalleryProfileData
               }
             />

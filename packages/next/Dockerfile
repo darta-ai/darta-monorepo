@@ -12,6 +12,7 @@ COPY ./pnpm-workspace.yaml .
 COPY ./tsconfig.json .
 COPY ./pnpm-lock.yaml .
 COPY ./packages/next ./packages/next
+COPY ./packages/darta-types ./packages/darta-types
 COPY ./packages/next/package.json ./packages/next/package.json
 COPY ./packages/components/src ./packages/components/src
 COPY ./packages/components/package.json ./packages/components/package.json

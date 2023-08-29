@@ -108,7 +108,7 @@ export const galleryStyles = {
   createNewButton: {
     backgroundColor: PRIMARY_BLUE,
     color: PRIMARY_MILK,
-    width: '50%',
+    // width: '50%',
     alignSelf: 'center',
   },
   formTextField: {
