@@ -22,6 +22,7 @@ import {
   DartaTextInput,
 } from '../FormComponents/index';
 import {profileStyles} from './Components/profileStyles';
+import { updateGalleryProfile } from '../../API/galleries/galleries';
 
 const instagramREGEX =
   /(?:^|[^\w])(?:@)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)/;
@@ -148,7 +149,7 @@ export function EditProfileGallery({
   const [editImage, setEditImage] = React.useState<boolean>(
     !galleryProfileData?.galleryLogo?.value,
   );
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     const tempData = _.cloneDeep(data);
     if (
       !tempData.galleryLocation0.locationString.value &&
@@ -161,6 +162,7 @@ export function EditProfileGallery({
       tempData.galleryLocation0.locationId = crypto.randomUUID();
 
     setGalleryProfileData(data);
+    await updateGalleryProfile(data)
     setIsEditingProfile(!isEditingProfile);
   };
 

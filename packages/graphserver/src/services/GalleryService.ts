@@ -2,7 +2,7 @@ import { injectable, inject } from 'inversify';
 import { Database } from 'arangojs';
 import { IGalleryService } from './IGalleryService';
 import { Gallery } from 'src/models/GalleryModel';
-import { GalleryBase } from '@darta/types';
+import { GalleryBase, IGalleryProfileData } from '@darta/types';
 
 @injectable()
 export class GalleryService implements IGalleryService {
@@ -40,9 +40,20 @@ export class GalleryService implements IGalleryService {
 
   return gallery;
   }
-  public async editGalleryProfile(): Promise<void>{
+  
+  public async editGalleryProfile({user, data}: {user: any, data: IGalleryProfileData}): Promise<Gallery | null>{
+    const query = `
+    FOR gallery IN galleries
+      FILTER @userUUID IN gallery.uuids
+      UPDATE gallery WITH @data IN galleries
+      RETURN gallery
+  `;
+  const cursor = await this.db.query(query, { userUUID: user.user_id, ...data });
+  const gallery: Gallery | null = await cursor.next(); // Get the first result
 
+  return gallery;
   }
+
   public async deleteGalleryProfile(): Promise<void>{
 
   }
