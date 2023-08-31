@@ -41,6 +41,7 @@ const minioContainer = container.bind<MinioClient>(TYPES.MinioClient).toConstant
     useSSL: config.minio.useSSL === "true",
     accessKey:  config.minio.accessKey!,
     secretKey: config.minio.secretKey!,
+    region: 'us-east-1',
   })
 )
 

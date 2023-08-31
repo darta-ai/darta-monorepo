@@ -1,3 +1,5 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 import * as dotenv from 'dotenv';
 import cors from 'cors'
 import 'reflect-metadata';

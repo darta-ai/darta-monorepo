@@ -4,8 +4,9 @@ export interface PublicFields {
 
 export interface Images {
   value?: string | null, 
-  fileData?: string | null | string | ArrayBuffer,
-  fileName?: string | null
+  fileData?: string | null | ArrayBuffer,
+  fileName?: string | null, 
+  bucketName?: string | null,
 }
 
 export interface PrivateFields {
