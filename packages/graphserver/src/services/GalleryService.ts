@@ -48,11 +48,19 @@ export class GalleryService implements IGalleryService {
   `;
 
   const cursor = await this.db.query(query, { userUUID: uuid });
-  const gallery: Gallery | null | any = await cursor.next(); // Get the first result
+  const results: any = await cursor.next(); // Get the first result
 
-  const {bucketName, fileName} = gallery.gallery.galleryLogo
-  const url = this.imageController.processGetFile({bucketName, fileName})
-  return gallery.gallery;
+  const {gallery} : {gallery: Gallery} = results
+
+  const {galleryLogo} = gallery
+
+  let url;
+    if (galleryLogo?.bucketName && galleryLogo?.fileName){
+      url = await this.imageController.processGetFile({bucketName: galleryLogo?.bucketName, fileName: galleryLogo?.fileName})
+    }
+  return {...gallery, galleryLogo : {
+    value: url
+  }};
   }
   
   public async editGalleryProfile({user, data}: {user: any, data: IGalleryProfileData}): Promise<Gallery | null> {
@@ -62,7 +70,7 @@ export class GalleryService implements IGalleryService {
     let galleryLogoResults
     if (galleryLogo?.fileData){
       try{
-        galleryLogoResults = await this.imageController.processFile({fileBuffer: galleryLogo?.fileData, fileName: `${crypto.randomUUID()}-${galleryLogo?.fileName}`, bucketName: BUCKET_NAME})
+        galleryLogoResults = await this.imageController.processUploadImage({fileBuffer: galleryLogo?.fileData, fileName: `${crypto.randomUUID()}`, bucketName: BUCKET_NAME})
       } catch (error){
         console.error("error uploading image:", error)
       }
@@ -73,12 +81,13 @@ export class GalleryService implements IGalleryService {
     FOR gallery IN galleries
       FILTER @userUUID IN gallery.uuids
       UPDATE @data IN galleries
-      RETURN gallery
+      RETURN NEW
   `;
 
     const cursor = await this.db.query(findGalleryQuery, { userUUID: user.user_id, data: {...galleryData, galleryLogo: {
       fileName: galleryLogoResults?.fileName, 
-      bucketName: galleryLogoResults?.bucketName
+      bucketName: galleryLogoResults?.bucketName, 
+      value: galleryLogoResults?.value
     }} });
     const gallery: Gallery | null = await cursor.next();
     if(gallery){

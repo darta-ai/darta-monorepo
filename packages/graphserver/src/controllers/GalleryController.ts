@@ -3,7 +3,6 @@ import { IGalleryService } from '../services/interfaces/IGalleryService';
 import { controller, httpGet, httpPost, request, response } from 'inversify-express-utils';
 import { inject } from 'inversify';
 import { verifyToken } from 'src/middlewares/accessTokenVerify';
-import { TYPES } from 'src/config/container';
 
 
 @controller('/gallery')

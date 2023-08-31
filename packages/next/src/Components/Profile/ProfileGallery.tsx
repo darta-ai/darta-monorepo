@@ -129,10 +129,10 @@ export function ProfileGallery({
           <Box
             sx={profileStyles.profile.imageBox}
             data-testid="profile-gallery-image-box">
-            {galleryProfileData?.galleryLogo ? (
+            {galleryProfileData?.galleryLogo?.value ? (
               <Box>
                 <img
-                  src={galleryProfileData?.galleryLogo?.value as string}
+                  src={galleryProfileData?.galleryLogo?.value}
                   alt="gallery logo"
                   style={profileStyles.profile.defaultImage}
                   data-testid="profile-gallery-logo"

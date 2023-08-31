@@ -162,12 +162,14 @@ export function EditProfileGallery({
       tempData.galleryLocation0.locationId = crypto.randomUUID();
     
 
-    setGalleryProfileData(tempData);
     try{
-      await updateGalleryProfile(tempData)
+      const {data} = await updateGalleryProfile(tempData)
+      console.log({data})
+      setGalleryProfileData(data);
     } catch (error){
       //TO-DO: need an error modal  
     }
+    // setGalleryProfileData(tempData);
     setIsEditingProfile(!isEditingProfile);
   };
 

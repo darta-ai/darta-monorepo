@@ -1,34 +1,33 @@
 
 
-# helm repo add minio https://helm.min.io/
+# # helm repo add minio https://helm.min.io/
 
-# helm repo update
+# # helm repo update
 
-export myaccesskey=tjWetmore
-export mysecretkey=tjWetmore
-
-
-helm install minio-release minio/minio
-
-echo "Port Fowarding"
-kubectl port-forward svc/minio-release 9000:9000
+# export myaccesskey=tjWetmore
+# export mysecretkey=tjWetmore
 
 
-helm install minio-release minio/minio --set accessKey=$myaccesskey,secretKey=$mysecretkey
-helm install minio-release minio/minio --set persistence.enabled=true,persistence.size=10Gi
-#!/bin/bash
+# helm install minio-release minio/minio
 
-# Add the MinIO Helm repository
-echo "Adding Minio"
-helm repo add minio https://helm.min.io/
+# echo "Port Fowarding"
+# kubectl port-forward svc/minio-release 9000:9000
 
-# Update Helm repo to get the latest charts
-helm repo update
 
-# Install MinIO
-# You can add more configurations or use a values.yaml file as needed
-helm install my-minio-release minio/minio --set accessKey=$myaccesskey,secretKey=$mysecretkey
+# helm install minio-release minio/minio --set accessKey=$myaccesskey,secretKey=$mysecretkey
+# helm install minio-release minio/minio --set persistence.enabled=true,persistence.size=10Gi
+# #!/bin/bash
 
-# Other commands or configurations can be added as necessary
+# # Add the MinIO Helm repository
+# echo "Adding Minio"
+# helm install \ --namespace minio-operator \ --create-namespace \ minio-operator ./charts/minio/operator-5.0.7.tgz
 
-helm install my-minio-release ./my-minio-chart -f values.yaml -f secrets.yaml
+# # adding the service yaml
+# echo "adding service.yaml"
+# kubectl apply -f service.yaml
+
+# echo "adding operator.yaml"
+# kubectl apply -f operator.yaml
+
+# echo "adding console-secret.yaml"
+# kubectl apply -f console-secret.yaml

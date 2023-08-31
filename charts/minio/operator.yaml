@@ -32,7 +32,6 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app.kubernetes.io/instance: minio-operator
         app.kubernetes.io/name: operator
@@ -40,30 +39,30 @@ spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: name
-                    operator: In
-                    values:
-                      - minio-operator
-              topologyKey: kubernetes.io/hostname
+          - labelSelector:
+              matchExpressions:
+              - key: name
+                operator: In
+                values:
+                - minio-operator
+            topologyKey: kubernetes.io/hostname
       containers:
-        - args:
-            - controller
-          image: quay.io/minio/operator:v5.0.7
-          imagePullPolicy: IfNotPresent
-          name: operator
-          resources:
-            requests:
-              cpu: 200m
-              ephemeral-storage: 500Mi
-              memory: 256Mi
-          securityContext:
-            runAsGroup: 1000
-            runAsNonRoot: true
-            runAsUser: 1000
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
+      - args:
+        - controller
+        image: quay.io/minio/operator:v5.0.7
+        imagePullPolicy: IfNotPresent
+        name: operator
+        resources:
+          requests:
+            cpu: 200m
+            ephemeral-storage: 500Mi
+            memory: 256Mi
+        securityContext:
+          runAsGroup: 1000
+          runAsNonRoot: true
+          runAsUser: 1000
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -78,18 +77,18 @@ spec:
 status:
   availableReplicas: 2
   conditions:
-    - lastTransitionTime: "2023-08-29T19:31:02Z"
-      lastUpdateTime: "2023-08-29T19:31:02Z"
-      message: Deployment has minimum availability.
-      reason: MinimumReplicasAvailable
-      status: "True"
-      type: Available
-    - lastTransitionTime: "2023-08-29T19:30:53Z"
-      lastUpdateTime: "2023-08-29T19:31:02Z"
-      message: ReplicaSet "minio-operator-7757dc47d9" has successfully progressed.
-      reason: NewReplicaSetAvailable
-      status: "True"
-      type: Progressing
+  - lastTransitionTime: "2023-08-29T19:31:02Z"
+    lastUpdateTime: "2023-08-29T19:31:02Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2023-08-29T19:30:53Z"
+    lastUpdateTime: "2023-08-29T19:31:02Z"
+    message: ReplicaSet "minio-operator-7757dc47d9" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
   observedGeneration: 1
   readyReplicas: 2
   replicas: 2
