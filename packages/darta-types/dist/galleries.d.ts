@@ -1,6 +1,13 @@
 export interface PublicFields {
     value: string | null;
 }
+
+export interface Images {
+  value?: string | null, 
+  fileData?: string | null | string | ArrayBuffer,
+  fileName?: string | null
+}
+
 export interface PrivateFields {
     value: string | null;
     isPrivate: boolean | null;
@@ -38,8 +45,9 @@ export interface IBusinessLocationData {
     coordinates?: CoordinateFields;
     googleMapsPlaceId?: PublicFields;
     locationId?: string;
+    city?: PublicFields;
 }
-interface GalleryAddressFields {
+export interface GalleryAddressFields {
     galleryLocation0?: IBusinessLocationData;
     galleryLocation1?: IBusinessLocationData;
     galleryLocation2?: IBusinessLocationData;
@@ -55,9 +63,10 @@ export interface GalleryBase {
     primaryUUIDPhone?: string;
     primaryUUID?: string;
     uuids?: string[];
+    value?: string;
 }
 interface GalleryFields extends GalleryBase {
-    galleryLogo?: PublicFields;
+    galleryLogo?: Images;
     galleryBio?: PublicFields;
     galleryAddress?: PrivateFields;
     primaryContact?: PrivateFields;

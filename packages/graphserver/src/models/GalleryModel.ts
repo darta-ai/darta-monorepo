@@ -1,3 +1,4 @@
+import { IGalleryProfileData } from '@darta/types';
 import {Node} from './models'
 
 export interface GalleryUser {
@@ -6,6 +7,10 @@ export interface GalleryUser {
     email: string;
   }
   
-  export interface Gallery extends Node {
+  export interface Gallery extends Node, IGalleryProfileData {
+    uuids: string[]
+  }
+
+  export interface City extends Node {
     uuids: string[]
   }

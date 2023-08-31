@@ -1,5 +1,6 @@
 import { Container } from 'inversify';
 import { Database } from 'arangojs';
+import {Client as MinioClient} from 'minio'
 import * as Services from '../services'
 import * as Controllers from '../controllers'
 import https from 'https';
@@ -12,7 +13,16 @@ const agent = new https.Agent({
 
 const container = new Container();
 
-const arangoContainer = container.bind<Database>('Database').toConstantValue(
+const TYPES = {
+  Database: 'Database',
+  MinioClient: 'MinioClient',
+  IGalleryService: 'IGalleryService',
+  GalleryController: 'GalleryController',
+  ImageController: 'ImageController',
+  IImageService: 'IImageService'
+};
+
+const arangoContainer = container.bind<Database>(TYPES.Database).toConstantValue(
   new Database({
     url: config.arango.url!,
     databaseName: config.arango.database!,
@@ -24,15 +34,29 @@ const arangoContainer = container.bind<Database>('Database').toConstantValue(
   }),
 );
 
-console.log(arangoContainer)
+const minioContainer = container.bind<MinioClient>(TYPES.MinioClient).toConstantValue(
+  new MinioClient({
+    endPoint: config.minio.endpoint!,
+    port: parseInt(config.minio.port!),
+    useSSL: config.minio.useSSL === "true",
+    accessKey:  config.minio.accessKey!,
+    secretKey: config.minio.secretKey!,
+  })
+)
+
+
 
 // Bind services
-container.bind<Services.IGalleryService>('IGalleryService').to(Services.GalleryService);
+container.bind<Services.IGalleryService>(TYPES.IGalleryService).to(Services.GalleryService);
+container.bind<Services.IImageService>(TYPES.IImageService).to(Services.ImageUploadService);
 
 // Bind controllers
-container.bind<Controllers.GalleryController>('GalleryController').to(Controllers.GalleryController);
+container.bind<Controllers.GalleryController>(TYPES.GalleryController).to(Controllers.GalleryController);
+container.bind<Controllers.ImageController>(TYPES.ImageController).to(Controllers.ImageController);
 
 export {
   container,
   arangoContainer,
+  minioContainer,
+  TYPES
 };

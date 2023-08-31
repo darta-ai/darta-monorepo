@@ -1,11 +1,4 @@
 import {GalleryState} from '../../globalTypes';
-import {
-  artwork1,
-  artwork2,
-  artwork3,
-  dummyExhibition,
-  soteGalleryProfile,
-} from '../dummyData';
 import { getGalleryProfile } from './galleries/galleries';
 
 const preloadArtwork = {
@@ -16,7 +9,6 @@ const preloadArtwork = {
 
 export const retrieveAllGalleryData = async (accessToken: string): Promise<GalleryState> => {
   const galleryProfile = await getGalleryProfile()
-  console.log(galleryProfile)
 
   return {
     galleryProfile: galleryProfile.data,

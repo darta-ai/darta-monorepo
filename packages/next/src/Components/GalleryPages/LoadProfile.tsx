@@ -22,7 +22,6 @@ export function LoadProfile() {
           type: GalleryReducerActions.SET_ACCESS_TOKEN,
           payload: user?.accessToken,
         });
-        console.log('dispatching state')
         dispatch({
           type: GalleryReducerActions.SET_PROFILE,
           payload: galleryProfile as IGalleryProfileData,

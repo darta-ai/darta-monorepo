@@ -6,7 +6,7 @@ import express, {Request, Response} from 'express';
 import http from 'http';
 import { InversifyExpressServer } from 'inversify-express-utils';
 import {container} from './config/container'
-
+var bodyParser = require('body-parser')
 dotenv.config();
 
 const server = new InversifyExpressServer(container);
@@ -25,6 +25,8 @@ const corsOptions = {
 // Configure and start the server
 server.setConfig((app) => {
   app.use(cors(corsOptions));
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   app.use(express.json());
   app.use(express.urlencoded({extended: true}));
 });

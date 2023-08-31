@@ -226,6 +226,8 @@ export function ProfileGallery({
                       rel="noreferrer">
                       {galleryProfileData?.galleryWebsite?.value
                         .replace('http://www.', '')
+                        .replace('http:/www.', '')
+                        .replace('https:/', '')
                         .replace('https://www.', '')
                         .replace('/', '')}
                     </a>
@@ -265,7 +267,7 @@ export function ProfileGallery({
               <Divider />
             </Typography>
           </Box>
-          <Box sx={{display: 'flex', flexDirection: 'column', gap: '1vh'}}>
+          <Box sx={{display: 'flex', width: '100%', flexDirection: 'column', gap: '1vh'}}>
             <Box sx={profileStyles.profile.galleryAddressContainer}>
               <GalleryLocationComponent
                 galleryLocationData={galleryProfileData?.galleryLocation0}

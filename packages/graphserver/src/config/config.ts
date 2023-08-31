@@ -8,4 +8,11 @@ export const config = {
     database: process.env.ARANGO_DATABASE,
     password: process.env.ARANGO_PASSWORD
   },
+  minio: {
+    endpoint: process.env.MINIO_ENDPOINT,
+    port: process.env.MINIO_PORT,
+    useSSL: process.env.MINIO_USE_SSL,
+    accessKey: process.env.MINIO_ACCESS_KEY,
+    secretKey: process.env.MINIO_SECRET_KEY
+  }
 };

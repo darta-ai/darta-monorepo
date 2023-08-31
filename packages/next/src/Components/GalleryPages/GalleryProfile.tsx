@@ -48,7 +48,7 @@ export function GalleryProfile() {
 
   const [stepIndex, setStepIndex] = React.useState(0);
   const [run, setRun] = React.useState(
-    !state?.galleryProfile?.galleryName?.value,
+    !state?.galleryProfile?.galleryBio?.value,
   );
 
   React.useEffect(() => {

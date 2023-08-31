@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
-import { IGalleryService } from '../services/IGalleryService';
+import { IGalleryService } from '../services/interfaces/IGalleryService';
 import { controller, httpGet, httpPost, request, response } from 'inversify-express-utils';
 import { inject } from 'inversify';
 import { verifyToken } from 'src/middlewares/accessTokenVerify';
+import { TYPES } from 'src/config/container';
+
 
 @controller('/gallery')
 export class GalleryController {
@@ -41,9 +43,12 @@ export class GalleryController {
   public async editProfile(@request() req: Request, @response() res: Response): Promise<void> {
     const user = (req as any).user;
     try{
-      const gallery = await this.service.editGalleryProfile({user, data: req.body})
+      const value = req.body.data?.galleryName?.value
+
+      const gallery = await this.service.editGalleryProfile({user, data: {...req.body.data, value}})
       res.json(gallery);
     } catch (error: any) {
+      console.log(error)
       res.status(500).send(error.message);
     }
   }

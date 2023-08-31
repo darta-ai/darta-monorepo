@@ -1,5 +1,6 @@
 export type Node = {
-    id: string;
+  _key: string;
+    _id: string;
     properties?: Record<string, any>;
   };
   

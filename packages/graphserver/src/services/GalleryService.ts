@@ -1,12 +1,18 @@
 import { injectable, inject } from 'inversify';
 import { Database } from 'arangojs';
-import { IGalleryService } from './IGalleryService';
-import { Gallery } from 'src/models/GalleryModel';
-import { GalleryBase, IGalleryProfileData } from '@darta/types';
+import { IGalleryService } from './interfaces/IGalleryService';
+import { Gallery, City} from 'src/models/GalleryModel';
+import { GalleryBase, IGalleryProfileData, GalleryAddressFields } from '@darta/types';
+import { ImageController } from 'src/controllers/ImageController';
+
+const BUCKET_NAME= "gallery-logo-bucket"
 
 @injectable()
 export class GalleryService implements IGalleryService {
-  constructor(@inject('Database') private readonly db: Database) {}
+  constructor(
+    @inject('Database') private readonly db: Database,
+    @inject('ImageController') private readonly imageController: ImageController
+    ) {}
 
   public async createGalleryProfile(
     { primaryUUID,
@@ -31,28 +37,83 @@ export class GalleryService implements IGalleryService {
   }
   public async readGalleryProfile(uuid: string): Promise<Gallery | null>{
     const query = `
+    WITH cities
     FOR gallery IN galleries
-      FILTER @userUUID IN gallery.uuids
-      RETURN gallery
+    FILTER @userUUID IN gallery.uuids
+    FOR galleriesToCity, edge IN 1..1 OUTBOUND gallery galleryToCity
+    RETURN {
+        gallery: gallery,
+        city: galleriesToCity
+    }
   `;
-  const cursor = await this.db.query(query, { userUUID: uuid });
-  const gallery: Gallery | null = await cursor.next(); // Get the first result
 
-  return gallery;
+  const cursor = await this.db.query(query, { userUUID: uuid });
+  const gallery: Gallery | null | any = await cursor.next(); // Get the first result
+
+  const {bucketName, fileName} = gallery.gallery.galleryLogo
+  const url = this.imageController.processGetFile({bucketName, fileName})
+  return gallery.gallery;
   }
   
-  public async editGalleryProfile({user, data}: {user: any, data: IGalleryProfileData}): Promise<Gallery | null>{
-    const query = `
+  public async editGalleryProfile({user, data}: {user: any, data: IGalleryProfileData}): Promise<Gallery | null> {
+
+    const { galleryLogo, ...galleryData } = data;
+
+    let galleryLogoResults
+    if (galleryLogo?.fileData){
+      try{
+        galleryLogoResults = await this.imageController.processFile({fileBuffer: galleryLogo?.fileData, fileName: `${crypto.randomUUID()}-${galleryLogo?.fileName}`, bucketName: BUCKET_NAME})
+      } catch (error){
+        console.error("error uploading image:", error)
+      }
+    }
+
+    // Update or Insert gallery
+    const findGalleryQuery = `
     FOR gallery IN galleries
       FILTER @userUUID IN gallery.uuids
-      UPDATE gallery WITH @data IN galleries
+      UPDATE @data IN galleries
       RETURN gallery
   `;
-  const cursor = await this.db.query(query, { userUUID: user.user_id, ...data });
-  const gallery: Gallery | null = await cursor.next(); // Get the first result
 
-  return gallery;
-  }
+    const cursor = await this.db.query(findGalleryQuery, { userUUID: user.user_id, data: {...galleryData, galleryLogo: {
+      fileName: galleryLogoResults?.fileName, 
+      bucketName: galleryLogoResults?.bucketName
+    }} });
+    const gallery: Gallery | null = await cursor.next();
+    if(gallery){
+    // Dynamically check for galleryLocationX properties
+    for (let i = 0; i < 5; i++){
+      let key = `galleryLocation${i}`
+      if (gallery[key as keyof Gallery]){
+        const cityValue = gallery[key as keyof GalleryAddressFields] && gallery[key as keyof GalleryAddressFields]?.city?.value;
+        if (cityValue) {
+          // Check if city exists and upsert it
+          const upsertCityQuery = `
+            UPSERT { value: @cityValue }
+            INSERT { value: @cityValue }
+            UPDATE {} IN cities
+            RETURN NEW
+          `;
+
+          const cityCursor = await this.db.query(upsertCityQuery, { cityValue });
+          const city: City = await cityCursor.next(); // Assuming City is a type
+
+          // Create an edge between the gallery and city for this location
+          const createEdgeQuery = `
+            INSERT { _from: @galleryId, _to: @cityId } INTO galleryToCity
+          `;
+          
+            await this.db.query(createEdgeQuery, { galleryId: gallery._id, cityId: city._id });
+          }
+        }
+      }
+    }
+
+    return gallery;
+}
+
+
 
   public async deleteGalleryProfile(): Promise<void>{
 
@@ -91,7 +152,6 @@ export class GalleryService implements IGalleryService {
             UPDATE gallery WITH { ${awaitingApprovalField}: PUSH(gallery.${awaitingApprovalField}, @domain) } INTO galleryApprovals
           `;
           await this.db.query(query3, { domain });
-          console.log('sent!', query3, domain)
           return false;
         }
       }

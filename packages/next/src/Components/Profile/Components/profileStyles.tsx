@@ -85,9 +85,11 @@ export const profileStyles = {
       },
     },
     hoursOfOperationText: {
+      width: '100%',
+      textAlign: 'center',
       fontSize: '0.9rem',
       '@media (max-width: 700px)': {
-        flexDirection: '0.7rem',
+        fontSize: '0.8rem',
       },
     },
     galleryContactHeadline: {
@@ -104,8 +106,9 @@ export const profileStyles = {
     galleryAddressContainer: {
       display: 'column',
       flexDirection: 'row',
-      width: '95%',
+      width: '100%',
       alignItems: 'center',
+      alignSelf: 'right',
       alignText: 'center',
     },
     galleryBioStyles: {

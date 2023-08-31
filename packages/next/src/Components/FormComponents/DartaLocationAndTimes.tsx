@@ -177,12 +177,12 @@ export function DartaLocationAndTimes({
           placeId,
           fields: [
             'opening_hours',
+            'address_components',
             'geometry',
             'name',
             'website',
             'formatted_phone_number',
             'formatted_address',
-            'photos',
             'url',
           ],
         },
@@ -210,7 +210,7 @@ export function DartaLocationAndTimes({
 
   React.useEffect(() => {
     if (placeDetails) {
-      const {galleryAddress, lat, lng, mapsUrl} =
+      const {galleryAddress, lat, lng, mapsUrl, city} =
         googleMapsParser(placeDetails);
       if (galleryAddress) {
         setValue(`${locationNumber}.locationString.value`, galleryAddress);
@@ -223,6 +223,9 @@ export function DartaLocationAndTimes({
       }
       if (mapsUrl) {
         setValue(`${locationNumber}.coordinates.googleMapsUrl.value`, mapsUrl);
+      }
+      if (city) {
+        setValue(`${locationNumber}.city.value`, mapsUrl);
       }
       setValue(`${locationNumber}.googleMapsPlaceId.value`, placeId);
     }
@@ -264,7 +267,7 @@ export function DartaLocationAndTimes({
         <DartaLocationLookup
           fieldName={`${locationNumber}.locationString`}
           data={
-            (getValues(`${locationNumber}.locationString`) as any) ||
+            (getValues(`${locationNumber}.locationString`) as any) ??
             data?.locationString
           }
           register={register}
