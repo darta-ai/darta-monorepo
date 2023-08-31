@@ -164,7 +164,6 @@ export function EditProfileGallery({
 
     try{
       const {data} = await updateGalleryProfile(tempData)
-      console.log({data})
       setGalleryProfileData(data);
     } catch (error){
       //TO-DO: need an error modal  
