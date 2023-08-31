@@ -46,7 +46,7 @@ export const galleryStyles = {
     width: '100 %',
     flexDirection: 'row',
     gap: '3vw',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     '@media (min-width: 800px)': {
       width: '50%',
     },

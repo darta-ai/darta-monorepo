@@ -27,8 +27,7 @@ import { updateGalleryProfile } from '../../API/galleries/galleries';
 const instagramREGEX =
   /(?:^|[^\w])(?:@)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)/;
 
-const phoneRegExp = /^(\+?\d{1,4}[\s-])?(?!0+\s+,?$)\d{10}\s*,?$/;
-
+const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 const galleryDataSchema = yup
   .object({
     galleryName: yup.object().shape({
@@ -46,7 +45,7 @@ const galleryDataSchema = yup
       locationString: yup.object().shape({
         value: yup.string().optional(),
         isPrivate: yup.boolean().optional(),
-      }),
+      })
     }),
     primaryContact: yup.object().shape({
       value: yup.string().email('A valid email address is required'),
@@ -151,6 +150,7 @@ export function EditProfileGallery({
   );
   const onSubmit = async (data: any) => {
     const tempData = _.cloneDeep(data);
+    
     if (
       !tempData.galleryLocation0.locationString.value &&
       tempData?.galleryLocation1?.locationString.value
@@ -160,9 +160,14 @@ export function EditProfileGallery({
     }
     if (tempData.galleryLocation0 && !tempData?.galleryLocation0?.locationId)
       tempData.galleryLocation0.locationId = crypto.randomUUID();
+    
 
-    setGalleryProfileData(data);
-    await updateGalleryProfile(data)
+    setGalleryProfileData(tempData);
+    try{
+      await updateGalleryProfile(tempData)
+    } catch (error){
+      //TO-DO: need an error modal  
+    }
     setIsEditingProfile(!isEditingProfile);
   };
 
@@ -172,7 +177,20 @@ export function EditProfileGallery({
     const file = acceptedFiles[0];
     const previewURL = URL.createObjectURL(file);
 
-    setValue('galleryLogo', {value: previewURL});
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      // event.target.result contains the file's data as a base64 encoded string.
+      if (event.target?.result){
+        const fileData = event.target.result;
+        setValue('galleryLogo.fileData', fileData);
+        setValue('galleryLogo.fileName', file.name)
+      }
+    };
+
+    reader.readAsDataURL(file); // Read the file content as Data URL.
+
+
     setTempImage(previewURL);
     // NEED API CALL TO UPLOAD IMAGE TO DATABASE
     setEditImage(!editImage);
@@ -191,6 +209,7 @@ export function EditProfileGallery({
         galleryWebsite,
         galleryPhone,
         openHours,
+        city
       } = googleMapsParser(autofillDetails);
       if (galleryName) {
         setValue('galleryName.value', galleryName);
@@ -209,6 +228,9 @@ export function EditProfileGallery({
           'galleryLocation0.coordinates.googleMapsPlaceId.value',
           mapsUrl,
         );
+      }
+      if (city) {
+        setValue(`galleryLocation0.city.value`, city);
       }
       setValue('galleryLocation0.googleMapsPlaceId.value', placeId);
       if (openHours) {
@@ -410,8 +432,8 @@ export function EditProfileGallery({
             />
           </Box>
         </Box>
-        <Box key="primaryContact" sx={createArtworkStyles.multiLineContainer}>
-          <Box key="galleryWebsite" sx={createArtworkStyles.inputText}>
+        <Box key="galleryWebsite" sx={createArtworkStyles.multiLineContainer}>
+          <Box  sx={createArtworkStyles.inputText}>
             <DartaTextInput
               fieldName="galleryWebsite"
               data={

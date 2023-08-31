@@ -32,7 +32,6 @@ export function DartaLocationLookup({
   control,
   toolTips,
   allowPrivate,
-
   errors,
   helperTextString,
   required,

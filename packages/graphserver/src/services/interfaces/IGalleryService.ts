@@ -1,4 +1,4 @@
-import {Gallery} from '../models/GalleryModel'
+import {Gallery} from '../../models/GalleryModel'
 import {GalleryBase, IGalleryProfileData} from '@darta/types'
 
 export interface IGalleryService {

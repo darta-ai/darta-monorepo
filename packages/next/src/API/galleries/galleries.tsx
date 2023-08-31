@@ -36,6 +36,7 @@ export async function updateGalleryProfile(data : IGalleryProfileData): Promise<
         const response = await axios.post(`${URL}/gallery/editProfile`, {data} as IGalleryProfileData, {headers: {'authorization': `Bearer ${idToken}`}});
         return response;
     } catch (error) {
+        console.log(error)
         throw new Error('Unable to update profile')
     }
 }

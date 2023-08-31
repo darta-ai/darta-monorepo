@@ -173,6 +173,7 @@ export function DartaGallerySearch({
           placeId,
           fields: [
             'opening_hours',
+            'address_components',
             'geometry',
             'name',
             'website',
