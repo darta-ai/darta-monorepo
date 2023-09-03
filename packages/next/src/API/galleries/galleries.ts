@@ -10,6 +10,7 @@ export async function getGalleryProfile(): Promise<any> {
         const response = await axios.get(`${URL}/gallery/galleryProfile`, {headers: {'authorization': `Bearer ${idToken}`}});
         return response;
     } catch (error) {
+        console.log(error)
         throw new Error('Unable to retrieve profile')
     }
 }
@@ -26,6 +27,7 @@ export async function createGalleryProfile({galleryName,
             primaryOwnerPhone, primaryOwnerEmail} as GalleryBase, {headers: {'authorization': `Bearer ${idToken}`}});
         return response;
     } catch (error) {
+        console.log(error)
         throw new Error('Unable to create profile')
     }
 }

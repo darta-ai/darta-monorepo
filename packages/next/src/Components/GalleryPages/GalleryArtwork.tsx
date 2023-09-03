@@ -20,6 +20,7 @@ import {DartaRadioFilter, DartaTextFilter} from '../Filters';
 import {UploadArtworksXlsModal} from '../Modals';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
+import { createArtwork } from '../../API/artworks/artwork';
 
 // Reactour steps
 const artworkSteps = [
@@ -84,15 +85,22 @@ export function GalleryArtwork() {
     });
   };
 
-  const addNewArtwork = () => {
+  const addNewArtwork = async () => {
     const newArtwork: Artwork = _.cloneDeep(newArtworkShell);
     newArtwork.artworkId = crypto.randomUUID();
     newArtwork.updatedAt = new Date().toISOString();
     newArtwork.createdAt = new Date().toISOString();
-    dispatch({
-      type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
-      payload: {[newArtwork.artworkId]: newArtwork},
-    });
+    let results;
+    try{
+      results = await createArtwork(newArtwork)
+      dispatch({
+        type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
+        payload: {[newArtwork.artworkId]: results},
+      });
+    } catch (error: any){
+      //TO-DO: error handling modal
+      console.log(error)
+    }
   };
 
   const saveArtwork = (artworkId: string, updatedArtwork: Artwork) => {

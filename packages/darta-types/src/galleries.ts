@@ -4,7 +4,7 @@ export interface PublicFields {
 
 export interface Images {
   value?: string | null, 
-  fileData?: string | null | ArrayBuffer | FormData,
+  fileData?: string | null | ArrayBuffer ,
   fileName?: string | null, 
   bucketName?: string | null,
 }
@@ -78,4 +78,107 @@ interface GalleryFields extends GalleryBase {
 }
 export interface IGalleryProfileData extends GalleryFields, GalleryAddressFields {
 }
+
+export type Dimensions = {
+    heightIn: PublicFields;
+    text: PublicFields;
+    widthIn: PublicFields;
+    depthIn?: PublicFields;
+    depthCm?: PublicFields;
+    heightCm: PublicFields;
+    widthCm: PublicFields;
+    displayUnit: {value: 'in' | 'cm'};
+  };
+  
+export interface DateFields {
+    value: string | null;
+    isOngoing: boolean | null;
+  }
+export interface IOpeningLocationData extends IBusinessLocationData {
+    isPrivate: boolean;
+  }
+
+export type Artwork = {
+    artworkImage: Images;
+    artworkId?: string;
+    published?: boolean;
+    artworkImagesArray?: PublicFields[] | any[];
+    artworkTitle: PublicFields;
+    artistName: PublicFields;
+    artworkDescription?: PublicFields;
+    artworkCurrency?: PublicFields;
+    artworkPrice?: PrivateFields;
+    canInquire: PublicFields;
+    artworkMedium: PublicFields;
+    artworkDimensions: Dimensions;
+    slug?: PublicFields;
+    artworkCreatedYear?: PublicFields;
+    createdAt: string | null;
+    updatedAt: string | null;
+    collection?: PublicFields;
+    exhibitionOrder?: number;
+  };
+  
+  export type ExhibitionDates = {
+    exhibitionStartDate: DateFields;
+    exhibitionEndDate: DateFields;
+    exhibitionDuration: {value: 'Temporary' | 'Ongoing/Indefinite'};
+  };
+  
+  export type ReceptionDates = {
+    hasReception: {value: 'Yes' | 'No'};
+    receptionStartTime: PublicFields;
+    receptionEndTime: PublicFields;
+  };
+  
+  export type ArtworkObject = {[key: string]: Artwork};
+  
+  export type BusinessAddressType =
+    | 'galleryLocation0'
+    | 'galleryLocation1'
+    | 'galleryLocation2'
+    | 'galleryLocation3'
+    | 'galleryLocation4';
+  
+  // make it its own package. and then put the export under index. then import from @types
+  
+  export type Exhibition = {
+    exhibitionTitle: PublicFields;
+    exhibitionPressRelease: PublicFields;
+    exhibitionPrimaryImage: PublicFields;
+    exhibitionLocation: IOpeningLocationData;
+    mediumsUsed?: PublicFields[] | undefined[];
+    artists?: PublicFields[] | undefined[];
+    pressReleaseImages?: PublicFields[] | undefined[];
+    exhibitionImages?: PublicFields[] | undefined[];
+    artworks?: {[key: string]: Artwork} | {[key: string]: undefined};
+    published: boolean;
+    slug?: PublicFields;
+    exhibitionId: string;
+    exhibitionDates: ExhibitionDates;
+    receptionDates: ReceptionDates;
+    createdAt: string | null;
+    updatedAt?: string | null;
+  };
+  
+  export type ExhibitionObject = {[key: string]: Exhibition};
+  
+  export type CurrencyConverterType = {
+    [key: string]: '$' | '€' | '£';
+  };
+  
+  export type GalleryState = {
+    galleryProfile: IGalleryProfileData;
+    galleryArtworks: {[key: string]: Artwork};
+    galleryExhibitions: {[key: string]: Exhibition};
+    accessToken: string | null;
+  };
+  
+  type GalleryDisplayValues = {
+    label: string; // or any other type
+    value: string; // or any other type
+  };
+  export type GalleryDropdownDisplay = GalleryDisplayValues[];
+  
+
 export {};

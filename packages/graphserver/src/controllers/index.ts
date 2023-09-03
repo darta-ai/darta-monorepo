@@ -1,2 +1,4 @@
 export {GalleryController} from './GalleryController'
 export {ImageController} from './ImageController'
+export {ArtworkController} from './ArtworkController'
+export {AdminController} from './AdminController'
