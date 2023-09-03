@@ -32,6 +32,7 @@ import {
 import {CroppingMattersModal, DartaDialogue} from '../Modals/index';
 import {profileStyles} from '../Profile/Components/profileStyles';
 import {createArtworkStyles} from './styles';
+import { editArtwork } from '../../API/artworks/artwork';
 
 type currencyConverterType = {
   [key: string]: string;
@@ -217,7 +218,7 @@ export function CreateArtwork({
     );
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     handleMeasurementChange();
     const artist_name = data.artistName.value
       .toLowerCase()
@@ -252,8 +253,16 @@ export function CreateArtwork({
         `,
       );
     }
-
-    saveArtwork(data);
+    try{
+    console.log(newArtwork)
+     const results = await editArtwork({
+      ...newArtwork, 
+      ...data})
+      saveArtwork(data);
+    } catch (error: any) {
+      console.log('~~~~', error)
+    }
+    
   };
 
   const handleDrop = (acceptedFiles: any) => {

@@ -7,5 +7,6 @@ export interface IGalleryService {
     editGalleryProfile({user, data} : {user: any, data: IGalleryProfileData}): Promise<Gallery | null>;
     deleteGalleryProfile(): Promise<void>;
     verifyQualifyingGallery(domain: string): Promise<boolean>
+    getGalleryId({uuid}: {uuid:string}): Promise<string>
   }
   

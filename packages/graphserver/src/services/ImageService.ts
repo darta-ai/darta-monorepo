@@ -3,7 +3,7 @@ import {Client} from 'minio'
 import { IImageService, BatchImages } from './interfaces/IImageService';
 
 @injectable()
-export class ImageUploadService implements IImageService {
+export class ImageService implements IImageService {
   constructor(
     @inject('MinioClient') private readonly minio: Client
     ) {}
@@ -63,6 +63,7 @@ export class ImageUploadService implements IImageService {
     return new Promise((resolve, reject) => {
         const metadata = {
             'Content-type': mimeType,
+            'CacheControl': "no-cache"
         };
         
         this.minio.putObject(bucketName, fileName, imageBuffer, 400, metadata, (err, etag) => {
@@ -79,8 +80,8 @@ export class ImageUploadService implements IImageService {
     public uploadBatchImages(arg0: BatchImages[]): Promise<any>{
       return new Promise(() => true)
     }
-    public deleteImage(arg0: BatchImages[]): Promise<any>{
-      return new Promise(() => true)
+    public deleteImage({bucketName, fileName} : {bucketName: string, fileName: string}):Promise<any>{
+        return this.minio.removeObjects(bucketName, [fileName])
     }
     public deleteBatchImages(): Promise<any>{
       return new Promise(() => true)

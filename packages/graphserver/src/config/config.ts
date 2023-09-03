@@ -16,3 +16,5 @@ export const config = {
     secretKey: process.env.MINIO_SECRET_KEY
   }
 };
+
+export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD

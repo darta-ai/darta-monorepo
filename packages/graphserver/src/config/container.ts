@@ -19,7 +19,15 @@ const TYPES = {
   IGalleryService: 'IGalleryService',
   GalleryController: 'GalleryController',
   ImageController: 'ImageController',
-  IImageService: 'IImageService'
+  IImageService: 'IImageService',
+  ArtworkController: 'ArtworkController',
+  IArtworkService: 'IArtworkService',
+  AdminController: 'AdminController',
+  IAdminService: 'IAdminService',
+  EdgeService: 'EdgeService',
+  IEdgeService: 'IEdgeService',
+  NodeService: 'NodeService',
+  INodeService: 'INodeService'
 };
 
 const arangoContainer = container.bind<Database>(TYPES.Database).toConstantValue(
@@ -49,11 +57,20 @@ const minioContainer = container.bind<MinioClient>(TYPES.MinioClient).toConstant
 
 // Bind services
 container.bind<Services.IGalleryService>(TYPES.IGalleryService).to(Services.GalleryService);
-container.bind<Services.IImageService>(TYPES.IImageService).to(Services.ImageUploadService);
+container.bind<Services.IImageService>(TYPES.IImageService).to(Services.ImageService);
+container.bind<Services.IArtworkService>(TYPES.IArtworkService).to(Services.ArtworkService);
+container.bind<Services.IAdminService>(TYPES.IAdminService).to(Services.AdminService);
+container.bind<Services.IEdgeService>(TYPES.IEdgeService).to(Services.EdgeService);
+container.bind<Services.INodeService>(TYPES.INodeService).to(Services.NodeService);
+
+
 
 // Bind controllers
 container.bind<Controllers.GalleryController>(TYPES.GalleryController).to(Controllers.GalleryController);
 container.bind<Controllers.ImageController>(TYPES.ImageController).to(Controllers.ImageController);
+container.bind<Controllers.ArtworkController>(TYPES.ArtworkController).to(Controllers.ArtworkController);
+container.bind<Controllers.AdminController>(TYPES.AdminController).to(Controllers.AdminController);
+
 
 export {
   container,

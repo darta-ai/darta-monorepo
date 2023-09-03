@@ -16,7 +16,7 @@ export interface IImageService {
     uploadImage({} : ImageNeeds): Promise<any>;
     fetchImage({bucketName, fileName} : {bucketName: string, fileName: string}):Promise<any>
     uploadBatchImages(arg0: BatchImages[]): Promise<Gallery | null>;
-    deleteImage(arg0: BatchImages[]): Promise<Gallery | null>;
+    deleteImage({bucketName, fileName} : {bucketName: string, fileName: string}):Promise<any>
     deleteBatchImages(): Promise<void>;
   }
   

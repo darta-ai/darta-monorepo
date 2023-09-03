@@ -2,10 +2,11 @@ import { injectable, inject } from 'inversify';
 import { Database } from 'arangojs';
 import { IGalleryService } from './interfaces/IGalleryService';
 import { Gallery, City} from 'src/models/GalleryModel';
-import { GalleryBase, IGalleryProfileData, GalleryAddressFields } from '@darta/types';
+import { GalleryBase, IGalleryProfileData, GalleryAddressFields, ImageFields } from '@darta/types';
 import { ImageController } from 'src/controllers/ImageController';
+import {CollectionNames, EdgeNames} from '../config/collections'
 
-const BUCKET_NAME= "gallery-logo-bucket"
+const BUCKET_NAME= "logo"
 
 @injectable()
 export class GalleryService implements IGalleryService {
@@ -21,7 +22,7 @@ export class GalleryService implements IGalleryService {
     signUpWebsite,
     primaryOwnerEmail, 
     isValidated } : GalleryBase): Promise<void> {
-    const galleryCollection = this.db.collection('galleries');
+    const galleryCollection = this.db.collection(`${CollectionNames.Galleries}`);
     const newGallery: any = {
         uuids: [primaryUUID], 
         primaryUUID,
@@ -36,41 +37,74 @@ export class GalleryService implements IGalleryService {
       return { ...newGallery, _id: metaData._id, _key: metaData._key, _rev: metaData._rev };
   }
   public async readGalleryProfile(uuid: string): Promise<Gallery | null>{
-    const query = `
-    WITH cities
-    FOR gallery IN galleries
+    const galleryQuery = `
+    WITH ${CollectionNames.Galleries}
+    FOR gallery IN ${CollectionNames.Galleries}
     FILTER @userUUID IN gallery.uuids
-    FOR galleriesToCity, edge IN 1..1 OUTBOUND gallery galleryToCity
-    RETURN {
-        gallery: gallery,
-        city: galleriesToCity
-    }
+    RETURN gallery
   `;
 
-  const cursor = await this.db.query(query, { userUUID: uuid });
-  const results: any = await cursor.next(); // Get the first result
+  let gallery;
 
-  const {gallery} : {gallery: Gallery} = results
+  // get gallery
+  try{
+    const cursor = await this.db.query(galleryQuery, { userUUID: uuid });
+    gallery = await cursor.next(); // Get the first result
+  } catch(error){
+    console.log(error)
+  }
 
+
+  //get city
+  const cityQuery = `
+  WITH Galleries, Cities
+  FOR cityViaEdge IN 1..1 OUTBOUND @galleryId ${EdgeNames.GalleryToCity}
+    RETURN cityViaEdge
+`
+  let cityValue;
+
+  try{
+    const cityCursor = await this.db.query(cityQuery, { galleryId: gallery._id });
+    cityValue = await cityCursor.next(); // Get the first result
+  } catch(error: any){
+  }
+
+  // get gallery image
   const {galleryLogo} = gallery
 
   let url;
     if (galleryLogo?.bucketName && galleryLogo?.fileName){
-      url = await this.imageController.processGetFile({bucketName: galleryLogo?.bucketName, fileName: galleryLogo?.fileName})
+      try{
+        url = await this.imageController.processGetFile({bucketName: galleryLogo?.bucketName, fileName: galleryLogo?.fileName})
+      } catch(error){
+        console.log(error)
+      }
     }
-  return {...gallery, galleryLogo : {
-    value: url
-  }};
+  return {
+    ...gallery, 
+    galleryLogo : {
+      value: url
+    }
+  };
   }
   
   public async editGalleryProfile({user, data}: {user: any, data: IGalleryProfileData}): Promise<Gallery | null> {
 
     const { galleryLogo, ...galleryData } = data;
 
+    const galleryKey = await this.getGalleryId({uuid: user?.user_id})
+
+    const {currentGalleryLogo} = await this.getGalleryLogo({key: galleryKey})
+
+    let fileName:string = crypto.randomUUID()
+    if (currentGalleryLogo?.galleryLogo?.fileName){
+      fileName = currentGalleryLogo.galleryLogo.fileName
+    }
+
     let galleryLogoResults
     if (galleryLogo?.fileData){
       try{
-        galleryLogoResults = await this.imageController.processUploadImage({fileBuffer: galleryLogo?.fileData, fileName: `${crypto.randomUUID()}`, bucketName: BUCKET_NAME})
+        galleryLogoResults = await this.imageController.processUploadImage({fileBuffer: galleryLogo?.fileData, fileName, bucketName: BUCKET_NAME})
       } catch (error){
         console.error("error uploading image:", error)
       }
@@ -78,9 +112,10 @@ export class GalleryService implements IGalleryService {
 
     // Update or Insert gallery
     const findGalleryQuery = `
-    FOR gallery IN galleries
+    WITH ${CollectionNames.Galleries}
+    FOR gallery IN ${CollectionNames.Galleries}
       FILTER @userUUID IN gallery.uuids
-      UPDATE @data IN galleries
+      UPDATE @data IN ${CollectionNames.Galleries}
       RETURN NEW
   `;
 
@@ -101,19 +136,30 @@ export class GalleryService implements IGalleryService {
           const upsertCityQuery = `
             UPSERT { value: @cityValue }
             INSERT { value: @cityValue }
-            UPDATE {} IN cities
+            UPDATE {} IN ${CollectionNames.Cities}
             RETURN NEW
           `;
 
           const cityCursor = await this.db.query(upsertCityQuery, { cityValue });
           const city: City = await cityCursor.next(); // Assuming City is a type
 
-          // Create an edge between the gallery and city for this location
-          const createEdgeQuery = `
-            INSERT { _from: @galleryId, _to: @cityId } INTO galleryToCity
+          // Check if an edge between the gallery and this city already exists
+          const checkEdgeQuery = `
+          FOR edge IN ${EdgeNames.GalleryToCity}
+          FILTER edge._from == @galleryId AND edge._to == @cityId
+          RETURN edge
           `;
-          
-            await this.db.query(createEdgeQuery, { galleryId: gallery._id, cityId: city._id });
+
+          const edgeCursor = await this.db.query(checkEdgeQuery, { galleryId: gallery._id, cityId: city._id });
+          const existingEdge = await edgeCursor.next();
+
+            // If there's no existing edge, create a new one
+            if (!existingEdge) {
+                const createEdgeQuery = `
+                    INSERT { _from: @galleryId, _to: @cityId } INTO ${EdgeNames.GalleryToCity}
+                `;
+                await this.db.query(createEdgeQuery, { galleryId: gallery._id, cityId: city._id });
+            }
           }
         }
       }
@@ -134,7 +180,7 @@ export class GalleryService implements IGalleryService {
     try {
       // Define the query for checking the approved array
       const query = `
-        FOR gallery IN galleryApprovals
+        FOR gallery IN ${CollectionNames.GalleryApprovals}
         FILTER @domain IN gallery.approved
         RETURN gallery
       `;
@@ -145,7 +191,7 @@ export class GalleryService implements IGalleryService {
       } else {
         // Define the query for checking the awaiting approval array
         const query2 = `
-          FOR gallery IN galleryApprovals
+          FOR gallery IN ${CollectionNames.GalleryApprovals}
           FILTER @domain IN gallery.${isGmail ? 'awaitingApprovalGmail' : 'awaitingApproval'}
           RETURN gallery
         `;
@@ -157,8 +203,9 @@ export class GalleryService implements IGalleryService {
           // Save the domain to the awaiting approval array
           const awaitingApprovalField = isGmail ? 'awaitingApprovalGmail' : 'awaitingApproval';
           const query3 = `
-            FOR gallery IN galleryApprovals
-            UPDATE gallery WITH { ${awaitingApprovalField}: PUSH(gallery.${awaitingApprovalField}, @domain) } INTO galleryApprovals
+            FOR gallery IN ${CollectionNames.GalleryApprovals}
+            UPDATE gallery WITH { ${awaitingApprovalField}: PUSH(gallery.${awaitingApprovalField}, @domain) } INTO ${CollectionNames.GalleryApprovals}
+            RETURN NEW
           `;
           await this.db.query(query3, { domain });
           return false;
@@ -169,6 +216,33 @@ export class GalleryService implements IGalleryService {
       return false;
     }
   }  
+
+  public async getGalleryId({uuid}: {uuid:string}): Promise<any>{
+    const findGalleryKey = `
+    FOR gallery IN ${CollectionNames.Galleries}
+    FILTER @userUUID IN gallery.uuids
+    RETURN gallery._key
+    
+  `;
+  const cursor = await this.db.query(findGalleryKey, { userUUID: uuid });
+
+  const key: string = await cursor.next();
+  return key
+  }
+
+  public async getGalleryLogo({key}: {key:string}): Promise<any>{
+    const findGalleryKey = `
+    LET doc = DOCUMENT(CONCAT("Galleries/", @key))
+    RETURN {
+        galleryLogo: doc.galleryLogo
+    }
+  `;
+  const cursor = await this.db.query(findGalleryKey, { key });
+
+  const currentGalleryLogo: ImageFields = await cursor.next();
+  return {currentGalleryLogo}
+  }
+
 }
 
 
