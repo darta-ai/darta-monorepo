@@ -4,17 +4,6 @@ import {GalleryBase, IGalleryProfileData} from '@darta/types'
 
 const URL = "http://localhost:1160"
 
-export async function getGalleryProfile(): Promise<any> {
-    const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
-    try {
-        const response = await axios.get(`${URL}/gallery/galleryProfile`, {headers: {'authorization': `Bearer ${idToken}`}});
-        return response;
-    } catch (error) {
-        console.log(error)
-        throw new Error('Unable to retrieve profile')
-    }
-}
-
 export async function createGalleryProfile({galleryName, 
     signUpWebsite, 
     primaryOwnerPhone, 
@@ -31,6 +20,19 @@ export async function createGalleryProfile({galleryName,
         throw new Error('Unable to create profile')
     }
 }
+
+export async function readGalleryProfile(): Promise<any> {
+    const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
+    try {
+        const response = await axios.get(`${URL}/gallery/galleryProfile`, {headers: {'authorization': `Bearer ${idToken}`}});
+        return response.data;
+    } catch (error) {
+        console.log(error)
+        throw new Error('Unable to retrieve profile')
+    }
+}
+
+
 
 export async function updateGalleryProfile(data : IGalleryProfileData): Promise<any> {
     const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)

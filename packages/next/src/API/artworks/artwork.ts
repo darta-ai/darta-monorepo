@@ -27,11 +27,29 @@ export async function editArtwork(artwork : Artwork): Promise<any> {
     }
 }
 
-export async function getGalleryArtworks(): Promise<any> {
+export async function deleteArtworkAPI(artworkId: string): Promise<any>{
     const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
     try {
-        const response = await axios.get(`${URL}/artwork/galleryArtworks`, {headers: {'authorization': `Bearer ${idToken}`}});
+        const response = await axios.post(`${URL}/artwork/delete`, {artworkId} , {headers: {'authorization': `Bearer ${idToken}`}});
         return response.data;
+    } catch (error) {
+        console.log(error)
+        throw new Error('Unable edit artwork')
+    }
+}
+
+
+export async function listArtworksByGallery(): Promise<any> {
+    const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
+    try {
+        const response = await axios.get(`${URL}/artwork/listGalleryArtworks`, {headers: {'authorization': `Bearer ${idToken}`}});
+        const mappedGalleryArtworks = response.data.reduce((accumulator : any, artwork: Artwork) => {
+            if (artwork?.artworkId) {
+              accumulator[artwork.artworkId] = artwork;
+            }
+            return accumulator;
+          }, {});
+        return mappedGalleryArtworks
     } catch (error) {
         console.log(error)
         // throw new Error('Unable edit artwork')

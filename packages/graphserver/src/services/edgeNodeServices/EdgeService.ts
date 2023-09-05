@@ -52,7 +52,33 @@ export class EdgeService implements IEdgeService {
                 to
             });
         }
+
+        public async deleteEdgeWithFrom({edgeName, from} : {edgeName: string, from: string}): Promise<void> {
+            const query = `
+            FOR edge IN @@edgeName
+            FILTER edge._from == @from
+            REMOVE edge IN @@edgeName
+            `;
     
+            await this.db.query(query, {
+                '@edgeName': edgeName,
+                from,
+            });
+        }
+    
+        public async deleteEdgeWithTo({edgeName, to} : {edgeName: string, to: string}): Promise<void> {
+            const query = `
+            FOR edge IN @@edgeName
+            FILTER edge._to == @to
+            REMOVE edge IN @@edgeName
+            `;
+    
+            await this.db.query(query, {
+                '@edgeName': edgeName,
+                to
+            });
+        }
+
         public async updateEdge({edgeName, from, to, data = {}} : {edgeName: string, from: string, to: string, data: any }): Promise<void> {
             const query = `
             FOR edge IN @@edgeName

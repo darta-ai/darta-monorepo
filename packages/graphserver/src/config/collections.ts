@@ -3,7 +3,7 @@ export const CollectionNames = {
     ArtworkBelongsToGallery : 'ArtworkBelongsToGallery',
     ArtworkHasPrice :'ArtworkHasPrice',
     ArtworkSizeBuckets: 'ArtworkSizeBuckets',
-    ArtworkCreatorArtists: 'ArtworkCreatorArtists',
+    ArtworkArtists: 'ArtworkCreatorArtists',
     ArtworkCreatedBuckets: 'ArtworkCreatedBuckets',
     ArtworkPriceBuckets: 'ArtworkPriceBuckets',
     ArtworkHasDimension : 'ArtworkHasDimension',
