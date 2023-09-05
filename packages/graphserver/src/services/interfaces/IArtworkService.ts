@@ -5,8 +5,8 @@ export interface IArtworkService {
     createArtwork({artwork, galleryId} : {artwork: Artwork, galleryId: string}): Promise<void>;
     readArtwork(artworkId: string): Promise<Artwork | null>;
     editArtwork({artwork} : {artwork: Artwork}): Promise<ArtworkNode | null>;
-    deleteGalleryProfile(artworkId: string): Promise<void>;
+    deleteArtwork({artworkId} : {artworkId: string}): Promise<boolean>;
     confirmGalleryArtworkEdge(artworkId: string, galleryKey: string): Promise<boolean>;
-    getArtworksByGallery({galleryId} : {galleryId: string}): Promise<string[]>;
+    listArtworksByGallery({galleryId} : {galleryId: string}): Promise<(Artwork | null)[] | null>
   }
   

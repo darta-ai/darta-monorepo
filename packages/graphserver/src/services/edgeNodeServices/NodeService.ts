@@ -63,16 +63,15 @@ export class NodeService implements INodeService {
         return await cursor.next();
     }
 
-    async deleteNode({collectionName, key} : {collectionName: string, key: string}): Promise<void> {
+    async deleteNode({collectionName, id} : {collectionName: string, id: string}): Promise<void> {
         const query = `
-        FOR doc IN @@collectionName
-        FILTER doc._key == @key
-        REMOVE doc IN @@collectionName
+        FOR doc IN ${collectionName}
+        FILTER doc._id == @id
+        REMOVE doc IN ${collectionName}
         `;
 
         await this.db.query(query, {
-            '@collectionName': collectionName,
-            key
+            id
         });
     }
 

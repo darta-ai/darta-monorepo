@@ -1,22 +1,16 @@
 import {GalleryState} from '../../globalTypes';
-import { getGalleryProfile } from './galleries/galleries';
-import {getGalleryArtworks} from './artworks/artwork'
+import { readGalleryProfile } from './galleries/galleries';
+import {listArtworksByGallery} from './artworks/artwork'
 
-const preloadArtwork = {
-  // ...artwork1,
-  // ...artwork2,
-  // ...artwork3,
-};
+
 
 export const retrieveAllGalleryData = async (accessToken: string): Promise<GalleryState> => {
-  const galleryProfile = await getGalleryProfile()
-  const galleryArtworks = await getGalleryArtworks()
+  const galleryProfile = await readGalleryProfile()
+  const galleryArtworks = await listArtworksByGallery()
 
   return {
-    galleryProfile: galleryProfile.data,
-    galleryArtworks: {
-      // ...preloadArtwork
-    },
+    galleryProfile: galleryProfile,
+    galleryArtworks: galleryArtworks,
     galleryExhibitions: {
       // '02003454-b638-44a6-bb38-d418d8390729': dummyExhibition,
     },

@@ -7,7 +7,7 @@ import React from 'react';
 import {retrieveAllGalleryData} from '../../API/DartaGETrequests';
 import {AuthContext} from '../../../pages/_app';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
-import { IGalleryProfileData } from '@darta/types';
+import { ArtworkObject, IGalleryProfileData } from '@darta/types';
 
 export function LoadProfile() {
   const {dispatch} = useAppState();
@@ -18,6 +18,8 @@ export function LoadProfile() {
       if (user?.accessToken) {
         const {galleryProfile, galleryArtworks, galleryExhibitions} =
           await retrieveAllGalleryData(user.accessToken);
+        
+          console.log({galleryArtworks})
         dispatch({
           type: GalleryReducerActions.SET_ACCESS_TOKEN,
           payload: user?.accessToken,
@@ -27,8 +29,8 @@ export function LoadProfile() {
           payload: galleryProfile as IGalleryProfileData,
         });
         dispatch({
-          type: GalleryReducerActions.SET_ARTWORKS,
-          payload: {...galleryArtworks},
+          type: GalleryReducerActions.SET_BATCH_ARTWORKS,
+          payload: galleryArtworks as ArtworkObject,
         });
         dispatch({
           type: GalleryReducerActions.SET_EXHIBITIONS,

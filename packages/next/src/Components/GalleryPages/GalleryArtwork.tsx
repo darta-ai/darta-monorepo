@@ -20,7 +20,7 @@ import {DartaRadioFilter, DartaTextFilter} from '../Filters';
 import {UploadArtworksXlsModal} from '../Modals';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
-import { createArtwork } from '../../API/artworks/artwork';
+import { createArtwork, deleteArtworkAPI } from '../../API/artworks/artwork';
 
 // Reactour steps
 const artworkSteps = [
@@ -64,6 +64,8 @@ export function GalleryArtwork() {
   const [inquiries, setInquiries] = React.useState<{
     [key: string]: InquiryArtworkData[];
   } | null>(null);
+
+  console.log({state})
 
   React.useEffect(() => {
     const inquiriesArray = Object.values(galleryInquiriesDummyData);
@@ -110,8 +112,16 @@ export function GalleryArtwork() {
     });
   };
 
-  const deleteArtwork = (artworkId: string) => {
-    dispatch({type: GalleryReducerActions.DELETE_ARTWORKS, artworkId});
+  const deleteArtwork = async (artworkId: string) => {
+    try{
+      const results = await deleteArtworkAPI(artworkId)
+      console.log(results)
+      if (results.success){
+        dispatch({type: GalleryReducerActions.DELETE_ARTWORKS, artworkId});
+      }
+    } catch(error){
+      console.log(error)
+    }
   };
 
   const [croppingModalOpen, setCroppingModalOpen] = React.useState(true);

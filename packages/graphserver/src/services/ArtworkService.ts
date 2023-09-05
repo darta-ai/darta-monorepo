@@ -6,7 +6,7 @@ import { ImageController } from 'src/controllers/ImageController';
 import { CollectionNames, EdgeNames } from 'src/config/collections';
 import { IEdgeService } from './';
 import { ArtworkNode } from 'src/models/models';
-import { Collection } from 'arangojs/collection';
+import { Node } from 'src/models/models';
 
 const BUCKET_NAME= "artwork"
 
@@ -58,10 +58,8 @@ export class ArtworkService implements IArtworkService {
       return newArtwork
     }
     public async readArtwork(artworkId: string): Promise<Artwork | null>{
-
-
-
-      return null
+      // TO-DO: build out? 
+      return this.getArtworkById(artworkId)
     }
     public async editArtwork({artwork} : {artwork: Artwork}): Promise<ArtworkNode | null> {
 
@@ -76,9 +74,36 @@ export class ArtworkService implements IArtworkService {
 
 
         // #########################################################################
+        //                             SAVE THE ARTWORK IMAGE 
+        // #########################################################################
+
+        const {currentArtworkImage} = await this.getArtworkImage({key: artworkId})
+
+        // Don't overwrite an image
+        let fileName:string = crypto.randomUUID()
+        if (currentArtworkImage?.artworkImage?.fileName){
+          fileName = currentArtworkImage.artworkImage.fileName
+        }
+    
+        let bucketName = artworkImage?.bucketName ?? null;
+        let value = artworkImage?.value ?? null;
+        if (artworkImage?.fileData){
+          try{
+            const artworkImageResults = await this.imageController.processUploadImage({fileBuffer: artworkImage?.fileData, fileName, bucketName: BUCKET_NAME})
+            console.log(artworkImageResults)
+            ;({bucketName, value} = artworkImageResults)
+          } catch (error){
+            console.error("error uploading image:", error)
+          }
+        } 
+
+
+        // #########################################################################
         //                              SAVE THE ARTWORK 
         //                        Including the Bucketed Stuff 
         // #########################################################################
+
+
 
         const data = {
           ...remainingArtworkProps, 
@@ -86,7 +111,12 @@ export class ArtworkService implements IArtworkService {
           artworkPrice, 
           artworkCreatedYear,
           value: artwork?.slug?.value,
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          artworkImage: {
+            bucketName, 
+            value, 
+            fileName
+          }
         }
 
         let savedArtwork
@@ -101,34 +131,6 @@ export class ArtworkService implements IArtworkService {
           ...savedArtwork
         }
 
-        // #########################################################################
-        //                             SAVE THE ARTWORK IMAGE 
-        // #########################################################################
-
-        const {currentArtworkImage} = await this.getArtworkImage({key: artworkId})
-
-        // Don't overwrite an image
-        let fileName:string = crypto.randomUUID()
-        if (currentArtworkImage?.artworkImage?.fileName){
-          fileName = currentArtworkImage.artworkImage.fileName
-        }
-    
-        let artworkImageResults
-        if (artworkImage?.fileData){
-          try{
-            artworkImageResults = await this.imageController.processUploadImage({fileBuffer: artworkImage?.fileData, fileName, bucketName: BUCKET_NAME})
-            returnArtwork.artworkImage = {
-              ...artworkImageResults
-            }
-          } catch (error){
-            console.error("error uploading image:", error)
-          }
-        } else {
-          returnArtwork.artworkImage = {
-            ...artwork.artworkImage
-          }
-        }
-
         //augment return DTO
 
         
@@ -141,7 +143,7 @@ export class ArtworkService implements IArtworkService {
 
         // create/get artwork Artist node
         const artistNodePayload = {
-          collectionName: CollectionNames.ArtworkCreatorArtists,
+          collectionName: CollectionNames.ArtworkArtists,
           data: {
             value: artistName.value
           }
@@ -358,11 +360,139 @@ export class ArtworkService implements IArtworkService {
         return returnArtwork
       
     }
-    public async deleteGalleryProfile(artworkId: string): Promise<void>{
-      return 
+
+    public async deleteArtwork({artworkId} : {artworkId: string}): Promise<boolean>{
+
+      const artwork = await this.getArtworkById(artworkId)
+
+      if (!artwork){
+        return false
+      }
+
+      const key = `${CollectionNames.Artwork}/${artworkId}`
+
+      // #########################################################################
+      //                             DELETE THE ARTWORK IMAGE 
+      // #########################################################################
+
+      const {artworkImage} = artwork
+
+      if (artworkImage.bucketName && artworkImage.fileName){
+        try{
+          await this.imageController.processDeleteImage({fileName : artworkImage.fileName, bucketName: artworkImage.bucketName})
+        } catch {
+          console.log('error in deleting artwork image')
+          return false
+        }
+      }
+
+
+      // #########################################################################
+      //                               Gallery Edge
+      // #########################################################################
+      
+      try{
+        await this.edgeService.deleteEdgeWithTo({
+          edgeName: EdgeNames.FROMGalleryToArtwork,
+          to: key
+        })
+      } catch(error){
+        console.log('error deleting artist edge')
+      }
+
+
+      // #########################################################################
+      //                               Artist Edge
+      // #########################################################################
+      
+      try{
+        await this.edgeService.deleteEdgeWithFrom({
+          edgeName: EdgeNames.FROMArtworkTOArtist,
+          from: key
+        })
+      } catch(error){
+        console.log('error deleting artist edge')
+      }
+
+
+      // #########################################################################
+      //                                Artwork medium
+      // #########################################################################
+
+      try{
+        await this.edgeService.deleteEdgeWithFrom({
+          edgeName: EdgeNames.FROMArtworkToMedium,
+          from: key
+        })
+      } catch(error){
+        console.log('error deleting medium edge')
+      }
+
+
+      // #########################################################################
+      //                           Artwork price (bucket)
+      // #########################################################################
+     
+
+      try{
+        await this.edgeService.deleteEdgeWithFrom({
+          edgeName: EdgeNames.FROMArtworkTOCostBucket,
+          from: key
+        })
+      } catch(error){
+        console.log('error deleting price bucket edge')
+      }
+
+
+      // #########################################################################
+      //                             Artwork size (bucket)
+      // #########################################################################
+
+      try{
+        await this.edgeService.deleteEdgeWithFrom({
+          edgeName: EdgeNames.FROMArtworkTOSizeBucket,
+          from: key
+        })
+      } catch(error){
+        console.log('error deleting artist edge')
+      }
+
+      // #########################################################################
+      //                              YEAR (bucket)
+      // #########################################################################
+      
+      try{
+        await this.edgeService.deleteEdgeWithFrom({
+          edgeName: EdgeNames.FROMArtworkTOCreateBucket,
+          from: key
+        })
+      } catch(error){
+        console.log('error deleting year edge')
+      }
+
+      // #########################################################################
+      //                              DELETE THE ARTWORK 
+      //                        Including the Bucketed Stuff 
+      // #########################################################################
+
+      try {
+        await this.nodeService.deleteNode({
+          collectionName: CollectionNames.Artwork, 
+          id: key
+        })
+        console.log('triggered')
+      } catch (error) {
+        console.log(error)
+        return false
+      }
+      
+
+
+      return true
+
     }
 
-    public async getArtworksByGallery({galleryId} : {galleryId: string}): Promise<string[]>{
+    public async listArtworksByGallery({galleryId} : {galleryId: string}): Promise<(Artwork | null)[] | null>{
 
       const getArtworksQuery = `
       WITH ${CollectionNames.Galleries}, ${CollectionNames.Artwork}
@@ -370,12 +500,19 @@ export class ArtworkService implements IArtworkService {
       RETURN artwork._id      
     `;
 
-      console.log('here', galleryId)
       try{
         const edgeCursor = await this.db.query(getArtworksQuery, {galleryId});
         const artworkIds = (await edgeCursor.all()).filter((el) => el);
-        console.log(artworkIds)
-        return artworkIds
+
+
+
+        const galleryOwnedArtworkPromises = artworkIds.map(async (artworkId : string) =>{
+          return await this.getArtworkById(artworkId)
+        } )
+
+
+        const galleryOwnedArtwork = await Promise.all(galleryOwnedArtworkPromises);
+        return galleryOwnedArtwork
       } catch (error) {
         console.log(error)
         return []
@@ -384,22 +521,57 @@ export class ArtworkService implements IArtworkService {
 
     public async getArtworkById(artworkId: string): Promise<Artwork | null>{
 
+      const fullArtworkId = artworkId.includes('Artwork/') ? artworkId : `${CollectionNames.Artwork}/${artworkId}`
+
       const artworkQuery = `
       LET artwork = DOCUMENT(@artworkId)
       RETURN artwork      
       `
 
-      const bindVars = {
-        artworkId: `${CollectionNames.Artwork}/${artworkId}`
-      }
+      let artwork : Artwork;
 
       try{
-        const edgeCursor = await this.db.query(artworkQuery, {bindVars});
-        const artwork = await edgeCursor.next();
-        return artwork
+        const edgeCursor = await this.db.query(artworkQuery, {artworkId: fullArtworkId});
+        artwork = await edgeCursor.next();
       } catch (error) {
         return null
       }
+
+
+      // ################# Get Artist ############### 
+      let artistNameNode: Node | null = null
+
+      try {
+        artistNameNode = await this.getArtistFromArtworkId(fullArtworkId)
+      } catch (error) {
+        console.log(error)
+      }
+
+      // ################# Get Medium ############### 
+      let mediumNameNode: Node | null = null
+
+      try {
+        const results = await this.getMediumFromArtworkId(fullArtworkId)
+        if (results){
+          mediumNameNode = results
+        }
+
+      } catch (error) {
+        console.log(error)
+      }
+
+      // ################# Artwork Image ############### 
+
+
+        return {
+          ...artwork, 
+          artworkMedium: {
+            value: mediumNameNode?.value ?? ''
+          }, 
+          artistName: {
+            value : artistNameNode?.value ?? ''
+          }
+        }
     }
 
     public async confirmGalleryArtworkEdge(artworkId: string, galleryKey: string): Promise<boolean>{
@@ -440,6 +612,52 @@ export class ArtworkService implements IArtworkService {
     const artworkImage: Images = await cursor.next();
     return {artworkImage}
     }
+
+
+    private async getArtistFromArtworkId (artworkId: string): Promise<Node | null>{
+
+      const fullArtworkId = artworkId.includes(`${CollectionNames.Artwork}`) ? artworkId : `${CollectionNames.Artwork}/${artworkId}`
+
+      const artistQuery = `
+      WITH ${CollectionNames.ArtworkArtists} ${CollectionNames.Artwork}
+      FOR artist IN OUTBOUND @fullArtworkId ${EdgeNames.FROMArtworkTOArtist}
+      RETURN artist
+      `
+
+      try {
+        const cursor = await this.db.query(artistQuery, {fullArtworkId});
+        const artist: Node = await cursor.next();
+        return artist
+      } catch (error){
+        console.log(error)
+        return null
+      }
+    }
+
+
+    private async getMediumFromArtworkId (artworkId: string): Promise<Node | null>{
+
+      const fullArtworkId = artworkId.includes(`${CollectionNames.Artwork}`) ? artworkId : `${CollectionNames.Artwork}/${artworkId}`
+
+
+      const mediumQuery = `
+      WITH ${CollectionNames.ArtworkMediums} ${CollectionNames.Artwork}
+      FOR medium IN OUTBOUND @fullArtworkId ${EdgeNames.FROMArtworkToMedium}
+      RETURN medium
+      `
+
+      try{
+        const cursor = await this.db.query(mediumQuery, {fullArtworkId});
+        const medium: Node = await cursor.next();
+        return medium
+      } catch (error) {
+        // TO-DO 
+        console.log(error)
+        return null
+      }
+    }
+
+    
 
     private determinePriceBucket(price: string): string{
       const defaultReturn = 'no-price'
@@ -541,6 +759,7 @@ export class ArtworkService implements IArtworkService {
     }
 
     }
+
 }
 
 

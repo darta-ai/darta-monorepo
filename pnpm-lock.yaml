@@ -121,6 +121,9 @@ importers:
       inversify-express-utils:
         specifier: ^6.4.3
         version: 6.4.3
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       minio:
         specifier: ^7.1.2
         version: 7.1.2
@@ -146,6 +149,9 @@ importers:
       '@types/joi':
         specifier: ^17.2.3
         version: 17.2.3
+      '@types/lodash':
+        specifier: ^4.14.195
+        version: 4.14.195
       '@types/multer':
         specifier: ^1.4.7
         version: 1.4.7
@@ -838,6 +844,7 @@ packages:
   /@babel/plugin-proposal-numeric-separator@7.18.6(@babel/core@7.22.1):
     resolution: {integrity: sha512-ozlZFogPqoLm8WBr5Z8UckIoE4YQ5KESVcNudyXOR8uqIkliTEgJ3RoketfG6pmzLdeZF0H/wjE9/cCEitBl7Q==}
     engines: {node: '>=6.9.0'}
+    deprecated: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-numeric-separator instead.
     peerDependencies:
       '@babel/core': ^7.0.0-0
     dependencies:
