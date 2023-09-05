@@ -1,12 +1,11 @@
 import _ from 'lodash'
-import { Request, Response, NextFunction } from 'express';
 
-export const filterOutPrivateRecordsSingleObject = (req: Request, res: Response, next: NextFunction) => {
-    
-    console.log(req.body)
-    const newObj = {}
-
-    console.log('here')
-
-    res.json({})
+export const filterOutPrivateRecordsSingleObject = (obj: any) : any => {
+    const revisedObject = _.cloneDeep(obj)
+    for (let key in revisedObject) {
+      if (revisedObject[key].hasOwnProperty('isPrivate') && revisedObject[key].isPrivate === true){
+        delete revisedObject[key]
+      }
+    }
+    return obj
 }

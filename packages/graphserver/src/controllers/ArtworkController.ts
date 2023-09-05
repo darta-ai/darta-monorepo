@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { IArtworkService, IGalleryService } from '../services/interfaces';
 import { controller, httpGet, httpPost, request, response } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { verifyToken } from 'src/middlewares/';
+import { verifyToken, filterOutPrivateRecordsSingleObject } from 'src/middlewares/';
 import _ from 'lodash'
 
 
@@ -32,7 +32,7 @@ export class ArtworkController {
     const {artworkId} = req.body
     try {
         const artwork = await this.artworkService.readArtwork(artworkId)
-        const results = this.filterOutPrivateRecordsObject(artwork)
+        const results = filterOutPrivateRecordsSingleObject(artwork)
         res.json(results)
     } catch (error: any) {
       res.status(500).send(error.message);
@@ -98,13 +98,5 @@ public async getGalleryArtworks(@request() req: Request, @response() res: Respon
   }
 }
 
-private filterOutPrivateRecordsObject(obj: any): any {
-  
-  const revisedObject = _.cloneDeep(obj)
-
-  
-
-  return obj
-}
 
 }
