@@ -26,3 +26,14 @@ export async function editArtwork(artwork : Artwork): Promise<any> {
         throw new Error('Unable edit artwork')
     }
 }
+
+export async function getGalleryArtworks(): Promise<any> {
+    const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
+    try {
+        const response = await axios.get(`${URL}/artwork/galleryArtworks`, {headers: {'authorization': `Bearer ${idToken}`}});
+        return response.data;
+    } catch (error) {
+        console.log(error)
+        // throw new Error('Unable edit artwork')
+    }
+}

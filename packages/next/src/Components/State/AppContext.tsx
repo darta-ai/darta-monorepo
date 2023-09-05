@@ -3,13 +3,9 @@
 import _ from 'lodash';
 import React, {createContext, ReactNode, useContext, useReducer} from 'react';
 
-import {
-  ArtworkObject,
-  Exhibition,
+import {IGalleryProfileData, ArtworkObject,   Exhibition,
   ExhibitionObject,
-  GalleryState
-} from '../../../globalTypes';
-import {IGalleryProfileData} from '@darta/types'
+  GalleryState} from '@darta/types'
 import {AuthContext} from '../../../pages/_app';
 
 type Action =

@@ -2,7 +2,7 @@ import { injectable, inject } from 'inversify';
 import { Database } from 'arangojs';
 import { IGalleryService } from './interfaces/IGalleryService';
 import { Gallery, City} from 'src/models/GalleryModel';
-import { GalleryBase, IGalleryProfileData, GalleryAddressFields, ImageFields } from '@darta/types';
+import { GalleryBase, IGalleryProfileData, GalleryAddressFields, Images } from '@darta/types';
 import { ImageController } from 'src/controllers/ImageController';
 import {CollectionNames, EdgeNames} from '../config/collections'
 
@@ -231,15 +231,15 @@ export class GalleryService implements IGalleryService {
   }
 
   public async getGalleryLogo({key}: {key:string}): Promise<any>{
-    const findGalleryKey = `
+    const findGalleryLogo = `
     LET doc = DOCUMENT(CONCAT("Galleries/", @key))
     RETURN {
         galleryLogo: doc.galleryLogo
     }
   `;
-  const cursor = await this.db.query(findGalleryKey, { key });
+  const cursor = await this.db.query(findGalleryLogo, { key });
 
-  const currentGalleryLogo: ImageFields = await cursor.next();
+  const currentGalleryLogo: Images = await cursor.next();
   return {currentGalleryLogo}
   }
 

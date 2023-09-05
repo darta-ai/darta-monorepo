@@ -5,7 +5,7 @@ import _ from 'lodash';
 import Head from 'next/head';
 import React from 'react';
 
-import {Artwork} from '../../../globalTypes';
+import {Artwork} from '@darta/types';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
 // import authRequired from 'common/AuthRequired/AuthRequired';
@@ -160,12 +160,12 @@ export function GalleryArtwork() {
         return setDisplayArtworks(results as Artwork[]);
       case 'Has Inquiries':
         results = Object.values(state.galleryArtworks)?.filter(artwork =>
-          artworksWithInquiriesIds.includes(artwork.artworkId),
+          artworksWithInquiriesIds.includes(artwork.artworkId!),
         );
         return setDisplayArtworks(results);
       case 'None':
         results = Object.values(state.galleryArtworks)?.filter(
-          artwork => !artworksWithInquiriesIds.includes(artwork.artworkId),
+          artwork => !artworksWithInquiriesIds.includes(artwork.artworkId!),
         );
         return setDisplayArtworks(results);
       default:
@@ -295,7 +295,7 @@ export function GalleryArtwork() {
                             croppingModalOpen={croppingModalOpen}
                             setCroppingModalOpen={setCroppingModalOpen}
                             inquiries={
-                              inquiries[artwork?.artworkId] ??
+                              inquiries[artwork?.artworkId!] ??
                               ([] as InquiryArtworkData[])
                             }
                           />
@@ -320,7 +320,7 @@ export function GalleryArtwork() {
                             croppingModalOpen={croppingModalOpen}
                             setCroppingModalOpen={setCroppingModalOpen}
                             inquiries={
-                              inquiries[artwork?.artworkId] ??
+                              inquiries[artwork?.artworkId!] ??
                               ([] as InquiryArtworkData[])
                             }
                           />

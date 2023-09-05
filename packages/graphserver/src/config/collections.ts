@@ -2,6 +2,9 @@ export const CollectionNames = {
     Artwork: 'Artwork',
     ArtworkBelongsToGallery : 'ArtworkBelongsToGallery',
     ArtworkHasPrice :'ArtworkHasPrice',
+    ArtworkSizeBuckets: 'ArtworkSizeBuckets',
+    ArtworkCreatorArtists: 'ArtworkCreatorArtists',
+    ArtworkCreatedBuckets: 'ArtworkCreatedBuckets',
     ArtworkPriceBuckets: 'ArtworkPriceBuckets',
     ArtworkHasDimension : 'ArtworkHasDimension',
     ArtworkCreatedBy : 'ArtworkCreatedBy',
@@ -14,9 +17,12 @@ export const CollectionNames = {
 
 export const EdgeNames = {
     GalleryToCity: 'GalleryToCity',
-    GalleryShowsArtwork: 'GalleryShowsArtwork',
-    ArtworkUsesMedium : 'ArtworkUsesMedium',
-    ArtworkCosts: 'ArtworkCosts'
+    FROMGalleryToArtwork: 'GalleryShowsArtwork',
+    FROMArtworkToMedium : 'ArtworkUsesMedium',
+    FROMArtworkTOCostBucket: 'ArtworkCosts',
+    FROMArtworkTOSizeBucket: 'ArtworkSizes',
+    FROMArtworkTOArtist: 'ArtworkArtist',
+    FROMArtworkTOCreateBucket: 'ArtworkCreatedYear'
 }
 
 
