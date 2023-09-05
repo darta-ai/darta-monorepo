@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-import {Artwork} from '../../../globalTypes';
+import {Artwork} from '@darta/types';
 import {cardStyles} from '../../../styles/CardStyles';
 import {currencyConverter} from '../../common/templates';
 import {InquiryArtworkData} from '../../dummyData';
@@ -27,7 +27,7 @@ export function ArtworkCard({
   setCroppingModalOpen,
 }: {
   artwork: Artwork;
-  saveArtwork: (arg0: string, arg1: Artwork) => void;
+  saveArtwork: (artworkId: string, updatedArtwork: Artwork) => void;
   deleteArtwork: (arg0: string) => void;
   inquiries: InquiryArtworkData[] | null;
   croppingModalOpen?: boolean;
@@ -217,7 +217,7 @@ export function ArtworkCard({
             <CreateArtwork
               newArtwork={artwork}
               cancelAction={setEditArtwork}
-              saveArtwork={handleSave}
+              handleSave={handleSave}
               handleDelete={handleDelete}
               croppingModalOpen={croppingModalOpen}
               setCroppingModalOpen={setCroppingModalOpen}

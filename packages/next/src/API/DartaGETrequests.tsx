@@ -1,5 +1,6 @@
 import {GalleryState} from '../../globalTypes';
 import { getGalleryProfile } from './galleries/galleries';
+import {getGalleryArtworks} from './artworks/artwork'
 
 const preloadArtwork = {
   // ...artwork1,
@@ -9,6 +10,7 @@ const preloadArtwork = {
 
 export const retrieveAllGalleryData = async (accessToken: string): Promise<GalleryState> => {
   const galleryProfile = await getGalleryProfile()
+  const galleryArtworks = await getGalleryArtworks()
 
   return {
     galleryProfile: galleryProfile.data,

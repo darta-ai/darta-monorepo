@@ -185,7 +185,6 @@ export function EditProfileGallery({
       if (event.target?.result){
         const fileData = event.target.result;
         setValue('galleryLogo.fileData', fileData);
-        setValue('galleryLogo.fileName', file.name)
       }
     };
 

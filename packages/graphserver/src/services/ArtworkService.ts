@@ -1,11 +1,12 @@
 import { injectable, inject } from 'inversify';
 import { Database } from 'arangojs';
 import { IArtworkService, INodeService } from './interfaces';
-import { Artwork, Dimensions } from '@darta/types';
+import { Artwork, Dimensions, Images } from '@darta/types';
 import { ImageController } from 'src/controllers/ImageController';
-import { Gallery } from 'src/models/GalleryModel';
 import { CollectionNames, EdgeNames } from 'src/config/collections';
 import { IEdgeService } from './';
+import { ArtworkNode } from 'src/models/models';
+import { Collection } from 'arangojs/collection';
 
 const BUCKET_NAME= "artwork"
 
@@ -43,10 +44,10 @@ export class ArtworkService implements IArtworkService {
       if (newArtwork?._id){
         try{
           const upsertEdgePayload = {
-            edgeName: EdgeNames.GalleryShowsArtwork,
+            edgeName: EdgeNames.FROMGalleryToArtwork,
             from: `${CollectionNames.Galleries}/${galleryId}`,
             to: newArtwork._id,
-            data: {value : 'created'}
+            data: {value : 'uploaded'}
           }
           this.edgeService.upsertEdge({...upsertEdgePayload})
         } catch (error: any){
@@ -57,17 +58,133 @@ export class ArtworkService implements IArtworkService {
       return newArtwork
     }
     public async readArtwork(artworkId: string): Promise<Artwork | null>{
+
+
+
       return null
     }
-    public async editArtwork({artwork, galleryId} : {artwork: Artwork, galleryId: string}): Promise<Artwork | null>{
+    public async editArtwork({artwork} : {artwork: Artwork}): Promise<ArtworkNode | null> {
 
+        const artworkId = artwork?.artworkId
+
+        if (!artworkId){
+          return null 
+        }
+
+        const {artworkImage, artworkMedium, artworkPrice, artworkDimensions, artistName, artworkCreatedYear, ...remainingArtworkProps} = artwork
+        const artworkKey = `${CollectionNames.Artwork}/${artworkId}`
+
+
+        // #########################################################################
+        //                              SAVE THE ARTWORK 
+        //                        Including the Bucketed Stuff 
+        // #########################################################################
+
+        const data = {
+          ...remainingArtworkProps, 
+          artworkDimensions, 
+          artworkPrice, 
+          artworkCreatedYear,
+          value: artwork?.slug?.value,
+          updatedAt: new Date()
+        }
+
+        let savedArtwork
+
+        try{
+          savedArtwork = await this.nodeService.upsertNode({collectionName: CollectionNames.Artwork, key: artworkId, data })
+        } catch (error) {
+          console.log('error saving artwork')
+        }
+
+        const returnArtwork: any = {
+          ...savedArtwork
+        }
+
+        // #########################################################################
+        //                             SAVE THE ARTWORK IMAGE 
+        // #########################################################################
+
+        const {currentArtworkImage} = await this.getArtworkImage({key: artworkId})
+
+        // Don't overwrite an image
+        let fileName:string = crypto.randomUUID()
+        if (currentArtworkImage?.artworkImage?.fileName){
+          fileName = currentArtworkImage.artworkImage.fileName
+        }
+    
+        let artworkImageResults
+        if (artworkImage?.fileData){
+          try{
+            artworkImageResults = await this.imageController.processUploadImage({fileBuffer: artworkImage?.fileData, fileName, bucketName: BUCKET_NAME})
+            returnArtwork.artworkImage = {
+              ...artworkImageResults
+            }
+          } catch (error){
+            console.error("error uploading image:", error)
+          }
+        } else {
+          returnArtwork.artworkImage = {
+            ...artwork.artworkImage
+          }
+        }
+
+        //augment return DTO
+
+        
+
+        // #########################################################################
+        //                                  Artist
+        // #########################################################################
+        
+
+
+        // create/get artwork Artist node
+        const artistNodePayload = {
+          collectionName: CollectionNames.ArtworkCreatorArtists,
+          data: {
+            value: artistName.value
+          }
+        }
+
+        let artistNodeResults;
+        try {
+          artistNodeResults = await this.nodeService.upsertNode(artistNodePayload)
+        }catch(error){
+          console.log('artist NODE results error')
+        }
+
+        // augment return DTO
+        returnArtwork.artistName = {
+          value: artistNodeResults?.value ?? null
+        }
+
+        // create artwork Artist edge
+        if (artworkId && artistNodeResults?._id){
+          const artistEdgePayload = {
+            edgeName: EdgeNames.FROMArtworkTOArtist,
+            from: artworkKey, 
+            newTo: artistNodeResults?._id,
+            data: {
+              value: 'ARTIST'
+            }
+          }
+
+          let artistEdgeResults;
+          try {
+            artistEdgeResults = await this.edgeService.replaceMediumEdge(artistEdgePayload)
+          } catch (error){
+            console.log('artist EDGE results error')
+          }
+        }
 
         // #########################################################################
         //                                Artwork medium
         // #########################################################################
 
+
         // create/get artwork medium node
-        const mediumValue = artwork?.artworkMedium?.value
+        const mediumValue = artworkMedium?.value
         const mediumNodePayload = {
           collectionName: CollectionNames.ArtworkMediums,
           data: {
@@ -82,12 +199,18 @@ export class ArtworkService implements IArtworkService {
           console.log('medium NODE results error')
         }
 
+
+        // augment return DTO
+        returnArtwork.artworkMedium = {
+          value: mediumNodeResults?.value ?? null
+        }
+
         // create artwork medium edge
-        const artworkId = artwork?.artworkId
+        
         if (artworkId && mediumNodeResults?._id){
           const mediumEdgePayload = {
-            edgeName: EdgeNames.ArtworkUsesMedium,
-            from: `${CollectionNames.Artwork}/${artworkId}`, 
+            edgeName: EdgeNames.FROMArtworkToMedium,
+            from: artworkKey, 
             newTo: mediumNodeResults?._id,
             data: {
               value: 'USES'
@@ -104,9 +227,8 @@ export class ArtworkService implements IArtworkService {
         }
 
         // #########################################################################
-        //                                Artwork price
+        //                           Artwork price (bucket)
         // #########################################################################
-        const {artworkPrice} = artwork
         let priceBucket = "no-price"
         if (artworkPrice?.value){
           priceBucket = this.determinePriceBucket(artworkPrice.value);
@@ -129,8 +251,8 @@ export class ArtworkService implements IArtworkService {
         // create artwork price edge
         if (artworkId && priceNodeResults?._id){
           const priceEdgePayload = {
-            edgeName: EdgeNames.ArtworkCosts,
-            from: `${CollectionNames.Artwork}/${artworkId}`, 
+            edgeName: EdgeNames.FROMArtworkTOCostBucket,
+            from: artworkKey, 
             newTo: priceNodeResults?._id,
             data: {
               value: 'COST'
@@ -141,75 +263,123 @@ export class ArtworkService implements IArtworkService {
           try {
             priceEdgeResults = await this.edgeService.replaceMediumEdge(priceEdgePayload)
           } catch (error){
-            // console.log(error)
-            console.log('medium EDGE results error')
+            console.log('price EDGE results error')
           }
         }
 
+        // #########################################################################
+        //                             Artwork size (bucket)
+        // #########################################################################
 
         let sizeBucket = 'no-dimensions'
-        if (artwork.artworkDimensions.text){
-          sizeBucket = this.determineSizeBucket(artwork.artworkDimensions)
+        if (artworkDimensions?.text){
+          sizeBucket = this.determineSizeBucket(artworkDimensions)
         }
-        
-        // Bind variables:
-        const bindVars = {
-          artworkId: artwork.artworkId,
-          artworkDetails : {
-            ...artwork
-          },
-          galleryId: galleryId,
-          priceBucket,
-          dimensionsValue: sizeBucket,
-          artistName: artwork?.artistName?.value,
-          mediumName: artwork?.artworkMedium?.value,
-          yearCreated: artwork?.artworkCreatedYear?.value ?? "no-creation-year"
 
-          
-        };
-
- 
-        return null
-
-        // create edge and node between the medium and the artwork
-        // const artworkMediumQuery = `UPSERT { name: @mediumName }
-        // INSERT { name: @mediumName }
-        // UPDATE {}
-        // IN ${CollectionNames.ArtworkMediums}
-        // RETURN NEW
-        // `
-
-
-      // let medium
-      // try{
-      //   const mediumCursor = await this.db.query(artworkMediumQuery, {mediumName: bindVars.mediumName});
-      //   medium = await mediumCursor.next();
-      //   console.log({medium})
-      // } catch (error) {
-      //   //TO-DO
-      // }
-      
-      // const mediumEdgeQuery = `
-      // INSERT {
-      //   _from: CONCAT("${CollectionNames.Artwork}/", @artworkId),
-      //   _to: @mediumId,
-      //   value: "uses"
-      // } INTO ${EdgeNames.ArtworkUsesMedium}
-      // `
-
-      // try{
-      //   const mediumEdgeCursor = await this.db.query(mediumEdgeQuery, {artworkId: bindVars.artworkId, mediumId: medium._id });
-      //   const mediumEdge = await mediumEdgeCursor.next();
-      //   console.log({mediumEdge})
-      // } catch (error) {
-      //   console.log(error)
-      // }
-
+        // create/get artwork price node
+        const sizeNodePayload = {
+            collectionName: CollectionNames.ArtworkSizeBuckets,
+            data: {
+              value: sizeBucket
+            }
+          }
   
+          let sizeNodeResults;
+          try {
+            sizeNodeResults = await this.nodeService.upsertNode(sizeNodePayload)
+          }catch(error){
+            console.log('size NODE results error')
+          }
+
+          // create artwork price edge
+          if (artworkId && sizeNodeResults?._id){
+            const sizeEdgePayload = {
+              edgeName: EdgeNames.FROMArtworkTOSizeBucket,
+              from: artworkKey, 
+              newTo: sizeNodeResults?._id,
+              data: {
+                value: 'SIZE'
+              }
+            }
+  
+            let sizeEdgeResults;
+            try {
+              sizeEdgeResults = await this.edgeService.replaceMediumEdge(sizeEdgePayload)
+            } catch (error){
+              console.log('size EDGE results error')
+            }
+          }
+
+        // #########################################################################
+        //                              YEAR (bucket)
+        // #########################################################################
+        
+
+
+        // create/get artwork YEAR node
+        
+        let year = 'no-year-provided'
+        if (artworkCreatedYear?.value){
+          year = this.determineYearBucket(artworkCreatedYear.value)
+        }
+        const yearNodePayload = {
+          collectionName: CollectionNames.ArtworkCreatedBuckets,
+          data: {
+            value: year
+          }
+        }
+
+        let yearNodeResults;
+        try {
+          yearNodeResults = await this.nodeService.upsertNode(yearNodePayload)
+        }catch(error){
+          console.log('year NODE results error')
+        }
+
+        // create artwork YEAR edge
+        if (artworkId && yearNodeResults?._id){
+          const yearEdgePayload = {
+            edgeName: EdgeNames.FROMArtworkTOCreateBucket,
+            from: artworkKey, 
+            newTo: yearNodeResults?._id,
+            data: {
+              value: 'YEAR CREATED'
+            }
+          }
+
+          let yearEdgeResults;
+          try {
+            yearEdgeResults = await this.edgeService.replaceMediumEdge(yearEdgePayload)
+          } catch (error){
+            console.log('year YEAR results error')
+          }
+        }
+ 
+        return returnArtwork
       
     }
     public async deleteGalleryProfile(artworkId: string): Promise<void>{
       return 
+    }
+
+    public async getArtworksByGallery({galleryId} : {galleryId: string}): Promise<string[]>{
+
+      const getArtworksQuery = `
+      WITH ${CollectionNames.Galleries}, ${CollectionNames.Artwork}
+      FOR artwork IN OUTBOUND CONCAT("${CollectionNames.Galleries}/", @galleryId) ${EdgeNames.FROMGalleryToArtwork}
+      RETURN artwork._id      
+    `;
+
+      console.log('here', galleryId)
+      try{
+        const edgeCursor = await this.db.query(getArtworksQuery, {galleryId});
+        const artworkIds = (await edgeCursor.all()).filter((el) => el);
+        console.log(artworkIds)
+        return artworkIds
+      } catch (error) {
+        console.log(error)
+        return []
+      }
     }
 
     public async getArtworkById(artworkId: string): Promise<Artwork | null>{
@@ -235,7 +405,7 @@ export class ArtworkService implements IArtworkService {
     public async confirmGalleryArtworkEdge(artworkId: string, galleryKey: string): Promise<boolean>{
 
       const galleryEdgeQuery = `
-      FOR edge IN ${EdgeNames.GalleryShowsArtwork}
+      FOR edge IN ${EdgeNames.FROMGalleryToArtwork}
       FILTER edge._from == CONCAT("${CollectionNames.Galleries}/", @galleryKey) AND edge._to == CONCAT("${CollectionNames.Artwork}/", @artworkId)
       RETURN edge
       `
@@ -258,8 +428,20 @@ export class ArtworkService implements IArtworkService {
       }
     }
 
-    private determinePriceBucket(price: string): string{
+    private async getArtworkImage({key}: {key:string}): Promise<any>{
+      const findGalleryKey = `
+      LET doc = DOCUMENT(CONCAT("Artwork/", @key))
+      RETURN {
+        artworkImage: doc.artworkImage
+      }
+    `;
+    const cursor = await this.db.query(findGalleryKey, { key });
+      
+    const artworkImage: Images = await cursor.next();
+    return {artworkImage}
+    }
 
+    private determinePriceBucket(price: string): string{
       const defaultReturn = 'no-price'
       if (!price){
         return defaultReturn
@@ -332,6 +514,31 @@ export class ArtworkService implements IArtworkService {
           default:
             return defaultReturn
       }
+    }
+
+    private determineYearBucket(yearString: string): string {
+
+      const currentYear = new Date().getFullYear();
+      const year = parseInt(yearString, 10);
+
+      // Ensure the provided year is valid
+      if (isNaN(year) || year < 0) {
+        return 'no-year-provided'
+      }
+
+      const difference = currentYear - year;
+
+      if (difference <= 5) {
+        return 'within-the-last-5-years';
+      } else if (difference <= 10) {
+        return '5-10-years-ago';
+      } else if (difference <= 19) {
+        return '10-19-years-ago';
+      } else if (difference <= 50) {
+        return '20-50-years-ago';
+      } else {
+        return '51+-years-ago';
+    }
 
     }
 }

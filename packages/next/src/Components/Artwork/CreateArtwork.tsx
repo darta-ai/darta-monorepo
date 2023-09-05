@@ -13,7 +13,7 @@ import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {mediums} from '../../../data/medium';
-import {Artwork} from '../../../globalTypes';
+import {Artwork} from '@darta/types';
 import {PRIMARY_BLUE} from '../../../styles';
 import {
   createArtworkDimensionsToolTip,
@@ -129,14 +129,14 @@ const createArtworkSchema = yup
 export function CreateArtwork({
   newArtwork,
   cancelAction,
-  saveArtwork,
+  handleSave,
   handleDelete,
   croppingModalOpen,
   setCroppingModalOpen,
 }: {
   newArtwork: Artwork;
   cancelAction: (arg0: boolean) => void;
-  saveArtwork: (arg0: Artwork) => void;
+  handleSave: (savedArtwork: Artwork) => void;
   handleDelete: (arg0: string) => void;
   croppingModalOpen?: boolean;
   setCroppingModalOpen?: (arg0: boolean) => void;
@@ -230,6 +230,11 @@ export function CreateArtwork({
       .replaceAll('.', '');
     const slug = `${artist_name}-${artwork_title}`;
     setValue('slug.value', slug);
+
+    const artistNameAllCaps = data.artistName.value.toUpperCase()
+
+    setValue ('artistName.value', artistNameAllCaps)
+    console.log(artistNameAllCaps)
     if (
       Number(data.artworkDimensions.depthIn.value) &&
       Number(data.artworkDimensions.depthCm.value)
@@ -254,21 +259,34 @@ export function CreateArtwork({
       );
     }
     try{
-    console.log(newArtwork)
      const results = await editArtwork({
       ...newArtwork, 
       ...data})
-      saveArtwork(data);
+      handleSave(results);
     } catch (error: any) {
-      console.log('~~~~', error)
+      //TO-DO error handling 
     }
-    
   };
 
   const handleDrop = (acceptedFiles: any) => {
     const file = acceptedFiles[0];
     const previewURL = URL.createObjectURL(file);
     setTempImage(previewURL);
+
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      // event.target.result contains the file's data as a base64 encoded string.
+      if (event.target?.result){
+        const fileData = event.target.result;
+        setValue('artworkImage.fileData', fileData);
+        setValue('artworkImage.fileName', file.name)
+      }
+    };
+
+    reader.readAsDataURL(file); // Read the file content as Data URL.
+
+
     setValue('artworkImage.value', previewURL);
 
     // NEED API CALL TO UPLOAD IMAGE TO DATABASE

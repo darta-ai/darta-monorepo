@@ -1,7 +1,7 @@
 export interface PublicFields {
     value: string | null;
 }
-export interface ImageFields {
+export interface Images {
     value?: string | null;
     fileData?: string | null | ArrayBuffer;
     fileName?: string | null;
@@ -96,8 +96,8 @@ export interface IOpeningLocationData extends IBusinessLocationData {
     isPrivate: boolean;
 }
 export type Artwork = {
-    artworkImage: PublicFields;
-    artworkId: string;
+    artworkImage: Images;
+    artworkId?: string;
     published?: boolean;
     artworkImagesArray?: PublicFields[] | any[];
     artworkTitle: PublicFields;

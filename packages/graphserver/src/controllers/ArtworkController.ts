@@ -36,8 +36,20 @@ public async editArtwork(@request() req: Request, @response() res: Response): Pr
       res.status(403).send('Unauthorized');
       return;  
     }
-    const newArtwork = await this.artworkService.editArtwork({artwork, galleryId});
+    const newArtwork = await this.artworkService.editArtwork({artwork});
     res.json(newArtwork);
+  } catch (error: any) {
+    res.status(500).send(error.message);
+  }
+}
+
+@httpGet('/galleryArtworks', verifyToken)
+public async getGalleryArtworks(@request() req: Request, @response() res: Response): Promise<void> {
+  const user = (req as any).user;
+  try {
+    const galleryId = await this.galleryService.getGalleryId({uuid: user.user_id})
+    const galleryArtwork = await this.artworkService.getArtworksByGallery({galleryId});
+    res.json(galleryArtwork);
   } catch (error: any) {
     res.status(500).send(error.message);
   }
