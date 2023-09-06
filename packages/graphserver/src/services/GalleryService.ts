@@ -12,25 +12,21 @@ const BUCKET_NAME= "logo"
 export class GalleryService implements IGalleryService {
   constructor(
     @inject('Database') private readonly db: Database,
-    @inject('ImageController') private readonly imageController: ImageController
+    @inject('ImageController') private readonly imageController: ImageController,
+
     ) {}
 
   public async createGalleryProfile(
-    { primaryUUID,
-    primaryOwnerPhone,
-    galleryName, 
-    signUpWebsite,
-    primaryOwnerEmail, 
-    isValidated } : GalleryBase): Promise<void> {
+    { galleryName, isValidated, signUpWebsite, userEmail } : any): Promise<any> {
+
+    
     const galleryCollection = this.db.collection(`${CollectionNames.Galleries}`);
-    const newGallery: any = {
-        uuids: [primaryUUID], 
-        primaryUUID,
-        primaryOwnerPhone,
-        primaryOwnerEmail,
+    const newGallery: GalleryBase = {
         galleryName,
-        signUpWebsite, 
-        isValidated
+        isValidated,
+        normalizedGalleryName: this.normalizeGalleryName({galleryName : galleryName?.value}),
+        normalizedGalleryWebsite : this.normalizeGalleryWebsite({signUpWebsite}),
+        normalizedGalleryDomain: this.normalizeGalleryDomain({userEmail})
       };
     
       const metaData = await galleryCollection.save(newGallery);
@@ -297,6 +293,86 @@ export class GalleryService implements IGalleryService {
   return {currentGalleryLogo}
   }
 
+  public async checkDuplicateGalleries({
+    galleryName, 
+    signUpWebsite, 
+    userEmail
+  } : 
+    {galleryName: string, 
+      signUpWebsite: string, 
+      userEmail: string
+    }): Promise<Node | boolean> {
+
+    const normalisedGalleryName = this.normalizeGalleryName({galleryName})
+    const normalisedGalleryWebsite = this.normalizeGalleryWebsite({signUpWebsite})
+    const normalisedGalleryDomain = this.normalizeGalleryDomain({userEmail})
+
+
+    const checkGalleryDuplicates = `
+      WITH ${CollectionNames.Galleries}
+      FOR gallery in ${CollectionNames.Galleries}
+      FILTER @normalisedGalleryName == gallery.normalisedGalleryName 
+      && @normalisedGalleryWebsite == gallery.normalisedGalleryWebsite 
+      && @normalisedGalleryDomain == gallery.normalisedGalleryDomain
+      RETURN gallery
+    `
+
+    try{
+      const cursor = await this.db.query(checkGalleryDuplicates, { normalisedGalleryName, normalisedGalleryWebsite, normalisedGalleryDomain});
+      const galleryExists: Node = await cursor.next();
+      return galleryExists
+    } catch (error) {
+      console.log('error at check gallery duplicates', error)
+      throw new Error('ahhhhh')
+    }
+  }
+
+  private normalizeGalleryName({galleryName}: {galleryName: string | null}): string | null{
+    if (!galleryName){
+      return null
+    }
+    let normalized = galleryName.toLowerCase();
+    normalized = normalized.trim();
+    normalized = normalized.replace(/\s+/g, '-');
+    normalized = normalized.replace(/[^a-z0-9\-]/g, '');
+    normalized = normalized.replace(/\-+/g, '-');
+    return normalized;
+  }
+
+  private normalizeGalleryWebsite({signUpWebsite}: {signUpWebsite: string | undefined}):string | null{
+    if (!signUpWebsite){
+      return null
+    }
+    let normalized = signUpWebsite.toLowerCase();
+    if (!/^https?:\/\//.test(normalized)) {
+        normalized = "http://" + normalized;
+    }
+    normalized = normalized.replace(/\/+$/, "");
+    normalized = normalized.replace(/^https?:\/\/www\./, "https://");
+    normalized = decodeURIComponent(normalized);
+    return normalized;
+  }
+
+  private normalizeGalleryDomain({userEmail}: {userEmail: string}):string | null{
+    if (!userEmail){
+      return null
+    }
+    console.log('normalising,', userEmail)
+    // Trim whitespace
+
+    const domain = userEmail.split('@')[1];
+    if (!domain) return null;
+
+    let normalized = domain.trim();
+
+    // Convert to lowercase
+    normalized = normalized.toLowerCase();
+
+    // Remove non-printable characters
+    normalized = normalized.replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+
+    return normalized;
+  }
 }
 
 

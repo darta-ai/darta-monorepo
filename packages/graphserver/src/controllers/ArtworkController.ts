@@ -26,6 +26,7 @@ export class ArtworkController {
     }
   }
 
+// OPEN Endpoint
 @httpGet('/readArtwork')
   public async readArtwork(@request() req: Request, @response() res: Response, next: NextFunction): Promise<void> {
     console.log('in read Artwork')
@@ -40,13 +41,15 @@ export class ArtworkController {
     }
   }
 
+// OPEN Endpoint
 @httpGet('/readArtworkAndGallery')
 public async readArtworkAndGallery(@request() req: Request, @response() res: Response): Promise<void> {
   const {artworkId} = req.body
   try {
-      const artwork = await this.artworkService.readArtwork(artworkId)
-      
-      res.json(artwork);
+      const results = await this.artworkService.readArtworkAndGallery(artworkId)
+      // removing anything that isPrivate 
+      const artworkResults = filterOutPrivateRecordsSingleObject(results)
+      res.json(results);
   } catch (error: any) {
     res.status(500).send(error.message);
   }

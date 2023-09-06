@@ -20,7 +20,7 @@ import {DartaRadioFilter, DartaTextFilter} from '../Filters';
 import {UploadArtworksXlsModal} from '../Modals';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
-import { createArtwork, deleteArtworkAPI } from '../../API/artworks/artwork';
+import { createArtwork, deleteArtworkAPI } from '../../API/artworks/artworkRoutes';
 
 // Reactour steps
 const artworkSteps = [

@@ -32,7 +32,7 @@ import {
 import {CroppingMattersModal, DartaDialogue} from '../Modals/index';
 import {profileStyles} from '../Profile/Components/profileStyles';
 import {createArtworkStyles} from './styles';
-import { editArtwork } from '../../API/artworks/artwork';
+import { editArtwork } from '../../API/artworks/artworkRoutes';
 
 type currencyConverterType = {
   [key: string]: string;

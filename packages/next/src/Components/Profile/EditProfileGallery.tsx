@@ -22,7 +22,7 @@ import {
   DartaTextInput,
 } from '../FormComponents/index';
 import {profileStyles} from './Components/profileStyles';
-import { updateGalleryProfile } from '../../API/galleries/galleries';
+import { updateGalleryProfile } from '../../API/galleries/galleryRoutes';
 
 const instagramREGEX =
   /(?:^|[^\w])(?:@)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)/;
