@@ -137,6 +137,21 @@ export class EdgeService implements IEdgeService {
             return cursor.all();
         }
 
+        public async getAllEdgesToPointingToNode({edgeName, to}:{edgeName: string, to: string}): Promise<any[]> {
+            const query = `
+            FOR edge IN @@edgeName
+            FILTER edge._to == @to
+            RETURN edge
+            `;
+        
+            const cursor = await this.db.query(query, {
+                '@edgeName': edgeName,
+                to
+            });
+            return cursor.all();
+        }
+        
+
         public async getCurrentMediumEdge(edgeName: string, from: string): Promise<any> {
             const query = `
             FOR edge IN @@edgeName

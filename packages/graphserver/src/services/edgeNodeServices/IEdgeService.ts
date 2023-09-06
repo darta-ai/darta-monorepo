@@ -11,5 +11,6 @@ export interface IEdgeService {
     updateEdge({edgeName, from, to, data} : {edgeName: string, from: string, to: string, data: any }): Promise<void>;
     getAllEdgesFromNode({edgeName, from}:{edgeName: string, from: string}): Promise<any[]>
     replaceMediumEdge({edgeName, from, newTo, data} : {edgeName: string, from: string, newTo: string, data: any}): Promise<void>
+    getAllEdgesToPointingToNode({edgeName, to}:{edgeName: string, to: string}): Promise<any[]>
 }
   

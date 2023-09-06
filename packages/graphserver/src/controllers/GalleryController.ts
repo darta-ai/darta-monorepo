@@ -31,7 +31,7 @@ export class GalleryController {
     const {galleryName, signUpWebsite, primaryOwnerPhone, primaryOwnerEmail} = req.body
     try{
     const isValidated = await this.service.verifyQualifyingGallery(email)
-    const gallery = await this.service.createGalleryProfile({primaryUUID: user.user_id, primaryOwnerPhone, primaryOwnerEmail, galleryName, signUpWebsite, isValidated})
+    const gallery = await this.service.createGalleryProfile({galleryName, isValidated})
       res.json(gallery);
     } catch (error: any) {
       res.status(500).send(error.message);

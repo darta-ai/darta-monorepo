@@ -22,7 +22,7 @@ import {PhoneNumberFormat} from '../../FormComponents/DartaPhoneNumber';
 import {AlreadySignedUp} from '../../Navigation/Auth';
 import {authStyles} from '../styles';
 import {AuthEnum} from '../types';
-import { createGalleryProfile } from 'packages/next/src/API/galleries/galleries';
+import { createGalleryUser } from 'packages/next/src/API/users/userRoutes';
 
 const websiteRegExp =
   /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/;
@@ -37,7 +37,7 @@ const schema = yup
     galleryName: yup
       .string()
       .required(
-        'please include a gallery name to speed up the approval process',
+        'please include a gallery name',
       ),
     password: yup
       .string()
@@ -47,7 +47,7 @@ const schema = yup
       .string()
       .oneOf([yup.ref('password'), undefined], 'passwords must match')
       .required('please confirm your password'),
-    website: yup.string().optional().matches(websiteRegExp, {
+    website: yup.string().required('please include your gallery website').matches(websiteRegExp, {
       message: 'please double check your website url',
       excludeEmptyString: true,
     }),
@@ -69,17 +69,18 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
         if (error) {
           setFirebaseError(errorMessage);
         } else if (user?.displayName) {
-          await createGalleryProfile({
+          await createGalleryUser({
             galleryName: { value: data?.galleryName}, 
             signUpWebsite: data?.website, 
-            primaryOwnerPhone: data?.phoneNumber, 
-            primaryOwnerEmail: data?.email
+            phoneNumber: data?.phoneNumber, 
+            email: data?.email
           })
-          router.push(`/${signUpType}/Profile`);
+          // router.push(`/${signUpType}/Profile`);
         } else {
-          router.push(`/`);
+          // router.push(`/`);
         }
       } catch (e: any) {
+        console.log(e)
         setFirebaseError('Something went wrong. Please try again.');
       }
     };
@@ -141,27 +142,6 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
           </FormHelperText>
         </FormControl>
         <FormControl variant="outlined" required>
-          <InputLabel htmlFor="outlined-adornment-email">email</InputLabel>
-          <Input
-            error={!!errors?.email?.message}
-            {...register('email')}
-            id="email"
-            aria-describedby="email"
-            color="info"
-            required
-            data-testid="emailInput"
-            onChange={event => {
-              setEmailInput(event.target.value);
-            }}
-          />
-          <FormHelperText
-            id="emailHelperText"
-            data-testid="emailInput-helper-text"
-            sx={authStyles.warningText}>
-            {(errors?.email?.message as string) || emailError}
-          </FormHelperText>
-        </FormControl>
-        <FormControl variant="outlined" required>
           <InputLabel htmlFor="outlined-adornment-phone">
             phone number
           </InputLabel>
@@ -183,12 +163,46 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             {errors?.phoneNumber?.message as string}
           </FormHelperText>
         </FormControl>
-
+        <FormControl variant="outlined" required>
+          <InputLabel htmlFor="outlined-adornment-website">website</InputLabel>
+          <Input
+            error={!!errors?.website?.message}
+            {...register('website')}
+            id="website"
+            color="info"
+            aria-describedby="website"
+            data-testid="websiteInput"
+            required
+          />
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
+            {errors?.website?.message as string}
+          </FormHelperText>
+        </FormControl>
         {!errors?.password?.message && (
           <FormHelperText id="phoneHelperText" sx={authStyles.formHelperText}>
             For account management purposes.
           </FormHelperText>
         )}
+        <FormControl variant="outlined" required>
+          <InputLabel htmlFor="outlined-adornment-email">email</InputLabel>
+          <Input
+            error={!!errors?.email?.message}
+            {...register('email')}
+            id="email"
+            aria-describedby="email"
+            color="info"
+            data-testid="emailInput"
+            onChange={event => {
+              setEmailInput(event.target.value);
+            }}
+          />
+          <FormHelperText
+            id="emailHelperText"
+            data-testid="emailInput-helper-text"
+            sx={authStyles.warningText}>
+            {(errors?.email?.message as string) || emailError}
+          </FormHelperText>
+        </FormControl>
         <FormControl variant="outlined" required>
           <InputLabel htmlFor="outlined-adornment-password">
             password
@@ -257,20 +271,6 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             data-testid="password-confirm-helper-text"
             sx={authStyles.warningText}>
             {errors?.confirmPassword?.message as string}
-          </FormHelperText>
-        </FormControl>
-        <FormControl variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-website">website</InputLabel>
-          <Input
-            error={!!errors?.website?.message}
-            {...register('website')}
-            id="website"
-            color="info"
-            aria-describedby="website"
-            data-testid="websiteInput"
-          />
-          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
-            {errors?.website?.message as string}
           </FormHelperText>
         </FormControl>
         {firebaseError && (

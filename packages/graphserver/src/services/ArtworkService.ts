@@ -1,12 +1,12 @@
 import { injectable, inject } from 'inversify';
 import { Database } from 'arangojs';
-import { IArtworkService, INodeService, IGalleryService } from './interfaces';
+import { IArtworkService, INodeService, IGalleryService, IEdgeService } from './interfaces';
 import { Artwork, Dimensions, Images } from '@darta/types';
 import { ImageController } from 'src/controllers/ImageController';
 import { CollectionNames, EdgeNames } from 'src/config/collections';
-import { IEdgeService } from './';
 import { ArtworkNode, Edge } from 'src/models/models';
 import { Node } from 'src/models/models';
+import { ArtworkAndGallery } from './interfaces/IArtworkService';
 
 const BUCKET_NAME= "artwork"
 
@@ -65,14 +65,13 @@ export class ArtworkService implements IArtworkService {
       return artwork
     }
 
-    public async readArtworkAndGallery(artworkId: string): Promise<Artwork | null>{
+    public async readArtworkAndGallery(artworkId: string): Promise<ArtworkAndGallery>{
       // TO-DO: build out? 
       const artwork = await this.getArtworkById(artworkId)
 
       // ############## get gallery ##############
 
       let galleryEdge: Edge;
-      let galleryId: string;
       let gallery = null
 
       if(artwork?._id){
@@ -83,7 +82,6 @@ export class ArtworkService implements IArtworkService {
         console.log(galleryEdge)
         gallery = await this.galleryService.readGalleryProfileFromGalleryId({galleryId : galleryEdge._from})
       }
-
       return {artwork, gallery}
     }
     public async editArtwork({artwork} : {artwork: Artwork}): Promise<ArtworkNode | null> {

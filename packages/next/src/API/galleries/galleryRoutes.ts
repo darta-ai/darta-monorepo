@@ -7,7 +7,7 @@ const URL = "http://localhost:1160"
 export async function createGalleryProfile({galleryName, 
     signUpWebsite, 
     primaryOwnerPhone, 
-    primaryOwnerEmail} : GalleryBase): Promise<any> {
+    primaryOwnerEmail} : any): Promise<any> {
     const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
     try {
         const response = await axios.post(`${URL}/gallery/createProfile`, {
@@ -37,7 +37,7 @@ export async function readGalleryProfile(): Promise<any> {
 export async function updateGalleryProfile(data : IGalleryProfileData): Promise<any> {
     const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
     try {
-        const response = await axios.post(`${URL}/gallery/editProfile`, {data} as IGalleryProfileData, {headers: {'authorization': `Bearer ${idToken}`}});
+        const response = await axios.post(`${URL}/gallery/editProfile`, {data}, {headers: {'authorization': `Bearer ${idToken}`}});
         return response;
     } catch (error) {
         console.log(error)

@@ -56,15 +56,15 @@ export interface GalleryAddressFields {
     galleryLocation4?: IBusinessLocationData;
 }
 export interface GalleryBase {
-    galleryName?: PublicFields;
+    galleryName: PublicFields;
+    normalizedGalleryName?: string | null;
+    normalizedGalleryWebsite?: string | null;
+    normalizedGalleryDomain?: string | null;
     isValidated?: boolean;
-    primaryOwnerPhone?: string;
-    primaryOwnerEmail?: string;
     signUpWebsite?: string;
-    primaryUUIDPhone?: string;
-    primaryUUID?: string;
-    uuids?: string[];
     value?: string;
+    _id?: string;
+    _key?: string
 }
 interface GalleryFields extends GalleryBase {
     galleryLogo?: Images;
