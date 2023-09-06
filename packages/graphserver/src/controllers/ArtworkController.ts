@@ -32,8 +32,9 @@ export class ArtworkController {
     const {artworkId} = req.body
     try {
         const artwork = await this.artworkService.readArtwork(artworkId)
-        const results = filterOutPrivateRecordsSingleObject(artwork)
-        res.json(results)
+        // removing anything that isPrivate 
+        const artworkResults = filterOutPrivateRecordsSingleObject(artwork)
+        res.json(artworkResults)
     } catch (error: any) {
       res.status(500).send(error.message);
     }
@@ -44,6 +45,7 @@ public async readArtworkAndGallery(@request() req: Request, @response() res: Res
   const {artworkId} = req.body
   try {
       const artwork = await this.artworkService.readArtwork(artworkId)
+      
       res.json(artwork);
   } catch (error: any) {
     res.status(500).send(error.message);

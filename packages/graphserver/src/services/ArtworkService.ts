@@ -1,11 +1,11 @@
 import { injectable, inject } from 'inversify';
 import { Database } from 'arangojs';
-import { IArtworkService, INodeService } from './interfaces';
+import { IArtworkService, INodeService, IGalleryService } from './interfaces';
 import { Artwork, Dimensions, Images } from '@darta/types';
 import { ImageController } from 'src/controllers/ImageController';
 import { CollectionNames, EdgeNames } from 'src/config/collections';
 import { IEdgeService } from './';
-import { ArtworkNode } from 'src/models/models';
+import { ArtworkNode, Edge } from 'src/models/models';
 import { Node } from 'src/models/models';
 
 const BUCKET_NAME= "artwork"
@@ -16,7 +16,8 @@ export class ArtworkService implements IArtworkService {
     @inject('Database') private readonly db: Database,
     @inject('ImageController') private readonly imageController: ImageController,
     @inject('IEdgeService') private readonly edgeService: IEdgeService,
-    @inject('INodeService') private readonly nodeService: INodeService
+    @inject('INodeService') private readonly nodeService: INodeService,
+    @inject('IGalleryService') private readonly galleryService: IGalleryService
     ) {}
     public async createArtwork({artwork, galleryId} : {artwork: Artwork, galleryId: string}): Promise<void>{
       // create the artwork 
@@ -59,7 +60,31 @@ export class ArtworkService implements IArtworkService {
     }
     public async readArtwork(artworkId: string): Promise<Artwork | null>{
       // TO-DO: build out? 
-      return this.getArtworkById(artworkId)
+      const artwork = await this.getArtworkById(artworkId)
+
+      return artwork
+    }
+
+    public async readArtworkAndGallery(artworkId: string): Promise<Artwork | null>{
+      // TO-DO: build out? 
+      const artwork = await this.getArtworkById(artworkId)
+
+      // ############## get gallery ##############
+
+      let galleryEdge: Edge;
+      let galleryId: string;
+      let gallery = null
+
+      if(artwork?._id){
+        galleryEdge = await this.edgeService.getEdgeWithTo({
+          edgeName: EdgeNames.FROMGalleryToArtwork,
+          to: artwork._id
+        })
+        console.log(galleryEdge)
+        gallery = await this.galleryService.readGalleryProfileFromGalleryId({galleryId : galleryEdge._from})
+      }
+
+      return {artwork, gallery}
     }
     public async editArtwork({artwork} : {artwork: Artwork}): Promise<ArtworkNode | null> {
 

@@ -7,5 +7,5 @@ export const filterOutPrivateRecordsSingleObject = (obj: any) : any => {
         delete revisedObject[key]
       }
     }
-    return obj
+    return revisedObject
 }

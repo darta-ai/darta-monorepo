@@ -14,7 +14,7 @@ export class GalleryController {
     const user = (req as any).user;
     try {
         let gallery;
-        gallery = await this.service.readGalleryProfile(user.user_id);
+        gallery = await this.service.readGalleryProfileFromUUID(user.user_id);
       if (!gallery){
         res.status(404).send("cannot find gallery")
       }
