@@ -36,7 +36,7 @@ export class GalleryService implements IGalleryService {
       const metaData = await galleryCollection.save(newGallery);
       return { ...newGallery, _id: metaData._id, _key: metaData._key, _rev: metaData._rev };
   }
-  public async readGalleryProfile(uuid: string): Promise<Gallery | null>{
+  public async readGalleryProfileFromUUID(uuid: string): Promise<Gallery | null>{
     const galleryQuery = `
     WITH ${CollectionNames.Galleries}
     FOR gallery IN ${CollectionNames.Galleries}
@@ -49,6 +49,60 @@ export class GalleryService implements IGalleryService {
   // get gallery
   try{
     const cursor = await this.db.query(galleryQuery, { userUUID: uuid });
+    gallery = await cursor.next(); // Get the first result
+  } catch(error){
+    console.log(error)
+  }
+
+
+  //get city
+  const cityQuery = `
+  WITH Galleries, Cities
+  FOR cityViaEdge IN 1..1 OUTBOUND @galleryId ${EdgeNames.GalleryToCity}
+    RETURN cityViaEdge
+`
+  let cityValue;
+
+  try{
+    const cityCursor = await this.db.query(cityQuery, { galleryId: gallery._id });
+    cityValue = await cityCursor.next(); // Get the first result
+  } catch(error: any){
+  }
+
+  // get gallery image
+  const {galleryLogo} = gallery
+
+  let url;
+    if (galleryLogo?.bucketName && galleryLogo?.fileName){
+      try{
+        url = await this.imageController.processGetFile({bucketName: galleryLogo?.bucketName, fileName: galleryLogo?.fileName})
+      } catch(error){
+        console.log(error)
+      }
+    }
+  return {
+    ...gallery, 
+    galleryLogo : {
+      value: url
+    }
+  };
+  }
+
+  public async readGalleryProfileFromGalleryId({galleryId} : {galleryId: string}): Promise<Gallery | null>{
+    
+    
+    const galleryQuery = `
+    WITH ${CollectionNames.Galleries}
+    FOR gallery IN ${CollectionNames.Galleries}
+    FILTER gallery._id == @galleryId
+    RETURN gallery
+  `;
+
+  let gallery;
+
+  // get gallery
+  try{
+    const cursor = await this.db.query(galleryQuery, { galleryId });
     gallery = await cursor.next(); // Get the first result
   } catch(error){
     console.log(error)

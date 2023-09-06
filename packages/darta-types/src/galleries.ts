@@ -117,6 +117,8 @@ export type Artwork = {
     updatedAt: string | null;
     collection?: PublicFields;
     exhibitionOrder?: number;
+    galleryId?: string;
+    _id?: string;
   };
   
   export type ExhibitionDates = {

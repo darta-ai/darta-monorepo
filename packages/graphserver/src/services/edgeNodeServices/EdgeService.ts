@@ -1,6 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { IEdgeService } from './IEdgeService'
 import { Database } from 'arangojs';
+import { Edge } from 'src/models/models';
 
 @injectable()
 export class EdgeService implements IEdgeService {
@@ -24,7 +25,7 @@ export class EdgeService implements IEdgeService {
             });
         }
     
-        public async getEdge({edgeName, from, to} : {edgeName: string, from: string, to: string}): Promise<any> {
+        public async getEdge({edgeName, from, to} : {edgeName: string, from: string, to: string}): Promise<Edge> {
             const query = `
             FOR edge IN @@edgeName
             FILTER edge._from == @from AND edge._to == @to
@@ -35,6 +36,34 @@ export class EdgeService implements IEdgeService {
                 '@edgeName': edgeName,
                 from,
                 to
+            });
+            return cursor.next();
+        }
+
+        public async getEdgeWithFrom({edgeName, from} : {edgeName: string, from: string}): Promise<Edge> {
+            const query = `
+            FOR edge IN @@edgeName
+            FILTER edge._from == @from
+            RETURN edge
+            `;
+    
+            const cursor = await this.db.query(query, {
+                '@edgeName': edgeName,
+                from,
+            });
+            return cursor.next();
+        }
+
+        public async getEdgeWithTo({edgeName, to} : {edgeName: string, to: string}): Promise<Edge> {
+            const query = `
+            FOR edge IN @@edgeName
+            FILTER edge._to == @to
+            RETURN edge
+            `;
+    
+            const cursor = await this.db.query(query, {
+                '@edgeName': edgeName,
+                to,
             });
             return cursor.next();
         }
