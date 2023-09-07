@@ -75,7 +75,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             phoneNumber: data?.phoneNumber, 
             email: data?.email
           })
-          // router.push(`/${signUpType}/Profile`);
+          router.push(`/${signUpType}/Profile`);
         } else {
           // router.push(`/`);
         }

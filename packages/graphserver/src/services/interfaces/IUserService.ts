@@ -2,8 +2,8 @@ import { Node } from 'src/models/models';
 
 
 export interface IUserService {
-  createGalleryUserAndEdge({uid, galleryId, email, phoneNumber, gallery, relationship, validated} : {uid: string, galleryId: string, email : string, phoneNumber :string, gallery:string, relationship: string, validated: boolean}): Promise<any>    
-  createGalleryUser({email, uid} : {email: string, uid: string}): Promise<boolean>;
+    createGalleryUserAndEdge({uid, galleryId, email, phoneNumber, gallery, relationship, validated} : {uid: string, galleryId: string, email : string, phoneNumber :string, gallery:string, relationship: string, validated: boolean}): Promise<any>    
+    createGalleryUser({email, uid} : {email: string, uid: string}): Promise<boolean>;
     readGalleryUser({uid} : {uid: string}): Promise<Node | null>
     deleteGalleryUser(): Promise<boolean>;
     editGalleryUserEmailAddress({uid, emailAddress} : {uid: string, emailAddress: string}): Promise<boolean>;

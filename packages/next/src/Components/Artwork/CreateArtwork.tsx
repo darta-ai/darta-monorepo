@@ -234,7 +234,6 @@ export function CreateArtwork({
     const artistNameAllCaps = data.artistName.value.toUpperCase()
 
     setValue ('artistName.value', artistNameAllCaps)
-    console.log(artistNameAllCaps)
     if (
       Number(data.artworkDimensions.depthIn.value) &&
       Number(data.artworkDimensions.depthCm.value)

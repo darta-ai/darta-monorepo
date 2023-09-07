@@ -40,7 +40,7 @@ export class UserService implements IUserService {
 
     public async createGalleryUser({email, uid, phoneNumber, gallery}: {email: string, uid: string, phoneNumber: string, gallery: string, validated: boolean}): Promise<boolean>{
         try{
-            const results = await this.nodeService.upsertNode({
+            const results = await this.nodeService.upsertNodeByKey({
                 collectionName: CollectionNames.GalleryUsers, 
                 key: uid, 
                 data: {
@@ -88,8 +88,6 @@ export class UserService implements IUserService {
 
 
     public async createGalleryEdge({galleryId, uid, relationship} : {galleryId: string, uid: string, relationship: string}): Promise<boolean>{
-        console.log({galleryId, uid, relationship})
-
         const standarizedGalleryId = galleryId.includes(CollectionNames.Galleries) ? galleryId : `${CollectionNames.Galleries}/${galleryId}`
         const standarizedUserId = uid.includes(CollectionNames.GalleryUsers) ? uid : `${CollectionNames.GalleryUsers}/${uid}`
 
@@ -115,7 +113,6 @@ export class UserService implements IUserService {
                 edgeName: EdgeNames.FROMUserTOGallery,
                 from: `${CollectionNames.GalleryUsers}/${uid}`
             })
-            console.log(results)
             return results
         } catch(error){
             console.log('error at read gallery relationship edge',error)

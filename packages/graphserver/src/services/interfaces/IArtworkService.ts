@@ -12,7 +12,7 @@ export interface IArtworkService {
     readArtworkAndGallery(artworkId: string): Promise<ArtworkAndGallery | null>
     editArtwork({artwork} : {artwork: Artwork}): Promise<ArtworkNode | null>;
     deleteArtwork({artworkId} : {artworkId: string}): Promise<boolean>;
-    confirmGalleryArtworkEdge(artworkId: string, galleryKey: string): Promise<boolean>;
+    confirmGalleryArtworkEdge({artworkId, galleryId} : {artworkId: string, galleryId: string}): Promise<boolean> 
     listArtworksByGallery({galleryId} : {galleryId: string}): Promise<(Artwork | null)[] | null>
   }
   

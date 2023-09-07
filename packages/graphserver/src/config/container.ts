@@ -29,7 +29,9 @@ const TYPES = {
   NodeService: 'NodeService',
   INodeService: 'INodeService',
   IUserService: 'IUserService',
-  UserController: 'UserController'
+  UserController: 'UserController',
+  IExhibitionService: 'IExhibitionService',
+  ExhibitionController: 'ExhibitionController'
 };
 
 const arangoContainer = container.bind<Database>(TYPES.Database).toConstantValue(
@@ -65,6 +67,7 @@ container.bind<Services.IAdminService>(TYPES.IAdminService).to(Services.AdminSer
 container.bind<Services.IEdgeService>(TYPES.IEdgeService).to(Services.EdgeService);
 container.bind<Services.INodeService>(TYPES.INodeService).to(Services.NodeService);
 container.bind<Services.IUserService>(TYPES.IUserService).to(Services.UserService);
+container.bind<Services.IExhibitionService>(TYPES.IExhibitionService).to(Services.CollectionService);
 
 
 
@@ -74,6 +77,7 @@ container.bind<Controllers.ImageController>(TYPES.ImageController).to(Controller
 container.bind<Controllers.ArtworkController>(TYPES.ArtworkController).to(Controllers.ArtworkController);
 container.bind<Controllers.AdminController>(TYPES.AdminController).to(Controllers.AdminController);
 container.bind<Controllers.UserController>(TYPES.UserController).to(Controllers.UserController);
+container.bind<Controllers.ExhibitionController>(TYPES.ExhibitionController).to(Controllers.ExhibitionController);
 
 
 export {

@@ -1,6 +1,6 @@
 import {GalleryState} from '../../globalTypes';
 import { readGalleryProfile } from './galleries/galleryRoutes';
-import {listArtworksByGallery} from './artworks/artworkRoutes'
+import { listArtworksByGallery } from './artworks/artworkRoutes'
 
 
 
