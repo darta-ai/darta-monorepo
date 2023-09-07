@@ -1,7 +1,7 @@
 import { Artwork } from "@darta/types";
 
 export interface Node {
-  _key: string;
+  _key?: string;
   _id?: string;
   properties?: Record<string, any>;
   value?: string

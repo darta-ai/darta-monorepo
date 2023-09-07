@@ -8,7 +8,6 @@ export interface GalleryUser {
   }
   
   export interface Gallery extends Node, IGalleryProfileData {
-    uuids: string[]
   }
 
   export interface City extends Node {

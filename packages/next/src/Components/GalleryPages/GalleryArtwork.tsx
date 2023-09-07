@@ -65,8 +65,6 @@ export function GalleryArtwork() {
     [key: string]: InquiryArtworkData[];
   } | null>(null);
 
-  console.log({state})
-
   React.useEffect(() => {
     const inquiriesArray = Object.values(galleryInquiriesDummyData);
     const sortedInquiries: {[key: string]: InquiryArtworkData[]} = {};

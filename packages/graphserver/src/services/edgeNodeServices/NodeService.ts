@@ -9,7 +9,7 @@ export class NodeService implements INodeService {
         @inject('Database') private readonly db: Database,
     ) {}
 
-    async upsertNode({collectionName, key, data = {}} : {collectionName: string, data: any,  key?: string,}): Promise<Node> {
+    async upsertNodeByKey({collectionName, key, data = {}} : {collectionName: string, data: any,  key?: string,}): Promise<Node> {
         
         let query
         let payload: any = {
@@ -26,6 +26,47 @@ export class NodeService implements INodeService {
             payload = {
                 '@collectionName': collectionName,
                 key,
+                data
+            }
+        } else if (data?.value){
+            query = `
+            UPSERT { value: @data.value }
+            INSERT @data
+            UPDATE @data INTO @@collectionName
+            RETURN NEW
+            `;
+        } else{
+            query = `
+            INSERT @data INTO @@collectionName
+            RETURN NEW
+            `;
+        }
+
+        const cursor = await this.db.query(query, payload);
+
+        const results = await cursor.next();
+        return results;
+    
+    }
+
+
+    async upsertNodeById({collectionName, id, data = {}} : {collectionName: string, data: any,  id?: string,}): Promise<Node> {
+        
+        let query
+        let payload: any = {
+            '@collectionName': collectionName,
+            data
+        }
+        if (id) {
+            query = `
+            UPSERT { _id: @id }
+            INSERT MERGE(@data, { _id: @id })
+            UPDATE @data INTO @@collectionName
+            RETURN NEW
+            `;
+            payload = {
+                '@collectionName': collectionName,
+                id,
                 data
             }
         } else if (data?.value){

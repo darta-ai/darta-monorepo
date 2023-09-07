@@ -7,16 +7,16 @@ import { verifyToken } from 'src/middlewares/accessTokenVerify';
 
 @controller('/gallery')
 export class GalleryController {
-  constructor(@inject('IGalleryService') private service: IGalleryService) {}
+  constructor(@inject('IGalleryService') private galleryService: IGalleryService) {}
 
   @httpGet('/galleryProfile', verifyToken)
   public async getGallery(@request() req: Request, @response() res: Response): Promise<void> {
     const user = (req as any).user;
     try {
-        let gallery;
-        gallery = await this.service.readGalleryProfileFromUUID(user.user_id);
+        const gallery = await this.galleryService.readGalleryProfileFromUID(user.user_id);
       if (!gallery){
-        res.status(404).send("cannot find gallery")
+        res.status(404).send("Cannot find gallery")
+        return
       }
       res.json(gallery);
     } catch (error: any) {
@@ -24,14 +24,15 @@ export class GalleryController {
     }
   }
 
+  
   @httpPost('/createProfile', verifyToken)
   public async createProfile(@request() req: Request, @response() res: Response): Promise<void> {
     const user = (req as any).user;
     const email = user.email;
-    const {galleryName, signUpWebsite, primaryOwnerPhone, primaryOwnerEmail} = req.body
+    const {galleryName} = req.body
     try{
-    const isValidated = await this.service.verifyQualifyingGallery(email)
-    const gallery = await this.service.createGalleryProfile({galleryName, isValidated})
+    const isValidated = await this.galleryService.verifyQualifyingGallery(email)
+    const gallery = await this.galleryService.createGalleryProfile({galleryName, isValidated})
       res.json(gallery);
     } catch (error: any) {
       res.status(500).send(error.message);
@@ -44,7 +45,7 @@ export class GalleryController {
     try{
       const value = req.body.data?.galleryName?.value
 
-      const gallery = await this.service.editGalleryProfile({user, data: {...req.body.data, value}})
+      const gallery = await this.galleryService.editGalleryProfile({user, data: {...req.body.data, value}})
       res.json(gallery);
     } catch (error: any) {
       console.log(error)

@@ -12,6 +12,7 @@ export const CollectionNames = {
     ArtworkCreatedIn : 'ArtworkCreatedIn',
     Cities: 'Cities',
     Galleries: 'Galleries',
+    Exhibitions: 'Exhibitions',
     GalleryApprovals: 'GalleryApprovals',
 
 
@@ -26,7 +27,7 @@ export const EdgeNames = {
     FROMArtworkTOSizeBucket: 'ArtworkSizes',
     FROMArtworkTOArtist: 'ArtworkArtist',
     FROMArtworkTOCreateBucket: 'ArtworkCreatedYear',
-
+    FROMGalleryTOExhibition: 'FROMGalleryTOExhibition',
     FROMUserTOGallery: 'FROMUserTOGallery'
 }
 

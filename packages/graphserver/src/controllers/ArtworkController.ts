@@ -18,9 +18,9 @@ export class ArtworkController {
     const user = (req as any).user;
     const {artwork} = req.body
     try {
-        const galleryId = await this.galleryService.getGalleryId({uuid: user.user_id})
-        const newArtwork = await this.artworkService.createArtwork({artwork, galleryId});
-        res.json(newArtwork);
+      const galleryId = await this.galleryService.getGalleryIdFromUID({uid: user.user_id})
+      const newArtwork = await this.artworkService.createArtwork({artwork, galleryId});
+      res.json(newArtwork);
     } catch (error: any) {
       res.status(500).send(error.message);
     }
@@ -29,7 +29,6 @@ export class ArtworkController {
 // OPEN Endpoint
 @httpGet('/readArtwork')
   public async readArtwork(@request() req: Request, @response() res: Response, next: NextFunction): Promise<void> {
-    console.log('in read Artwork')
     const {artworkId} = req.body
     try {
         const artwork = await this.artworkService.readArtwork(artworkId)
@@ -60,8 +59,8 @@ public async editArtwork(@request() req: Request, @response() res: Response): Pr
   const user = (req as any).user;
   const {artwork} = req.body
   try {
-    const galleryId = await this.galleryService.getGalleryId({uuid: user.user_id})
-    const isVerified = await this.artworkService.confirmGalleryArtworkEdge(artwork.artworkId, galleryId)
+    const galleryId = await this.galleryService.getGalleryIdFromUID({uid: user.user_id})
+    const isVerified = await this.artworkService.confirmGalleryArtworkEdge({artworkId: artwork.artworkId, galleryId})
     if (!isVerified) {
       res.status(403).send('Unauthorized');
       return;  
@@ -77,9 +76,10 @@ public async editArtwork(@request() req: Request, @response() res: Response): Pr
 public async deleteArtwork(@request() req: Request, @response() res: Response): Promise<void> {
   const user = (req as any).user;
   const {artworkId} = req.body
+  console.log('hit')
   try {
-    const galleryId = await this.galleryService.getGalleryId({uuid: user.user_id})
-    const isVerified = await this.artworkService.confirmGalleryArtworkEdge(artworkId, galleryId)
+    const galleryId = await this.galleryService.getGalleryIdFromUID({uid: user.user_id})
+    const isVerified = await this.artworkService.confirmGalleryArtworkEdge({artworkId, galleryId})
     if (!isVerified) {
       res.status(403).send('Unauthorized');
       return;  
@@ -95,7 +95,8 @@ public async deleteArtwork(@request() req: Request, @response() res: Response): 
 public async getGalleryArtworks(@request() req: Request, @response() res: Response): Promise<void> {
   const user = (req as any).user;
   try {
-    const galleryId = await this.galleryService.getGalleryId({uuid: user.user_id})
+    const galleryId = await this.galleryService.getGalleryIdFromUID({uid: user.user_id})
+    console.log(galleryId)
     const galleryArtwork = await this.artworkService.listArtworksByGallery({galleryId});
     res.json(galleryArtwork);
   } catch (error: any) {

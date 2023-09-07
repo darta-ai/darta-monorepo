@@ -19,7 +19,6 @@ export function LoadProfile() {
         const {galleryProfile, galleryArtworks, galleryExhibitions} =
           await retrieveAllGalleryData(user.accessToken);
         
-          console.log({galleryArtworks})
         dispatch({
           type: GalleryReducerActions.SET_ACCESS_TOKEN,
           payload: user?.accessToken,

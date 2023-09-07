@@ -41,16 +41,14 @@ export class ArtworkService implements IArtworkService {
       }
 
       // create the edge between the gallery and the artwork
-
       if (newArtwork?._id){
         try{
-          const upsertEdgePayload = {
+          await this.edgeService.upsertEdge({
             edgeName: EdgeNames.FROMGalleryToArtwork,
-            from: `${CollectionNames.Galleries}/${galleryId}`,
+            from: `${galleryId}`,
             to: newArtwork._id,
             data: {value : 'uploaded'}
-          }
-          this.edgeService.upsertEdge({...upsertEdgePayload})
+          })
         } catch (error: any){
           console.log(error)
         }
@@ -79,7 +77,6 @@ export class ArtworkService implements IArtworkService {
           edgeName: EdgeNames.FROMGalleryToArtwork,
           to: artwork._id
         })
-        console.log(galleryEdge)
         gallery = await this.galleryService.readGalleryProfileFromGalleryId({galleryId : galleryEdge._from})
       }
       return {artwork, gallery}
@@ -145,7 +142,7 @@ export class ArtworkService implements IArtworkService {
         let savedArtwork
 
         try{
-          savedArtwork = await this.nodeService.upsertNode({collectionName: CollectionNames.Artwork, key: artworkId, data })
+          savedArtwork = await this.nodeService.upsertNodeByKey({collectionName: CollectionNames.Artwork, key: artworkId, data })
         } catch (error) {
           console.log('error saving artwork')
         }
@@ -174,7 +171,7 @@ export class ArtworkService implements IArtworkService {
 
         let artistNodeResults;
         try {
-          artistNodeResults = await this.nodeService.upsertNode(artistNodePayload)
+          artistNodeResults = await this.nodeService.upsertNodeByKey(artistNodePayload)
         }catch(error){
           console.log('artist NODE results error')
         }
@@ -219,7 +216,7 @@ export class ArtworkService implements IArtworkService {
 
         let mediumNodeResults;
         try {
-          mediumNodeResults = await this.nodeService.upsertNode(mediumNodePayload)
+          mediumNodeResults = await this.nodeService.upsertNodeByKey(mediumNodePayload)
         }catch(error){
           console.log('medium NODE results error')
         }
@@ -268,7 +265,7 @@ export class ArtworkService implements IArtworkService {
 
         let priceNodeResults;
         try {
-          priceNodeResults = await this.nodeService.upsertNode(priceNodePayload)
+          priceNodeResults = await this.nodeService.upsertNodeByKey(priceNodePayload)
         }catch(error){
           console.log('price NODE results error')
         }
@@ -311,7 +308,7 @@ export class ArtworkService implements IArtworkService {
   
           let sizeNodeResults;
           try {
-            sizeNodeResults = await this.nodeService.upsertNode(sizeNodePayload)
+            sizeNodeResults = await this.nodeService.upsertNodeByKey(sizeNodePayload)
           }catch(error){
             console.log('size NODE results error')
           }
@@ -356,7 +353,7 @@ export class ArtworkService implements IArtworkService {
 
         let yearNodeResults;
         try {
-          yearNodeResults = await this.nodeService.upsertNode(yearNodePayload)
+          yearNodeResults = await this.nodeService.upsertNodeByKey(yearNodePayload)
         }catch(error){
           console.log('year NODE results error')
         }
@@ -519,7 +516,7 @@ export class ArtworkService implements IArtworkService {
 
       const getArtworksQuery = `
       WITH ${CollectionNames.Galleries}, ${CollectionNames.Artwork}
-      FOR artwork IN OUTBOUND CONCAT("${CollectionNames.Galleries}/", @galleryId) ${EdgeNames.FROMGalleryToArtwork}
+      FOR artwork IN OUTBOUND @galleryId ${EdgeNames.FROMGalleryToArtwork}
       RETURN artwork._id      
     `;
 
@@ -527,13 +524,11 @@ export class ArtworkService implements IArtworkService {
         const edgeCursor = await this.db.query(getArtworksQuery, {galleryId});
         const artworkIds = (await edgeCursor.all()).filter((el) => el);
 
-
-
         const galleryOwnedArtworkPromises = artworkIds.map(async (artworkId : string) =>{
           return await this.getArtworkById(artworkId)
         } )
 
-
+        
         const galleryOwnedArtwork = await Promise.all(galleryOwnedArtworkPromises);
         return galleryOwnedArtwork
       } catch (error) {
@@ -585,7 +580,6 @@ export class ArtworkService implements IArtworkService {
 
       // ################# Artwork Image ############### 
 
-
         return {
           ...artwork, 
           artworkMedium: {
@@ -597,17 +591,23 @@ export class ArtworkService implements IArtworkService {
         }
     }
 
-    public async confirmGalleryArtworkEdge(artworkId: string, galleryKey: string): Promise<boolean>{
+    public async confirmGalleryArtworkEdge({artworkId, galleryId} : {artworkId: string, galleryId: string}): Promise<boolean> {
+
+      const artworkValue = artworkId.includes(CollectionNames.Artwork) ? artworkId : `${CollectionNames.Artwork}/${artworkId}`
+      const galleryValue = galleryId.includes(CollectionNames.Galleries) ? galleryId : `${CollectionNames.Galleries}/${galleryId}`
+
+
+      console.log({artworkValue, galleryValue})
 
       const galleryEdgeQuery = `
       FOR edge IN ${EdgeNames.FROMGalleryToArtwork}
-      FILTER edge._from == CONCAT("${CollectionNames.Galleries}/", @galleryKey) AND edge._to == CONCAT("${CollectionNames.Artwork}/", @artworkId)
+      FILTER edge._from == @galleryValue AND edge._to == @artworkValue
       RETURN edge
       `
 
       const galleryEdgeData = {
-        galleryKey, 
-        artworkId: artworkId
+        artworkValue,
+        galleryValue
       }
 
       try{
