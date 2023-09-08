@@ -33,7 +33,7 @@ export function LoadProfile() {
         });
         dispatch({
           type: GalleryReducerActions.SET_EXHIBITIONS,
-          payload: {...galleryExhibitions},
+          payload: galleryExhibitions,
         });
       }
     }

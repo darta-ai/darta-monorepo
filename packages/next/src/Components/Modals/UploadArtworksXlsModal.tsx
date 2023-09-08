@@ -14,7 +14,7 @@ import Image from 'next/image';
 import React from 'react';
 import * as XLSX from 'xlsx';
 
-import {Artwork} from '../../../globalTypes';
+import {Artwork} from '@darta/types';
 import {PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../../styles';
 import {parseExcelArtworkData} from '../../common/nextFunctions';
 

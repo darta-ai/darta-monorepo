@@ -1,6 +1,8 @@
 import {Artwork, CurrencyConverterType, Exhibition} from '@darta/types';
 
 export const newArtworkShell: Artwork = {
+  artworkId: crypto.randomUUID(),
+  exhibitionId: null,
   artworkTitle: {
     value: '',
   },
@@ -59,7 +61,6 @@ export const newArtworkShell: Artwork = {
   },
   createdAt: '',
   updatedAt: '',
-  artworkId: '',
   exhibitionOrder: 0,
 };
 

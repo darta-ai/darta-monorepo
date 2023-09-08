@@ -67,7 +67,7 @@ container.bind<Services.IAdminService>(TYPES.IAdminService).to(Services.AdminSer
 container.bind<Services.IEdgeService>(TYPES.IEdgeService).to(Services.EdgeService);
 container.bind<Services.INodeService>(TYPES.INodeService).to(Services.NodeService);
 container.bind<Services.IUserService>(TYPES.IUserService).to(Services.UserService);
-container.bind<Services.IExhibitionService>(TYPES.IExhibitionService).to(Services.CollectionService);
+container.bind<Services.IExhibitionService>(TYPES.IExhibitionService).to(Services.ExhibitionService);
 
 
 

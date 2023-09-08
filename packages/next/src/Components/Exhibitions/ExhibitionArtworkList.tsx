@@ -17,11 +17,12 @@ import {
 import _ from 'lodash';
 import React from 'react';
 
-import {Artwork, Exhibition} from '../../../globalTypes';
+import {Artwork, Exhibition} from '@darta/types';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {currencyConverter} from '../../common/templates';
 import {CreateArtwork} from '../Artwork/index';
 import {useAppState} from '../State/AppContext';
+
 
 const dartaListDisplay = {
   toggleContainer: {
@@ -70,11 +71,14 @@ function DartaListItem({
   const artworkPrice = artwork?.artworkPrice?.value;
   const artworkCurrency = artwork?.artworkCurrency?.value;
   const [editArtwork, setEditArtwork] = React.useState<boolean>(false);
+
   const handleSave = (updatedArtwork: Artwork) => {
     if (!artwork.artworkId) return;
     saveArtwork(artwork?.artworkId, updatedArtwork);
     setEditArtwork(!editArtwork);
   };
+
+
   const handleDelete = (artworkId: string) => {
     if (!artworkId) return;
     const results = deleteArtwork(artworkId);
@@ -92,7 +96,7 @@ function DartaListItem({
           <Box>
             <IconButton
               disabled={index === 0}
-              onClick={() => swapExhibitionOrder(artwork?.artworkId, 'up')}>
+              onClick={() => swapExhibitionOrder(artwork?.artworkId as string, 'up')}>
               <ArrowDropUpIcon />
             </IconButton>
           </Box>
@@ -102,7 +106,7 @@ function DartaListItem({
           <Box>
             <IconButton
               disabled={index === arrayLength - 1}
-              onClick={() => swapExhibitionOrder(artwork?.artworkId, 'down')}>
+              onClick={() => swapExhibitionOrder(artwork?.artworkId as string, 'down')}>
               <ArrowDropDownIcon />
             </IconButton>
           </Box>
@@ -194,8 +198,10 @@ function DartaListItem({
           <CreateArtwork
             newArtwork={artwork}
             cancelAction={setEditArtwork}
-            saveArtwork={handleSave}
+            handleSave={handleSave}
             handleDelete={handleDelete}
+            saveSpinner={false}
+            deleteSpinner={false}
           />
         </Box>
       </Collapse>

@@ -114,6 +114,7 @@ export type Artwork = {
     updatedAt: string | null;
     collection?: PublicFields;
     exhibitionOrder?: number;
+    exhibitionId: string | null;
     galleryId?: string;
     _id?: string;
 };
@@ -138,7 +139,7 @@ export type BusinessAddressType = 'galleryLocation0' | 'galleryLocation1' | 'gal
 export type Exhibition = {
     exhibitionTitle: PublicFields;
     exhibitionPressRelease: PublicFields;
-    exhibitionPrimaryImage: PublicFields;
+    exhibitionPrimaryImage: Images;
     exhibitionLocation: IOpeningLocationData;
     mediumsUsed?: PublicFields[] | undefined[];
     artists?: PublicFields[] | undefined[];

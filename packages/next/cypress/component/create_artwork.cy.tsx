@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import {Artwork} from '../../globalTypes';
+import {Artwork} from '@darta/types';
 import {newArtworkShell} from '../../src/common/templates';
 import {
   createArtworkDimensionsToolTip,

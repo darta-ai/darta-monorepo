@@ -6,7 +6,7 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {Exhibition} from '../../../globalTypes';
+import {Exhibition} from '@darta/types';
 import {PRIMARY_BLUE} from '../../../styles';
 import {exhibitionPressReleaseToolTip} from '../../common/ToolTips/toolTips';
 import {createArtworkStyles} from '../Artwork/styles';
@@ -21,6 +21,7 @@ import {
 } from '../FormComponents/index';
 import {DartaDialogue} from '../Modals/DartaDialogue';
 import {profileStyles} from '../Profile/Components/profileStyles';
+import { editExhibition } from '../../API/exhibitions/exhibitionRotes';
 
 export const createExhibitionErrors = {
   exhibitionTitle: 'An exhibition title is required.',
@@ -55,11 +56,7 @@ const createExhibitionSchema = yup
         .required(createExhibitionErrors.exhibitionPressRelease),
     }),
     exhibitionLocation: yup.object().shape({
-      locationString: yup.object().shape({
-        value: yup
-          .string()
-          .required(createExhibitionErrors.exhibitionLocationString),
-      }),
+      locationString: yup.string().required(createExhibitionErrors.exhibitionLocationString)
     }),
     exhibitionDates: yup
       .object()
@@ -210,7 +207,7 @@ export function CreateExhibition({
     resolver: yupResolver(createExhibitionSchema),
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     const galleryNameHashified = galleryName.replaceAll(' ', '-');
     const exhibitionNameHashified = data.exhibitionTitle.value.replaceAll(
       ' ',
@@ -218,7 +215,11 @@ export function CreateExhibition({
     );
     const slug = `${galleryNameHashified}-${exhibitionNameHashified}`;
     setValue('slug.value', slug);
-    saveExhibition(data);
+    try{
+      saveExhibition(data);
+    } catch(error){
+      console.log(error)
+    }
   };
 
   const [tempImage, setTempImage] = React.useState<string | null>(
@@ -229,9 +230,20 @@ export function CreateExhibition({
     const file = acceptedFiles[0];
     const previewURL = URL.createObjectURL(file);
     setTempImage(previewURL);
-    setValue('exhibitionPrimaryImage.value', previewURL);
 
-    // NEED API CALL TO UPLOAD IMAGE TO DATABASE
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      // event.target.result contains the file's data as a base64 encoded string.
+      if (event.target?.result){
+        const fileData = event.target.result;
+        setValue('exhibitionPrimaryImage.fileData', fileData);
+        setValue('exhibitionPrimaryImage.fileName', file.name)
+      }
+    };
+
+    reader.readAsDataURL(file); // Read the file content as Data URL.
+    setValue('exhibitionPrimaryImage.value', previewURL);
     setEditPressRelease(!editPressRelease);
   };
 

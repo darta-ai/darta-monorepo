@@ -11,6 +11,7 @@ import {
 import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
+import {CircularProgress} from '@mui/material'
 
 import {mediums} from '../../../data/medium';
 import {Artwork} from '@darta/types';
@@ -32,7 +33,6 @@ import {
 import {CroppingMattersModal, DartaDialogue} from '../Modals/index';
 import {profileStyles} from '../Profile/Components/profileStyles';
 import {createArtworkStyles} from './styles';
-import { editArtwork } from '../../API/artworks/artworkRoutes';
 
 type currencyConverterType = {
   [key: string]: string;
@@ -131,6 +131,8 @@ export function CreateArtwork({
   cancelAction,
   handleSave,
   handleDelete,
+  saveSpinner,
+  deleteSpinner,
   croppingModalOpen,
   setCroppingModalOpen,
 }: {
@@ -138,6 +140,8 @@ export function CreateArtwork({
   cancelAction: (arg0: boolean) => void;
   handleSave: (savedArtwork: Artwork) => void;
   handleDelete: (arg0: string) => void;
+  saveSpinner: boolean;
+  deleteSpinner: boolean;
   croppingModalOpen?: boolean;
   setCroppingModalOpen?: (arg0: boolean) => void;
 }) {
@@ -257,14 +261,7 @@ export function CreateArtwork({
         `,
       );
     }
-    try{
-     const results = await editArtwork({
-      ...newArtwork, 
-      ...data})
-      handleSave(results);
-    } catch (error: any) {
-      //TO-DO error handling 
-    }
+    handleSave(data);
   };
 
   const handleDrop = (acceptedFiles: any) => {
@@ -641,7 +638,8 @@ export function CreateArtwork({
             onClick={() => {
               handleClickOpen();
             }}>
-            <Typography sx={{fontWeight: 'bold'}}>Delete</Typography>
+            {deleteSpinner ? <CircularProgress size={24} /> : <Typography sx={{fontWeight: 'bold'}}>Delete</Typography>
+            }          
           </Button>
           <Button
             variant="contained"
@@ -649,7 +647,8 @@ export function CreateArtwork({
             type="submit"
             sx={{backgroundColor: PRIMARY_BLUE}}
             onClick={handleSubmit(onSubmit)}>
-            <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
+              {saveSpinner ? <CircularProgress size={24} /> : <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
+              }
           </Button>
         </Box>
       </Box>
