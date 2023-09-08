@@ -5,13 +5,14 @@ import _ from 'lodash';
 import Head from 'next/head';
 import React from 'react';
 
-import {Exhibition, GalleryState} from '../../../globalTypes';
+import {Exhibition, GalleryState} from '@darta/types';
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
 import {newExhibitionShell} from '../../common/templates';
 import {dummyExhibition} from '../../dummyData';
 import {ExhibitionCard} from '../Exhibitions/index';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
+import { createExhibition, editExhibition } from '../../API/exhibitions/exhibitionRotes';
 
 // need a function that gets all artworks
 // need a function that gets all inquiries for art
@@ -104,42 +105,62 @@ export function GalleryExhibition() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const addNewExhibition = () => {
+  const addNewExhibition = async () => {
     const newExhibition: Exhibition = _.cloneDeep(newExhibitionShell);
     newExhibition.exhibitionId = crypto.randomUUID();
     newExhibition.createdAt = new Date().toISOString();
-    dispatch({
-      type: GalleryReducerActions.SAVE_EXHIBITION,
-      payload: newExhibition,
-      exhibitionId: newExhibition.exhibitionId,
-    });
+
+    try{
+      const results = await createExhibition({exhibition: newExhibition})
+      console.log({results})
+      if(results?.exhibitionId){
+        dispatch({
+          type: GalleryReducerActions.SAVE_EXHIBITION,
+          payload: results,
+          exhibitionId: results.exhibitionId,
+        });
+      } else {
+        throw new Error()
+      }
+    } catch(error){
+      // TO-DO: throw error for frontend
+    }
+
   };
 
-  const saveExhibition = (
+  const saveExhibition = async (
     exhibitionId: string,
     updatedExhibition: Exhibition,
   ) => {
     const exhibition = _.cloneDeep(updatedExhibition);
-    const exhibitionLocation =
-      updatedExhibition?.exhibitionLocation?.exhibitionLocationString?.value;
+    const exhibitionLocation = exhibition?.exhibitionLocation?.locationString
     const locations = Object.values(state?.galleryProfile);
+     
     const fullExhibitionLocation = locations.filter(
       (locationArrayData: any) => {
         return locationArrayData?.locationString?.value === exhibitionLocation;
       },
     )[0];
 
-    exhibition.exhibitionLocation = fullExhibitionLocation;
+    exhibition.exhibitionLocation = {...fullExhibitionLocation};
 
-    dispatch({
-      type: GalleryReducerActions.SAVE_EXHIBITION,
-      payload: exhibition,
-      exhibitionId,
-    });
-    dispatch({
-      type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
-      payload: exhibition.artworks as any,
-    });
+    try {
+      const results = await editExhibition({exhibition})
+      dispatch({
+        type: GalleryReducerActions.SAVE_EXHIBITION,
+        payload: results,
+        exhibitionId,
+      });
+      dispatch({
+        type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
+        payload: results.artworks as any,
+      });
+    } catch(error){
+      console.log(error)
+      // TO-DO: error handling
+    }
+
+
   };
 
   const deleteExhibition = (exhibitionId: string) => {
@@ -210,12 +231,12 @@ export function GalleryExhibition() {
                 return (dateB as any) - (dateA as any);
               })
               .map((exhibition: Exhibition) => (
-                <Box key={exhibition.exhibitionId}>
+                <Box key={exhibition.exhibitionId }>
                   <ExhibitionCard
                     exhibition={exhibition}
-                    saveExhibition={saveExhibition}
-                    galleryLocations={galleryLocations}
-                    deleteExhibition={deleteExhibition}
+                    saveExhibition={saveExhibition }
+                    galleryLocations={galleryLocations }
+                    deleteExhibition={deleteExhibition }
                     exhibitionId={exhibition?.exhibitionId}
                     galleryName={galleryName as string}
                   />

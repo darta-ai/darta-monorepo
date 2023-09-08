@@ -7,8 +7,10 @@ import { CollectionNames, EdgeNames } from 'src/config/collections';
 import { ArtworkNode, Edge } from 'src/models/models';
 import { Node } from 'src/models/models';
 import { ArtworkAndGallery } from './interfaces/IArtworkService';
+import { newArtworkShell } from 'src/config/templates';
+import _ from 'lodash';
 
-const BUCKET_NAME= "artwork"
+const BUCKET_NAME = "artwork"
 
 @injectable()
 export class ArtworkService implements IArtworkService {
@@ -19,8 +21,16 @@ export class ArtworkService implements IArtworkService {
     @inject('INodeService') private readonly nodeService: INodeService,
     @inject('IGalleryService') private readonly galleryService: IGalleryService
     ) {}
-    public async createArtwork({artwork, galleryId} : {artwork: Artwork, galleryId: string}): Promise<void>{
+    public async createArtwork({galleryId, exhibitionOrder = null} : {galleryId: string, exhibitionOrder?: number | null}): Promise<Artwork>{
       // create the artwork 
+
+      const artwork: Artwork = _.cloneDeep(newArtworkShell);
+      artwork.artworkId = crypto.randomUUID()
+      artwork.createdAt = new Date().toISOString()
+      artwork.updatedAt = new Date().toISOString()
+      if (exhibitionOrder){
+        artwork.exhibitionOrder = exhibitionOrder
+      }
 
       if (!galleryId){
         throw new Error("no gallery id present")
@@ -30,32 +40,31 @@ export class ArtworkService implements IArtworkService {
         INSERT @newArtwork INTO ${CollectionNames.Artwork} 
         RETURN NEW
       `
-
-      let newArtwork
+      let newArtwork;
 
       try{
-        const collectionCursor = await this.db.query(artworkQuery, { newArtwork: {...artwork, _key: artwork.artworkId}});
-        newArtwork = await collectionCursor.next();
+        const createArtworkCursor = await this.db.query(artworkQuery, { newArtwork: {...artwork, _key: artwork.artworkId}});
+        newArtwork = await createArtworkCursor.next();
       } catch (error: any){
         console.log(error)
       }
 
       // create the edge between the gallery and the artwork
-      if (newArtwork?._id){
+
         try{
           await this.edgeService.upsertEdge({
             edgeName: EdgeNames.FROMGalleryToArtwork,
             from: `${galleryId}`,
             to: newArtwork._id,
-            data: {value : 'uploaded'}
+            data: {value : 'created'}
           })
         } catch (error: any){
           console.log(error)
         }
-      }
 
       return newArtwork
     }
+
     public async readArtwork(artworkId: string): Promise<Artwork | null>{
       // TO-DO: build out? 
       const artwork = await this.getArtworkById(artworkId)
@@ -110,7 +119,6 @@ export class ArtworkService implements IArtworkService {
         if (artworkImage?.fileData){
           try{
             const artworkImageResults = await this.imageController.processUploadImage({fileBuffer: artworkImage?.fileData, fileName, bucketName: BUCKET_NAME})
-            console.log(artworkImageResults)
             ;({bucketName, value} = artworkImageResults)
           } catch (error){
             console.error("error uploading image:", error)
@@ -597,8 +605,6 @@ export class ArtworkService implements IArtworkService {
       const galleryValue = galleryId.includes(CollectionNames.Galleries) ? galleryId : `${CollectionNames.Galleries}/${galleryId}`
 
 
-      console.log({artworkValue, galleryValue})
-
       const galleryEdgeQuery = `
       FOR edge IN ${EdgeNames.FROMGalleryToArtwork}
       FILTER edge._from == @galleryValue AND edge._to == @artworkValue
@@ -624,16 +630,21 @@ export class ArtworkService implements IArtworkService {
     }
 
     private async getArtworkImage({key}: {key:string}): Promise<any>{
+
       const findGalleryKey = `
       LET doc = DOCUMENT(CONCAT("Artwork/", @key))
       RETURN {
         artworkImage: doc.artworkImage
       }
     `;
-    const cursor = await this.db.query(findGalleryKey, { key });
-      
-    const artworkImage: Images = await cursor.next();
-    return {artworkImage}
+
+    try{
+      const cursor = await this.db.query(findGalleryKey, { key });
+      const artworkImage: Images = await cursor.next();
+      return {artworkImage}
+    }catch(error) {
+      console.log(error)
+    }
     }
 
 
@@ -680,9 +691,12 @@ export class ArtworkService implements IArtworkService {
       }
     }
 
+    public generateArtworkId({artworkId}:{artworkId: string}): string {
+      return artworkId.includes(`${CollectionNames.Artwork}`) ? artworkId : `${CollectionNames.Artwork}/${artworkId}`
+    }
     
 
-    private determinePriceBucket(price: string): string{
+    public determinePriceBucket(price: string): string{
       const defaultReturn = 'no-price'
       if (!price){
         return defaultReturn
@@ -714,7 +728,7 @@ export class ArtworkService implements IArtworkService {
 
     }
 
-    private determineSizeBucket(dimensions: Dimensions): string{
+    public determineSizeBucket(dimensions: Dimensions): string{
 
       const defaultReturn = 'no-dimensions'
       if (!dimensions){
@@ -757,7 +771,7 @@ export class ArtworkService implements IArtworkService {
       }
     }
 
-    private determineYearBucket(yearString: string): string {
+    public determineYearBucket(yearString: string): string {
 
       const currentYear = new Date().getFullYear();
       const year = parseInt(yearString, 10);

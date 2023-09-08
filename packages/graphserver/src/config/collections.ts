@@ -28,7 +28,8 @@ export const EdgeNames = {
     FROMArtworkTOArtist: 'ArtworkArtist',
     FROMArtworkTOCreateBucket: 'ArtworkCreatedYear',
     FROMGalleryTOExhibition: 'FROMGalleryTOExhibition',
-    FROMUserTOGallery: 'FROMUserTOGallery'
+    FROMUserTOGallery: 'FROMUserTOGallery',
+    FROMCollectionTOArtwork: 'FROMCollectionTOArtwork'
 }
 
 

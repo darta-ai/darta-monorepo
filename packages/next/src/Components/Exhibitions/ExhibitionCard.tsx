@@ -13,14 +13,15 @@ import dayjs from 'dayjs';
 import _ from 'lodash';
 import React from 'react';
 
-import {Artwork, Exhibition} from '../../../globalTypes';
+import { Exhibition, Artwork } from '@darta/types';
 import {PRIMARY_MILK} from '../../../styles';
 import {cardStyles} from '../../../styles/CardStyles';
 import {newArtworkShell} from '../../common/templates';
 import {ArtworkHeader} from '../Artwork';
-import {useAppState} from '../State/AppContext';
+import {GalleryReducerActions, useAppState} from '../State/AppContext';
 import {ExhibitionArtworkList} from './ExhibitionArtworkList';
 import {CreateExhibition} from './index';
+import { createArtworkForExhibitionAPI } from '../../API/artworks/artworkRoutes';
 
 const ariaLabel = {'aria-label': 'description'};
 
@@ -41,7 +42,7 @@ export function ExhibitionCard({
 }) {
   const [expanded, setExpanded] = React.useState(false);
   const [editExhibition, setEditExhibition] = React.useState<boolean>(false);
-  const {state} = useAppState();
+  const {state, dispatch} = useAppState();
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -56,26 +57,41 @@ export function ExhibitionCard({
     deleteExhibition(id);
   };
 
-  const addNewArtwork = () => {
-    const newArtwork: Artwork = _.cloneDeep(newArtworkShell);
+  const addNewArtwork = async () => {
     const newExhibition: Exhibition = _.cloneDeep(
       state?.galleryExhibitions[exhibitionId],
     );
-    let exhibitionOrder;
-    if (!newExhibition.artworks || !Object.keys(newExhibition?.artworks)) {
+    let exhibitionOrder
+    if (!newExhibition?.artworks || !Object.keys(newExhibition?.artworks)) {
       exhibitionOrder = 0;
     } else {
       exhibitionOrder = Object.keys(newExhibition?.artworks)?.length;
     }
-    newArtwork.artworkId = crypto.randomUUID();
-    newArtwork.updatedAt = new Date().toISOString();
-    newArtwork.createdAt = new Date().toISOString();
-    newArtwork.exhibitionOrder = exhibitionOrder;
-    newExhibition.artworks = {
-      ...newExhibition.artworks,
-      [newArtwork.artworkId]: newArtwork as any,
-    };
-    saveExhibition(exhibitionId, newExhibition);
+
+
+    try{
+      const newArtwork = await createArtworkForExhibitionAPI({exhibitionId, exhibitionOrder})
+      dispatch({
+        type: GalleryReducerActions.SAVE_EXHIBITION,
+        payload: {
+          ...newExhibition, 
+          artworks: {
+            ...newExhibition.artworks,
+            newArtwork
+          }
+        },
+        exhibitionId,
+      });
+      dispatch({
+        type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
+        payload: newArtwork as any,
+      });
+      
+    } catch(error){
+      // TO-DO: error handling
+      console.log(error)
+    }
+
   };
 
   const handleBatchUpload = (uploadArtworks: {[key: string]: Artwork}) => {

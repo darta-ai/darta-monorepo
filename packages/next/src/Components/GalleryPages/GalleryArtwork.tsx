@@ -20,7 +20,7 @@ import {DartaRadioFilter, DartaTextFilter} from '../Filters';
 import {UploadArtworksXlsModal} from '../Modals';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
-import { createArtwork, deleteArtworkAPI } from '../../API/artworks/artworkRoutes';
+import { createArtworkAPI, editArtworkAPI, deleteArtworkAPI } from '../../API/artworks/artworkRoutes';
 
 // Reactour steps
 const artworkSteps = [
@@ -86,40 +86,53 @@ export function GalleryArtwork() {
   };
 
   const addNewArtwork = async () => {
-    const newArtwork: Artwork = _.cloneDeep(newArtworkShell);
-    newArtwork.artworkId = crypto.randomUUID();
-    newArtwork.updatedAt = new Date().toISOString();
-    newArtwork.createdAt = new Date().toISOString();
+
     let results;
     try{
-      results = await createArtwork(newArtwork)
-      dispatch({
-        type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
-        payload: {[newArtwork.artworkId]: results},
-      });
+      results = await createArtworkAPI()
+      if (results?.artworkId){
+        dispatch({
+          type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
+          payload: {[results.artworkId]: results},
+        });
+      }else{
+        throw new Error('did not receive an artwork')
+      }
     } catch (error: any){
-      //TO-DO: error handling modal
-      console.log(error)
+        // TO-DO: throw an error
     }
   };
 
-  const saveArtwork = (artworkId: string, updatedArtwork: Artwork) => {
-    dispatch({
-      type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
-      payload: {[artworkId]: updatedArtwork},
-    });
+  const saveArtwork = async ({updatedArtwork} : {updatedArtwork: Artwork}): Promise<boolean> => {
+    try{
+      const results = await editArtworkAPI({artwork: updatedArtwork})
+      if (results && results?.artworkId){
+        dispatch({
+          type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
+          payload: {[results.artworkId as string]: results},
+        }); 
+      }
+      else{
+        throw new Error('unable to edit artwork')
+      }
+    }catch{
+      // TO-DO: throw an error
+    }
+    return Promise.resolve(true);
   };
 
-  const deleteArtwork = async (artworkId: string) => {
+  const deleteArtwork = async ({artworkId} : {artworkId: string}) : Promise<boolean>  => {
     try{
       const results = await deleteArtworkAPI(artworkId)
-      console.log(results)
       if (results.success){
         dispatch({type: GalleryReducerActions.DELETE_ARTWORKS, artworkId});
+      } else {
+        throw new Error('unable to edit artwork')
       }
     } catch(error){
-      console.log(error)
+      // TO-DO: throw an error
     }
+    return Promise.resolve(true);
   };
 
   const [croppingModalOpen, setCroppingModalOpen] = React.useState(true);

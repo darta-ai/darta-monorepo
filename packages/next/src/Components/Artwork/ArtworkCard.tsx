@@ -27,8 +27,8 @@ export function ArtworkCard({
   setCroppingModalOpen,
 }: {
   artwork: Artwork;
-  saveArtwork: (artworkId: string, updatedArtwork: Artwork) => void;
-  deleteArtwork: (arg0: string) => void;
+  saveArtwork: ({updatedArtwork} : {updatedArtwork: Artwork}) => Promise<boolean>;
+  deleteArtwork: ({artworkId} : {artworkId: string}) => Promise<boolean>
   inquiries: InquiryArtworkData[] | null;
   croppingModalOpen?: boolean;
   setCroppingModalOpen?: (arg0: boolean) => void;
@@ -36,17 +36,24 @@ export function ArtworkCard({
   const [expanded, setExpanded] = React.useState(false);
   const [editArtwork, setEditArtwork] = React.useState<boolean>(false);
 
+  const [saveSpinner, setSaveSpinner] = React.useState(false)
+  const [deleteSpinner, setDeleteSpinner] = React.useState(false)
+
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  const handleSave = (savedArtwork: Artwork) => {
-    saveArtwork(savedArtwork.artworkId!, savedArtwork);
+  const handleSave = async (savedArtwork: Artwork) => {
+    setSaveSpinner(true)
+    await saveArtwork({updatedArtwork: savedArtwork});
+    setSaveSpinner(false)
     setEditArtwork(!editArtwork);
   };
 
-  const handleDelete = (artworkId: string) => {
-    deleteArtwork(artworkId);
+  const handleDelete = async (artworkId: string) => {
+    setDeleteSpinner(true)
+    await deleteArtwork({artworkId});
+    setDeleteSpinner(false)
     return setEditArtwork(false);
   };
 
@@ -221,6 +228,8 @@ export function ArtworkCard({
               handleDelete={handleDelete}
               croppingModalOpen={croppingModalOpen}
               setCroppingModalOpen={setCroppingModalOpen}
+              saveSpinner={saveSpinner}
+              deleteSpinner={deleteSpinner}
             />
           </Box>
         ) : (
