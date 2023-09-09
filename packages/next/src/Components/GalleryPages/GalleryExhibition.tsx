@@ -112,7 +112,6 @@ export function GalleryExhibition() {
 
     try{
       const results = await createExhibition({exhibition: newExhibition})
-      console.log({results})
       if(results?.exhibitionId){
         dispatch({
           type: GalleryReducerActions.SAVE_EXHIBITION,
@@ -152,7 +151,7 @@ export function GalleryExhibition() {
         exhibitionId,
       });
       dispatch({
-        type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
+        type: GalleryReducerActions.SAVE_NEW_ARTWORK,
         payload: results.artworks as any,
       });
     } catch(error){
@@ -231,7 +230,7 @@ export function GalleryExhibition() {
                 return (dateB as any) - (dateA as any);
               })
               .map((exhibition: Exhibition) => (
-                <Box key={exhibition.exhibitionId }>
+                <Box key={exhibition?.exhibitionId }>
                   <ExhibitionCard
                     exhibition={exhibition}
                     saveExhibition={saveExhibition }

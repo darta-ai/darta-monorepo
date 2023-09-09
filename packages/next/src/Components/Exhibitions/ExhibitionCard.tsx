@@ -14,14 +14,15 @@ import _ from 'lodash';
 import React from 'react';
 
 import { Exhibition, Artwork } from '@darta/types';
-import {PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_BLUE, PRIMARY_DARK_BLUE, PRIMARY_DARK_MILK, PRIMARY_GREY, PRIMARY_LIGHTBLUE, PRIMARY_MILK} from '../../../styles';
 import {cardStyles} from '../../../styles/CardStyles';
-import {newArtworkShell} from '../../common/templates';
 import {ArtworkHeader} from '../Artwork';
-import {GalleryReducerActions, useAppState} from '../State/AppContext';
 import {ExhibitionArtworkList} from './ExhibitionArtworkList';
 import {CreateExhibition} from './index';
 import { createArtworkForExhibitionAPI } from '../../API/artworks/artworkRoutes';
+import {GalleryReducerActions, useAppState} from '../State/AppContext';
+import { editArtworkForExhibitionAPI } from '../../API/artworks/artworkRoutes';
+
 
 const ariaLabel = {'aria-label': 'description'};
 
@@ -43,6 +44,13 @@ export function ExhibitionCard({
   const [expanded, setExpanded] = React.useState(false);
   const [editExhibition, setEditExhibition] = React.useState<boolean>(false);
   const {state, dispatch} = useAppState();
+  const [artworks, setArtworks] = React.useState<any>(exhibition.artworks)
+
+  React.useEffect(() => {
+    if (exhibition?.artworks){
+      setArtworks(exhibition.artworks!)
+    }
+  }, [])
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -83,8 +91,8 @@ export function ExhibitionCard({
         exhibitionId,
       });
       dispatch({
-        type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
-        payload: newArtwork as any,
+        type: GalleryReducerActions.SAVE_NEW_ARTWORK,
+        payload: {[newArtwork.artworkId] : newArtwork} as any,
       });
       
     } catch(error){
@@ -93,6 +101,114 @@ export function ExhibitionCard({
     }
 
   };
+
+  const [saveSpinner, setSavedSpinner] = React.useState(false)
+  const [deleteSpinner, setDeleteSpinner] = React.useState(false)
+
+
+  const saveArtwork = async (updatedArtwork: Artwork): Promise<boolean> => {
+    setSavedSpinner(true)
+    const artworkId: string = updatedArtwork.artworkId!
+    const tempExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
+    if (tempExhibition?.artworks && tempExhibition?.artworks[artworkId]) {
+      tempExhibition.artworks[artworkId] = updatedArtwork;
+    }
+    try {
+      const results = await editArtworkForExhibitionAPI({artwork: updatedArtwork})
+      dispatch({
+        type: GalleryReducerActions.SAVE_EXHIBITION,
+        payload: {
+          ...tempExhibition,
+          artworks: {
+            ...tempExhibition.artworks,
+            [results.artworkId] : results
+          }
+        },
+        exhibitionId,
+      });
+      dispatch({
+        type: GalleryReducerActions.SAVE_NEW_ARTWORK,
+        payload: {[results.artworkId as string]: results},
+      });
+      setSavedSpinner(false)
+      return Promise.resolve(true)
+    } catch(error){
+      // TO-DO: error handling
+      setSavedSpinner(false)
+      return Promise.resolve(false)
+    }
+
+  };
+
+  const deleteArtwork = (artworkId: string): Promise<boolean> => {
+    setDeleteSpinner(true)
+    const tempExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
+
+    let artwork;
+    if (tempExhibition?.artworks && tempExhibition.artworks[artworkId]) {
+      artwork = tempExhibition.artworks[artworkId];
+    }
+
+    if (!artwork || !tempExhibition || !tempExhibition?.artworks) {
+      return Promise.resolve(false)
+    }
+
+    if (tempExhibition?.artworks && tempExhibition?.artworks[artworkId]) {
+      delete tempExhibition?.artworks[artworkId];
+    }
+
+    for (const id in tempExhibition?.artworks) {
+      if (
+        artwork?.exhibitionOrder &&
+        tempExhibition?.artworks[id] &&
+        artworks[id].exhibitionOrder > artwork?.exhibitionOrder
+      ) {
+        tempExhibition.artworks[id]!.exhibitionOrder!--;
+      }
+    }
+
+    saveExhibition(exhibitionId, tempExhibition);
+    setDeleteSpinner(false)
+    return Promise.resolve(true)
+  };
+
+  const swapExhibitionOrder = (artworkId: string, direction: 'up' | 'down') => {
+    const tempArtworks = _.cloneDeep(artworks);
+    // Get the artwork for which the arrow was clicked
+    const artwork = artworks[artworkId];
+
+    if (!artwork) return;
+
+    // Depending on whether up or down was clicked, find the artwork to swap with
+    let swapArtworkId: string | undefined;
+    for (const id in artworks) {
+      if (
+        artworks[id].exhibitionOrder ===
+        (direction === 'up'
+          ? artwork.exhibitionOrder - 1
+          : artwork.exhibitionOrder + 1)
+      ) {
+        swapArtworkId = id;
+        break;
+      }
+    }
+
+    // If we have found an artwork to swap with
+    if (swapArtworkId) {
+      // Swap the exhibitionOrder of the two artworks
+      [
+        tempArtworks[artworkId].exhibitionOrder,
+        tempArtworks[swapArtworkId].exhibitionOrder,
+      ] = [
+        artworks[swapArtworkId].exhibitionOrder,
+        artworks[artworkId].exhibitionOrder,
+      ];
+    }
+    const tempExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
+    tempExhibition.artworks = tempArtworks;
+    saveExhibition(exhibitionId, tempExhibition);
+  };
+
 
   const handleBatchUpload = (uploadArtworks: {[key: string]: Artwork}) => {
     const newExhibition: Exhibition = _.cloneDeep(
@@ -280,19 +396,21 @@ export function ExhibitionCard({
           )}
         </Collapse>
         <Box>
-          <Divider variant="middle" sx={{m: 2}} flexItem>
-            Artworks
+          <Divider variant="middle" sx={{m: 2, color: PRIMARY_BLUE}} flexItem>
+            <Typography sx={{fontWeight: 'bold', color: PRIMARY_BLUE}}>Artworks</Typography>
           </Divider>
           <ArtworkHeader
             addNewArtwork={addNewArtwork}
             handleBatchUpload={handleBatchUpload}
           />
         </Box>
-
         <ExhibitionArtworkList
-          artworks={exhibition.artworks}
-          saveExhibition={saveExhibition}
-          exhibitionId={exhibitionId}
+          artworks={exhibition?.artworks}
+          swapExhibitionOrder={swapExhibitionOrder}
+          saveArtwork={saveArtwork}
+          deleteArtwork={deleteArtwork}
+          saveSpinner={saveSpinner}
+          deleteSpinner={deleteSpinner}
         />
       </Box>
     </Card>

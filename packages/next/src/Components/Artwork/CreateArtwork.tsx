@@ -135,6 +135,7 @@ export function CreateArtwork({
   deleteSpinner,
   croppingModalOpen,
   setCroppingModalOpen,
+  isExhibition = false
 }: {
   newArtwork: Artwork;
   cancelAction: (arg0: boolean) => void;
@@ -144,6 +145,7 @@ export function CreateArtwork({
   deleteSpinner: boolean;
   croppingModalOpen?: boolean;
   setCroppingModalOpen?: (arg0: boolean) => void;
+  isExhibition?: boolean
 }) {
   const [isInchesMeasurement, setIsInchesMeasurement] =
     React.useState<boolean>(false);
@@ -235,9 +237,6 @@ export function CreateArtwork({
     const slug = `${artist_name}-${artwork_title}`;
     setValue('slug.value', slug);
 
-    const artistNameAllCaps = data.artistName.value.toUpperCase()
-
-    setValue ('artistName.value', artistNameAllCaps)
     if (
       Number(data.artworkDimensions.depthIn.value) &&
       Number(data.artworkDimensions.depthCm.value)
@@ -330,12 +329,14 @@ export function CreateArtwork({
               />
             </>
           ) : (
+            <Box sx={createArtworkStyles.defaultImageContainer}>
             <Box
               component="img"
               src={tempImage as string}
               alt="artwork"
               style={createArtworkStyles.defaultImage}
             />
+            </Box>
           )}
         </Box>
         {errors.artworkImage && (
@@ -596,7 +597,9 @@ export function CreateArtwork({
               inputAdornmentValue={isInchesMeasurement ? 'cm' : 'in'}
             />
           </Box>
-          <Box key="artworkDimensionDepth" sx={createArtworkStyles.inputText}>
+        </Box>
+        <Box>
+        <Box key="artworkDimensionDepth" sx={createArtworkStyles.inputText}>
             <DartaTextInput
               fieldName={
                 getValues('artworkDimensions.displayUnit.value') === 'cm'
@@ -631,6 +634,7 @@ export function CreateArtwork({
           {errors?.artworkDimensions?.message}
         </Typography>
         <Box sx={createArtworkStyles.saveButtonContainer}>
+        {isExhibition && newArtwork?.exhibitionId ? 
           <Button
             variant="contained"
             data-testid="delete-artwork-button"
@@ -638,9 +642,21 @@ export function CreateArtwork({
             onClick={() => {
               handleClickOpen();
             }}>
-            {deleteSpinner ? <CircularProgress size={24} /> : <Typography sx={{fontWeight: 'bold'}}>Delete</Typography>
+            {deleteSpinner ? <CircularProgress size={24} /> : <Typography sx={{fontWeight: 'bold'}}>Remove</Typography>
             }          
           </Button>
+      :
+            <Button
+              variant="contained"
+              data-testid="delete-artwork-button"
+              color="error"
+              onClick={() => {
+                handleClickOpen();
+              }}>
+              {deleteSpinner ? <CircularProgress size={24} /> : <Typography sx={{fontWeight: 'bold'}}>Delete</Typography>
+              }          
+            </Button>
+          }
           <Button
             variant="contained"
             data-testid="save-artwork-button"

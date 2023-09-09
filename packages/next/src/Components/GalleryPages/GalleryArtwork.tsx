@@ -9,7 +9,6 @@ import {Artwork} from '@darta/types';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
 // import authRequired from 'common/AuthRequired/AuthRequired';
-import {newArtworkShell} from '../../common/templates';
 import {
   artwork1,
   galleryInquiriesDummyData,
@@ -80,7 +79,7 @@ export function GalleryArtwork() {
 
   const handleBatchUpload = (uploadArtworks: {[key: string]: Artwork}) => {
     dispatch({
-      type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
+      type: GalleryReducerActions.SAVE_NEW_ARTWORK,
       payload: {...uploadArtworks},
     });
   };
@@ -92,7 +91,7 @@ export function GalleryArtwork() {
       results = await createArtworkAPI()
       if (results?.artworkId){
         dispatch({
-          type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
+          type: GalleryReducerActions.SAVE_NEW_ARTWORK,
           payload: {[results.artworkId]: results},
         });
       }else{
@@ -106,9 +105,16 @@ export function GalleryArtwork() {
   const saveArtwork = async ({updatedArtwork} : {updatedArtwork: Artwork}): Promise<boolean> => {
     try{
       const results = await editArtworkAPI({artwork: updatedArtwork})
+      if (results && results?.exhibitionId && results?.artworkId){
+        dispatch({
+          type: GalleryReducerActions.SAVE_EXHIBITION_ARTWORK,
+          artwork: results,
+          exhibitionId : results.exhibitionId,
+        });
+      }
       if (results && results?.artworkId){
         dispatch({
-          type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
+          type: GalleryReducerActions.SAVE_NEW_ARTWORK,
           payload: {[results.artworkId as string]: results},
         }); 
       }
@@ -125,7 +131,7 @@ export function GalleryArtwork() {
     try{
       const results = await deleteArtworkAPI(artworkId)
       if (results.success){
-        dispatch({type: GalleryReducerActions.DELETE_ARTWORKS, artworkId});
+        dispatch({type: GalleryReducerActions.DELETE_ARTWORK, artworkId});
       } else {
         throw new Error('unable to edit artwork')
       }

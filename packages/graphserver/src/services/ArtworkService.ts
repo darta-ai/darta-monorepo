@@ -21,7 +21,7 @@ export class ArtworkService implements IArtworkService {
     @inject('INodeService') private readonly nodeService: INodeService,
     @inject('IGalleryService') private readonly galleryService: IGalleryService
     ) {}
-    public async createArtwork({galleryId, exhibitionOrder = null} : {galleryId: string, exhibitionOrder?: number | null}): Promise<Artwork>{
+    public async createArtwork({galleryId, exhibitionOrder = null, exhibitionId = null} : {galleryId: string, exhibitionOrder?: number | null, exhibitionId?: string | null}): Promise<Artwork>{
       // create the artwork 
 
       const artwork: Artwork = _.cloneDeep(newArtworkShell);
@@ -30,6 +30,9 @@ export class ArtworkService implements IArtworkService {
       artwork.updatedAt = new Date().toISOString()
       if (exhibitionOrder){
         artwork.exhibitionOrder = exhibitionOrder
+      }
+      if (exhibitionId){
+        artwork.exhibitionId = exhibitionId
       }
 
       if (!galleryId){

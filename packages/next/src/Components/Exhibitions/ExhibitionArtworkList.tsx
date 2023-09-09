@@ -17,11 +17,10 @@ import {
 import _ from 'lodash';
 import React from 'react';
 
-import {Artwork, Exhibition} from '@darta/types';
+import {Artwork} from '@darta/types';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {currencyConverter} from '../../common/templates';
 import {CreateArtwork} from '../Artwork/index';
-import {useAppState} from '../State/AppContext';
 
 
 const dartaListDisplay = {
@@ -53,267 +52,211 @@ const dartaListDisplay = {
   },
 };
 
-function DartaListItem({
+function DartaListArtwork({
   artwork,
-  index,
   arrayLength,
+  index,
+  saveSpinner,
+  deleteSpinner,
   swapExhibitionOrder,
   saveArtwork,
   deleteArtwork,
-}: {
+} : {
   artwork: Artwork;
-  index: number;
   arrayLength: number;
+  index: number;
+  saveSpinner: boolean;
+  deleteSpinner: boolean;
   swapExhibitionOrder: (arg0: string, arg1: 'up' | 'down') => void;
-  saveArtwork: (arg0: string, arg1: Artwork) => void;
-  deleteArtwork: (arg0: string) => boolean;
-}) {
-  const artworkPrice = artwork?.artworkPrice?.value;
-  const artworkCurrency = artwork?.artworkCurrency?.value;
+  saveArtwork: (arg1: Artwork) => Promise<boolean>;
+  deleteArtwork: (arg0: string) => Promise<boolean>;
+}){
+
   const [editArtwork, setEditArtwork] = React.useState<boolean>(false);
 
-  const handleSave = (updatedArtwork: Artwork) => {
-    if (!artwork.artworkId) return;
-    saveArtwork(artwork?.artworkId, updatedArtwork);
-    setEditArtwork(!editArtwork);
-  };
+  const handleSave = async (newArtwork: Artwork) => {
+    await saveArtwork(newArtwork)
+    setEditArtwork(false)
+  }
 
-
-  const handleDelete = (artworkId: string) => {
-    if (!artworkId) return;
-    const results = deleteArtwork(artworkId);
-    if (results) {
-      setEditArtwork(!editArtwork);
+  const handleDelete = async (artworkId: string) => {
+    if(artwork.artworkId){
+      await deleteArtwork(artworkId)
     }
-  };
+    setEditArtwork(!editArtwork)
+  }
 
   return (
     <Box key={artwork?.artworkTitle?.value}>
-      <ListItem>
-        <Box
-          sx={dartaListDisplay.toggleContainer}
-          className="edit-artwork-order">
-          <Box>
-            <IconButton
-              disabled={index === 0}
-              onClick={() => swapExhibitionOrder(artwork?.artworkId as string, 'up')}>
-              <ArrowDropUpIcon />
-            </IconButton>
-          </Box>
-          <Box>
-            <Typography>{Number(artwork?.exhibitionOrder) + 1}</Typography>
-          </Box>
-          <Box>
-            <IconButton
-              disabled={index === arrayLength - 1}
-              onClick={() => swapExhibitionOrder(artwork?.artworkId as string, 'down')}>
-              <ArrowDropDownIcon />
-            </IconButton>
-          </Box>
+    <ListItem>
+      <Box
+        sx={dartaListDisplay.toggleContainer}
+        className="edit-artwork-order">
+        <Box>
+          <IconButton
+            disabled={index === 0}
+            onClick={() => swapExhibitionOrder(artwork?.artworkId as string, 'up')}>
+            <ArrowDropUpIcon />
+          </IconButton>
         </Box>
-
-        <ListItemAvatar sx={dartaListDisplay.displayComponentShowMobile}>
-          <Avatar
-            variant="square"
-            alt={`${artwork?.artistName?.value}`}
-            src={`${artwork?.artworkImage?.value}`}
-          />
-        </ListItemAvatar>
-        <ListItemText
-          sx={dartaListDisplay.displayComponentShowMobile}
-          primary={`${artwork?.artworkTitle?.value}`}
-          secondary={
-            <Typography
-              sx={{display: 'inline'}}
-              component="span"
-              variant="body2"
-              color="text.primary">
-              {`${artwork?.artistName?.value}`}
-            </Typography>
-          }
-        />
-
-        <ListItemText
-          sx={dartaListDisplay.displayComponentHideMobile}
-          primary={artwork?.artworkMedium?.value}
-          secondary={
-            <Typography
-              sx={{display: 'inline'}}
-              component="span"
-              variant="body2"
-              color="text.primary">
-              {artwork?.artworkDimensions?.text?.value}
-            </Typography>
-          }
-        />
-        <ListItemText
-          sx={dartaListDisplay.displayComponentHideMobile}
-          primary={`${artworkCurrency && currencyConverter[artworkCurrency]}${
-            artworkPrice
-              ? Number(artwork?.artworkPrice?.value).toLocaleString()
-              : '-'
-          }`}
-          secondary={
-            <Typography
-              sx={{display: 'inline'}}
-              component="span"
-              variant="body2"
-              color="text.primary">
-              {`Can Inquire: ${artwork?.canInquire?.value}`}
-            </Typography>
-          }
-        />
-        <Box sx={dartaListDisplay.displayComponentShowMobile}>
-          <Button
-            sx={{
-              backgroundColor: PRIMARY_BLUE,
-              color: PRIMARY_MILK,
-              alignSelf: 'center',
-            }}
-            className="exhibition-artwork-edit"
-            onClick={() => setEditArtwork(!editArtwork)}
-            color="secondary"
-            variant="contained">
-            <Typography
-              sx={{
-                fontWeight: 'bold',
-                fontSize: '0.8rem',
-                '@media (min-width: 780px)': {
-                  fontSize: '0.8rem',
-                },
-              }}>
-              Edit
-            </Typography>
-          </Button>
+        <Box>
+          <Typography>{Number(artwork?.exhibitionOrder) + 1}</Typography>
         </Box>
-      </ListItem>
-      <Collapse in={editArtwork}>
-        <Box
+        <Box>
+          <IconButton
+            disabled={index === arrayLength - 1}
+            onClick={() => swapExhibitionOrder(artwork?.artworkId as string, 'down')}>
+            <ArrowDropDownIcon />
+          </IconButton>
+        </Box>
+      </Box>
+
+      <ListItemAvatar sx={dartaListDisplay.displayComponentShowMobile}>
+        <Avatar
+          variant="square"
+          alt={`${artwork?.artistName?.value}`}
+          src={`${artwork?.artworkImage?.value}`}
+        />
+      </ListItemAvatar>
+      <ListItemText
+        sx={dartaListDisplay.displayComponentShowMobile}
+        primary={`${artwork?.artworkTitle?.value}`}
+        secondary={
+          <Typography
+            sx={{display: 'inline'}}
+            component="span"
+            variant="body2"
+            color="text.primary">
+            {`${artwork?.artistName?.value}`}
+          </Typography>
+        }
+      />
+
+      <ListItemText
+        sx={dartaListDisplay.displayComponentHideMobile}
+        primary={artwork?.artworkMedium?.value}
+        secondary={
+          <Typography
+            sx={{display: 'inline'}}
+            component="span"
+            variant="body2"
+            color="text.primary">
+            {artwork?.artworkDimensions?.text?.value}
+          </Typography>
+        }
+      />
+      <ListItemText
+        sx={dartaListDisplay.displayComponentHideMobile}
+        primary={`${artwork?.artworkCurrency?.value && currencyConverter[artwork?.artworkCurrency?.value]}${
+          artwork?.artworkPrice?.value
+            ? Number(artwork?.artworkPrice?.value).toLocaleString()
+            : '-'
+        }`}
+        secondary={
+          <Typography
+            sx={{display: 'inline'}}
+            component="span"
+            variant="body2"
+            color="text.primary">
+            {`Can Inquire: ${artwork?.canInquire?.value}`}
+          </Typography>
+        }
+      />
+      <Box sx={dartaListDisplay.displayComponentShowMobile}>
+        <Button
           sx={{
-            display: 'flex',
-            alignContent: 'center',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <CreateArtwork
-            newArtwork={artwork}
-            cancelAction={setEditArtwork}
-            handleSave={handleSave}
-            handleDelete={handleDelete}
-            saveSpinner={false}
-            deleteSpinner={false}
-          />
-        </Box>
-      </Collapse>
-      {index !== arrayLength - 1 && !editArtwork && (
-        <Divider sx={{mx: 3}} component="li" />
-      )}
-    </Box>
-  );
+            backgroundColor: PRIMARY_BLUE,
+            color: PRIMARY_MILK,
+            alignSelf: 'center',
+          }}
+          className="exhibition-artwork-edit"
+          onClick={() => setEditArtwork(!editArtwork)}
+          color="secondary"
+          variant="contained">
+          <Typography
+            sx={{
+              fontWeight: 'bold',
+              fontSize: '0.8rem',
+              '@media (min-width: 780px)': {
+                fontSize: '0.8rem',
+              },
+            }}>
+            Edit
+          </Typography>
+        </Button>
+      </Box>
+    </ListItem>
+    <Collapse in={editArtwork}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignContent: 'center',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <CreateArtwork
+          newArtwork={artwork}
+          cancelAction={setEditArtwork}
+          handleSave={handleSave}
+          handleDelete={handleDelete}
+          saveSpinner={saveSpinner}
+          deleteSpinner={deleteSpinner}
+          isExhibition={true}
+        />
+      </Box>
+    </Collapse>
+    {index !== arrayLength - 1 && !editArtwork && (
+      <Divider sx={{mx: 3}} component="li" />
+    )}
+  </Box>
+  )
+
 }
 
 export function ExhibitionArtworkList({
   artworks,
-  saveExhibition,
-  exhibitionId,
+  saveSpinner,
+  deleteSpinner,
+  swapExhibitionOrder,
+  saveArtwork,
+  deleteArtwork,
 }: {
   artworks: any;
-  saveExhibition: (arg0: string, arg1: Exhibition) => void;
-  exhibitionId: string;
+  saveSpinner: boolean;
+  deleteSpinner: boolean;
+  swapExhibitionOrder: (arg0: string, arg1: 'up' | 'down') => void;
+  saveArtwork: (arg1: Artwork) => Promise<boolean>;
+  deleteArtwork: (arg0: string) => Promise<boolean>;
 }) {
-  const {state} = useAppState();
 
-  const mappedArtworks = Object.values(artworks).sort(
+
+  const [mappedArtworks, setMappedArtworks] = React.useState<any>(Object.values(artworks).sort(
     (a: any, b: any) => a?.exhibitionOrder - b?.exhibitionOrder,
-  );
+  ))
+  const [arrayLength, setArrayLength] = React.useState<number>(0)
 
-  const saveArtwork = (artworkId: string, updatedArtwork: Artwork) => {
-    const tempExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
-    if (tempExhibition?.artworks && tempExhibition?.artworks[artworkId]) {
-      tempExhibition.artworks[artworkId] = updatedArtwork;
-    }
-    saveExhibition(exhibitionId, tempExhibition);
-  };
-
-  const deleteArtwork = (artworkId: string) => {
-    const tempExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
-
-    let artwork;
-    if (tempExhibition?.artworks && tempExhibition.artworks[artworkId]) {
-      artwork = tempExhibition.artworks[artworkId];
-    }
-
-    if (!artwork || !tempExhibition || !tempExhibition?.artworks) {
-      return false;
-    }
-
-    if (tempExhibition?.artworks && tempExhibition?.artworks[artworkId]) {
-      delete tempExhibition?.artworks[artworkId];
-    }
-
-    for (const id in tempExhibition?.artworks) {
-      if (
-        artwork?.exhibitionOrder &&
-        tempExhibition?.artworks[id] &&
-        artworks[id].exhibitionOrder > artwork?.exhibitionOrder
-      ) {
-        tempExhibition.artworks[id]!.exhibitionOrder!--;
-      }
-    }
-
-    saveExhibition(exhibitionId, tempExhibition);
-    return true;
-  };
-
-  const swapExhibitionOrder = (artworkId: string, direction: 'up' | 'down') => {
-    const tempArtworks = _.cloneDeep(artworks);
-    // Get the artwork for which the arrow was clicked
-    const artwork = artworks[artworkId];
-
-    if (!artwork) return;
-
-    // Depending on whether up or down was clicked, find the artwork to swap with
-    let swapArtworkId: string | undefined;
-    for (const id in artworks) {
-      if (
-        artworks[id].exhibitionOrder ===
-        (direction === 'up'
-          ? artwork.exhibitionOrder - 1
-          : artwork.exhibitionOrder + 1)
-      ) {
-        swapArtworkId = id;
-        break;
-      }
-    }
-
-    // If we have found an artwork to swap with
-    if (swapArtworkId) {
-      // Swap the exhibitionOrder of the two artworks
-      [
-        tempArtworks[artworkId].exhibitionOrder,
-        tempArtworks[swapArtworkId].exhibitionOrder,
-      ] = [
-        artworks[swapArtworkId].exhibitionOrder,
-        artworks[artworkId].exhibitionOrder,
-      ];
-    }
-    const tempExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
-    tempExhibition.artworks = tempArtworks;
-    saveExhibition(exhibitionId, tempExhibition);
-  };
+  React.useEffect(() => {
+    const tempMappedArtworks = Object.values(artworks).sort(
+      (a: any, b: any) => a?.exhibitionOrder - b?.exhibitionOrder,
+    );
+    setMappedArtworks(tempMappedArtworks)
+    setArrayLength(tempMappedArtworks.length)
+  }, [artworks])
 
   return (
     <List
       sx={{width: '100%', bgcolor: PRIMARY_MILK}}
       className="exhibition-artwork-list">
       {mappedArtworks.map((artwork: any, index: number) => (
-        <DartaListItem
-          artwork={artwork}
-          index={index}
-          arrayLength={mappedArtworks?.length}
-          swapExhibitionOrder={swapExhibitionOrder}
-          saveArtwork={saveArtwork}
-          deleteArtwork={deleteArtwork}
+        <DartaListArtwork 
+        artwork={artwork}
+        arrayLength={arrayLength}
+        index={index}
+        swapExhibitionOrder={swapExhibitionOrder}
+        saveArtwork={saveArtwork}
+        deleteArtwork={deleteArtwork}
+        saveSpinner={saveSpinner}
+        deleteSpinner={deleteSpinner}
         />
       ))}
     </List>

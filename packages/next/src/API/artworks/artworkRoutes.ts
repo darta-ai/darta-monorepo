@@ -52,7 +52,7 @@ export async function createArtworkForExhibitionAPI({exhibitionId, exhibitionOrd
     }
 }
 
-export async function editArtworkForExhibitionAPI({artwork} :{exhibitionId: string, artwork: Artwork}): Promise<any> {
+export async function editArtworkForExhibitionAPI({artwork} : { artwork: Artwork}): Promise<any> {
     const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
     try {
         const response = await axios.post(`${URL}/editArtworkForExhibition`, {artwork} , {headers: {'authorization': `Bearer ${idToken}`}});
