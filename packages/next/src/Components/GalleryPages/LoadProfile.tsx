@@ -28,7 +28,7 @@ export function LoadProfile() {
           payload: galleryProfile as IGalleryProfileData,
         });
         dispatch({
-          type: GalleryReducerActions.SET_BATCH_ARTWORKS,
+          type: GalleryReducerActions.SET_BATCH_ARTWORK,
           payload: galleryArtworks as ArtworkObject,
         });
         dispatch({

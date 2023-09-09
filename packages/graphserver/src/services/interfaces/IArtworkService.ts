@@ -7,7 +7,7 @@ export type ArtworkAndGallery = {
 }
 
 export interface IArtworkService {
-    createArtwork({galleryId, exhibitionOrder} : {galleryId: string, exhibitionOrder?: number | null}): Promise<Artwork>;
+    createArtwork({galleryId, exhibitionOrder, exhibitionId} : {galleryId: string, exhibitionOrder?: number | null, exhibitionId?: string | null}): Promise<Artwork>;
     readArtwork(artworkId: string): Promise<Artwork | null>;
     readArtworkAndGallery(artworkId: string): Promise<ArtworkAndGallery | null>
     editArtwork({artwork} : {artwork: Artwork}): Promise<ArtworkNode | null>;

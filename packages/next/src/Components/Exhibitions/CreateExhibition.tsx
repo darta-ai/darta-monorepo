@@ -21,7 +21,7 @@ import {
 } from '../FormComponents/index';
 import {DartaDialogue} from '../Modals/DartaDialogue';
 import {profileStyles} from '../Profile/Components/profileStyles';
-import { editExhibition } from '../../API/exhibitions/exhibitionRotes';
+import { DartaConfirmExhibitionDelete } from '../Modals/ConfirmDeleteExhibitionArtworks';
 
 export const createExhibitionErrors = {
   exhibitionTitle: 'An exhibition title is required.',
@@ -659,8 +659,8 @@ export function CreateExhibition({
           </Box>
         </Box>
       </Box>
-      <DartaDialogue
-        identifier={newExhibition?.exhibitionTitle?.value || '____'}
+      <DartaConfirmExhibitionDelete
+        identifier={newExhibition?.exhibitionTitle?.value || 'this artwork'}
         deleteType="exhibition"
         id={newExhibition.exhibitionId as string}
         open={open}

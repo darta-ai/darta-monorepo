@@ -33,7 +33,7 @@ export class ArtworkController {
     const {exhibitionId, exhibitionOrder} = req.body;
     try {
       const galleryId = await this.galleryService.getGalleryIdFromUID({uid: user.user_id})
-      const artwork = await this.artworkService.createArtwork({galleryId, exhibitionOrder})
+      const artwork = await this.artworkService.createArtwork({galleryId, exhibitionOrder, exhibitionId})
       await this.exhibitionService.createExhibitionToArtworkEdge({exhibitionId, artworkId : artwork.artworkId!})
       res.json(artwork)
     } catch (error: any) {

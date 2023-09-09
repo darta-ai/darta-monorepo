@@ -9,7 +9,7 @@ export const cardStyles = {
     width: '75vw',
     margin: 'auto',
     border: '1px solid darkgrey',
-    backgroundColor: PRIMARY_DARK_MILK,
+    backgroundColor: PRIMARY_MILK,
   },
   exhibitionRoot: {
     alignItems: 'center',

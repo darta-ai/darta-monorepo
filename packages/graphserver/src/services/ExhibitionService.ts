@@ -132,38 +132,6 @@ export class ExhibitionService implements IExhibitionService {
         ...savedExhibition
       }
 
-
-      // // #########################################################################
-      // //                              SAVE THE ARTWORK             
-      // // #########################################################################
-
-
-      // let artworkPromises;
-
-      // if (artworks) {
-      //   console.log('triggered')
-      //   const artworkValues = Object.values(artworks);
-      //   console.log(artworkValues)
-      //   artworkPromises = artworkValues.map(async (artwork) => {
-      //     if (artwork) {
-      //       try {
-      //         const results = await this.artworkService.createArtwork({ galleryId });
-      //         console.log('results', {results})
-      //         console.log('tirggering updateArtwork')
-      //         const updatedArtwork = await this.artworkService.editArtwork({ artwork });
-      //         return updatedArtwork;
-      //       } catch (error) {
-      //         console.error("Error handling artwork:", artwork, error);
-      //         // You can decide to either return null or some error object here
-      //         return null;
-      //       }
-      //     }
-      //   });
-      
-      //   // Wait for all tasks to complete
-      //   // const artworkResults = await Promise.all(artworkPromises);
-      //   // returnExhibition.artworks = artworkResults;
-      // }
       return returnExhibition;
     }
 
@@ -189,8 +157,6 @@ export class ExhibitionService implements IExhibitionService {
 
       const exhibitionArtworks = await this.listAllExhibitionArtworks({exhibitionId})
       
-      console.log('!!!', exhibitionArtworks)
-
       return {
         ...exhibition, 
         artworks: {
@@ -286,7 +252,7 @@ export class ExhibitionService implements IExhibitionService {
           return null
         });
         const results = await Promise.all(artworkPromises);
-        artworkResults = results.filter((result) : result is Artwork => result !== null)
+        artworkResults = results.filter((result) : result is Artwork => result !== null && result?.artworkId !== undefined)
       }
 
       return artworkResults.reduce((acc, artwork) => ({...acc, [artwork.artworkId as string] : artwork}), {})
