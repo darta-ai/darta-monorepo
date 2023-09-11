@@ -13,17 +13,17 @@ import {
   InputLabel,
 } from '@mui/material';
 import {useRouter} from 'next/router';
+import {createGalleryUser} from 'packages/next/src/API/users/userRoutes';
 import React, {useState} from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {dartaSignUp} from '../../../API/FirebaseAccountManagement';
 import {PhoneNumberFormat} from '../../FormComponents/DartaPhoneNumber';
+import {DartaErrorAlert} from '../../Modals';
 import {AlreadySignedUp} from '../../Navigation/Auth';
 import {authStyles} from '../styles';
 import {AuthEnum} from '../types';
-import { createGalleryUser } from 'packages/next/src/API/users/userRoutes';
-import { DartaErrorAlert } from '../../Modals';
 
 const websiteRegExp =
   /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/;
@@ -35,11 +35,7 @@ const schema = yup
       .string()
       .min(10, 'please double check your phone number')
       .optional(),
-    galleryName: yup
-      .string()
-      .required(
-        'please include a gallery name',
-      ),
+    galleryName: yup.string().required('please include a gallery name'),
     password: yup
       .string()
       .min(8, 'password must be at least 8 characters')
@@ -48,16 +44,19 @@ const schema = yup
       .string()
       .oneOf([yup.ref('password'), undefined], 'passwords must match')
       .required('please confirm your password'),
-    website: yup.string().required('please include your gallery website').matches(websiteRegExp, {
-      message: 'please double check your website url',
-      excludeEmptyString: true,
-    }),
+    website: yup
+      .string()
+      .required('please include your gallery website')
+      .matches(websiteRegExp, {
+        message: 'please double check your website url',
+        excludeEmptyString: true,
+      }),
   })
   .required();
 
 export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
   const router = useRouter();
-  const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false)
+  const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
   const [firebaseError, setFirebaseError] = useState<string>('');
   const {
     register,
@@ -71,23 +70,23 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
         if (error) {
           setFirebaseError(errorMessage);
         } else if (user?.displayName) {
-          try{
+          try {
             await createGalleryUser({
-              galleryName: { value: data?.galleryName}, 
-              signUpWebsite: data?.website, 
-              phoneNumber: data?.phoneNumber, 
-              email: data?.email
-            })
+              galleryName: {value: data?.galleryName},
+              signUpWebsite: data?.website,
+              phoneNumber: data?.phoneNumber,
+              email: data?.email,
+            });
             router.push(`/${signUpType}/Profile`);
-          } catch (error){
-            setErrorAlertOpen(true)
+          } catch (error) {
+            setErrorAlertOpen(true);
           }
         } else {
-          setErrorAlertOpen(true)
+          setErrorAlertOpen(true);
           router.push(`/`);
         }
       } catch (e: any) {
-        setErrorAlertOpen(true)
+        setErrorAlertOpen(true);
         setFirebaseError('Something went wrong. Please try again.');
       }
     };
@@ -299,7 +298,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
         </Button>
         <AlreadySignedUp routeType={signUpType} />
       </Box>
-      <DartaErrorAlert 
+      <DartaErrorAlert
         errorAlertOpen={errorAlertOpen}
         setErrorAlertOpen={setErrorAlertOpen}
       />

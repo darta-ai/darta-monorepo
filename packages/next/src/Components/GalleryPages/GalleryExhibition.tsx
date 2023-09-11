@@ -1,19 +1,19 @@
 import 'firebase/compat/auth';
 
+import {Exhibition, GalleryState} from '@darta/types';
 import {Box, Button, Typography} from '@mui/material';
 import _ from 'lodash';
 import Head from 'next/head';
+import {AuthContext} from 'packages/next/pages/_app';
 import React from 'react';
 
-import {Exhibition, GalleryState} from '@darta/types';
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
+import {createExhibitionAPI} from '../../API/exhibitions/exhibitionRotes';
 import {newExhibitionShell} from '../../common/templates';
 import {dummyExhibition} from '../../dummyData';
 import {ExhibitionCard} from '../Exhibitions/index';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
-import { createExhibitionAPI } from '../../API/exhibitions/exhibitionRotes';
-import { AuthContext } from 'packages/next/pages/_app';
 
 // need a function that gets all artworks
 // need a function that gets all inquiries for art
@@ -112,24 +112,21 @@ export function GalleryExhibition() {
     newExhibition.exhibitionId = crypto.randomUUID();
     newExhibition.createdAt = new Date().toISOString();
 
-  
-    try{
-      const results = await createExhibitionAPI({exhibition: newExhibition})
-      if(results?.exhibitionId){
+    try {
+      const results = await createExhibitionAPI({exhibition: newExhibition});
+      if (results?.exhibitionId) {
         dispatch({
           type: GalleryReducerActions.SAVE_EXHIBITION,
           payload: results,
           exhibitionId: results.exhibitionId,
         });
       } else {
-        throw new Error()
+        throw new Error();
       }
-    } catch(error){
+    } catch (error) {
       // TO-DO: throw error for frontend
     }
-
   };
-
 
   const [stepIndex, setStepIndex] = React.useState(0);
   const runJoyride = Object.keys(state?.galleryExhibitions).length;
@@ -174,9 +171,13 @@ export function GalleryExhibition() {
               className="create-new-exhibition"
               type="submit"
               onClick={() => addNewExhibition()}
-              disabled={!state.galleryProfile.isValidated || !user.emailVerified}
+              disabled={
+                !state.galleryProfile.isValidated || !user.emailVerified
+              }
               sx={galleryStyles.createNewButton}>
-              <Typography sx={{fontWeight: 'bold'}}>Create Exhibition</Typography>
+              <Typography sx={{fontWeight: 'bold'}}>
+                Create Exhibition
+              </Typography>
             </Button>
           </Box>
         </Box>
@@ -196,7 +197,7 @@ export function GalleryExhibition() {
                 <Box key={exhibition?.exhibitionId} sx={{my: 2}}>
                   <ExhibitionCard
                     exhibition={exhibition}
-                    galleryLocations={galleryLocations }
+                    galleryLocations={galleryLocations}
                     exhibitionId={exhibition?.exhibitionId}
                     galleryName={galleryName as string}
                   />

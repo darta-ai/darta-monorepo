@@ -1,3 +1,4 @@
+import {Typography} from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -5,7 +6,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import React from 'react';
-import {Typography} from '@mui/material'
 
 export function DartaDialogue({
   open,
@@ -30,11 +30,16 @@ export function DartaDialogue({
       aria-describedby="alert-dialog-description"
       data-testid="confirm-delete-artwork-modal">
       <DialogTitle id="alert-dialog-title">
-        <Typography sx={{fontWeight: 'bold'}} variant="h4">{`Are you sure you want to delete this ${deleteType} from darta?`}</Typography>
+        <Typography
+          sx={{fontWeight: 'bold'}}
+          variant="h4">{`Are you sure you want to delete this ${deleteType} from darta?`}</Typography>
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-        <Typography sx={{fontWeight: 'bold'}}>{`You are about to delete ${identifier} from darta. This action cannot be undone.`}</Typography>
+          <Typography
+            sx={{
+              fontWeight: 'bold',
+            }}>{`You are about to delete ${identifier} from darta. This action cannot be undone.`}</Typography>
         </DialogContentText>
       </DialogContent>
       <DialogActions>

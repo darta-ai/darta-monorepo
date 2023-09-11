@@ -1,13 +1,16 @@
-import { Request, Response, NextFunction } from 'express';
-import { auth } from '../config/firebase';
-import { ADMIN_PASSWORD } from 'src/config/config';
+import {NextFunction, Request, Response} from 'express';
 
-export const verifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
-  const adminPassword = req.body.adminPassword
+import {ADMIN_PASSWORD} from '../config/config';
+
+export const verifyAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const {adminPassword} = req.body;
   if (ADMIN_PASSWORD === adminPassword) {
-      next();
-  }
-   else {
+    next();
+  } else {
     res.status(403).send('Unauthorized');
   }
 };

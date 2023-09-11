@@ -1,7 +1,12 @@
-import {Button, Dialog, DialogActions, DialogContent} from '@mui/material';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Typography,
+} from '@mui/material';
 import Image from 'next/image';
 import React from 'react';
-import {Typography} from '@mui/material'
 
 const croppingMatters = require(`../../../public/static/images/croppingMatters.png`);
 

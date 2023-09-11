@@ -4,14 +4,12 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   getIdTokenResult,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  sendEmailVerification,
-  updateProfile
-} from 'firebase/auth';
+  updateProfile,
+, User } from 'firebase/auth';
 import {getFirestore} from 'firebase/firestore';
-import { User } from 'firebase/auth';
-
 
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY,
@@ -56,11 +54,15 @@ export const firebaseErrors = (message: string) => {
   }
 };
 
-export async function firebaseSignUp({email, password, userName} :
-  {email: string,
-  password: string,
-  userName: string} 
-) {
+export async function firebaseSignUp({
+  email,
+  password,
+  userName,
+}: {
+  email: string;
+  password: string;
+  userName: string;
+}) {
   try {
     await auth.setPersistence(browserSessionPersistence);
     const userCredential = await createUserWithEmailAndPassword(
@@ -71,8 +73,8 @@ export async function firebaseSignUp({email, password, userName} :
     await updateProfile(userCredential.user, {
       displayName: userName,
     });
-    if (auth.currentUser){
-      await sendEmailVerification(auth.currentUser)
+    if (auth.currentUser) {
+      await sendEmailVerification(auth.currentUser);
     }
     return {error: false, user: userCredential.user, errorMessage: ''};
   } catch (error: any) {
@@ -80,7 +82,7 @@ export async function firebaseSignUp({email, password, userName} :
       error: true,
       user: undefined,
       errorMessage: firebaseErrors(error.code),
-      verifiedEmail: false
+      verifiedEmail: false,
     };
   }
 }
@@ -121,18 +123,18 @@ export async function firebaseSignIn(
   }
 }
 
-export async function resendEmailVerification(){
+export async function resendEmailVerification() {
   try {
-    if (auth.currentUser){
-      const results = await sendEmailVerification(auth.currentUser)
-      console.log({results})
-      return {success: true}
-    } else{
-      throw new Error()
+    if (auth.currentUser) {
+      const results = await sendEmailVerification(auth.currentUser);
+      console.log({results});
+      return {success: true};
+    } else {
+      throw new Error();
     }
   } catch (error) {
-    console.log(error)
-    return {success: false}
+    console.log(error);
+    return {success: false};
   }
 }
 

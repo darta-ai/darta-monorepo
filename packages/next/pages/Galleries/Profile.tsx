@@ -1,8 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import 'firebase/compat/auth';
 
+// eslint-disable-next-line import/no-unresolved
+import {ArtworkObject, IGalleryProfileData} from '@darta/types';
 import {Box} from '@mui/material';
 import React from 'react';
 
+import {retrieveAllGalleryData} from '../../src/API/DartaGETrequests';
 import authRequired from '../../src/common/AuthRequired/AuthRequired';
 import {
   GalleryArtwork,
@@ -11,10 +15,11 @@ import {
   LoadProfile,
 } from '../../src/Components/GalleryPages';
 import {MiniDrawer} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
-import { retrieveAllGalleryData } from 'packages/next/src/API/DartaGETrequests';
-import { AuthContext } from '../_app';
-import { GalleryReducerActions, useAppState } from 'packages/next/src/Components/State/AppContext';
-import { ArtworkObject, IGalleryProfileData } from '@darta/types';
+import {
+  GalleryReducerActions,
+  useAppState,
+} from '../../src/Components/State/AppContext';
+import {AuthContext} from '../_app';
 
 export enum EGalleryDisplay {
   Profile = 'PROFILE',
@@ -40,9 +45,7 @@ function Gallery() {
   const {dispatch} = useAppState();
   const {user} = React.useContext(AuthContext);
 
-
   React.useEffect(() => {
-    
     const fetchData = async () => {
       if (user?.accessToken) {
         const {galleryProfile, galleryArtworks, galleryExhibitions} =
@@ -63,10 +66,8 @@ function Gallery() {
       } else {
         // TO-DO: error handling
       }
-
-    }
-    fetchData()
-  
+    };
+    fetchData();
   }, []);
   return (
     <Box sx={profileStyles}>

@@ -5,11 +5,11 @@ import {
 } from '../ThirdPartyAPIs/firebaseApp';
 
 export const dartaSignUp = async (user: any) => {
-  const firebaseCheck = await firebaseSignUp(
-    {email: user.email,
+  const firebaseCheck = await firebaseSignUp({
+    email: user.email,
     password: user.password,
-    userName: user.galleryName}
-  );
+    userName: user.galleryName,
+  });
   return firebaseCheck;
 };
 

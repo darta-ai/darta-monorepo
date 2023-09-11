@@ -1,4 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
+import {Artwork, Exhibition} from '@darta/types';
 import {
   Box,
   Button,
@@ -13,21 +14,25 @@ import dayjs from 'dayjs';
 import _ from 'lodash';
 import React from 'react';
 
-import { Exhibition, Artwork } from '@darta/types';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {cardStyles} from '../../../styles/CardStyles';
+import {
+  createAndEditArtworkForExhibition,
+  createArtworkForExhibitionAPI,
+  deleteExhibitionArtwork,
+  editArtworkForExhibitionAPI,
+  removeArtworkFromExhibition,
+} from '../../API/artworks/artworkRoutes';
+import {
+  deleteExhibitionAndArtworkAPI,
+  deleteExhibitionOnlyAPI,
+  editExhibitionAPI,
+} from '../../API/exhibitions/exhibitionRotes';
 import {ArtworkHeader} from '../Artwork';
+import {DartaErrorAlert} from '../Modals';
+import {GalleryReducerActions, useAppState} from '../State/AppContext';
 import {ExhibitionArtworkList} from './ExhibitionArtworkList';
 import {CreateExhibition} from './index';
-import { createArtworkForExhibitionAPI, 
-  removeArtworkFromExhibition, 
-  deleteExhibitionArtwork, 
-  editArtworkForExhibitionAPI, 
-  createAndEditArtworkForExhibition } from '../../API/artworks/artworkRoutes';
-import { deleteExhibitionAndArtworkAPI, deleteExhibitionOnlyAPI, editExhibitionAPI} from '../../API/exhibitions/exhibitionRotes'
-import {GalleryReducerActions, useAppState} from '../State/AppContext';
-import { DartaErrorAlert } from '../Modals';
-
 
 const ariaLabel = {'aria-label': 'description'};
 
@@ -45,27 +50,24 @@ export function ExhibitionCard({
   const [expanded, setExpanded] = React.useState(false);
   const [editExhibition, setEditExhibition] = React.useState<boolean>(false);
   const {state, dispatch} = useAppState();
-  const [artworks, setArtworks] = React.useState<any>(exhibition.artworks)
-  const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false)
-
+  const [artworks, setArtworks] = React.useState<any>(exhibition.artworks);
+  const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    if (exhibition?.artworks){
-      setArtworks(exhibition.artworks!)
+    if (exhibition?.artworks) {
+      setArtworks(exhibition.artworks!);
     }
-  }, [])
+  }, []);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  const saveExhibition = async (
-    updatedExhibition: Exhibition,
-  ) => {
+  const saveExhibition = async (updatedExhibition: Exhibition) => {
     const exhibition = _.cloneDeep(updatedExhibition);
-    const exhibitionLocation = exhibition?.exhibitionLocation?.locationString
+    const exhibitionLocation = exhibition?.exhibitionLocation?.locationString;
     const locations = Object.values(state?.galleryProfile);
-     
+
     const fullExhibitionLocation = locations.filter(
       (locationArrayData: any) => {
         return locationArrayData?.locationString?.value === exhibitionLocation;
@@ -75,7 +77,7 @@ export function ExhibitionCard({
     exhibition.exhibitionLocation = {...fullExhibitionLocation};
 
     try {
-      const results = await editExhibitionAPI({exhibition}) 
+      const results = await editExhibitionAPI({exhibition});
       dispatch({
         type: GalleryReducerActions.SAVE_EXHIBITION,
         payload: results,
@@ -86,8 +88,8 @@ export function ExhibitionCard({
         payload: results.artworks as any,
       });
       setEditExhibition(!editExhibition);
-    } catch(error){
-      setErrorAlertOpen(true)
+    } catch (error) {
+      setErrorAlertOpen(true);
     }
   };
 
@@ -95,59 +97,60 @@ export function ExhibitionCard({
     const newExhibition: Exhibition = _.cloneDeep(
       state?.galleryExhibitions[exhibitionId],
     );
-    let exhibitionOrder
+    let exhibitionOrder;
     if (!newExhibition?.artworks || !Object.keys(newExhibition?.artworks)) {
       exhibitionOrder = 0;
     } else {
       exhibitionOrder = Object.keys(newExhibition?.artworks)?.length;
     }
 
-
-    try{
-      const newArtwork = await createArtworkForExhibitionAPI({exhibitionId, exhibitionOrder})
+    try {
+      const newArtwork = await createArtworkForExhibitionAPI({
+        exhibitionId,
+        exhibitionOrder,
+      });
       dispatch({
         type: GalleryReducerActions.SAVE_EXHIBITION,
         payload: {
-          ...newExhibition, 
+          ...newExhibition,
           artworks: {
             ...newExhibition.artworks,
-            [newArtwork.artworkId] : newArtwork
-          }
+            [newArtwork.artworkId]: newArtwork,
+          },
         },
         exhibitionId,
       });
       dispatch({
         type: GalleryReducerActions.SAVE_NEW_ARTWORK,
-        payload: {[newArtwork.artworkId] : newArtwork} as any,
+        payload: {[newArtwork.artworkId]: newArtwork} as any,
       });
-      
-    } catch(error){
-      setErrorAlertOpen(true)
+    } catch (error) {
+      setErrorAlertOpen(true);
     }
-
   };
 
-  const [saveSpinner, setSavedSpinner] = React.useState(false)
-  const [deleteSpinner, setDeleteSpinner] = React.useState(false)
-
+  const [saveSpinner, setSavedSpinner] = React.useState(false);
+  const [deleteSpinner, setDeleteSpinner] = React.useState(false);
 
   const saveArtwork = async (updatedArtwork: Artwork): Promise<boolean> => {
-    setSavedSpinner(true)
-    const artworkId: string = updatedArtwork.artworkId!
+    setSavedSpinner(true);
+    const artworkId: string = updatedArtwork.artworkId!;
     const tempExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
     if (tempExhibition?.artworks && tempExhibition?.artworks[artworkId]) {
       tempExhibition.artworks[artworkId] = updatedArtwork;
     }
     try {
-      const results = await editArtworkForExhibitionAPI({artwork: updatedArtwork})
+      const results = await editArtworkForExhibitionAPI({
+        artwork: updatedArtwork,
+      });
       dispatch({
         type: GalleryReducerActions.SAVE_EXHIBITION,
         payload: {
           ...tempExhibition,
           artworks: {
             ...tempExhibition.artworks,
-            [results.artworkId] : results
-          }
+            [results.artworkId]: results,
+          },
         },
         exhibitionId,
       });
@@ -155,124 +158,149 @@ export function ExhibitionCard({
         type: GalleryReducerActions.SAVE_NEW_ARTWORK,
         payload: {[results.artworkId as string]: results},
       });
-      setSavedSpinner(false)
-      return Promise.resolve(true)
-    } catch(error){
+      setSavedSpinner(false);
+      return Promise.resolve(true);
+    } catch (error) {
       // TO-DO: error handling
-      setErrorAlertOpen(true)
-      setSavedSpinner(false)
-      return Promise.resolve(false)
+      setErrorAlertOpen(true);
+      setSavedSpinner(false);
+      return Promise.resolve(false);
     }
-
   };
 
-  const handleRemoveArtworkFromExhibition = async ({ exhibitionId, artworkId }: { exhibitionId: string; artworkId: string; }): Promise<boolean> => {
-    try { 
-      const results = await removeArtworkFromExhibition({exhibitionId, artworkId})
+  const handleRemoveArtworkFromExhibition = async ({
+    exhibitionId,
+    artworkId,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+  }): Promise<boolean> => {
+    try {
+      const results = await removeArtworkFromExhibition({
+        exhibitionId,
+        artworkId,
+      });
       dispatch({
         type: GalleryReducerActions.SAVE_EXHIBITION,
         payload: results,
         exhibitionId,
-      })
-      return Promise.resolve(true)
-    } catch(error){
-      setErrorAlertOpen(true)
+      });
+      return Promise.resolve(true);
+    } catch (error) {
+      setErrorAlertOpen(true);
     }
-    return Promise.resolve(false)
-  }
+    return Promise.resolve(false);
+  };
 
-  const handleDeleteArtworkFromDarta = async ({ exhibitionId, artworkId }: { exhibitionId: string; artworkId: string; }): Promise<boolean> => {
-    try { 
-      const results = await deleteExhibitionArtwork({exhibitionId, artworkId})
+  const handleDeleteArtworkFromDarta = async ({
+    exhibitionId,
+    artworkId,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+  }): Promise<boolean> => {
+    try {
+      const results = await deleteExhibitionArtwork({exhibitionId, artworkId});
       dispatch({
         type: GalleryReducerActions.SAVE_EXHIBITION,
         payload: results,
         exhibitionId,
-      })
+      });
       dispatch({
         type: GalleryReducerActions.DELETE_ARTWORK,
         artworkId,
-      })
-      return Promise.resolve(true)
-    } catch(error){
-      setErrorAlertOpen(true)
+      });
+      return Promise.resolve(true);
+    } catch (error) {
+      setErrorAlertOpen(true);
     }
-    return Promise.resolve(false)
-  }
+    return Promise.resolve(false);
+  };
 
-  const handleBatchUpload = async (uploadArtworks: {[key: string]: Artwork}): Promise<boolean> => {
+  const handleBatchUpload = async (uploadArtworks: {
+    [key: string]: Artwork;
+  }): Promise<boolean> => {
     const newExhibition: Exhibition = _.cloneDeep(
       state?.galleryExhibitions[exhibitionId],
     );
 
     if (!newExhibition || !newExhibition?.artworks) {
-      Promise.resolve(false)
-    };
+      Promise.resolve(false);
+    }
 
-    let counter = Object.values(newExhibition.artworks!).length
+    let counter = Object.values(newExhibition.artworks!).length;
 
-    for (let artworkId in uploadArtworks) {
+    for (const artworkId in uploadArtworks) {
       if (uploadArtworks[artworkId]) {
         // eslint-disable-next-line no-param-reassign
         uploadArtworks[artworkId].exhibitionOrder = counter++;
-        uploadArtworks[artworkId].exhibitionId = exhibitionId
+        uploadArtworks[artworkId].exhibitionId = exhibitionId;
       }
     }
 
-    const artworkPromises = Object.values(uploadArtworks).map((artwork: Artwork) => {
-      return createAndEditArtworkForExhibition({exhibitionId, artwork})
-    })
+    const artworkPromises = Object.values(uploadArtworks).map(
+      (artwork: Artwork) => {
+        return createAndEditArtworkForExhibition({exhibitionId, artwork});
+      },
+    );
     try {
-      const results = await Promise.all(artworkPromises)
+      const results = await Promise.all(artworkPromises);
 
-      const resultsObj = results.reduce((acc, artwork) => ({...acc, [artwork?.artworkId as string] : artwork}), {})
-  
+      const resultsObj = results.reduce(
+        (acc, artwork) => ({...acc, [artwork?.artworkId as string]: artwork}),
+        {},
+      );
+
       dispatch({
         type: GalleryReducerActions.SAVE_EXHIBITION_ARTWORK,
         exhibitionId,
-        artwork: resultsObj
-      })
-  
+        artwork: resultsObj,
+      });
+
       dispatch({
         type: GalleryReducerActions.SET_BATCH_ARTWORK,
-        payload: resultsObj
-      })
-      return Promise.resolve(true)
+        payload: resultsObj,
+      });
+      return Promise.resolve(true);
     } catch (error) {
-      setErrorAlertOpen(true)
-      return Promise.resolve(false)
+      setErrorAlertOpen(true);
+      return Promise.resolve(false);
     }
-
-    
   };
 
-  const deleteExhibition = async ({exhibitionId, deleteArtworks = false} : {exhibitionId: string, deleteArtworks?: boolean}): Promise<boolean> => {
+  const deleteExhibition = async ({
+    exhibitionId,
+    deleteArtworks = false,
+  }: {
+    exhibitionId: string;
+    deleteArtworks?: boolean;
+  }): Promise<boolean> => {
     if (deleteArtworks) {
       try {
-        await deleteExhibitionAndArtworkAPI({exhibitionId})
+        await deleteExhibitionAndArtworkAPI({exhibitionId});
         dispatch({
           type: GalleryReducerActions.DELETE_EXHIBITION,
           exhibitionId,
         });
-        return Promise.resolve(true)
-      } catch (error){
-        setErrorAlertOpen(true)
-        //TO-DO: error handling
+        return Promise.resolve(true);
+      } catch (error) {
+        setErrorAlertOpen(true);
+        // TO-DO: error handling
       }
-    } else{
+    } else {
       try {
-        await deleteExhibitionOnlyAPI({exhibitionId})
+        await deleteExhibitionOnlyAPI({exhibitionId});
         dispatch({
           type: GalleryReducerActions.DELETE_EXHIBITION,
           exhibitionId,
         });
-        return Promise.resolve(true)
-      } catch (error){
-        setErrorAlertOpen(true)
+        return Promise.resolve(true);
+      } catch (error) {
+        setErrorAlertOpen(true);
         // TO-DO: error handling
       }
     }
-    return Promise.resolve(false)
+    return Promise.resolve(false);
   };
 
   const swapExhibitionOrder = (artworkId: string, direction: 'up' | 'down') => {
@@ -311,9 +339,6 @@ export function ExhibitionCard({
     tempExhibition.artworks = tempArtworks;
     saveExhibition(tempExhibition);
   };
-
-
-
 
   const displayRed =
     !exhibition?.exhibitionTitle?.value ||
@@ -483,7 +508,9 @@ export function ExhibitionCard({
         </Collapse>
         <Box>
           <Divider variant="middle" sx={{m: 2, color: PRIMARY_BLUE}} flexItem>
-            <Typography sx={{fontWeight: 'bold', color: PRIMARY_BLUE}}>Artworks</Typography>
+            <Typography sx={{fontWeight: 'bold', color: PRIMARY_BLUE}}>
+              Artworks
+            </Typography>
           </Divider>
           <ArtworkHeader
             addNewArtwork={addNewArtwork}
@@ -491,18 +518,20 @@ export function ExhibitionCard({
           />
         </Box>
         {exhibition?.artworks && (
-        <ExhibitionArtworkList
-          artworks={exhibition?.artworks}
-          swapExhibitionOrder={swapExhibitionOrder}
-          saveArtwork={saveArtwork}
-          saveSpinner={saveSpinner}
-          deleteSpinner={deleteSpinner}
-          handleRemoveArtworkFromExhibition={handleRemoveArtworkFromExhibition}
-          handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
-        />
+          <ExhibitionArtworkList
+            artworks={exhibition?.artworks}
+            swapExhibitionOrder={swapExhibitionOrder}
+            saveArtwork={saveArtwork}
+            saveSpinner={saveSpinner}
+            deleteSpinner={deleteSpinner}
+            handleRemoveArtworkFromExhibition={
+              handleRemoveArtworkFromExhibition
+            }
+            handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
+          />
         )}
       </Box>
-      <DartaErrorAlert 
+      <DartaErrorAlert
         errorAlertOpen={errorAlertOpen}
         setErrorAlertOpen={setErrorAlertOpen}
       />

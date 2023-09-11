@@ -1,7 +1,7 @@
+import {Artwork} from '@darta/types';
 import {Box, Button, Typography} from '@mui/material';
 import React from 'react';
 
-import {Artwork} from '@darta/types';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles/index';
 import {UploadArtworksXlsModal} from '../Modals';
 

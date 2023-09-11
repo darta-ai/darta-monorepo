@@ -1,16 +1,18 @@
 import {GalleryState} from '@darta/types';
-import { readGalleryProfileAPI } from './galleries/galleryRoutes';
-import { listArtworksByGalleryAPI } from './artworks/artworkRoutes'
-import { listExhibitionsByGalleryAPI } from './exhibitions/exhibitionRotes'
 
+import {listArtworksByGalleryAPI} from './artworks/artworkRoutes';
+import {listExhibitionsByGalleryAPI} from './exhibitions/exhibitionRotes';
+import {readGalleryProfileAPI} from './galleries/galleryRoutes';
 
-
-export const retrieveAllGalleryData = async (accessToken: string): Promise<GalleryState> => {
-  const [galleryProfile, galleryArtworks, galleryExhibitions] = await Promise.all([
-    readGalleryProfileAPI(),
-    listArtworksByGalleryAPI(),
-    listExhibitionsByGalleryAPI()
-  ]);
+export const retrieveAllGalleryData = async (
+  accessToken: string,
+): Promise<GalleryState> => {
+  const [galleryProfile, galleryArtworks, galleryExhibitions] =
+    await Promise.all([
+      readGalleryProfileAPI(),
+      listArtworksByGalleryAPI(),
+      listExhibitionsByGalleryAPI(),
+    ]);
 
   return {
     galleryProfile,
@@ -19,7 +21,6 @@ export const retrieveAllGalleryData = async (accessToken: string): Promise<Galle
     accessToken,
   };
 };
-
 
 export const retrieveGalleryArtworks = (
   accessToken: string,
@@ -33,7 +34,6 @@ export const retrieveGalleryArtworks = (
     accessToken,
   };
 };
-
 
 export const retrieveGalleryExhibitions = (
   accessToken: string,

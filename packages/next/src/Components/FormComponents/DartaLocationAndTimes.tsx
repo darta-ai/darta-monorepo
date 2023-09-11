@@ -1,12 +1,9 @@
+import {IGalleryProfileData} from '@darta/types';
 import {Box, Button, Divider} from '@mui/material';
 import {debounce} from '@mui/material/utils';
 import React from 'react';
 
-import {
-  BusinessAddressType,
-  IBusinessLocationData,
-} from '../../../globalTypes';
-import {IGalleryProfileData} from "@darta/types"
+import {BusinessAddressType, IBusinessLocationData} from '../../../globalTypes';
 import {googleMapsParser} from '../../common/nextFunctions';
 import {DartaHoursOfOperation, DartaLocationLookup} from './index';
 import {formStyles} from './styles';

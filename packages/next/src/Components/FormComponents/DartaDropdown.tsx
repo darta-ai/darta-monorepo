@@ -37,7 +37,7 @@ export function DartaDropdown({
     innerWidthRef.current = window.innerWidth;
   }, []);
 
-  console.log({value, fieldName})
+  console.log({value, fieldName});
 
   const testIdValue = fieldName.replace('.', '-');
   return (
