@@ -1,4 +1,4 @@
-import {Artwork, Dimensions} from '../../globalTypes';
+import {Artwork, Dimensions} from '@darta/types';
 
 function fractionToDecimal(str: string) {
   if (!str) return null;
@@ -212,6 +212,7 @@ export const parseExcelArtworkData = (
     const newId = crypto.randomUUID();
     artworkObject[newId] = {
       artworkId: newId,
+      exhibitionId: null,
       artworkImage: {value: item['Main image URL (large)']},
       artworkTitle: {value: item?.Title},
       artistName: {value: item?.Artist},

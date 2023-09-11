@@ -60,7 +60,8 @@ function DartaListArtwork({
   deleteSpinner,
   swapExhibitionOrder,
   saveArtwork,
-  deleteArtwork,
+  handleDeleteArtworkFromDarta,
+  handleRemoveArtworkFromExhibition
 } : {
   artwork: Artwork;
   arrayLength: number;
@@ -69,7 +70,8 @@ function DartaListArtwork({
   deleteSpinner: boolean;
   swapExhibitionOrder: (arg0: string, arg1: 'up' | 'down') => void;
   saveArtwork: (arg1: Artwork) => Promise<boolean>;
-  deleteArtwork: (arg0: string) => Promise<boolean>;
+  handleDeleteArtworkFromDarta: ({ exhibitionId, artworkId }: { exhibitionId: string; artworkId: string; }) => Promise<boolean>
+  handleRemoveArtworkFromExhibition: ({ exhibitionId, artworkId }: { exhibitionId: string; artworkId: string; }) => Promise<boolean>
 }){
 
   const [editArtwork, setEditArtwork] = React.useState<boolean>(false);
@@ -79,12 +81,6 @@ function DartaListArtwork({
     setEditArtwork(false)
   }
 
-  const handleDelete = async (artworkId: string) => {
-    if(artwork.artworkId){
-      await deleteArtwork(artworkId)
-    }
-    setEditArtwork(!editArtwork)
-  }
 
   return (
     <Box key={artwork?.artworkTitle?.value}>
@@ -198,10 +194,10 @@ function DartaListArtwork({
           newArtwork={artwork}
           cancelAction={setEditArtwork}
           handleSave={handleSave}
-          handleDelete={handleDelete}
           saveSpinner={saveSpinner}
           deleteSpinner={deleteSpinner}
-          isExhibition={true}
+          handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
+          handleRemoveArtworkFromExhibition={handleRemoveArtworkFromExhibition}
         />
       </Box>
     </Collapse>
@@ -219,16 +215,18 @@ export function ExhibitionArtworkList({
   deleteSpinner,
   swapExhibitionOrder,
   saveArtwork,
-  deleteArtwork,
+  handleDeleteArtworkFromDarta,
+  handleRemoveArtworkFromExhibition
 }: {
   artworks: any;
   saveSpinner: boolean;
   deleteSpinner: boolean;
   swapExhibitionOrder: (arg0: string, arg1: 'up' | 'down') => void;
   saveArtwork: (arg1: Artwork) => Promise<boolean>;
-  deleteArtwork: (arg0: string) => Promise<boolean>;
-}) {
+  handleDeleteArtworkFromDarta: ({ exhibitionId, artworkId }: { exhibitionId: string; artworkId: string; }) => Promise<boolean>
+  handleRemoveArtworkFromExhibition: ({ exhibitionId, artworkId }: { exhibitionId: string; artworkId: string; }) => Promise<boolean>
 
+}) {
 
   const [mappedArtworks, setMappedArtworks] = React.useState<any>(Object.values(artworks).sort(
     (a: any, b: any) => a?.exhibitionOrder - b?.exhibitionOrder,
@@ -247,17 +245,20 @@ export function ExhibitionArtworkList({
     <List
       sx={{width: '100%', bgcolor: PRIMARY_MILK}}
       className="exhibition-artwork-list">
-      {mappedArtworks.map((artwork: any, index: number) => (
-        <DartaListArtwork 
-        artwork={artwork}
-        arrayLength={arrayLength}
-        index={index}
-        swapExhibitionOrder={swapExhibitionOrder}
-        saveArtwork={saveArtwork}
-        deleteArtwork={deleteArtwork}
-        saveSpinner={saveSpinner}
-        deleteSpinner={deleteSpinner}
-        />
+      {mappedArtworks.map((artwork: Artwork, index: number) => (
+        <Box key={artwork.artworkId}>
+          <DartaListArtwork 
+          artwork={artwork}
+          arrayLength={arrayLength}
+          index={index}
+          swapExhibitionOrder={swapExhibitionOrder}
+          saveArtwork={saveArtwork}
+          saveSpinner={saveSpinner}
+          deleteSpinner={deleteSpinner}
+          handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
+          handleRemoveArtworkFromExhibition={handleRemoveArtworkFromExhibition}
+          />
+        </Box>
       ))}
     </List>
   );

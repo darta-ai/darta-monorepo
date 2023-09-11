@@ -30,9 +30,11 @@ import {
   DartaRadioButtonsGroup,
   DartaTextInput,
 } from '../FormComponents/index';
-import {CroppingMattersModal, DartaDialogue} from '../Modals/index';
+import {CroppingMattersModal, DartaDialogue, ConfirmDeleteExhibitionArtwork} from '../Modals/index';
 import {profileStyles} from '../Profile/Components/profileStyles';
 import {createArtworkStyles} from './styles';
+import {useAppState} from '../State/AppContext';
+import { DartaErrorAlert } from '../Modals/index';
 
 type currencyConverterType = {
   [key: string]: string;
@@ -135,18 +137,22 @@ export function CreateArtwork({
   deleteSpinner,
   croppingModalOpen,
   setCroppingModalOpen,
-  isExhibition = false
+  handleRemoveArtworkFromExhibition,
+  handleDeleteArtworkFromDarta
 }: {
   newArtwork: Artwork;
   cancelAction: (arg0: boolean) => void;
   handleSave: (savedArtwork: Artwork) => void;
-  handleDelete: (arg0: string) => void;
   saveSpinner: boolean;
   deleteSpinner: boolean;
   croppingModalOpen?: boolean;
+  handleDelete?: (arg0: string) => void;
   setCroppingModalOpen?: (arg0: boolean) => void;
-  isExhibition?: boolean
+  handleRemoveArtworkFromExhibition?: ({ exhibitionId, artworkId }: { exhibitionId: string; artworkId: string; }) => Promise<boolean>
+  handleDeleteArtworkFromDarta?: ({ exhibitionId, artworkId }: { exhibitionId: string; artworkId: string; }) => Promise<boolean>
 }) {
+  const {state} = useAppState();
+
   const [isInchesMeasurement, setIsInchesMeasurement] =
     React.useState<boolean>(false);
   const [tempImage, setTempImage] = React.useState<string | null>(
@@ -243,20 +249,23 @@ export function CreateArtwork({
     ) {
       setValue(
         'artworkDimensions.text.value',
-        `${data.artworkDimensions.widthIn.value} x 
-        ${data.artworkDimensions.heightIn.value} x
-        ${data.artworkDimensions.depthIn?.value}in;
-        ${data.artworkDimensions.widthCm.value} x 
-        ${data.artworkDimensions.heightCm.value} x
-         ${data.artworkDimensions.depthCm?.value}cm`,
+        `
+        ${data.artworkDimensions.heightIn.value}" x
+        ${data.artworkDimensions.widthIn.value}" x 
+        ${data.artworkDimensions.depthIn?.value}";
+        ${data.artworkDimensions.heightCm.value}' x
+        ${data.artworkDimensions.widthCm.value}' x 
+        ${data.artworkDimensions.depthCm?.value}'
+         `,
       );
     } else {
       setValue(
         'artworkDimensions.text.value',
-        `${data.artworkDimensions.widthIn.value} x 
-        ${data.artworkDimensions.heightIn.value}in;
-        ${data.artworkDimensions.widthCm.value} x 
-        ${data.artworkDimensions.heightCm.value}cm 
+        `
+        ${data.artworkDimensions.heightIn.value}" x
+        ${data.artworkDimensions.widthIn.value}"; 
+        ${data.artworkDimensions.heightCm.value}' x 
+        ${data.artworkDimensions.widthCm.value}'
         `,
       );
     }
@@ -303,6 +312,19 @@ export function CreateArtwork({
       setCroppingModalOpen(false);
     }
   };
+
+  const exhibitionId = newArtwork?.exhibitionId;
+  let isInExhibition = false;
+  
+  if (exhibitionId) {
+    const exhibition = state.galleryExhibitions?.[exhibitionId];
+    const artworkId = newArtwork?.artworkId;
+  
+    if (exhibition?.artworks && artworkId) {
+      isInExhibition = Boolean(exhibition.artworks[artworkId]);
+    }
+  }
+  
 
   return (
     <Box mb={2} sx={profileStyles.container}>
@@ -634,19 +656,7 @@ export function CreateArtwork({
           {errors?.artworkDimensions?.message}
         </Typography>
         <Box sx={createArtworkStyles.saveButtonContainer}>
-        {isExhibition && newArtwork?.exhibitionId ? 
           <Button
-            variant="contained"
-            data-testid="delete-artwork-button"
-            color="error"
-            onClick={() => {
-              handleClickOpen();
-            }}>
-            {deleteSpinner ? <CircularProgress size={24} /> : <Typography sx={{fontWeight: 'bold'}}>Remove</Typography>
-            }          
-          </Button>
-      :
-            <Button
               variant="contained"
               data-testid="delete-artwork-button"
               color="error"
@@ -656,7 +666,6 @@ export function CreateArtwork({
               {deleteSpinner ? <CircularProgress size={24} /> : <Typography sx={{fontWeight: 'bold'}}>Delete</Typography>
               }          
             </Button>
-          }
           <Button
             variant="contained"
             data-testid="save-artwork-button"
@@ -668,15 +677,28 @@ export function CreateArtwork({
           </Button>
         </Box>
       </Box>
-
-      <DartaDialogue
-        identifier={newArtwork?.artworkTitle?.value || '____'}
+      
+      {isInExhibition && newArtwork.artworkId && newArtwork.exhibitionId && handleDeleteArtworkFromDarta && handleRemoveArtworkFromExhibition && 
+        <ConfirmDeleteExhibitionArtwork 
+          artworkId={newArtwork.artworkId}
+          open={open}
+          handleClose={handleClose}
+          exhibitionId={newArtwork.exhibitionId}
+          handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
+          handleRemoveArtworkFromExhibition={handleRemoveArtworkFromExhibition}
+        />
+      }
+      {handleDelete && !isInExhibition && 
+        <DartaDialogue
+        identifier={newArtwork?.artworkTitle?.value || 'this artwork'}
         deleteType="artwork"
         id={newArtwork?.artworkId as string}
         open={open}
         handleClose={handleClose}
         handleDelete={handleDelete}
       />
+      }
+
     </Box>
   );
 }
@@ -684,4 +706,6 @@ export function CreateArtwork({
 CreateArtwork.defaultProps = {
   croppingModalOpen: false,
   setCroppingModalOpen: () => {},
+  handleDeleteArtworkFromDarta: () => {},
+  handleRemoveArtworkFromExhibition: () => {}
 };

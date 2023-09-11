@@ -40,7 +40,7 @@ export class GalleryService implements IGalleryService {
       const gallery =  await this.readGalleryProfileFromGalleryId({galleryId})
       return gallery
     } catch (error){
-      console.log('error reading profile')
+      console.log('error reading profile', error)
       return null
     }
   }
@@ -241,7 +241,7 @@ export class GalleryService implements IGalleryService {
   public async getGalleryIdFromUID({uid}: {uid:string}): Promise<string>{
 
 
-    const from = uid.includes(CollectionNames.GalleryUsers) ? uid : `${CollectionNames.GalleryUsers}/${uid}`
+    const from = this.generateGalleryUserId({galleryId: uid})  
 
 
     const galleryEdge = await this.edgeService.getEdgeWithFrom({
@@ -292,6 +292,14 @@ export class GalleryService implements IGalleryService {
       console.log('error at check gallery duplicates', error)
       throw new Error('ahhhhh')
     }
+  }
+
+  public generateGalleryUserId({galleryId} : {galleryId : string}): string {
+    return galleryId.includes(CollectionNames.GalleryUsers) ? galleryId : `${CollectionNames.GalleryUsers}/${galleryId}`
+  }
+
+  public generateGalleryId({galleryId} : {galleryId : string}): string {
+    return galleryId.includes(CollectionNames.Galleries) ? galleryId : `${CollectionNames.GalleryUsers}/${galleryId}`
   }
 
   private normalizeGalleryName({galleryName}: {galleryName: string | null}): string | null{

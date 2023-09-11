@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { IArtworkService, IGalleryService, IExhibitionService } from '../services/interfaces';
 import { controller, httpGet, httpPost, request, response } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { verifyToken, filterOutPrivateRecordsSingleObject } from 'src/middlewares/';
+import { verifyToken, filterOutPrivateRecordsSingleObject } from 'src/middleware';
 import _ from 'lodash'
 
 
@@ -40,6 +40,23 @@ export class ArtworkController {
       res.status(500).send(error.message);
     }
   }
+
+  @httpPost('/createAndEditArtworkForExhibition', verifyToken)
+  public async createAndEditArtworkForExhibition(@request() req: Request, @response() res: Response): Promise<void>{
+    const user = (req as any).user
+    const {exhibitionId, exhibitionOrder, artwork} = req.body;
+    try {
+      const galleryId = await this.galleryService.getGalleryIdFromUID({uid: user.user_id})
+      const createdArtwork = await this.artworkService.createArtwork({galleryId, exhibitionId})
+      artwork.artworkId = createdArtwork.artworkId
+      await this.exhibitionService.createExhibitionToArtworkEdge({exhibitionId, artworkId : artwork.artworkId!})
+      const results = await this.artworkService.editArtwork({artwork})
+      res.json(results)
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
+
 
 // OPEN Endpoint
 @httpGet('/readArtwork')
@@ -111,7 +128,6 @@ public async editArtworkForExhibition(@request() req: Request, @response() res: 
 public async deleteArtwork(@request() req: Request, @response() res: Response): Promise<void> {
   const user = (req as any).user;
   const {artworkId} = req.body
-  console.log('hit')
   try {
     const galleryId = await this.galleryService.getGalleryIdFromUID({uid: user.user_id})
     const isVerified = await this.artworkService.confirmGalleryArtworkEdge({artworkId, galleryId})
@@ -127,8 +143,8 @@ public async deleteArtwork(@request() req: Request, @response() res: Response): 
 }
 
 
-@httpPost('/deleteArtworkForExhibition', verifyToken)
-public async deleteArtworkForExhibition(@request() req: Request, @response() res: Response): Promise<void>{
+@httpPost('/removeArtworkFromExhibition', verifyToken)
+public async removeArtworkFromExhibition(@request() req: Request, @response() res: Response): Promise<void>{
   const user = (req as any).user
   const {artworkId, exhibitionId} = req.body;
   try {
@@ -138,8 +154,28 @@ public async deleteArtworkForExhibition(@request() req: Request, @response() res
       res.status(403).send('Unauthorized');
       return;  
     }
-    const results = await this.artworkService.deleteArtwork({artworkId})
     await this.exhibitionService.deleteExhibitionToArtworkEdge({exhibitionId, artworkId})
+    const results = await this.exhibitionService.readExhibitionForGallery({exhibitionId, galleryId})
+    res.json(results)
+  } catch (error: any) {
+    res.status(500).send(error.message);
+  }
+}
+
+@httpPost('/deleteExhibitionArtwork', verifyToken)
+public async deleteExhibitionArtwork(@request() req: Request, @response() res: Response): Promise<void>{
+  const user = (req as any).user
+  const {artworkId, exhibitionId} = req.body;
+  try {
+    const galleryId = await this.galleryService.getGalleryIdFromUID({uid: user.user_id})
+    const isVerified = await this.artworkService.confirmGalleryArtworkEdge({artworkId, galleryId})
+    if (!isVerified) {
+      res.status(403).send('Unauthorized');
+      return;  
+    }
+    await this.artworkService.deleteArtwork({artworkId})
+    await this.exhibitionService.deleteExhibitionToArtworkEdge({exhibitionId, artworkId})
+    const results = await this.exhibitionService.readExhibitionForGallery({exhibitionId, galleryId})
     res.json(results)
   } catch (error: any) {
     res.status(500).send(error.message);

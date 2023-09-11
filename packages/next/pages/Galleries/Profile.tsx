@@ -11,6 +11,10 @@ import {
   LoadProfile,
 } from '../../src/Components/GalleryPages';
 import {MiniDrawer} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
+import { retrieveAllGalleryData } from 'packages/next/src/API/DartaGETrequests';
+import { AuthContext } from '../_app';
+import { GalleryReducerActions, useAppState } from 'packages/next/src/Components/State/AppContext';
+import { ArtworkObject, IGalleryProfileData } from '@darta/types';
 
 export enum EGalleryDisplay {
   Profile = 'PROFILE',
@@ -33,14 +37,36 @@ function Gallery() {
   const [currentDisplay, setCurrentDisplay] = React.useState<EGalleryDisplay>(
     EGalleryDisplay.Load,
   );
+  const {dispatch} = useAppState();
+  const {user} = React.useContext(AuthContext);
+
 
   React.useEffect(() => {
-    const timer = setTimeout(() => {
-      // redirect to the new page
-      setCurrentDisplay(EGalleryDisplay.Profile);
-    }, 750);
+    
+    const fetchData = async () => {
+      if (user?.accessToken) {
+        const {galleryProfile, galleryArtworks, galleryExhibitions} =
+          await retrieveAllGalleryData(user.accessToken);
+        dispatch({
+          type: GalleryReducerActions.SET_PROFILE,
+          payload: galleryProfile as IGalleryProfileData,
+        });
+        dispatch({
+          type: GalleryReducerActions.SET_BATCH_ARTWORK,
+          payload: galleryArtworks as ArtworkObject,
+        });
+        dispatch({
+          type: GalleryReducerActions.SET_EXHIBITIONS,
+          payload: galleryExhibitions,
+        });
+        setCurrentDisplay(EGalleryDisplay.Profile);
+      } else {
+        // TO-DO: error handling
+      }
 
-    return () => clearTimeout(timer);
+    }
+    fetchData()
+  
   }, []);
   return (
     <Box sx={profileStyles}>

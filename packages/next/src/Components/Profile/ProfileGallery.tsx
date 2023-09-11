@@ -1,30 +1,95 @@
-import {Box, Divider, Typography} from '@mui/material';
+import {Box, Divider, Typography, Button} from '@mui/material';
 import Image from 'next/image';
 import React from 'react';
 
 import {IGalleryProfileData} from "@darta/types"
-import {PRIMARY_BLUE} from '../../../styles';
+import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {phoneNumberConverter} from '../../common/utils/phoneNumberConverter';
 import {GalleryLocationComponent} from './Components/GalleryLocationText';
 import {profileStyles} from './Components/profileStyles';
+import { AuthContext } from 'packages/next/pages/_app';
+import { resendEmailVerification } from '../../ThirdPartyAPIs/firebaseApp';
 
 function GalleryStatus({
   galleryProfileData,
 }: {
   galleryProfileData: IGalleryProfileData;
 }) {
-  if (!galleryProfileData?.isValidated) {
+  const {user} = React.useContext(AuthContext);
+  const [isResent, setIsResent] = React.useState(false)
+  const resendEmail = async () => {
+    console.log({user})
+    try{
+      await resendEmailVerification()
+      setIsResent(true)
+    } catch (error){
+      // TO-DO: error handling
+    }
+  }
+  if (!user.emailVerified){
+    return (
+      <Box data-testid="gallery-under-review">
+        <Typography variant="h3" sx={{color: 'red', textAlign: 'center'}}>
+          Please verify your email
+        </Typography>
+        <Box sx={profileStyles.profile.galleryBioStyles}>
+          <Box sx={{mx: 3}}>
+            <Typography>
+              Please check your inbox for an email confirmation. 
+            </Typography>
+          </Box>
+          <Box sx={{mx: 3, my: 3}}>
+              <Button
+              variant="contained"
+              disabled={isResent}
+              sx={{
+                backgroundColor: PRIMARY_BLUE,
+                color: PRIMARY_MILK,
+                alignSelf: 'center',
+              }}
+              onClick={() => {
+                resendEmail()
+              }}
+              >
+                {isResent ?
+                (<Typography sx={{fontWeight: 'bold'}}>Email Sent!</Typography>)  
+                :
+                (<Typography sx={{fontWeight: 'bold'}}>Re-send email confirmation</Typography>)
+              }
+                
+              </Button>
+          </Box>
+          <Box sx={{mx: 3, my: 3}}>
+          <Typography>          
+              After you have confirmed your email, please refresh this page. 
+            </Typography>
+            </Box>
+            <Box sx={{mx: 3, my: 3}}>
+            <Typography>
+              With questions, please reach out to us at{' '}
+              <a href="mailto:info@darta.works">info@darta.works</a>
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    );
+  }
+  else if (!galleryProfileData?.isValidated) {
     return (
       <Box data-testid="gallery-under-review">
         <Typography variant="h4" sx={{color: 'red', textAlign: 'center'}}>
           Gallery Under Review
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
-          <Box sx={{mx: 3}}>
+          <Box sx={{m: 3}}>
             <Typography>
               We do basic quality assurance of all galleries on the platform to
-              ensure the end user gets the best possible experience. We will
-              reach out to you via the email you have provided when it is
+              ensure the end user gets the best possible experience.
+            </Typography>
+          </Box>
+          <Box sx={{m: 3}}>
+            <Typography>
+              We will reach out to you via the email you have provided when it is
               approved or denied.
             </Typography>
           </Box>

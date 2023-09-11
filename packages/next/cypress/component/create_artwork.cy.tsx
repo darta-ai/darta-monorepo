@@ -16,7 +16,7 @@ describe('EditProfileGallery.cy.tsx', () => {
       <CreateArtwork
         newArtwork={newArtworkShell as Artwork}
         cancelAction={cy.stub().as('cancelAction')}
-        saveArtwork={cy.stub().as('saveArtwork')}
+        saveArtwork={cy.stub().as('saveArtwork') as any}
         handleDelete={cy.stub().as('handleDelete')}
         croppingModalOpen={false}
         setCroppingModalOpen={cy.stub().as('setCroppingModalOpen')}

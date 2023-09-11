@@ -6,7 +6,6 @@ const URL = "http://localhost:1160/artwork"
 
 export async function createArtworkAPI(): Promise<Artwork> {
     const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
-    console.log('triggered')
     try {
         const response = await axios.get(`${URL}/create`, {headers: {'authorization': `Bearer ${idToken}`}});
         console.log(response.data)
@@ -63,19 +62,43 @@ export async function editArtworkForExhibitionAPI({artwork} : { artwork: Artwork
     }
 }
 
-export async function deleteArtworkOnExhibitionAPI({artworkId} :{artworkId: string}): Promise<any> {
+export async function createAndEditArtworkForExhibition({exhibitionId, artwork} : {exhibitionId : string, artwork: Artwork}): Promise<Artwork | null>{
     const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
     try {
-        const response = await axios.post(`${URL}/deleteArtwork`, {artworkId} , {headers: {'authorization': `Bearer ${idToken}`}});
+        const response = await axios.post(`${URL}/createAndEditArtworkForExhibition`, {exhibitionId, artwork} , {headers: {'authorization': `Bearer ${idToken}`}});
         return response.data;
     } catch (error) {
         console.log(error)
-        throw new Error('Unable to edit exhibition')
+        throw new Error('Unable to create and edit exhibition')
+    }
+
+    return null
+}
+
+export async function removeArtworkFromExhibition({exhibitionId, artworkId} :{ exhibitionId: string, artworkId: string}): Promise<any> {
+    const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
+    try {
+        const response = await axios.post(`${URL}/removeArtworkFromExhibition`, {artworkId, exhibitionId} , {headers: {'authorization': `Bearer ${idToken}`}});
+        return response.data;
+    } catch (error) {
+        console.log(error)
+        throw new Error('Unable to delete exhibition')
+    }
+}
+
+export async function deleteExhibitionArtwork({exhibitionId, artworkId} :{ exhibitionId: string, artworkId: string}): Promise<any> {
+    const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
+    try {
+        const response = await axios.post(`${URL}/deleteExhibitionArtwork`, {artworkId, exhibitionId} , {headers: {'authorization': `Bearer ${idToken}`}});
+        return response.data;
+    } catch (error) {
+        console.log(error)
+        throw new Error('Unable to delete exhibition')
     }
 }
 
 
-export async function listArtworksByGallery(): Promise<any> {
+export async function listArtworksByGalleryAPI(): Promise<any> {
     const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
     try {
         const response = await axios.get(`${URL}/listGalleryArtworks`, {headers: {'authorization': `Bearer ${idToken}`}});
