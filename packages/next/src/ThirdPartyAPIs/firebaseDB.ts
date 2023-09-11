@@ -10,7 +10,7 @@ export async function getPamphlet() {
     const pamphletList = pamphletSnapshot.docs.map(doc => doc.data());
     return pamphletList;
   } catch (e) {
-    console.log({e});
+    // TO-DO: throw error
   }
 }
 
@@ -21,7 +21,7 @@ export async function getGalleryPamphlet() {
     const pamphletList = pamphletSnapshot.docs.map(doc => doc.data());
     return pamphletList;
   } catch (e) {
-    console.log({e});
+    // TO-DO: throw error
   }
 }
 

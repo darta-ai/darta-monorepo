@@ -1,7 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
-import { auth } from '../config/firebase';
+import {NextFunction, Request, Response} from 'express';
 
-export const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
+import {auth} from '../config/firebase';
+
+export const verifyToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const idToken = req.headers.authorization?.split('Bearer ')[1];
   if (idToken) {
     try {

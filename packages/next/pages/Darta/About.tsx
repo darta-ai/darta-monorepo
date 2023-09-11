@@ -14,8 +14,8 @@ import Head from 'next/head';
 import React from 'react';
 
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
 import {getAbout} from '../../src/ThirdPartyAPIs/firebaseDB';
+import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
 
 const aboutStyles = {
   container: {

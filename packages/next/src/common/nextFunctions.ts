@@ -22,17 +22,16 @@ function fractionToDecimal(str: string) {
 }
 
 type AddressComponents = {
-  long_name: string, 
-  short_name: string,
-  types: string[]
-}
+  long_name: string;
+  short_name: string;
+  types: string[];
+};
 
 const findLocality = (addressComponents: AddressComponents[]) => {
   return addressComponents
-  .filter(component => component.types.includes('locality'))
-  .map(component => component.long_name)[0];
-
-}
+    .filter(component => component.types.includes('locality'))
+    .map(component => component.long_name)[0];
+};
 
 export const createDimensionsString = ({
   depthIn,
@@ -110,7 +109,7 @@ export const googleMapsParser = (data: any) => {
   const lng = data?.geometry?.location.lng();
   const mapsUrl = data?.geometry?.url;
   const galleryName = data?.name;
-  const city = findLocality(data?.address_components)
+  const city = findLocality(data?.address_components);
   const galleryWebsite = data?.website;
   const galleryPhone = data?.formatted_phone_number;
   const openHours = parseBusinessHours(data?.opening_hours?.periods);
@@ -123,7 +122,7 @@ export const googleMapsParser = (data: any) => {
     galleryWebsite,
     galleryPhone,
     openHours,
-    city
+    city,
   };
   return addressObj;
 };

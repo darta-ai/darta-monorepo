@@ -100,12 +100,12 @@ export const createArtworkStyles = {
       maxHeight: '30vh',
     },
   },
-  defaultImageContainer:{
+  defaultImageContainer: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     height: '100%',
-    width: '100%', 
+    width: '100%',
     marginTop: '1em',
   },
   defaultImage: {

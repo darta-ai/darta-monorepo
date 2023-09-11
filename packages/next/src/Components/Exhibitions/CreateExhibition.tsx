@@ -1,3 +1,4 @@
+import {Exhibition} from '@darta/types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {Box, Button, Typography} from '@mui/material';
@@ -6,7 +7,6 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {Exhibition} from '@darta/types';
 import {PRIMARY_BLUE} from '../../../styles';
 import {exhibitionPressReleaseToolTip} from '../../common/ToolTips/toolTips';
 import {createArtworkStyles} from '../Artwork/styles';
@@ -19,8 +19,8 @@ import {
   DartaSwitch,
   DartaTextInput,
 } from '../FormComponents/index';
+import {DartaConfirmExhibitionDelete} from '../Modals/DartaConfirmExhibitionDelete';
 import {profileStyles} from '../Profile/Components/profileStyles';
-import { DartaConfirmExhibitionDelete } from '../Modals/DartaConfirmExhibitionDelete';
 
 export const createExhibitionErrors = {
   exhibitionTitle: 'An exhibition title is required.',
@@ -55,7 +55,9 @@ const createExhibitionSchema = yup
         .required(createExhibitionErrors.exhibitionPressRelease),
     }),
     exhibitionLocation: yup.object().shape({
-      locationString: yup.string().required(createExhibitionErrors.exhibitionLocationString)
+      locationString: yup
+        .string()
+        .required(createExhibitionErrors.exhibitionLocationString),
     }),
     exhibitionDates: yup
       .object()
@@ -184,8 +186,13 @@ export function CreateExhibition({
   newExhibition: Exhibition;
   cancelAction: (arg0: boolean) => void;
   saveExhibition: (arg0: Exhibition) => void;
-  handleDelete: ({ exhibitionId, deleteArtworks }: 
-    { exhibitionId: string; deleteArtworks?: boolean | undefined; }) => Promise<boolean>;
+  handleDelete: ({
+    exhibitionId,
+    deleteArtworks,
+  }: {
+    exhibitionId: string;
+    deleteArtworks?: boolean | undefined;
+  }) => Promise<boolean>;
   galleryLocations: string[];
   galleryName: string;
 }) {
@@ -215,10 +222,10 @@ export function CreateExhibition({
     );
     const slug = `${galleryNameHashified}-${exhibitionNameHashified}`;
     setValue('slug.value', slug);
-    try{
+    try {
       saveExhibition(data);
-    } catch(error){
-      console.log(error)
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -233,12 +240,12 @@ export function CreateExhibition({
 
     const reader = new FileReader();
 
-    reader.onload = (event) => {
+    reader.onload = event => {
       // event.target.result contains the file's data as a base64 encoded string.
-      if (event.target?.result){
+      if (event.target?.result) {
         const fileData = event.target.result;
         setValue('exhibitionPrimaryImage.fileData', fileData);
-        setValue('exhibitionPrimaryImage.fileName', file.name)
+        setValue('exhibitionPrimaryImage.fileName', file.name);
       }
     };
 
@@ -321,7 +328,7 @@ export function CreateExhibition({
     setMinTime(date);
   };
 
-  console.log({newExhibition})
+  console.log({newExhibition});
 
   return (
     <Box mb={2} sx={profileStyles.container}>
@@ -349,17 +356,16 @@ export function CreateExhibition({
                 instructions="Drag and drop the main image of your exhibition or click to select an image to upload."
               />
             ) : (
-              // eslint-disable-next-line jsx-a11y/img-redundant-alt
               <Box>
-              <img
-                src={
-                  tempImage ??
-                  (newExhibition?.exhibitionPrimaryImage?.value as string) ??
-                  ''
-                }
-                alt="exhibition main image"
-                style={createArtworkStyles.defaultImage}
-              />
+                <img
+                  src={
+                    tempImage ??
+                    (newExhibition?.exhibitionPrimaryImage?.value as string) ??
+                    ''
+                  }
+                  alt="exhibition main image"
+                  style={createArtworkStyles.defaultImage}
+                />
               </Box>
             )}
             {errors.exhibitionPrimaryImage && (

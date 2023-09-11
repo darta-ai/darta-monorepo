@@ -1,3 +1,4 @@
+import {Artwork} from '@darta/types';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Box,
@@ -11,13 +12,12 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-import {Artwork} from '@darta/types';
 import {cardStyles} from '../../../styles/CardStyles';
 import {currencyConverter} from '../../common/templates';
 import {InquiryArtworkData} from '../../dummyData';
+import {useAppState} from '../State/AppContext';
 import {InquiryTable} from '../Tables/InquiryTable';
 import {CreateArtwork} from './CreateArtwork';
-import { useAppState } from '../State/AppContext';
 
 export function ArtworkCard({
   artwork,
@@ -28,24 +28,30 @@ export function ArtworkCard({
   setCroppingModalOpen,
 }: {
   artwork: Artwork;
-  saveArtwork: ({updatedArtwork} : {updatedArtwork: Artwork}) => Promise<boolean>;
-  deleteArtwork: ({artworkId} : {artworkId: string}) => Promise<boolean>
+  saveArtwork: ({
+    updatedArtwork,
+  }: {
+    updatedArtwork: Artwork;
+  }) => Promise<boolean>;
+  deleteArtwork: ({artworkId}: {artworkId: string}) => Promise<boolean>;
   inquiries: InquiryArtworkData[] | null;
   croppingModalOpen?: boolean;
   setCroppingModalOpen?: (arg0: boolean) => void;
 }) {
-
-  const {state} = useAppState()
+  const {state} = useAppState();
   const [expanded, setExpanded] = React.useState(false);
   const [editArtwork, setEditArtwork] = React.useState<boolean>(false);
 
-  const [saveSpinner, setSaveSpinner] = React.useState(false)
-  const [deleteSpinner, setDeleteSpinner] = React.useState(false)
+  const [saveSpinner, setSaveSpinner] = React.useState(false);
+  const [deleteSpinner, setDeleteSpinner] = React.useState(false);
 
   let exhibition;
-  if (artwork?.exhibitionId && state.galleryExhibitions[artwork?.exhibitionId]?.exhibitionTitle?.value){
-    const exhibitionId = artwork.exhibitionId
-    exhibition = state.galleryExhibitions[exhibitionId].exhibitionTitle.value
+  if (
+    artwork?.exhibitionId &&
+    state.galleryExhibitions[artwork?.exhibitionId]?.exhibitionTitle?.value
+  ) {
+    const {exhibitionId} = artwork;
+    exhibition = state.galleryExhibitions[exhibitionId].exhibitionTitle.value;
   }
 
   const handleExpandClick = () => {
@@ -53,25 +59,21 @@ export function ArtworkCard({
   };
 
   const handleSave = async (savedArtwork: Artwork) => {
-    setSaveSpinner(true)
+    setSaveSpinner(true);
     try {
       await saveArtwork({updatedArtwork: savedArtwork});
-    } catch (error){
-
-    }
-    setSaveSpinner(false)
+    } catch (error) {}
+    setSaveSpinner(false);
     setEditArtwork(!editArtwork);
   };
 
   const handleDelete = async (artworkId: string) => {
-    setDeleteSpinner(true)
-    
+    setDeleteSpinner(true);
+
     try {
       await deleteArtwork({artworkId});
-    } catch (error){
-      
-    }
-    setDeleteSpinner(false)
+    } catch (error) {}
+    setDeleteSpinner(false);
     return setEditArtwork(false);
   };
 
@@ -134,29 +136,28 @@ export function ArtworkCard({
                 component="h2"
                 data-testid="artwork-card-artist-name"
                 sx={{textOverflow: 'ellipsis'}}>
-                  {artwork?.artistName?.value}
+                {artwork?.artistName?.value}
               </Typography>
               <Typography
                 data-testid="artwork-card-artwork-title"
                 variant="h6"
                 color="textSecondary">
-                  {artwork?.artworkTitle?.value}
+                {artwork?.artworkTitle?.value}
               </Typography>
               <Typography
                 paragraph
                 data-testid="artwork-card-medium"
                 color="textSecondary">
-                  Medium: {artwork?.artworkMedium?.value}
+                Medium: {artwork?.artworkMedium?.value}
               </Typography>
               {exhibition && (
                 <Typography
-                paragraph
-                data-testid="artwork-card-medium"
-                color="textSecondary"
-                sx={{fontWeight: 'bold'}}
-                >
+                  paragraph
+                  data-testid="artwork-card-medium"
+                  color="textSecondary"
+                  sx={{fontWeight: 'bold'}}>
                   Exhibition: {exhibition}
-               </Typography>              
+                </Typography>
               )}
             </CardContent>
           </Box>
@@ -264,7 +265,6 @@ export function ArtworkCard({
           <Box />
         )}
       </Collapse>
-      
     </Card>
   );
 }

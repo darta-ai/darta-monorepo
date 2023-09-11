@@ -1,15 +1,15 @@
 import 'firebase/compat/auth';
 
+import {IGalleryProfileData} from '@darta/types';
 import {Box, Button, Typography} from '@mui/material';
 import Head from 'next/head';
+import {AuthContext} from 'packages/next/pages/_app';
 import React from 'react';
 
-import {IGalleryProfileData} from "@darta/types"
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {EditProfileGallery, ProfileGallery} from '../Profile';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
-import { AuthContext } from 'packages/next/pages/_app';
 
 // Reactour steps
 const profileSteps = [
@@ -92,7 +92,9 @@ export function GalleryProfile() {
               data-testid="edit-profile-button"
               className="edit-profile-button"
               type="submit"
-              disabled={!state.galleryProfile.isValidated || !user.emailVerified}
+              disabled={
+                !state.galleryProfile.isValidated || !user.emailVerified
+              }
               onClick={() => setIsEditingProfile(!isEditingProfile)}
               sx={galleryStyles.createNewButton}>
               <Typography sx={{fontWeight: 'bold'}}>Edit Profile</Typography>
@@ -117,7 +119,7 @@ export function GalleryProfile() {
             <ProfileGallery
               galleryProfileData={
                 {
-                  ...state.galleryProfile
+                  ...state.galleryProfile,
                 } as IGalleryProfileData
               }
             />

@@ -42,7 +42,14 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
   } = useForm({resolver: yupResolver(schema)});
   const handleSignIn = async (data: any) => {
     try {
-      const {error, user, errorMessage}: {error: any, user: any, errorMessage: string} = await dartaSignIn(data, signInType);
+      const {
+        error,
+        user,
+        errorMessage,
+      }: {error: any; user: any; errorMessage: string} = await dartaSignIn(
+        data,
+        signInType,
+      );
       if (error) {
         setFirebaseError(errorMessage);
       } else if (user?.displayName) {
