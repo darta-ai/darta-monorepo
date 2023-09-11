@@ -20,6 +20,8 @@ import {UploadArtworksXlsModal} from '../Modals';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
 import { createArtworkAPI, editArtworkAPI, deleteArtworkAPI } from '../../API/artworks/artworkRoutes';
+import { AuthContext } from 'packages/next/pages/_app';
+import { DartaErrorAlert } from '../Modals';
 
 // Reactour steps
 const artworkSteps = [
@@ -58,11 +60,14 @@ const artworkSteps = [
 
 export function GalleryArtwork() {
   const {state, dispatch} = useAppState();
+  const {user} = React.useContext(AuthContext);
 
   const [displayArtworks, setDisplayArtworks] = React.useState<Artwork[]>();
   const [inquiries, setInquiries] = React.useState<{
     [key: string]: InquiryArtworkData[];
   } | null>(null);
+  const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(true)
+
 
   React.useEffect(() => {
     const inquiriesArray = Object.values(galleryInquiriesDummyData);
@@ -98,17 +103,17 @@ export function GalleryArtwork() {
         throw new Error('did not receive an artwork')
       }
     } catch (error: any){
-        // TO-DO: throw an error
+      setErrorAlertOpen(true)
     }
   };
 
   const saveArtwork = async ({updatedArtwork} : {updatedArtwork: Artwork}): Promise<boolean> => {
     try{
-      const results = await editArtworkAPI({artwork: updatedArtwork})
+      const results: Artwork = await editArtworkAPI({artwork: updatedArtwork})
       if (results && results?.exhibitionId && results?.artworkId){
         dispatch({
           type: GalleryReducerActions.SAVE_EXHIBITION_ARTWORK,
-          artwork: results,
+          artwork: {[results.artworkId] : results},
           exhibitionId : results.exhibitionId,
         });
       }
@@ -122,7 +127,7 @@ export function GalleryArtwork() {
         throw new Error('unable to edit artwork')
       }
     }catch{
-      // TO-DO: throw an error
+      setErrorAlertOpen(true)
     }
     return Promise.resolve(true);
   };
@@ -136,9 +141,9 @@ export function GalleryArtwork() {
         throw new Error('unable to edit artwork')
       }
     } catch(error){
-      // TO-DO: throw an error
+      setErrorAlertOpen(true)
     }
-    return Promise.resolve(true);
+    return Promise.resolve(false);
   };
 
   const [croppingModalOpen, setCroppingModalOpen] = React.useState(true);
@@ -269,12 +274,13 @@ export function GalleryArtwork() {
                 type="submit"
                 onClick={() => addNewArtwork()}
                 className="create-new-artwork"
+                disabled={!state.galleryProfile.isValidated || !user.emailVerified}
                 sx={{
                   backgroundColor: PRIMARY_BLUE,
                   color: PRIMARY_MILK,
                   alignSelf: 'center',
                 }}>
-                Create Artwork
+                <Typography sx={{fontWeight: 'bold'}}>Create Artwork</Typography>
               </Button>
               <UploadArtworksXlsModal handleBatchUpload={handleBatchUpload} />
             </Box>
@@ -359,8 +365,8 @@ export function GalleryArtwork() {
               <Box>
                 <ArtworkCard
                   artwork={Object.values({...artwork1})[0] as Artwork}
-                  saveArtwork={saveArtwork}
-                  deleteArtwork={deleteArtwork}
+                  saveArtwork={() => Promise.resolve(true)}
+                  deleteArtwork={() => Promise.resolve(true)}
                   croppingModalOpen={croppingModalOpen}
                   setCroppingModalOpen={setCroppingModalOpen}
                   inquiries={[] as InquiryArtworkData[]}
@@ -370,6 +376,10 @@ export function GalleryArtwork() {
           </Box>
         </Box>
       </Box>
+      <DartaErrorAlert 
+        errorAlertOpen={errorAlertOpen}
+        setErrorAlertOpen={setErrorAlertOpen}
+      />
     </>
   );
 }

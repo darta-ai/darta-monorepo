@@ -6,9 +6,12 @@ import {
   getIdTokenResult,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  updateProfile,
+  sendEmailVerification,
+  updateProfile
 } from 'firebase/auth';
 import {getFirestore} from 'firebase/firestore';
+import { User } from 'firebase/auth';
+
 
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY,
@@ -53,10 +56,10 @@ export const firebaseErrors = (message: string) => {
   }
 };
 
-export async function firebaseSignUp(
-  email: string,
+export async function firebaseSignUp({email, password, userName} :
+  {email: string,
   password: string,
-  signInType: string,
+  userName: string} 
 ) {
   try {
     await auth.setPersistence(browserSessionPersistence);
@@ -66,14 +69,18 @@ export async function firebaseSignUp(
       password,
     );
     await updateProfile(userCredential.user, {
-      displayName: signInType,
+      displayName: userName,
     });
+    if (auth.currentUser){
+      await sendEmailVerification(auth.currentUser)
+    }
     return {error: false, user: userCredential.user, errorMessage: ''};
   } catch (error: any) {
     return {
       error: true,
       user: undefined,
       errorMessage: firebaseErrors(error.code),
+      verifiedEmail: false
     };
   }
 }
@@ -102,7 +109,8 @@ export async function firebaseSignIn(
     await updateProfile(userCredential.user, {
       displayName: signInType,
     });
-    const idToken = auth.currentUser?.getIdToken()
+    const idToken = auth.currentUser?.getIdToken();
+
     return {error: false, user: userCredential.user, errorMessage: '', idToken};
   } catch (error: any) {
     return {
@@ -110,6 +118,21 @@ export async function firebaseSignIn(
       user: undefined,
       errorMessage: firebaseErrors(error.code),
     };
+  }
+}
+
+export async function resendEmailVerification(){
+  try {
+    if (auth.currentUser){
+      const results = await sendEmailVerification(auth.currentUser)
+      console.log({results})
+      return {success: true}
+    } else{
+      throw new Error()
+    }
+  } catch (error) {
+    console.log(error)
+    return {success: false}
   }
 }
 

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { IImageService } from '../services/interfaces/IImageService';
 import { controller, httpGet, httpPost, request, response,  } from 'inversify-express-utils';
 import { inject, injectable } from 'inversify';
-import { upload } from 'src/middlewares/upload';
+import { upload } from 'src/middleware/upload';
 
 
 @controller('/image')

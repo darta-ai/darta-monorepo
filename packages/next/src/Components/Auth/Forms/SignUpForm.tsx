@@ -23,6 +23,7 @@ import {AlreadySignedUp} from '../../Navigation/Auth';
 import {authStyles} from '../styles';
 import {AuthEnum} from '../types';
 import { createGalleryUser } from 'packages/next/src/API/users/userRoutes';
+import { DartaErrorAlert } from '../../Modals';
 
 const websiteRegExp =
   /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/;
@@ -56,6 +57,7 @@ const schema = yup
 
 export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
   const router = useRouter();
+  const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false)
   const [firebaseError, setFirebaseError] = useState<string>('');
   const {
     register,
@@ -65,22 +67,27 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
   const handleSignUp = async (data: any) => {
     const submitMe = async () => {
       try {
-        const {error, user, errorMessage} = await dartaSignUp(data, signUpType);
+        const {error, user, errorMessage} = await dartaSignUp(data);
         if (error) {
           setFirebaseError(errorMessage);
         } else if (user?.displayName) {
-          await createGalleryUser({
-            galleryName: { value: data?.galleryName}, 
-            signUpWebsite: data?.website, 
-            phoneNumber: data?.phoneNumber, 
-            email: data?.email
-          })
-          router.push(`/${signUpType}/Profile`);
+          try{
+            await createGalleryUser({
+              galleryName: { value: data?.galleryName}, 
+              signUpWebsite: data?.website, 
+              phoneNumber: data?.phoneNumber, 
+              email: data?.email
+            })
+            router.push(`/${signUpType}/Profile`);
+          } catch (error){
+            setErrorAlertOpen(true)
+          }
         } else {
-          // router.push(`/`);
+          setErrorAlertOpen(true)
+          router.push(`/`);
         }
       } catch (e: any) {
-        console.log(e)
+        setErrorAlertOpen(true)
         setFirebaseError('Something went wrong. Please try again.');
       }
     };
@@ -292,6 +299,10 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
         </Button>
         <AlreadySignedUp routeType={signUpType} />
       </Box>
+      <DartaErrorAlert 
+        errorAlertOpen={errorAlertOpen}
+        setErrorAlertOpen={setErrorAlertOpen}
+      />
     </Box>
   );
 }

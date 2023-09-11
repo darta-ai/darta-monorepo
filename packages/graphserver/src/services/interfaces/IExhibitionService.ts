@@ -7,13 +7,12 @@ export interface IExhibitionService {
     createExhibitionToArtworkEdge({exhibitionId, artworkId} : {exhibitionId : string, artworkId: string}): Promise<boolean>
     deleteExhibitionToArtworkEdge ({exhibitionId, artworkId} : {exhibitionId : string, artworkId: string}): Promise<boolean>
     
-    readExhibitionForGallery({exhibitionId} : {exhibitionId: string}) : Promise<Exhibition | void>
+    readExhibitionForGallery({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) : Promise<Exhibition | void>
     readExhibitionForUser({exhibitionId} : {exhibitionId: string}) : Promise<Exhibition | void>
     editExhibition({exhibition, galleryId}: {exhibition: Exhibition, galleryId: string}): Promise<Exhibition | void>
     listExhibitionForGallery({galleryId}: {galleryId : string}): Promise<Exhibition[] | void>
 
-    deleteExhibitionAndArtwork({exhibitionId}: {exhibitionId: string}): Promise<void>
-    deleteExhibitionOnly({exhibitionId}: {exhibitionId: string}): Promise<void>
+    deleteExhibition({exhibitionId, galleryId, deleteArtworks}: {exhibitionId: string, galleryId: string, deleteArtworks?: boolean}): Promise<boolean>
 
   }
   

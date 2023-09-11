@@ -9,6 +9,7 @@ import {galleryStyles} from '../../../styles/GalleryPageStyles';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {EditProfileGallery, ProfileGallery} from '../Profile';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
+import { AuthContext } from 'packages/next/pages/_app';
 
 // Reactour steps
 const profileSteps = [
@@ -29,13 +30,14 @@ const profileSteps = [
   {
     target: '.gallery-navigation-artwork',
     content:
-      'Otherwise, you can add artworks to the Darta platform by clicking here.',
+      'Otherwise, you can add, track, and manage artwork on the Darta platform by clicking here.',
   },
 ];
 
 // About component
 export function GalleryProfile() {
   const {state, dispatch} = useAppState();
+  const {user} = React.useContext(AuthContext);
   const [isEditingProfile, setIsEditingProfile] =
     React.useState<boolean>(false);
 
@@ -57,7 +59,6 @@ export function GalleryProfile() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditingProfile]);
-
   return (
     <>
       <Head>
@@ -91,9 +92,10 @@ export function GalleryProfile() {
               data-testid="edit-profile-button"
               className="edit-profile-button"
               type="submit"
+              disabled={!state.galleryProfile.isValidated || !user.emailVerified}
               onClick={() => setIsEditingProfile(!isEditingProfile)}
               sx={galleryStyles.createNewButton}>
-              Edit Profile
+              <Typography sx={{fontWeight: 'bold'}}>Edit Profile</Typography>
             </Button>
           </Box>
         </Box>

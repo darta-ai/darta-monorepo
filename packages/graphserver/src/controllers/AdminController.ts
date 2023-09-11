@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { IAdminService } from '../services/interfaces';
 import { controller, httpPost, request, response } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { verifyAdmin } from 'src/middlewares/adminVerify';
+import { verifyAdmin } from 'src/middleware/adminVerify';
 
 
 @controller('/admin')

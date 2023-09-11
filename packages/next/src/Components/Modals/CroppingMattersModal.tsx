@@ -1,6 +1,7 @@
 import {Button, Dialog, DialogActions, DialogContent} from '@mui/material';
 import Image from 'next/image';
 import React from 'react';
+import {Typography} from '@mui/material'
 
 const croppingMatters = require(`../../../public/static/images/croppingMatters.png`);
 
@@ -26,7 +27,7 @@ export function CroppingMattersModal({
           color="secondary"
           variant="contained"
           data-testid="dismiss-cropping-matters-modal">
-          Got it!
+          <Typography sx={{fontWeight: 'bold'}}>Got it!</Typography>
         </Button>
       </DialogActions>
     </Dialog>

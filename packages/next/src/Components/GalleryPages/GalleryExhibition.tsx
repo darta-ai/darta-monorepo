@@ -12,7 +12,8 @@ import {dummyExhibition} from '../../dummyData';
 import {ExhibitionCard} from '../Exhibitions/index';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
-import { createExhibition, editExhibition } from '../../API/exhibitions/exhibitionRotes';
+import { createExhibitionAPI } from '../../API/exhibitions/exhibitionRotes';
+import { AuthContext } from 'packages/next/pages/_app';
 
 // need a function that gets all artworks
 // need a function that gets all inquiries for art
@@ -94,6 +95,7 @@ export const getGalleryLocations = (state: GalleryState): string[] => {
 
 export function GalleryExhibition() {
   const {state, dispatch} = useAppState();
+  const {user} = React.useContext(AuthContext);
 
   const [galleryLocations, setGalleryLocations] = React.useState<string[]>([]);
   const [galleryName, setGalleryName] = React.useState<string | null>();
@@ -110,8 +112,9 @@ export function GalleryExhibition() {
     newExhibition.exhibitionId = crypto.randomUUID();
     newExhibition.createdAt = new Date().toISOString();
 
+  
     try{
-      const results = await createExhibition({exhibition: newExhibition})
+      const results = await createExhibitionAPI({exhibition: newExhibition})
       if(results?.exhibitionId){
         dispatch({
           type: GalleryReducerActions.SAVE_EXHIBITION,
@@ -127,47 +130,6 @@ export function GalleryExhibition() {
 
   };
 
-  const saveExhibition = async (
-    exhibitionId: string,
-    updatedExhibition: Exhibition,
-  ) => {
-    const exhibition = _.cloneDeep(updatedExhibition);
-    const exhibitionLocation = exhibition?.exhibitionLocation?.locationString
-    const locations = Object.values(state?.galleryProfile);
-     
-    const fullExhibitionLocation = locations.filter(
-      (locationArrayData: any) => {
-        return locationArrayData?.locationString?.value === exhibitionLocation;
-      },
-    )[0];
-
-    exhibition.exhibitionLocation = {...fullExhibitionLocation};
-
-    try {
-      const results = await editExhibition({exhibition})
-      dispatch({
-        type: GalleryReducerActions.SAVE_EXHIBITION,
-        payload: results,
-        exhibitionId,
-      });
-      dispatch({
-        type: GalleryReducerActions.SAVE_NEW_ARTWORK,
-        payload: results.artworks as any,
-      });
-    } catch(error){
-      console.log(error)
-      // TO-DO: error handling
-    }
-
-
-  };
-
-  const deleteExhibition = (exhibitionId: string) => {
-    dispatch({
-      type: GalleryReducerActions.DELETE_EXHIBITION,
-      exhibitionId,
-    });
-  };
 
   const [stepIndex, setStepIndex] = React.useState(0);
   const runJoyride = Object.keys(state?.galleryExhibitions).length;
@@ -212,8 +174,9 @@ export function GalleryExhibition() {
               className="create-new-exhibition"
               type="submit"
               onClick={() => addNewExhibition()}
+              disabled={!state.galleryProfile.isValidated || !user.emailVerified}
               sx={galleryStyles.createNewButton}>
-              Create Exhibition
+              <Typography sx={{fontWeight: 'bold'}}>Create Exhibition</Typography>
             </Button>
           </Box>
         </Box>
@@ -230,12 +193,10 @@ export function GalleryExhibition() {
                 return (dateB as any) - (dateA as any);
               })
               .map((exhibition: Exhibition) => (
-                <Box key={exhibition?.exhibitionId }>
+                <Box key={exhibition?.exhibitionId} sx={{my: 2}}>
                   <ExhibitionCard
                     exhibition={exhibition}
-                    saveExhibition={saveExhibition }
                     galleryLocations={galleryLocations }
-                    deleteExhibition={deleteExhibition }
                     exhibitionId={exhibition?.exhibitionId}
                     galleryName={galleryName as string}
                   />
@@ -245,9 +206,7 @@ export function GalleryExhibition() {
             <Box>
               <ExhibitionCard
                 exhibition={dummyExhibition}
-                saveExhibition={saveExhibition}
                 galleryLocations={galleryLocations}
-                deleteExhibition={deleteExhibition}
                 exhibitionId="00000-00000-0000"
                 galleryName={galleryName as string}
               />

@@ -1,4 +1,4 @@
-import {ArtworkObject, Exhibition, IGalleryProfileData} from '../globalTypes';
+import {ArtworkObject, Exhibition, IGalleryProfileData} from '@darta/types';
 
 export const galleryProfileRawData: IGalleryProfileData = {
   galleryName: {value: 'Pat Kirts Gallery 2000'},
@@ -37,8 +37,9 @@ export const artwork1: ArtworkObject = {
   '5f92586d-b127-497e-ae96-20dc8c93ae1b': {
     published: false,
     artworkId: '5f92586d-b127-497e-ae96-20dc8c93ae1b',
+    exhibitionId: '5f92586d-b127-497e-ae96-20dc8c93ae1b',
     artistName: {
-      value: 'RACHEL MARINO',
+      value: 'RACHEL SIMONE MARINO',
     },
     artworkCreatedYear: {
       value: '2022',
@@ -98,6 +99,7 @@ export const artwork2: ArtworkObject = {
       value: 'SABRINA RING',
     },
     artworkCreatedYear: {value: '2024'},
+    exhibitionId: '5f92586d-b127-497e-ae96-20dc8c93ae1b',
     artworkCurrency: {value: 'USD'},
     artworkDescription: {
       value:
@@ -135,6 +137,7 @@ export const artwork3: ArtworkObject = {
     artistName: {value: 'MARY GRIGORIADIS'},
     artworkCreatedYear: {value: '2024'},
     artworkCurrency: {value: 'USD'},
+    exhibitionId: '5f92586d-b127-497e-ae96-20dc8c93ae1b',
     artworkDescription: {
       value:
         'Grigoriadis devised her methodical approach during… These ideas to her own experiments on\nthe canvas. ',

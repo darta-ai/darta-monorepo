@@ -37,6 +37,8 @@ export function DartaDropdown({
     innerWidthRef.current = window.innerWidth;
   }, []);
 
+  console.log({value, fieldName})
+
   const testIdValue = fieldName.replace('.', '-');
   return (
     <Box
@@ -83,12 +85,12 @@ export function DartaDropdown({
             control={control}
             name={`${fieldName}`}
             key={fieldName}
+            defaultValue={value}
             render={({field}) => (
               <Select
                 id="autocomplete"
                 inputvalue={field.value}
                 key={field.value}
-                defaultValue={value}
                 sx={formStyles.dropDown}
                 data-testid={`${testIdValue}-select-field`}
                 {...register(`${fieldName}.${'value'}`)}

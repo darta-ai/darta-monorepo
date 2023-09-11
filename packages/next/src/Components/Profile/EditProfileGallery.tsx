@@ -9,7 +9,7 @@ import * as yup from 'yup';
 import {
   BusinessAddressType,
   PrivateFields,
-} from '../../../globalTypes';
+} from '@darta/types';
 import {IGalleryProfileData} from '@darta/types'
 import {PRIMARY_BLUE} from '../../../styles';
 import {googleMapsParser} from '../../common/nextFunctions';
@@ -22,7 +22,7 @@ import {
   DartaTextInput,
 } from '../FormComponents/index';
 import {profileStyles} from './Components/profileStyles';
-import { updateGalleryProfile } from '../../API/galleries/galleryRoutes';
+import { updateGalleryProfileAPI } from '../../API/galleries/galleryRoutes';
 
 const instagramREGEX =
   /(?:^|[^\w])(?:@)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)/;
@@ -163,7 +163,7 @@ export function EditProfileGallery({
     
 
     try{
-      const {data} = await updateGalleryProfile(tempData)
+      const {data} = await updateGalleryProfileAPI(tempData)
       setGalleryProfileData(data);
     } catch (error){
       //TO-DO: need an error modal  

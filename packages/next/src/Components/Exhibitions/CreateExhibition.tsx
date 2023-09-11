@@ -19,9 +19,8 @@ import {
   DartaSwitch,
   DartaTextInput,
 } from '../FormComponents/index';
-import {DartaDialogue} from '../Modals/DartaDialogue';
 import {profileStyles} from '../Profile/Components/profileStyles';
-import { DartaConfirmExhibitionDelete } from '../Modals/ConfirmDeleteExhibitionArtworks';
+import { DartaConfirmExhibitionDelete } from '../Modals/DartaConfirmExhibitionDelete';
 
 export const createExhibitionErrors = {
   exhibitionTitle: 'An exhibition title is required.',
@@ -185,7 +184,8 @@ export function CreateExhibition({
   newExhibition: Exhibition;
   cancelAction: (arg0: boolean) => void;
   saveExhibition: (arg0: Exhibition) => void;
-  handleDelete: (arg0: string) => void;
+  handleDelete: ({ exhibitionId, deleteArtworks }: 
+    { exhibitionId: string; deleteArtworks?: boolean | undefined; }) => Promise<boolean>;
   galleryLocations: string[];
   galleryName: string;
 }) {
@@ -321,6 +321,8 @@ export function CreateExhibition({
     setMinTime(date);
   };
 
+  console.log({newExhibition})
+
   return (
     <Box mb={2} sx={profileStyles.container}>
       <Box sx={createArtworkStyles.backButton}>
@@ -348,6 +350,7 @@ export function CreateExhibition({
               />
             ) : (
               // eslint-disable-next-line jsx-a11y/img-redundant-alt
+              <Box>
               <img
                 src={
                   tempImage ??
@@ -357,6 +360,7 @@ export function CreateExhibition({
                 alt="exhibition main image"
                 style={createArtworkStyles.defaultImage}
               />
+              </Box>
             )}
             {errors.exhibitionPrimaryImage && (
               <Typography
@@ -417,10 +421,10 @@ export function CreateExhibition({
             data={newExhibition.exhibitionPressRelease?.value}
             register={register}
             errors={errors}
-            required={false}
+            required={true}
             control={control}
             helperTextString={errors.exhibitionPressRelease?.value?.message}
-            inputAdornmentString="Description"
+            inputAdornmentString="Press Release"
             toolTips={exhibitionPressReleaseToolTip}
             multiline={12}
             allowPrivate={false}
@@ -602,7 +606,7 @@ export function CreateExhibition({
                 fieldName="receptionDates.receptionStartTime"
                 canEdit={!hasReception}
                 setHigherLevelState={handleMinTime}
-                minTime={dayjs(minTime)}
+                minTime={null}
                 maxTime={dayjs(maxDate)}
                 error={!!errors?.receptionDates?.message}
                 value={

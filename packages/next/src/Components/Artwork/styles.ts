@@ -95,6 +95,7 @@ export const createArtworkStyles = {
   },
   defaultImageEdit: {
     maxHeight: '40vh',
+    maxWidth: '40vw',
     '@media (min-width: 780px)': {
       maxHeight: '30vh',
     },
@@ -111,7 +112,7 @@ export const createArtworkStyles = {
     p: '1em',
     // width: '100%',
     maxHeight: '40vh',
-    maxWidth: '40vw',
+    maxWidth: '35vw',
     alignSelf: 'center',
     borderWidth: 30,
   },

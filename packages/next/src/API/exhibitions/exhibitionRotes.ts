@@ -4,7 +4,7 @@ import { Exhibition, Artwork} from "@darta/types";
 
 const URL = "http://localhost:1160/exhibition"
 
-export async function createExhibition({exhibition} : any): Promise<any> {
+export async function createExhibitionAPI({exhibition} : any): Promise<any> {
     const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
     try {
         const response = await axios.post(`${URL}/create`, {exhibition} , {headers: {'authorization': `Bearer ${idToken}`}});
@@ -15,7 +15,18 @@ export async function createExhibition({exhibition} : any): Promise<any> {
     }
 }
 
-export async function editExhibition({exhibition} : any): Promise<any> {
+export async function readExhibitionForGallery({exhibitionId} : {exhibitionId: string}): Promise<any> {
+    const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
+    try {
+        const response = await axios.post(`${URL}/readExhibitionForGallery`, {exhibitionId}, {headers: {'authorization': `Bearer ${idToken}`}});
+        return response.data
+    } catch (error) {
+        console.log(error)
+        throw new Error('Unable list exhibitions')
+    }
+}
+
+export async function editExhibitionAPI({exhibition} : any): Promise<any> {
     const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
     try {
         const response = await axios.post(`${URL}/edit`, {exhibition} , {headers: {'authorization': `Bearer ${idToken}`}});
@@ -27,7 +38,33 @@ export async function editExhibition({exhibition} : any): Promise<any> {
 }
 
 
-export async function listExhibitionsByGallery(): Promise<any> {
+
+export async function deleteExhibitionOnlyAPI({exhibitionId} : {exhibitionId: string}): Promise<any>{
+    const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
+
+    try {
+        const response = await axios.post(`${URL}/deleteExhibitionOnly`, {exhibitionId} , {headers: {'authorization': `Bearer ${idToken}`}});
+        return response.data;
+    } catch (error) {
+        console.log(error)
+        throw new Error('Unable to edit exhibition')
+    }
+}
+
+export async function deleteExhibitionAndArtworkAPI({exhibitionId} : {exhibitionId: string}): Promise<any>{
+    const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
+    try {
+        const response = await axios.post(`${URL}/deleteExhibitionAndArtwork`, {exhibitionId} , {headers: {'authorization': `Bearer ${idToken}`}});
+        return response.data;
+    } catch (error) {
+        console.log(error)
+        throw new Error('Unable to edit exhibition')
+    }
+}
+
+
+
+export async function listExhibitionsByGalleryAPI(): Promise<any> {
     const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true)
     try {
         const response = await axios.get(`${URL}/listForGallery`, {headers: {'authorization': `Bearer ${idToken}`}});

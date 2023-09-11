@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { Database } from 'arangojs';
 import {Client} from 'minio'
-import { IExhibitionService, INodeService, IEdgeService, IArtworkService, } from './interfaces';
+import { IExhibitionService, INodeService, IEdgeService, IArtworkService,IGalleryService } from './interfaces';
 import { Artwork, Exhibition, Images } from '@darta/types';
 import { CollectionNames, EdgeNames } from 'src/config/collections';
 import { ImageController } from 'src/controllers/ImageController';
@@ -20,6 +20,7 @@ export class ExhibitionService implements IExhibitionService {
     @inject('MinioClient') private readonly minio: Client,
     @inject('ImageController') private readonly imageController: ImageController,
     @inject('INodeService') private readonly nodeService: INodeService,
+    @inject('IGalleryService') private readonly galleryService: IGalleryService
     ) {}
 
     public async createExhibition({galleryId, userId}: { galleryId: string, userId: string}): Promise<Exhibition | void>{
@@ -40,7 +41,7 @@ export class ExhibitionService implements IExhibitionService {
     let newExhibition
 
     try{
-      const ExhibitionCursor = await this.db.query(exhibitionQuery, { newExhibition: {...exhibition, _key: exhibition?.exhibitionId}});
+      const ExhibitionCursor = await this.db.query(exhibitionQuery, { newExhibition: {...exhibition, _key: exhibition?.exhibitionId, value: exhibition?.slug?.value}});
       newExhibition = await ExhibitionCursor.next();
     } catch (error: any){
       console.log(error)
@@ -61,8 +62,13 @@ export class ExhibitionService implements IExhibitionService {
     return newExhibition
     }
 
-    public async readExhibitionForGallery({exhibitionId} : {exhibitionId: string}) : Promise<Exhibition | void>{
+    public async readExhibitionForGallery({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) : Promise<Exhibition | void>{
+      const isValidated = await this.verifyGalleryOwnsExhibition({exhibitionId, galleryId})
+      if (!isValidated) {
+        throw new Error('Unauthorized')
+      }
 
+      return await this.getExhibitionById({exhibitionId})
     }
 
     public async readExhibitionForUser({exhibitionId} : {exhibitionId: string}) : Promise<Exhibition | void>{
@@ -194,13 +200,81 @@ export class ExhibitionService implements IExhibitionService {
 
     }
 
-    public async deleteExhibitionAndArtwork({exhibitionId}: {exhibitionId: string}): Promise<void>{
+    public async deleteExhibition({exhibitionId, galleryId, deleteArtworks}: {exhibitionId: string, galleryId: string, deleteArtworks?: boolean}): Promise<boolean> {
+    
+      const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+      const fullGalleryId = this.galleryService.generateGalleryId({galleryId});
+    
+      const isVerified = await this.verifyGalleryOwnsExhibition({exhibitionId, galleryId});
+      if (!isVerified) {
+        throw new Error('unable to verify exhibition is owned by gallery');
+      }
+    
+      const exhibition = await this.getExhibitionById({exhibitionId});
+      let artworks: {[key: string]: Artwork} = {};
+    
+      if(exhibition?.artworks) {
+        artworks = exhibition.artworks as {[key:string]: Artwork};
+      }
+    
+      const promises = [];
+    
+      // Handle artworks
+      if (artworks) {
+        const artworkArray = Object.values(artworks);
+        
+        artworkArray.forEach((artwork) => {
+          // Delete artwork if required
+          if (deleteArtworks && artwork?.artworkId) {
+            promises.push(this.artworkService.deleteArtwork({artworkId: artwork.artworkId}));
+          }
+          
+          // Delete exhibition to artwork edge
+          promises.push(this.edgeService.deleteEdge({
+            edgeName: EdgeNames.FROMGalleryTOExhibition,
+            from: fullGalleryId,
+            to: fullExhibitionId
+          }));
+    
+        });
+      }
+    
+      // Delete exhibition image
+      if (exhibition?.exhibitionPrimaryImage?.fileName && exhibition?.exhibitionPrimaryImage?.bucketName) {
+        const {fileName, bucketName} = exhibition.exhibitionPrimaryImage;
+        promises.push(this.imageController.processDeleteImage({fileName, bucketName}));
+      }
+    
+      // Delete gallery to Exhibition edge
+      promises.push(this.edgeService.deleteEdge({
+        edgeName: EdgeNames.FROMGalleryTOExhibition,
+        from: fullGalleryId,
+        to: fullExhibitionId
+      }).catch(error => console.log('unable to delete edge', error))); // Catch here to allow other promises to complete
+    
+      // Delete exhibition
+      promises.push(this.nodeService.deleteNode({
+        collectionName: CollectionNames.Exhibitions,
+        id: fullExhibitionId
+      }).catch(error => console.log('unable to delete node', error))); // Catch here to allow other promises to complete
+    
+      // Wait for all promises to complete
+      let results;
+      try{
+        results = await Promise.all(promises);
+      }catch (error) {
+        console.log(error)
+      }
 
+      if (results){
+        return true
+      }
+
+      return false
+    
+      // You can further handle results if needed (e.g., check for errors)
     }
     
-    public async deleteExhibitionOnly({exhibitionId}: {exhibitionId: string}): Promise<void> {
-
-    }
 
     private async getExhibitionImage({key}: {key:string}): Promise<any>{
 
@@ -297,6 +371,27 @@ export class ExhibitionService implements IExhibitionService {
       return false
     }
 
+    private async verifyGalleryOwnsExhibition({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}): Promise<boolean>{
+
+      const to = this.generateExhibitionId({exhibitionId})
+      const from = this.galleryService.generateGalleryId({galleryId})
+
+      try{
+        const results = await this.edgeService.getEdge({
+          edgeName: EdgeNames.FROMGalleryTOExhibition,
+          from, 
+          to
+        })
+        if(results){
+          return true
+        }
+      } catch (error) {
+        console.log(error)
+      }
+
+
+      return false
+    }
 
     private generateExhibitionId({exhibitionId}:{exhibitionId: string}): string {
       return exhibitionId.includes(`${CollectionNames.Exhibitions}`) ? exhibitionId : `${CollectionNames.Exhibitions}/${exhibitionId}`

@@ -8,6 +8,7 @@ import {IGalleryProfileData, ArtworkObject,   Exhibition,
   Artwork,
   GalleryState} from '@darta/types'
 import {AuthContext} from '../../../pages/_app';
+import { User } from 'firebase/auth';
 
 type Action =
   | {type: 'SET_ARTWORK'; payload: ArtworkObject}
@@ -22,7 +23,9 @@ type Action =
   | {type: 'SAVE_EXHIBITION'; payload: Exhibition; exhibitionId: string}
   | {type: 'DELETE_EXHIBITION'; exhibitionId: string}
   | {type: 'SET_ACCESS_TOKEN'; payload: string | null}
-  | {type: 'SAVE_EXHIBITION_ARTWORK'; artwork: Artwork; exhibitionId: string}
+  | {type: 'SAVE_EXHIBITION_ARTWORK'; artwork: ArtworkObject; exhibitionId: string}
+  | {type: 'DELETE_EXHIBITION_ARTWORK'; artworkId: string, exhibitionId: string}
+  | {type: 'SET_GALLERY_USER'; user: User}
 
 // Define the shape of your state
 const initialState: GalleryState = {
@@ -30,6 +33,7 @@ const initialState: GalleryState = {
   galleryProfile: {} as IGalleryProfileData,
   galleryExhibitions: {},
   accessToken: '',
+  user: {}
 };
 
 export enum GalleryReducerActions {
@@ -42,7 +46,9 @@ export enum GalleryReducerActions {
   SAVE_EXHIBITION = 'SAVE_EXHIBITION',
   SAVE_EXHIBITION_ARTWORK = 'SAVE_EXHIBITION_ARTWORK',
   DELETE_EXHIBITION = 'DELETE_EXHIBITION',
+  DELETE_EXHIBITION_ARTWORK = "DELETE_EXHIBITION_ARTWORK",
   SET_ACCESS_TOKEN = 'SET_ACCESS_TOKEN',
+  SET_GALLERY_USER = 'SET_GALLERY_USER',
 }
 
 // Define your reducer
@@ -50,6 +56,8 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
   switch (action.type) {
     case GalleryReducerActions.SET_ACCESS_TOKEN:
       return {...state, accessToken: action.payload};
+    case GalleryReducerActions.SET_GALLERY_USER:
+        return {...state, user: action.user};
     case GalleryReducerActions.SET_ARTWORK:
       const artworkId = action.payload?.artworkId;
       if (artworkId) {
@@ -116,11 +124,28 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
       } else {
         return state;
       }
+    case GalleryReducerActions.DELETE_EXHIBITION_ARTWORK:
+      const galleryExhibitionsClone = _.cloneDeep(state.galleryExhibitions[action.exhibitionId]);
+      if(galleryExhibitionsClone?.artworks && galleryExhibitionsClone.artworks[action.artworkId]){
+        delete galleryExhibitionsClone.artworks[action.artworkId];
+      }
+        if (action?.exhibitionId && action?.artworkId) {
+          const exhibitionId = action.exhibitionId
+          return {
+            ...state,
+            galleryExhibitions: {
+              ...state.galleryExhibitions,
+              [exhibitionId] : {
+                ...galleryExhibitionsClone
+              }
+              }
+            }
+        } else {
+          return state;
+      }
     case GalleryReducerActions.SAVE_EXHIBITION_ARTWORK:
-      console.log(action)
         if (action?.exhibitionId && action?.artwork) {
           const exhibitionId = action.exhibitionId
-          const artworkId = action.artwork?.artworkId
           return {
             ...state,
             galleryExhibitions: {
@@ -129,14 +154,14 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
                 ...state.galleryExhibitions[exhibitionId],
                 artworks : {
                   ...state.galleryExhibitions[exhibitionId].artworks,
-                  [artworkId as any] : action.artwork
+                  ...action.artwork
                 }
               }
               }
             }
         } else {
           return state;
-        }
+      }
     case GalleryReducerActions.DELETE_EXHIBITION:
       if (action?.exhibitionId) {
         const galleryExhibitionsClone = _.cloneDeep(state.galleryExhibitions);

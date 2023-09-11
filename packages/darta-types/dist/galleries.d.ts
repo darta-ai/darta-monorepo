@@ -147,8 +147,6 @@ export type Exhibition = {
     exhibitionImages?: PublicFields[] | undefined[];
     artworks?: {
         [key: string]: Artwork;
-    } | {
-        [key: string]: undefined;
     };
     published: boolean;
     slug?: PublicFields;
@@ -173,6 +171,7 @@ export type GalleryState = {
         [key: string]: Exhibition;
     };
     accessToken: string | null;
+    user: any;
 };
 type GalleryDisplayValues = {
     label: string;

@@ -41,7 +41,6 @@ export function ArtworkHeader({
             backgroundColor: PRIMARY_BLUE,
             color: PRIMARY_MILK,
             alignSelf: 'center',
-            // width: '15vw',
           }}>
           <Typography sx={{fontWeight: 'bold', fontSize: '0.8rem'}}>
             Create Artwork

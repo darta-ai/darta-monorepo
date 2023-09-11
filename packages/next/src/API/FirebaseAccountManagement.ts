@@ -4,11 +4,11 @@ import {
   firebaseSignUp,
 } from '../ThirdPartyAPIs/firebaseApp';
 
-export const dartaSignUp = async (user: any, signUpType: string) => {
+export const dartaSignUp = async (user: any) => {
   const firebaseCheck = await firebaseSignUp(
-    user.email,
-    user.password,
-    signUpType,
+    {email: user.email,
+    password: user.password,
+    userName: user.galleryName}
   );
   return firebaseCheck;
 };

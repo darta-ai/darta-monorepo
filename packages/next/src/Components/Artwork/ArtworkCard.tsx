@@ -17,6 +17,7 @@ import {currencyConverter} from '../../common/templates';
 import {InquiryArtworkData} from '../../dummyData';
 import {InquiryTable} from '../Tables/InquiryTable';
 import {CreateArtwork} from './CreateArtwork';
+import { useAppState } from '../State/AppContext';
 
 export function ArtworkCard({
   artwork,
@@ -33,11 +34,19 @@ export function ArtworkCard({
   croppingModalOpen?: boolean;
   setCroppingModalOpen?: (arg0: boolean) => void;
 }) {
+
+  const {state} = useAppState()
   const [expanded, setExpanded] = React.useState(false);
   const [editArtwork, setEditArtwork] = React.useState<boolean>(false);
 
   const [saveSpinner, setSaveSpinner] = React.useState(false)
   const [deleteSpinner, setDeleteSpinner] = React.useState(false)
+
+  let exhibition;
+  if (artwork?.exhibitionId && state.galleryExhibitions[artwork?.exhibitionId]?.exhibitionTitle?.value){
+    const exhibitionId = artwork.exhibitionId
+    exhibition = state.galleryExhibitions[exhibitionId].exhibitionTitle.value
+  }
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -45,14 +54,23 @@ export function ArtworkCard({
 
   const handleSave = async (savedArtwork: Artwork) => {
     setSaveSpinner(true)
-    await saveArtwork({updatedArtwork: savedArtwork});
+    try {
+      await saveArtwork({updatedArtwork: savedArtwork});
+    } catch (error){
+
+    }
     setSaveSpinner(false)
     setEditArtwork(!editArtwork);
   };
 
   const handleDelete = async (artworkId: string) => {
     setDeleteSpinner(true)
-    await deleteArtwork({artworkId});
+    
+    try {
+      await deleteArtwork({artworkId});
+    } catch (error){
+      
+    }
     setDeleteSpinner(false)
     return setEditArtwork(false);
   };
@@ -82,7 +100,7 @@ export function ArtworkCard({
           <Typography
             data-testid="artwork-card-additional-information-warning"
             sx={{textAlign: 'center', color: 'red', fontWeight: 'bold'}}>
-            Additional Information Required. Please Edit.
+            Additional Information Required. Please Edit Artwork.
           </Typography>
         </Box>
       ) : (
@@ -116,20 +134,30 @@ export function ArtworkCard({
                 component="h2"
                 data-testid="artwork-card-artist-name"
                 sx={{textOverflow: 'ellipsis'}}>
-                {artwork?.artistName?.value}
+                  {artwork?.artistName?.value}
               </Typography>
               <Typography
                 data-testid="artwork-card-artwork-title"
                 variant="h6"
                 color="textSecondary">
-                {artwork?.artworkTitle?.value}
+                  {artwork?.artworkTitle?.value}
               </Typography>
               <Typography
                 paragraph
                 data-testid="artwork-card-medium"
                 color="textSecondary">
-                Medium: {artwork?.artworkMedium?.value}
+                  Medium: {artwork?.artworkMedium?.value}
               </Typography>
+              {exhibition && (
+                <Typography
+                paragraph
+                data-testid="artwork-card-medium"
+                color="textSecondary"
+                sx={{fontWeight: 'bold'}}
+                >
+                  Exhibition: {exhibition}
+               </Typography>              
+              )}
             </CardContent>
           </Box>
 
@@ -236,6 +264,7 @@ export function ArtworkCard({
           <Box />
         )}
       </Collapse>
+      
     </Card>
   );
 }

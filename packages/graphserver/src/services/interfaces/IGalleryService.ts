@@ -12,5 +12,7 @@ export interface IGalleryService {
     verifyQualifyingGallery(domain: string): Promise<boolean>
     getGalleryIdFromUID({uid}: {uid:string}): Promise<string>
     getGalleryLogo({id}: {id:string}): Promise<any>
+    generateGalleryUserId({galleryId} : {galleryId : string}): string
+    generateGalleryId({galleryId} : {galleryId : string}): string
   }
   
