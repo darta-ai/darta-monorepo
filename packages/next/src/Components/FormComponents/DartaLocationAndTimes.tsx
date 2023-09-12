@@ -1,9 +1,12 @@
-import {IGalleryProfileData} from '@darta/types';
+import {
+  BusinessAddressType,
+  IBusinessLocationData,
+  IGalleryProfileData,
+} from '@darta/types';
 import {Box, Button, Divider} from '@mui/material';
 import {debounce} from '@mui/material/utils';
 import React from 'react';
 
-import {BusinessAddressType, IBusinessLocationData} from '../../../globalTypes';
 import {googleMapsParser} from '../../common/nextFunctions';
 import {DartaHoursOfOperation, DartaLocationLookup} from './index';
 import {formStyles} from './styles';
@@ -207,7 +210,7 @@ export function DartaLocationAndTimes({
 
   React.useEffect(() => {
     if (placeDetails) {
-      const {galleryAddress, lat, lng, mapsUrl, city} =
+      const {galleryAddress, lat, lng, mapsUrl, city, locality} =
         googleMapsParser(placeDetails);
       if (galleryAddress) {
         setValue(`${locationNumber}.locationString.value`, galleryAddress);
@@ -222,7 +225,10 @@ export function DartaLocationAndTimes({
         setValue(`${locationNumber}.coordinates.googleMapsUrl.value`, mapsUrl);
       }
       if (city) {
-        setValue(`${locationNumber}.city.value`, mapsUrl);
+        setValue(`${locationNumber}.city.value`, city);
+      }
+      if (locality) {
+        setValue(`${locationNumber}.locality.value`, locality);
       }
       setValue(`${locationNumber}.googleMapsPlaceId.value`, placeId);
     }

@@ -1,13 +1,8 @@
-import {ArtworkObject, IGalleryProfileData} from '@darta/types';
 import {Box, Typography} from '@mui/material';
 import Container from '@mui/material/Container';
 import LinearProgress from '@mui/material/LinearProgress';
 import Head from 'next/head';
 import React from 'react';
-
-import {AuthContext} from '../../../pages/_app';
-import {retrieveAllGalleryData} from '../../API/DartaGETrequests';
-import {GalleryReducerActions, useAppState} from '../State/AppContext';
 
 export function LoadProfile() {
   return (

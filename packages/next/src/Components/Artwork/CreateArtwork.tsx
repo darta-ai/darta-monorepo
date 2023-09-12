@@ -34,7 +34,6 @@ import {
   ConfirmDeleteExhibitionArtwork,
   CroppingMattersModal,
   DartaDialogue,
-  DartaErrorAlert,
 } from '../Modals/index';
 import {profileStyles} from '../Profile/Components/profileStyles';
 import {useAppState} from '../State/AppContext';
@@ -737,4 +736,5 @@ CreateArtwork.defaultProps = {
   setCroppingModalOpen: () => {},
   handleDeleteArtworkFromDarta: () => {},
   handleRemoveArtworkFromExhibition: () => {},
+  handleDelete: () => {},
 };

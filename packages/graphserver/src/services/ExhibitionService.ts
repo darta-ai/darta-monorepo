@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import {Artwork, Exhibition, Images} from '@darta/types';
 import {Database} from 'arangojs';
 import {Edge} from 'arangojs/documents';
@@ -116,7 +115,6 @@ export class ExhibitionService implements IExhibitionService {
     exhibition: Exhibition;
   }): Promise<Exhibition | void> {
     const exhibitionId = exhibition?.exhibitionId;
-
     if (!exhibitionId) {
       return;
     }

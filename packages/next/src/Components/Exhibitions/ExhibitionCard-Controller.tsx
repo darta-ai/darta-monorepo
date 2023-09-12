@@ -49,6 +49,8 @@ export function ExhibitionCard({
 }) {
   const [expanded, setExpanded] = React.useState(false);
   const [editExhibition, setEditExhibition] = React.useState<boolean>(false);
+  const [isEditingExhibition, setIsEditingExhibition] =
+    React.useState<boolean>(false);
   const {state, dispatch} = useAppState();
   const [artworks, setArtworks] = React.useState<any>(exhibition.artworks);
   const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
@@ -64,23 +66,29 @@ export function ExhibitionCard({
   };
 
   const saveExhibition = async (updatedExhibition: Exhibition) => {
-    const exhibition = _.cloneDeep(updatedExhibition);
-    const exhibitionLocation = exhibition?.exhibitionLocation?.locationString;
+    setIsEditingExhibition(true);
+    const exhibitionClone = _.cloneDeep(updatedExhibition);
+    const exhibitionLocation =
+      exhibitionClone?.exhibitionLocation?.locationString?.value;
     const locations = Object.values(state?.galleryProfile);
 
     const fullExhibitionLocation = locations.filter(
       (locationArrayData: any) => {
-        return locationArrayData?.locationString?.value === exhibitionLocation;
+        return (
+          locationArrayData?.locationString?.value === exhibitionLocation ||
+          locationArrayData?.locationString?.value ===
+            exhibitionClone?.exhibitionLocation?.locationString
+        );
       },
     )[0];
 
-    exhibition.exhibitionLocation = {...fullExhibitionLocation};
+    exhibitionClone.exhibitionLocation = {...fullExhibitionLocation};
 
     try {
-      const results = await editExhibitionAPI({exhibition});
+      const results = await editExhibitionAPI({exhibition: exhibitionClone});
       dispatch({
         type: GalleryReducerActions.SAVE_EXHIBITION,
-        payload: results,
+        payload: {...results, artworks: {...exhibitionClone.artworks}},
         exhibitionId,
       });
       dispatch({
@@ -91,6 +99,7 @@ export function ExhibitionCard({
     } catch (error) {
       setErrorAlertOpen(true);
     }
+    setIsEditingExhibition(false);
   };
 
   const addNewArtwork = async () => {
@@ -130,7 +139,10 @@ export function ExhibitionCard({
   };
 
   const [saveSpinner, setSavedSpinner] = React.useState(false);
-  const [deleteSpinner, setDeleteSpinner] = React.useState(false);
+  const [
+    deleteSpinner,
+    // setDeleteSpinner
+  ] = React.useState(false);
 
   const saveArtwork = async (updatedArtwork: Artwork): Promise<boolean> => {
     setSavedSpinner(true);
@@ -234,6 +246,7 @@ export function ExhibitionCard({
       if (uploadArtworks[artworkId]) {
         // eslint-disable-next-line no-param-reassign
         uploadArtworks[artworkId].exhibitionOrder = counter++;
+        // eslint-disable-next-line no-param-reassign
         uploadArtworks[artworkId].exhibitionId = exhibitionId;
       }
     }
@@ -484,6 +497,7 @@ export function ExhibitionCard({
                 cancelAction={setEditExhibition}
                 handleDelete={deleteExhibition}
                 galleryLocations={galleryLocations}
+                isEditingExhibition={isEditingExhibition}
                 galleryName={galleryName}
               />
             </Box>

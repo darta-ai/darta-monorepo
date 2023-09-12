@@ -208,6 +208,7 @@ export function EditProfileGallery({
         galleryWebsite,
         galleryPhone,
         openHours,
+        locality,
         city,
       } = googleMapsParser(autofillDetails);
       if (galleryName) {
@@ -230,6 +231,9 @@ export function EditProfileGallery({
       }
       if (city) {
         setValue(`galleryLocation0.city.value`, city);
+      }
+      if (locality) {
+        setValue(`galleryLocation0.locality.value`, locality);
       }
       setValue('galleryLocation0.googleMapsPlaceId.value', placeId);
       if (openHours) {

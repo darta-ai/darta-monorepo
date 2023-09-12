@@ -1,4 +1,4 @@
-import {GalleryBase, IGalleryProfileData} from '@darta/types';
+import {GalleryBase} from '@darta/types';
 import axios from 'axios';
 
 import {auth} from '../../ThirdPartyAPIs/firebaseApp';
@@ -25,7 +25,6 @@ export async function createGalleryUser({
     );
     return response;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to create profile');
   }
 }

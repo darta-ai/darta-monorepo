@@ -33,6 +33,12 @@ const findLocality = (addressComponents: AddressComponents[]) => {
     .map(component => component.long_name)[0];
 };
 
+const findSubLocality = (addressComponents: AddressComponents[]) => {
+  return addressComponents
+    .filter(component => component.types.includes('sublocality'))
+    .map(component => component.long_name)[0];
+};
+
 export const createDimensionsString = ({
   depthIn,
   depthCm,
@@ -110,6 +116,7 @@ export const googleMapsParser = (data: any) => {
   const mapsUrl = data?.geometry?.url;
   const galleryName = data?.name;
   const city = findLocality(data?.address_components);
+  const locality = findSubLocality(data?.address_components);
   const galleryWebsite = data?.website;
   const galleryPhone = data?.formatted_phone_number;
   const openHours = parseBusinessHours(data?.opening_hours?.periods);
@@ -123,6 +130,7 @@ export const googleMapsParser = (data: any) => {
     galleryPhone,
     openHours,
     city,
+    locality,
   };
   return addressObj;
 };

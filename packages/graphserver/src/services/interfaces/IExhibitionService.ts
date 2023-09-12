@@ -1,13 +1,10 @@
-// eslint-disable-next-line import/no-unresolved
 import {Exhibition} from '@darta/types';
 
 export interface IExhibitionService {
   createExhibition({
-    exhibition,
     userId,
     galleryId,
   }: {
-    exhibition: Exhibition;
     userId: string;
     galleryId: string;
   }): Promise<Exhibition | void>;

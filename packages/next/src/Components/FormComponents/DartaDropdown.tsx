@@ -20,7 +20,6 @@ export function DartaDropdown({
   register,
   control,
   helperTextString,
-  value,
 }: {
   options: string[];
   toolTips: {
@@ -30,14 +29,11 @@ export function DartaDropdown({
   register: any;
   control: any;
   helperTextString: string | undefined;
-  value: string | null | undefined;
 }) {
   const innerWidthRef = React.useRef(800);
   React.useEffect(() => {
     innerWidthRef.current = window.innerWidth;
   }, []);
-
-  console.log({value, fieldName});
 
   const testIdValue = fieldName.replace('.', '-');
   return (
@@ -85,7 +81,7 @@ export function DartaDropdown({
             control={control}
             name={`${fieldName}`}
             key={fieldName}
-            defaultValue={value}
+            {...register(`${fieldName}.${'value'}`)}
             render={({field}) => (
               <Select
                 id="autocomplete"
@@ -93,7 +89,6 @@ export function DartaDropdown({
                 key={field.value}
                 sx={formStyles.dropDown}
                 data-testid={`${testIdValue}-select-field`}
-                {...register(`${fieldName}.${'value'}`)}
                 {...(field as any)}>
                 {options.map((option, index) => (
                   <MenuItem

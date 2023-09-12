@@ -22,8 +22,7 @@ export function DartaConfirmExhibitionDelete({
     exhibitionId: string;
     deleteArtworks?: boolean | undefined;
   }) => Promise<boolean>;
-  identifier: string;
-  deleteType: string;
+
   id: string;
 }) {
   const [isSpinner, setSpinner] = React.useState<boolean>(false);

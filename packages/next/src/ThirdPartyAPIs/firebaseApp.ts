@@ -8,7 +8,7 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   updateProfile,
-, User } from 'firebase/auth';
+} from 'firebase/auth';
 import {getFirestore} from 'firebase/firestore';
 
 export const firebaseConfig = {
@@ -126,14 +126,12 @@ export async function firebaseSignIn(
 export async function resendEmailVerification() {
   try {
     if (auth.currentUser) {
-      const results = await sendEmailVerification(auth.currentUser);
-      console.log({results});
+      await sendEmailVerification(auth.currentUser);
       return {success: true};
     } else {
       throw new Error();
     }
   } catch (error) {
-    console.log(error);
     return {success: false};
   }
 }
@@ -152,7 +150,7 @@ export async function firebaseForgotPassword(
 
 export async function firebaseVerifyTest(user: any) {
   try {
-    const results = await getIdTokenResult(user);
+    await getIdTokenResult(user);
     return {success: true, errorMessage: ''};
   } catch (error: any) {
     const errorCode = error.code;
