@@ -1,21 +1,20 @@
-import {Artwork, Exhibition} from '@darta/types';
+import {Exhibition} from '@darta/types';
 import axios from 'axios';
 
 import {auth} from '../../ThirdPartyAPIs/firebaseApp';
 
 const URL = 'http://localhost:1160/exhibition';
 
-export async function createExhibitionAPI({exhibition}: any): Promise<any> {
+export async function createExhibitionAPI(): Promise<any> {
   const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
   try {
     const response = await axios.post(
       `${URL}/create`,
-      {exhibition},
+      {},
       {headers: {authorization: `Bearer ${idToken}`}},
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to create exhibition');
   }
 }
@@ -34,12 +33,15 @@ export async function readExhibitionForGallery({
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable list exhibitions');
   }
 }
 
-export async function editExhibitionAPI({exhibition}: any): Promise<any> {
+export async function editExhibitionAPI({
+  exhibition,
+}: {
+  exhibition: Exhibition;
+}): Promise<any> {
   const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
   try {
     const response = await axios.post(
@@ -49,7 +51,6 @@ export async function editExhibitionAPI({exhibition}: any): Promise<any> {
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to edit exhibition');
   }
 }
@@ -69,7 +70,6 @@ export async function deleteExhibitionOnlyAPI({
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to edit exhibition');
   }
 }
@@ -88,7 +88,6 @@ export async function deleteExhibitionAndArtworkAPI({
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to edit exhibition');
   }
 }
@@ -110,7 +109,6 @@ export async function listExhibitionsByGalleryAPI(): Promise<any> {
     );
     return mappedGalleryExhibitions;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable list exhibitions');
   }
 }

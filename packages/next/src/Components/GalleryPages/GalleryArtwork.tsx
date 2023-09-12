@@ -1,6 +1,5 @@
 import 'firebase/compat/auth';
 
-// eslint-disable-next-line import/no-unresolved
 import {Artwork} from '@darta/types';
 import {Box, Button, Typography} from '@mui/material';
 import Head from 'next/head';
@@ -69,7 +68,7 @@ export function GalleryArtwork() {
   const [inquiries, setInquiries] = React.useState<{
     [key: string]: InquiryArtworkData[];
   } | null>(null);
-  const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(true);
+  const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const inquiriesArray = Object.values(galleryInquiriesDummyData);

@@ -3,9 +3,9 @@ import 'firebase/compat/auth';
 import {IGalleryProfileData} from '@darta/types';
 import {Box, Button, Typography} from '@mui/material';
 import Head from 'next/head';
-import {AuthContext} from 'packages/next/pages/_app';
 import React from 'react';
 
+import {AuthContext} from '../../../pages/_app';
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {EditProfileGallery, ProfileGallery} from '../Profile';

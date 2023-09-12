@@ -24,13 +24,11 @@ export class ExhibitionController {
     @response() res: Response,
   ): Promise<void> {
     const {user} = req as any;
-    const {exhibition} = req.body;
     try {
       const galleryId = await this.galleryService.getGalleryIdFromUID({
         uid: user.user_id,
       });
       const newCollection = await this.exhibitionService.createExhibition({
-        exhibition,
         galleryId,
         userId: user.uid,
       });

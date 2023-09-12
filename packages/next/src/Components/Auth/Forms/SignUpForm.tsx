@@ -13,12 +13,12 @@ import {
   InputLabel,
 } from '@mui/material';
 import {useRouter} from 'next/router';
-import {createGalleryUser} from 'packages/next/src/API/users/userRoutes';
-import React, {useState} from 'react';
+import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {dartaSignUp} from '../../../API/FirebaseAccountManagement';
+import {createGalleryUser} from '../../../API/users/userRoutes';
 import {PhoneNumberFormat} from '../../FormComponents/DartaPhoneNumber';
 import {DartaErrorAlert} from '../../Modals';
 import {AlreadySignedUp} from '../../Navigation/Auth';
@@ -57,7 +57,7 @@ const schema = yup
 export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
   const router = useRouter();
   const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
-  const [firebaseError, setFirebaseError] = useState<string>('');
+  const [firebaseError, setFirebaseError] = React.useState<string>('');
   const {
     register,
     handleSubmit,
@@ -93,21 +93,25 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
     submitMe();
   };
 
-  const [togglePasswordView, setTogglePasswordView] = useState<boolean>(false);
+  const [togglePasswordView, setTogglePasswordView] =
+    React.useState<boolean>(false);
   const [toggleConfirmPasswordView, setToggleConfirmPasswordView] =
-    useState<boolean>(false);
+    React.useState<boolean>(false);
 
-  const [emailInput, setEmailInput] = useState<string | undefined>('');
-  const [emailError, setEmailError] = useState<string | undefined>('');
+  const [emailInput, setEmailInput] = React.useState<string | undefined>('');
+  const [emailError, setEmailError] = React.useState<string | undefined>('');
+  const [isGmail, setIsGmail] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const regex = /\b[A-Za-z0-9._%+-]+@gmail\.com\b/g;
     if (emailInput?.match(regex)) {
       setEmailError(
-        'Using an @gmail account to register will result in a longer to approve. If you have a business email address related to this gallery and your gallery is on the pre-approved list, you will automatically be authorized.',
+        'darta is not supporting @gmail email addresses at this time. Please use the domain of your gallery.',
       );
+      setIsGmail(true);
     } else {
       setEmailError('');
+      setIsGmail(false);
     }
   }, [emailInput]);
 
@@ -292,6 +296,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
           variant="contained"
           color="primary"
           type="submit"
+          disabled={isGmail}
           sx={{alignSelf: 'center', margin: '2vh'}}
           data-testid="signUpButton">
           Sign Up

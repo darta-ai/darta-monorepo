@@ -1,9 +1,9 @@
 import {IGalleryProfileData} from '@darta/types';
 import {Box, Button, Divider, Typography} from '@mui/material';
 import Image from 'next/image';
-import {AuthContext} from 'packages/next/pages/_app';
 import React from 'react';
 
+import {AuthContext} from '../../../pages/_app';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {phoneNumberConverter} from '../../common/utils/phoneNumberConverter';
 import {resendEmailVerification} from '../../ThirdPartyAPIs/firebaseApp';
@@ -18,7 +18,6 @@ function GalleryStatus({
   const {user} = React.useContext(AuthContext);
   const [isResent, setIsResent] = React.useState(false);
   const resendEmail = async () => {
-    console.log({user});
     try {
       await resendEmailVerification();
       setIsResent(true);
@@ -129,28 +128,6 @@ function GalleryStatus({
         </Typography>
         <Typography
           variant="h6"
-          sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
-          Click EDIT to get started.
-        </Typography>
-        <Box sx={profileStyles.profile.galleryBioStyles}>
-          <Box sx={{mx: 3}}>
-            <Typography>
-              This will be your gallery bio. Click EDIT to get started.
-            </Typography>
-          </Box>
-          <Box sx={{mx: 3, my: 3}}>
-            <Typography>
-              If you believe this is an error, please refresh the page.
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
-    );
-  } else if (galleryProfileData?.galleryName?.value) {
-    return (
-      <Box data-testid="gallery-start-editing">
-        <Typography
-          variant="h4"
           sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
           Click EDIT to get started.
         </Typography>

@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-case-declarations */
 import {
-  Artwork,
   ArtworkObject,
   Exhibition,
   ExhibitionObject,

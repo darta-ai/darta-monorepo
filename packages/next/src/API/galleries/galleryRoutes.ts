@@ -25,7 +25,6 @@ export async function createGalleryProfileAPI({
     );
     return response;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to create profile');
   }
 }
@@ -38,7 +37,6 @@ export async function readGalleryProfileAPI(): Promise<any> {
     });
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to retrieve profile');
   }
 }
@@ -55,7 +53,6 @@ export async function updateGalleryProfileAPI(
     );
     return response;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to update profile');
   }
 }

@@ -2,14 +2,12 @@ import 'firebase/compat/auth';
 
 import {Exhibition, GalleryState} from '@darta/types';
 import {Box, Button, Typography} from '@mui/material';
-import _ from 'lodash';
 import Head from 'next/head';
-import {AuthContext} from 'packages/next/pages/_app';
 import React from 'react';
 
+import {AuthContext} from '../../../pages/_app';
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
 import {createExhibitionAPI} from '../../API/exhibitions/exhibitionRotes';
-import {newExhibitionShell} from '../../common/templates';
 import {dummyExhibition} from '../../dummyData';
 import {ExhibitionCard} from '../Exhibitions/index';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
@@ -108,12 +106,8 @@ export function GalleryExhibition() {
   }, []);
 
   const addNewExhibition = async () => {
-    const newExhibition: Exhibition = _.cloneDeep(newExhibitionShell);
-    newExhibition.exhibitionId = crypto.randomUUID();
-    newExhibition.createdAt = new Date().toISOString();
-
     try {
-      const results = await createExhibitionAPI({exhibition: newExhibition});
+      const results = await createExhibitionAPI();
       if (results?.exhibitionId) {
         dispatch({
           type: GalleryReducerActions.SAVE_EXHIBITION,

@@ -1,4 +1,3 @@
-/* eslint-disable no-unsafe-optional-chaining */
 import {Artwork} from '@darta/types';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
@@ -15,7 +14,6 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import _ from 'lodash';
 import React from 'react';
 
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
@@ -257,14 +255,16 @@ export function ExhibitionArtworkList({
 }) {
   const [mappedArtworks, setMappedArtworks] = React.useState<any>(
     Object.values(artworks).sort(
-      (a: any, b: any) => a?.exhibitionOrder - b?.exhibitionOrder,
+      (a: any, b: any) =>
+        Number(a?.exhibitionOrder) - Number(b?.exhibitionOrder),
     ),
   );
   const [arrayLength, setArrayLength] = React.useState<number>(0);
 
   React.useEffect(() => {
     const tempMappedArtworks = Object.values(artworks).sort(
-      (a: any, b: any) => a?.exhibitionOrder - b?.exhibitionOrder,
+      (a: any, b: any) =>
+        Number(a?.exhibitionOrder) - Number(b?.exhibitionOrder),
     );
     setMappedArtworks(tempMappedArtworks);
     setArrayLength(tempMappedArtworks.length);

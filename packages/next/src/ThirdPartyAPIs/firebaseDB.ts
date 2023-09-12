@@ -7,7 +7,7 @@ export async function getPamphlet() {
   try {
     const pamphletData = collection(db, 'pamphlet');
     const pamphletSnapshot = await getDocs(pamphletData);
-    const pamphletList = pamphletSnapshot.docs.map(doc => doc.data());
+    const pamphletList = pamphletSnapshot.docs.map(el => el.data());
     return pamphletList;
   } catch (e) {
     // TO-DO: throw error

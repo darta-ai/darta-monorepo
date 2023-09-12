@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import 'firebase/compat/auth';
 
-// eslint-disable-next-line import/no-unresolved
 import {ArtworkObject, IGalleryProfileData} from '@darta/types';
 import {Box} from '@mui/material';
 import React from 'react';

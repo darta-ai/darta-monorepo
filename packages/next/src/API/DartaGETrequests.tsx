@@ -19,6 +19,7 @@ export const retrieveAllGalleryData = async (
     galleryArtworks,
     galleryExhibitions,
     accessToken,
+    user: {},
   };
 };
 

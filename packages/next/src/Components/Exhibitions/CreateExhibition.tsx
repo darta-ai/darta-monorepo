@@ -1,7 +1,7 @@
 import {Exhibition} from '@darta/types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import {Box, Button, Typography} from '@mui/material';
+import {Box, Button, CircularProgress, Typography} from '@mui/material';
 import dayjs from 'dayjs';
 import React from 'react';
 import {useForm} from 'react-hook-form';
@@ -55,9 +55,11 @@ const createExhibitionSchema = yup
         .required(createExhibitionErrors.exhibitionPressRelease),
     }),
     exhibitionLocation: yup.object().shape({
-      locationString: yup
-        .string()
-        .required(createExhibitionErrors.exhibitionLocationString),
+      locationString: yup.object().shape({
+        value: yup
+          .string()
+          .required(createExhibitionErrors.exhibitionPrimaryImage),
+      }),
     }),
     exhibitionDates: yup
       .object()
@@ -182,6 +184,7 @@ export function CreateExhibition({
   handleDelete,
   galleryLocations,
   galleryName,
+  isEditingExhibition,
 }: {
   newExhibition: Exhibition;
   cancelAction: (arg0: boolean) => void;
@@ -195,6 +198,7 @@ export function CreateExhibition({
   }) => Promise<boolean>;
   galleryLocations: string[];
   galleryName: string;
+  isEditingExhibition: boolean;
 }) {
   const [editPressRelease, setEditPressRelease] = React.useState<boolean>(
     !newExhibition?.exhibitionPrimaryImage?.value,
@@ -225,7 +229,7 @@ export function CreateExhibition({
     try {
       saveExhibition(data);
     } catch (error) {
-      console.log(error);
+      // TO-DO: error handling?
     }
   };
 
@@ -328,8 +332,6 @@ export function CreateExhibition({
     setMinTime(date);
   };
 
-  console.log({newExhibition});
-
   return (
     <Box mb={2} sx={profileStyles.container}>
       <Box sx={createArtworkStyles.backButton}>
@@ -357,6 +359,7 @@ export function CreateExhibition({
               />
             ) : (
               <Box>
+                {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
                 <img
                   src={
                     tempImage ??
@@ -475,10 +478,6 @@ export function CreateExhibition({
               control={control}
               toolTips={exhibitionPressReleaseToolTip}
               options={galleryLocations ?? ['edit profile to add locations']}
-              value={
-                getValues('exhibitionLocation.locationString.value') ??
-                newExhibition?.exhibitionLocation?.locationString?.value
-              }
               helperTextString={
                 errors.exhibitionLocation?.exhibitionLocationString?.value
                   ?.message
@@ -515,7 +514,7 @@ export function CreateExhibition({
                 errors={errors}
                 value={
                   getValues('exhibitionDates.exhibitionDuration.value') ||
-                  newExhibition?.exhibitionDates.exhibitionDuration
+                  newExhibition?.exhibitionDates?.exhibitionDuration
                 }
               />
             </Box>
@@ -664,14 +663,16 @@ export function CreateExhibition({
               type="submit"
               sx={{backgroundColor: PRIMARY_BLUE}}
               onClick={handleSubmit(onSubmit)}>
-              <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
+              {isEditingExhibition ? (
+                <CircularProgress size={24} />
+              ) : (
+                <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
+              )}
             </Button>
           </Box>
         </Box>
       </Box>
       <DartaConfirmExhibitionDelete
-        identifier={newExhibition?.exhibitionTitle?.value || 'this artwork'}
-        deleteType="exhibition"
         id={newExhibition.exhibitionId as string}
         open={open}
         handleClose={handleClose}

@@ -11,10 +11,8 @@ export async function createArtworkAPI(): Promise<Artwork> {
     const response = await axios.get(`${URL}/create`, {
       headers: {authorization: `Bearer ${idToken}`},
     });
-    console.log(response.data);
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to create artwork');
   }
 }
@@ -33,7 +31,6 @@ export async function editArtworkAPI({
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable edit artwork');
   }
 }
@@ -48,7 +45,6 @@ export async function deleteArtworkAPI(artworkId: string): Promise<any> {
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable edit artwork');
   }
 }
@@ -69,7 +65,6 @@ export async function createArtworkForExhibitionAPI({
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to edit exhibition');
   }
 }
@@ -88,7 +83,6 @@ export async function editArtworkForExhibitionAPI({
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to edit exhibition');
   }
 }
@@ -109,11 +103,8 @@ export async function createAndEditArtworkForExhibition({
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to create and edit exhibition');
   }
-
-  return null;
 }
 
 export async function removeArtworkFromExhibition({
@@ -132,7 +123,6 @@ export async function removeArtworkFromExhibition({
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to delete exhibition');
   }
 }
@@ -153,7 +143,6 @@ export async function deleteExhibitionArtwork({
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error('Unable to delete exhibition');
   }
 }
@@ -175,7 +164,6 @@ export async function listArtworksByGalleryAPI(): Promise<any> {
     );
     return mappedGalleryArtworks;
   } catch (error) {
-    console.log(error);
     // throw new Error('Unable edit artwork')
   }
 }

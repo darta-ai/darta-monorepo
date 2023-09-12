@@ -11,7 +11,7 @@ describe('EditProfileGallery.cy.tsx', () => {
         isEditingProfile={false}
         setIsEditingProfile={cy.stub().as('setIsEditingProfile')}
         setGalleryProfileData={cy.stub().as('setGalleryProfileData')}
-        galleryProfileData={{}}
+        galleryProfileData={{galleryName: {value: 'Test Gallery'}}}
       />,
     );
   });
