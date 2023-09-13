@@ -49,21 +49,25 @@ export async function deleteArtworkAPI(artworkId: string): Promise<any> {
   }
 }
 
+type artworkForExhibition = {
+  artwork: Artwork;
+};
+
 export async function createArtworkForExhibitionAPI({
   exhibitionId,
   exhibitionOrder,
 }: {
   exhibitionId: string;
   exhibitionOrder: number;
-}): Promise<any> {
+}): Promise<artworkForExhibition> {
   const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
   try {
-    const response = await axios.post(
+    const {data} = await axios.post(
       `${URL}/createArtworkForExhibition`,
       {exhibitionId, exhibitionOrder},
       {headers: {authorization: `Bearer ${idToken}`}},
     );
-    return response.data;
+    return data;
   } catch (error) {
     throw new Error('Unable to edit exhibition');
   }
@@ -79,6 +83,26 @@ export async function editArtworkForExhibitionAPI({
     const response = await axios.post(
       `${URL}/editArtworkForExhibition`,
       {artwork},
+      {headers: {authorization: `Bearer ${idToken}`}},
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error('Unable to edit exhibition');
+  }
+}
+
+export async function swapArtworkOrderAPI({
+  artworkId,
+  order,
+}: {
+  artworkId: string;
+  order: string;
+}): Promise<any> {
+  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  try {
+    const response = await axios.post(
+      `${URL}/swapArtworkOrder`,
+      {artworkId, order},
       {headers: {authorization: `Bearer ${idToken}`}},
     );
     return response.data;

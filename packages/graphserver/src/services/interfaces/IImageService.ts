@@ -1,5 +1,3 @@
-import {Gallery} from '../../models/GalleryModel';
-
 export interface BatchImages {
   fileBuffer: Buffer;
   fileName: string;
@@ -21,7 +19,6 @@ export interface IImageService {
     bucketName: string;
     fileName: string;
   }): Promise<any>;
-  uploadBatchImages(arg0: BatchImages[]): Promise<Gallery | null>;
   deleteImage({
     bucketName,
     fileName,
@@ -29,5 +26,4 @@ export interface IImageService {
     bucketName: string;
     fileName: string;
   }): Promise<any>;
-  deleteBatchImages(): Promise<void>;
 }

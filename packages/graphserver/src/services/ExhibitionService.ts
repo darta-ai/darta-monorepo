@@ -1,4 +1,4 @@
-import {Artwork, Exhibition, Images} from '@darta/types';
+import {Artwork, Exhibition, IBusinessLocationData, Images} from '@darta/types';
 import {Database} from 'arangojs';
 import {Edge} from 'arangojs/documents';
 import {inject, injectable} from 'inversify';
@@ -84,19 +84,9 @@ export class ExhibitionService implements IExhibitionService {
 
   public async readExhibitionForGallery({
     exhibitionId,
-    galleryId,
   }: {
     exhibitionId: string;
-    galleryId: string;
   }): Promise<Exhibition | void> {
-    const isValidated = await this.verifyGalleryOwnsExhibition({
-      exhibitionId,
-      galleryId,
-    });
-    if (!isValidated) {
-      throw new Error('Unauthorized');
-    }
-
     return await this.getExhibitionById({exhibitionId});
   }
 
@@ -393,12 +383,19 @@ export class ExhibitionService implements IExhibitionService {
     let artworkResults: Artwork[] = [];
     if (exhibitionArtworkIds) {
       const artworkPromises = exhibitionArtworkIds.map(
-        async (artwork: Edge) => {
-          if (artwork) {
+        async (artworkEdge: Edge) => {
+          if (artworkEdge) {
             try {
-              return await this.artworkService.readArtwork(artwork._to!);
+              const artwork = await this.artworkService.readArtwork(
+                artworkEdge._to!,
+              );
+              if (artwork) {
+                // Append the exhibitionOrder from the edge to the artwork
+                artwork.exhibitionOrder = artworkEdge.exhibitionOrder;
+              }
+              return artwork;
             } catch (error) {
-              throw new Error(`'Error handling artwork:', ${artwork}`);
+              throw new Error(`'Error handling artwork:', ${artworkEdge}`);
             }
           }
           return null;
@@ -417,29 +414,214 @@ export class ExhibitionService implements IExhibitionService {
     );
   }
 
-  public async createExhibitionToArtworkEdge({
+  public async createExhibitionToArtworkEdgeWithExhibitionOrder({
     exhibitionId,
     artworkId,
   }: {
     exhibitionId: string;
     artworkId: string;
-  }): Promise<boolean> {
+  }): Promise<string> {
     const fullExhibitionId = this.generateExhibitionId({exhibitionId});
     const fullArtworkId = this.artworkService.generateArtworkId({artworkId});
 
     try {
+      const artworkEdges = await this.edgeService.getAllEdgesFromNode({
+        edgeName: EdgeNames.FROMCollectionTOArtwork,
+        from: fullExhibitionId,
+      });
+
+      let exhibitionOrder = artworkEdges?.length;
+      if (artworkEdges?.length > 0) {
+        exhibitionOrder = artworkEdges.length;
+      }
+
       await this.edgeService.upsertEdge({
         edgeName: EdgeNames.FROMCollectionTOArtwork,
         from: fullExhibitionId,
         to: fullArtworkId,
         data: {
           value: 'SHOWS',
+          exhibitionOrder,
         },
       });
-      return true;
+      return exhibitionOrder.toString();
     } catch (error: any) {
       throw new Error(error.message);
     }
+  }
+
+  public async reOrderExhibitionToArtworkEdgesAfterDelete({
+    exhibitionId,
+  }: {
+    exhibitionId: string;
+  }): Promise<boolean> {
+    const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+
+    try {
+      const artworkEdges = await this.edgeService.getAllEdgesFromNode({
+        edgeName: EdgeNames.FROMCollectionTOArtwork,
+        from: fullExhibitionId,
+      });
+
+      const currentLength = artworkEdges.length;
+      const highestExhibitionOrder = artworkEdges.reduce((max, obj) => {
+        return obj.exhibitionOrder > max ? obj.exhibitionOrder : max;
+      }, -Infinity);
+
+      if (currentLength + 1 === highestExhibitionOrder) return true;
+
+      const artworkEdgesExhibitionOrder = artworkEdges.sort((a, b) => {
+        return a.exhibitionOrder - b.exhibitionOrder;
+      });
+
+      const promises = [];
+      for (let i = 0; i < artworkEdgesExhibitionOrder.length; i++) {
+        const edge = artworkEdgesExhibitionOrder[i];
+        if (edge.exhibitionOrder !== i) {
+          promises.push(
+            this.edgeService.upsertEdge({
+              edgeName: EdgeNames.FROMCollectionTOArtwork,
+              from: fullExhibitionId,
+              to: edge._to!,
+              data: {
+                value: 'SHOWS',
+                exhibitionOrder: i,
+              },
+            }),
+          );
+        }
+      }
+      await Promise.all(promises);
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+
+    return true;
+  }
+
+  public async batchEditArtworkToLocationEdgesByExhibitionId({
+    locationId,
+    uid,
+    exhibitionId,
+  }: {
+    locationId: string;
+    uid: string;
+    exhibitionId: string;
+  }): Promise<boolean> {
+    const exhibition = await this.getExhibitionById({exhibitionId});
+    const artworks = exhibition?.artworks;
+    const gallery = await this.galleryService.getGalleryIdFromUID({
+      uid,
+    });
+    const location: any = gallery[locationId as any];
+
+    if (artworks && location) {
+      await this.batchEditArtworkToLocationEdges({
+        locationData: location,
+        artwork: artworks,
+      });
+    }
+
+    throw new Error('Method not implemented.');
+  }
+
+  public async batchEditArtworkToLocationEdges({
+    locationData,
+    artwork,
+  }: {
+    locationData: IBusinessLocationData;
+    artwork: {[key: string]: Artwork};
+  }): Promise<boolean> {
+    const promises = Object.values(artwork).map(async (art: Artwork) => {
+      if (art?.artworkId) {
+        return await this.editArtworkToLocationEdge({
+          locationData,
+          artworkId: art.artworkId,
+        });
+      }
+      return false;
+    });
+
+    try {
+      await Promise.all(promises);
+    } catch {
+      return false;
+    }
+
+    return true;
+  }
+
+  public async editArtworkToLocationEdge({
+    locationData,
+    artworkId,
+  }: {
+    locationData: IBusinessLocationData;
+    artworkId: string;
+  }): Promise<boolean> {
+    let locality, city;
+    const fullArtworkId = this.artworkService.generateArtworkId({artworkId});
+
+    if (locationData?.locality?.value) {
+      locality = locationData.locality.value;
+      const localityNode = await this.nodeService.upsertNodeByKey({
+        collectionName: CollectionNames.Localities,
+        data: {value: locality.toUpperCase()},
+      });
+      try {
+        await this.edgeService.upsertEdge({
+          edgeName: EdgeNames.FROMArtworkTOLocality,
+          from: fullArtworkId,
+          to: localityNode._id,
+          data: {
+            value: 'LOCALITY',
+          },
+        });
+      } catch (error: any) {
+        throw new Error(error.message);
+      }
+    }
+    if (locationData?.city?.value) {
+      city = locationData.city.value.toUpperCase();
+      try {
+        const cityNode = await this.nodeService.upsertNodeByKey({
+          collectionName: CollectionNames.Localities,
+          data: {value: city.toUpperCase()},
+        });
+
+        await this.edgeService.upsertEdge({
+          edgeName: EdgeNames.FROMArtworkTOCity,
+          from: fullArtworkId,
+          to: cityNode._id,
+          data: {
+            value: 'CITY',
+          },
+        });
+      } catch (error: any) {
+        throw new Error(error.message);
+      }
+    }
+    return true;
+  }
+
+  // TO-DO
+  // eslint-disable-next-line class-methods-use-this
+  public async deleteArtworkToLocationEdge(): Promise<boolean> {
+    // const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+    // const fullArtworkId = this.artworkService.generateArtworkId({artworkId});
+
+    // try {
+    //   await this.edgeService.deleteEdge({
+    //     edgeName: EdgeNames.FROMCollectionTOArtwork,
+    //     from: fullExhibitionId,
+    //     to: fullArtworkId,
+    //   });
+    //   return true;
+    // } catch (error: any) {
+    //   throw new Error(
+    //     `unable to delete edge from collection to artwork: ${error.message}`,
+    //   );
+    // }
+    return true;
   }
 
   public async deleteExhibitionToArtworkEdge({
@@ -458,6 +640,7 @@ export class ExhibitionService implements IExhibitionService {
         from: fullExhibitionId,
         to: fullArtworkId,
       });
+      await this.reOrderExhibitionToArtworkEdgesAfterDelete({exhibitionId});
       return true;
     } catch (error: any) {
       throw new Error(
@@ -466,7 +649,7 @@ export class ExhibitionService implements IExhibitionService {
     }
   }
 
-  private async verifyGalleryOwnsExhibition({
+  public async verifyGalleryOwnsExhibition({
     exhibitionId,
     galleryId,
   }: {

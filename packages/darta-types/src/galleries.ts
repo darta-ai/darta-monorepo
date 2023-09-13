@@ -159,6 +159,7 @@ export type Exhibition = {
   artists?: PublicFields[] | undefined[];
   pressReleaseImages?: PublicFields[] | undefined[];
   exhibitionImages?: PublicFields[] | undefined[];
+  exhibitionOrder?: string[];
   artworks?: {
     [key: string]: Artwork;
   };

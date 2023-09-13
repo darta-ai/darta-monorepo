@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import {Artwork} from '@darta/types';
 
 export interface Node {

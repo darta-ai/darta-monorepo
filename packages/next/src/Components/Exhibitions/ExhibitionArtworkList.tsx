@@ -65,7 +65,13 @@ function DartaListArtwork({
   index: number;
   saveSpinner: boolean;
   deleteSpinner: boolean;
-  swapExhibitionOrder: (arg0: string, arg1: 'up' | 'down') => void;
+  swapExhibitionOrder: ({
+    artworkId,
+    direction,
+  }: {
+    artworkId: string;
+    direction: 'up' | 'down';
+  }) => void;
   saveArtwork: (arg1: Artwork) => Promise<boolean>;
   handleDeleteArtworkFromDarta: ({
     exhibitionId,
@@ -99,7 +105,10 @@ function DartaListArtwork({
             <IconButton
               disabled={index === 0}
               onClick={() =>
-                swapExhibitionOrder(artwork?.artworkId as string, 'up')
+                swapExhibitionOrder({
+                  artworkId: artwork?.artworkId as string,
+                  direction: 'up',
+                })
               }>
               <ArrowDropUpIcon />
             </IconButton>
@@ -111,7 +120,10 @@ function DartaListArtwork({
             <IconButton
               disabled={index === arrayLength - 1}
               onClick={() =>
-                swapExhibitionOrder(artwork?.artworkId as string, 'down')
+                swapExhibitionOrder({
+                  artworkId: artwork?.artworkId as string,
+                  direction: 'down',
+                })
               }>
               <ArrowDropDownIcon />
             </IconButton>
@@ -236,7 +248,13 @@ export function ExhibitionArtworkList({
   artworks: any;
   saveSpinner: boolean;
   deleteSpinner: boolean;
-  swapExhibitionOrder: (arg0: string, arg1: 'up' | 'down') => void;
+  swapExhibitionOrder: ({
+    artworkId,
+    direction,
+  }: {
+    artworkId: string;
+    direction: 'up' | 'down';
+  }) => void;
   saveArtwork: (arg1: Artwork) => Promise<boolean>;
   handleDeleteArtworkFromDarta: ({
     exhibitionId,
@@ -274,8 +292,8 @@ export function ExhibitionArtworkList({
     <List
       sx={{width: '100%', bgcolor: PRIMARY_MILK}}
       className="exhibition-artwork-list">
-      {mappedArtworks.map((artwork: Artwork, index: number) => (
-        <Box key={artwork.artworkId}>
+      {mappedArtworks?.map((artwork: Artwork, index: number) => (
+        <Box key={artwork?.artworkId}>
           <DartaListArtwork
             artwork={artwork}
             arrayLength={arrayLength}

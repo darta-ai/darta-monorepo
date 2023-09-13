@@ -677,6 +677,14 @@ export function CreateArtwork({
             variant="contained"
             data-testid="delete-artwork-button"
             color="error"
+            disabled={deleteSpinner}
+            sx={{
+              alignSelf: 'center',
+              width: '50vw',
+              '@media (min-width: 800px)': {
+                width: '10vw',
+              },
+            }}
             onClick={() => {
               handleClickOpen();
             }}>
@@ -690,7 +698,15 @@ export function CreateArtwork({
             variant="contained"
             data-testid="save-artwork-button"
             type="submit"
-            sx={{backgroundColor: PRIMARY_BLUE}}
+            disabled={saveSpinner}
+            sx={{
+              alignSelf: 'center',
+              backgroundColor: PRIMARY_BLUE,
+              width: '50vw',
+              '@media (min-width: 800px)': {
+                width: '10vw',
+              },
+            }}
             onClick={handleSubmit(onSubmit)}>
             {saveSpinner ? (
               <CircularProgress size={24} />

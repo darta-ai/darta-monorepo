@@ -87,7 +87,7 @@ export function DartaDateTimePicker({
                   },
                 }}
                 onChange={(newValue: any) => {
-                  const date = newValue.toDate();
+                  const date = newValue?.toDate();
                   field.onChange(date);
                   if (setHigherLevelState) {
                     setHigherLevelState(newValue);

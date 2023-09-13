@@ -46,21 +46,25 @@ export class ArtworkController {
     @response() res: Response,
   ): Promise<void> {
     const {user} = req as any;
-    const {exhibitionId, exhibitionOrder} = req.body;
+    const {exhibitionId} = req.body;
     try {
       const galleryId = await this.galleryService.getGalleryIdFromUID({
         uid: user.user_id,
       });
       const artwork = await this.artworkService.createArtwork({
         galleryId,
-        exhibitionOrder,
         exhibitionId,
       });
-      await this.exhibitionService.createExhibitionToArtworkEdge({
-        exhibitionId,
-        artworkId: artwork.artworkId!,
+      const exhibitionOrder =
+        await this.exhibitionService.createExhibitionToArtworkEdgeWithExhibitionOrder(
+          {
+            exhibitionId,
+            artworkId: artwork.artworkId!,
+          },
+        );
+      res.json({
+        artwork: {...artwork, exhibitionOrder: Number(exhibitionOrder)},
       });
-      res.json(artwork);
     } catch (error: any) {
       res.status(500).send(error.message);
     }
@@ -82,16 +86,40 @@ export class ArtworkController {
         exhibitionId,
       });
       artwork.artworkId = createdArtwork.artworkId;
-      await this.exhibitionService.createExhibitionToArtworkEdge({
-        exhibitionId,
-        artworkId: artwork.artworkId!,
-      });
+      await this.exhibitionService.createExhibitionToArtworkEdgeWithExhibitionOrder(
+        {
+          exhibitionId,
+          artworkId: artwork.artworkId!,
+        },
+      );
       const results = await this.artworkService.editArtwork({artwork});
-      res.json(results);
+      if (results) {
+        // results.exhibitionOrder = exhibitionOrder;
+        res.json(results);
+      }
+      res.status(500).send('unable to create and edit artwork for exhibition');
     } catch (error: any) {
       res.status(500).send(error.message);
     }
   }
+
+  // @httpPost('/updateExhibitionArtworkLocation', verifyToken)
+  // public async updateExhibitionArtworkLocation(
+  //   @request() req: Request,
+  //   @response() res: Response,
+  // ): Promise<void> {
+  //   const {user} = req as any;
+  //   const {exhibitionLocation, artwork} = req.body;
+  //   try {
+  //     const artwork = await this.exhibitionService.editArtworkToLocationEdge({
+  //       locationData: exhibitionLocation,
+  //       artworkId: artwork.artworkId,
+  //     });
+  //     res.json(results);
+  //   } catch (error: any) {
+  //     res.status(500).send(error.message);
+  //   }
+  // }
 
   // OPEN Endpoint
   @httpGet('/readArtwork')
@@ -181,6 +209,23 @@ export class ArtworkController {
     }
   }
 
+  @httpPost('/swapArtworkOrder', verifyToken)
+  public async swapArtworkOrder(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    const {artworkId, order} = req.body;
+    try {
+      const results = await this.artworkService.swapArtworkOrder({
+        artworkId,
+        order,
+      });
+      res.json(results);
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
+
   @httpPost('/delete', verifyToken)
   public async deleteArtwork(
     @request() req: Request,
@@ -234,7 +279,6 @@ export class ArtworkController {
       });
       const results = await this.exhibitionService.readExhibitionForGallery({
         exhibitionId,
-        galleryId,
       });
       res.json(results);
     } catch (error: any) {
@@ -268,7 +312,6 @@ export class ArtworkController {
       });
       const results = await this.exhibitionService.readExhibitionForGallery({
         exhibitionId,
-        galleryId,
       });
       res.json(results);
     } catch (error: any) {

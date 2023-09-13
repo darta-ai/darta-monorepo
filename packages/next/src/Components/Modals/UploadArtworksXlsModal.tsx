@@ -17,7 +17,7 @@ import React from 'react';
 import * as XLSX from 'xlsx';
 
 import {AuthContext} from '../../../pages/_app';
-import {PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_MILK} from '../../../styles';
 import {parseExcelArtworkData} from '../../common/nextFunctions';
 import {useAppState} from '../State/AppContext';
 
@@ -284,9 +284,7 @@ export function UploadArtworksXlsModal({
                   />
                   {success ? (
                     <Fade in={success}>
-                      <Typography variant="h5" sx={{color: PRIMARY_DARK_GREY}}>
-                        Upload Successful!
-                      </Typography>
+                      <Typography variant="h5">Upload Successful!</Typography>
                     </Fade>
                   ) : (
                     <Fade in={!success}>
@@ -295,7 +293,13 @@ export function UploadArtworksXlsModal({
                           variant="contained"
                           color="secondary"
                           disabled={loading}
-                          sx={{}}
+                          sx={{
+                            alignSelf: 'center',
+                            width: '50vw',
+                            '@media (min-width: 800px)': {
+                              width: '10vw',
+                            },
+                          }}
                           component="span">
                           {loading ? (
                             <CircularProgress color="secondary" size={20} />
