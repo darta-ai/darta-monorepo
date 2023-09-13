@@ -43,9 +43,9 @@ export class ExhibitionController {
     @request() req: Request,
     @response() res: Response,
   ): Promise<void> {
-    const {user} = req as any;
-    const {exhibitionId} = req.body;
     try {
+      const {user} = req as any;
+      const {exhibitionId} = req.body;
       const galleryId = await this.galleryService.getGalleryIdFromUID({
         uid: user.user_id,
       });
@@ -58,7 +58,7 @@ export class ExhibitionController {
       if (!isVerified) {
         throw new Error('unable to verify exhibition is owned by gallery');
       }
-      const results = this.exhibitionService.readExhibitionForGallery({
+      const results = await this.exhibitionService.readExhibitionForGallery({
         exhibitionId,
       });
       res.json(results);
@@ -169,6 +169,44 @@ export class ExhibitionController {
       });
       const results = await this.exhibitionService.listExhibitionForGallery({
         galleryId,
+      });
+      res.json(results);
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpPost('/reOrderExhibitionArtwork', verifyToken)
+  public async reOrderExhibitionArtwork(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const {user} = req as any;
+      if (!user) {
+      }
+      const {exhibitionId, artworkId, desiredIndex, currentIndex} = req.body;
+
+      const galleryId = await this.galleryService.getGalleryIdFromUID({
+        uid: user.user_id,
+      });
+
+      const isVerified =
+        await this.exhibitionService.verifyGalleryOwnsExhibition({
+          exhibitionId,
+          galleryId,
+        });
+      if (!isVerified) {
+        throw new Error('unable to verify exhibition is owned by gallery');
+      }
+      await this.exhibitionService.reOrderExhibitionArtwork({
+        exhibitionId,
+        artworkId,
+        desiredIndex,
+        currentIndex,
+      });
+      const results = await this.exhibitionService.listAllExhibitionArtworks({
+        exhibitionId,
       });
       res.json(results);
     } catch (error: any) {

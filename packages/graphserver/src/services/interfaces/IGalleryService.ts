@@ -1,7 +1,7 @@
-// eslint-disable-next-line import/no-unresolved
 import {IGalleryProfileData} from '@darta/types';
 
 import {Gallery} from '../../models/GalleryModel';
+import {Node} from '../../models/models';
 
 export interface IGalleryService {
   // eslint-disable-next-line no-empty-pattern
@@ -10,7 +10,7 @@ export interface IGalleryService {
     userEmail,
   }: {
     userEmail: string | undefined;
-  }): Promise<Node | boolean>;
+  }): Promise<Node>;
   readGalleryProfileFromUID(uid: string): Promise<Gallery | null>;
   readGalleryProfileFromGalleryId({
     galleryId,

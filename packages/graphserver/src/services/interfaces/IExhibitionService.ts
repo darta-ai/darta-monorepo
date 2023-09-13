@@ -90,4 +90,20 @@ export interface IExhibitionService {
     exhibitionId: string;
     galleryId: string;
   }): Promise<boolean>;
+  reOrderExhibitionArtwork({
+    exhibitionId,
+    artworkId,
+    desiredIndex,
+    currentIndex,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+    desiredIndex: number;
+    currentIndex: number;
+  }): Promise<boolean>;
+  listAllExhibitionArtworks({
+    exhibitionId,
+  }: {
+    exhibitionId: string;
+  }): Promise<any>;
 }

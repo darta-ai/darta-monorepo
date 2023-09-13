@@ -35,6 +35,9 @@ export async function readGalleryProfileAPI(): Promise<any> {
     const response = await axios.get(`${URL}/galleryProfile`, {
       headers: {authorization: `Bearer ${idToken}`},
     });
+    if (!response.data) {
+      return {};
+    }
     return response.data;
   } catch (error) {
     throw new Error('Unable to retrieve profile');

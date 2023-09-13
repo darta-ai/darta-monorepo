@@ -12,6 +12,9 @@ export const verifyToken = async (
     try {
       const decodedToken = await auth.verifyIdToken(idToken);
       (req as any).user = decodedToken;
+      if (decodedToken.email_verified === false) {
+        res.status(204).send('Unauthorized');
+      }
       next();
     } catch (error) {
       res.status(403).send('Unauthorized');

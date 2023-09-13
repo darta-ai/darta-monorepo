@@ -17,6 +17,7 @@ export const CollectionNames = {
   GalleryApprovals: 'GalleryApprovals',
 
   GalleryUsers: 'GalleryUsers',
+  GalleryAdminNode: 'GalleryAdminNode',
 };
 
 export const EdgeNames = {
