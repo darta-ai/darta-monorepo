@@ -1,4 +1,4 @@
-import {Exhibition} from '@darta/types';
+import {Artwork, Exhibition, IBusinessLocationData} from '@darta/types';
 
 export interface IExhibitionService {
   createExhibition({
@@ -8,11 +8,34 @@ export interface IExhibitionService {
     userId: string;
     galleryId: string;
   }): Promise<Exhibition | void>;
-  createExhibitionToArtworkEdge({
+  createExhibitionToArtworkEdgeWithExhibitionOrder({
     exhibitionId,
     artworkId,
   }: {
     exhibitionId: string;
+    artworkId: string;
+  }): Promise<string>;
+  batchEditArtworkToLocationEdgesByExhibitionId({
+    locationId,
+    uid,
+    exhibitionId,
+  }: {
+    locationId: string;
+    uid: string;
+    exhibitionId: string;
+  }): Promise<boolean>;
+  batchEditArtworkToLocationEdges({
+    locationData,
+    artwork,
+  }: {
+    locationData: IBusinessLocationData;
+    artwork: {[key: string]: Artwork};
+  }): Promise<boolean>;
+  editArtworkToLocationEdge({
+    locationData,
+    artworkId,
+  }: {
+    locationData: IBusinessLocationData;
     artworkId: string;
   }): Promise<boolean>;
   deleteExhibitionToArtworkEdge({
@@ -25,10 +48,8 @@ export interface IExhibitionService {
 
   readExhibitionForGallery({
     exhibitionId,
-    galleryId,
   }: {
     exhibitionId: string;
-    galleryId: string;
   }): Promise<Exhibition | void>;
   readExhibitionForUser({
     exhibitionId,
@@ -56,5 +77,17 @@ export interface IExhibitionService {
     exhibitionId: string;
     galleryId: string;
     deleteArtworks?: boolean;
+  }): Promise<boolean>;
+  reOrderExhibitionToArtworkEdgesAfterDelete({
+    exhibitionId,
+  }: {
+    exhibitionId: string;
+  }): Promise<boolean>;
+  verifyGalleryOwnsExhibition({
+    exhibitionId,
+    galleryId,
+  }: {
+    exhibitionId: string;
+    galleryId: string;
   }): Promise<boolean>;
 }

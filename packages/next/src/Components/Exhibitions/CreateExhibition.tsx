@@ -7,7 +7,7 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {PRIMARY_BLUE} from '../../../styles';
+import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {exhibitionPressReleaseToolTip} from '../../common/ToolTips/toolTips';
 import {createArtworkStyles} from '../Artwork/styles';
 import {
@@ -661,7 +661,16 @@ export function CreateExhibition({
               variant="contained"
               data-testid="save-exhibition-button"
               type="submit"
-              sx={{backgroundColor: PRIMARY_BLUE}}
+              disabled={isEditingExhibition}
+              sx={{
+                backgroundColor: PRIMARY_BLUE,
+                color: PRIMARY_MILK,
+                alignSelf: 'center',
+                width: '50vw',
+                '@media (min-width: 800px)': {
+                  width: '10vw',
+                },
+              }}
               onClick={handleSubmit(onSubmit)}>
               {isEditingExhibition ? (
                 <CircularProgress size={24} />

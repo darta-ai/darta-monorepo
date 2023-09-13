@@ -49,9 +49,17 @@ export class ExhibitionController {
       const galleryId = await this.galleryService.getGalleryIdFromUID({
         uid: user.user_id,
       });
+
+      const isVerified =
+        await this.exhibitionService.verifyGalleryOwnsExhibition({
+          exhibitionId,
+          galleryId,
+        });
+      if (!isVerified) {
+        throw new Error('unable to verify exhibition is owned by gallery');
+      }
       const results = this.exhibitionService.readExhibitionForGallery({
         exhibitionId,
-        galleryId,
       });
       res.json(results);
     } catch (error: any) {

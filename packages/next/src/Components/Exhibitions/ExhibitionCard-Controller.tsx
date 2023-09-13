@@ -22,6 +22,7 @@ import {
   deleteExhibitionArtwork,
   editArtworkForExhibitionAPI,
   removeArtworkFromExhibition,
+  // swapArtworkOrderAPI,
 } from '../../API/artworks/artworkRoutes';
 import {
   deleteExhibitionAndArtworkAPI,
@@ -54,6 +55,7 @@ export function ExhibitionCard({
   const {state, dispatch} = useAppState();
   const [artworks, setArtworks] = React.useState<any>(exhibition.artworks);
   const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
+  const [artworkLoading, setArtworkLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (exhibition?.artworks) {
@@ -72,24 +74,28 @@ export function ExhibitionCard({
       exhibitionClone?.exhibitionLocation?.locationString?.value;
     const locations = Object.values(state?.galleryProfile);
 
-    const fullExhibitionLocation = locations.filter(
-      (locationArrayData: any) => {
-        return (
-          locationArrayData?.locationString?.value === exhibitionLocation ||
-          locationArrayData?.locationString?.value ===
-            exhibitionClone?.exhibitionLocation?.locationString
-        );
-      },
-    )[0];
+    let matchedValue;
+    for (const [, value] of Object.entries(locations)) {
+      if (
+        value?.locationString?.value === exhibitionLocation ||
+        value?.locationString?.value ===
+          exhibitionClone?.exhibitionLocation?.locationString
+      ) {
+        matchedValue = value;
+        break; // Exit the loop once you find a match.
+      }
+    }
 
-    exhibitionClone.exhibitionLocation = {...fullExhibitionLocation};
+    exhibitionClone.exhibitionLocation = {...matchedValue};
 
     try {
-      const results = await editExhibitionAPI({exhibition: exhibitionClone});
+      const results = await editExhibitionAPI({
+        exhibition: exhibitionClone,
+      });
       dispatch({
         type: GalleryReducerActions.SAVE_EXHIBITION,
         payload: {...results, artworks: {...exhibitionClone.artworks}},
-        exhibitionId,
+        exhibitionId: results.exhibitionId,
       });
       dispatch({
         type: GalleryReducerActions.SAVE_NEW_ARTWORK,
@@ -103,39 +109,27 @@ export function ExhibitionCard({
   };
 
   const addNewArtwork = async () => {
-    const newExhibition: Exhibition = _.cloneDeep(
-      state?.galleryExhibitions[exhibitionId],
-    );
-    let exhibitionOrder;
-    if (!newExhibition?.artworks || !Object.keys(newExhibition?.artworks)) {
-      exhibitionOrder = 0;
-    } else {
-      exhibitionOrder = Object.keys(newExhibition?.artworks)?.length;
-    }
+    setArtworkLoading(true);
+    const exhibitionOrder = Object?.keys(artworks).length;
 
     try {
-      const newArtwork = await createArtworkForExhibitionAPI({
+      const {artwork} = await createArtworkForExhibitionAPI({
         exhibitionId,
         exhibitionOrder,
       });
       dispatch({
-        type: GalleryReducerActions.SAVE_EXHIBITION,
-        payload: {
-          ...newExhibition,
-          artworks: {
-            ...newExhibition.artworks,
-            [newArtwork.artworkId]: newArtwork,
-          },
-        },
+        type: GalleryReducerActions.SAVE_EXHIBITION_ARTWORK,
+        artwork: {[artwork.artworkId as string]: artwork},
         exhibitionId,
       });
       dispatch({
         type: GalleryReducerActions.SAVE_NEW_ARTWORK,
-        payload: {[newArtwork.artworkId]: newArtwork} as any,
+        payload: {[artwork.artworkId as string]: artwork} as any,
       });
     } catch (error) {
       setErrorAlertOpen(true);
     }
+    setArtworkLoading(false);
   };
 
   const [saveSpinner, setSavedSpinner] = React.useState(false);
@@ -316,41 +310,64 @@ export function ExhibitionCard({
     return Promise.resolve(false);
   };
 
-  const swapExhibitionOrder = (artworkId: string, direction: 'up' | 'down') => {
-    const tempArtworks = _.cloneDeep(artworks);
-    // Get the artwork for which the arrow was clicked
-    const artwork = artworks[artworkId];
+  const swapExhibitionOrder = async ({
+    artworkId,
+    direction,
+  }: {
+    artworkId: string;
+    direction: 'up' | 'down';
+  }) => {
+    if (!artworks[artworkId]) return;
+    const baseExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
 
-    if (!artwork) return;
+    const targetOrder =
+      direction === 'up'
+        ? artworks[artworkId].exhibitionOrder - 1
+        : artworks[artworkId].exhibitionOrder + 1;
 
-    // Depending on whether up or down was clicked, find the artwork to swap with
-    let swapArtworkId: string | undefined;
-    for (const id in artworks) {
-      if (
-        artworks[id].exhibitionOrder ===
-        (direction === 'up'
-          ? artwork.exhibitionOrder - 1
-          : artwork.exhibitionOrder + 1)
-      ) {
-        swapArtworkId = id;
-        break;
-      }
-    }
+    // Check boundaries
+    if (targetOrder > Object.keys(artworks).length) return;
 
-    // If we have found an artwork to swap with
+    const swapArtworkId = Object.keys(artworks).find(
+      id => artworks[id].exhibitionOrder === targetOrder,
+    );
+
     if (swapArtworkId) {
-      // Swap the exhibitionOrder of the two artworks
+      const tempArtworks = {...artworks};
       [
         tempArtworks[artworkId].exhibitionOrder,
         tempArtworks[swapArtworkId].exhibitionOrder,
       ] = [
-        artworks[swapArtworkId].exhibitionOrder,
-        artworks[artworkId].exhibitionOrder,
+        tempArtworks[swapArtworkId].exhibitionOrder,
+        tempArtworks[artworkId].exhibitionOrder,
       ];
+
+      const tempExhibition = {
+        ...state.galleryExhibitions[exhibitionId],
+        artworks: tempArtworks,
+      };
+      dispatch({
+        type: GalleryReducerActions.SAVE_EXHIBITION,
+        payload: tempExhibition,
+        exhibitionId,
+      });
+
+      try {
+        await editArtworkForExhibitionAPI({
+          artwork: tempArtworks[artworkId],
+        });
+        await editArtworkForExhibitionAPI({
+          artwork: tempArtworks[swapArtworkId],
+        });
+      } catch (error) {
+        setErrorAlertOpen(true);
+        dispatch({
+          type: GalleryReducerActions.SAVE_EXHIBITION,
+          payload: baseExhibition,
+          exhibitionId,
+        });
+      }
     }
-    const tempExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
-    tempExhibition.artworks = tempArtworks;
-    saveExhibition(tempExhibition);
   };
 
   const displayRed =
@@ -527,6 +544,7 @@ export function ExhibitionCard({
             </Typography>
           </Divider>
           <ArtworkHeader
+            artworkLoading={artworkLoading}
             addNewArtwork={addNewArtwork}
             handleBatchUpload={handleBatchUpload}
           />

@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import {Artwork, Dimensions, IGalleryProfileData} from '@darta/types';
 
 import {ArtworkNode} from '../../models/models';
@@ -34,6 +33,14 @@ export interface IArtworkService {
   }: {
     galleryId: string;
   }): Promise<(Artwork | null)[] | null>;
+
+  swapArtworkOrder({
+    artworkId,
+    order,
+  }: {
+    artworkId: string;
+    order: string;
+  }): Promise<ArtworkNode | null>;
 
   generateArtworkId({artworkId}: {artworkId: string}): string;
   determinePriceBucket(price: string): string;

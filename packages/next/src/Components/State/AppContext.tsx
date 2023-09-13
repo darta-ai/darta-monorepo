@@ -30,6 +30,11 @@ type Action =
       artwork: ArtworkObject;
       exhibitionId: string;
     }
+  | {
+      type: 'SET_EXHIBITION_ORDER';
+      exhibitionId: string;
+      exhibitionOrder: string[];
+    }
   | {type: 'DELETE_EXHIBITION_ARTWORK'; artworkId: string; exhibitionId: string}
   | {type: 'SET_GALLERY_USER'; user: User};
 
@@ -51,6 +56,7 @@ export enum GalleryReducerActions {
   SET_EXHIBITIONS = 'SET_EXHIBITIONS',
   SAVE_EXHIBITION = 'SAVE_EXHIBITION',
   SAVE_EXHIBITION_ARTWORK = 'SAVE_EXHIBITION_ARTWORK',
+  SET_EXHIBITION_ORDER = 'SET_EXHIBITION_ORDER',
   DELETE_EXHIBITION = 'DELETE_EXHIBITION',
   DELETE_EXHIBITION_ARTWORK = 'DELETE_EXHIBITION_ARTWORK',
   SET_ACCESS_TOKEN = 'SET_ACCESS_TOKEN',
@@ -173,6 +179,23 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
       } else {
         return state;
       }
+    case GalleryReducerActions.SET_EXHIBITION_ORDER:
+      if (action?.exhibitionId && action?.exhibitionOrder) {
+        const {exhibitionId} = action;
+        return {
+          ...state,
+          galleryExhibitions: {
+            ...state.galleryExhibitions,
+            [exhibitionId]: {
+              ...state.galleryExhibitions[exhibitionId],
+              exhibitionOrder: action.exhibitionOrder,
+            },
+          },
+        };
+      } else {
+        return state;
+      }
+
     case GalleryReducerActions.DELETE_EXHIBITION:
       if (action?.exhibitionId) {
         const galleryExhibitionsClone = _.cloneDeep(state.galleryExhibitions);
