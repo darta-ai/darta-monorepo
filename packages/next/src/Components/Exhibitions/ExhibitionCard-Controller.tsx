@@ -28,6 +28,7 @@ import {
   deleteExhibitionAndArtworkAPI,
   deleteExhibitionOnlyAPI,
   editExhibitionAPI,
+  reOrderExhibitionArtworkAPI,
 } from '../../API/exhibitions/exhibitionRotes';
 import {ArtworkHeader} from '../Artwork';
 import {DartaErrorAlert} from '../Modals';
@@ -56,6 +57,8 @@ export function ExhibitionCard({
   const [artworks, setArtworks] = React.useState<any>(exhibition.artworks);
   const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
   const [artworkLoading, setArtworkLoading] = React.useState<boolean>(false);
+  const [isSwappingLoading, setIsSwappingLoading] =
+    React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (exhibition?.artworks) {
@@ -317,57 +320,44 @@ export function ExhibitionCard({
     artworkId: string;
     direction: 'up' | 'down';
   }) => {
-    if (!artworks[artworkId]) return;
-    const baseExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
-
-    const targetOrder =
-      direction === 'up'
-        ? artworks[artworkId].exhibitionOrder - 1
-        : artworks[artworkId].exhibitionOrder + 1;
-
-    // Check boundaries
-    if (targetOrder > Object.keys(artworks).length) return;
-
-    const swapArtworkId = Object.keys(artworks).find(
-      id => artworks[id].exhibitionOrder === targetOrder,
+    setIsSwappingLoading(true);
+    const tempArtworks = _.cloneDeep(
+      state.galleryExhibitions[exhibitionId].artworks,
     );
+    if (!tempArtworks) return;
+    if (!tempArtworks[artworkId]) return;
+    const currentIndex = tempArtworks[artworkId].exhibitionOrder;
 
-    if (swapArtworkId) {
-      const tempArtworks = {...artworks};
-      [
-        tempArtworks[artworkId].exhibitionOrder,
-        tempArtworks[swapArtworkId].exhibitionOrder,
-      ] = [
-        tempArtworks[swapArtworkId].exhibitionOrder,
-        tempArtworks[artworkId].exhibitionOrder,
-      ];
+    if (currentIndex === undefined || currentIndex === null) return;
 
-      const tempExhibition = {
-        ...state.galleryExhibitions[exhibitionId],
-        artworks: tempArtworks,
-      };
+    const desiredIndex =
+      direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+
+    if (!currentIndex && currentIndex !== 0) {
+      throw new Error('oops');
+    }
+
+    try {
+      const results = await reOrderExhibitionArtworkAPI({
+        exhibitionId,
+        artworkId,
+        desiredIndex,
+        currentIndex,
+      });
       dispatch({
-        type: GalleryReducerActions.SAVE_EXHIBITION,
-        payload: tempExhibition,
+        type: GalleryReducerActions.SAVE_EXHIBITION_ARTWORK,
+        artwork: {...results},
         exhibitionId,
       });
-
-      try {
-        await editArtworkForExhibitionAPI({
-          artwork: tempArtworks[artworkId],
-        });
-        await editArtworkForExhibitionAPI({
-          artwork: tempArtworks[swapArtworkId],
-        });
-      } catch (error) {
-        setErrorAlertOpen(true);
-        dispatch({
-          type: GalleryReducerActions.SAVE_EXHIBITION,
-          payload: baseExhibition,
-          exhibitionId,
-        });
-      }
+    } catch (error) {
+      dispatch({
+        type: GalleryReducerActions.SAVE_EXHIBITION_ARTWORK,
+        artwork: {...tempArtworks},
+        exhibitionId,
+      });
+      setErrorAlertOpen(true);
     }
+    setIsSwappingLoading(false);
   };
 
   const displayRed =
@@ -552,6 +542,7 @@ export function ExhibitionCard({
         {exhibition?.artworks && (
           <ExhibitionArtworkList
             artworks={exhibition?.artworks}
+            isSwappingLoading={isSwappingLoading}
             swapExhibitionOrder={swapExhibitionOrder}
             saveArtwork={saveArtwork}
             saveSpinner={saveSpinner}

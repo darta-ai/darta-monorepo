@@ -362,7 +362,7 @@ export class ExhibitionService implements IExhibitionService {
     }
   }
 
-  private async listAllExhibitionArtworks({
+  public async listAllExhibitionArtworks({
     exhibitionId,
   }: {
     exhibitionId: string;
@@ -606,21 +606,6 @@ export class ExhibitionService implements IExhibitionService {
   // TO-DO
   // eslint-disable-next-line class-methods-use-this
   public async deleteArtworkToLocationEdge(): Promise<boolean> {
-    // const fullExhibitionId = this.generateExhibitionId({exhibitionId});
-    // const fullArtworkId = this.artworkService.generateArtworkId({artworkId});
-
-    // try {
-    //   await this.edgeService.deleteEdge({
-    //     edgeName: EdgeNames.FROMCollectionTOArtwork,
-    //     from: fullExhibitionId,
-    //     to: fullArtworkId,
-    //   });
-    //   return true;
-    // } catch (error: any) {
-    //   throw new Error(
-    //     `unable to delete edge from collection to artwork: ${error.message}`,
-    //   );
-    // }
     return true;
   }
 
@@ -675,6 +660,67 @@ export class ExhibitionService implements IExhibitionService {
     }
 
     return false;
+  }
+
+  public async reOrderExhibitionArtwork({
+    exhibitionId,
+    artworkId,
+    desiredIndex,
+    currentIndex,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+    desiredIndex: number;
+    currentIndex: number;
+  }): Promise<boolean> {
+    const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+    const fullArtworkId = this.artworkService.generateArtworkId({artworkId});
+
+    try {
+      const artworkEdges = await this.edgeService.getAllEdgesFromNode({
+        edgeName: EdgeNames.FROMCollectionTOArtwork,
+        from: fullExhibitionId,
+      });
+      const desiredLocation = artworkEdges.filter((edge: Edge) => {
+        return edge.exhibitionOrder === desiredIndex;
+      });
+      const currentLocation = artworkEdges.filter((edge: Edge) => {
+        return edge.exhibitionOrder === currentIndex;
+      });
+      if (currentLocation[0]._to !== fullArtworkId) {
+        throw new Error('incorrect location!');
+      }
+      const promises = [
+        this.edgeService.upsertEdge({
+          edgeName: EdgeNames.FROMCollectionTOArtwork,
+          from: fullExhibitionId,
+          to: currentLocation[0]._to!,
+          data: {
+            value: 'SHOWS',
+            exhibitionOrder: desiredIndex,
+          },
+        }),
+      ];
+      if (desiredLocation) {
+        promises.push(
+          this.edgeService.upsertEdge({
+            edgeName: EdgeNames.FROMCollectionTOArtwork,
+            from: fullExhibitionId,
+            to: desiredLocation[0]._to!,
+            data: {
+              value: 'SHOWS',
+              exhibitionOrder: currentIndex,
+            },
+          }),
+        );
+      }
+      await Promise.all(promises);
+      return this.reOrderExhibitionToArtworkEdgesAfterDelete({exhibitionId});
+    } catch (error: any) {
+      throw new Error(
+        `error verifying the gallery owns the artwork: ${error.message}`,
+      );
+    }
   }
 
   // eslint-disable-next-line class-methods-use-this

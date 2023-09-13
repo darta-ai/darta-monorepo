@@ -25,7 +25,7 @@ function GalleryStatus({
       // TO-DO: error handling
     }
   };
-  if (!user.emailVerified) {
+  if (!user?.emailVerified) {
     return (
       <Box data-testid="gallery-under-review">
         <Typography variant="h3" sx={{color: 'red', textAlign: 'center'}}>

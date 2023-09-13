@@ -5,6 +5,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Collapse,
   Divider,
   IconButton,
@@ -53,6 +54,7 @@ function DartaListArtwork({
   artwork,
   arrayLength,
   index,
+  isSwappingLoading,
   saveSpinner,
   deleteSpinner,
   swapExhibitionOrder,
@@ -64,6 +66,7 @@ function DartaListArtwork({
   arrayLength: number;
   index: number;
   saveSpinner: boolean;
+  isSwappingLoading: boolean;
   deleteSpinner: boolean;
   swapExhibitionOrder: ({
     artworkId,
@@ -103,7 +106,7 @@ function DartaListArtwork({
           className="edit-artwork-order">
           <Box>
             <IconButton
-              disabled={index === 0}
+              disabled={index === 0 || isSwappingLoading}
               onClick={() =>
                 swapExhibitionOrder({
                   artworkId: artwork?.artworkId as string,
@@ -114,11 +117,15 @@ function DartaListArtwork({
             </IconButton>
           </Box>
           <Box>
-            <Typography>{Number(artwork?.exhibitionOrder) + 1}</Typography>
+            {isSwappingLoading ? (
+              <CircularProgress color="secondary" size={15} />
+            ) : (
+              <Typography>{Number(artwork?.exhibitionOrder) + 1}</Typography>
+            )}
           </Box>
           <Box>
             <IconButton
-              disabled={index === arrayLength - 1}
+              disabled={index === arrayLength - 1 || isSwappingLoading}
               onClick={() =>
                 swapExhibitionOrder({
                   artworkId: artwork?.artworkId as string,
@@ -239,6 +246,7 @@ function DartaListArtwork({
 export function ExhibitionArtworkList({
   artworks,
   saveSpinner,
+  isSwappingLoading,
   deleteSpinner,
   swapExhibitionOrder,
   saveArtwork,
@@ -247,6 +255,7 @@ export function ExhibitionArtworkList({
 }: {
   artworks: any;
   saveSpinner: boolean;
+  isSwappingLoading: boolean;
   deleteSpinner: boolean;
   swapExhibitionOrder: ({
     artworkId,
@@ -299,6 +308,7 @@ export function ExhibitionArtworkList({
             arrayLength={arrayLength}
             index={index}
             swapExhibitionOrder={swapExhibitionOrder}
+            isSwappingLoading={isSwappingLoading}
             saveArtwork={saveArtwork}
             saveSpinner={saveSpinner}
             deleteSpinner={deleteSpinner}

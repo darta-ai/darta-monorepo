@@ -93,7 +93,7 @@ export function GalleryProfile() {
               className="edit-profile-button"
               type="submit"
               disabled={
-                !state.galleryProfile.isValidated || !user.emailVerified
+                !state?.galleryProfile?.isValidated || !user?.emailVerified
               }
               onClick={() => setIsEditingProfile(!isEditingProfile)}
               sx={galleryStyles.createNewButton}>

@@ -4,7 +4,6 @@ import {
   GalleryBase,
   IGalleryProfileData,
   Images,
-  // eslint-disable-next-line import/no-unresolved
 } from '@darta/types';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
@@ -12,6 +11,7 @@ import {inject, injectable} from 'inversify';
 import {CollectionNames, EdgeNames} from '../config/collections';
 import {ImageController} from '../controllers/ImageController';
 import {City, Gallery} from '../models/GalleryModel';
+import {Node} from '../models/models';
 import {IEdgeService, IGalleryService, INodeService} from './interfaces';
 
 const BUCKET_NAME = 'logo';
@@ -313,19 +313,19 @@ export class GalleryService implements IGalleryService {
     userEmail,
   }: {
     userEmail: string;
-  }): Promise<Node | boolean> {
-    const normalisedGalleryDomain = this.normalizeGalleryDomain({userEmail});
+  }): Promise<Node> {
+    const normalizedGalleryDomain = this.normalizeGalleryDomain({userEmail});
 
     const checkGalleryDuplicates = `
       WITH ${CollectionNames.Galleries}
       FOR gallery in ${CollectionNames.Galleries}
-      FILTER @normalisedGalleryDomain == gallery.normalisedGalleryDomain
+      FILTER @normalizedGalleryDomain == gallery.normalizedGalleryDomain
       RETURN gallery
     `;
 
     try {
       const cursor = await this.db.query(checkGalleryDuplicates, {
-        normalisedGalleryDomain,
+        normalizedGalleryDomain,
       });
       const galleryExists: Node = await cursor.next();
       return galleryExists;

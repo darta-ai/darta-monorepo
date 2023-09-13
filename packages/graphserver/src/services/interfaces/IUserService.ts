@@ -46,5 +46,5 @@ export interface IUserService {
     galleryId: string;
     uid: string;
     relationship: string;
-  }): Promise<boolean>;
+  }): Promise<any>;
 }

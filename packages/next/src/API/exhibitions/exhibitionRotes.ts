@@ -98,17 +98,50 @@ export async function listExhibitionsByGalleryAPI(): Promise<any> {
     const response = await axios.get(`${URL}/listForGallery`, {
       headers: {authorization: `Bearer ${idToken}`},
     });
-    const mappedGalleryExhibitions = response.data.reduce(
-      (accumulator: any, exhibition: Exhibition) => {
-        if (exhibition?.exhibitionId) {
-          accumulator[exhibition.exhibitionId] = exhibition;
-        }
-        return accumulator;
-      },
-      {},
-    );
-    return mappedGalleryExhibitions;
+    if (response.data && Array.isArray(response.data)) {
+      const mappedGalleryExhibitions = response.data.reduce(
+        (accumulator: any, exhibition: Exhibition) => {
+          if (exhibition?.exhibitionId) {
+            accumulator[exhibition.exhibitionId] = exhibition;
+          }
+          return accumulator;
+        },
+        {},
+      );
+      return mappedGalleryExhibitions;
+    }
+    return {};
   } catch (error) {
     throw new Error('Unable list exhibitions');
+  }
+}
+export async function reOrderExhibitionArtworkAPI({
+  exhibitionId,
+  artworkId,
+  desiredIndex,
+  currentIndex,
+}: {
+  exhibitionId: string;
+  artworkId: string;
+  desiredIndex: number;
+  currentIndex: number;
+}): Promise<any> {
+  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  try {
+    const response = await axios.post(
+      `${URL}/reOrderExhibitionArtwork`,
+      {
+        exhibitionId,
+        artworkId,
+        desiredIndex,
+        currentIndex,
+      },
+      {
+        headers: {authorization: `Bearer ${idToken}`},
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.message);
   }
 }

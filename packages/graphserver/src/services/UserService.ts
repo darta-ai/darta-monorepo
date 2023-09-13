@@ -163,19 +163,29 @@ export class UserService implements IUserService {
     galleryId: string;
     uid: string;
     relationship: string;
-  }): Promise<boolean> {
+  }): Promise<any> {
+    const fullGalleryId = this.galleryService.generateGalleryId({galleryId});
+    const fullUserId = this.generateUserId({uid});
+
     try {
-      await this.edgeService.updateEdge({
+      const results = await this.edgeService.upsertEdge({
         edgeName: EdgeNames.FROMUserTOGallery,
-        from: `${CollectionNames.GalleryUsers}/${uid}`,
-        to: `${CollectionNames.Galleries}/${galleryId}`,
+        from: fullUserId,
+        to: fullGalleryId,
         data: {
           value: relationship,
         },
       });
-      return true;
+      return results;
     } catch (error) {
       throw new Error('Unable to edit gallery edge');
     }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private generateUserId({uid}: {uid: string}): string {
+    return uid.includes(CollectionNames.GalleryUsers)
+      ? uid
+      : `${CollectionNames.GalleryUsers}/${uid}`;
   }
 }
