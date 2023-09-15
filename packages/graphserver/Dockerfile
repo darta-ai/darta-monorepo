@@ -9,6 +9,7 @@ COPY ./pnpm-workspace.yaml .
 COPY ./tsconfig.json .
 COPY ./pnpm-lock.yaml .
 COPY ./packages/graphserver ./packages/graphserver
+COPY ./packages/darta-types ./packages/darta-types
 
 FROM deps AS builder
 WORKDIR /app/packages/graphserver
@@ -24,6 +25,7 @@ WORKDIR /app
 # Copy over necessary files for installation
 COPY --from=deps /app/pnpm-lock.yaml .
 COPY --from=deps /app/pnpm-workspace.yaml .
+COPY --from=deps /app/packages ./packages
 COPY --from=deps /app/packages/graphserver/package.json ./package.json
 COPY --from=builder /app/packages/graphserver/dist ./dist
 

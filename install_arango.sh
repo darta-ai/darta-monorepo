@@ -19,4 +19,4 @@ echo "Installing helm ArangoDB chart"
 helm install kube-arangodb "$URLPREFIX/kube-arangodb-$VERSION.tgz" --namespace "$NAMESPACE" --set "operator.features.storage=true" --set "operator.architectures={amd64,arm64}"
 
 echo "Creating ArangoDB Deployment"
-kubectl apply -f charts/arango-dev-cluster.yaml
+kubectl apply -f charts/arango-dev-clusterARM.yaml

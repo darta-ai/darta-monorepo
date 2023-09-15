@@ -2,17 +2,8 @@ apiVersion: "database.arangodb.com/v1"
 kind: "ArangoDeployment"
 metadata:
   name: "simple-cluster"
+  namespace: "arango-mvp-cluster"
 spec:
   mode: Cluster
-  architecture:
-  - arm64
-  image: 'arangodb/arangodb:3.10.5-arm64v8'
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: beta.kubernetes.io/arch
-            operator: In
-            values:
-            - arm64
+  tls:
+    caSecretName: None

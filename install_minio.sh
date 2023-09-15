@@ -1,4 +1,6 @@
-
+# export URLPREFIX=https://raw.githubusercontent.com/arangodb/kube-arangodb/1.22/manifests
+# kubectl apply -f $URLPREFIX/arango-crd.yaml
+# kubectl apply -f $URLPREFIX/arango-deployment.yaml
 
 # # helm repo add minio https://helm.min.io/
 
