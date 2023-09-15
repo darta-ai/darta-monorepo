@@ -45,13 +45,21 @@ export class GalleryService implements IGalleryService {
       normalizedGalleryDomain: this.normalizeGalleryDomain({userEmail}),
     };
 
-    const metaData = await galleryCollection.save(newGallery);
-    return {
-      ...newGallery,
-      _id: metaData._id,
-      _key: metaData._key,
-      _rev: metaData._rev,
-    };
+    try {
+      const metaData = await galleryCollection.save(newGallery);
+      await this.createGalleryAdminNode({
+        galleryId: metaData?._id,
+        email: userEmail,
+      });
+      return {
+        ...newGallery,
+        _id: metaData?._id,
+        _key: metaData?._key,
+        _rev: metaData?._rev,
+      };
+    } catch (error) {
+      throw new Error('error creating gallery profile');
+    }
   }
 
   public async readGalleryProfileFromUID(uid: string): Promise<Gallery | null> {
@@ -85,23 +93,6 @@ export class GalleryService implements IGalleryService {
     } catch (error) {
       throw new Error('error in read gallery profile');
     }
-
-    // TO-DO: place city value on gallery
-    // get city
-    // const cityQuery = `
-    //   WITH Galleries, Cities
-    //   FOR cityViaEdge IN 1..1 OUTBOUND @galleryId ${EdgeNames.GalleryToCity}
-    //     RETURN cityViaEdge
-    // `;
-
-    // let cityValue;
-
-    // try {
-    //   const cityCursor = await this.db.query(cityQuery, {galleryId});
-    //   cityValue = await cityCursor.next(); // Get the first result
-    // } catch (error: any) {
-    //   throw new Error('error retrieving city value');
-    // }
 
     let galleryLogo;
 
@@ -331,6 +322,28 @@ export class GalleryService implements IGalleryService {
       return galleryExists;
     } catch (error) {
       throw new Error('ahhhhh');
+    }
+  }
+
+  public async createGalleryAdminNode({
+    galleryId,
+    email,
+  }: {
+    galleryId: string;
+    email: string;
+  }): Promise<any> {
+    const galleryIdId = this.generateGalleryId({galleryId});
+
+    try {
+      await this.nodeService.upsertNodeById({
+        collectionName: CollectionNames.GalleryAdminNode,
+        id: galleryIdId,
+        data: {
+          approvedEmails: [email],
+        },
+      });
+    } catch (error: any) {
+      throw new Error('Unable to create gallery admin node');
     }
   }
 

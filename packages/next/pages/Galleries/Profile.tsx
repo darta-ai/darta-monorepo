@@ -47,7 +47,7 @@ function Gallery() {
     const fetchData = async () => {
       if (user?.accessToken) {
         const {galleryProfile, galleryArtworks, galleryExhibitions} =
-          await retrieveAllGalleryData(user.accessToken);
+          await retrieveAllGalleryData();
         dispatch({
           type: GalleryReducerActions.SET_PROFILE,
           payload: galleryProfile as IGalleryProfileData,

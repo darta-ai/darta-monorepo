@@ -1,7 +1,7 @@
 {
   "name": "graphserver",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.1.0",
+  "description": "version 1.1.0 of the graph server includes connection to the buyer side",
   "main": "index.js",
   "scripts": {
     "start": "node build/index.js",
@@ -15,7 +15,7 @@
   "author": "TJ Wetmore",
   "license": "ISC",
   "dependencies": {
-    "@darta/types": "1.0.2",
+    "@darta/types": "*",
     "@hapi/joi": "^17.1.1",
     "@types/express": "4.17.13",
     "@types/node": "^18.11.9",

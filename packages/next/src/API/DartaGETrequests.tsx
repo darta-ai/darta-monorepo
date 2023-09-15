@@ -4,9 +4,7 @@ import {listArtworksByGalleryAPI} from './artworks/artworkRoutes';
 import {listExhibitionsByGalleryAPI} from './exhibitions/exhibitionRotes';
 import {readGalleryProfileAPI} from './galleries/galleryRoutes';
 
-export const retrieveAllGalleryData = async (
-  accessToken: string,
-): Promise<GalleryState> => {
+export const retrieveAllGalleryData = async (): Promise<GalleryState> => {
   const [galleryProfile, galleryArtworks, galleryExhibitions] =
     await Promise.all([
       readGalleryProfileAPI(),
@@ -18,7 +16,7 @@ export const retrieveAllGalleryData = async (
     galleryProfile,
     galleryArtworks,
     galleryExhibitions,
-    accessToken,
+    accessToken: '',
     user: {},
   };
 };

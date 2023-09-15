@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import {auth} from '../../ThirdPartyAPIs/firebaseApp';
 
-const URL = 'http://localhost:1160/artwork';
+const URL = `${process.env.NEXT_PUBLIC_API_URL}artwork`;
 
 export async function createArtworkAPI(): Promise<Artwork> {
   const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);

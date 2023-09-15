@@ -18,6 +18,7 @@ describe('EditProfileGallery.cy.tsx', () => {
         handleDelete={cy.stub().as('handleDelete')}
         galleryLocations={['51 Mott Street']}
         galleryName="All Street"
+        isEditingExhibition={false}
       />,
     );
     cy.viewport('macbook-11');

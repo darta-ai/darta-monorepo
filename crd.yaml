@@ -1,0 +1,92 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: "2023-09-14T17:08:17Z"
+  generation: 1
+  labels:
+    arangodb.com/version: 1.0.1
+  name: arangobackuppolicies.backup.arangodb.com
+  resourceVersion: "28156425"
+  uid: a9caab09-45d5-423f-be74-53303291fa71
+spec:
+  conversion:
+    strategy: None
+  group: backup.arangodb.com
+  names:
+    kind: ArangoBackupPolicy
+    listKind: ArangoBackupPolicyList
+    plural: arangobackuppolicies
+    shortNames:
+    - arangobackuppolicy
+    - arangobp
+    singular: arangobackuppolicy
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - description: Schedule
+      jsonPath: .spec.schedule
+      name: Schedule
+      type: string
+    - description: Scheduled
+      jsonPath: .status.scheduled
+      name: Scheduled
+      type: string
+    - description: Message of the ArangoBackupPolicy object
+      jsonPath: .status.message
+      name: Message
+      priority: 1
+      type: string
+    name: v1
+    schema:
+      openAPIV3Schema:
+        type: object
+        x-kubernetes-preserve-unknown-fields: true
+    served: true
+    storage: true
+    subresources:
+      status: {}
+  - additionalPrinterColumns:
+    - description: Schedule
+      jsonPath: .spec.schedule
+      name: Schedule
+      type: string
+    - description: Scheduled
+      jsonPath: .status.scheduled
+      name: Scheduled
+      type: string
+    - description: Message of the ArangoBackupPolicy object
+      jsonPath: .status.message
+      name: Message
+      priority: 1
+      type: string
+    name: v1alpha
+    schema:
+      openAPIV3Schema:
+        type: object
+        x-kubernetes-preserve-unknown-fields: true
+    served: true
+    storage: false
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ArangoBackupPolicy
+    listKind: ArangoBackupPolicyList
+    plural: arangobackuppolicies
+    shortNames:
+    - arangobackuppolicy
+    - arangobp
+    singular: arangobackuppolicy
+  conditions:
+  - lastTransitionTime: "2023-09-14T17:08:17Z"
+    message: no conflicts found
+    reason: NoConflicts
+    status: "True"
+    type: NamesAccepted
+  - lastTransitionTime: "2023-09-14T17:08:17Z"
+    message: the initial names have been accepted
+    reason: InitialNamesAccepted
+    status: "True"
+    type: Established
+  storedVersions:
+  - v1

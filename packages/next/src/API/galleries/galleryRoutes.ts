@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import {auth} from '../../ThirdPartyAPIs/firebaseApp';
 
-const URL = 'http://localhost:1160/gallery';
+const URL = `${process.env.NEXT_PUBLIC_API_URL}gallery`;
 
 export async function createGalleryProfileAPI({
   galleryName,
