@@ -27,6 +27,7 @@ images:
       - "--no-cache"
       - "--compress"
 
+
 deployments:
   next:
     namespace: darta-next
@@ -38,7 +39,7 @@ deployments:
         containers:
         - image: gcr.io/darta-dev/darta-next
         buildKit:
-          args: []
+          args: ["--platform=linux/amd64"]
         docker:
           args:
           - "--no-cache"
@@ -50,7 +51,6 @@ deployments:
             traefik.ingress.kubernetes.io/router.entrypoints: web
             traefik.ingress.kubernetes.io/router.middlewares: redirect-https@kubernetescrd
             traefik.ingress.kubernetes.io/router.tls: "true"
-
   traefik:
     helm:
       chart:
@@ -64,11 +64,11 @@ deployments:
   ingress:
     kubectl:
       manifests:
-      - ../../charts/ingress-route.yaml
+      - ../../charts/production/ingress-route.yaml
   https-redirect:
     kubectl:
       manifests:
-      - ../../charts/https-redirect-middleware.yaml
+      - ../../charts/production/https-redirect.yaml
 
 
 dev:

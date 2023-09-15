@@ -1,4 +1,4 @@
-### Deployment Guide
+# Deployment Guide
 Prerequisites:
 Ensure you have kubectl and devspace CLI tools installed.
 Make sure you have access to your GKE cluster. This typically means you've set the correct context for kubectl.

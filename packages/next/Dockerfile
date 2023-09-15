@@ -1,10 +1,8 @@
 # syntax=docker/dockerfile:1.4
 
-FROM --platform=linux/amd64 node:18-alpine as base
-
+FROM node:20-slim as base
 
 FROM base as deps 
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 WORKDIR /app
 
 # Copy over the necessary files
@@ -13,12 +11,12 @@ COPY ./tsconfig.json .
 COPY ./pnpm-lock.yaml .
 COPY ./packages/next ./packages/next
 COPY ./packages/darta-types ./packages/darta-types
+COPY ./.eslintrc.json ./.eslintrc.json
 COPY ./packages/next/package.json ./packages/next/package.json
 COPY ./packages/components/src ./packages/components/src
 COPY ./packages/components/package.json ./packages/components/package.json
 
 FROM deps AS builder
-
 WORKDIR /app/packages/next
 ENV NEXT_BUILD_ENV_TYPECHECK=false
 ENV NEXT_BUILD_ENV_LINT=false
@@ -26,21 +24,20 @@ ENV NEXT_BUILD_ENV_OUTPUT=standalone
 ENV NEXT_BUILD_ENV_SENTRY_ENABLED=false
 ENV NEXT_BUILD_ENV_SENTRY_TRACING=false
 
-# Install pnpm, dependencies and build in a single layer
+# Install pnpm, dependencies and build in multiple layers
 RUN corepack enable && \
     corepack prepare pnpm@8.6.2 --activate && \
-    CYPRESS_INSTALL_BINARY=0 pnpm install && \
+    pnpm install && \
     pnpm run build
 
 
 FROM base AS runner
-
 ENV NODE_ENV production
 WORKDIR /app
 
 RUN \
-  addgroup --system --gid 1001 nodejs; \
-  adduser --system --uid 1001 nextjs
+  addgroup --system --gid 101 nodejs; \
+  adduser --system --uid 101 nextjs
 
 
 COPY --from=builder --link /app/packages/next/package.json \

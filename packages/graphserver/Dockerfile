@@ -1,6 +1,5 @@
 # Use the official Node.js image
 FROM node:20-slim AS base
-WORKDIR /app
 
 FROM base as deps 
 WORKDIR /app
