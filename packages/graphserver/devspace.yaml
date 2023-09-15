@@ -56,7 +56,7 @@ deployments:
   ingress:
     kubectl:
       manifests:
-      - ../../charts/ingress-route.yaml
+      - ../../charts/production/ingress-route.yaml
 
 dev:
   app:
