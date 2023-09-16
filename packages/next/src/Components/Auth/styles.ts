@@ -71,7 +71,7 @@ export const welcomeStyles = {
   },
   introContainer: {
     flex: 4,
-    height: '50vh',
+    height: '30vh',
     backgroundColor: PRIMARY_BLUE,
     borderTopLeftRadius: '30px',
     borderTopRightRadius: '30px',

@@ -8,7 +8,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
     - name: Check out the code
       uses: actions/checkout@v2
@@ -16,10 +15,10 @@ jobs:
     - name: Set up Node.js (if using a Node.js package)
       uses: actions/setup-node@v2
       with:
-        node-version: '14' # Modify the version as required
+        node-version: '20' 
 
     - name: Install DevSpace CLI
-      run: curl -s -L "https://get.devspace.sh" | bash
+      uses: loft-sh/setup-devspace@main
 
     - name: Navigate to the package
       run: cd packages/next # Change the path to the package you want to deploy

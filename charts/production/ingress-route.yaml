@@ -30,5 +30,7 @@ spec:
     - name: darta-api
       namespace: darta-next
       port: 1160
+    middlewares:
+    - name: "https-redirect"
   tls:
     secretName: my-tls-secret

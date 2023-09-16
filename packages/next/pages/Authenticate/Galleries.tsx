@@ -1,11 +1,10 @@
 import {Box} from '@mui/material';
-import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import React from 'react';
 
+import {welcomeBackData} from '../../data/pamphletPages';
 import {SignInForm, SignInWelcome} from '../../src/Components/Auth';
 import {AuthEnum, WelcomeBack} from '../../src/Components/Auth/types';
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
-import {welcomeBack} from '../../src/ThirdPartyAPIs/firebaseDB';
 
 const styles = {
   container: {
@@ -26,15 +25,13 @@ const styles = {
 // defines everything
 const userType = AuthEnum.galleries;
 
-export default function GallerySignIn({
-  data,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function GallerySignIn() {
   return (
     <>
       <BaseHeader />
       <Box sx={styles.container}>
         <SignInWelcome
-          welcomeBackData={data as WelcomeBack}
+          welcomeBackData={welcomeBackData as WelcomeBack}
           signInType={userType}
         />
         <SignInForm signInType={userType} />
@@ -42,14 +39,3 @@ export default function GallerySignIn({
     </>
   );
 }
-
-type WelcomeBackData = {
-  data: WelcomeBack;
-};
-
-export const getStaticProps: GetStaticProps<{
-  data: WelcomeBackData;
-}> = async () => {
-  const welcomeBackData = (await welcomeBack(userType)) as WelcomeBackData;
-  return {props: {data: welcomeBackData}};
-};

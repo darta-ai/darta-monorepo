@@ -22,10 +22,10 @@ images:
     context: ../..
     buildKit:
       args: ["--platform=linux/amd64"]
-    docker:
-      args:
-      - "--no-cache"
-      - "--compress"
+      # docker:
+      #   args:
+      #   - "--no-cache"
+      #   - "--compress"
 
 
 deployments:
