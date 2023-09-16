@@ -1,9 +1,7 @@
 apiVersion: "database.arangodb.com/v1"
 kind: "ArangoDeployment"
 metadata:
-  name: "simple-cluster"
-  namespace: "arango-mvp-cluster"
+  name: "my-arango-deployment"
+  namespace: "arango-cluster"
 spec:
   mode: Cluster
-  tls:
-    caSecretName: None

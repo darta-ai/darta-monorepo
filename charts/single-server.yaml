@@ -1,6 +1,7 @@
 apiVersion: "database.arangodb.com/v1"
 kind: "ArangoDeployment"
 metadata:
-  name: "single-server"
+  name: "arango-single-server"
+  namespace: "arango-cluster"
 spec:
   mode: Single

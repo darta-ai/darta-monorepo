@@ -66,7 +66,7 @@ function GalleryStatus({
           <Box sx={{mx: 3, my: 3}}>
             <Typography>
               With questions, please reach out to us at{' '}
-              <a href="mailto:info@darta.works">info@darta.works</a>
+              <a href="mailto:info@darta.art">info@darta.art</a>
             </Typography>
           </Box>
         </Box>
@@ -94,7 +94,7 @@ function GalleryStatus({
           <Box sx={{mx: 3, my: 3}}>
             <Typography>
               If you have any questions or concerns, please reach out to us at{' '}
-              <a href="mailto:info@darta.works">info@darta.works</a>
+              <a href="mailto:info@darta.art">info@darta.art</a>
             </Typography>
           </Box>
         </Box>

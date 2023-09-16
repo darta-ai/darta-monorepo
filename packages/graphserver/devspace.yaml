@@ -58,6 +58,11 @@ deployments:
       manifests:
       - ../../charts/production/ingress-route.yaml
 
+  https-redirect:
+    kubectl:
+      manifests:
+      - ../../charts/production/https-redirect.yaml
+
 dev:
   app:
     imageSelector: gcr.io/darta-dev/darta-root/next

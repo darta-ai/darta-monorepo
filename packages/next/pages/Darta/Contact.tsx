@@ -123,19 +123,19 @@ function Contact() {
           <ContactElement
             title="support"
             blurb="Have questions about your account or using the app?"
-            email="support@darta.works"
+            email="support@darta.art"
             dataTestId="contact-element-support"
           />
           <ContactElement
             title="collaborate"
             blurb="Love the mission? Want to work with us?"
-            email="collaborate@darta.works"
+            email="collaborate@darta.art"
             dataTestId="contact-element-collaborate"
           />
           <ContactElement
             title="press"
             blurb="If you're a writer or editor and want to connect on a story."
-            email="press@darta.works"
+            email="press@darta.art"
             dataTestId="contact-element-press"
           />
         </Box>
