@@ -28,7 +28,7 @@ spec:
     kind: Rule
     services:
     - name: darta-api
-      namespace: darta-next
+      namespace: darta-main
       port: 1160
     middlewares:
     - name: "https-redirect"
