@@ -17,14 +17,19 @@ dotenv.config();
 const server = new InversifyExpressServer(container);
 
 const corsOptions = {
-  origin: (origin: any, callback: any) => {
-    // Check if the origin is from the same container or allowed host
-    if (origin === 'http://localhost:1169' || origin === undefined) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  // origin: (origin: any, callback: any) => {
+  //   // Check if the origin is from the same container or allowed host
+  //   if (
+  //     origin === 'http://localhost:1169' ||
+  //     origin === 'https://www.darta.art' ||
+  //     origin === undefined
+  //   ) {
+  //     callback(null, true);
+  //   } else {
+  //     callback(new Error('Not allowed by CORS'));
+  //   }
+  // },
+  origin: true,
 };
 
 // Configure and start the server
@@ -39,6 +44,8 @@ server.setConfig(app => {
 const app = server.build();
 
 const {PORT: port, VERSION: version} = process.env;
+// eslint-disable-next-line no-console
+console.log({version});
 
 const httpServer = http.createServer(app);
 

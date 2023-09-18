@@ -78,11 +78,13 @@ deployments:
           type: LoadBalancer
 
   ingress:
+    namespace: traefik
     kubectl:
       manifests:
       - ../../charts/production/ingress-route.yaml
 
   https-redirect:
+    namespace: traefik
     kubectl:
       manifests:
       - ../../charts/production/https-redirect.yaml
