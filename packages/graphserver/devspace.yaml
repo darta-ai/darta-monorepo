@@ -1,7 +1,7 @@
 version: v2beta1
 name: darta-graph-server
 vars:
-  DEVSPACE_ENV_FILE: "production.env"
+  DEVSPACE_ENV_FILE: ".env.production"
 
 
 pipelines:

@@ -2,7 +2,7 @@ version: v2beta1
 name: darta-next
 
 vars:
-  DEVSPACE_ENV_FILE: "production.env"
+  DEVSPACE_ENV_FILE: ".env.production"
 
 
 
