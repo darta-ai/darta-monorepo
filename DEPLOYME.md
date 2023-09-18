@@ -18,7 +18,7 @@ Navigate to your server package directory:
 
 Then, use devspace to deploy:
 
-`devspace deploy`
+`source production.env && devspace deploy`
 
 ## Deploy your Next.js Package:
 
@@ -26,7 +26,7 @@ Navigate to your Next.js package directory:
 `cd /packages/next`
 
 Then, use devspace to deploy:
-`devspace deploy`
+`source production.env && devspace deploy`
 
 ## Setup the TLS Secrets:
 
