@@ -1,0 +1,43 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: my-ingressroute
+spec:
+  entryPoints:
+  - web
+  - websecure
+  routes:
+  - match: Host(`darta.art`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: next
+      namespace: darta-next
+      port: 1169
+    middlewares:
+    - name: "https-redirect"
+  - match: Host(`www.darta.art`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: next
+      namespace: darta-next
+      port: 1169
+    middlewares:
+    - name: "https-redirect"
+  # Adding a new rule for the API
+  - match: Host(`api.darta.art`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: darta-api
+      namespace: darta-main
+      port: 1160
+    middlewares:
+    - name: "https-redirect"
+  - match: Host(`images.darta.art`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: minio
+      port: 443
+    middlewares:
+    - name: "https-redirect"
+  tls:
+    secretName: my-tls-secret

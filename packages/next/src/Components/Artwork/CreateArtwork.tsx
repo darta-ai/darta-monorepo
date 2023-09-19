@@ -1,8 +1,10 @@
+import {Artwork} from '@darta/types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
   Box,
   Button,
+  CircularProgress,
   FormControlLabel,
   FormGroup,
   Switch,
@@ -13,7 +15,6 @@ import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {mediums} from '../../../data/medium';
-import {Artwork} from '../../../globalTypes';
 import {PRIMARY_BLUE} from '../../../styles';
 import {
   createArtworkDimensionsToolTip,
@@ -29,8 +30,13 @@ import {
   DartaRadioButtonsGroup,
   DartaTextInput,
 } from '../FormComponents/index';
-import {CroppingMattersModal, DartaDialogue} from '../Modals/index';
+import {
+  ConfirmDeleteExhibitionArtwork,
+  CroppingMattersModal,
+  DartaDialogue,
+} from '../Modals/index';
 import {profileStyles} from '../Profile/Components/profileStyles';
+import {useAppState} from '../State/AppContext';
 import {createArtworkStyles} from './styles';
 
 type currencyConverterType = {
@@ -113,14 +119,18 @@ const createArtworkSchema = yup
       .test(
         'either-or-height',
         'Artwork height must be a positive number and is required.',
-        (value: {heightIn: {value?: string | null | undefined}; heightCm: {value?: string | null | undefined}}) =>
-          !!(value.heightIn.value || value.heightCm.value),
+        (value: {
+          heightIn: {value?: string | null | undefined};
+          heightCm: {value?: string | null | undefined};
+        }) => !!(value.heightIn.value || value.heightCm.value),
       )
       .test(
         'either-or-width',
         'Artwork width must be a positive number and is required.',
-        (value: {widthIn: {value?: string | null | undefined}; widthCm: {value?: string | null | undefined}}) =>
-          !!(value.widthIn.value || value.widthCm.value),
+        (value: {
+          widthIn: {value?: string | null | undefined};
+          widthCm: {value?: string | null | undefined};
+        }) => !!(value.widthIn.value || value.widthCm.value),
       ),
   })
   .required();
@@ -128,18 +138,40 @@ const createArtworkSchema = yup
 export function CreateArtwork({
   newArtwork,
   cancelAction,
-  saveArtwork,
+  handleSave,
   handleDelete,
+  saveSpinner,
+  deleteSpinner,
   croppingModalOpen,
   setCroppingModalOpen,
+  handleRemoveArtworkFromExhibition,
+  handleDeleteArtworkFromDarta,
 }: {
   newArtwork: Artwork;
   cancelAction: (arg0: boolean) => void;
-  saveArtwork: (arg0: Artwork) => void;
-  handleDelete: (arg0: string) => void;
+  handleSave: (savedArtwork: Artwork) => void;
+  saveSpinner: boolean;
+  deleteSpinner: boolean;
   croppingModalOpen?: boolean;
+  handleDelete?: (arg0: string) => void;
   setCroppingModalOpen?: (arg0: boolean) => void;
+  handleRemoveArtworkFromExhibition?: ({
+    exhibitionId,
+    artworkId,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+  }) => Promise<boolean>;
+  handleDeleteArtworkFromDarta?: ({
+    exhibitionId,
+    artworkId,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+  }) => Promise<boolean>;
 }) {
+  const {state} = useAppState();
+
   const [isInchesMeasurement, setIsInchesMeasurement] =
     React.useState<boolean>(false);
   const [tempImage, setTempImage] = React.useState<string | null>(
@@ -217,7 +249,7 @@ export function CreateArtwork({
     );
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     handleMeasurementChange();
     const artist_name = data.artistName.value
       .toLowerCase()
@@ -229,37 +261,54 @@ export function CreateArtwork({
       .replaceAll('.', '');
     const slug = `${artist_name}-${artwork_title}`;
     setValue('slug.value', slug);
+
     if (
       Number(data.artworkDimensions.depthIn.value) &&
       Number(data.artworkDimensions.depthCm.value)
     ) {
       setValue(
         'artworkDimensions.text.value',
-        `${data.artworkDimensions.widthIn.value} x 
-        ${data.artworkDimensions.heightIn.value} x
-        ${data.artworkDimensions.depthIn?.value}in;
-        ${data.artworkDimensions.widthCm.value} x 
-        ${data.artworkDimensions.heightCm.value} x
-         ${data.artworkDimensions.depthCm?.value}cm`,
+        `
+        ${data.artworkDimensions.heightIn.value}" x
+        ${data.artworkDimensions.widthIn.value}" x 
+        ${data.artworkDimensions.depthIn?.value}";
+        ${data.artworkDimensions.heightCm.value}' x
+        ${data.artworkDimensions.widthCm.value}' x 
+        ${data.artworkDimensions.depthCm?.value}'
+         `,
       );
     } else {
       setValue(
         'artworkDimensions.text.value',
-        `${data.artworkDimensions.widthIn.value} x 
-        ${data.artworkDimensions.heightIn.value}in;
-        ${data.artworkDimensions.widthCm.value} x 
-        ${data.artworkDimensions.heightCm.value}cm 
+        `
+        ${data.artworkDimensions.heightIn.value}" x
+        ${data.artworkDimensions.widthIn.value}"; 
+        ${data.artworkDimensions.heightCm.value}' x 
+        ${data.artworkDimensions.widthCm.value}'
         `,
       );
     }
-
-    saveArtwork(data);
+    handleSave(data);
   };
 
   const handleDrop = (acceptedFiles: any) => {
     const file = acceptedFiles[0];
     const previewURL = URL.createObjectURL(file);
     setTempImage(previewURL);
+
+    const reader = new FileReader();
+
+    reader.onload = event => {
+      // event.target.result contains the file's data as a base64 encoded string.
+      if (event.target?.result) {
+        const fileData = event.target.result;
+        setValue('artworkImage.fileData', fileData);
+        setValue('artworkImage.fileName', file.name);
+      }
+    };
+
+    reader.readAsDataURL(file); // Read the file content as Data URL.
+
     setValue('artworkImage.value', previewURL);
 
     // NEED API CALL TO UPLOAD IMAGE TO DATABASE
@@ -281,6 +330,18 @@ export function CreateArtwork({
       setCroppingModalOpen(false);
     }
   };
+
+  const exhibitionId = newArtwork?.exhibitionId;
+  let isInExhibition = false;
+
+  if (exhibitionId) {
+    const exhibition = state.galleryExhibitions?.[exhibitionId];
+    const artworkId = newArtwork?.artworkId;
+
+    if (exhibition?.artworks && artworkId) {
+      isInExhibition = Boolean(exhibition.artworks[artworkId]);
+    }
+  }
 
   return (
     <Box mb={2} sx={profileStyles.container}>
@@ -307,12 +368,14 @@ export function CreateArtwork({
               />
             </>
           ) : (
-            <Box
-              component="img"
-              src={tempImage as string}
-              alt="artwork"
-              style={createArtworkStyles.defaultImage}
-            />
+            <Box sx={createArtworkStyles.defaultImageContainer}>
+              <Box
+                component="img"
+                src={tempImage as string}
+                alt="artwork"
+                style={createArtworkStyles.defaultImage}
+              />
+            </Box>
           )}
         </Box>
         {errors.artworkImage && (
@@ -573,6 +636,8 @@ export function CreateArtwork({
               inputAdornmentValue={isInchesMeasurement ? 'cm' : 'in'}
             />
           </Box>
+        </Box>
+        <Box>
           <Box key="artworkDimensionDepth" sx={createArtworkStyles.inputText}>
             <DartaTextInput
               fieldName={
@@ -612,30 +677,72 @@ export function CreateArtwork({
             variant="contained"
             data-testid="delete-artwork-button"
             color="error"
+            disabled={deleteSpinner}
+            sx={{
+              alignSelf: 'center',
+              width: '50vw',
+              '@media (min-width: 800px)': {
+                width: '10vw',
+              },
+            }}
             onClick={() => {
               handleClickOpen();
             }}>
-            <Typography sx={{fontWeight: 'bold'}}>Delete</Typography>
+            {deleteSpinner ? (
+              <CircularProgress size={24} />
+            ) : (
+              <Typography sx={{fontWeight: 'bold'}}>Delete</Typography>
+            )}
           </Button>
           <Button
             variant="contained"
             data-testid="save-artwork-button"
             type="submit"
-            sx={{backgroundColor: PRIMARY_BLUE}}
+            disabled={saveSpinner}
+            sx={{
+              alignSelf: 'center',
+              backgroundColor: PRIMARY_BLUE,
+              width: '50vw',
+              '@media (min-width: 800px)': {
+                width: '10vw',
+              },
+            }}
             onClick={handleSubmit(onSubmit)}>
-            <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
+            {saveSpinner ? (
+              <CircularProgress size={24} />
+            ) : (
+              <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
+            )}
           </Button>
         </Box>
       </Box>
 
-      <DartaDialogue
-        identifier={newArtwork?.artworkTitle?.value || '____'}
-        deleteType="artwork"
-        id={newArtwork?.artworkId as string}
-        open={open}
-        handleClose={handleClose}
-        handleDelete={handleDelete}
-      />
+      {isInExhibition &&
+        newArtwork.artworkId &&
+        newArtwork.exhibitionId &&
+        handleDeleteArtworkFromDarta &&
+        handleRemoveArtworkFromExhibition && (
+          <ConfirmDeleteExhibitionArtwork
+            artworkId={newArtwork.artworkId}
+            open={open}
+            handleClose={handleClose}
+            exhibitionId={newArtwork.exhibitionId}
+            handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
+            handleRemoveArtworkFromExhibition={
+              handleRemoveArtworkFromExhibition
+            }
+          />
+        )}
+      {handleDelete && !isInExhibition && (
+        <DartaDialogue
+          identifier={newArtwork?.artworkTitle?.value || 'this artwork'}
+          deleteType="artwork"
+          id={newArtwork?.artworkId as string}
+          open={open}
+          handleClose={handleClose}
+          handleDelete={handleDelete}
+        />
+      )}
     </Box>
   );
 }
@@ -643,4 +750,7 @@ export function CreateArtwork({
 CreateArtwork.defaultProps = {
   croppingModalOpen: false,
   setCroppingModalOpen: () => {},
+  handleDeleteArtworkFromDarta: () => {},
+  handleRemoveArtworkFromExhibition: () => {},
+  handleDelete: () => {},
 };

@@ -1,0 +1,7 @@
+apiVersion: "database.arangodb.com/v1"
+kind: "ArangoDeployment"
+metadata:
+  name: "my-arango-deployment"
+  namespace: "arango-cluster"
+spec:
+  mode: Cluster

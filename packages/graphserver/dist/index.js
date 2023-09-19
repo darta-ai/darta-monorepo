@@ -26,14 +26,44 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("reflect-metadata");
+const cors_1 = __importDefault(require("cors"));
 const dotenv = __importStar(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const http_1 = __importDefault(require("http"));
+const inversify_express_utils_1 = require("inversify-express-utils");
+const container_1 = require("./config/container");
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+const bodyParser = require('body-parser');
 dotenv.config();
-const { PORT: port } = process.env;
-const app = (0, express_1.default)();
-app.use(express_1.default.json());
-app.use(express_1.default.urlencoded({ extended: true }));
+const server = new inversify_express_utils_1.InversifyExpressServer(container_1.container);
+const corsOptions = {
+    // origin: (origin: any, callback: any) => {
+    //   // Check if the origin is from the same container or allowed host
+    //   if (
+    //     origin === 'http://localhost:1169' ||
+    //     origin === 'https://www.darta.art' ||
+    //     origin === undefined
+    //   ) {
+    //     callback(null, true);
+    //   } else {
+    //     callback(new Error('Not allowed by CORS'));
+    //   }
+    // },
+    origin: true,
+};
+// Configure and start the server
+server.setConfig(app => {
+    app.use((0, cors_1.default)(corsOptions));
+    app.use(bodyParser.json({ limit: '50mb' }));
+    app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+    app.use(express_1.default.json());
+    app.use(express_1.default.urlencoded({ extended: true }));
+});
+const app = server.build();
+const { PORT: port, VERSION: version } = process.env;
+// eslint-disable-next-line no-console
+console.log({ version });
 const httpServer = http_1.default.createServer(app);
 let n = 0;
 app.get('/', (req, res) => {
@@ -45,6 +75,10 @@ app.get('/ping', (req, res) => {
 app.get('/pong', (req, res) => {
     res.send('ping');
 });
+app.get('/version', (req, res) => {
+    res.send(version);
+});
 httpServer.listen(port, () => {
-    console.log(`Listening on port ${port}`);
+    // eslint-disable-next-line no-console
+    console.log(`Listening on port ${port}, version ${version}`);
 });

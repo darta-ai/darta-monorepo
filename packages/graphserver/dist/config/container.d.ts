@@ -1,0 +1,27 @@
+import { Database } from 'arangojs';
+import { Container } from 'inversify';
+import { Client as MinioClient } from 'minio';
+declare const container: Container;
+declare const TYPES: {
+    Database: string;
+    MinioClient: string;
+    IGalleryService: string;
+    GalleryController: string;
+    ImageController: string;
+    IImageService: string;
+    ArtworkController: string;
+    IArtworkService: string;
+    AdminController: string;
+    IAdminService: string;
+    EdgeService: string;
+    IEdgeService: string;
+    NodeService: string;
+    INodeService: string;
+    IUserService: string;
+    UserController: string;
+    IExhibitionService: string;
+    ExhibitionController: string;
+};
+declare const arangoContainer: import("inversify/lib/interfaces/interfaces").interfaces.BindingWhenOnSyntax<Database>;
+declare const minioContainer: import("inversify/lib/interfaces/interfaces").interfaces.BindingWhenOnSyntax<MinioClient>;
+export { arangoContainer, container, minioContainer, TYPES };

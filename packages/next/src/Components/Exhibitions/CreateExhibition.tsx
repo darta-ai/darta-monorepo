@@ -1,13 +1,13 @@
+import {Exhibition} from '@darta/types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import {Box, Button, Typography} from '@mui/material';
+import {Box, Button, CircularProgress, Typography} from '@mui/material';
 import dayjs from 'dayjs';
 import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {Exhibition} from '../../../globalTypes';
-import {PRIMARY_BLUE} from '../../../styles';
+import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {exhibitionPressReleaseToolTip} from '../../common/ToolTips/toolTips';
 import {createArtworkStyles} from '../Artwork/styles';
 import {
@@ -19,7 +19,7 @@ import {
   DartaSwitch,
   DartaTextInput,
 } from '../FormComponents/index';
-import {DartaDialogue} from '../Modals/DartaDialogue';
+import {DartaConfirmExhibitionDelete} from '../Modals/DartaConfirmExhibitionDelete';
 import {profileStyles} from '../Profile/Components/profileStyles';
 
 export const createExhibitionErrors = {
@@ -58,7 +58,7 @@ const createExhibitionSchema = yup
       locationString: yup.object().shape({
         value: yup
           .string()
-          .required(createExhibitionErrors.exhibitionLocationString),
+          .required(createExhibitionErrors.exhibitionPrimaryImage),
       }),
     }),
     exhibitionDates: yup
@@ -184,13 +184,21 @@ export function CreateExhibition({
   handleDelete,
   galleryLocations,
   galleryName,
+  isEditingExhibition,
 }: {
   newExhibition: Exhibition;
   cancelAction: (arg0: boolean) => void;
   saveExhibition: (arg0: Exhibition) => void;
-  handleDelete: (arg0: string) => void;
+  handleDelete: ({
+    exhibitionId,
+    deleteArtworks,
+  }: {
+    exhibitionId: string;
+    deleteArtworks?: boolean | undefined;
+  }) => Promise<boolean>;
   galleryLocations: string[];
   galleryName: string;
+  isEditingExhibition: boolean;
 }) {
   const [editPressRelease, setEditPressRelease] = React.useState<boolean>(
     !newExhibition?.exhibitionPrimaryImage?.value,
@@ -210,7 +218,7 @@ export function CreateExhibition({
     resolver: yupResolver(createExhibitionSchema),
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     const galleryNameHashified = galleryName.replaceAll(' ', '-');
     const exhibitionNameHashified = data.exhibitionTitle.value.replaceAll(
       ' ',
@@ -218,7 +226,11 @@ export function CreateExhibition({
     );
     const slug = `${galleryNameHashified}-${exhibitionNameHashified}`;
     setValue('slug.value', slug);
-    saveExhibition(data);
+    try {
+      saveExhibition(data);
+    } catch (error) {
+      // TO-DO: error handling?
+    }
   };
 
   const [tempImage, setTempImage] = React.useState<string | null>(
@@ -229,9 +241,20 @@ export function CreateExhibition({
     const file = acceptedFiles[0];
     const previewURL = URL.createObjectURL(file);
     setTempImage(previewURL);
-    setValue('exhibitionPrimaryImage.value', previewURL);
 
-    // NEED API CALL TO UPLOAD IMAGE TO DATABASE
+    const reader = new FileReader();
+
+    reader.onload = event => {
+      // event.target.result contains the file's data as a base64 encoded string.
+      if (event.target?.result) {
+        const fileData = event.target.result;
+        setValue('exhibitionPrimaryImage.fileData', fileData);
+        setValue('exhibitionPrimaryImage.fileName', file.name);
+      }
+    };
+
+    reader.readAsDataURL(file); // Read the file content as Data URL.
+    setValue('exhibitionPrimaryImage.value', previewURL);
     setEditPressRelease(!editPressRelease);
   };
 
@@ -335,16 +358,18 @@ export function CreateExhibition({
                 instructions="Drag and drop the main image of your exhibition or click to select an image to upload."
               />
             ) : (
-              // eslint-disable-next-line jsx-a11y/img-redundant-alt
-              <img
-                src={
-                  tempImage ??
-                  (newExhibition?.exhibitionPrimaryImage?.value as string) ??
-                  ''
-                }
-                alt="exhibition main image"
-                style={createArtworkStyles.defaultImage}
-              />
+              <Box>
+                {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
+                <img
+                  src={
+                    tempImage ??
+                    (newExhibition?.exhibitionPrimaryImage?.value as string) ??
+                    ''
+                  }
+                  alt="exhibition main image"
+                  style={createArtworkStyles.defaultImage}
+                />
+              </Box>
             )}
             {errors.exhibitionPrimaryImage && (
               <Typography
@@ -405,10 +430,10 @@ export function CreateExhibition({
             data={newExhibition.exhibitionPressRelease?.value}
             register={register}
             errors={errors}
-            required={false}
+            required={true}
             control={control}
             helperTextString={errors.exhibitionPressRelease?.value?.message}
-            inputAdornmentString="Description"
+            inputAdornmentString="Press Release"
             toolTips={exhibitionPressReleaseToolTip}
             multiline={12}
             allowPrivate={false}
@@ -453,10 +478,6 @@ export function CreateExhibition({
               control={control}
               toolTips={exhibitionPressReleaseToolTip}
               options={galleryLocations ?? ['edit profile to add locations']}
-              value={
-                getValues('exhibitionLocation.locationString.value') ??
-                newExhibition?.exhibitionLocation?.locationString?.value
-              }
               helperTextString={
                 errors.exhibitionLocation?.exhibitionLocationString?.value
                   ?.message
@@ -493,7 +514,7 @@ export function CreateExhibition({
                 errors={errors}
                 value={
                   getValues('exhibitionDates.exhibitionDuration.value') ||
-                  newExhibition?.exhibitionDates.exhibitionDuration
+                  newExhibition?.exhibitionDates?.exhibitionDuration
                 }
               />
             </Box>
@@ -590,7 +611,7 @@ export function CreateExhibition({
                 fieldName="receptionDates.receptionStartTime"
                 canEdit={!hasReception}
                 setHigherLevelState={handleMinTime}
-                minTime={dayjs(minTime)}
+                minTime={null}
                 maxTime={dayjs(maxDate)}
                 error={!!errors?.receptionDates?.message}
                 value={
@@ -640,16 +661,27 @@ export function CreateExhibition({
               variant="contained"
               data-testid="save-exhibition-button"
               type="submit"
-              sx={{backgroundColor: PRIMARY_BLUE}}
+              disabled={isEditingExhibition}
+              sx={{
+                backgroundColor: PRIMARY_BLUE,
+                color: PRIMARY_MILK,
+                alignSelf: 'center',
+                width: '50vw',
+                '@media (min-width: 800px)': {
+                  width: '10vw',
+                },
+              }}
               onClick={handleSubmit(onSubmit)}>
-              <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
+              {isEditingExhibition ? (
+                <CircularProgress size={24} />
+              ) : (
+                <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
+              )}
             </Button>
           </Box>
         </Box>
       </Box>
-      <DartaDialogue
-        identifier={newExhibition?.exhibitionTitle?.value || '____'}
-        deleteType="exhibition"
+      <DartaConfirmExhibitionDelete
         id={newExhibition.exhibitionId as string}
         open={open}
         handleClose={handleClose}

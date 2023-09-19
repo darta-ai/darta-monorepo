@@ -1,19 +1,15 @@
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
+import {galleryPamphletData} from '../../data/pamphletPages';
 import {AuthEnum} from '../../src/Components/Auth/types';
 import {GalleryHeader} from '../../src/Components/Navigation/Headers/GalleryHeader';
 import {PamphletLeft} from '../../src/Components/Pamphlet/pamphletLeft';
 import {PamphletRight} from '../../src/Components/Pamphlet/pamphletRight';
-import {getGalleryPamphlet} from '../../ThirdPartyAPIs/firebaseDB';
 
-export default function Home({
-  data,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
-  const {pamphletData} = data;
+export default function Home() {
   return (
     <>
       <Head>
@@ -24,7 +20,7 @@ export default function Home({
       </Head>
       <GalleryHeader />
       <Container maxWidth="xl" sx={{mt: '20vh'}}>
-        {pamphletData && (
+        {galleryPamphletData && (
           <Box
             sx={{
               my: 10,
@@ -33,8 +29,8 @@ export default function Home({
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            {pamphletData &&
-              pamphletData.map((d: any, index: number) => {
+            {galleryPamphletData &&
+              galleryPamphletData.map((d: any, index: number) => {
                 const isEven = index % 2 === 0;
                 if (isEven) {
                   return (
@@ -68,10 +64,3 @@ export default function Home({
     </>
   );
 }
-
-export const getStaticProps: GetStaticProps<{
-  data: any;
-}> = async () => {
-  const pamphletData = (await getGalleryPamphlet()) as any[];
-  return {props: {data: {pamphletData}}};
-};

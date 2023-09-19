@@ -1,21 +1,17 @@
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import Head from 'next/head';
 import React from 'react';
 
+import {pamphletData} from '../data/pamphletPages';
 import {AuthEnum} from '../src/Components/Auth/types';
 import {BaseHeader} from '../src/Components/Navigation/Headers/BaseHeader';
 import {PamphletLeft} from '../src/Components/Pamphlet/pamphletLeft';
 import {PamphletRight} from '../src/Components/Pamphlet/pamphletRight';
-import {getPamphlet} from '../ThirdPartyAPIs/firebaseDB';
 
 // import {Hello} from '@/components';
 
-export default function Home({
-  staticData,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
-  const {pamphletData} = staticData;
+export default function Home() {
   return (
     <>
       <Head>
@@ -72,10 +68,3 @@ export default function Home({
     </>
   );
 }
-
-export const getStaticProps: GetStaticProps<{
-  staticData: any;
-}> = async () => {
-  const pamphletData = (await getPamphlet()) as any[];
-  return {props: {staticData: {pamphletData}}};
-};

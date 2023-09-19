@@ -1,3 +1,4 @@
+import {Artwork} from '@darta/types';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import {
@@ -5,6 +6,7 @@ import {
   Button,
   CircularProgress,
   Fade,
+  LinearProgress,
   MobileStepper,
   Modal,
   Paper,
@@ -14,9 +16,10 @@ import Image from 'next/image';
 import React from 'react';
 import * as XLSX from 'xlsx';
 
-import {Artwork} from '../../../globalTypes';
-import {PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../../styles';
+import {AuthContext} from '../../../pages/_app';
+import {PRIMARY_MILK} from '../../../styles';
 import {parseExcelArtworkData} from '../../common/nextFunctions';
+import {useAppState} from '../State/AppContext';
 
 const excelPNG = require(`../../../public/static/images/excelExample.png`);
 const artLogicPNG = require(`../../../public/static/images/artLogicInstructions.png`);
@@ -76,6 +79,14 @@ const instructionsCarouselStyles = {
     fontSize: '1rem',
     '@media (min-width: 800px)': {
       fontSize: '1.2rem',
+    },
+  },
+  buttonSize: {
+    fontSize: '1rem',
+    width: '60vw',
+    height: '5vh',
+    '@media (min-width: 800px)': {
+      width: '50vw',
     },
   },
 };
@@ -171,6 +182,8 @@ interface UploadArtworksXlsModalProps {
 export function UploadArtworksXlsModal({
   handleBatchUpload,
 }: UploadArtworksXlsModalProps) {
+  const {state} = useAppState();
+  const {user} = React.useContext(AuthContext);
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
@@ -184,7 +197,9 @@ export function UploadArtworksXlsModal({
     setOpen(false);
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setLoading(true);
     const file = event.target.files![0];
     const reader = new FileReader();
@@ -215,10 +230,6 @@ export function UploadArtworksXlsModal({
         handleBatchUpload(results);
       }
 
-      // Simulate a delay. Replace this with actual logic.
-      // eslint-disable-next-line no-promise-executor-return
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
       setLoading(false);
       setSuccess(true);
       handleClose();
@@ -232,6 +243,7 @@ export function UploadArtworksXlsModal({
         className="upload-new-artwork"
         variant="contained"
         color="primary"
+        disabled={!state.galleryProfile.isValidated || !user.emailVerified}
         onClick={handleOpen}>
         <Typography sx={{fontWeight: 'bold', fontSize: '0.8rem'}}>
           Upload Artwork From .xls File
@@ -256,39 +268,51 @@ export function UploadArtworksXlsModal({
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <input
-                accept=".xlsx,.xls"
-                // eslint-disable-next-line react-native/no-inline-styles
-                style={{display: 'none'}}
-                id="contained-button-file"
-                type="file"
-                onChange={handleFileUpload}
-              />
-              {success ? (
-                <Fade in={success}>
-                  <Typography variant="h5" sx={{color: PRIMARY_DARK_GREY}}>
-                    Upload Successful!
-                  </Typography>
-                </Fade>
+              {loading ? (
+                <Box sx={{width: '100%'}}>
+                  <LinearProgress color="secondary" />
+                </Box>
               ) : (
-                <Fade in={!success}>
-                  <label htmlFor="contained-button-file">
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      disabled={loading}
-                      sx={{width: '50vw', height: '5vh'}}
-                      component="span">
-                      {loading ? (
-                        <CircularProgress color="secondary" size={20} />
-                      ) : (
-                        <Typography>
-                          Click Here To Upload From .xls File
-                        </Typography>
-                      )}
-                    </Button>
-                  </label>
-                </Fade>
+                <>
+                  <input
+                    accept=".xlsx,.xls"
+                    // eslint-disable-next-line react-native/no-inline-styles
+                    style={{display: 'none'}}
+                    id="contained-button-file"
+                    type="file"
+                    onChange={handleFileUpload}
+                  />
+                  {success ? (
+                    <Fade in={success}>
+                      <Typography variant="h5">Upload Successful!</Typography>
+                    </Fade>
+                  ) : (
+                    <Fade in={!success}>
+                      <label htmlFor="contained-button-file">
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          disabled={loading}
+                          sx={{
+                            alignSelf: 'center',
+                            width: '50vw',
+                            '@media (min-width: 800px)': {
+                              width: '10vw',
+                            },
+                          }}
+                          component="span">
+                          {loading ? (
+                            <CircularProgress color="secondary" size={20} />
+                          ) : (
+                            <Typography sx={{fontWeight: 'bold'}}>
+                              Upload From .xls File
+                            </Typography>
+                          )}
+                        </Button>
+                      </label>
+                    </Fade>
+                  )}
+                </>
               )}
             </Box>
           </Box>

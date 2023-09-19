@@ -48,7 +48,7 @@ export function ArtOnDisplay({
 }) {
   const {state, dispatch} = useContext(StoreContext);
 
-  const [isPanActionEnabled, setisPanActionEnabled] = useState(true);
+  const [isPanActionEnabled, seIsPanActionEnabled] = useState(true);
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -101,6 +101,7 @@ export function ArtOnDisplay({
           }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [state, ArtRatingGesture.swipeUp, ArtRatingGesture.swipeDown, rateArtwork],
   );
 
@@ -144,7 +145,7 @@ export function ArtOnDisplay({
 
   const handleDoubleTap = () => {
     if (isPanActionEnabled) {
-      setisPanActionEnabled(false);
+      seIsPanActionEnabled(false);
       const targetScale = 3;
 
       // Calculate the translation values
@@ -156,7 +157,7 @@ export function ArtOnDisplay({
         animated: false,
       });
     } else {
-      setisPanActionEnabled(true);
+      seIsPanActionEnabled(true);
       setCurrentZoomScale(1);
       scrollViewRef.current?.scrollToEnd({animated: false});
     }
@@ -268,9 +269,9 @@ export function ArtOnDisplay({
         onScrollEndDrag={({nativeEvent: {zoomScale}}) => {
           setCurrentZoomScale(zoomScale);
           if (zoomScale <= 1.1) {
-            setisPanActionEnabled(true);
+            seIsPanActionEnabled(true);
           } else {
-            setisPanActionEnabled(false);
+            seIsPanActionEnabled(false);
           }
         }}
         zoomScale={currentZoomScale}

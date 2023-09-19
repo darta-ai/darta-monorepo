@@ -1,7 +1,7 @@
+import {IBusinessLocationData} from '@darta/types';
 import {Box, Divider, Grid, Typography} from '@mui/material';
 import React from 'react';
 
-import {IBusinessLocationData} from '../../../../globalTypes';
 import {profileStyles} from './profileStyles';
 
 export function GalleryLocationComponent({
@@ -15,7 +15,8 @@ export function GalleryLocationComponent({
   const locationString = galleryLocationData?.locationString;
   // Holy fuck this is risky with the array
   const galleryLocationArray = locationString?.value?.split(',');
-  const galleryCity = galleryLocationArray?.slice(1, 2);
+  const galleryCity =
+    galleryLocationData?.city?.value ?? galleryLocationArray?.slice(1, 2);
   const galleryLocationIsPrivate = locationString?.isPrivate;
   const hoursOfOperation = businessHours?.hoursOfOperation;
 
@@ -117,49 +118,63 @@ export function GalleryLocationComponent({
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-monday-open`}>
-                  {hoursOfOperation?.Monday.open.value}
+                  {hoursOfOperation?.Monday.open.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Monday.open.value}
                 </Typography>
               </Grid>
               <Grid item xs={1.5}>
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-tuesday-open`}>
-                  {hoursOfOperation?.Tuesday.open.value}
+                  {hoursOfOperation?.Tuesday.open.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Tuesday.open.value}
                 </Typography>
               </Grid>
               <Grid item xs={1.5}>
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-wednesday-open`}>
-                  {hoursOfOperation?.Wednesday.open.value}
+                  {hoursOfOperation?.Wednesday.open.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Wednesday.open.value}
                 </Typography>
               </Grid>
               <Grid item xs={1.5}>
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-thursday-open`}>
-                  {hoursOfOperation?.Thursday.open.value}
+                  {hoursOfOperation?.Thursday.open.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Thursday.open.value}
                 </Typography>
               </Grid>
               <Grid item xs={1.5}>
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-friday-open`}>
-                  {hoursOfOperation?.Friday.open.value}
+                  {hoursOfOperation?.Friday.open.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Friday.open.value}
                 </Typography>
               </Grid>
               <Grid item xs={1.5}>
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-saturday-open`}>
-                  {hoursOfOperation?.Saturday.open.value}
+                  {hoursOfOperation?.Saturday.open.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Saturday.open.value}
                 </Typography>
               </Grid>
               <Grid item xs={1.5}>
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-sunday-open`}>
-                  {hoursOfOperation?.Sunday.open.value}
+                  {hoursOfOperation?.Sunday.open.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Sunday.open.value}
                 </Typography>
               </Grid>
               <Grid item xs={1.5}>
@@ -175,7 +190,9 @@ export function GalleryLocationComponent({
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-monday-close`}>
-                  {hoursOfOperation?.Monday.close.value}
+                  {hoursOfOperation?.Monday.close.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Monday.close.value}
                 </Typography>
               </Grid>
 
@@ -183,7 +200,9 @@ export function GalleryLocationComponent({
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-tuesday-close`}>
-                  {hoursOfOperation?.Tuesday.close.value}
+                  {hoursOfOperation?.Tuesday.close.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Tuesday.close.value}
                 </Typography>
               </Grid>
 
@@ -191,7 +210,9 @@ export function GalleryLocationComponent({
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-wednesday-close`}>
-                  {hoursOfOperation?.Wednesday.close.value}
+                  {hoursOfOperation?.Wednesday.close.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Wednesday.close.value}
                 </Typography>
               </Grid>
 
@@ -199,7 +220,9 @@ export function GalleryLocationComponent({
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-thursday-close`}>
-                  {hoursOfOperation?.Thursday.close.value}
+                  {hoursOfOperation?.Thursday.close.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Thursday.close.value}
                 </Typography>
               </Grid>
 
@@ -207,7 +230,9 @@ export function GalleryLocationComponent({
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-friday-close`}>
-                  {hoursOfOperation?.Friday.close.value}
+                  {hoursOfOperation?.Friday.close.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Friday.close.value}
                 </Typography>
               </Grid>
 
@@ -215,7 +240,9 @@ export function GalleryLocationComponent({
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-saturday-close`}>
-                  {hoursOfOperation?.Saturday.close.value}
+                  {hoursOfOperation?.Saturday.close.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Saturday.close.value}
                 </Typography>
               </Grid>
 
@@ -223,7 +250,9 @@ export function GalleryLocationComponent({
                 <Typography
                   sx={profileStyles.profile.hoursOfOperationText}
                   data-testid={`${testIdData}-hours-sunday-close`}>
-                  {hoursOfOperation?.Sunday.close.value}
+                  {hoursOfOperation?.Sunday.close.value === 'Closed'
+                    ? '-'
+                    : hoursOfOperation?.Sunday.close.value}
                 </Typography>
               </Grid>
             </Grid>

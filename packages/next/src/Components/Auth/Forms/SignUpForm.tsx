@@ -13,12 +13,14 @@ import {
   InputLabel,
 } from '@mui/material';
 import {useRouter} from 'next/router';
-import React, {useState} from 'react';
+import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {dartaSignUp} from '../../../../API/FirebaseAccountManagement';
+import {dartaSignUp} from '../../../API/FirebaseAccountManagement';
+import {createGalleryUser} from '../../../API/users/userRoutes';
 import {PhoneNumberFormat} from '../../FormComponents/DartaPhoneNumber';
+import {DartaErrorAlert} from '../../Modals';
 import {AlreadySignedUp} from '../../Navigation/Auth';
 import {authStyles} from '../styles';
 import {AuthEnum} from '../types';
@@ -33,11 +35,7 @@ const schema = yup
       .string()
       .min(10, 'please double check your phone number')
       .optional(),
-    galleryName: yup
-      .string()
-      .required(
-        'please include a gallery name to speed up the approval process',
-      ),
+    galleryName: yup.string().required('please include a gallery name'),
     password: yup
       .string()
       .min(8, 'password must be at least 8 characters')
@@ -46,16 +44,20 @@ const schema = yup
       .string()
       .oneOf([yup.ref('password'), undefined], 'passwords must match')
       .required('please confirm your password'),
-    website: yup.string().optional().matches(websiteRegExp, {
-      message: 'please double check your website url',
-      excludeEmptyString: true,
-    }),
+    website: yup
+      .string()
+      .required('please include your gallery website')
+      .matches(websiteRegExp, {
+        message: 'please double check your website url',
+        excludeEmptyString: true,
+      }),
   })
   .required();
 
 export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
   const router = useRouter();
-  const [firebaseError, setFirebaseError] = useState<string>('');
+  const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
+  const [firebaseError, setFirebaseError] = React.useState<string>('');
   const {
     register,
     handleSubmit,
@@ -64,36 +66,52 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
   const handleSignUp = async (data: any) => {
     const submitMe = async () => {
       try {
-        const {error, user, errorMessage} = await dartaSignUp(data, signUpType);
+        const {error, user, errorMessage} = await dartaSignUp(data);
         if (error) {
           setFirebaseError(errorMessage);
         } else if (user?.displayName) {
-          router.push(`/${signUpType}/LoadProfile`);
+          try {
+            await createGalleryUser({
+              galleryName: {value: data?.galleryName},
+              signUpWebsite: data?.website,
+              phoneNumber: data?.phoneNumber,
+              email: data?.email,
+            });
+            router.push(`/${signUpType}/Profile`);
+          } catch (error) {
+            setErrorAlertOpen(true);
+          }
         } else {
+          setErrorAlertOpen(true);
           router.push(`/`);
         }
       } catch (e: any) {
+        setErrorAlertOpen(true);
         setFirebaseError('Something went wrong. Please try again.');
       }
     };
     submitMe();
   };
 
-  const [togglePasswordView, setTogglePasswordView] = useState<boolean>(false);
+  const [togglePasswordView, setTogglePasswordView] =
+    React.useState<boolean>(false);
   const [toggleConfirmPasswordView, setToggleConfirmPasswordView] =
-    useState<boolean>(false);
+    React.useState<boolean>(false);
 
-  const [emailInput, setEmailInput] = useState<string | undefined>('');
-  const [emailError, setEmailError] = useState<string | undefined>('');
+  const [emailInput, setEmailInput] = React.useState<string | undefined>('');
+  const [emailError, setEmailError] = React.useState<string | undefined>('');
+  const [isGmail, setIsGmail] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const regex = /\b[A-Za-z0-9._%+-]+@gmail\.com\b/g;
     if (emailInput?.match(regex)) {
       setEmailError(
-        'Using an @gmail account to register will result in a longer to approve. If you have a business email address related to this gallery and your gallery is on the pre-approved list, you will automatically be authorized.',
+        'darta is not supporting @gmail email addresses at this time. Please use the domain of your gallery.',
       );
+      setIsGmail(true);
     } else {
       setEmailError('');
+      setIsGmail(false);
     }
   }, [emailInput]);
 
@@ -134,27 +152,6 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
           </FormHelperText>
         </FormControl>
         <FormControl variant="outlined" required>
-          <InputLabel htmlFor="outlined-adornment-email">email</InputLabel>
-          <Input
-            error={!!errors?.email?.message}
-            {...register('email')}
-            id="email"
-            aria-describedby="email"
-            color="info"
-            required
-            data-testid="emailInput"
-            onChange={event => {
-              setEmailInput(event.target.value);
-            }}
-          />
-          <FormHelperText
-            id="emailHelperText"
-            data-testid="emailInput-helper-text"
-            sx={authStyles.warningText}>
-            {(errors?.email?.message as string) || emailError}
-          </FormHelperText>
-        </FormControl>
-        <FormControl variant="outlined" required>
           <InputLabel htmlFor="outlined-adornment-phone">
             phone number
           </InputLabel>
@@ -176,12 +173,46 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             {errors?.phoneNumber?.message as string}
           </FormHelperText>
         </FormControl>
-
+        <FormControl variant="outlined" required>
+          <InputLabel htmlFor="outlined-adornment-website">website</InputLabel>
+          <Input
+            error={!!errors?.website?.message}
+            {...register('website')}
+            id="website"
+            color="info"
+            aria-describedby="website"
+            data-testid="websiteInput"
+            required
+          />
+          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
+            {errors?.website?.message as string}
+          </FormHelperText>
+        </FormControl>
         {!errors?.password?.message && (
           <FormHelperText id="phoneHelperText" sx={authStyles.formHelperText}>
             For account management purposes.
           </FormHelperText>
         )}
+        <FormControl variant="outlined" required>
+          <InputLabel htmlFor="outlined-adornment-email">email</InputLabel>
+          <Input
+            error={!!errors?.email?.message}
+            {...register('email')}
+            id="email"
+            aria-describedby="email"
+            color="info"
+            data-testid="emailInput"
+            onChange={event => {
+              setEmailInput(event.target.value);
+            }}
+          />
+          <FormHelperText
+            id="emailHelperText"
+            data-testid="emailInput-helper-text"
+            sx={authStyles.warningText}>
+            {(errors?.email?.message as string) || emailError}
+          </FormHelperText>
+        </FormControl>
         <FormControl variant="outlined" required>
           <InputLabel htmlFor="outlined-adornment-password">
             password
@@ -252,20 +283,6 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
             {errors?.confirmPassword?.message as string}
           </FormHelperText>
         </FormControl>
-        <FormControl variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-website">website</InputLabel>
-          <Input
-            error={!!errors?.website?.message}
-            {...register('website')}
-            id="website"
-            color="info"
-            aria-describedby="website"
-            data-testid="websiteInput"
-          />
-          <FormHelperText id="phoneHelperText" sx={authStyles.warningText}>
-            {errors?.website?.message as string}
-          </FormHelperText>
-        </FormControl>
         {firebaseError && (
           <FormHelperText
             id="websiteHelperText"
@@ -279,12 +296,17 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
           variant="contained"
           color="primary"
           type="submit"
+          disabled={isGmail}
           sx={{alignSelf: 'center', margin: '2vh'}}
           data-testid="signUpButton">
           Sign Up
         </Button>
         <AlreadySignedUp routeType={signUpType} />
       </Box>
+      <DartaErrorAlert
+        errorAlertOpen={errorAlertOpen}
+        setErrorAlertOpen={setErrorAlertOpen}
+      />
     </Box>
   );
 }

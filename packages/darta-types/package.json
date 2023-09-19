@@ -1,0 +1,14 @@
+{
+  "name": "@darta/types",
+  "version": "1.0.2",
+  "description": "darta global types package",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

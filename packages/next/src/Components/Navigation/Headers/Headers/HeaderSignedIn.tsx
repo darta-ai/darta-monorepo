@@ -2,7 +2,7 @@ import {Box, Button, Typography} from '@mui/material';
 import {useRouter} from 'next/router';
 import React from 'react';
 
-import {firebaseSignOut} from '../../../../../ThirdPartyAPIs/firebaseApp';
+import {firebaseSignOut} from '../../../../ThirdPartyAPIs/firebaseApp';
 import {AuthEnum} from '../../../Auth/types';
 import {useAppState} from '../../../State/AppContext';
 import {headerStyles} from '../styles';

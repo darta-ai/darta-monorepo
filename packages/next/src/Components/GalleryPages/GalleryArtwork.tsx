@@ -1,15 +1,21 @@
 import 'firebase/compat/auth';
 
+import {Artwork} from '@darta/types';
 import {Box, Button, Typography} from '@mui/material';
-import _ from 'lodash';
 import Head from 'next/head';
 import React from 'react';
 
-import {Artwork} from '../../../globalTypes';
+import {AuthContext} from '../../../pages/_app';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
+import {
+  createArtworkAPI,
+  deleteArtworkAPI,
+  deleteExhibitionArtwork,
+  editArtworkAPI,
+  removeArtworkFromExhibition,
+} from '../../API/artworks/artworkRoutes';
 // import authRequired from 'common/AuthRequired/AuthRequired';
-import {newArtworkShell} from '../../common/templates';
 import {
   artwork1,
   galleryInquiriesDummyData,
@@ -17,7 +23,7 @@ import {
 } from '../../dummyData';
 import {ArtworkCard} from '../Artwork/index';
 import {DartaRadioFilter, DartaTextFilter} from '../Filters';
-import {UploadArtworksXlsModal} from '../Modals';
+import {DartaErrorAlert, UploadArtworksXlsModal} from '../Modals';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
 
@@ -58,11 +64,13 @@ const artworkSteps = [
 
 export function GalleryArtwork() {
   const {state, dispatch} = useAppState();
+  const {user} = React.useContext(AuthContext);
 
   const [displayArtworks, setDisplayArtworks] = React.useState<Artwork[]>();
   const [inquiries, setInquiries] = React.useState<{
     [key: string]: InquiryArtworkData[];
   } | null>(null);
+  const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const inquiriesArray = Object.values(galleryInquiriesDummyData);
@@ -79,31 +87,121 @@ export function GalleryArtwork() {
 
   const handleBatchUpload = (uploadArtworks: {[key: string]: Artwork}) => {
     dispatch({
-      type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
+      type: GalleryReducerActions.SAVE_NEW_ARTWORK,
       payload: {...uploadArtworks},
     });
   };
 
-  const addNewArtwork = () => {
-    const newArtwork: Artwork = _.cloneDeep(newArtworkShell);
-    newArtwork.artworkId = crypto.randomUUID();
-    newArtwork.updatedAt = new Date().toISOString();
-    newArtwork.createdAt = new Date().toISOString();
-    dispatch({
-      type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
-      payload: {[newArtwork.artworkId]: newArtwork},
-    });
+  const addNewArtwork = async () => {
+    let results;
+    try {
+      results = await createArtworkAPI();
+      if (results?.artworkId) {
+        dispatch({
+          type: GalleryReducerActions.SAVE_NEW_ARTWORK,
+          payload: {[results.artworkId]: results},
+        });
+      } else {
+        throw new Error('did not receive an artwork');
+      }
+    } catch (error: any) {
+      setErrorAlertOpen(true);
+    }
   };
 
-  const saveArtwork = (artworkId: string, updatedArtwork: Artwork) => {
-    dispatch({
-      type: GalleryReducerActions.SAVE_NEW_ARTWORKS,
-      payload: {[artworkId]: updatedArtwork},
-    });
+  const saveArtwork = async ({
+    updatedArtwork,
+  }: {
+    updatedArtwork: Artwork;
+  }): Promise<boolean> => {
+    try {
+      const results: Artwork = await editArtworkAPI({artwork: updatedArtwork});
+      if (results && results?.exhibitionId && results?.artworkId) {
+        dispatch({
+          type: GalleryReducerActions.SAVE_EXHIBITION_ARTWORK,
+          artwork: {[results.artworkId]: results},
+          exhibitionId: results.exhibitionId,
+        });
+      }
+      if (results && results?.artworkId) {
+        dispatch({
+          type: GalleryReducerActions.SAVE_NEW_ARTWORK,
+          payload: {[results.artworkId as string]: results},
+        });
+      } else {
+        throw new Error('unable to edit artwork');
+      }
+    } catch {
+      setErrorAlertOpen(true);
+    }
+    return Promise.resolve(true);
   };
 
-  const deleteArtwork = (artworkId: string) => {
-    dispatch({type: GalleryReducerActions.DELETE_ARTWORKS, artworkId});
+  const deleteArtwork = async ({
+    artworkId,
+  }: {
+    artworkId: string;
+  }): Promise<boolean> => {
+    try {
+      const results = await deleteArtworkAPI(artworkId);
+      if (results.success) {
+        dispatch({type: GalleryReducerActions.DELETE_ARTWORK, artworkId});
+      } else {
+        throw new Error('unable to edit artwork');
+      }
+    } catch (error) {
+      setErrorAlertOpen(true);
+    }
+    return Promise.resolve(false);
+  };
+
+  const handleRemoveArtworkFromExhibition = async ({
+    exhibitionId,
+    artworkId,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+  }): Promise<boolean> => {
+    try {
+      const results = await removeArtworkFromExhibition({
+        exhibitionId,
+        artworkId,
+      });
+      dispatch({
+        type: GalleryReducerActions.SAVE_EXHIBITION,
+        payload: results,
+        exhibitionId,
+      });
+      return Promise.resolve(true);
+    } catch (error) {
+      setErrorAlertOpen(true);
+    }
+    return Promise.resolve(false);
+  };
+
+  const handleDeleteArtworkFromDarta = async ({
+    exhibitionId,
+    artworkId,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+  }): Promise<boolean> => {
+    try {
+      const results = await deleteExhibitionArtwork({exhibitionId, artworkId});
+      dispatch({
+        type: GalleryReducerActions.SAVE_EXHIBITION,
+        payload: results,
+        exhibitionId,
+      });
+      dispatch({
+        type: GalleryReducerActions.DELETE_ARTWORK,
+        artworkId,
+      });
+      return Promise.resolve(true);
+    } catch (error) {
+      setErrorAlertOpen(true);
+    }
+    return Promise.resolve(false);
   };
 
   const [croppingModalOpen, setCroppingModalOpen] = React.useState(true);
@@ -152,12 +250,12 @@ export function GalleryArtwork() {
         return setDisplayArtworks(results as Artwork[]);
       case 'Has Inquiries':
         results = Object.values(state.galleryArtworks)?.filter(artwork =>
-          artworksWithInquiriesIds.includes(artwork.artworkId),
+          artworksWithInquiriesIds.includes(artwork.artworkId!),
         );
         return setDisplayArtworks(results);
       case 'None':
         results = Object.values(state.galleryArtworks)?.filter(
-          artwork => !artworksWithInquiriesIds.includes(artwork.artworkId),
+          artwork => !artworksWithInquiriesIds.includes(artwork.artworkId!),
         );
         return setDisplayArtworks(results);
       default:
@@ -234,12 +332,17 @@ export function GalleryArtwork() {
                 type="submit"
                 onClick={() => addNewArtwork()}
                 className="create-new-artwork"
+                disabled={
+                  !state.galleryProfile.isValidated || !user.emailVerified
+                }
                 sx={{
                   backgroundColor: PRIMARY_BLUE,
                   color: PRIMARY_MILK,
                   alignSelf: 'center',
                 }}>
-                Create Artwork
+                <Typography sx={{fontWeight: 'bold'}}>
+                  Create Artwork
+                </Typography>
               </Button>
               <UploadArtworksXlsModal handleBatchUpload={handleBatchUpload} />
             </Box>
@@ -287,8 +390,14 @@ export function GalleryArtwork() {
                             croppingModalOpen={croppingModalOpen}
                             setCroppingModalOpen={setCroppingModalOpen}
                             inquiries={
-                              inquiries[artwork?.artworkId] ??
+                              inquiries[artwork?.artworkId!] ??
                               ([] as InquiryArtworkData[])
+                            }
+                            handleRemoveArtworkFromExhibition={
+                              handleRemoveArtworkFromExhibition
+                            }
+                            handleDeleteArtworkFromDarta={
+                              handleDeleteArtworkFromDarta
                             }
                           />
                         </Box>
@@ -312,8 +421,14 @@ export function GalleryArtwork() {
                             croppingModalOpen={croppingModalOpen}
                             setCroppingModalOpen={setCroppingModalOpen}
                             inquiries={
-                              inquiries[artwork?.artworkId] ??
+                              inquiries[artwork?.artworkId!] ??
                               ([] as InquiryArtworkData[])
+                            }
+                            handleRemoveArtworkFromExhibition={
+                              handleRemoveArtworkFromExhibition
+                            }
+                            handleDeleteArtworkFromDarta={
+                              handleDeleteArtworkFromDarta
                             }
                           />
                         </Box>
@@ -324,17 +439,25 @@ export function GalleryArtwork() {
               <Box>
                 <ArtworkCard
                   artwork={Object.values({...artwork1})[0] as Artwork}
-                  saveArtwork={saveArtwork}
-                  deleteArtwork={deleteArtwork}
+                  saveArtwork={() => Promise.resolve(true)}
+                  deleteArtwork={() => Promise.resolve(true)}
                   croppingModalOpen={croppingModalOpen}
                   setCroppingModalOpen={setCroppingModalOpen}
                   inquiries={[] as InquiryArtworkData[]}
+                  handleRemoveArtworkFromExhibition={() =>
+                    Promise.resolve(true)
+                  }
+                  handleDeleteArtworkFromDarta={() => Promise.resolve(true)}
                 />
               </Box>
             )}
           </Box>
         </Box>
       </Box>
+      <DartaErrorAlert
+        errorAlertOpen={errorAlertOpen}
+        setErrorAlertOpen={setErrorAlertOpen}
+      />
     </>
   );
 }

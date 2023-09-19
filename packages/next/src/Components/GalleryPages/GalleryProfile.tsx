@@ -1,10 +1,11 @@
 import 'firebase/compat/auth';
 
+import {IGalleryProfileData} from '@darta/types';
 import {Box, Button, Typography} from '@mui/material';
 import Head from 'next/head';
 import React from 'react';
 
-import {IGalleryProfileData} from '../../../globalTypes';
+import {AuthContext} from '../../../pages/_app';
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {EditProfileGallery, ProfileGallery} from '../Profile';
@@ -29,13 +30,14 @@ const profileSteps = [
   {
     target: '.gallery-navigation-artwork',
     content:
-      'Otherwise, you can add artworks to the Darta platform by clicking here.',
+      'Otherwise, you can add, track, and manage artwork on the Darta platform by clicking here.',
   },
 ];
 
 // About component
 export function GalleryProfile() {
   const {state, dispatch} = useAppState();
+  const {user} = React.useContext(AuthContext);
   const [isEditingProfile, setIsEditingProfile] =
     React.useState<boolean>(false);
 
@@ -48,7 +50,7 @@ export function GalleryProfile() {
 
   const [stepIndex, setStepIndex] = React.useState(0);
   const [run, setRun] = React.useState(
-    !state?.galleryProfile?.galleryName?.value,
+    !state?.galleryProfile?.galleryBio?.value,
   );
 
   React.useEffect(() => {
@@ -57,7 +59,6 @@ export function GalleryProfile() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditingProfile]);
-
   return (
     <>
       <Head>
@@ -91,9 +92,12 @@ export function GalleryProfile() {
               data-testid="edit-profile-button"
               className="edit-profile-button"
               type="submit"
+              disabled={
+                !state?.galleryProfile?.isValidated || !user?.emailVerified
+              }
               onClick={() => setIsEditingProfile(!isEditingProfile)}
               sx={galleryStyles.createNewButton}>
-              Edit Profile
+              <Typography sx={{fontWeight: 'bold'}}>Edit Profile</Typography>
             </Button>
           </Box>
         </Box>
@@ -116,7 +120,6 @@ export function GalleryProfile() {
               galleryProfileData={
                 {
                   ...state.galleryProfile,
-                  isValidated: true,
                 } as IGalleryProfileData
               }
             />

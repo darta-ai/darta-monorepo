@@ -4,6 +4,12 @@
       "node": {
         "extensions": [".js", ".jsx", "test.js", ".ts", ".tsx"]
       }
+      // "alias": {
+      //   "map": [
+      //     ["@darta/types", "packages/darta-types/dist/*"]
+      //   ],
+      //   "extensions": [".ts", ".js", ".jsx", ".tsx"]
+      // }
     }
   },
   "root": true,
@@ -47,6 +53,7 @@
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-shadow": 1,
     "no-shadow": "off",
+    "import/no-unresolved": [2, { "ignore": ["@darta/types"] }],
     "import/extensions": [
       "error",
       "ignorePackages",

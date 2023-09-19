@@ -1,3 +1,4 @@
+import {Artwork} from '@darta/types';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Box,
@@ -11,10 +12,10 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-import {Artwork} from '../../../globalTypes';
 import {cardStyles} from '../../../styles/CardStyles';
 import {currencyConverter} from '../../common/templates';
 import {InquiryArtworkData} from '../../dummyData';
+import {useAppState} from '../State/AppContext';
 import {InquiryTable} from '../Tables/InquiryTable';
 import {CreateArtwork} from './CreateArtwork';
 
@@ -25,28 +26,70 @@ export function ArtworkCard({
   inquiries,
   croppingModalOpen,
   setCroppingModalOpen,
+  handleRemoveArtworkFromExhibition,
+  handleDeleteArtworkFromDarta,
 }: {
   artwork: Artwork;
-  saveArtwork: (arg0: string, arg1: Artwork) => void;
-  deleteArtwork: (arg0: string) => void;
+  saveArtwork: ({
+    updatedArtwork,
+  }: {
+    updatedArtwork: Artwork;
+  }) => Promise<boolean>;
+  deleteArtwork: ({artworkId}: {artworkId: string}) => Promise<boolean>;
   inquiries: InquiryArtworkData[] | null;
   croppingModalOpen?: boolean;
   setCroppingModalOpen?: (arg0: boolean) => void;
+  handleRemoveArtworkFromExhibition: ({
+    exhibitionId,
+    artworkId,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+  }) => Promise<boolean>;
+  handleDeleteArtworkFromDarta: ({
+    exhibitionId,
+    artworkId,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+  }) => Promise<boolean>;
 }) {
+  const {state} = useAppState();
   const [expanded, setExpanded] = React.useState(false);
   const [editArtwork, setEditArtwork] = React.useState<boolean>(false);
+
+  const [saveSpinner, setSaveSpinner] = React.useState(false);
+  const [deleteSpinner, setDeleteSpinner] = React.useState(false);
+
+  let exhibition;
+  if (
+    artwork?.exhibitionId &&
+    state.galleryExhibitions[artwork?.exhibitionId]?.exhibitionTitle?.value
+  ) {
+    const {exhibitionId} = artwork;
+    exhibition = state.galleryExhibitions[exhibitionId].exhibitionTitle.value;
+  }
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  const handleSave = (savedArtwork: Artwork) => {
-    saveArtwork(savedArtwork.artworkId!, savedArtwork);
+  const handleSave = async (savedArtwork: Artwork) => {
+    setSaveSpinner(true);
+    try {
+      await saveArtwork({updatedArtwork: savedArtwork});
+    } catch (error) {}
+    setSaveSpinner(false);
     setEditArtwork(!editArtwork);
   };
 
-  const handleDelete = (artworkId: string) => {
-    deleteArtwork(artworkId);
+  const handleDelete = async (artworkId: string) => {
+    setDeleteSpinner(true);
+
+    try {
+      await deleteArtwork({artworkId});
+    } catch (error) {}
+    setDeleteSpinner(false);
     return setEditArtwork(false);
   };
 
@@ -75,7 +118,7 @@ export function ArtworkCard({
           <Typography
             data-testid="artwork-card-additional-information-warning"
             sx={{textAlign: 'center', color: 'red', fontWeight: 'bold'}}>
-            Additional Information Required. Please Edit.
+            Additional Information Required. Please Edit Artwork.
           </Typography>
         </Box>
       ) : (
@@ -123,6 +166,15 @@ export function ArtworkCard({
                 color="textSecondary">
                 Medium: {artwork?.artworkMedium?.value}
               </Typography>
+              {exhibition && (
+                <Typography
+                  paragraph
+                  data-testid="artwork-card-medium"
+                  color="textSecondary"
+                  sx={{fontWeight: 'bold'}}>
+                  Exhibition: {exhibition}
+                </Typography>
+              )}
             </CardContent>
           </Box>
 
@@ -217,10 +269,16 @@ export function ArtworkCard({
             <CreateArtwork
               newArtwork={artwork}
               cancelAction={setEditArtwork}
-              saveArtwork={handleSave}
+              handleSave={handleSave}
               handleDelete={handleDelete}
               croppingModalOpen={croppingModalOpen}
               setCroppingModalOpen={setCroppingModalOpen}
+              saveSpinner={saveSpinner}
+              deleteSpinner={deleteSpinner}
+              handleRemoveArtworkFromExhibition={
+                handleRemoveArtworkFromExhibition
+              }
+              handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
             />
           </Box>
         ) : (

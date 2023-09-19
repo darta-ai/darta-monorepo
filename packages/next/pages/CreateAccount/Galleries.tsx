@@ -1,12 +1,11 @@
 import {Box} from '@mui/material';
-import {GetStaticProps, InferGetStaticPropsType} from 'next';
 import React from 'react';
 
+import {benefitsData} from '../../data/pamphletPages';
 import {SignUpForm} from '../../src/Components/Auth/Forms/SignUpForm';
 import {AuthEnum, DartaBenefits} from '../../src/Components/Auth/types';
 import {SignUpWelcome} from '../../src/Components/Auth/Welcome/SignUpWelcome';
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
-import {signUpBenefits} from '../../ThirdPartyAPIs/firebaseDB';
 
 const styles = {
   container: {
@@ -28,27 +27,14 @@ const styles = {
 // defines everything
 const userType = AuthEnum.galleries;
 
-export default function GallerySignIn({
-  data,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function GallerySignIn() {
   return (
     <>
       <BaseHeader />
       <Box sx={styles.container}>
-        <SignUpWelcome benefitsData={data as DartaBenefits} />
+        <SignUpWelcome benefitsData={benefitsData as DartaBenefits} />
         <SignUpForm signUpType={userType} />
       </Box>
     </>
   );
 }
-
-type BenefitsData = {
-  data: DartaBenefits;
-};
-
-export const getStaticProps: GetStaticProps<{
-  data: BenefitsData;
-}> = async () => {
-  const benefitsData = (await signUpBenefits(userType)) as BenefitsData;
-  return {props: {data: benefitsData}};
-};

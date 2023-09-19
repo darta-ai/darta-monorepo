@@ -35,5 +35,5 @@ export const forgotPasswordText: WelcomeBack = {
   Headline: 'Forgot your password? It happens.',
   Field1: "You'll receive an email with a link to reset your password",
   Footer: 'If you have any concerns about your account, please contact us',
-  HelpEmail: 'support@darta.works',
+  HelpEmail: 'support@darta.art',
 };

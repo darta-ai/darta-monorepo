@@ -1,14 +1,16 @@
-import {Box, Button, Typography} from '@mui/material';
+import {Artwork} from '@darta/types';
+import {Box, Button, CircularProgress, Typography} from '@mui/material';
 import React from 'react';
 
-import {Artwork} from '../../../globalTypes';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles/index';
 import {UploadArtworksXlsModal} from '../Modals';
 
 export function ArtworkHeader({
+  artworkLoading,
   addNewArtwork,
   handleBatchUpload,
 }: {
+  artworkLoading: boolean;
   addNewArtwork: () => void;
   handleBatchUpload: (artworks: {[key: string]: Artwork}) => void;
 }) {
@@ -37,15 +39,23 @@ export function ArtworkHeader({
           type="submit"
           onClick={() => addNewArtwork()}
           className="create-new-artwork"
+          disabled={artworkLoading}
           sx={{
             backgroundColor: PRIMARY_BLUE,
             color: PRIMARY_MILK,
             alignSelf: 'center',
-            // width: '15vw',
+            width: '50vw',
+            '@media (min-width: 800px)': {
+              width: '10vw',
+            },
           }}>
-          <Typography sx={{fontWeight: 'bold', fontSize: '0.8rem'}}>
-            Create Artwork
-          </Typography>
+          {artworkLoading ? (
+            <CircularProgress size={24} />
+          ) : (
+            <Typography sx={{fontWeight: 'bold', fontSize: '0.8rem'}}>
+              Create Artwork
+            </Typography>
+          )}
         </Button>
         <UploadArtworksXlsModal handleBatchUpload={handleBatchUpload} />
       </Box>

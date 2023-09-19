@@ -116,7 +116,7 @@ export function SignInWelcome({
             <Typography sx={welcomeStyles.footerText} data-testid="footer-text">
               {welcomeBackData.Footer}{' '}
               <a
-                href={`mailto: ${welcomeBackData.HelpEmail}+${signInType}@darta.works`}
+                href={`mailto: ${welcomeBackData.HelpEmail}+${signInType}@darta.art`}
                 data-testid="help-email-link">
                 {welcomeBackData.HelpEmail}
               </a>
