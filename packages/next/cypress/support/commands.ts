@@ -28,7 +28,7 @@
 
 // cypress/support/commands.js
 
-export const e2eEmail = 'cypress.test@darta.works';
+export const e2eEmail = 'cypress.test@darta.art';
 export const e2ePass = '(cypress.test)';
 
 Cypress.Commands.add('login' as any, () => {

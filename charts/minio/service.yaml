@@ -5,35 +5,35 @@ metadata:
     cloud.google.com/neg: '{"ingress":true}'
     meta.helm.sh/release-name: minio-operator
     meta.helm.sh/release-namespace: minio
-  creationTimestamp: "2023-09-16T19:47:27Z"
+  creationTimestamp: "2023-09-18T18:24:01Z"
   labels:
     app.kubernetes.io/instance: minio-operator
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: operator
-    app.kubernetes.io/version: v5.0.7
-    helm.sh/chart: operator-5.0.7
+    app.kubernetes.io/version: v5.0.9
+    helm.sh/chart: operator-5.0.9
   name: console
   namespace: minio
-  resourceVersion: "107319"
-  uid: e15585f1-c1c1-4be6-b83b-7667fae6cb71
+  resourceVersion: "1442815"
+  uid: 2aae1397-3fae-46c5-8d75-3213541fd51a
 spec:
-  clusterIP: 10.8.15.127
+  clusterIP: 10.8.6.11
   clusterIPs:
-    - 10.8.15.127
+  - 10.8.6.11
   internalTrafficPolicy: Cluster
   ipFamilies:
-    - IPv4
+  - IPv4
   ipFamilyPolicy: SingleStack
   ports:
-    - name: http
-      port: 9090
-      protocol: TCP
-      targetPort: 9090
-      nodePort: 8800
-    - name: https
-      port: 9443
-      protocol: TCP
-      targetPort: 9443
+  - name: http
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+    nodePort: 32766
+  - name: https
+    port: 9443
+    protocol: TCP
+    targetPort: 9443
   selector:
     app.kubernetes.io/instance: minio-operator-console
     app.kubernetes.io/name: operator

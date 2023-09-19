@@ -13,16 +13,11 @@ export function TombstoneRoute({route}: {route: any}) {
     Alert.alert("We'll reach out", 'How would you like to get in contact?', [
       {
         text: `Email: ${state.userSettings.email}`,
-        onPress: () => console.log('Ask me later pressed'),
+        onPress: () => {},
       },
       {
         text: `Text: ${state.userSettings.phone}`,
-        onPress: () => console.log('Cancel Pressed'),
-      },
-      {
-        text: 'Cancel',
-        onPress: () => console.log('OK Pressed'),
-        style: 'destructive',
+        onPress: () => {},
       },
     ]);
 

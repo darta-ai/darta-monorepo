@@ -139,7 +139,8 @@ export class ExhibitionService implements IExhibitionService {
           });
         ({bucketName, value} = artworkImageResults);
       } catch (error) {
-        // console.error('error uploading image:', error);
+        // eslint-disable-next-line no-console
+        console.error('error uploading image:', error);
       }
     }
 

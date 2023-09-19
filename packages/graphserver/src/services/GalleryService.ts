@@ -148,7 +148,9 @@ export class GalleryService implements IGalleryService {
           bucketName: BUCKET_NAME,
         });
       } catch (error) {
-        throw new Error('error uploading image');
+        // eslint-disable-next-line no-console
+        console.log({error});
+        // throw new Error('error uploading image');
       }
     }
 

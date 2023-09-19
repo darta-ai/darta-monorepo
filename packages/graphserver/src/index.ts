@@ -68,5 +68,5 @@ app.get('/version', (req: Request, res: Response) => {
 
 httpServer.listen(port, () => {
   // eslint-disable-next-line no-console
-  console.log(`Listening on port ${port}`);
+  console.log(`Listening on port ${port}, version ${version}`);
 });

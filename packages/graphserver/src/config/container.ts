@@ -7,6 +7,8 @@ import * as Controllers from '../controllers';
 import * as Services from '../services';
 import {config} from './config';
 
+const fs = require('fs');
+
 const agent = new https.Agent({
   rejectUnauthorized: false,
 });
@@ -57,6 +59,13 @@ const minioContainer = container
       useSSL: config.minio.useSSL === 'true',
       accessKey: config.minio.accessKey!,
       secretKey: config.minio.secretKey!,
+      transportAgent: new https.Agent({
+        timeout: 10000,
+        ca: fs.readFileSync('path/to/ca.cert'),
+        cert: fs.readFileSync('path/to/public.cert'),
+        key: fs.readFileSync('path/to/secret.key'),
+        keepAlive: false,
+      }),
       region: 'us-east-1',
     }),
   );
