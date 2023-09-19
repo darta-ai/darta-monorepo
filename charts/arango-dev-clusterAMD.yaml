@@ -1,0 +1,14 @@
+apiVersion: "database.arangodb.com/v1"
+kind: "ArangoDeployment"
+metadata:
+  name: "arango-mvp-single"
+  namespace: "arango-mvp-cluster"
+spec:
+  mode: Single
+  architecture:
+  - amd64
+  image: arangodb/arangodb:3.11.3
+  license:
+    secretName: arango-license-key
+  tls:
+    caSecretName: None

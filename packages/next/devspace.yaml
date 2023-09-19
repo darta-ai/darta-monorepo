@@ -1,6 +1,11 @@
 version: v2beta1
 name: darta-next
 
+vars:
+  DEVSPACE_ENV_FILE: ".env.production"
+
+
+
 pipelines:
   dev:
     run: |-
@@ -26,6 +31,21 @@ images:
       args:
       - "--no-cache"
       - "--compress"
+    buildArgs:
+      NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY: ${NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY}
+      NEXT_PUBLIC_REACT_APP_FIREBASE_AUTH_DOMAIN: ${NEXT_PUBLIC_REACT_APP_FIREBASE_AUTH_DOMAIN}
+      NEXT_PUBLIC_REACT_APP_PROJECT_ID: ${NEXT_PUBLIC_REACT_APP_PROJECT_ID}
+      NEXT_PUBLIC_REACT_APP_FIREBASE_STORAGE_BUCKET: ${NEXT_PUBLIC_REACT_APP_FIREBASE_STORAGE_BUCKET}
+      NEXT_PUBLIC_REACT_APP_FIREBASE_SENDER_ID: ${NEXT_PUBLIC_REACT_APP_FIREBASE_SENDER_ID}
+      NEXT_PUBLIC_REACT_APP_FIREBASE_APP_ID: ${NEXT_PUBLIC_REACT_APP_FIREBASE_APP_ID}
+      NEXT_PUBLIC_REACT_APP_FIREBASE_MEASUREMENT_ID: ${NEXT_PUBLIC_REACT_APP_FIREBASE_MEASUREMENT_ID}
+      NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+      NEXT_PUBLIC_PORT: ${NEXT_PUBLIC_PORT}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_ADMIN_UID: ${NEXT_PUBLIC_ADMIN_UID}
+      NEXT_PUBLIC_ADMIN_EMAIL: ${NEXT_PUBLIC_ADMIN_EMAIL}
+
+
 
 deployments:
   next:
@@ -38,20 +58,20 @@ deployments:
         containers:
         - image: gcr.io/darta-dev/darta-next
         buildKit:
-          args: []
+          args: ["--platform=linux/amd64"]
         docker:
           args:
           - "--no-cache"
           - "--compress"
         service:
           ports:
-          - port: 1169
+          - port: ${PORT}
           annotations:
             traefik.ingress.kubernetes.io/router.entrypoints: web
             traefik.ingress.kubernetes.io/router.middlewares: redirect-https@kubernetescrd
             traefik.ingress.kubernetes.io/router.tls: "true"
-
   traefik:
+    namespace: traefik
     helm:
       chart:
         name: traefik
@@ -64,11 +84,11 @@ deployments:
   ingress:
     kubectl:
       manifests:
-      - ../../charts/ingress-route.yaml
+      - ../../charts/production/ingress-route.yaml
   https-redirect:
     kubectl:
       manifests:
-      - ../../charts/https-redirect-middleware.yaml
+      - ../../charts/production/https-redirect.yaml
 
 
 dev:

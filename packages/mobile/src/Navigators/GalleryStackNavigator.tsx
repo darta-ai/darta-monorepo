@@ -4,7 +4,7 @@ import {GalleryStack} from '../../App';
 import {headerOptions} from '../../screens/styles';
 import {DartaGalleryView} from '../Screens/Gallery/DartaGalleryView';
 import {DartaHome} from '../Screens/Gallery/DartaHome';
-import {TombstoneRoute} from '../Screens/Gallery/Tomstone';
+import {TombstoneRoute} from '../Screens/Gallery/TombstoneRoute';
 import {ETypes, StoreContext} from '../State/Store';
 import {createOpeningTransition} from './NavigationStyling/openingTransition';
 import {GalleryNavigatorEnum} from './Routes/galleryRoutes.d';

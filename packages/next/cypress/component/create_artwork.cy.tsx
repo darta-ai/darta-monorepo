@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
 
+import {Artwork} from '@darta/types';
 import React from 'react';
 
-import {Artwork} from '../../globalTypes';
 import {newArtworkShell} from '../../src/common/templates';
 import {
   createArtworkDimensionsToolTip,
@@ -15,11 +15,13 @@ describe('EditProfileGallery.cy.tsx', () => {
     cy.mount(
       <CreateArtwork
         newArtwork={newArtworkShell as Artwork}
-        cancelAction={cy.stub().as('cancelAction')}
-        saveArtwork={cy.stub().as('saveArtwork')}
-        handleDelete={cy.stub().as('handleDelete')}
+        cancelAction={cy.stub().as('cancelAction') as any}
+        handleSave={cy.stub().as('saveArtwork') as any}
+        handleDelete={cy.stub().as('handleDelete') as any}
         croppingModalOpen={false}
         setCroppingModalOpen={cy.stub().as('setCroppingModalOpen')}
+        saveSpinner={false}
+        deleteSpinner={false}
       />,
     );
     cy.viewport('macbook-11');

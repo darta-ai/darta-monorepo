@@ -33,7 +33,7 @@ export const createArtworkDimensionsToolTip = {
 export const exhibitionPressReleaseToolTip = {
   exhibitionTitle: 'The title of the exhibition. Required.',
   exhibitionPressRelease:
-    'An exhibition description or press release text helps improve user experience. Optional.',
+    'An exhibition description or press release text helps improve user experience. Required.',
   'exhibitionLocation.locationString':
     'The location of the exhibition will help guide users to your openings.',
   'exhibitionLocation.isPrivate':

@@ -1,9 +1,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
+import {LocalizationProvider, MobileDateTimePicker} from '@mui/x-date-pickers';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
-import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
-import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
 import React from 'react';
 import {Controller} from 'react-hook-form';
@@ -71,7 +70,7 @@ export function DartaDateTimePicker({
           {...register(`${fieldName}.${'value'}`)}
           render={({field}) => (
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateTimePicker
+              <MobileDateTimePicker
                 {...field}
                 data-testid={`${testIdValue}-timePicker`}
                 sx={formStyles.datePicker}
@@ -88,7 +87,7 @@ export function DartaDateTimePicker({
                   },
                 }}
                 onChange={(newValue: any) => {
-                  const date = newValue.toDate();
+                  const date = newValue?.toDate();
                   field.onChange(date);
                   if (setHigherLevelState) {
                     setHigherLevelState(newValue);

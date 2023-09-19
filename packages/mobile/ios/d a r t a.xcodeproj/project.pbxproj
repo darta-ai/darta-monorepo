@@ -11,13 +11,12 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		33563DBDA254C7894C014222 /* Pods_frontendV1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71D3D7096AC85CD46B81B308 /* Pods_frontendV1.framework */; };
 		5DEBB48814714ACDAA0BEE77 /* EBGaramond-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0493C18CFA604366B7E7FC3D /* EBGaramond-ExtraBoldItalic.ttf */; };
 		6BAE3046748B4D0699383018 /* EBGaramond-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FA295E91C52C47169B2EAAF8 /* EBGaramond-BoldItalic.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9B50041BB67D4606B0EE7FB1 /* EBGaramond-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2205F17D178E4F77AD7F236F /* EBGaramond-SemiBoldItalic.ttf */; };
-		A24D2CD6B3CEA02590B5F10D /* Pods_frontendV1_frontendV1Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDAAC5A2687D01BC85443B51 /* Pods_frontendV1_frontendV1Tests.framework */; };
 		BA984084D40B486184B742E6 /* EBGaramond-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D18E0B615FBD4672951A96F3 /* EBGaramond-MediumItalic.ttf */; };
+		BD3FB05678BE20F963EE2D9A /* Pods_frontendV1_frontendV1Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F8FA4549D7E06EE315FE6F7 /* Pods_frontendV1_frontendV1Tests.framework */; };
 		C069601CC87C49D88836E268 /* EBGaramond-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 120FB81567B64ADE818880B7 /* EBGaramond-SemiBold.ttf */; };
 		C096130E06BF4CD6964A7E59 /* EBGaramond-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0A183233F5E048ACA29B4C28 /* EBGaramond-Italic.ttf */; };
 		C16CBB4629968EFC00483254 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16CBB3629968EFB00483254 /* Fontisto.ttf */; };
@@ -38,6 +37,7 @@
 		C16CBB5529968EFC00483254 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C16CBB4529968EFB00483254 /* MaterialIcons.ttf */; };
 		C1B04B7F29956483009D8487 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = C1B04B7E29956483009D8487 /* fonts */; };
 		C1BB97352994A78C00BCAE3E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C1BB97342994A78C00BCAE3E /* GoogleService-Info.plist */; };
+		C387B7E9F94DE97C2EEB7F7C /* Pods_frontendV1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A63989C77BD69D1EFBE61C78 /* Pods_frontendV1.framework */; };
 		C48BFD2AA0F7495A9141BCB4 /* EBGaramond-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA00E4F6626B4ED287A1B379 /* EBGaramond-Regular.ttf */; };
 		DA567612E3B746CA8FC9A73A /* EBGaramond-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1F3516BEDC7E4A6A93DDEFAC /* EBGaramond-ExtraBold.ttf */; };
 		DADCEDC0ADEC4AD89BAFEEFE /* EBGaramond-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8F5C80A1AA8B454C8E0508D4 /* EBGaramond-Medium.ttf */; };
@@ -70,12 +70,13 @@
 		1F3516BEDC7E4A6A93DDEFAC /* EBGaramond-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "EBGaramond-ExtraBold.ttf"; path = "../assets/fonts/EBGaramond-ExtraBold.ttf"; sourceTree = "<group>"; };
 		2205F17D178E4F77AD7F236F /* EBGaramond-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "EBGaramond-SemiBoldItalic.ttf"; path = "../assets/fonts/EBGaramond-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		2E89B3C006AF4949898AB405 /* EBGaramond-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "EBGaramond-Bold.ttf"; path = "../assets/fonts/EBGaramond-Bold.ttf"; sourceTree = "<group>"; };
-		62791B5E58D528DBDC67348A /* Pods-frontendV1-frontendV1Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-frontendV1-frontendV1Tests.debug.xcconfig"; path = "Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		71D3D7096AC85CD46B81B308 /* Pods_frontendV1.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_frontendV1.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6FACE5CC30F489F9D1FF111B /* Pods-frontendV1-frontendV1Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-frontendV1-frontendV1Tests.release.xcconfig"; path = "Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = frontendV1/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		82CD1B03E639014C1CBC31F9 /* Pods-frontendV1.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-frontendV1.debug.xcconfig"; path = "Target Support Files/Pods-frontendV1/Pods-frontendV1.debug.xcconfig"; sourceTree = "<group>"; };
+		85EBE81B957F1998242D9430 /* Pods-frontendV1.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-frontendV1.debug.xcconfig"; path = "Target Support Files/Pods-frontendV1/Pods-frontendV1.debug.xcconfig"; sourceTree = "<group>"; };
 		8F5C80A1AA8B454C8E0508D4 /* EBGaramond-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "EBGaramond-Medium.ttf"; path = "../assets/fonts/EBGaramond-Medium.ttf"; sourceTree = "<group>"; };
-		99D23178B9464C06273B04D7 /* Pods-frontendV1-frontendV1Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-frontendV1-frontendV1Tests.release.xcconfig"; path = "Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests.release.xcconfig"; sourceTree = "<group>"; };
+		8F8FA4549D7E06EE315FE6F7 /* Pods_frontendV1_frontendV1Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_frontendV1_frontendV1Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		931BD18DEE386318D50621E1 /* Pods-frontendV1-frontendV1Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-frontendV1-frontendV1Tests.debug.xcconfig"; path = "Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		A63989C77BD69D1EFBE61C78 /* Pods_frontendV1.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_frontendV1.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA00E4F6626B4ED287A1B379 /* EBGaramond-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "EBGaramond-Regular.ttf"; path = "../assets/fonts/EBGaramond-Regular.ttf"; sourceTree = "<group>"; };
 		C1612BEC29E2EBD400A370AE /* EBGaramond-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "EBGaramond-Italic.ttf"; sourceTree = "<group>"; };
 		C1612BED29E2EBD400A370AE /* EBGaramond-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "EBGaramond-Medium.ttf"; sourceTree = "<group>"; };
@@ -105,10 +106,9 @@
 		C16CBB4529968EFB00483254 /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialIcons.ttf; sourceTree = "<group>"; };
 		C1B04B7E29956483009D8487 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		C1BB97342994A78C00BCAE3E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		CDAAC5A2687D01BC85443B51 /* Pods_frontendV1_frontendV1Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_frontendV1_frontendV1Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D18E0B615FBD4672951A96F3 /* EBGaramond-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "EBGaramond-MediumItalic.ttf"; path = "../assets/fonts/EBGaramond-MediumItalic.ttf"; sourceTree = "<group>"; };
-		E1C32F9326B9830709C72376 /* Pods-frontendV1.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-frontendV1.release.xcconfig"; path = "Target Support Files/Pods-frontendV1/Pods-frontendV1.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F6C6C9D01A3508039B00B45D /* Pods-frontendV1.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-frontendV1.release.xcconfig"; path = "Target Support Files/Pods-frontendV1/Pods-frontendV1.release.xcconfig"; sourceTree = "<group>"; };
 		FA295E91C52C47169B2EAAF8 /* EBGaramond-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "EBGaramond-BoldItalic.ttf"; path = "../assets/fonts/EBGaramond-BoldItalic.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -117,7 +117,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A24D2CD6B3CEA02590B5F10D /* Pods_frontendV1_frontendV1Tests.framework in Frameworks */,
+				BD3FB05678BE20F963EE2D9A /* Pods_frontendV1_frontendV1Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,7 +125,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				33563DBDA254C7894C014222 /* Pods_frontendV1.framework in Frameworks */,
+				C387B7E9F94DE97C2EEB7F7C /* Pods_frontendV1.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,8 +166,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				71D3D7096AC85CD46B81B308 /* Pods_frontendV1.framework */,
-				CDAAC5A2687D01BC85443B51 /* Pods_frontendV1_frontendV1Tests.framework */,
+				A63989C77BD69D1EFBE61C78 /* Pods_frontendV1.framework */,
+				8F8FA4549D7E06EE315FE6F7 /* Pods_frontendV1_frontendV1Tests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -228,10 +228,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				82CD1B03E639014C1CBC31F9 /* Pods-frontendV1.debug.xcconfig */,
-				E1C32F9326B9830709C72376 /* Pods-frontendV1.release.xcconfig */,
-				62791B5E58D528DBDC67348A /* Pods-frontendV1-frontendV1Tests.debug.xcconfig */,
-				99D23178B9464C06273B04D7 /* Pods-frontendV1-frontendV1Tests.release.xcconfig */,
+				85EBE81B957F1998242D9430 /* Pods-frontendV1.debug.xcconfig */,
+				F6C6C9D01A3508039B00B45D /* Pods-frontendV1.release.xcconfig */,
+				931BD18DEE386318D50621E1 /* Pods-frontendV1-frontendV1Tests.debug.xcconfig */,
+				6FACE5CC30F489F9D1FF111B /* Pods-frontendV1-frontendV1Tests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -276,12 +276,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "frontendV1Tests" */;
 			buildPhases = (
-				2342604F6E41C821D20625BC /* [CP] Check Pods Manifest.lock */,
+				5C244327E4E372712B6C0A3D /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				C7369C3C3C3E6BC14E66AFD1 /* [CP] Embed Pods Frameworks */,
-				744CC3E9C2B9910CDE042EB7 /* [CP] Copy Pods Resources */,
+				04820E2CA6E8AB17112570C0 /* [CP] Embed Pods Frameworks */,
+				6C06A4B1268F3FDBC6B34272 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -297,15 +297,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "frontendV1" */;
 			buildPhases = (
-				648EC3304B0D7E4414864B06 /* [CP] Check Pods Manifest.lock */,
+				A2D37FA18FC70DAEC80B83A4 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				6FF6A8A96FF1227FE0ADA33C /* [CP] Embed Pods Frameworks */,
-				45BB2733EEBC5310C60BE349 /* [CP] Copy Pods Resources */,
-				CE5275F2543BB7130F9ADE02 /* [CP-User] [RNFB] Core Configuration */,
+				E9AC6626543D14B992A35F05 /* [CP] Embed Pods Frameworks */,
+				2629F63571691E28F1471C76 /* [CP] Copy Pods Resources */,
+				F250B74B24C05B543A61288D /* [CP-User] [RNFB] Core Configuration */,
 			);
 			buildRules = (
 			);
@@ -417,7 +417,41 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		2342604F6E41C821D20625BC /* [CP] Check Pods Manifest.lock */ = {
+		04820E2CA6E8AB17112570C0 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2629F63571691E28F1471C76 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-frontendV1/Pods-frontendV1-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-frontendV1/Pods-frontendV1-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-frontendV1/Pods-frontendV1-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5C244327E4E372712B6C0A3D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -439,24 +473,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		45BB2733EEBC5310C60BE349 /* [CP] Copy Pods Resources */ = {
+		6C06A4B1268F3FDBC6B34272 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-frontendV1/Pods-frontendV1-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-frontendV1/Pods-frontendV1-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-frontendV1/Pods-frontendV1-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		648EC3304B0D7E4414864B06 /* [CP] Check Pods Manifest.lock */ = {
+		A2D37FA18FC70DAEC80B83A4 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -478,7 +512,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		6FF6A8A96FF1227FE0ADA33C /* [CP] Embed Pods Frameworks */ = {
+		E9AC6626543D14B992A35F05 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -495,41 +529,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-frontendV1/Pods-frontendV1-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		744CC3E9C2B9910CDE042EB7 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C7369C3C3C3E6BC14E66AFD1 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-frontendV1-frontendV1Tests/Pods-frontendV1-frontendV1Tests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		CE5275F2543BB7130F9ADE02 /* [CP-User] [RNFB] Core Configuration */ = {
+		F250B74B24C05B543A61288D /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -594,7 +594,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 62791B5E58D528DBDC67348A /* Pods-frontendV1-frontendV1Tests.debug.xcconfig */;
+			baseConfigurationReference = 931BD18DEE386318D50621E1 /* Pods-frontendV1-frontendV1Tests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -623,7 +623,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 99D23178B9464C06273B04D7 /* Pods-frontendV1-frontendV1Tests.release.xcconfig */;
+			baseConfigurationReference = 6FACE5CC30F489F9D1FF111B /* Pods-frontendV1-frontendV1Tests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -649,7 +649,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 82CD1B03E639014C1CBC31F9 /* Pods-frontendV1.debug.xcconfig */;
+			baseConfigurationReference = 85EBE81B957F1998242D9430 /* Pods-frontendV1.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -681,7 +681,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E1C32F9326B9830709C72376 /* Pods-frontendV1.release.xcconfig */;
+			baseConfigurationReference = F6C6C9D01A3508039B00B45D /* Pods-frontendV1.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;

@@ -1,6 +1,45 @@
 # Use the official Node.js image
 FROM node:20-slim AS base
-WORKDIR /app
+
+ARG ARANGO_URL\
+    ARANGO_USER \
+    ARANGO_PASSWORD \
+    ARANGO_DATABASE \
+    FIREBASE_API_KEY \
+    FIREBASE_AUTH_DOMAIN \
+    PROJECT_ID \
+    FIREBASE_STORAGE_BUCKET \
+    FIREBASE_SENDER_ID \
+    FIREBASE_APP_ID \
+    FIREBASE_MEASUREMENT_ID \
+    MINIO_PORT \
+    MINIO_ACCESS_KEY \
+    MINIO_SECRET_KEY \
+    MINIO_ENDPOINT \
+    MINIO_USE_SSL \
+    ADMIN_PASSWORD \
+    PORT \
+    VERSION
+# Environment variables from .env
+ENV ARANGO_URL=$ARANGO_URL \
+    ARANGO_USER=$ARANGO_USER \
+    ARANGO_PASSWORD=$ARANGO_PASSWORD \
+    ARANGO_DATABASE=$ARANGO_DATABASE \
+    FIREBASE_API_KEY=$FIREBASE_API_KEY \
+    FIREBASE_AUTH_DOMAIN=$FIREBASE_AUTH_DOMAIN \
+    PROJECT_ID=$PROJECT_ID \
+    FIREBASE_STORAGE_BUCKET=$FIREBASE_STORAGE_BUCKET \
+    FIREBASE_SENDER_ID=$FIREBASE_SENDER_ID \
+    FIREBASE_APP_ID=$FIREBASE_APP_ID \
+    FIREBASE_MEASUREMENT_ID=$FIREBASE_MEASUREMENT_ID \
+    MINIO_PORT=$MINIO_PORT \
+    MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY \
+    MINIO_SECRET_KEY=$MINIO_SECRET_KEY \
+    MINIO_ENDPOINT=$MINIO_ENDPOINT \
+    MINIO_USE_SSL=$MINIO_USE_SSL \
+    ADMIN_PASSWORD=$ADMIN_PASSWORD \
+    PORT=$PORT \
+    VERSION=$VERSION
 
 FROM base as deps 
 WORKDIR /app
@@ -9,6 +48,7 @@ COPY ./pnpm-workspace.yaml .
 COPY ./tsconfig.json .
 COPY ./pnpm-lock.yaml .
 COPY ./packages/graphserver ./packages/graphserver
+COPY ./packages/darta-types ./packages/darta-types
 
 FROM deps AS builder
 WORKDIR /app/packages/graphserver
@@ -24,6 +64,7 @@ WORKDIR /app
 # Copy over necessary files for installation
 COPY --from=deps /app/pnpm-lock.yaml .
 COPY --from=deps /app/pnpm-workspace.yaml .
+COPY --from=deps /app/packages ./packages
 COPY --from=deps /app/packages/graphserver/package.json ./package.json
 COPY --from=builder /app/packages/graphserver/dist ./dist
 
@@ -38,7 +79,6 @@ RUN npm install -g pnpm && \
 
 # Expose the port that your app runs on
 EXPOSE 1160
-ENV PORT 1160
-ENV HOSTNAME localhost
+
 # Start the app
 CMD [ "pnpm", "start:prod" ]

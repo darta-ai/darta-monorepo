@@ -1,0 +1,10 @@
+{
+    "extends": "../../.eslintrc.json",
+    "rules": {
+        "no-useless-constructor": "off",
+        "no-empty-function": "warn",
+        "max-len": ["warn", { "code": 150 }],
+        "no-return-await": "warn"
+    }
+  }
+  

@@ -66,7 +66,7 @@ export function Footer() {
             contact
           </Typography>
         </Link>
-        <div style={styles.divider} data-testid="second-divider">
+        {/* <div style={styles.divider} data-testid="second-divider">
           |
         </div>
         <Typography
@@ -74,7 +74,7 @@ export function Footer() {
           sx={styles.typography}
           data-testid="terms-link">
           terms & conditions
-        </Typography>
+        </Typography> */}
       </Box>
     </Box>
   );

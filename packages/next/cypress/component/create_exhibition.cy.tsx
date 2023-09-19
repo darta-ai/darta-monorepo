@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
 
+import {Exhibition} from '@darta/types';
 import React from 'react';
 
-import {Exhibition} from '../../globalTypes';
 import {newExhibitionShell} from '../../src/common/templates';
 import {exhibitionPressReleaseToolTip} from '../../src/common/ToolTips/toolTips';
 import {CreateExhibition} from '../../src/Components/Exhibitions';
@@ -18,6 +18,7 @@ describe('EditProfileGallery.cy.tsx', () => {
         handleDelete={cy.stub().as('handleDelete')}
         galleryLocations={['51 Mott Street']}
         galleryName="All Street"
+        isEditingExhibition={false}
       />,
     );
     cy.viewport('macbook-11');

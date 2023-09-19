@@ -1,10 +1,11 @@
-/* eslint-disable no-unsafe-optional-chaining */
+import {Artwork} from '@darta/types';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Collapse,
   Divider,
   IconButton,
@@ -14,14 +15,11 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import _ from 'lodash';
 import React from 'react';
 
-import {Artwork, Exhibition} from '../../../globalTypes';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {currencyConverter} from '../../common/templates';
 import {CreateArtwork} from '../Artwork/index';
-import {useAppState} from '../State/AppContext';
 
 const dartaListDisplay = {
   toggleContainer: {
@@ -52,35 +50,52 @@ const dartaListDisplay = {
   },
 };
 
-function DartaListItem({
+function DartaListArtwork({
   artwork,
-  index,
   arrayLength,
+  index,
+  isSwappingLoading,
+  saveSpinner,
+  deleteSpinner,
   swapExhibitionOrder,
   saveArtwork,
-  deleteArtwork,
+  handleDeleteArtworkFromDarta,
+  handleRemoveArtworkFromExhibition,
 }: {
   artwork: Artwork;
-  index: number;
   arrayLength: number;
-  swapExhibitionOrder: (arg0: string, arg1: 'up' | 'down') => void;
-  saveArtwork: (arg0: string, arg1: Artwork) => void;
-  deleteArtwork: (arg0: string) => boolean;
+  index: number;
+  saveSpinner: boolean;
+  isSwappingLoading: boolean;
+  deleteSpinner: boolean;
+  swapExhibitionOrder: ({
+    artworkId,
+    direction,
+  }: {
+    artworkId: string;
+    direction: 'up' | 'down';
+  }) => void;
+  saveArtwork: (arg1: Artwork) => Promise<boolean>;
+  handleDeleteArtworkFromDarta: ({
+    exhibitionId,
+    artworkId,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+  }) => Promise<boolean>;
+  handleRemoveArtworkFromExhibition: ({
+    exhibitionId,
+    artworkId,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+  }) => Promise<boolean>;
 }) {
-  const artworkPrice = artwork?.artworkPrice?.value;
-  const artworkCurrency = artwork?.artworkCurrency?.value;
   const [editArtwork, setEditArtwork] = React.useState<boolean>(false);
-  const handleSave = (updatedArtwork: Artwork) => {
-    if (!artwork.artworkId) return;
-    saveArtwork(artwork?.artworkId, updatedArtwork);
-    setEditArtwork(!editArtwork);
-  };
-  const handleDelete = (artworkId: string) => {
-    if (!artworkId) return;
-    const results = deleteArtwork(artworkId);
-    if (results) {
-      setEditArtwork(!editArtwork);
-    }
+
+  const handleSave = async (newArtwork: Artwork) => {
+    await saveArtwork(newArtwork);
+    setEditArtwork(false);
   };
 
   return (
@@ -91,18 +106,32 @@ function DartaListItem({
           className="edit-artwork-order">
           <Box>
             <IconButton
-              disabled={index === 0}
-              onClick={() => swapExhibitionOrder(artwork?.artworkId, 'up')}>
+              disabled={index === 0 || isSwappingLoading}
+              onClick={() =>
+                swapExhibitionOrder({
+                  artworkId: artwork?.artworkId as string,
+                  direction: 'up',
+                })
+              }>
               <ArrowDropUpIcon />
             </IconButton>
           </Box>
           <Box>
-            <Typography>{Number(artwork?.exhibitionOrder) + 1}</Typography>
+            {isSwappingLoading ? (
+              <CircularProgress color="secondary" size={15} />
+            ) : (
+              <Typography>{Number(artwork?.exhibitionOrder) + 1}</Typography>
+            )}
           </Box>
           <Box>
             <IconButton
-              disabled={index === arrayLength - 1}
-              onClick={() => swapExhibitionOrder(artwork?.artworkId, 'down')}>
+              disabled={index === arrayLength - 1 || isSwappingLoading}
+              onClick={() =>
+                swapExhibitionOrder({
+                  artworkId: artwork?.artworkId as string,
+                  direction: 'down',
+                })
+              }>
               <ArrowDropDownIcon />
             </IconButton>
           </Box>
@@ -144,8 +173,11 @@ function DartaListItem({
         />
         <ListItemText
           sx={dartaListDisplay.displayComponentHideMobile}
-          primary={`${artworkCurrency && currencyConverter[artworkCurrency]}${
-            artworkPrice
+          primary={`${
+            artwork?.artworkCurrency?.value &&
+            currencyConverter[artwork?.artworkCurrency?.value]
+          }${
+            artwork?.artworkPrice?.value
               ? Number(artwork?.artworkPrice?.value).toLocaleString()
               : '-'
           }`}
@@ -194,8 +226,13 @@ function DartaListItem({
           <CreateArtwork
             newArtwork={artwork}
             cancelAction={setEditArtwork}
-            saveArtwork={handleSave}
-            handleDelete={handleDelete}
+            handleSave={handleSave}
+            saveSpinner={saveSpinner}
+            deleteSpinner={deleteSpinner}
+            handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
+            handleRemoveArtworkFromExhibition={
+              handleRemoveArtworkFromExhibition
+            }
           />
         </Box>
       </Collapse>
@@ -208,107 +245,79 @@ function DartaListItem({
 
 export function ExhibitionArtworkList({
   artworks,
-  saveExhibition,
-  exhibitionId,
+  saveSpinner,
+  isSwappingLoading,
+  deleteSpinner,
+  swapExhibitionOrder,
+  saveArtwork,
+  handleDeleteArtworkFromDarta,
+  handleRemoveArtworkFromExhibition,
 }: {
   artworks: any;
-  saveExhibition: (arg0: string, arg1: Exhibition) => void;
-  exhibitionId: string;
+  saveSpinner: boolean;
+  isSwappingLoading: boolean;
+  deleteSpinner: boolean;
+  swapExhibitionOrder: ({
+    artworkId,
+    direction,
+  }: {
+    artworkId: string;
+    direction: 'up' | 'down';
+  }) => void;
+  saveArtwork: (arg1: Artwork) => Promise<boolean>;
+  handleDeleteArtworkFromDarta: ({
+    exhibitionId,
+    artworkId,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+  }) => Promise<boolean>;
+  handleRemoveArtworkFromExhibition: ({
+    exhibitionId,
+    artworkId,
+  }: {
+    exhibitionId: string;
+    artworkId: string;
+  }) => Promise<boolean>;
 }) {
-  const {state} = useAppState();
-
-  const mappedArtworks = Object.values(artworks).sort(
-    (a: any, b: any) => a?.exhibitionOrder - b?.exhibitionOrder,
+  const [mappedArtworks, setMappedArtworks] = React.useState<any>(
+    Object.values(artworks).sort(
+      (a: any, b: any) =>
+        Number(a?.exhibitionOrder) - Number(b?.exhibitionOrder),
+    ),
   );
+  const [arrayLength, setArrayLength] = React.useState<number>(0);
 
-  const saveArtwork = (artworkId: string, updatedArtwork: Artwork) => {
-    const tempExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
-    if (tempExhibition?.artworks && tempExhibition?.artworks[artworkId]) {
-      tempExhibition.artworks[artworkId] = updatedArtwork;
-    }
-    saveExhibition(exhibitionId, tempExhibition);
-  };
-
-  const deleteArtwork = (artworkId: string) => {
-    const tempExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
-
-    let artwork;
-    if (tempExhibition?.artworks && tempExhibition.artworks[artworkId]) {
-      artwork = tempExhibition.artworks[artworkId];
-    }
-
-    if (!artwork || !tempExhibition || !tempExhibition?.artworks) {
-      return false;
-    }
-
-    if (tempExhibition?.artworks && tempExhibition?.artworks[artworkId]) {
-      delete tempExhibition?.artworks[artworkId];
-    }
-
-    for (const id in tempExhibition?.artworks) {
-      if (
-        artwork?.exhibitionOrder &&
-        tempExhibition?.artworks[id] &&
-        artworks[id].exhibitionOrder > artwork?.exhibitionOrder
-      ) {
-        tempExhibition.artworks[id]!.exhibitionOrder!--;
-      }
-    }
-
-    saveExhibition(exhibitionId, tempExhibition);
-    return true;
-  };
-
-  const swapExhibitionOrder = (artworkId: string, direction: 'up' | 'down') => {
-    const tempArtworks = _.cloneDeep(artworks);
-    // Get the artwork for which the arrow was clicked
-    const artwork = artworks[artworkId];
-
-    if (!artwork) return;
-
-    // Depending on whether up or down was clicked, find the artwork to swap with
-    let swapArtworkId: string | undefined;
-    for (const id in artworks) {
-      if (
-        artworks[id].exhibitionOrder ===
-        (direction === 'up'
-          ? artwork.exhibitionOrder - 1
-          : artwork.exhibitionOrder + 1)
-      ) {
-        swapArtworkId = id;
-        break;
-      }
-    }
-
-    // If we have found an artwork to swap with
-    if (swapArtworkId) {
-      // Swap the exhibitionOrder of the two artworks
-      [
-        tempArtworks[artworkId].exhibitionOrder,
-        tempArtworks[swapArtworkId].exhibitionOrder,
-      ] = [
-        artworks[swapArtworkId].exhibitionOrder,
-        artworks[artworkId].exhibitionOrder,
-      ];
-    }
-    const tempExhibition = _.cloneDeep(state.galleryExhibitions[exhibitionId]);
-    tempExhibition.artworks = tempArtworks;
-    saveExhibition(exhibitionId, tempExhibition);
-  };
+  React.useEffect(() => {
+    const tempMappedArtworks = Object.values(artworks).sort(
+      (a: any, b: any) =>
+        Number(a?.exhibitionOrder) - Number(b?.exhibitionOrder),
+    );
+    setMappedArtworks(tempMappedArtworks);
+    setArrayLength(tempMappedArtworks.length);
+  }, [artworks]);
 
   return (
     <List
       sx={{width: '100%', bgcolor: PRIMARY_MILK}}
       className="exhibition-artwork-list">
-      {mappedArtworks.map((artwork: any, index: number) => (
-        <DartaListItem
-          artwork={artwork}
-          index={index}
-          arrayLength={mappedArtworks?.length}
-          swapExhibitionOrder={swapExhibitionOrder}
-          saveArtwork={saveArtwork}
-          deleteArtwork={deleteArtwork}
-        />
+      {mappedArtworks?.map((artwork: Artwork, index: number) => (
+        <Box key={artwork?.artworkId}>
+          <DartaListArtwork
+            artwork={artwork}
+            arrayLength={arrayLength}
+            index={index}
+            swapExhibitionOrder={swapExhibitionOrder}
+            isSwappingLoading={isSwappingLoading}
+            saveArtwork={saveArtwork}
+            saveSpinner={saveSpinner}
+            deleteSpinner={deleteSpinner}
+            handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
+            handleRemoveArtworkFromExhibition={
+              handleRemoveArtworkFromExhibition
+            }
+          />
+        </Box>
       ))}
     </List>
   );

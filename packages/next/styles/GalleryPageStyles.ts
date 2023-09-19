@@ -46,7 +46,7 @@ export const galleryStyles = {
     width: '100 %',
     flexDirection: 'row',
     gap: '3vw',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     '@media (min-width: 800px)': {
       width: '50%',
     },
@@ -108,7 +108,7 @@ export const galleryStyles = {
   createNewButton: {
     backgroundColor: PRIMARY_BLUE,
     color: PRIMARY_MILK,
-    width: '50%',
+    // width: '50%',
     alignSelf: 'center',
   },
   formTextField: {

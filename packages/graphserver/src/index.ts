@@ -1,15 +1,51 @@
-import * as dotenv from 'dotenv';
+import 'reflect-metadata';
 
+import cors from 'cors';
+import * as dotenv from 'dotenv';
 import express, {Request, Response} from 'express';
 import http from 'http';
+import {InversifyExpressServer} from 'inversify-express-utils';
+
+import {container} from './config/container';
+
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+const bodyParser = require('body-parser');
 
 dotenv.config();
 
-const {PORT: port} = process.env;
+const server = new InversifyExpressServer(container);
 
-const app = express();
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+const corsOptions = {
+  // origin: (origin: any, callback: any) => {
+  //   // Check if the origin is from the same container or allowed host
+  //   if (
+  //     origin === 'http://localhost:1169' ||
+  //     origin === 'https://www.darta.art' ||
+  //     origin === undefined
+  //   ) {
+  //     callback(null, true);
+  //   } else {
+  //     callback(new Error('Not allowed by CORS'));
+  //   }
+  // },
+  origin: true,
+};
+
+// Configure and start the server
+server.setConfig(app => {
+  app.use(cors(corsOptions));
+  app.use(bodyParser.json({limit: '50mb'}));
+  app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+  app.use(express.json());
+  app.use(express.urlencoded({extended: true}));
+});
+
+const app = server.build();
+
+const {PORT: port, VERSION: version} = process.env;
+// eslint-disable-next-line no-console
+console.log({version});
 
 const httpServer = http.createServer(app);
 
@@ -26,6 +62,11 @@ app.get('/pong', (req: Request, res: Response) => {
   res.send('ping');
 });
 
+app.get('/version', (req: Request, res: Response) => {
+  res.send(version);
+});
+
 httpServer.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+  // eslint-disable-next-line no-console
+  console.log(`Listening on port ${port}, version ${version}`);
 });

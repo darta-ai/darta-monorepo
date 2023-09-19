@@ -1,8 +1,10 @@
 import 'firebase/compat/auth';
 
+import {ArtworkObject, IGalleryProfileData} from '@darta/types';
 import {Box} from '@mui/material';
 import React from 'react';
 
+import {retrieveAllGalleryData} from '../../src/API/DartaGETrequests';
 import authRequired from '../../src/common/AuthRequired/AuthRequired';
 import {
   GalleryArtwork,
@@ -11,6 +13,11 @@ import {
   LoadProfile,
 } from '../../src/Components/GalleryPages';
 import {MiniDrawer} from '../../src/Components/Navigation/DashboardNavigation/GalleryDashboardNavigation';
+import {
+  GalleryReducerActions,
+  useAppState,
+} from '../../src/Components/State/AppContext';
+import {AuthContext} from '../_app';
 
 export enum EGalleryDisplay {
   Profile = 'PROFILE',
@@ -33,14 +40,32 @@ function Gallery() {
   const [currentDisplay, setCurrentDisplay] = React.useState<EGalleryDisplay>(
     EGalleryDisplay.Load,
   );
+  const {dispatch} = useAppState();
+  const {user} = React.useContext(AuthContext);
 
   React.useEffect(() => {
-    const timer = setTimeout(() => {
-      // redirect to the new page
-      setCurrentDisplay(EGalleryDisplay.Profile);
-    }, 750);
-
-    return () => clearTimeout(timer);
+    const fetchData = async () => {
+      if (user?.accessToken) {
+        const {galleryProfile, galleryArtworks, galleryExhibitions} =
+          await retrieveAllGalleryData();
+        dispatch({
+          type: GalleryReducerActions.SET_PROFILE,
+          payload: galleryProfile as IGalleryProfileData,
+        });
+        dispatch({
+          type: GalleryReducerActions.SET_BATCH_ARTWORK,
+          payload: galleryArtworks as ArtworkObject,
+        });
+        dispatch({
+          type: GalleryReducerActions.SET_EXHIBITIONS,
+          payload: galleryExhibitions,
+        });
+        setCurrentDisplay(EGalleryDisplay.Profile);
+      } else {
+        // TO-DO: error handling
+      }
+    };
+    fetchData();
   }, []);
   return (
     <Box sx={profileStyles}>

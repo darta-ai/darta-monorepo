@@ -1,5 +1,8 @@
 version: v2beta1
 name: darta-graph-server
+vars:
+  DEVSPACE_ENV_FILE: ".env.production"
+
 
 pipelines:
   dev:
@@ -26,10 +29,30 @@ images:
       args:
       - "--no-cache"
       - "--compress"
+    buildArgs:
+      ARANGO_URL: ${ARANGO_URL}
+      ARANGO_USER: ${ARANGO_USER}
+      ARANGO_PASSWORD: ${ARANGO_PASSWORD}
+      ARANGO_DATABASE: ${ARANGO_DATABASE}
+      FIREBASE_API_KEY: ${FIREBASE_API_KEY}
+      FIREBASE_AUTH_DOMAIN: ${FIREBASE_AUTH_DOMAIN}
+      PROJECT_ID: ${PROJECT_ID}
+      FIREBASE_STORAGE_BUCKET: ${FIREBASE_STORAGE_BUCKET}
+      FIREBASE_SENDER_ID: ${FIREBASE_SENDER_ID}
+      FIREBASE_APP_ID: ${FIREBASE_APP_ID}
+      FIREBASE_MEASUREMENT_ID: ${FIREBASE_MEASUREMENT_ID}
+      MINIO_PORT: ${MINIO_PORT}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_USE_SSL: ${MINIO_USE_SSL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      PORT: ${PORT}
+      VERSION: ${VERSION}
 
 deployments:
   darta-api:
-    namespace: darta-next
+    namespace: darta-main
     helm:
       chart:
         name: component-chart
@@ -41,9 +64,10 @@ deployments:
           args: ["--platform=linux/amd64"]
         service:
           ports:
-          - port: 1160
+          - port: ${PORT} # using variable here
 
   traefik:
+    namespace: traefik
     helm:
       chart:
         name: traefik
@@ -54,9 +78,16 @@ deployments:
           type: LoadBalancer
 
   ingress:
+    namespace: traefik
     kubectl:
       manifests:
-      - ../../charts/ingress-route.yaml
+      - ../../charts/production/ingress-route.yaml
+
+  https-redirect:
+    namespace: traefik
+    kubectl:
+      manifests:
+      - ../../charts/production/https-redirect.yaml
 
 dev:
   app:
@@ -79,9 +110,9 @@ dev:
     - command: helm
     - gitCredentials: true
     ports:
-    - port: "1169"
+    - port: ${PORT} # using variable here
     open:
-    - url: http://localhost:1169
+    - url: http://localhost:${PORT} # using variable here
 
 commands:
   migrate-db:

@@ -8,7 +8,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@/graph": ["./packages/graph/src"]
+      "@/darta-types": ["./packages/darta-types/src/*"]
   },
     "noEmit": false,
     "esModuleInterop": true,

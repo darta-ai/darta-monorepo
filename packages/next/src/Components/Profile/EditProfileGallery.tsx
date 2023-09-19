@@ -1,3 +1,8 @@
+import {
+  BusinessAddressType,
+  IGalleryProfileData,
+  PrivateFields,
+} from '@darta/types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {Box, Button, Typography} from '@mui/material';
@@ -6,12 +11,8 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {
-  BusinessAddressType,
-  IGalleryProfileData,
-  PrivateFields,
-} from '../../../globalTypes';
 import {PRIMARY_BLUE} from '../../../styles';
+import {updateGalleryProfileAPI} from '../../API/galleries/galleryRoutes';
 import {googleMapsParser} from '../../common/nextFunctions';
 import {createArtworkStyles} from '../Artwork/styles';
 import {
@@ -26,8 +27,8 @@ import {profileStyles} from './Components/profileStyles';
 const instagramREGEX =
   /(?:^|[^\w])(?:@)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)/;
 
-const phoneRegExp = /^(\+?\d{1,4}[\s-])?(?!0+\s+,?$)\d{10}\s*,?$/;
-
+const phoneRegExp =
+  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 const galleryDataSchema = yup
   .object({
     galleryName: yup.object().shape({
@@ -148,8 +149,9 @@ export function EditProfileGallery({
   const [editImage, setEditImage] = React.useState<boolean>(
     !galleryProfileData?.galleryLogo?.value,
   );
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     const tempData = _.cloneDeep(data);
+
     if (
       !tempData.galleryLocation0.locationString.value &&
       tempData?.galleryLocation1?.locationString.value
@@ -160,7 +162,13 @@ export function EditProfileGallery({
     if (tempData.galleryLocation0 && !tempData?.galleryLocation0?.locationId)
       tempData.galleryLocation0.locationId = crypto.randomUUID();
 
-    setGalleryProfileData(data);
+    try {
+      const {data} = await updateGalleryProfileAPI(tempData);
+      setGalleryProfileData(data);
+    } catch (error) {
+      // TO-DO: need an error modal
+    }
+    // setGalleryProfileData(tempData);
     setIsEditingProfile(!isEditingProfile);
   };
 
@@ -170,7 +178,18 @@ export function EditProfileGallery({
     const file = acceptedFiles[0];
     const previewURL = URL.createObjectURL(file);
 
-    setValue('galleryLogo', {value: previewURL});
+    const reader = new FileReader();
+
+    reader.onload = event => {
+      // event.target.result contains the file's data as a base64 encoded string.
+      if (event.target?.result) {
+        const fileData = event.target.result;
+        setValue('galleryLogo.fileData', fileData);
+      }
+    };
+
+    reader.readAsDataURL(file); // Read the file content as Data URL.
+
     setTempImage(previewURL);
     // NEED API CALL TO UPLOAD IMAGE TO DATABASE
     setEditImage(!editImage);
@@ -189,6 +208,8 @@ export function EditProfileGallery({
         galleryWebsite,
         galleryPhone,
         openHours,
+        locality,
+        city,
       } = googleMapsParser(autofillDetails);
       if (galleryName) {
         setValue('galleryName.value', galleryName);
@@ -207,6 +228,12 @@ export function EditProfileGallery({
           'galleryLocation0.coordinates.googleMapsPlaceId.value',
           mapsUrl,
         );
+      }
+      if (city) {
+        setValue(`galleryLocation0.city.value`, city);
+      }
+      if (locality) {
+        setValue(`galleryLocation0.locality.value`, locality);
       }
       setValue('galleryLocation0.googleMapsPlaceId.value', placeId);
       if (openHours) {
@@ -322,7 +349,7 @@ export function EditProfileGallery({
           sx={{...createArtworkStyles.inputText, mt: 10}}>
           <DartaGallerySearch
             fieldName="gallerySearch"
-            data={galleryProfileData.galleryName as PrivateFields}
+            data={'' as any}
             register={register}
             required={true}
             inputAdornmentString="Search"
@@ -376,7 +403,7 @@ export function EditProfileGallery({
           <Typography variant="h5">Contact</Typography>
         </Box>
         <Box key="primaryContact" sx={createArtworkStyles.multiLineContainer}>
-          <Box key="galleryPhone" sx={createArtworkStyles.inputText}>
+          <Box key="inputText" sx={createArtworkStyles.inputText}>
             <DartaTextInput
               fieldName="primaryContact"
               data={galleryProfileData.primaryContact}
@@ -408,8 +435,8 @@ export function EditProfileGallery({
             />
           </Box>
         </Box>
-        <Box key="primaryContact" sx={createArtworkStyles.multiLineContainer}>
-          <Box key="galleryWebsite" sx={createArtworkStyles.inputText}>
+        <Box key="galleryWebsite" sx={createArtworkStyles.multiLineContainer}>
+          <Box sx={createArtworkStyles.inputText}>
             <DartaTextInput
               fieldName="galleryWebsite"
               data={

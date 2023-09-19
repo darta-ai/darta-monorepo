@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import {Animated, ImageSourcePropType, StyleSheet, View} from 'react-native';
 import {OrientationLocker, PORTRAIT} from 'react-native-orientation-locker';
-// import { Button } from 'react-native-paper';
 import ProgressBar from 'react-native-progress/Bar';
 import {
   heightPercentageToDP as hp,

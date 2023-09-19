@@ -66,10 +66,6 @@ export const createArtworkStyles = {
     justifyContent: 'space-around',
     alignItems: 'center',
     alignContent: 'center',
-    gap: '3vh',
-    '@media (min-width: 780px)': {
-      gap: '1vh',
-    },
   },
   imageContainer: {
     alignSelf: 'center',
@@ -99,14 +95,24 @@ export const createArtworkStyles = {
   },
   defaultImageEdit: {
     maxHeight: '40vh',
+    maxWidth: '40vw',
     '@media (min-width: 780px)': {
       maxHeight: '30vh',
     },
   },
-  defaultImage: {
-    marginTop: '1em',
+  defaultImageContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    height: '100%',
     width: '100%',
-    maxHeight: '39vh',
+    marginTop: '1em',
+  },
+  defaultImage: {
+    p: '1em',
+    // width: '100%',
+    maxHeight: '40vh',
+    maxWidth: '35vw',
     alignSelf: 'center',
     borderWidth: 30,
   },
@@ -133,10 +139,9 @@ export const createArtworkStyles = {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    minHeight: '10vh',
     height: '100%',
-    width: '100%',
-    gap: '10vh',
+    width: '95%',
+    gap: '5vh',
     '@media (max-width: 780px)': {
       flexDirection: 'column',
     },

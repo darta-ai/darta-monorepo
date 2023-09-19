@@ -18,10 +18,10 @@ import {Footer} from '../src/Components/Navigation/Footer';
 import {AppContextProvider} from '../src/Components/State/AppContext';
 import createEmotionCache from '../src/createEmotionCache';
 import theme from '../src/theme';
+import {auth} from '../src/ThirdPartyAPIs/firebaseApp';
 import {PRIMARY_MILK} from '../styles';
-import {auth} from '../ThirdPartyAPIs/firebaseApp';
 
-export {app, auth, db} from '../ThirdPartyAPIs/firebaseApp';
+export {app, auth, db} from '../src/ThirdPartyAPIs/firebaseApp';
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 

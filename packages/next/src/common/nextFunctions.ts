@@ -1,4 +1,4 @@
-import {Artwork, Dimensions} from '../../globalTypes';
+import {Artwork, Dimensions} from '@darta/types';
 
 function fractionToDecimal(str: string) {
   if (!str) return null;
@@ -20,6 +20,24 @@ function fractionToDecimal(str: string) {
     return wholeNumber;
   }
 }
+
+type AddressComponents = {
+  long_name: string;
+  short_name: string;
+  types: string[];
+};
+
+const findLocality = (addressComponents: AddressComponents[]) => {
+  return addressComponents
+    .filter(component => component.types.includes('locality'))
+    .map(component => component.long_name)[0];
+};
+
+const findSubLocality = (addressComponents: AddressComponents[]) => {
+  return addressComponents
+    .filter(component => component.types.includes('sublocality'))
+    .map(component => component.long_name)[0];
+};
 
 export const createDimensionsString = ({
   depthIn,
@@ -97,6 +115,8 @@ export const googleMapsParser = (data: any) => {
   const lng = data?.geometry?.location.lng();
   const mapsUrl = data?.geometry?.url;
   const galleryName = data?.name;
+  const city = findLocality(data?.address_components);
+  const locality = findSubLocality(data?.address_components);
   const galleryWebsite = data?.website;
   const galleryPhone = data?.formatted_phone_number;
   const openHours = parseBusinessHours(data?.opening_hours?.periods);
@@ -109,6 +129,8 @@ export const googleMapsParser = (data: any) => {
     galleryWebsite,
     galleryPhone,
     openHours,
+    city,
+    locality,
   };
   return addressObj;
 };
@@ -197,6 +219,7 @@ export const parseExcelArtworkData = (
     const newId = crypto.randomUUID();
     artworkObject[newId] = {
       artworkId: newId,
+      exhibitionId: null,
       artworkImage: {value: item['Main image URL (large)']},
       artworkTitle: {value: item?.Title},
       artistName: {value: item?.Artist},

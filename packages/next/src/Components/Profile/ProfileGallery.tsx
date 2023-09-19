@@ -1,10 +1,12 @@
-import {Box, Divider, Typography} from '@mui/material';
+import {IGalleryProfileData} from '@darta/types';
+import {Box, Button, Divider, Typography} from '@mui/material';
 import Image from 'next/image';
 import React from 'react';
 
-import {IGalleryProfileData} from '../../../globalTypes';
-import {PRIMARY_BLUE} from '../../../styles';
+import {AuthContext} from '../../../pages/_app';
+import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {phoneNumberConverter} from '../../common/utils/phoneNumberConverter';
+import {resendEmailVerification} from '../../ThirdPartyAPIs/firebaseApp';
 import {GalleryLocationComponent} from './Components/GalleryLocationText';
 import {profileStyles} from './Components/profileStyles';
 
@@ -13,31 +15,92 @@ function GalleryStatus({
 }: {
   galleryProfileData: IGalleryProfileData;
 }) {
-  if (!galleryProfileData?.isValidated) {
+  const {user} = React.useContext(AuthContext);
+  const [isResent, setIsResent] = React.useState(false);
+  const resendEmail = async () => {
+    try {
+      await resendEmailVerification();
+      setIsResent(true);
+    } catch (error) {
+      // TO-DO: error handling
+    }
+  };
+  if (!user?.emailVerified) {
+    return (
+      <Box data-testid="gallery-under-review">
+        <Typography variant="h3" sx={{color: 'red', textAlign: 'center'}}>
+          Please verify your email
+        </Typography>
+        <Box sx={profileStyles.profile.galleryBioStyles}>
+          <Box sx={{mx: 3}}>
+            <Typography>
+              Please check your inbox for an email confirmation.
+            </Typography>
+          </Box>
+          <Box sx={{mx: 3, my: 3}}>
+            <Button
+              variant="contained"
+              disabled={isResent}
+              sx={{
+                backgroundColor: PRIMARY_BLUE,
+                color: PRIMARY_MILK,
+                alignSelf: 'center',
+              }}
+              onClick={() => {
+                resendEmail();
+              }}>
+              {isResent ? (
+                <Typography sx={{fontWeight: 'bold'}}>Email Sent!</Typography>
+              ) : (
+                <Typography sx={{fontWeight: 'bold'}}>
+                  Re-send email confirmation
+                </Typography>
+              )}
+            </Button>
+          </Box>
+          <Box sx={{mx: 3, my: 3}}>
+            <Typography>
+              After you have confirmed your email, please refresh this page.
+            </Typography>
+          </Box>
+          <Box sx={{mx: 3, my: 3}}>
+            <Typography>
+              With questions, please reach out to us at{' '}
+              <a href="mailto:info@darta.art">info@darta.art</a>
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    );
+  } else if (!galleryProfileData?.isValidated) {
     return (
       <Box data-testid="gallery-under-review">
         <Typography variant="h4" sx={{color: 'red', textAlign: 'center'}}>
           Gallery Under Review
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
-          <Box sx={{mx: 3}}>
+          <Box sx={{m: 3}}>
             <Typography>
               We do basic quality assurance of all galleries on the platform to
-              ensure the end user gets the best possible experience. We will
-              reach out to you via the email you have provided when it is
-              approved or denied.
+              ensure the end user gets the best possible experience.
+            </Typography>
+          </Box>
+          <Box sx={{m: 3}}>
+            <Typography>
+              We will reach out to you via the email you have provided when it
+              is approved or denied.
             </Typography>
           </Box>
           <Box sx={{mx: 3, my: 3}}>
             <Typography>
               If you have any questions or concerns, please reach out to us at{' '}
-              <a href="mailto:info@darta.works">info@darta.works</a>
+              <a href="mailto:info@darta.art">info@darta.art</a>
             </Typography>
           </Box>
         </Box>
       </Box>
     );
-  } else if (galleryProfileData?.galleryName?.value) {
+  } else if (galleryProfileData?.galleryBio?.value) {
     return (
       <Box>
         <Typography
@@ -55,11 +118,16 @@ function GalleryStatus({
         </Box>
       </Box>
     );
-  } else {
+  } else if (galleryProfileData?.galleryName?.value) {
     return (
       <Box data-testid="gallery-start-editing">
         <Typography
           variant="h4"
+          sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
+          {galleryProfileData?.galleryName?.value}
+        </Typography>
+        <Typography
+          variant="h6"
           sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
           Click EDIT to get started.
         </Typography>
@@ -102,10 +170,10 @@ export function ProfileGallery({
           <Box
             sx={profileStyles.profile.imageBox}
             data-testid="profile-gallery-image-box">
-            {galleryProfileData?.galleryLogo ? (
+            {galleryProfileData?.galleryLogo?.value ? (
               <Box>
                 <img
-                  src={galleryProfileData?.galleryLogo?.value as string}
+                  src={galleryProfileData?.galleryLogo?.value}
                   alt="gallery logo"
                   style={profileStyles.profile.defaultImage}
                   data-testid="profile-gallery-logo"
@@ -199,6 +267,8 @@ export function ProfileGallery({
                       rel="noreferrer">
                       {galleryProfileData?.galleryWebsite?.value
                         .replace('http://www.', '')
+                        .replace('http:/www.', '')
+                        .replace('https:/', '')
                         .replace('https://www.', '')
                         .replace('/', '')}
                     </a>
@@ -238,7 +308,13 @@ export function ProfileGallery({
               <Divider />
             </Typography>
           </Box>
-          <Box sx={{display: 'flex', flexDirection: 'column', gap: '1vh'}}>
+          <Box
+            sx={{
+              display: 'flex',
+              width: '100%',
+              flexDirection: 'column',
+              gap: '1vh',
+            }}>
             <Box sx={profileStyles.profile.galleryAddressContainer}>
               <GalleryLocationComponent
                 galleryLocationData={galleryProfileData?.galleryLocation0}
