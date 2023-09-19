@@ -37,28 +37,6 @@ export class GalleryController {
     }
   }
 
-  // @httpPost('/createProfile', verifyToken)
-  // public async createProfile(
-  //   @request() req: Request,
-  //   @response() res: Response,
-  // ): Promise<void> {
-  //   const {user} = req as any;
-  //   const {email} = user;
-  //   const {galleryName} = req.body;
-  //   try {
-  //     const isValidated = await this.galleryService.verifyQualifyingGallery(
-  //       email,
-  //     );
-  //     const gallery = await this.galleryService.createGalleryProfile({
-  //       galleryName,
-  //       isValidated,
-  //     });
-  //     res.json(gallery);
-  //   } catch (error: any) {
-  //     res.status(500).send(error.message);
-  //   }
-  // }
-
   @httpPost('/editProfile', verifyToken)
   public async editProfile(
     @request() req: Request,

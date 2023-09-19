@@ -32,5 +32,12 @@ spec:
       port: 1160
     middlewares:
     - name: "https-redirect"
+  - match: Host(`images.darta.art`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: minio
+      port: 443
+    middlewares:
+    - name: "https-redirect"
   tls:
     secretName: my-tls-secret

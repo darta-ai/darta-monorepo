@@ -96,30 +96,15 @@ export class ArtworkController {
       if (results) {
         // results.exhibitionOrder = exhibitionOrder;
         res.json(results);
+      } else {
+        res
+          .status(500)
+          .send('unable to create and edit artwork for exhibition');
       }
-      res.status(500).send('unable to create and edit artwork for exhibition');
     } catch (error: any) {
       res.status(500).send(error.message);
     }
   }
-
-  // @httpPost('/updateExhibitionArtworkLocation', verifyToken)
-  // public async updateExhibitionArtworkLocation(
-  //   @request() req: Request,
-  //   @response() res: Response,
-  // ): Promise<void> {
-  //   const {user} = req as any;
-  //   const {exhibitionLocation, artwork} = req.body;
-  //   try {
-  //     const artwork = await this.exhibitionService.editArtworkToLocationEdge({
-  //       locationData: exhibitionLocation,
-  //       artworkId: artwork.artworkId,
-  //     });
-  //     res.json(results);
-  //   } catch (error: any) {
-  //     res.status(500).send(error.message);
-  //   }
-  // }
 
   // OPEN Endpoint
   @httpGet('/readArtwork')

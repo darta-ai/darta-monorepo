@@ -1,7 +1,7 @@
 import {PRIMARY_BLUE, PRIMARY_LIGHTBLUE, PRIMARY_MILK} from '../assets/styles';
 
 export const headerOptions = {
-  headerTitle: 'd | a r t | ai',
+  headerTitle: 'd a r t a',
   headerTitleStyle: {
     fontFamily: 'Nunito Sans',
     fontSize: 18,
@@ -17,7 +17,7 @@ export const headerOptions = {
 };
 
 export const footerOptions = {
-  headerTitle: 'd | a r t | ai',
+  headerTitle: 'd a r t a',
   tabBarLabelStyle: {
     fontFamily: 'Nunito Sans',
     fontSize: 15,

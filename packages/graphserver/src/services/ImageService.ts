@@ -32,6 +32,8 @@ export class ImageService implements IImageService {
         etag,
       };
     } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.log(err);
       throw new Error(err.message);
     }
   }
