@@ -22,8 +22,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ADMIN_PASSWORD = exports.config = void 0;
+exports.ENV = exports.ADMIN_PASSWORD = exports.config = void 0;
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 exports.config = {
@@ -41,4 +42,4 @@ exports.config = {
         secretKey: process.env.MINIO_SECRET_KEY,
     },
 };
-exports.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+_a = process.env, exports.ADMIN_PASSWORD = _a.ADMIN_PASSWORD, exports.ENV = _a.ENV;

@@ -18,4 +18,4 @@ export const config = {
   },
 };
 
-export const {ADMIN_PASSWORD} = process.env;
+export const {ADMIN_PASSWORD, ENV} = process.env;

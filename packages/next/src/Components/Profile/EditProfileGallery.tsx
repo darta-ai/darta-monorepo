@@ -397,13 +397,12 @@ export function EditProfileGallery({
         <Box
           key="gallerySocialMedia"
           sx={{
-            ...createArtworkStyles.inputText,
             justifyContent: 'space-around',
           }}>
           <Typography variant="h5">Contact</Typography>
         </Box>
         <Box key="primaryContact" sx={createArtworkStyles.multiLineContainer}>
-          <Box key="inputText" sx={createArtworkStyles.inputText}>
+          <Box key="inputText">
             <DartaTextInput
               fieldName="primaryContact"
               data={galleryProfileData.primaryContact}
@@ -419,7 +418,7 @@ export function EditProfileGallery({
               inputAdornmentValue={null}
             />
           </Box>
-          <Box key="galleryPhone" sx={createArtworkStyles.inputText}>
+          <Box key="galleryPhone">
             <DartaPhoneNumber
               fieldName="galleryPhone"
               data={galleryProfileData.galleryPhone}
@@ -436,7 +435,7 @@ export function EditProfileGallery({
           </Box>
         </Box>
         <Box key="galleryWebsite" sx={createArtworkStyles.multiLineContainer}>
-          <Box sx={createArtworkStyles.inputText}>
+          <Box key="galleryWebsite">
             <DartaTextInput
               fieldName="galleryWebsite"
               data={
@@ -455,7 +454,7 @@ export function EditProfileGallery({
               inputAdornmentValue={null}
             />
           </Box>
-          <Box key="galleryInstagram" sx={createArtworkStyles.inputText}>
+          <Box key="galleryInstagram">
             <DartaTextInput
               fieldName="galleryInstagram"
               data={

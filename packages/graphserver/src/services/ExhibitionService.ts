@@ -9,6 +9,10 @@ import {CollectionNames, EdgeNames} from '../config/collections';
 import {newExhibitionShell} from '../config/templates';
 import {ImageController} from '../controllers/ImageController';
 import {
+  filterOutPrivateRecordsMultiObject,
+  filterOutPrivateRecordsSingleObject,
+} from '../middleware/filterOutPrivateRecords';
+import {
   IArtworkService,
   IEdgeService,
   IExhibitionService,
@@ -95,8 +99,22 @@ export class ExhibitionService implements IExhibitionService {
   }: {
     exhibitionId: string;
   }): Promise<Exhibition | void> {
-    const fake = exhibitionId;
-    this.generateExhibitionId({exhibitionId: fake});
+    const results = await this.getExhibitionById({
+      exhibitionId,
+    });
+    if (!results) {
+      return;
+    }
+    const {artworks, ...exhibition} = results;
+    const cleanedExhibition = filterOutPrivateRecordsSingleObject(exhibition);
+    const cleanedArtworks = filterOutPrivateRecordsMultiObject(artworks);
+
+    return {
+      ...cleanedExhibition,
+      artworks: {
+        ...cleanedArtworks,
+      },
+    };
   }
 
   public async editExhibition({

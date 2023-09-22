@@ -4,12 +4,12 @@ export const formStyles = {
   inputTextContainer: {
     display: 'flex',
     flexDirection: 'column',
-    minWidth: '50%',
     gap: '4vw',
     height: '100%',
+    minWidth: '35vw',
     alignItems: 'center',
     justifyContent: 'center',
-    '@media (min-width: 780px)': {
+    '@media (min-width: 1500px)': {
       display: 'grid',
       width: '100%',
       height: '15vh',
@@ -24,7 +24,7 @@ export const formStyles = {
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    '@media (min-width: 780px)': {
+    '@media (min-width: 1280px)': {
       display: 'grid',
       minHeight: '15vh',
       minWidth: '100%',
@@ -55,7 +55,7 @@ export const formStyles = {
     justifyContent: 'center',
     width: '100%',
     gridTemplateColumns: '1fr',
-    '@media (min-width: 780px)': {
+    '@media (min-width: 1280px)': {
       display: 'grid',
       gridTemplateColumns: '1.5fr 8fr 0.5fr',
     },
@@ -75,13 +75,12 @@ export const formStyles = {
   },
   formTextField: {
     width: '60vw',
-
     fontSize: '2rem',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1280px)': {
       width: '100%',
     },
   },
@@ -97,7 +96,7 @@ export const formStyles = {
     flexDirection: 'column',
     placeItems: 'center',
     gridTemplateColumns: '1fr 1fr',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1280px)': {
       display: 'flex',
     },
   },
@@ -117,26 +116,26 @@ export const formStyles = {
   toolTip: {
     fontSize: 10,
     textAlign: 'center',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1080px)': {
       fontSize: 15,
     },
   },
   rawToolTip: {
     fontSize: 10,
     textAlign: 'center',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1280px)': {
       fontSize: 15,
     },
   },
   hoursOfOperationContainer: {
     display: 'grid',
     width: '100%',
-    '@media (min-width: 800px)': {
+    gridTemplateColumns: 'repeat(1, 1fr)',
+    gridTemplateRows: 'repeat(3, 1fr)',
+    '@media (min-width: 1280px)': {
       gridTemplateColumns: 'repeat(7, 1fr)',
       gridTemplateRows: 'repeat(1, 1fr)',
     },
-    gridTemplateColumns: 'repeat(1, 1fr)',
-    gridTemplateRows: 'repeat(3, 1fr)',
   },
   hoursOfOperationInputContainer: {
     display: 'flex',
@@ -147,14 +146,14 @@ export const formStyles = {
   },
   datePicker: {
     width: '60vw',
-    '@media (min-width: 800px)': {
-      width: '20vw',
+    '@media (min-width: 1080px)': {
+      width: '30vw',
     },
   },
   dropDownTextContainer: {
     width: '100%',
     alignSelf: 'center',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1080px)': {
       width: '100%',
     },
   },

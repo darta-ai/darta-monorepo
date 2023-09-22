@@ -22,7 +22,7 @@ export const galleryStyles = {
     flexDirection: 'column',
     gap: '2vw',
     borderLeft: `0px`,
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1080px)': {
       borderTop: `1px solid ${PRIMARY_GREY}`,
       borderLeft: `1px solid ${PRIMARY_GREY}`,
       borderTopLeftRadius: '10px',
@@ -36,7 +36,7 @@ export const galleryStyles = {
     alignContent: 'center',
     justifyContent: 'flex-start',
     gap: '2vh',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1080px)': {
       flexDirection: 'row',
       justifyContent: 'space-around',
     },
@@ -47,7 +47,7 @@ export const galleryStyles = {
     flexDirection: 'row',
     gap: '3vw',
     justifyContent: 'space-between',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1080px)': {
       width: '50%',
     },
   },
@@ -72,7 +72,7 @@ export const galleryStyles = {
     color: PRIMARY_BLUE,
     fontSize: '2rem',
     my: '3vh',
-    '@media (min-width:800px)': {
+    '@media (min-width: 1080px)': {
       fontSize: '2.5rem',
     },
     cursor: 'default',
@@ -82,7 +82,7 @@ export const galleryStyles = {
     color: PRIMARY_BLUE,
     fontSize: '1.5rem',
     my: '3vh',
-    '@media (min-width:800px)': {
+    '@media (min-width: 1080px)': {
       fontSize: '2rem',
     },
     cursor: 'default',
@@ -91,7 +91,7 @@ export const galleryStyles = {
     fontFamily: 'Nunito Sans',
     color: PRIMARY_DARK_GREY,
     fontSize: '1rem',
-    '@media (minWidth: 800px)': {
+    '@media (minWidth: 1080px)': {
       fontSize: '1.3rem',
     },
     cursor: 'default',
@@ -122,7 +122,7 @@ export const galleryStyles = {
     justifyContent: 'space-around',
     gap: '4vh',
     width: '100%',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1080px)': {
       fontSize: '1.3rem',
       flexDirection: 'row',
     },

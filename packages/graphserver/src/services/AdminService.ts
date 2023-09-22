@@ -43,6 +43,16 @@ export class AdminService implements IAdminService {
     }
   }
 
+  public async addMinioBucker(bucketName: string): Promise<string> {
+    try {
+      await this.minio.makeBucket(bucketName);
+      return `added ${bucketName}`;
+    } catch (error: any) {
+      console.log(error);
+      throw new Error(`failed to add ${bucketName}: ${error.message}`);
+    }
+  }
+
   private async ensureCollectionExists(collectionName: string) {
     try {
       await this.db.collection(collectionName).get();

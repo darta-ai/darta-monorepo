@@ -69,6 +69,7 @@ export class ImageController {
         });
       }
     } catch (error: any) {
+      console.log(error);
       res.status(500).send({success: false, message: error.message});
     }
   }
@@ -87,7 +88,7 @@ export class ImageController {
       });
       return metadata;
     } catch (error: any) {
-      // console.log(error);
+      console.log(error);
       throw new Error(`received an error from minio ${error?.message}`);
     }
   }
@@ -116,6 +117,7 @@ export class ImageController {
         });
       }
     } catch (error: any) {
+      console.log(error);
       res.status(500).send({success: false, message: error.message});
     }
   }
@@ -134,7 +136,7 @@ export class ImageController {
       });
       return metadata;
     } catch (error: any) {
-      // console.log(error);
+      console.log(error);
       throw new Error(`received an error from minio ${error?.message}`);
     }
   }

@@ -531,7 +531,7 @@ export function CreateExhibition({
                 fieldName="exhibitionDates.exhibitionStartDate"
                 canEdit={!isOngoingExhibition}
                 setHigherLevelState={handleMinDate}
-                minDate={dayjs()}
+                minDate={null}
                 value={
                   getValues('exhibitionDates.exhibitionStartDate.value') ||
                   newExhibition?.exhibitionDates?.exhibitionStartDate?.value
@@ -666,7 +666,7 @@ export function CreateExhibition({
                 backgroundColor: PRIMARY_BLUE,
                 color: PRIMARY_MILK,
                 alignSelf: 'center',
-                width: '50vw',
+                width: '35vw',
                 '@media (min-width: 800px)': {
                   width: '10vw',
                 },
@@ -675,7 +675,9 @@ export function CreateExhibition({
               {isEditingExhibition ? (
                 <CircularProgress size={24} />
               ) : (
-                <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
+                <Typography sx={{fontWeight: 'bold', color: PRIMARY_MILK}}>
+                  Save
+                </Typography>
               )}
             </Button>
           </Box>

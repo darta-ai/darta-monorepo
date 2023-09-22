@@ -25,7 +25,7 @@ export const profileStyles = {
       gap: '5%',
       minWidth: '75vw',
       alignSelf: 'center',
-      '@media (max-width: 800px)': {
+      '@media (max-width: 1080px)': {
         flexDirection: 'row',
         justifyContent: 'flex-start',
       },
@@ -38,7 +38,7 @@ export const profileStyles = {
       justifyContent: 'center',
       alignSelf: 'center',
       textAlign: 'center',
-      '@media (max-width: 800px)': {
+      '@media (max-width: 1080px)': {
         height: 200,
         width: 200,
       },
@@ -56,7 +56,7 @@ export const profileStyles = {
       alignSelf: 'center',
       width: '60%',
       my: 5,
-      '@media (max-width: 790px)': {
+      '@media (max-width: 1080px)': {
         width: '95%',
       },
     },
@@ -71,7 +71,7 @@ export const profileStyles = {
       alignSelf: 'flex-start',
       height: '40%',
       width: '95%',
-      '@media (max-width: 790px)': {
+      '@media (max-width: 1080px)': {
         flexDirection: 'column',
       },
     },
@@ -81,7 +81,7 @@ export const profileStyles = {
       justifyContent: 'space-evenly',
       gap: '5%',
       width: '95%',
-      '@media (max-width: 790px)': {
+      '@media (max-width: 1080px)': {
         flexDirection: 'column',
       },
     },
@@ -174,7 +174,7 @@ export const profileStyles = {
       my: 12,
       borderWidth: 30,
       minWidth: '10vw',
-      '@media (min-width: 700px)': {
+      '@media (min-width: 1080px)': {
         minWidth: '60vw',
       },
     },
