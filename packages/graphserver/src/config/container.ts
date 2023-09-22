@@ -1,17 +1,19 @@
 import {Database} from 'arangojs';
+// import fs from 'fs';
 import https from 'https';
 import {Container} from 'inversify';
 import {Client as MinioClient} from 'minio';
 
+// import path from 'path';
 import * as Controllers from '../controllers';
 import * as Services from '../services';
 import {config} from './config';
 
-const fs = require('fs');
-
 const agent = new https.Agent({
   rejectUnauthorized: false,
 });
+
+// const certPath = path.join(__dirname, '../assets/cluster-ca.crt');
 
 const container = new Container();
 
@@ -59,14 +61,7 @@ const minioContainer = container
       useSSL: config.minio.useSSL === 'true',
       accessKey: config.minio.accessKey!,
       secretKey: config.minio.secretKey!,
-      transportAgent: new https.Agent({
-        timeout: 10000,
-        ca: fs.readFileSync('path/to/ca.cert'),
-        cert: fs.readFileSync('path/to/public.cert'),
-        key: fs.readFileSync('path/to/secret.key'),
-        keepAlive: false,
-      }),
-      region: 'us-east-1',
+      region: 'us-central-1',
     }),
   );
 

@@ -2,21 +2,26 @@
 
 operator:
   ## Setup environment variables for the Operator
-  # env:
-  #   - name: MINIO_CONSOLE_TLS_ENABLE
-  #     value: "off"
-  #   - name: CLUSTER_DOMAIN
-  #     value: "cluster.domain"
-  #   - name: WATCHED_NAMESPACE
-  #     value: ""
-  #   - name: MINIO_OPERATOR_RUNTIME
-  #     value: "OpenShift"
+  #  env:
+  #    - name: MINIO_OPERATOR_DEPLOYMENT_NAME
+  #      valueFrom:
+  #        fieldRef:
+  #          fieldPath: metadata.labels['app.kubernetes.io/name']
+  #    - name: MINIO_CONSOLE_TLS_ENABLE
+  #      value: "off"
+  #    - name: CLUSTER_DOMAIN
+  #      value: "cluster.domain"
+  #    - name: WATCHED_NAMESPACE
+  #      value: ""
+  #    - name: MINIO_OPERATOR_RUNTIME
+  #      value: "OpenShift"
+  env: []
   #
   ### Image field:
   ## Image from tag (original behaviour), for example:
   # image:
   #   repository: quay.io/minio/operator
-  #   tag: v5.0.7
+  #   tag: v5.0.9
   #   pullPolicy: IfNotPresent
   ## Image from digest (added after original behaviour), for example:
   # image:
@@ -25,12 +30,11 @@ operator:
   #   pullPolicy: IfNotPresent
   image:
     repository: quay.io/minio/operator
-    tag: v5.0.7
+    tag: v5.0.9
     pullPolicy: IfNotPresent
-  imagePullSecrets: [ ]
+  imagePullSecrets: []
   runtimeClassName: ~
-  initContainers: [ ]
-  env: [ ]
+  initContainers: []
   replicaCount: 2
   securityContext:
     runAsUser: 1000
@@ -41,43 +45,46 @@ operator:
     runAsUser: 1000
     runAsGroup: 1000
     runAsNonRoot: true
-  volumes: [ ]
-  volumeMounts: [ ]
-  nodeSelector: { }
+  volumes: []
+  volumeMounts: []
+  nodeSelector: {}
   priorityClassName: ""
   affinity:
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-              - key: name
-                operator: In
-                values:
-                  - minio-operator
-          topologyKey: kubernetes.io/hostname
-  tolerations: [ ]
-  topologySpreadConstraints: [ ]
+      - labelSelector:
+          matchExpressions:
+          - key: name
+            operator: In
+            values:
+            - minio-operator
+        topologyKey: kubernetes.io/hostname
+  tolerations: []
+  topologySpreadConstraints: []
   resources:
     requests:
-      cpu: 200m
+      cpu: 100m
       memory: 256Mi
       ephemeral-storage: 500Mi
 
 console:
   image:
     repository: quay.io/minio/operator
-    tag: v5.0.7
+    tag: v5.0.9
     pullPolicy: IfNotPresent
-  env: [ ]
-  imagePullSecrets: [ ]
+  env: []
+  imagePullSecrets: []
   runtimeClassName: ~
-  initContainers: [ ]
+  initContainers: []
   replicaCount: 1
-  nodeSelector: { }
-  affinity: { }
-  tolerations: [ ]
-  topologySpreadConstraints: [ ]
-  resources: { }
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  topologySpreadConstraints: []
+  resources:
+    requests:
+      cpu: 0.25
+      memory: 512Mi
   securityContext:
     runAsUser: 1000
     runAsNonRoot: true
@@ -85,13 +92,13 @@ console:
     runAsUser: 1000
     runAsNonRoot: true
   ingress:
-    enabled: false
+    enabled: true
     ingressClassName: ""
-    labels: { }
-    annotations: { }
-    tls: [ ]
+    labels: {}
+    annotations: {}
+    tls: []
     host: console.local
     path: /
     pathType: Prefix
-  volumes: [ ]
-  volumeMounts: [ ]
+  volumes: []
+  volumeMounts: []

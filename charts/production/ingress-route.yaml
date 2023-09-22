@@ -32,12 +32,15 @@ spec:
       port: 1160
     middlewares:
     - name: "https-redirect"
+      # Adding a new rule for the API
+
+  # Adding a new rule for the minio
   - match: Host(`images.darta.art`) && PathPrefix(`/`)
     kind: Rule
     services:
     - name: minio
-      port: 443
-    middlewares:
-    - name: "https-redirect"
+      namespace: minio-tenant
+      port: 80
+
   tls:
     secretName: my-tls-secret

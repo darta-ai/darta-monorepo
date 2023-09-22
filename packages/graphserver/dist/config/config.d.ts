@@ -13,4 +13,4 @@ export declare const config: {
         secretKey: string | undefined;
     };
 };
-export declare const ADMIN_PASSWORD: string | undefined;
+export declare const ADMIN_PASSWORD: string | undefined, ENV: string | undefined;

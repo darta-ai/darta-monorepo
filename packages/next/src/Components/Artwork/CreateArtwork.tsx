@@ -15,7 +15,7 @@ import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {mediums} from '../../../data/medium';
-import {PRIMARY_BLUE} from '../../../styles';
+import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {
   createArtworkDimensionsToolTip,
   createArtworkToolTips,
@@ -261,6 +261,12 @@ export function CreateArtwork({
       .replaceAll('.', '');
     const slug = `${artist_name}-${artwork_title}`;
     setValue('slug.value', slug);
+    if (data.artworkPrice.value) {
+      setValue(
+        'artworkPrice.value',
+        data.artworkPrice.value.replace(/,/g, '').replace('$', ''),
+      );
+    }
 
     if (
       Number(data.artworkDimensions.depthIn.value) &&
@@ -500,7 +506,7 @@ export function CreateArtwork({
           }}>
           <Typography variant="h6">Pricing & Inquires</Typography>
           <Box sx={createArtworkStyles.multiLineContainer}>
-            <Box sx={{my: 2}}>
+            <Box sx={createArtworkStyles.inputText}>
               <DartaRadioButtonsGroup
                 toolTips={createArtworkToolTips}
                 fieldName="artworkCurrency"
@@ -518,39 +524,39 @@ export function CreateArtwork({
               />
             </Box>
           </Box>
-        </Box>
-        <Box key="price" sx={createArtworkStyles.multiLineContainer}>
-          <Box>
-            <DartaTextInput
-              fieldName="artworkPrice"
-              data={newArtwork?.artworkPrice?.value}
-              register={register}
-              errors={errors}
-              required={false}
-              control={control}
-              helperTextString={errors.artworkPrice?.value?.message}
-              inputAdornmentString="Price"
-              toolTips={createArtworkToolTips}
-              multiline={1}
-              allowPrivate={true}
-              inputAdornmentValue={displayCurrency as string}
-            />
-          </Box>
-          <Box key="canInquire">
-            <DartaRadioButtonsGroup
-              toolTips={createArtworkToolTips}
-              fieldName="canInquire"
-              inputAdornmentString="Users Can Inquire?"
-              control={control}
-              required={true}
-              helperTextString=""
-              errors={errors}
-              options={['Yes', 'No']}
-              setHigherLevelState={null}
-              value={
-                getValues('canInquire.value') || newArtwork?.canInquire?.value
-              }
-            />
+          <Box key="price" sx={createArtworkStyles.multiLineContainer}>
+            <Box sx={createArtworkStyles.inputText}>
+              <DartaTextInput
+                fieldName="artworkPrice"
+                data={newArtwork?.artworkPrice?.value}
+                register={register}
+                errors={errors}
+                required={false}
+                control={control}
+                helperTextString={errors.artworkPrice?.value?.message}
+                inputAdornmentString="Price"
+                toolTips={createArtworkToolTips}
+                multiline={1}
+                allowPrivate={true}
+                inputAdornmentValue={displayCurrency as string}
+              />
+            </Box>
+            <Box key="canInquire" sx={createArtworkStyles.inputText}>
+              <DartaRadioButtonsGroup
+                toolTips={createArtworkToolTips}
+                fieldName="canInquire"
+                inputAdornmentString="Users Can Inquire?"
+                control={control}
+                required={true}
+                helperTextString=""
+                errors={errors}
+                options={['Yes', 'No']}
+                setHigherLevelState={null}
+                value={
+                  getValues('canInquire.value') || newArtwork?.canInquire?.value
+                }
+              />
+            </Box>
           </Box>
         </Box>
         {errors?.canInquire && (
@@ -680,7 +686,7 @@ export function CreateArtwork({
             disabled={deleteSpinner}
             sx={{
               alignSelf: 'center',
-              width: '50vw',
+              width: '15vw',
               '@media (min-width: 800px)': {
                 width: '10vw',
               },
@@ -702,7 +708,7 @@ export function CreateArtwork({
             sx={{
               alignSelf: 'center',
               backgroundColor: PRIMARY_BLUE,
-              width: '50vw',
+              width: '30vw',
               '@media (min-width: 800px)': {
                 width: '10vw',
               },
@@ -711,7 +717,9 @@ export function CreateArtwork({
             {saveSpinner ? (
               <CircularProgress size={24} />
             ) : (
-              <Typography sx={{fontWeight: 'bold'}}>Save</Typography>
+              <Typography sx={{fontWeight: 'bold', color: PRIMARY_MILK}}>
+                Save
+              </Typography>
             )}
           </Button>
         </Box>

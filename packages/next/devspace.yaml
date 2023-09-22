@@ -70,16 +70,16 @@ deployments:
             traefik.ingress.kubernetes.io/router.entrypoints: web
             traefik.ingress.kubernetes.io/router.middlewares: redirect-https@kubernetescrd
             traefik.ingress.kubernetes.io/router.tls: "true"
-  traefik:
-    namespace: traefik
-    helm:
-      chart:
-        name: traefik
-        version: 23.2.0
-        repo: "https://helm.traefik.io/traefik"
-      values:
-        service:
-          type: LoadBalancer
+  # traefik:
+  #   namespace: traefik-v2
+  #   helm:
+  #     chart:
+  #       name: traefik
+  #       version: 23.2.0
+  #       repo: "https://helm.traefik.io/traefik"
+  #     values:
+  #       service:
+  #         type: LoadBalancer
 
   ingress:
     kubectl:

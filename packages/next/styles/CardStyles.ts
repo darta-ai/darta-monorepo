@@ -23,7 +23,7 @@ export const cardStyles = {
   },
   media: {
     minHeight: '15vh',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1080px)': {
       minHeight: '50vh',
     },
   },
@@ -56,7 +56,7 @@ export const cardStyles = {
     width: '95%',
     alignItems: 'center',
     backgroundColor: PRIMARY_MILK,
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1080px)': {
       flexDirection: 'row',
       width: '75vw',
       minHeight: '15vh',
@@ -67,7 +67,7 @@ export const cardStyles = {
     width: '70vw',
     textOverflow: 'ellipsis',
     textAlign: 'start',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1080px)': {
       width: '35vw',
     },
   },
@@ -75,7 +75,7 @@ export const cardStyles = {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1080px)': {
       flexDirection: 'column',
     },
   },

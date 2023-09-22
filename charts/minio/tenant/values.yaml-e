@@ -15,7 +15,7 @@ tenant:
   ## Option 1: Image from tag (original behaviour):
   # image:
   #    repository: quay.io/minio/minio
-  #    tag: RELEASE.2023-07-21T21-12-44Z
+  #    tag: RELEASE.2023-09-07T02-05-02Z
   #    pullPolicy: IfNotPresent
   ## Option 2: Image from digest (added after original):
   # image:
@@ -24,7 +24,7 @@ tenant:
   #    pullPolicy: IfNotPresent
   image:
     repository: quay.io/minio/minio
-    tag: RELEASE.2023-07-21T21-12-44Z
+    tag: RELEASE.2023-09-07T02-05-02Z
     pullPolicy: IfNotPresent
   ## Customize any private registry image pull secret.
   ## currently only one secret registry is supported
@@ -49,6 +49,10 @@ tenant:
       ## size specifies the capacity per volume
       size: 10Gi
       ## storageClass specifies the storage class name to be used for this pool
+      ### If using Amazon Elastic Block Store (EBS) CSI driver
+      ### Please make sure to set xfs for "csi.storage.k8s.io/fstype" parameter
+      ### under StorageClass.parameters.
+      ### Docs: https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/docs/parameters.md
       storageClassName: standard
       ## Used to specify annotations for pods
       annotations: { }
@@ -66,11 +70,15 @@ tenant:
       affinity: { }
       ## Configure resource requests and limits for MinIO containers
       resources: { }
-      ## Configure security context
+      ## Configure Pod's security context
+      ## We recommend to skip the recursive permission change by using
+      ## fsGroupChangePolicy as OnRootMismatch because it can be pretty
+      ## expensive for larger volumes with lots of small files.
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
         runAsNonRoot: true
       ## Configure container security context
       containerSecurityContext:
@@ -173,14 +181,14 @@ tenant:
   #  ## Image from tag (original behaviour), for example:
   #  # image:
   #  #   repository: quay.io/minio/kes
-  #  #   tag: 2023-07-26T11-13-07Z
+  #  #   tag: 2023-08-19T17-27-47Z
   #  ## Image from digest (added after original behaviour), for example:
   #  # image:
   #  #   repository: quay.io/minio/kes@sha256
   #  #   digest: fb15af611149892f357a8a99d1bcd8bf5dae713bd64c15e6eb27fbdb88fc208b
   #  image:
   #    repository: quay.io/minio/kes
-  #    tag: 2023-07-26T11-13-07Z
+  #    tag: 2023-08-19T17-27-47Z
   #    pullPolicy: IfNotPresent
   #  env: [ ]
   #  replicas: 2
@@ -280,3 +288,20 @@ ingress:
     host: minio-console.local
     path: /
     pathType: Prefix
+
+## Use an extraResources template section to include additional Kubernetes resources
+## with the Helm deployment.
+## Example: the following creates the config secret together with the tenant:
+#secrets:
+#  existingSecret: custom-env-configuration
+#extraResources:
+#  - |
+#    apiVersion: v1
+#    kind: Secret
+#    type: Opaque
+#    metadata:
+#      name: {{ dig "secrets" "existingSecret" "" (.Values | merge (dict)) }}
+#    stringData:
+#      config.env: |-
+#        export MINIO_ROOT_USER='minio'
+#        export MINIO_ROOT_PASSWORD='minio123'

@@ -43,6 +43,7 @@ const minio_1 = require("minio");
 const collections_1 = require("../config/collections");
 const templates_1 = require("../config/templates");
 const ImageController_1 = require("../controllers/ImageController");
+const filterOutPrivateRecords_1 = require("../middleware/filterOutPrivateRecords");
 const BUCKET_NAME = 'exhibitions';
 let ExhibitionService = exports.ExhibitionService = class ExhibitionService {
     constructor(db, edgeService, artworkService, minio, imageController, nodeService, galleryService) {
@@ -98,8 +99,16 @@ let ExhibitionService = exports.ExhibitionService = class ExhibitionService {
     }
     readExhibitionForUser({ exhibitionId, }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const fake = exhibitionId;
-            this.generateExhibitionId({ exhibitionId: fake });
+            const results = yield this.getExhibitionById({
+                exhibitionId,
+            });
+            if (!results) {
+                return;
+            }
+            const { artworks } = results, exhibition = __rest(results, ["artworks"]);
+            const cleanedExhibition = (0, filterOutPrivateRecords_1.filterOutPrivateRecordsSingleObject)(exhibition);
+            const cleanedArtworks = (0, filterOutPrivateRecords_1.filterOutPrivateRecordsMultiObject)(artworks);
+            return Object.assign(Object.assign({}, cleanedExhibition), { artworks: Object.assign({}, cleanedArtworks) });
         });
     }
     editExhibition({ exhibition, }) {
@@ -134,7 +143,8 @@ let ExhibitionService = exports.ExhibitionService = class ExhibitionService {
                     ({ bucketName, value } = artworkImageResults);
                 }
                 catch (error) {
-                    // console.error('error uploading image:', error);
+                    // eslint-disable-next-line no-console
+                    console.error('error uploading image:', error);
                 }
             }
             // #########################################################################

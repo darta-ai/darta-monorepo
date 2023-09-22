@@ -13,7 +13,7 @@ export const createArtworkStyles = {
     alignContent: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1280px)': {
       width: '95%',
       gap: '5vh',
     },
@@ -30,7 +30,7 @@ export const createArtworkStyles = {
     alignContent: 'center',
     alignItems: 'center',
     minWidth: '50%',
-    '@media (min-width: 700px)': {
+    '@media (min-width: 1280px)': {
       width: '100%',
       flexDirection: 'row',
     },
@@ -44,7 +44,7 @@ export const createArtworkStyles = {
     width: '90%',
     gap: '2rem',
     height: '100%',
-    '@media (min-width: 780px)': {
+    '@media (min-width: 1280px)': {
       maxWidth: '90%',
     },
   },
@@ -56,7 +56,7 @@ export const createArtworkStyles = {
     height: '100%',
     gap: '2rem',
     justifyContent: 'center',
-    '@media (min-width: 780px)': {
+    '@media (min-width: 1280px)': {
       maxWidth: '90%',
     },
   },
@@ -76,7 +76,7 @@ export const createArtworkStyles = {
     maxWidth: '85vw',
     gap: '1vh',
     minHeight: '100%',
-    '@media (min-width: 780px)': {
+    '@media (min-width: 1280px)': {
       minHeight: '35vh',
       maxWidth: '35vw',
     },
@@ -89,14 +89,14 @@ export const createArtworkStyles = {
     alignContent: 'center',
     maxWidth: '40vw',
     minHeight: '100%',
-    '@media (min-width: 780px)': {
+    '@media (min-width: 1280px)': {
       minHeight: '30vh',
     },
   },
   defaultImageEdit: {
     maxHeight: '40vh',
     maxWidth: '40vw',
-    '@media (min-width: 780px)': {
+    '@media (min-width: 1280px)': {
       maxHeight: '30vh',
     },
   },
@@ -142,7 +142,9 @@ export const createArtworkStyles = {
     height: '100%',
     width: '95%',
     gap: '5vh',
-    '@media (max-width: 780px)': {
+    mt: '1em',
+    '@media (max-width: 1280px)': {
+      gap: '3vh',
       flexDirection: 'column',
     },
   },

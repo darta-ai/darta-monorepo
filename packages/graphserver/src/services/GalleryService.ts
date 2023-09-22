@@ -67,8 +67,8 @@ export class GalleryService implements IGalleryService {
       const galleryId = await this.getGalleryIdFromUID({uid});
       const gallery = await this.readGalleryProfileFromGalleryId({galleryId});
       return gallery;
-    } catch (error) {
-      throw new Error('error reading profile');
+    } catch (error: any) {
+      throw new Error(error.message);
     }
   }
 
@@ -90,8 +90,8 @@ export class GalleryService implements IGalleryService {
     try {
       const cursor = await this.db.query(galleryQuery, {galleryId});
       gallery = await cursor.next(); // Get the first result
-    } catch (error) {
-      throw new Error('error in read gallery profile');
+    } catch (error: any) {
+      throw new Error(error.message);
     }
 
     let galleryLogo;
@@ -108,8 +108,10 @@ export class GalleryService implements IGalleryService {
           bucketName: galleryLogo?.bucketName,
           fileName: galleryLogo?.fileName,
         });
-      } catch (error) {
-        throw new Error('error retrieving url');
+      } catch (error: any) {
+        // eslint-disable-next-line no-console
+        console.log(error);
+        url = '';
       }
     }
     return {

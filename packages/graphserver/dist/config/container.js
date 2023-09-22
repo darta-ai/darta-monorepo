@@ -28,15 +28,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TYPES = exports.minioContainer = exports.container = exports.arangoContainer = void 0;
 const arangojs_1 = require("arangojs");
+// import fs from 'fs';
 const https_1 = __importDefault(require("https"));
 const inversify_1 = require("inversify");
 const minio_1 = require("minio");
+const path_1 = __importDefault(require("path"));
 const Controllers = __importStar(require("../controllers"));
 const Services = __importStar(require("../services"));
 const config_1 = require("./config");
 const agent = new https_1.default.Agent({
     rejectUnauthorized: false,
 });
+const certPath = path_1.default.join(__dirname, '../assets/cluster-ca.crt');
 const container = new inversify_1.Container();
 exports.container = container;
 const TYPES = {
@@ -80,7 +83,11 @@ const minioContainer = container
     useSSL: config_1.config.minio.useSSL === 'true',
     accessKey: config_1.config.minio.accessKey,
     secretKey: config_1.config.minio.secretKey,
-    region: 'us-east-1',
+    transportAgent: config_1.ENV === 'production'
+        ? new https_1.default.Agent({
+            ca: certPath,
+        })
+        : undefined,
 }));
 exports.minioContainer = minioContainer;
 // Bind services

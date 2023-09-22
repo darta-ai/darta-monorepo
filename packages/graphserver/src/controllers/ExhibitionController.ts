@@ -123,7 +123,7 @@ export class ExhibitionController {
       if (results) {
         res.send(true);
       } else {
-        throw new Error('unable to delete exhibition');
+        res.status(500).send('unable to delete exhibition');
       }
     } catch (error: any) {
       res.status(500).send(error.message);
@@ -152,7 +152,6 @@ export class ExhibitionController {
         throw new Error('unable to delete exhibition');
       }
     } catch (error: any) {
-      // console.log(error);
       res.status(500).send(error.message);
     }
   }
