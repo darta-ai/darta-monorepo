@@ -48,7 +48,6 @@ export class AdminService implements IAdminService {
       await this.minio.makeBucket(bucketName);
       return `added ${bucketName}`;
     } catch (error: any) {
-      console.log(error);
       throw new Error(`failed to add ${bucketName}: ${error.message}`);
     }
   }

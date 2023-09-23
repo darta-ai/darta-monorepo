@@ -27,7 +27,7 @@ import {
   ArtOnDisplay,
   CombinedInteractionButtons,
   GalleryViewOptions,
-} from '../../Components/Gallery/index';
+} from '../../Components/Darta/index';
 import {
   DEFAULT_Gallery_Image,
   duration,

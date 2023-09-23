@@ -1,11 +1,28 @@
-$RNFirebaseAsStaticFramework = true
+def append_header_search_path(target, path)
+  target.build_configurations.each do |config|
+      config.build_settings["HEADER_SEARCH_PATHS"] ||= "$(inherited) "
+      config.build_settings["HEADER_SEARCH_PATHS"] << path
+  end
+end
+
+
+$RNFirebaseAsStaticFramework = false
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec', :modular_headers => false
 
-
 platform :ios, '12.4'
 prepare_react_native_project!
+
+permissions_path = '../../../node_modules/react-native-permissions/ios'
+pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
+pod 'Permission-Calendars', :path => "#{permissions_path}/Calendars"
+pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts"
+pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways"
+pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse"
+pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
+pod 'Permission-PhotoLibraryAddOnly', :path => "#{permissions_path}/PhotoLibraryAddOnly"
+
 
 # If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
 # because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
@@ -24,7 +41,8 @@ if linkage != nil
   use_frameworks! :linkage => :static
 end
 
-target 'frontendV1' do
+
+target 'darta' do
   config = use_native_modules!
   use_frameworks! :linkage => :static
 
@@ -47,12 +65,21 @@ target 'frontendV1' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'frontendV1Tests' do
+  target 'dartaTests' do
     inherit! :complete
     # Pods for testing
   end
 
   post_install do |installer|
+    installer.pods_project.build_configurations.each do |config|
+      config.build_settings["CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES"] = true
+    end
+    installer.pods_project.targets.each do |target|
+      if ["React-utils-framework", "React-cxxreact-framework"].any? { |t| t == target.name }
+          append_header_search_path(target, "${PODS_ROOT}/../../node_modules/react-native/ReactCommon")
+        end
+    end
+    
     react_native_post_install(
       installer,
       # Set `mac_catalyst_enabled` to `true` in order to apply patches

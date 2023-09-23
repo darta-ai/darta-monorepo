@@ -212,7 +212,7 @@ const initialState: IState = {
   globalGallery: {},
   userArtworkRatings: {},
   isPortrait: true,
-  galleryTitle: 'd a r t a',
+  galleryTitle: 'darta',
   tombstoneTitle: 't o m b s t o n e',
   userSettings: fetchRawUserData(),
   artworkData: fetchRawArtworkData(),
@@ -227,7 +227,7 @@ const reducer = (state: IState, action: IAction): IState => {
     currentIndex = 0,
     loadedDGallery = [],
     artworkOnDisplayId = 'string',
-    galleryTitle = 'd a r t a',
+    galleryTitle = 'darta',
     tombstoneTitle = 't o m b s t o n e',
     userSettings = {
       profilePicture: 'https://i.imgur.com/5ABY3J8.jpg',

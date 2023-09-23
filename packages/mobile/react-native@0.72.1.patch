@@ -1,0 +1,212 @@
+diff --git a/Libraries/LinkingIOS/React-RCTLinking.podspec b/Libraries/LinkingIOS/React-RCTLinking.podspec
+index a0ccd2a0af9814f5c808b695ecbd2db89625cf2d..9c03c1343719f413bf42af63e40a7e71647d7760 100644
+--- a/Libraries/LinkingIOS/React-RCTLinking.podspec
++++ b/Libraries/LinkingIOS/React-RCTLinking.podspec
+@@ -28,7 +28,10 @@ header_search_paths = [
+ if ENV["USE_FRAMEWORKS"]
+   header_search_paths = header_search_paths.concat([
+     "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
+-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\""
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\"",
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers/build/generated/ios\"",
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers/build/generated/ios\"",
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\""
+   ])
+ end
+ 
+diff --git a/Libraries/Network/React-RCTNetwork.podspec b/Libraries/Network/React-RCTNetwork.podspec
+index 0e171e77153b5ebb1b3b227bd22983d97cab6a5e..05513c92aeb274da217eb91a8a8794a4d60cc903 100644
+--- a/Libraries/Network/React-RCTNetwork.podspec
++++ b/Libraries/Network/React-RCTNetwork.podspec
+@@ -28,7 +28,11 @@ header_search_paths = [
+ if ENV["USE_FRAMEWORKS"]
+   header_search_paths = header_search_paths.concat([
+     "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
+-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\""
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\"",
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers/build/generated/ios\"",
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers/build/generated/ios\"",
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\"",
++
+   ])
+ end
+ 
+diff --git a/Libraries/Settings/React-RCTSettings.podspec b/Libraries/Settings/React-RCTSettings.podspec
+index b8eee3e01ee1d13949a945c8bce7769f9320e4ee..aa6c9f4b660ff237cc276948269299c7986db27c 100644
+--- a/Libraries/Settings/React-RCTSettings.podspec
++++ b/Libraries/Settings/React-RCTSettings.podspec
+@@ -28,7 +28,10 @@ header_search_paths = [
+ if ENV["USE_FRAMEWORKS"]
+   header_search_paths = header_search_paths.concat([
+     "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
+-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\""
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\"",
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers/build/generated/ios\"",
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers/build/generated/ios\"",
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\"",
+   ])
+ end
+ 
+diff --git a/Libraries/Vibration/React-RCTVibration.podspec b/Libraries/Vibration/React-RCTVibration.podspec
+index 559cc9b5804c10517bf8a05f25c2d117ee87dc70..c0f2211c9616a26c3e850e683799414479407673 100644
+--- a/Libraries/Vibration/React-RCTVibration.podspec
++++ b/Libraries/Vibration/React-RCTVibration.podspec
+@@ -28,7 +28,9 @@ header_search_paths = [
+ if ENV["USE_FRAMEWORKS"]
+   header_search_paths = header_search_paths.concat([
+     "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
+-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\""
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\"",
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers/build/generated/ios\"",
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\""
+   ])
+ end
+ 
+diff --git a/ReactCommon/React-Fabric.podspec b/ReactCommon/React-Fabric.podspec
+index 0644c97ba22b5c74bf14e8e5efa0fc81227f78ae..1a8e4ebfa2ae7f818cb50c1874e655f07782ac36 100644
+--- a/ReactCommon/React-Fabric.podspec
++++ b/ReactCommon/React-Fabric.podspec
+@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
+                             "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
+ 
+   if ENV['USE_FRAMEWORKS']
+-    s.header_mappings_dir     = './'
++    s.header_mappings_dir     = File.absolute_path('./')
+     s.module_name             = 'React_Fabric'
+   end
+ 
+diff --git a/ReactCommon/React-rncore.podspec b/ReactCommon/React-rncore.podspec
+index a58fc56f2e0c4f254355df732e86d51b268fe02c..9ff023c47354516a0ece9e0ab64edb843f350319 100644
+--- a/ReactCommon/React-rncore.podspec
++++ b/ReactCommon/React-rncore.podspec
+@@ -26,6 +26,17 @@ react_native_dependency_path = ENV['REACT_NATIVE_PATH']
+ # Relative path to react native from current podspec
+ react_native_sources_path = '..'
+ 
++header_search_paths = [
++  "\"$(PODS_TARGET_SRCROOT)\"",
++  "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
++]
++
++if ENV["USE_FRAMEWORKS"]
++  header_search_paths = header_search_paths.concat([
++    "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
++  ])
++end
++
+ Pod::Spec.new do |s|
+   s.name                   = "React-rncore"
+   s.version                = version
+@@ -37,6 +48,7 @@ Pod::Spec.new do |s|
+   s.source                 = source
+   s.source_files           = "dummyFile.cpp"
+   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
++                            "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+                             "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
+ 
+ 
+diff --git a/ReactCommon/ReactCommon.podspec b/ReactCommon/ReactCommon.podspec
+index 2953f2d46dd0e599bbef79d5b5e8dd94f2e92242..8ae3b996510b4424189045352512f5baf4edd1ef 100644
+--- a/ReactCommon/ReactCommon.podspec
++++ b/ReactCommon/ReactCommon.podspec
+@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
+                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                                "GCC_WARN_PEDANTIC" => "YES" }
+   if ENV['USE_FRAMEWORKS']
+-    s.header_mappings_dir     = './'
++    s.header_mappings_dir     = File.absolute_path("./")
+   end
+ 
+   # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
+diff --git a/ReactCommon/react/debug/React-debug.podspec b/ReactCommon/react/debug/React-debug.podspec
+index dab4a31652edfa60e8d1828cb4c58a258e6296ba..8faf9c969933b02d0b4723d513fa7c394dcbec6c 100644
+--- a/ReactCommon/react/debug/React-debug.podspec
++++ b/ReactCommon/react/debug/React-debug.podspec
+@@ -31,6 +31,8 @@ Pod::Spec.new do |s|
+ 
+   if ENV['USE_FRAMEWORKS']
+     s.module_name            = "React_debug"
+-    s.header_mappings_dir  = "../.."
++    s.header_mappings_dir  = File.absolute_path("../..")
++    
+   end
++  
+ end
+diff --git a/ReactCommon/react/nativemodule/core/platform/ios/React-NativeModulesApple.podspec b/ReactCommon/react/nativemodule/core/platform/ios/React-NativeModulesApple.podspec
+index bf36f7347f432df8d9b7aa7296f72a49bdd7170a..7821feca178c6c0e329ee6ad26506bc0b830e0da 100644
+--- a/ReactCommon/react/nativemodule/core/platform/ios/React-NativeModulesApple.podspec
++++ b/ReactCommon/react/nativemodule/core/platform/ios/React-NativeModulesApple.podspec
+@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
+                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                                 "GCC_WARN_PEDANTIC" => "YES" }
+     if ENV['USE_FRAMEWORKS']
+-        s.header_mappings_dir     = './'
++        s.header_mappings_dir     = File.absolute_path('./')
+     end
+ 
+     s.source_files = "ReactCommon/**/*.{mm,cpp,h}"
+diff --git a/ReactCommon/react/nativemodule/samples/ReactCommon-Samples.podspec b/ReactCommon/react/nativemodule/samples/ReactCommon-Samples.podspec
+index a9a362f0c65160e107f35ae407664855b21a4e2f..c72d72761223280b38fcfd254afa6c8c741dd6c9 100644
+--- a/ReactCommon/react/nativemodule/samples/ReactCommon-Samples.podspec
++++ b/ReactCommon/react/nativemodule/samples/ReactCommon-Samples.podspec
+@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
+                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                                "GCC_WARN_PEDANTIC" => "YES" }
+   if ENV['USE_FRAMEWORKS']
+-    s.header_mappings_dir     = './'
++    s.header_mappings_dir     = File.absolute_path('./')
+   end
+ 
+ 
+diff --git a/ReactCommon/react/renderer/graphics/React-graphics.podspec b/ReactCommon/react/renderer/graphics/React-graphics.podspec
+index 19cc4ea84a7acf2138bdcead89d7c3c16c7e3642..433e20d325a5017709656015800f63acfe6c9e3d 100644
+--- a/ReactCommon/react/renderer/graphics/React-graphics.podspec
++++ b/ReactCommon/react/renderer/graphics/React-graphics.podspec
+@@ -45,7 +45,7 @@ Pod::Spec.new do |s|
+ 
+   if ENV['USE_FRAMEWORKS']
+     s.module_name            = "React_graphics"
+-    s.header_mappings_dir  = "../../.."
++    s.header_mappings_dir  =  File.absolute_path("../../..")
+     header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
+   end
+ 
+diff --git a/ReactCommon/react/renderer/imagemanager/platform/ios/React-ImageManager.podspec b/ReactCommon/react/renderer/imagemanager/platform/ios/React-ImageManager.podspec
+index b9c34a94346f323d703a6e24e5eba9a23c8944ee..1606c5ed23bcab08613c4fa3eba1215b892b3e39 100644
+--- a/ReactCommon/react/renderer/imagemanager/platform/ios/React-ImageManager.podspec
++++ b/ReactCommon/react/renderer/imagemanager/platform/ios/React-ImageManager.podspec
+@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
+ 
+   if ENV['USE_FRAMEWORKS']
+     s.module_name            = "React_ImageManager"
+-    s.header_mappings_dir  = "./"
++    s.header_mappings_dir  = File.absolute_path("./")
+     header_search_paths = header_search_paths + [
+       "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
+       "\"$(PODS_ROOT)/DoubleConversion\"",
+diff --git a/ReactCommon/react/renderer/runtimescheduler/React-runtimescheduler.podspec b/ReactCommon/react/renderer/runtimescheduler/React-runtimescheduler.podspec
+index 14c9ed0daa0825aba9703a778ee17a2e7a75d556..69012ed6eda94ffa08f7b916e54310c8fa9e34e5 100644
+--- a/ReactCommon/react/renderer/runtimescheduler/React-runtimescheduler.podspec
++++ b/ReactCommon/react/renderer/runtimescheduler/React-runtimescheduler.podspec
+@@ -47,7 +47,7 @@ Pod::Spec.new do |s|
+ 
+   if ENV['USE_FRAMEWORKS']
+     s.module_name            = "React_runtimescheduler"
+-    s.header_mappings_dir  = "../../.."
++    s.header_mappings_dir  = File.absolute_path("../../..")
+   end
+ 
+   s.dependency "React-jsi"
+diff --git a/ReactCommon/react/utils/React-utils.podspec b/ReactCommon/react/utils/React-utils.podspec
+index d262c55924105281d5e329e6339db70b55a95acb..29da22ad00da7812beb661cd7b53705e72936a18 100644
+--- a/ReactCommon/react/utils/React-utils.podspec
++++ b/ReactCommon/react/utils/React-utils.podspec
+@@ -48,7 +48,7 @@ Pod::Spec.new do |s|
+ 
+   if ENV['USE_FRAMEWORKS']
+     s.module_name            = "React_utils"
+-    s.header_mappings_dir  = "../.."
++    s.header_mappings_dir  = File.absolute_path("../..")
+   end
+ 
+   s.dependency "RCT-Folly", folly_version
