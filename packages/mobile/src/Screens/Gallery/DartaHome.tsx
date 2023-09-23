@@ -7,7 +7,7 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../assets/styles';
 import {getImages, imagePrefetch} from '../../../functions/galleryFunctions';
 import {DataT} from '../../../types';
-import {GalleryPreview} from '../../Components/Gallery';
+import {GalleryPreview} from '../../Components/Darta';
 import {GlobalText} from '../../GlobalElements/index';
 import {days, DEFAULT_Gallery_Image, today} from '../../globalVariables';
 import {

@@ -2,12 +2,12 @@ import React, {useContext} from 'react';
 
 import {UserStack} from '../../App';
 import {MILK} from '../../assets/styles';
-import {headerOptions} from '../../screens/styles';
 import {UserHome} from '../Screens/User';
 import {UserInquiredArtwork} from '../Screens/User/UserInquiredArtwork';
 import {UserSavedArtwork} from '../Screens/User/UserSavedArtwork';
 import {UserSettings} from '../Screens/User/UserSettings';
 import {StoreContext} from '../State/Store';
+import {headerOptions} from '../styles';
 import {SavedArtworkNavigatorModal} from './Modals/SavedArtworkNavigatorModal';
 import {createOpeningTransition} from './NavigationStyling/openingTransition';
 import {UserRoutesEnum} from './Routes/userRoutes.d';

@@ -1,5 +1,7 @@
 import {StyleSheet} from 'react-native';
 
+import {PRIMARY_BLUE, PRIMARY_LIGHTBLUE, PRIMARY_MILK} from '../assets/styles';
+
 const baseText = {fontFamily: 'Avenir Next'};
 
 export const globalTextStyles = StyleSheet.create({
@@ -27,3 +29,35 @@ export const globalTextStyles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export const headerOptions = {
+  headerTitle: 'darta',
+  headerTitleStyle: {
+    fontFamily: 'Nunito Sans',
+    fontSize: 18,
+    color: PRIMARY_MILK,
+  },
+  headerBackTitleStyle: {
+    fontFamily: 'Nunito Sans',
+    fontSize: 15,
+  },
+  headerStyle: {
+    backgroundColor: PRIMARY_BLUE,
+  },
+};
+
+export const footerOptions = {
+  headerTitle: 'darta',
+  tabBarLabelStyle: {
+    fontFamily: 'Nunito Sans',
+    fontSize: 15,
+    color: PRIMARY_MILK,
+  },
+  tabBarStyle: {
+    backgroundColor: PRIMARY_BLUE,
+  },
+};
+export const footerColors = {
+  focused: PRIMARY_MILK,
+  notFocused: PRIMARY_LIGHTBLUE,
+};

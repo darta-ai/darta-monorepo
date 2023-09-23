@@ -3,8 +3,8 @@
     "baseUrl": ".",
     "allowSyntheticDefaultImports": true,
     "target": "es6",
-    // "preserveSymlinks": true,
     "allowJs": true,
+    "outDir": "./dist",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {

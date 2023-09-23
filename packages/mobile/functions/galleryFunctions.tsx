@@ -31,8 +31,7 @@ export const getImages = async (docIds: string[]) => {
             }
           }
         })
-        .catch((e: Error) => {
-          console.log('!!!! error', {e});
+        .catch(() => {
           throw new Error(`No image exists for id ${docID}`);
         });
       return artwork as DataT;

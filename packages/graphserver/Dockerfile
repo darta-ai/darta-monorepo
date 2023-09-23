@@ -1,5 +1,5 @@
 # Use the official Node.js image
-FROM node:20 AS base
+FROM node:20-slim AS base
 
 ARG ARANGO_URL\
     ARANGO_USER \
