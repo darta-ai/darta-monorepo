@@ -21,7 +21,7 @@
   "extends": [
     "plugin:react/recommended",
     "airbnb",
-    "@react-native-community",
+    "@react-native",
     "prettier"
     // "plugin:@next/next/recommended"
   ],

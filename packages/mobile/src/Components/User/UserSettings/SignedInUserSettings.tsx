@@ -1,7 +1,7 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {Animated, Image, ScrollView, StyleSheet, View} from 'react-native';
-import {launchImageLibrary} from 'react-native-image-picker';
+// import {launchImageLibrary} from 'react-native-image-picker';
 import {Button, IconButton, TextInput} from 'react-native-paper';
 import {
   heightPercentageToDP as hp,
@@ -173,12 +173,12 @@ export function UserSettingsSignedIn() {
             [formName]: {isEditing: true},
           });
           handleShrinkElements();
-          await launchImageLibrary({mediaType: 'photo'}, response => {
-            if (response?.assets) {
-              const results = response.assets[0];
-              setTempImage({uri: results.uri, type: results.type});
-            }
-          });
+          // await launchImageLibrary({mediaType: 'photo'}, response => {
+          //   if (response?.assets) {
+          //     const results = response.assets[0];
+          //     setTempImage({uri: results.uri, type: results.type});
+          //   }
+          // });
         } else {
           setFormData({
             ...formData,

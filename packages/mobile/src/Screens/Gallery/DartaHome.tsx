@@ -5,8 +5,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../assets/styles';
-import {getImages, imagePrefetch} from '../../../functions/galleryFunctions';
-import {DataT} from '../../../types';
+import {imagePrefetch} from '../../../functions/galleryFunctions';
 import {GalleryPreview} from '../../Components/Darta';
 import {GlobalText} from '../../GlobalElements/index';
 import {days, DEFAULT_Gallery_Image, today} from '../../globalVariables';
@@ -74,7 +73,6 @@ export function DartaHome({
 
   const showGallery = async (galleryId: string): Promise<void> => {
     const gallery = state.globalGallery[galleryId];
-    let fullImages: DataT[];
     dispatch({
       type: ETypes.setGalleryId,
       galleryId,
@@ -86,10 +84,10 @@ export function DartaHome({
     if (!gallery?.fullDGallery) {
       updateLoadingStatus(galleryId, true);
       try {
-        fullImages = await getImages(gallery.artworkIds);
+        // fullImages = await getImages(gallery.artworkIds);
         dispatch({
           type: ETypes.loadArt,
-          loadedDGallery: fullImages,
+          loadedDGallery: [],
           galleryId,
         });
         dispatch({

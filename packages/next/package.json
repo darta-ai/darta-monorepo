@@ -44,7 +44,6 @@
     "react-hook-form": "^7.43.9",
     "react-joyride": "^2.5.4",
     "react-number-format": "^5.2.2",
-    "sharp": "^0.32.4",
     "xlsx": "^0.18.5",
     "yup": "^1.1.1"
   },
