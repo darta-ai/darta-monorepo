@@ -5,7 +5,6 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import {getImages} from '../../../functions/galleryFunctions';
 import {GlobalText} from '../../GlobalElements';
 import {UserRoutesEnum} from '../../Navigators/Routes/userRoutes.d';
 import {ETypes, StoreContext} from '../../State/Store';
@@ -41,7 +40,6 @@ export function UserPersonalWorkSelector({
     });
 
   const navigateToSaved = async () => {
-    let fullImages;
     setShowActivityIndicator({
       ...showActivityIndicator,
       [UserScreenSelectorEnum.savedArtwork]: true,
@@ -51,10 +49,9 @@ export function UserPersonalWorkSelector({
       !state.artworkData.savedArtwork?.fullDGallery
     ) {
       try {
-        fullImages = await getImages(state.artworkData.savedArtwork.artworkIds);
         dispatch({
           type: ETypes.loadArt,
-          loadedDGallery: fullImages,
+          loadedDGallery: [],
           galleryId: UserScreenSelectorEnum.savedArtwork,
         });
       } catch (e) {
@@ -70,7 +67,6 @@ export function UserPersonalWorkSelector({
   };
 
   const navigateToInquired = async () => {
-    let fullImages;
     setShowActivityIndicator({
       ...showActivityIndicator,
       [UserScreenSelectorEnum.inquiredArtwork]: true,
@@ -80,12 +76,12 @@ export function UserPersonalWorkSelector({
       !state.artworkData?.inquiredArtwork?.fullDGallery
     ) {
       try {
-        fullImages = await getImages(
-          state.artworkData.inquiredArtwork.artworkIds,
-        );
+        // fullImages = await getImages(
+        //   state.artworkData.inquiredArtwork.artworkIds,
+        // );
         dispatch({
           type: ETypes.loadArt,
-          loadedDGallery: fullImages,
+          loadedDGallery: [],
           galleryId: 'inquiredArtwork',
         });
       } catch (e) {

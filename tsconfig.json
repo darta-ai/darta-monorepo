@@ -8,7 +8,8 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@/darta-types": ["./packages/darta-types/src/*"]
+      "@/darta-types": ["./packages/darta-types/src/*"],
+      "@/darta-styles": ["./packages/darta-styles/src/*"]
   },
     "noEmit": false,
     "esModuleInterop": true,

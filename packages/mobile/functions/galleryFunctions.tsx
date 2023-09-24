@@ -1,8 +1,6 @@
 import {Image} from 'react-native';
 
-import {ImageCollection} from '../firebase/hooks';
 import {buttonSizes} from '../src/globalVariables';
-import {DataT} from '../types';
 
 export const imagePrefetch = async (imageUrls: string[]) => {
   const imagePrefetchResults: boolean[] = await Promise.all(
@@ -16,30 +14,30 @@ export const imagePrefetch = async (imageUrls: string[]) => {
   return imagePrefetchResults;
 };
 
-export const getImages = async (docIds: string[]) => {
-  const imageIds: string[] = [];
-  const results: DataT[] = await Promise.all(
-    docIds.map(async (docID: string): Promise<DataT> => {
-      let artwork: DataT | undefined;
-      await ImageCollection.doc(docID)
-        .get()
-        .then((value: any) => {
-          if (value.exists) {
-            ({artwork} = value.data());
-            if (artwork) {
-              imageIds.push(artwork.image);
-            }
-          }
-        })
-        .catch(() => {
-          throw new Error(`No image exists for id ${docID}`);
-        });
-      return artwork as DataT;
-    }),
-  );
-  await imagePrefetch(imageIds);
-  return results.reduce((a, v) => ({...a, [v.id]: v}), {});
-};
+// export const getImages = async (docIds: string[]) => {
+//   const imageIds: string[] = [];
+//   const results: DataT[] = await Promise.all(
+//     docIds.map(async (docID: string): Promise<DataT> => {
+//       let artwork: DataT | undefined;
+//       await ImageCollection.doc(docID)
+//         .get()
+//         .then((value: any) => {
+//           if (value.exists) {
+//             ({artwork} = value.data());
+//             if (artwork) {
+//               imageIds.push(artwork.image);
+//             }
+//           }
+//         })
+//         .catch(() => {
+//           throw new Error(`No image exists for id ${docID}`);
+//         });
+//       return artwork as DataT;
+//     }),
+//   );
+//   await imagePrefetch(imageIds);
+//   return results.reduce((a, v) => ({...a, [v.id]: v}), {});
+// };
 
 export const getButtonSizes = (hp: number) => {
   const baseHeight = 926;

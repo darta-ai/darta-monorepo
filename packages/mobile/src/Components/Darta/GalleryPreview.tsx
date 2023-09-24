@@ -20,6 +20,7 @@ import {galleryPreviewStyles} from '../../Screens/Gallery/galleryStyles';
 import {globalTextStyles} from '../../styles';
 
 const galleryWallRaw = DEFAULT_Gallery_Image;
+
 export function GalleryPreview({
   body,
   preview,
