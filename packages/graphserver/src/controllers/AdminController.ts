@@ -18,7 +18,6 @@ export class AdminController {
       await this.service.validateAndCreateCollectionsAndEdges();
       res.status(200);
     } catch (error: any) {
-      // console.log(error);
       res.status(500).send(error.message);
     }
   }

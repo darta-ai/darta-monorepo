@@ -4,7 +4,7 @@ import {Alert, StyleSheet, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-import {PRIMARY_BLUE, PRIMARY_MILK} from '@darta/styles';
+import {PRIMARY_BLUE, PRIMARY_MILK} from '@darta-styles';
 import {imagePrefetch} from '../utils/functions';
 import {GalleryPreview} from '../components/Previews/GalleryPreview';
 import {TextElement} from '../components/Elements/_index';

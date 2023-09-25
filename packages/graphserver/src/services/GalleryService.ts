@@ -4,7 +4,7 @@ import {
   GalleryBase,
   IGalleryProfileData,
   Images,
-} from '@darta/types';
+} from '@darta-types';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 

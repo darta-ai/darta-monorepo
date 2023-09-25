@@ -1,4 +1,4 @@
-import {Artwork} from '@darta/types';
+import {Artwork} from '@darta-types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
@@ -338,16 +338,23 @@ export function CreateArtwork({
   };
 
   const exhibitionId = newArtwork?.exhibitionId;
-  let isInExhibition = false;
 
-  if (exhibitionId) {
-    const exhibition = state.galleryExhibitions?.[exhibitionId];
-    const artworkId = newArtwork?.artworkId;
+  const isInExhibitionRef = React.useRef<boolean>(false);
 
-    if (exhibition?.artworks && artworkId) {
-      isInExhibition = Boolean(exhibition.artworks[artworkId]);
+  React.useEffect(() => {
+    if (exhibitionId) {
+      const exhibition = state.galleryExhibitions?.[exhibitionId];
+      const artworkId = newArtwork?.artworkId;
+
+      if (exhibition?.artworks && artworkId) {
+        isInExhibitionRef.current = Boolean(exhibition.artworks[artworkId]);
+      }
+      if (exhibition?.exhibitionArtist && exhibition.exhibitionArtist.value) {
+        setValue('artistName.value', exhibition.exhibitionArtist.value);
+      }
     }
-  }
+  }, []);
+  const isInExhibition = isInExhibitionRef.current;
 
   return (
     <Box mb={2} sx={profileStyles.container}>

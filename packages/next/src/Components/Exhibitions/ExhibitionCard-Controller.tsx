@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Artwork, Exhibition} from '@darta/types';
+import {Artwork, Exhibition} from '@darta-types';
 import {
   Box,
   Button,
@@ -424,6 +424,17 @@ export function ExhibitionCard({
                 data-testid="artwork-card-exhibition-title">
                 {exhibition?.exhibitionTitle?.value}
               </Typography>
+              {exhibition.exhibitionArtist?.value && (
+                <Typography variant="h6" color="textSecondary">
+                  {exhibition.exhibitionArtist?.value}
+                </Typography>
+              )}
+              <Typography
+                paragraph
+                data-testid="artwork-card-exhibition-location-string"
+                color="textSecondary">
+                {exhibition?.exhibitionLocation?.locationString?.value}
+              </Typography>
               {exhibition?.exhibitionDates?.exhibitionStartDate?.value &&
                 exhibition?.exhibitionDates?.exhibitionEndDate?.value && (
                   <Typography
@@ -439,12 +450,6 @@ export function ExhibitionCard({
                     ).format('MM/DD/YYYY')}
                   </Typography>
                 )}
-              <Typography
-                paragraph
-                data-testid="artwork-card-exhibition-location-string"
-                color="textSecondary">
-                {exhibition?.exhibitionLocation?.locationString?.value}
-              </Typography>
             </CardContent>
           </Box>
           <Box sx={cardStyles.informationContainer}>

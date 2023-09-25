@@ -1,4 +1,4 @@
-import {Exhibition} from '@darta/types';
+import {Exhibition} from '@darta-types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {Box, Button, CircularProgress, Typography} from '@mui/material';
@@ -44,6 +44,9 @@ const createExhibitionSchema = yup
     exhibitionTitle: yup.object().shape({
       value: yup.string().required(createExhibitionErrors.exhibitionTitle),
     }),
+    exhibitionType: yup
+      .object()
+      .shape({value: yup.string().required('Show type is required.')}),
     exhibitionPrimaryImage: yup.object().shape({
       value: yup
         .string()
@@ -226,6 +229,10 @@ export function CreateExhibition({
     );
     const slug = `${galleryNameHashified}-${exhibitionNameHashified}`;
     setValue('slug.value', slug);
+    setValue(
+      'exhibitionArtist.value',
+      data?.exhibitionArtist?.value.toUpperCase(),
+    );
     try {
       saveExhibition(data);
     } catch (error) {
@@ -286,6 +293,19 @@ export function CreateExhibition({
         setIsOngoingExhibition(false);
         break;
       default:
+        break;
+    }
+  };
+
+  const [showArtistField, setShowArtist] = React.useState<boolean>(false);
+
+  const handleExhibitionArtist = (arg0: string) => {
+    switch (arg0) {
+      case 'Solo Show':
+        setShowArtist(true);
+        break;
+      default:
+        setShowArtist(false);
         break;
     }
   };
@@ -424,6 +444,57 @@ export function CreateExhibition({
             inputAdornmentValue={null}
           />
         </Box>
+        <Box sx={createArtworkStyles.multiLineContainer}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              alignContent: 'center',
+            }}>
+            <DartaRadioButtonsGroup
+              toolTips={exhibitionPressReleaseToolTip}
+              fieldName="exhibitionType"
+              inputAdornmentString="Show Type"
+              control={control}
+              required={true}
+              options={['Solo Show', 'Group Show']}
+              setHigherLevelState={handleExhibitionArtist}
+              helperTextString=""
+              errors={errors}
+              value={
+                getValues('exhibitionType.value') ||
+                newExhibition?.exhibitionType?.value
+              }
+            />
+          </Box>
+        </Box>
+        {errors.exhibitionType?.value && (
+          <Typography
+            data-testid="artwork-image-error"
+            sx={{color: 'red', alignSelf: 'center', textAlign: 'center'}}>
+            {errors.exhibitionType?.value.message!}
+          </Typography>
+        )}
+        {showArtistField && (
+          <Box key="exhibitionArtist" sx={createArtworkStyles.inputText}>
+            <DartaTextInput
+              fieldName="exhibitionArtist"
+              data={newExhibition.exhibitionArtist?.value as any}
+              register={register}
+              control={control}
+              errors={errors}
+              required={true}
+              helperTextString={errors.exhibitionArtist?.value?.message}
+              inputAdornmentString="Artist"
+              toolTips={exhibitionPressReleaseToolTip}
+              multiline={1}
+              allowPrivate={false}
+              inputAdornmentValue={null}
+            />
+          </Box>
+        )}
         <Box key="exhibitionPressRelease" sx={createArtworkStyles.inputText}>
           <DartaTextInput
             fieldName="exhibitionPressRelease"

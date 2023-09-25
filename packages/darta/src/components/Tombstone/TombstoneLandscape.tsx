@@ -7,7 +7,7 @@ import {
 } from 'react-native-responsive-screen';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
-import {Artwork} from '@darta/types';
+import {Artwork} from '@darta-types';
 import {TextElement} from '../Elements/_index';
 import {icons} from '../../utils/constants';
 import {globalTextStyles} from '../../styles/styles';

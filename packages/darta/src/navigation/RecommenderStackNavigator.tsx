@@ -1,13 +1,13 @@
 import React, {useContext, useEffect} from 'react';
 
 import {RecommenderStack} from '../../App';
-import {DartaGalleryView} from '../Screens/Gallery/DartaGalleryView';
+import {DartaRecommenderView} from '../screens/DartaRecommenderView';
 import {RecommenderHomeScreen} from '../screens/_index';
 import {TombstonePortrait} from '../components/Tombstone/TombstonePortrait';
 import {ETypes, StoreContext} from '../state/Store';
 import {headerOptions} from '../styles/styles';
 import {createOpeningTransition} from '../utils/openingTransition';
-import {GalleryNavigatorEnum} from '../typing/routes';
+import {GalleryNavigatorEnum} from '../typing/routes'
 
 export function RecommenderStackNavigator() {
   const openingTransition = createOpeningTransition();
@@ -29,7 +29,7 @@ export function RecommenderStackNavigator() {
         />
         <RecommenderStack.Screen
           name={GalleryNavigatorEnum.gallery}
-          component={DartaGalleryView}
+          component={DartaRecommenderView}
           options={{
             ...headerOptions,
             ...openingTransition,

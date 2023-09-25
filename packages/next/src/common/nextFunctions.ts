@@ -1,4 +1,4 @@
-import {Artwork, Dimensions} from '@darta/types';
+import {Artwork, Dimensions} from '@darta-types';
 
 function fractionToDecimal(str: string) {
   if (!str) return null;

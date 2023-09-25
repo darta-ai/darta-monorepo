@@ -1,4 +1,4 @@
-import {Artwork, CurrencyConverterType, Exhibition} from '@darta/types';
+import {Artwork, CurrencyConverterType, Exhibition} from '@darta-types';
 
 export const newArtworkShell: Artwork = {
   exhibitionId: '',

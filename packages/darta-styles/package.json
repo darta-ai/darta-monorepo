@@ -1,5 +1,5 @@
 {
-  "name": "@darta/styles",
+  "name": "@darta-styles",
   "version": "1.0.1",
   "description": "darta global styles package",
   "main": "dist/styles.js",

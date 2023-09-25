@@ -160,6 +160,10 @@ export type Exhibition = {
   pressReleaseImages?: PublicFields[] | undefined[];
   exhibitionImages?: PublicFields[] | undefined[];
   exhibitionOrder?: string[];
+  exhibitionType?: {value: 'Group Show' | 'Solo Show'};
+  exhibitionArtist?: {
+    value: string;
+  };
   artworks?: {
     [key: string]: Artwork;
   };

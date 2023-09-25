@@ -1,4 +1,4 @@
-import * as Colors from '@darta/styles';
+import * as Colors from '@darta-styles';
 
 import {Dimensions, StyleSheet} from 'react-native';
 import {
@@ -6,6 +6,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 const baseText = {fontFamily: 'Avenir Next'};
+
 export const DIMENSION_WIDTH = Dimensions.get('window').width;
 export const DIMENSION_HEIGHT = Dimensions.get('window').height;
 
@@ -38,12 +39,12 @@ export const globalTextStyles = StyleSheet.create({
 export const headerOptions = {
   headerTitle: 'darta',
   headerTitleStyle: {
-    fontFamily: 'Nunito Sans',
+    fontFamily: 'Avenir Next',
     fontSize: 18,
     color: Colors.PRIMARY_MILK,
   },
   headerBackTitleStyle: {
-    fontFamily: 'Nunito Sans',
+    fontFamily: 'Avenir Next',
     fontSize: 15,
   },
   headerStyle: {
@@ -54,7 +55,7 @@ export const headerOptions = {
 export const footerOptions = {
   headerTitle: 'darta',
   tabBarLabelStyle: {
-    fontFamily: 'Nunito Sans',
+    fontFamily: 'Avenir Next',
     fontSize: 15,
     color: Colors.PRIMARY_MILK,
   },
@@ -474,3 +475,14 @@ export const viewOptionsStyles = StyleSheet.create({
     opacity: 0.9,
   },
 });
+
+
+
+export const SSDartaHome = StyleSheet.create({
+    container: {
+      backgroundColor: Colors.PRIMARY_MILK,
+      height: hp('85%'),
+      flexDirection: 'column',
+      justifyContent: 'space-evenly',
+    },
+  });

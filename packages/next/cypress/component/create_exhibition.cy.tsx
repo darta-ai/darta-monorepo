@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import {Exhibition} from '@darta/types';
+import {Exhibition} from '@darta-types';
 import React from 'react';
 
 import {newExhibitionShell} from '../../src/common/templates';

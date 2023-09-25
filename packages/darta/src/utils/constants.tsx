@@ -2,6 +2,8 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import {Platform} from 'react-native';
+import StaticSafeAreaInsets from 'react-native-static-safe-area-insets';
 
 import {GalleryLandingPage, Icons} from '../typing/types';
 
@@ -17,6 +19,9 @@ export const galleryDimensionsLandscape = {
 
 export const DEFAULT_Gallery_Image =
   'https://lh3.googleusercontent.com/pw/AMWts8A127Q1kjVXhb88Fmm8APNKph27xdQ_chFVbh42T5PClwoMztq0EIj6fMpBoAAgM9TfjIQPCrfbYOqFTLqE8XhmLWhbLEWyq1vy77WqexLXo7Ehq2mhfpXZ3L3OKQra96wrOju1sj8chqzAY3-qr_QDTA=w1778-h998-s-no';
+
+export const CONTENT_SPACING = 15;
+
 
 export const icons: Icons = {
   back: 'arrow-left',

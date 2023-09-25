@@ -1,21 +1,18 @@
+import {MILK} from '@darta-styles';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import React, {useContext} from 'react';
-import {Alert, View} from 'react-native';
-
+import {Alert} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import {MILK} from '@darta/styles';
+import {StoreContext} from '../../state/Store';
 import {SavedArtworkDisplay} from '../Artwork/SavedArtworkDisplay';
 import {TombstonePortrait} from '../Tombstone/_index';
-import {StoreContext} from '../../state/Store';
-
 
 export function ArtworkNavigatorModal({route}: {route: any}) {
   const {artOnDisplay} = route.params;
-
 
   const {state} = useContext(StoreContext);
 
@@ -24,10 +21,6 @@ export function ArtworkNavigatorModal({route}: {route: any}) {
       {
         text: `Email: ${state.userSettings.email}`,
         onPress: () => console.log('Ask me later pressed'),
-      },
-      {
-        text: `Text: ${state.userSettings.phone}`,
-        onPress: () => console.log('Cancel Pressed'),
       },
       {
         text: 'Cancel',

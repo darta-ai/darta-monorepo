@@ -2,7 +2,7 @@ import {
   BusinessAddressType,
   IGalleryProfileData,
   PrivateFields,
-} from '@darta/types';
+} from '@darta-types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {Box, Button, Typography} from '@mui/material';

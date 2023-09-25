@@ -1,4 +1,4 @@
-import {GalleryState} from '@darta/types';
+import {GalleryState} from '@darta-types';
 
 import {listArtworksByGalleryAPI} from './artworks/artworkRoutes';
 import {listExhibitionsByGalleryAPI} from './exhibitions/exhibitionRotes';

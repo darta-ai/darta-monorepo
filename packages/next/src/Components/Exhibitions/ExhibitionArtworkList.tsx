@@ -1,4 +1,4 @@
-import {Artwork} from '@darta/types';
+import {Artwork} from '@darta-types';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import {

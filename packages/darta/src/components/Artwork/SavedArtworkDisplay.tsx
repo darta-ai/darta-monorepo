@@ -1,3 +1,7 @@
+import {MILK, PRIMARY_DARK_RED} from '@darta-styles';
+import {Artwork} from '@darta-types';
+// import {OrientationLocker, PORTRAIT} from 'react-native-orientation-locker';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import React, {useContext, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
@@ -6,21 +10,19 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {OrientationLocker, PORTRAIT} from 'react-native-orientation-locker';
 import {Button} from 'react-native-paper';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import {MILK, PRIMARY_DARK_RED} from '@darta/styles';
+import {ETypes, StoreContext} from '../../state/Store';
+import {UserRoutesEnum} from '../../typing/routes';
 import {
   DEFAULT_Gallery_Image,
   galleryDimensionsLandscape,
   icons,
 } from '../../utils/constants';
-import {UserRoutesEnum} from '../../typing/routes';
-import {ETypes, StoreContext} from '../../state/Store';
 import {SavedArtOnDisplay} from './SavedArtOnDisplay';
 
 const galleryWallRaw = DEFAULT_Gallery_Image;
@@ -32,7 +34,7 @@ export function SavedArtworkDisplay({
   route: any;
   navigation: any;
 }) {
-  const {artOnDisplay} = route.params;
+  const {artOnDisplay}: {artOnDisplay: Artwork} = route.params;
 
   const {state, dispatch} = useContext(StoreContext);
 
@@ -59,6 +61,20 @@ export function SavedArtworkDisplay({
     });
     navigation.navigate(UserRoutesEnum.userSavedArtwork);
   };
+
+  useEffect(() => {
+    // Lock the screen orientation when the component mounts
+    async function lockScreenOrientation() {
+      await ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.PORTRAIT_UP,
+      );
+    }
+    lockScreenOrientation();
+
+    return () => {
+      ScreenOrientation.unlockAsync();
+    };
+  }, []);
 
   const confirmUnsaveAlert = () =>
     Alert.alert('Are you sure?', `You may never see this work again`, [
@@ -114,7 +130,6 @@ export function SavedArtworkDisplay({
 
   return (
     <View style={SSDartaGalleryView.container}>
-      <OrientationLocker orientation={PORTRAIT} />
       <View
         style={[
           backgroundContainerDimensionsPixels,
@@ -128,13 +143,13 @@ export function SavedArtworkDisplay({
           />
         ) : (
           <SavedArtOnDisplay
-            artImage={artOnDisplay?.image}
+            artImage={artOnDisplay?.artworkImage.value ?? ''}
             backgroundImage={backgroundImage}
             backgroundImageDimensionsPixels={
               backgroundContainerDimensionsPixels
             }
             currentZoomScale={currentZoomScale}
-            dimensionsInches={artOnDisplay?.dimensionsInches}
+            artworkDimensions={artOnDisplay?.artworkDimensions}
             isPortrait={state.isPortrait}
             wallHeight={wallHeight}
             setCurrentZoomScale={setCurrentZoomScale}

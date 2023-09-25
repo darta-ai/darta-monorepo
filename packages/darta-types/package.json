@@ -1,5 +1,5 @@
 {
-  "name": "@darta/types",
+  "name": "@darta-types",
   "version": "1.0.2",
   "description": "darta global types package",
   "main": "dist/index.js",

@@ -18,9 +18,7 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 
-// Use turborepo to restore the cache when possible
-config.cacheStores = [
-  new FileStore({ root: path.join(projectRoot, 'node_modules', '.cache', 'metro') }),
-];
+// 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
+config.resolver.disableHierarchicalLookup = true;
 
 module.exports = config;

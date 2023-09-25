@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, {createContext, ReactNode, useReducer} from 'react';
 
-import {DataT, RatingEnum} from '../typing/types.d';
+import {RatingEnum} from '../typing/types';
 import {
   days,
   image1Preview,
@@ -11,6 +11,7 @@ import {
   images3,
   today,
 } from '../utils/constants';
+import {Artwork, Exhibition} from '@darta-types'
 
 export interface IUserArtworkRatings {
   [id: string]: {
@@ -24,9 +25,9 @@ export interface IUserArtworkRatings {
 export type PatUserData = {
   profilePicture: string;
   userName: string;
-  legalName: string;
+  legalFirstName: string;
+  legalLastName: string;
   email: string;
-  phone: string;
   uniqueId?: string;
 };
 
@@ -34,9 +35,9 @@ const rawDataUserData: PatUserData = {
   profilePicture:
     'https://www.shutterstock.com/image-photo/closeup-photo-amazing-short-hairdo-260nw-1617540484.jpg',
   userName: 'user name 10000',
-  legalName: 'firstName lastName',
+  legalFirstName: 'firstName lastName',
+  legalLastName: 'lastName',
   email: 'email@gmail.com',
-  phone: '(123) 123-4567',
 };
 
 // here is the test.
@@ -159,6 +160,11 @@ export interface IState {
   userSettings: PatUserData;
   artworkData: PatArtworkData;
   savedArtwork?: GalleryData;
+  // don't know what's going on up there. 
+
+  exhibitionData?: {
+    [key: string] : Exhibition
+  }
 }
 
 export enum ETypes {
@@ -174,6 +180,9 @@ export enum ETypes {
   setTombstone = 'SET_TOMBSTONE',
   setUserSettings = 'SET_USER_SETTINGS',
   setSaveArtwork = 'SET_UNSAVE',
+
+  // look at above in future
+  saveExhibition = 'SAVE_EXHIBITION',
 }
 
 // Define the action type
@@ -189,7 +198,7 @@ interface IAction {
   artworkOnDisplayId?: string;
 
   // for LOAD
-  loadedDGallery?: DataT[];
+  loadedDGallery?: Artwork[];
 
   // for title
   galleryTitle?: string;
@@ -201,8 +210,11 @@ interface IAction {
   userSettings?: PatUserData;
 
   // for saving artwork
-  artOnDisplay?: DataT;
+  artOnDisplay?: Artwork;
   saveWork?: boolean;
+
+  
+  exhibitionData?: Exhibition;
 }
 
 // Define the initial state
@@ -217,11 +229,13 @@ const initialState: IState = {
   userSettings: {
     profilePicture: "",
     userName: "userName",
-    legalName: "legalName", 
+    legalFirstName: "legalName", 
+    legalLastName: "legalName",
     email: "email", 
-    phone: "phone",
   },
   artworkData: fetchRawArtworkData(),
+
+  exhibitionData : {}
 };
 
 // Define the reducer function
@@ -404,6 +418,17 @@ const reducer = (state: IState, action: IAction): IState => {
       }
     case ETypes.setTombstone:
       return state
+
+      // starting over here
+
+    case ETypes.saveExhibition:
+      if(!action.exhibitionData || !action.exhibitionData.exhibitionId){
+        return state
+      }
+      return {
+        ...state,
+        [action.exhibitionData.exhibitionId]: action.exhibitionData
+      }
     default:
       return state;
   }

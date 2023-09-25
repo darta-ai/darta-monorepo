@@ -99,7 +99,7 @@ export function GalleryPreview({
             contentContainerStyle={{
               alignItems: 'center',
               height: maxDimension,
-              columnGap: wp('10%'),
+              // columnGap: wp('10%'),
             }}
             horizontal
             renderItem={({item}) => (
@@ -111,7 +111,7 @@ export function GalleryPreview({
                     style={{
                       alignItems: 'center',
                       height: maxDimension,
-                      columnGap: wp('15%'),
+                      // columnGap: wp('15%'),
                       alignSelf: 'center',
                     }}
                   />

@@ -44,7 +44,8 @@ export const profileStyles = {
       },
     },
     image: {
-      width: `100%`,
+      width: '100%',
+      maxHeight: '30vh',
       height: 'unset',
       alignSelf: 'center',
     },

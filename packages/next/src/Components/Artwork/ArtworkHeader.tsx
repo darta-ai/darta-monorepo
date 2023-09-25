@@ -1,4 +1,4 @@
-import {Artwork} from '@darta/types';
+import {Artwork} from '@darta-types';
 import {Box, Button, CircularProgress, Typography} from '@mui/material';
 import React from 'react';
 
@@ -53,7 +53,7 @@ export function ArtworkHeader({
             <CircularProgress size={24} />
           ) : (
             <Typography sx={{fontWeight: 'bold', fontSize: '0.8rem'}}>
-              Create Artwork
+              Add Artwork
             </Typography>
           )}
         </Button>

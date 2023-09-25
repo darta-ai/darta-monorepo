@@ -6,7 +6,6 @@
   ],
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "ios": "lerna --scope=mobile run ios --stream --",
     "clean": "rm -rf ./packages/mobile/node_modules rm -rf ./packages/darta/node_modules rm -rf ./packages/next/node_modules rm -rf ./packages/graphserver/node_modules rm -rf ./node_modules rm-rf pnpm-lock.yaml"
   },
   "pnpm": {
@@ -22,13 +21,13 @@
   "devDependencies": {
     "eslint-config-prettier": "9.0.0",
     "eslint-plugin-simple-import-sort": "10.0.0",
-    "lerna": "^3.21.0",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.6"
   },
   "dependencies": {
     "node-libs-react-native": "^1.2.1",
-    "watchman": "^1.0.0"
+    "watchman": "^1.0.0",
+    "uuid": "3.4.0"
   }
 }
