@@ -1,4 +1,4 @@
-import {Artwork, Exhibition, IBusinessLocationData} from '@darta/types';
+import {Artwork, Exhibition, IBusinessLocationData} from '@darta-types';
 
 export interface IExhibitionService {
   createExhibition({

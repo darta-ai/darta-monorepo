@@ -1,16 +1,16 @@
+import {MILK} from '@darta-styles';
 import React, {useContext} from 'react';
 
 import {UserStack} from '../../App';
-import {MILK} from '@darta/styles';
-import {UserHome} from '../Screens/User';
-import {UserInquiredArtwork} from '../Screens/User/UserInquiredArtwork';
-import {UserSavedArtwork} from '../Screens/User/UserSavedArtwork';
-import {UserSettings} from '../Screens/User/UserSettings';
+import {ArtworkNavigatorModal} from '../components/Modal/ArtworkNavigatorModal';
+import {UserHome} from '../screens/UserHome';
+import {UserInquiredArtwork} from '../components/User/UserInquiredArtwork';
+import {UserSavedArtwork} from '../components/User/UserSavedArtwork';
+import {UserSettings} from '../components/User/UserSettings';
 import {StoreContext} from '../state/Store';
 import {headerOptions} from '../styles/styles';
-import {SavedArtworkNavigatorModal} from './Modals/SavedArtworkNavigatorModal';
-import {createOpeningTransition} from './NavigationStyling/openingTransition';
-import {UserRoutesEnum} from './Routes/userRoutes.d';
+import {UserRoutesEnum} from '../typing/routes';
+import {createOpeningTransition} from '../utils/openingTransition';
 
 export function UserStackNavigator() {
   const {state} = useContext(StoreContext);
@@ -76,7 +76,7 @@ export function UserStackNavigator() {
       <UserStack.Group screenOptions={{presentation: 'modal'}}>
         <UserStack.Screen
           name={UserRoutesEnum.SavedArtworkModal}
-          component={SavedArtworkNavigatorModal}
+          component={ArtworkNavigatorModal}
           options={{...headerOptions, headerTitle: state.tombstoneTitle}}
         />
       </UserStack.Group>

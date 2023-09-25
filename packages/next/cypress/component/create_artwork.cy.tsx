@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import {Artwork} from '@darta/types';
+import {Artwork} from '@darta-types';
 import React from 'react';
 
 import {newArtworkShell} from '../../src/common/templates';

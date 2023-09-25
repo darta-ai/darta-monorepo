@@ -67,18 +67,21 @@ export class ExhibitionController {
     }
   }
 
-  // TO-DO!!!
-  @httpGet('/readForUser', verifyToken)
+  @httpGet('/readForUser')
   public async readCollectionForGallery(
     @request() req: Request,
     @response() res: Response,
   ): Promise<void> {
-    // const {user} = req as any;
+    if (!req.query.exhibitionId) {
+      res.status(400).send("exhibitionId query parameter is required");
+      return;
+  }
     try {
-      await this.galleryService.checkDuplicateGalleries({
-        userEmail: 'fake',
+      const exhibitionId = <string>req.query.exhibitionId;
+      const results = await this.exhibitionService.readExhibitionForUser({
+        exhibitionId,
       });
-      res.json(null);
+      res.json(results);
     } catch (error: any) {
       res.status(500).send(error.message);
     }

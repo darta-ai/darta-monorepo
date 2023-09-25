@@ -6,7 +6,7 @@
       }
       // "alias": {
       //   "map": [
-      //     ["@darta/types", "packages/darta-types/dist/*"]
+      //     ["@darta-types", "packages/darta-types/dist/*"]
       //   ],
       //   "extensions": [".ts", ".js", ".jsx", ".tsx"]
       // }
@@ -53,7 +53,7 @@
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-shadow": 1,
     "no-shadow": "off",
-    "import/no-unresolved": [2, { "ignore": ["@darta/types"] }],
+    "import/no-unresolved": [2, { "ignore": ["@darta-types"] }],
     "import/extensions": [
       "error",
       "ignorePackages",

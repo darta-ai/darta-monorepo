@@ -2,7 +2,7 @@ import {
   BusinessAddressType,
   IBusinessLocationData,
   IGalleryProfileData,
-} from '@darta/types';
+} from '@darta-types';
 import {Box, Button, Divider} from '@mui/material';
 import {debounce} from '@mui/material/utils';
 import React from 'react';

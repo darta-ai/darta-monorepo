@@ -1,4 +1,4 @@
-import {IGalleryProfileData} from '@darta/types';
+import {IGalleryProfileData} from '@darta-types';
 
 import {Gallery} from '../../models/GalleryModel';
 import {Node} from '../../models/models';

@@ -1,4 +1,4 @@
-import {Artwork, Exhibition, IBusinessLocationData, Images} from '@darta/types';
+import {Artwork, Exhibition, IBusinessLocationData, Images} from '@darta-types';
 import {Database} from 'arangojs';
 import {Edge} from 'arangojs/documents';
 import {inject, injectable} from 'inversify';
@@ -63,6 +63,7 @@ export class ExhibitionService implements IExhibitionService {
           ...exhibition,
           _key: exhibition?.exhibitionId,
           value: exhibition?.slug?.value,
+          galleryId,
         },
       });
       newExhibition = await ExhibitionCursor.next();
@@ -75,7 +76,7 @@ export class ExhibitionService implements IExhibitionService {
         edgeName: EdgeNames.FROMGalleryTOExhibition,
         from: `${galleryId}`,
         to: newExhibition._id,
-        data: {value: 'created'},
+        data: {value: 'created', createdAt: exhibition.createdAt},
       });
     } catch (error: any) {
       throw new Error(

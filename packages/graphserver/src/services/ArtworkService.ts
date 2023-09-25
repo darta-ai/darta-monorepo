@@ -1,4 +1,4 @@
-import {Artwork, Dimensions, Images} from '@darta/types';
+import {Artwork, Dimensions, Images} from '@darta-types';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 import _ from 'lodash';
@@ -62,7 +62,7 @@ export class ArtworkService implements IArtworkService {
 
     try {
       const createArtworkCursor = await this.db.query(artworkQuery, {
-        newArtwork: {...artwork, _key: artwork.artworkId},
+        newArtwork: {...artwork, _key: artwork.artworkId, galleryId},
       });
       newArtwork = await createArtworkCursor.next();
     } catch (error: any) {

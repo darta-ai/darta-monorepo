@@ -1,6 +1,6 @@
 import 'firebase/compat/auth';
 
-import {Exhibition, GalleryState} from '@darta/types';
+import {Exhibition, GalleryState} from '@darta-types';
 import {Box, Button, Typography} from '@mui/material';
 import Head from 'next/head';
 import React from 'react';

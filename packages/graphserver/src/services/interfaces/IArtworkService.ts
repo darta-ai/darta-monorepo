@@ -1,4 +1,4 @@
-import {Artwork, Dimensions, IGalleryProfileData} from '@darta/types';
+import {Artwork, Dimensions, IGalleryProfileData} from '@darta-types';
 
 import {ArtworkNode} from '../../models/models';
 

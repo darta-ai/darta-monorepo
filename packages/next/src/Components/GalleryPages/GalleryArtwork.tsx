@@ -1,6 +1,6 @@
 import 'firebase/compat/auth';
 
-import {Artwork} from '@darta/types';
+import {Artwork} from '@darta-types';
 import {Box, Button, Typography} from '@mui/material';
 import Head from 'next/head';
 import React from 'react';
@@ -340,9 +340,7 @@ export function GalleryArtwork() {
                   color: PRIMARY_MILK,
                   alignSelf: 'center',
                 }}>
-                <Typography sx={{fontWeight: 'bold'}}>
-                  Create Artwork
-                </Typography>
+                <Typography sx={{fontWeight: 'bold'}}>Add Artwork</Typography>
               </Button>
               <UploadArtworksXlsModal handleBatchUpload={handleBatchUpload} />
             </Box>

@@ -9,15 +9,17 @@ import {
 } from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-import {Artwork} from '@darta/types';
+import {Artwork} from '@darta-types';
 import {galleryStyles} from '../../styles/styles';
 
+
+// This is pretty useless. Just re-doing ArtOnWall.tsx
 export function SavedArtOnDisplay({
   artImage,
   backgroundImage,
   backgroundImageDimensionsPixels,
   currentZoomScale,
-  dimensionsInches,
+  artworkDimensions,
   isPortrait,
   wallHeight,
   setCurrentZoomScale,
@@ -26,7 +28,7 @@ export function SavedArtOnDisplay({
   backgroundImage: ImageSourcePropType;
   backgroundImageDimensionsPixels: any;
   currentZoomScale: number;
-  dimensionsInches: Artwork['artworkDimensions'] | undefined;
+  artworkDimensions: Artwork['artworkDimensions'] | undefined;
   isPortrait: boolean;
   wallHeight: number;
   setCurrentZoomScale: (arg0: number) => void;
@@ -49,9 +51,9 @@ export function SavedArtOnDisplay({
   let artImageLocation;
   let artHeightPixels = 0;
   let artWidthPixels = 0;
-  if (dimensionsInches && dimensionsInches.heightIn.value && dimensionsInches.widthIn.value) {
-    artHeightInches = parseInt(dimensionsInches.heightIn.value, 10);
-    artWidthInches = parseInt(dimensionsInches.widthIn.value, 10);
+  if (artworkDimensions && artworkDimensions.heightIn.value && artworkDimensions.widthIn.value) {
+    artHeightInches = parseInt(artworkDimensions.heightIn.value, 10);
+    artWidthInches = parseInt(artworkDimensions.widthIn.value, 10);
 
     const pixelsPerInchHeight =
       backgroundImageDimensionsPixels.height / backgroundHeightInches;

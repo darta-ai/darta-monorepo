@@ -1,4 +1,4 @@
-import {IGalleryProfileData} from '@darta/types';
+import {IGalleryProfileData} from '@darta-types';
 import {Box, Button, Divider, Typography} from '@mui/material';
 import Image from 'next/image';
 import React from 'react';

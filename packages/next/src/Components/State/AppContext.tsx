@@ -5,7 +5,7 @@ import {
   ExhibitionObject,
   GalleryState,
   IGalleryProfileData,
-} from '@darta/types';
+} from '@darta-types';
 import {User} from 'firebase/auth';
 import _ from 'lodash';
 import React, {createContext, ReactNode, useContext, useReducer} from 'react';

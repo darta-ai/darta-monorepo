@@ -1,6 +1,6 @@
 import 'firebase/compat/auth';
 
-import {ArtworkObject, IGalleryProfileData} from '@darta/types';
+import {ArtworkObject, IGalleryProfileData} from '@darta-types';
 import {Box} from '@mui/material';
 import React from 'react';
 

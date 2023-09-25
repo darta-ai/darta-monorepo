@@ -1,4 +1,4 @@
-import {ArtworkObject, Exhibition, IGalleryProfileData} from '@darta/types';
+import {ArtworkObject, Exhibition, IGalleryProfileData} from '@darta-types';
 
 export const galleryProfileRawData: IGalleryProfileData = {
   galleryName: {value: 'Pat Kirts Gallery 2000'},
