@@ -1,4 +1,4 @@
-import {Artwork, Exhibition, IBusinessLocationData, Images} from '@darta-types';
+import {Artwork, Exhibition, ExhibitionObject, IBusinessLocationData, Images} from '@darta-types';
 import {Database} from 'arangojs';
 import {Edge} from 'arangojs/documents';
 import {inject, injectable} from 'inversify';
@@ -95,7 +95,7 @@ export class ExhibitionService implements IExhibitionService {
     return await this.getExhibitionById({exhibitionId});
   }
 
-  public async readExhibitionForUser({
+  public async readGalleryExhibitionForUser({
     exhibitionId,
   }: {
     exhibitionId: string;
@@ -230,6 +230,48 @@ export class ExhibitionService implements IExhibitionService {
     };
   }
 
+  public async getExhibitionPreviewById({
+    exhibitionId,
+  }: {
+    exhibitionId: string;
+  }): Promise<Exhibition | void> {
+    const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+
+    const exhibitionQuery = `
+      LET exhibition = DOCUMENT(@fullExhibitionId)
+      RETURN {
+        exhibitionTitle: exhibition.exhibitionTitle,
+        exhibitionPrimaryImage: exhibition.exhibitionPrimaryImage,
+        exhibitionLocation: exhibition.exhibitionLocation,
+        exhibitionArtist: exhibition.exhibitionArtist,
+        exhibitionId: exhibition.exhibitionId,
+        exhibitionDates: exhibition.exhibitionDates,
+        createdAt: exhibition.createdAt,
+      }      
+      `;
+
+    // LOL terrible as
+    let exhibition: Exhibition = {} as Exhibition;
+    try {
+      const cursor = await this.db.query(exhibitionQuery, {fullExhibitionId});
+      exhibition = await cursor.next();
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+
+    const exhibitionArtworks = await this.listAllExhibitionArtworks({
+      exhibitionId,
+    });
+
+    return {
+      ...exhibition,
+      artworks: {
+        ...exhibitionArtworks,
+      },
+    };
+  }
+
+
   public async listExhibitionForGallery({
     galleryId,
   }: {
@@ -259,6 +301,106 @@ export class ExhibitionService implements IExhibitionService {
       throw new Error(error.message);
     }
   }
+
+  public async listGalleryExhibitionsForUser({
+    galleryId,
+  }: {
+    galleryId: string;
+  }): Promise<ExhibitionObject | void>{
+    const getExhibitionsQuery = `
+    WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}
+    FOR exhibition IN OUTBOUND @galleryId ${EdgeNames.FROMGalleryTOExhibition}
+    RETURN exhibition._id      
+  `;
+
+  try {
+    const edgeCursor = await this.db.query(getExhibitionsQuery, {galleryId});
+    const exhibitionIds = (await edgeCursor.all()).filter(el => el);
+
+    const galleryOwnedArtworkPromises = exhibitionIds.map(
+      async (exhibitionId: string) => {
+        const results = await this.getExhibitionById({exhibitionId});
+        return filterOutPrivateRecordsMultiObject(results)
+      },
+    );
+
+    const galleryExhibitions = await Promise.all(galleryOwnedArtworkPromises);
+    const galleryExhibitionsObject = galleryExhibitions.reduce((acc, obj) => acc[obj.exhibitionId as string] = obj, {})
+    if (galleryExhibitions) {
+      return galleryExhibitionsObject as ExhibitionObject;
+    }
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+  }
+
+
+  public async listGalleryExhibitionPreviewsForUser({
+    galleryId,
+  }: {
+    galleryId: string;
+  }): Promise<ExhibitionObject | void> {
+    const getExhibitionsQuery = `
+    WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}
+    FOR exhibition IN OUTBOUND @galleryId ${EdgeNames.FROMGalleryTOExhibition}
+    RETURN exhibition._id      
+  `;
+
+  try {
+    const edgeCursor = await this.db.query(getExhibitionsQuery, {galleryId});
+    const exhibitionIds = (await edgeCursor.all()).filter(el => el);
+
+    const galleryOwnedArtworkPromises = exhibitionIds.map(
+      async (exhibitionId: string) => {
+        const results = await this.getExhibitionPreviewById({exhibitionId});
+        return filterOutPrivateRecordsMultiObject(results)
+      },
+    );
+
+    const galleryExhibitions = await Promise.all(galleryOwnedArtworkPromises);
+    const galleryExhibitionsObject = galleryExhibitions.reduce((acc, obj) =>{ 
+      acc[obj.exhibitionId as string] = obj 
+      return acc}, 
+      {})
+    if (galleryExhibitions) {
+      return galleryExhibitionsObject;
+    }
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+    
+
+  }
+
+
+  // TO-DO
+  public async listAllExhibitionsForUser(): Promise<Exhibition[] | void>{
+    const getExhibitionsQuery = `
+    WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}
+    FOR exhibition IN OUTBOUND @galleryId ${EdgeNames.FROMGalleryTOExhibition}
+    RETURN exhibition._id      
+  `;
+
+  try {
+    const edgeCursor = await this.db.query(getExhibitionsQuery);
+    const exhibitionIds = (await edgeCursor.all()).filter(el => el);
+
+    const galleryOwnedArtworkPromises = exhibitionIds.map(
+      async (exhibitionId: string) => {
+        const results = await this.getExhibitionById({exhibitionId});
+        return filterOutPrivateRecordsMultiObject(results)
+      },
+    );
+
+    const galleryExhibitions = await Promise.all(galleryOwnedArtworkPromises);
+    if (galleryExhibitions) {
+      return galleryExhibitions as Exhibition[];
+    }
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+  }
+
 
   public async deleteExhibition({
     exhibitionId,

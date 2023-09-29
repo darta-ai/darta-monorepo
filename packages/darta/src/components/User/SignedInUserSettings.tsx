@@ -10,7 +10,7 @@ import {
 
 import {
   MILK,
-  PRIMARY_BLUE,
+  PRIMARY_600,
   PRIMARY_DARK_GREY,
   PRIMARY_DARK_RED,
   PRIMARY_MILK,
@@ -295,7 +295,7 @@ export function UserSettingsSignedIn() {
                       label="user name"
                       testID="userNameInput"
                       mode="outlined"
-                      activeOutlineColor={PRIMARY_BLUE}
+                      activeOutlineColor={PRIMARY_600}
                       theme={{
                         fonts: {default: {fontFamily: 'AvenirNext-Bold'}},
                       }}
@@ -357,7 +357,7 @@ export function UserSettingsSignedIn() {
                       label="full name"
                       mode="outlined"
                       autoComplete="name"
-                      activeOutlineColor={PRIMARY_BLUE}
+                      activeOutlineColor={PRIMARY_600}
                       style={{
                         backgroundColor: PRIMARY_MILK,
                         fontFamily: 'AvenirNext-Bold',
@@ -415,7 +415,7 @@ export function UserSettingsSignedIn() {
                       testID="emailInput"
                       mode="outlined"
                       autoComplete="email"
-                      activeOutlineColor={PRIMARY_BLUE}
+                      activeOutlineColor={PRIMARY_600}
                       style={{
                         backgroundColor: PRIMARY_MILK,
                         fontFamily: 'AvenirNext-Bold',
@@ -469,7 +469,7 @@ export function UserSettingsSignedIn() {
                       testID="phoneInput"
                       mode="outlined"
                       autoComplete="tel"
-                      activeOutlineColor={PRIMARY_BLUE}
+                      activeOutlineColor={PRIMARY_600}
                       style={{
                         backgroundColor: PRIMARY_MILK,
                         fontFamily: 'AvenirNext-Bold',
@@ -506,7 +506,7 @@ export function UserSettingsSignedIn() {
           <Button
             icon={icons.saveSettings}
             mode="contained"
-            buttonColor={PRIMARY_BLUE}
+            buttonColor={PRIMARY_600}
             textColor={MILK}
             style={{
               width: wp('80%'),

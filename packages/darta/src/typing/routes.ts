@@ -44,10 +44,11 @@ export type UserRouteStackParamList = {
 
 export enum ExhibitionRootEnum {
   exhibitionHome = 'EXHIBITION_HOME',
-  exhibitionDetails = 'EXHIBITION_DETAILS',
-  artworkList = 'ARTWORK_LIST',
-  artwork = 'ARTWORK',
-  galleryProfile = 'GALLERY_PROFILE',
+  exhibitionDetails = 'exhibition',
+  artworkList = 'artwork',
+  individualArtwork = 'individualArtwork',
+  exhibitionGallery = 'gallery',
+  TopTab = 'EXHIBITION_TOP_TAB',
 }
 
  // TO-DO
@@ -55,11 +56,12 @@ export type ExhibitionNavigatorParamList = {
   [ExhibitionRootEnum.exhibitionHome]: undefined;
   [ExhibitionRootEnum.exhibitionDetails]: {exhibition: Exhibition};
   [ExhibitionRootEnum.artworkList]: {artworkList : Exhibition["artworks"]};
-  [ExhibitionRootEnum.artwork]: {
-    artwork: Artwork | undefined;
-  };
-  [ExhibitionRootEnum.galleryProfile]: {
+  [ExhibitionRootEnum.exhibitionGallery]: {
     gallery: IGalleryProfileData | undefined
   };
+  [ExhibitionRootEnum.TopTab]: {
+    galleryId: string,
+    exhibitionId: string,
+  }
   
 }

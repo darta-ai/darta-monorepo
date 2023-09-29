@@ -17,6 +17,11 @@ export interface IGalleryService {
   }: {
     galleryId: string;
   }): Promise<Gallery | null>;
+  readGalleryProfileFromGalleryIdForUser({
+    galleryId,
+  }: {
+    galleryId: string;
+  }): Promise<Gallery | null>;
   editGalleryProfile({
     user,
     data,

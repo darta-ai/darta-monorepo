@@ -2,14 +2,15 @@ import {Box, Typography} from '@mui/material';
 import Link from 'next/link';
 import React from 'react';
 
-import {PRIMARY_BLUE, PRIMARY_LIGHTBLUE, PRIMARY_MILK} from '../../../styles';
+import { PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_400, PRIMARY_200} from '@darta-styles'
 
 const styles = {
   footerBox: {
     width: '100%',
     height: '5vh',
     zIndex: 1,
-    backgroundColor: PRIMARY_BLUE,
+    backgroundColor: PRIMARY_400,
     '@media (min-width:800px)': {
       width: '100%',
     },
@@ -37,7 +38,7 @@ const styles = {
       fontSize: '0.9rem',
     },
     '&:hover': {
-      color: PRIMARY_LIGHTBLUE,
+      color: PRIMARY_200,
       opacity: [0.9, 0.9, 0.9],
     },
   },

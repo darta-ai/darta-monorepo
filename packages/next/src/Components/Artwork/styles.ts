@@ -1,4 +1,5 @@
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_600} from '@darta-styles'
 
 export const createArtworkStyles = {
   container: {
@@ -19,7 +20,7 @@ export const createArtworkStyles = {
     },
   },
   backButton: {
-    color: PRIMARY_BLUE,
+    color: PRIMARY_600,
     alignSelf: 'flex-start',
     m: 2,
   },

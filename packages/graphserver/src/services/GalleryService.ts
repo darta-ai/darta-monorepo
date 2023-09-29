@@ -13,6 +13,7 @@ import {ImageController} from '../controllers/ImageController';
 import {City, Gallery} from '../models/GalleryModel';
 import {Node} from '../models/models';
 import {IEdgeService, IGalleryService, INodeService} from './interfaces';
+import { filterOutPrivateRecordsMultiObject } from 'src/middleware/filterOutPrivateRecords';
 
 const BUCKET_NAME = 'logo';
 
@@ -121,6 +122,14 @@ export class GalleryService implements IGalleryService {
         value: url,
       },
     };
+  }
+
+  public async readGalleryProfileFromGalleryIdForUser({galleryId} : {galleryId: string}): Promise<Gallery | null> {
+    const gallery = await this.readGalleryProfileFromGalleryId({galleryId});
+    if (!gallery) {
+      return null;
+    }
+    return filterOutPrivateRecordsMultiObject(gallery) 
   }
 
   public async editGalleryProfile({

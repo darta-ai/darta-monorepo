@@ -1,4 +1,5 @@
 import {Artwork} from '@darta-types';
+import { PRIMARY_800 } from '@darta-styles';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import {
@@ -244,7 +245,16 @@ export function UploadArtworksXlsModal({
         variant="contained"
         color="primary"
         disabled={!state.galleryProfile.isValidated || !user.emailVerified}
-        onClick={handleOpen}>
+        onClick={handleOpen}
+        sx={{
+          color: PRIMARY_800,
+          alignSelf: 'center',
+          width: '30vw',
+          '@media (min-width: 1080px)': {
+            width: '20vw',
+          },
+        }}
+        >
         <Typography sx={{fontWeight: 'bold', fontSize: '0.8rem'}}>
           Upload Artwork From .xls File
         </Typography>

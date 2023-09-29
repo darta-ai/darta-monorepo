@@ -20,7 +20,9 @@ import Toolbar from '@mui/material/Toolbar';
 import React from 'react';
 
 import {EGalleryDisplay} from '../../../../pages/Galleries/Profile';
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../../styles';
+import {PRIMARY_MILK} from '../../../../styles';
+import {PRIMARY_400} from '@darta-styles'
+
 import {AuthEnum} from '../../Auth/types';
 import {HeaderSignedIn} from '../Headers/Headers/HeaderSignedIn';
 
@@ -66,7 +68,7 @@ const AppBar = styled(MuiAppBar, {
   shouldForwardProp: prop => prop !== 'open',
 })<AppBarProps>(({theme, open}) => ({
   zIndex: theme.zIndex.drawer + 1,
-  backgroundColor: PRIMARY_BLUE,
+  backgroundColor: PRIMARY_400,
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,

@@ -81,6 +81,8 @@ interface GalleryFields extends GalleryBase {
   galleryPhone?: PrivateFields;
   galleryBusinessHours?: IBusinessHours;
   galleryInstagram?: PrivateFields;
+  galleryId?: string;
+  galleryExhibitions?: ExhibitionObject;
 }
 export interface IGalleryProfileData
   extends GalleryFields,

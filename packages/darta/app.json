@@ -2,7 +2,7 @@
   "expo": {
     "name": "darta",
     "slug": "darta",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/darta-icon.png",
     "userInterfaceStyle": "dark",
@@ -16,7 +16,11 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.anonymous.darta"
+      "bundleIdentifier": "com.darta.darta",
+      "config": {
+        "usesNonExemptEncryption": false,
+        "googleMapsApiKey": "AIzaSyCgJAXkO4WoPQXTf7ENx_tejgKbiem9chc"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -26,13 +30,23 @@
     },
     "web": {
       "favicon": "./assets/darta-icon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d23d751f-88df-452b-a30f-5b5f30e3bc43"
+      }
+    },
+    "plugins": [
+      "expo-localization"
+    ]
   },
   "plugins": [
     [
       "expo-screen-orientation",
+      "expo-calendar",
       {
-        "initialOrientation": "PORTRAIT"
+        "initialOrientation": "PORTRAIT",
+        "calendarPermission": "The app needs to access your calendar."
       }
     ]
   ]

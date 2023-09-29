@@ -15,7 +15,7 @@ import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {mediums} from '../../../data/medium';
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_MILK} from '../../../styles';
 import {
   createArtworkDimensionsToolTip,
   createArtworkToolTips,
@@ -38,6 +38,7 @@ import {
 import {profileStyles} from '../Profile/Components/profileStyles';
 import {useAppState} from '../State/AppContext';
 import {createArtworkStyles} from './styles';
+import {PRIMARY_600, PRIMARY_200} from '@darta-styles'
 
 type currencyConverterType = {
   [key: string]: string;
@@ -361,9 +362,9 @@ export function CreateArtwork({
       <Box sx={createArtworkStyles.backButton}>
         <Button
           variant="outlined"
-          sx={{color: PRIMARY_BLUE}}
+          sx={{color: PRIMARY_600}}
           onClick={() => cancelAction(false)}
-          startIcon={<ArrowBackIcon sx={{color: PRIMARY_BLUE}} />}>
+          startIcon={<ArrowBackIcon sx={{color: PRIMARY_600}} />}>
           <Typography sx={{fontWeight: 'bold'}}>Cancel</Typography>
         </Button>
       </Box>
@@ -689,9 +690,9 @@ export function CreateArtwork({
           <Button
             variant="contained"
             data-testid="delete-artwork-button"
-            color="error"
             disabled={deleteSpinner}
             sx={{
+              backgroundColor: PRIMARY_200, 
               alignSelf: 'center',
               width: '15vw',
               '@media (min-width: 800px)': {
@@ -714,7 +715,7 @@ export function CreateArtwork({
             disabled={saveSpinner}
             sx={{
               alignSelf: 'center',
-              backgroundColor: PRIMARY_BLUE,
+              backgroundColor: PRIMARY_600,
               width: '30vw',
               '@media (min-width: 800px)': {
                 width: '10vw',

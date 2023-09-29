@@ -6,11 +6,12 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import {PRIMARY_BLUE, PRIMARY_GREY} from '@darta-styles';
+import {PRIMARY_600, PRIMARY_GREY, PRIMARY_900, PRIMARY_200} from '@darta-styles';
 import {Artwork} from '@darta-types'
 import {TextElement} from '../Elements/_index';
 import {UserRoutesEnum} from '../../typing/routes'
 import {ETypes, StoreContext} from '../../state/Store';
+import { ExhibitionRootEnum } from '../../typing/routes';
 
 export function ArtworkCard({
   artwork,
@@ -25,14 +26,14 @@ export function ArtworkCard({
 
   const navigateToTombstone = () => {
     dispatch({
-      type: ETypes.setArtwork,
-      artworkOnDisplayId: artwork?.artworkId,
+      type: ETypes.setCurrentArtwork,
+      currentArtwork: artwork,
     });
     dispatch({
       type: ETypes.setTombstone,
       tombstoneTitle: artwork?.artworkTitle?.value ?? "",
     });
-    navigation.navigate(UserRoutesEnum.SavedArtworkModal, {
+    navigation.navigate(ExhibitionRootEnum.individualArtwork, {
       artOnDisplay: artwork,
     });
   };
@@ -54,6 +55,13 @@ export function ArtworkCard({
     artHeight = Math.floor((height / width) * artWidth);
   }
 
+  let displayPrice = "";
+
+  if (artwork?.artworkPrice?.value){
+    displayPrice = "$" + parseInt(artwork?.artworkPrice?.value, 10)?.toLocaleString()
+  }
+
+
   const SSArtworkSelectorCard = StyleSheet.create({
     container: {
       marginTop: hp('1%'),
@@ -62,8 +70,8 @@ export function ArtworkCard({
       borderBottomLeftRadius: !displayLeft ? hp('2%') : 0,
       borderTopRightRadius: displayLeft ? hp('1%') : 0,
       borderBottomRightRadius: displayLeft ? hp('2%') : 0,
-      borderLeftColor: displayLeft ? PRIMARY_BLUE : PRIMARY_GREY,
-      borderRightColor: !displayLeft ? PRIMARY_BLUE : PRIMARY_GREY,
+      borderLeftColor: displayLeft ? PRIMARY_600 : PRIMARY_200,
+      borderRightColor: !displayLeft ? PRIMARY_600 : PRIMARY_200,
       borderLeftWidth: displayLeft ? 2 : 0.5,
       borderRightWidth: !displayLeft ? 2 : 0.5,
       justifyContent: 'center',
@@ -73,7 +81,7 @@ export function ArtworkCard({
       minHeight: hp('28%'),
       marginBottom: hp('0.5%'),
       borderWidth: 0.5,
-      borderColor: PRIMARY_GREY,
+      borderColor: PRIMARY_200,
     },
     imageContainer: {
       alignSelf: 'center',
@@ -91,20 +99,26 @@ export function ArtworkCard({
       fontFamily: 'AvenirNext-Bold',
       fontSize: 15,
       textAlign: 'center',
+      color: PRIMARY_900,
     },
     imageTitle: {
       fontFamily: 'AvenirNext-Italic',
       fontSize: 13,
       textAlign: 'center',
+      color: PRIMARY_900,
     },
     imagePrice: {
       fontFamily: 'Avenir Next',
       fontSize: 13,
       textAlign: 'center',
+      color: PRIMARY_900,
     },
   });
   return (
-    <TouchableOpacity onPress={() => navigateToTombstone()}>
+
+    <TouchableOpacity 
+      onPress={() => navigateToTombstone()}
+    >
       <View style={SSArtworkSelectorCard.container}>
         <View style={SSArtworkSelectorCard.imageContainer}>
           <Image
@@ -122,7 +136,7 @@ export function ArtworkCard({
             {artwork?.artworkTitle.value}
           </TextElement>
           <TextElement style={SSArtworkSelectorCard.imagePrice}>
-            {artwork?.artworkPrice?.value}
+            {displayPrice}
           </TextElement>
         </View>
       </View>

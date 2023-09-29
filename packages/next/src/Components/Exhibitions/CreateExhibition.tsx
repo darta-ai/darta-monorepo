@@ -7,7 +7,9 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_600} from '@darta-styles'
+
 import {exhibitionPressReleaseToolTip} from '../../common/ToolTips/toolTips';
 import {createArtworkStyles} from '../Artwork/styles';
 import {
@@ -357,10 +359,10 @@ export function CreateExhibition({
       <Box sx={createArtworkStyles.backButton}>
         <Button
           variant="outlined"
-          sx={{color: PRIMARY_BLUE}}
+          sx={{color: PRIMARY_600}}
           data-testid="create-exhibition-cancel-button"
           onClick={() => cancelAction(false)}
-          startIcon={<ArrowBackIcon sx={{color: PRIMARY_BLUE}} />}>
+          startIcon={<ArrowBackIcon sx={{color: PRIMARY_600}} />}>
           <Typography sx={{fontWeight: 'bold'}}>Cancel</Typography>
         </Button>
       </Box>
@@ -734,7 +736,7 @@ export function CreateExhibition({
               type="submit"
               disabled={isEditingExhibition}
               sx={{
-                backgroundColor: PRIMARY_BLUE,
+                backgroundColor: PRIMARY_600,
                 color: PRIMARY_MILK,
                 alignSelf: 'center',
                 width: '35vw',

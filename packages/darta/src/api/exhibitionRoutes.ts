@@ -11,14 +11,14 @@ export async function readExhibition({
   exhibitionId: string;
 }): Promise<Exhibition | any> {
   try {
-    console.log({exhibitionId})
-    const response = await axios.get(`${URL}/readForUser`, {
+    const {data} = await axios.get(`${URL}/readForUser`, {
       params: {
         exhibitionId
   }});
-    return response.data;
+    return data;
   } catch (error:any) {
     console.log({error: error, message: error.message})
     return {};
   }
 }
+

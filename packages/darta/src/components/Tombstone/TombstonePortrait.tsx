@@ -9,7 +9,7 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {Artwork} from '@darta-types';
-import {MILK} from '@darta-styles'
+import {MILK, PRIMARY_300, PRIMARY_950, PRIMARY_600, PRIMARY_800} from '@darta-styles'
 import {TextElement} from '../Elements/_index';
 import {icons} from '../../utils/constants';
 import {globalTextStyles} from '../../styles/styles';
@@ -17,15 +17,32 @@ import {globalTextStyles} from '../../styles/styles';
 
 
 
-export function TombstonePortrait({route}: {route: any}) {
+export function TombstonePortrait({artwork,
+  inquireAlert}: {artwork: Artwork,
+    inquireAlert: () => void}) {
 
-  const {artOnDisplay, inquireAlert} = route.params;
 
-  let inputHeight = artOnDisplay?.artworkDimensions?.heightIn?.value ?? "1"
-  let inputWidth = artOnDisplay?.artworkDimensions?.widthIn?.value ?? "1"
+  let inputHeight = artwork?.artworkDimensions?.heightIn?.value ?? "1"
+  let inputWidth = artwork?.artworkDimensions?.widthIn?.value ?? "1"
 
   const height = parseInt(inputHeight, 10)
   const width = parseInt(inputWidth, 10)
+
+
+  let displayDimensionsString;
+  if(artwork?.artworkDimensions.text.value){
+    displayDimensionsString = artwork.artworkDimensions.text.value
+    .replaceAll(/[\r\n]+/g, '')
+    .replaceAll(' ', '')
+    .replaceAll('x', ' x ')
+    .replace(';', '; ')
+  }
+  let displayPrice = "";
+
+  if (artwork?.artworkPrice?.value){
+    displayPrice = "$" + parseInt(artwork?.artworkPrice?.value, 10)?.toLocaleString()
+  }
+
   
   const maxDimension = Math.floor(wp('100%') * 0.6);
 
@@ -59,7 +76,11 @@ export function TombstonePortrait({route}: {route: any}) {
     },
     textContainer: {
       width: wp('90%'),
-      height: 'auto',
+      height: hp('30%'),
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-around',
+
       alignSelf: 'center',
       alignItems: 'center',
     },
@@ -68,12 +89,13 @@ export function TombstonePortrait({route}: {route: any}) {
       fontSize: 20,
       textAlign: 'center',
     },
-    artTitle: {fontSize: 17, textAlign: 'center'},
-    artMedium: {fontSize: 15, textAlign: 'center'},
-    artDimensions: {fontSize: 12},
+    artTitle: {fontSize: 17, textAlign: 'center', color: PRIMARY_950},
+    artMedium: {fontSize: 15, textAlign: 'center', color: PRIMARY_950},
+    artDimensions: {fontSize: 12, color: PRIMARY_950},
     artPrice: {
       textAlign: 'center',
       fontSize: 14,
+      color: PRIMARY_950
     },
     inquireButton: {
       flex: 1,
@@ -95,7 +117,7 @@ export function TombstonePortrait({route}: {route: any}) {
             centerContent>
             <View style={SSTombstonePortrait.imageContainer}>
               <Image
-                source={{uri: artOnDisplay?.artworkImage?.value!}}
+                source={{uri: artwork?.artworkImage?.value!}}
                 style={SSTombstonePortrait.image}
               />
             </View>
@@ -109,7 +131,7 @@ export function TombstonePortrait({route}: {route: any}) {
               globalTextStyles.boldTitleText,
               SSTombstonePortrait.artistName,
             ]}>
-            {artOnDisplay?.artistName?.value}
+            {artwork?.artistName?.value}
           </TextElement>
           <TextElement
             style={[
@@ -117,9 +139,9 @@ export function TombstonePortrait({route}: {route: any}) {
               globalTextStyles.italicTitleText,
             ]}
             numberOfLines={5}>
-            {artOnDisplay?.artworkTitle?.value}
+            {artwork?.artworkTitle?.value}
             {', '}
-            <TextElement>{artOnDisplay?.artworkCreatedYear?.value}</TextElement>
+            <TextElement>{artwork?.artworkCreatedYear?.value}</TextElement>
           </TextElement>
           <TextElement
             style={[
@@ -127,19 +149,15 @@ export function TombstonePortrait({route}: {route: any}) {
               globalTextStyles.italicTitleText,
             ]}
             numberOfLines={1}>
-            {artOnDisplay?.artworkMedium?.value}
+            {artwork?.artworkMedium?.value}
           </TextElement>
           <TextElement
             style={[
               SSTombstonePortrait.artDimensions,
               globalTextStyles.centeredText,
             ]}
-            numberOfLines={5}>
-            {artOnDisplay?.artworkDimensions?.text}
-            {'\n'}
-          </TextElement>
-          <TextElement style={[globalTextStyles.centeredText]}>
-            {artOnDisplay?.artworkMedium?.value}
+            >
+            {displayDimensionsString}
             {'\n'}
           </TextElement>
           <TextElement
@@ -147,15 +165,35 @@ export function TombstonePortrait({route}: {route: any}) {
               globalTextStyles.italicTitleText,
               SSTombstonePortrait.artPrice,
             ]}>
-            {artOnDisplay?.artworkPrice?.value}
+            {displayPrice}
           </TextElement>
         </View>
         <View style={SSTombstonePortrait.inquireButton}>
           <View>
             <Button
+              icon={icons.like}
+              dark
+              buttonColor={PRIMARY_300}
+              mode="contained"
+              onPress={() => inquireAlert()}>
+              Like
+            </Button>
+          </View>
+          <View>
+            <Button
+              icon={icons.save}
+              dark
+              buttonColor={PRIMARY_600}
+              mode="contained"
+              onPress={() => inquireAlert()}>
+              Save
+            </Button>
+          </View>
+          <View>
+          <Button
               icon={icons.inquire}
               dark
-              buttonColor="black"
+              buttonColor={PRIMARY_800}
               mode="contained"
               onPress={() => inquireAlert()}>
               Inquire

@@ -1,4 +1,4 @@
-import {DARK_GRAY, MILK, PRIMARY_BLUE, PRIMARY_DARK_GREY} from '@darta-styles';
+import {DARK_GRAY, MILK, PRIMARY_600, PRIMARY_DARK_GREY} from '@darta-styles';
 import React from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -44,7 +44,7 @@ const SSGallerySelectorComponent = StyleSheet.create({
   },
   prettyBlueLine: {
     flex: 0.05,
-    borderLeftColor: PRIMARY_BLUE,
+    borderLeftColor: PRIMARY_600,
     borderLeftWidth: 3,
     borderTopLeftRadius: hp('0.5%'),
     borderBottomLeftRadius: hp('10%'),

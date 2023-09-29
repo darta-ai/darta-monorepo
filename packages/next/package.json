@@ -15,7 +15,8 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "@darta-types": "1.0.2",
+    "@darta-types": "*",
+    "@darta-styles": "*",
     "@emotion/cache": "11.11.0",
     "@emotion/react": "11.11.0",
     "@emotion/server": "11.11.0",

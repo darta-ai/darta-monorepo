@@ -17,7 +17,8 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_600} from '@darta-styles'
 import {currencyConverter} from '../../common/templates';
 import {CreateArtwork} from '../Artwork/index';
 
@@ -194,7 +195,7 @@ function DartaListArtwork({
         <Box sx={dartaListDisplay.displayComponentShowMobile}>
           <Button
             sx={{
-              backgroundColor: PRIMARY_BLUE,
+              backgroundColor: PRIMARY_600,
               color: PRIMARY_MILK,
               alignSelf: 'center',
             }}

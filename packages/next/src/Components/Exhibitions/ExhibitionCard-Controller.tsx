@@ -14,7 +14,8 @@ import dayjs from 'dayjs';
 import _ from 'lodash';
 import React from 'react';
 
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_600} from '@darta-styles'
 import {cardStyles} from '../../../styles/CardStyles';
 import {
   createAndEditArtworkForExhibition,
@@ -533,8 +534,8 @@ export function ExhibitionCard({
           )}
         </Collapse>
         <Box>
-          <Divider variant="middle" sx={{m: 2, color: PRIMARY_BLUE}} flexItem>
-            <Typography sx={{fontWeight: 'bold', color: PRIMARY_BLUE}}>
+          <Divider variant="middle" sx={{m: 2, color: PRIMARY_600}} flexItem>
+            <Typography sx={{fontWeight: 'bold', color: PRIMARY_600}}>
               Artworks
             </Typography>
           </Divider>

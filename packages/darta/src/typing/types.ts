@@ -84,10 +84,6 @@ export type TabBarElementT = {
     focused: string;
     notFocused: string;
   };
-  // text?: string;
-  // type?: string;
-  // iconName?: any;
-  // emoji?: string;
 };
 
 export type ButtonSizesT = {

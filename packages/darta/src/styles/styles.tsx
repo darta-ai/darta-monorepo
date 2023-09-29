@@ -5,7 +5,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-const baseText = {fontFamily: 'Avenir Next'};
+const baseText = {fontFamily: 'Avenir Next', color: Colors.PRIMARY_950};
 
 export const DIMENSION_WIDTH = Dimensions.get('window').width;
 export const DIMENSION_HEIGHT = Dimensions.get('window').height;
@@ -15,9 +15,11 @@ export const globalTextStyles = StyleSheet.create({
     ...baseText,
   },
   italicTitleText: {
+    ...baseText,
     fontFamily: 'AvenirNext-Italic',
   },
   boldTitleText: {
+    ...baseText,
     fontFamily: 'AvenirNext-Bold',
     fontSize: 15,
   },
@@ -41,14 +43,14 @@ export const headerOptions = {
   headerTitleStyle: {
     fontFamily: 'Avenir Next',
     fontSize: 18,
-    color: Colors.PRIMARY_MILK,
+    color: Colors.PRIMARY_50,
   },
   headerBackTitleStyle: {
     fontFamily: 'Avenir Next',
     fontSize: 15,
   },
   headerStyle: {
-    backgroundColor: Colors.PRIMARY_BLUE,
+    backgroundColor: Colors.PRIMARY_400,
   },
 };
 
@@ -57,22 +59,22 @@ export const footerOptions = {
   tabBarLabelStyle: {
     fontFamily: 'Avenir Next',
     fontSize: 15,
-    color: Colors.PRIMARY_MILK,
+    color: Colors.PRIMARY_50,
   },
   tabBarStyle: {
-    backgroundColor: Colors.PRIMARY_BLUE,
+    backgroundColor: Colors.PRIMARY_400,
   },
 };
 export const footerColors = {
-  focused: Colors.PRIMARY_MILK,
-  notFocused: Colors.PRIMARY_LIGHTBLUE,
+  focused: Colors.PRIMARY_50,
+  notFocused: Colors.PRIMARY_200,
 };
 
 
 export default StyleSheet.create({
   // COMPONENT - CARD ITEM
   containerCardItem: {
-    backgroundColor: Colors.WHITE,
+    backgroundColor: Colors.PRIMARY_50,
     borderRadius: 8,
     alignItems: 'center',
     margin: 2,
@@ -486,3 +488,21 @@ export const SSDartaHome = StyleSheet.create({
       justifyContent: 'space-evenly',
     },
   });
+
+  export const touchableOpacity = StyleSheet.create({
+    touchableOpacityButtonStyling: {
+      backgroundColor: Colors.PRIMARY_50, // Green color for the button
+      borderRadius: 5, // Rounded corners
+      alignItems: 'center', // To center the text inside the button
+      justifyContent: 'center', 
+      elevation: 2, // For Android shadow
+      shadowColor: "#000", // For iOS shadow
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+    },
+  });
+  

@@ -2,12 +2,9 @@
 /* eslint-disable no-return-assign */
 import React from 'react';
 import {
-  ActivityIndicator,
-  FlatList,
   Image,
-  ImageBackground,
-  TouchableOpacity,
   StyleSheet,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {
@@ -15,94 +12,126 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import {TextElement} from '../Elements/_index';
-import {DEFAULT_Gallery_Image} from '../../utils/constants';
+import {GalleryIcon, TextElement} from '../Elements/_index';
 import {globalTextStyles, galleryPreviewStyles} from '../../styles/styles';
 import {ExhibitionDates, IOpeningLocationData} from '@darta-types';
-import MapView, {Marker} from 'react-native-maps';
+import { PRIMARY_950, PRIMARY_700, PRIMARY_900, PRIMARY_200, PRIMARY_100 } from '@darta-styles';
+import { customLocalDateString } from '../../utils/functions';
 
 
-export function GalleryPreview({
+export function ExhibitionPreview({
     exhibitionHeroImage,
     exhibitionTitle,
     exhibitionGallery, 
     exhibitionDates,
-    exhibitionLocationData
+    galleryLogoLink,
+    exhibitionArtist
 }: {
     exhibitionHeroImage: string,
     exhibitionTitle: string,
     exhibitionGallery: string, 
     exhibitionDates: ExhibitionDates,
-    exhibitionLocationData: IOpeningLocationData
+    galleryLogoLink: string,
+    exhibitionArtist: string
 }) {
 
-    const exhibitionPreview = StyleSheet.create({
-        heroImage: {
-            width: wp('50%'),
-            height: hp('20%'),
-            resizeMode: 'cover',
-            borderRadius: 20,
-        },
-    })
+  const exhibitionPreview = StyleSheet.create({
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: hp('35%'),
+      width: wp('90%'),
+      margin: hp('1%'),
+      gap: wp('1%'),
+      justifyContent: 'space-around',
+      alignItems: 'center',
+      borderRadius: 5,
+      borderColor: PRIMARY_700,
+      backgroundColor: PRIMARY_100,
+      borderWidth: 1,
+    },
+    heroImageContainer: {
+      height: '50%',
+      width: '100%',
+      display:'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: wp('1%'),
+    },
+    heroImage: {
+      width: '100%',
+      height: '100%',
+      resizeMode: 'contain',
+    },
+    textContainer:{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-start',
+      gap: wp('5%'),
+      width: '100%',
+      height: '20%',
+      alignItems: 'center',  
+    },
+    mapContainer: {
+      width: '15%',
+      height: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderColor: 'black',
+      borderWidth: 1,
+    },
+    galleryIcon: {
+      position: 'absolute',  
+      top: 2,                
+      right: 2,              
+      borderRadius: 20,
+    },
+  })
 
-    let latitude, longitude;
+  let startDate, endDate;
 
-    if (exhibitionLocationData.coordinates && 
-        exhibitionLocationData.coordinates?.latitude &&
-        exhibitionLocationData.coordinates?.longitude &&
-        exhibitionLocationData.coordinates.latitude?.value &&
-        exhibitionLocationData.coordinates.longitude?.value) {
-        latitude = parseInt(exhibitionLocationData.coordinates.latitude.value!, 10);
-        longitude = parseInt(exhibitionLocationData.coordinates.longitude.value!, 10);
-    }
+  if (exhibitionDates.exhibitionStartDate.value && exhibitionDates.exhibitionEndDate.value) {
+      startDate = customLocalDateString(new Date(exhibitionDates.exhibitionStartDate.value))
+      endDate = customLocalDateString(new Date(exhibitionDates.exhibitionEndDate.value))
+  }
 
-  
   return (
     <>
+    <TouchableOpacity 
+      onPress={() => console.log('pressed')}
+    >
       <View
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          height: hp('20%'),
-          marginTop: hp('1%'),
-          justifyContent: 'space-around',
-        }}>
+        style={exhibitionPreview.container}>
+            <View style={exhibitionPreview.galleryIcon}>
+              {/* <GalleryIcon galleryLogo={galleryLogoLink}/> */}
+            </View>
+          <View style={exhibitionPreview.heroImageContainer} >
             <Image 
                 source={{uri: exhibitionHeroImage}} 
                 style={exhibitionPreview.heroImage} 
             />
-        <View 
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-            }}
-        >
+          </View>
+
+        <View style={exhibitionPreview.textContainer}>
           <TextElement
-            style={[globalTextStyles.titleText, globalTextStyles.centeredText]}>
+            style={{...globalTextStyles.centeredText, fontWeight: 'bold', color: PRIMARY_900}}>
             {' '}
-            {exhibitionTitle}
+            {exhibitionTitle} {' - '} {exhibitionArtist}
           </TextElement>
           <TextElement
-            style={[globalTextStyles.baseText, globalTextStyles.centeredText]}>
+            style={{...globalTextStyles.centeredText, fontWeight: 'bold', color: PRIMARY_900}}>
             {' '}
-            {exhibitionGallery}
-          </TextElement>
-          <TextElement
-            style={[globalTextStyles.baseText, globalTextStyles.centeredText]}>
-            {' '}
-            {exhibitionDates}
+            {startDate} {' - '} {endDate}
           </TextElement>
         </View>
-        {exhibitionLocationData.locality?.value && (
-        <MapView
-            key={`${exhibitionLocationData.coordinates?.googleMapsPlaceId}`}
-        >
-            <Marker
-            coordinate={{latitude: latitude as number, longitude: longitude as number}}
-            />
-            </MapView>
-        )}
+      <TextElement
+      style={{...globalTextStyles.centeredText, textDecorationLine: 'underline', fontSize: 12}}>
+      {' '}
+      click to view
+    </TextElement>
       </View>
+      </TouchableOpacity>
     </>
   );
 }

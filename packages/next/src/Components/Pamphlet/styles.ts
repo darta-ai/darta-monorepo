@@ -1,5 +1,5 @@
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../../styles';
-
+import {PRIMARY_DARK_GREY} from '../../../styles';
+import {PRIMARY_600} from '@darta-styles'
 export const styles = {
   container: {
     height: 'auto',
@@ -69,7 +69,7 @@ export const styles = {
   },
   typographyTitle: {
     fontFamily: 'Nunito Sans',
-    color: PRIMARY_BLUE,
+    color: PRIMARY_600,
     my: 2,
     fontSize: '1.8rem',
     alignText: 'center',

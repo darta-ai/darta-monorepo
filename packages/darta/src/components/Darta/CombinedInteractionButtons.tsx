@@ -4,7 +4,7 @@ import {IconButton} from 'react-native-paper';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 import {
-  PRIMARY_BLUE,
+  PRIMARY_600,
   PRIMARY_GREY,
   PRIMARY_PROGRESS,
   PRIMARY_RED,
@@ -63,7 +63,7 @@ export function CombinedInteractionButtons({
       setRatingDisplayIcon(icons[ratingString] || icons.thumbsUpDown);
       switch (ratingString) {
         case RatingEnum.like:
-          setRatingDisplayColor(PRIMARY_BLUE);
+          setRatingDisplayColor(PRIMARY_600);
           break;
         case RatingEnum.dislike:
           setRatingDisplayColor(PRIMARY_RED);
@@ -154,7 +154,7 @@ export function CombinedInteractionButtons({
               disabled={!openRatings}
               icon={icons.like}
               iconColor={
-                currentArtRating[RatingEnum.like] ? PRIMARY_BLUE : PRIMARY_GREY
+                currentArtRating[RatingEnum.like] ? PRIMARY_600 : PRIMARY_GREY
               }
               mode={
                 currentArtRating[RatingEnum.like] ? 'contained' : 'outlined'

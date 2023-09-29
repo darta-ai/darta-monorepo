@@ -1,4 +1,5 @@
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_GREY, PRIMARY_MILK} from '.';
+import {PRIMARY_DARK_GREY, PRIMARY_GREY, PRIMARY_MILK} from '.';
+import {PRIMARY_600, PRIMARY_700} from '@darta-styles'
 
 export const galleryStyles = {
   container: {
@@ -24,8 +25,6 @@ export const galleryStyles = {
     borderLeft: `0px`,
     '@media (min-width: 1080px)': {
       borderTop: `1px solid ${PRIMARY_GREY}`,
-      borderLeft: `1px solid ${PRIMARY_GREY}`,
-      borderTopLeftRadius: '10px',
     },
   },
   navigationHeader: {
@@ -69,7 +68,7 @@ export const galleryStyles = {
   },
   typographyTitle: {
     fontFamily: 'Nunito Sans',
-    color: PRIMARY_BLUE,
+    color: PRIMARY_700,
     fontSize: '2rem',
     my: '3vh',
     '@media (min-width: 1080px)': {
@@ -79,7 +78,7 @@ export const galleryStyles = {
   },
   artworkHeader: {
     fontFamily: 'Nunito Sans',
-    color: PRIMARY_BLUE,
+    color: PRIMARY_600,
     fontSize: '1.5rem',
     my: '3vh',
     '@media (min-width: 1080px)': {
@@ -97,7 +96,7 @@ export const galleryStyles = {
     cursor: 'default',
   },
   button: {
-    color: PRIMARY_BLUE,
+    color: PRIMARY_600,
   },
   inputTextContainer: {
     display: 'flex',
@@ -106,7 +105,7 @@ export const galleryStyles = {
     alignItems: 'center',
   },
   createNewButton: {
-    backgroundColor: PRIMARY_BLUE,
+    backgroundColor: PRIMARY_600,
     color: PRIMARY_MILK,
     // width: '50%',
     alignSelf: 'center',

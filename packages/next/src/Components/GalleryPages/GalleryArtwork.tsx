@@ -6,7 +6,9 @@ import Head from 'next/head';
 import React from 'react';
 
 import {AuthContext} from '../../../pages/_app';
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_600} from '@darta-styles'
+
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
 import {
   createArtworkAPI,
@@ -336,7 +338,7 @@ export function GalleryArtwork() {
                   !state.galleryProfile.isValidated || !user.emailVerified
                 }
                 sx={{
-                  backgroundColor: PRIMARY_BLUE,
+                  backgroundColor: PRIMARY_600,
                   color: PRIMARY_MILK,
                   alignSelf: 'center',
                 }}>
