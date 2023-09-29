@@ -1,8 +1,9 @@
 import {
-  PRIMARY_BLUE,
   PRIMARY_LIGHTBLUE,
   PRIMARY_MILK,
 } from '../../../../styles';
+import {PRIMARY_600, PRIMARY_400} from '@darta-styles'
+
 
 export const headerStyles = {
   headerBox: {
@@ -12,7 +13,7 @@ export const headerStyles = {
     justifyContent: 'space-around',
     alignItems: 'center',
     gap: '1%',
-    backgroundColor: PRIMARY_BLUE,
+    backgroundColor: PRIMARY_400,
   },
   '@keyframes fadeInAnimation': {
     '0%': {
@@ -43,7 +44,7 @@ export const headerStyles = {
   },
   button: {
     backgroundColor: PRIMARY_MILK,
-    color: PRIMARY_BLUE,
+    color: PRIMARY_600,
     fontSize: '0.8rem',
     '@media (min-width:750px)': {
       fontSize: '1rem',

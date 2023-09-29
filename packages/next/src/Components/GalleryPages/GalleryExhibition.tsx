@@ -1,7 +1,7 @@
 import 'firebase/compat/auth';
 
 import {Exhibition, GalleryState} from '@darta-types';
-import {Box, Button, Typography} from '@mui/material';
+import {Box, Button, Typography, CircularProgress} from '@mui/material';
 import Head from 'next/head';
 import React from 'react';
 
@@ -105,7 +105,10 @@ export function GalleryExhibition() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const [isLoadingExhibition, setLoadingExhibition] = React.useState<boolean>(false)
+
   const addNewExhibition = async () => {
+    setLoadingExhibition(true)
     try {
       const results = await createExhibitionAPI();
       if (results?.exhibitionId) {
@@ -115,11 +118,13 @@ export function GalleryExhibition() {
           exhibitionId: results.exhibitionId,
         });
       } else {
+        setLoadingExhibition(false)
         throw new Error();
       }
     } catch (error) {
       // TO-DO: throw error for frontend
     }
+    setLoadingExhibition(false)
   };
 
   const [stepIndex, setStepIndex] = React.useState(0);
@@ -169,9 +174,16 @@ export function GalleryExhibition() {
                 !state.galleryProfile.isValidated || !user.emailVerified
               }
               sx={galleryStyles.createNewButton}>
+              {isLoadingExhibition ? (
+                <CircularProgress color="secondary" />
+              ):
+              (
               <Typography sx={{fontWeight: 'bold'}}>
                 Create Exhibition
               </Typography>
+              )
+            }
+
             </Button>
           </Box>
         </Box>

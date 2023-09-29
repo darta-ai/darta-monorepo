@@ -78,7 +78,7 @@ export class ExhibitionController {
   }
     try {
       const exhibitionId = <string>req.query.exhibitionId;
-      const results = await this.exhibitionService.readExhibitionForUser({
+      const results = await this.exhibitionService.readGalleryExhibitionForUser({
         exhibitionId,
       });
       res.json(results);

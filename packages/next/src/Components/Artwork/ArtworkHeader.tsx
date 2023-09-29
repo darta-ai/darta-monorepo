@@ -2,8 +2,9 @@ import {Artwork} from '@darta-types';
 import {Box, Button, CircularProgress, Typography} from '@mui/material';
 import React from 'react';
 
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles/index';
+import { PRIMARY_MILK} from '../../../styles/index';
 import {UploadArtworksXlsModal} from '../Modals';
+import {PRIMARY_600} from '@darta-styles'
 
 export function ArtworkHeader({
   artworkLoading,
@@ -41,12 +42,12 @@ export function ArtworkHeader({
           className="create-new-artwork"
           disabled={artworkLoading}
           sx={{
-            backgroundColor: PRIMARY_BLUE,
+            backgroundColor: PRIMARY_600,
             color: PRIMARY_MILK,
             alignSelf: 'center',
-            width: '50vw',
-            '@media (min-width: 800px)': {
-              width: '10vw',
+            width: '30vw',
+            '@media (min-width: 1080px)': {
+              width: '20vw',
             },
           }}>
           {artworkLoading ? (

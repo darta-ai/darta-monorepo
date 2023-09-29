@@ -1,7 +1,7 @@
 import {MILK} from '@darta-styles';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import React, {useContext} from 'react';
-import {Alert} from 'react-native';
+import {Alert, View} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -12,7 +12,10 @@ import {SavedArtworkDisplay} from '../Artwork/SavedArtworkDisplay';
 import {TombstonePortrait} from '../Tombstone/_index';
 
 export function ArtworkNavigatorModal({route}: {route: any}) {
-  const {artOnDisplay} = route.params;
+  let artOnDisplay;
+  if (route.params){
+    ({artOnDisplay} = route.params);
+  }
 
   const {state} = useContext(StoreContext);
 
@@ -29,29 +32,12 @@ export function ArtworkNavigatorModal({route}: {route: any}) {
       },
     ]);
 
-  const Tab = createMaterialTopTabNavigator();
   return (
-    <Tab.Navigator
-      style={{backgroundColor: MILK, height: hp('80%')}}
-      screenOptions={{
-        tabBarLabelStyle: {fontSize: 11, fontFamily: 'Avenir Next'},
-        tabBarItemStyle: {width: wp('50%')},
-        tabBarStyle: {backgroundColor: MILK},
-      }}>
-      {artOnDisplay && (
-        <>
-          <Tab.Screen
-            name="Tombstone"
-            component={TombstonePortrait}
-            initialParams={{artOnDisplay, inquireAlert}}
-          />
-          <Tab.Screen
-            name="Display"
-            component={SavedArtworkDisplay}
-            initialParams={{artOnDisplay}}
-          />
-        </>
-      )}
-    </Tab.Navigator>
+    <View>
+      <TombstonePortrait 
+        artwork={artOnDisplay}
+        inquireAlert={inquireAlert}
+      />
+    </View>
   );
 }

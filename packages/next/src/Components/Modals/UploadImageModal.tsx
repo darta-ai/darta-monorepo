@@ -10,14 +10,16 @@ import {
 import Image from 'next/image';
 import React from 'react';
 
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_600} from '@darta-styles'
+
 
 const modalStyles = {
   dialogueContainer: {
     color: PRIMARY_MILK,
   },
   button: {
-    color: PRIMARY_BLUE,
+    color: PRIMARY_600,
   },
   modalContainer: {
     color: PRIMARY_MILK,

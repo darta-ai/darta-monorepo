@@ -1,4 +1,5 @@
-import {PRIMARY_BLUE} from '../../../../styles';
+import {PRIMARY_600} from '@darta-styles'
+
 
 export const styles = {
   footerBox: {
@@ -9,7 +10,7 @@ export const styles = {
     height: '5vh',
   },
   typography: {
-    color: PRIMARY_BLUE,
+    color: PRIMARY_600,
     fontSize: '1rem',
     '@media (min-width:800px)': {
       fontSize: '1.1em',

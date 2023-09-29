@@ -1,4 +1,4 @@
-import {PRIMARY_BLUE, PRIMARY_GREY} from '../../../styles';
+import {PRIMARY_600, PRIMARY_300} from '@darta-styles'
 
 export const filterStyles = {
   inputTextContainer: {
@@ -12,7 +12,7 @@ export const filterStyles = {
     gridTemplateColumns: '0.5fr 0.5fr',
   },
   helpIcon: {
-    color: PRIMARY_GREY,
+    color: PRIMARY_300,
     height: '15px',
     '@media (min-width: 800px)': {
       height: '20px',
@@ -25,7 +25,7 @@ export const filterStyles = {
     border: '1px solid #E0E0E0',
   },
   helpIconTiny: {
-    color: PRIMARY_GREY,
+    color: PRIMARY_300,
     height: '0px',
     '@media (min-width: 800px)': {
       height: '15px',
@@ -38,7 +38,7 @@ export const filterStyles = {
     gridTemplateColumns: '1fr 1fr',
   },
   makePrivate: {
-    color: PRIMARY_BLUE,
+    color: PRIMARY_600,
     fontSize: 15,
   },
   toolTip: {

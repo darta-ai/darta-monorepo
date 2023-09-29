@@ -4,7 +4,7 @@ import {Alert, StyleSheet, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-import {PRIMARY_BLUE, PRIMARY_MILK} from '@darta-styles';
+import {PRIMARY_600, PRIMARY_MILK} from '@darta-styles';
 import {imagePrefetch} from '../utils/functions';
 import {GalleryPreview} from '../components/Previews/GalleryPreview';
 import {TextElement} from '../components/Elements/_index';
@@ -167,7 +167,7 @@ export function RecommenderHomeScreen({
               {
                 fontWeight: 'bold',
                 alignSelf: 'center',
-                color: PRIMARY_BLUE,
+                color: PRIMARY_600,
                 paddingTop: hp('5%'),
               },
             ]}>
@@ -176,7 +176,7 @@ export function RecommenderHomeScreen({
           <TextElement
             style={[
               globalTextStyles.centeredText,
-              {fontWeight: 'bold', alignSelf: 'center', color: PRIMARY_BLUE},
+              {fontWeight: 'bold', alignSelf: 'center', color: PRIMARY_600},
             ]}>
             teach your digital art advisor your tastes
           </TextElement>

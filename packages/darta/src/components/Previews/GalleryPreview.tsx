@@ -14,9 +14,10 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import {TextElement} from '../Elements/_index';
+import {TextElement, GalleryIcon} from '../Elements/_index';
 import {DEFAULT_Gallery_Image} from '../../utils/constants';
 import {globalTextStyles, galleryPreviewStyles} from '../../styles/styles';
+import { Artwork } from '@darta-types';
 
 const galleryWallRaw = DEFAULT_Gallery_Image;
 
@@ -40,10 +41,21 @@ export function GalleryPreview({
   const maxDimensions = 50;
   const maxDimension = Math.floor(hp('20%') * 0.5);
 
-  const resizedPreviewWorks = previewWorks.map(id => {
-    const {
-      dimensionsInches: {height, width},
-    } = id;
+  const resizedPreviewWorks = previewWorks.map((artwork: Artwork) => {
+    let height;
+    let width;
+
+    if (artwork?.artworkDimensions 
+      && artwork?.artworkDimensions?.heightIn
+      && artwork?.artworkDimensions?.widthIn
+      && artwork?.artworkDimensions.heightIn.value
+      && artwork?.artworkDimensions.widthIn.value){
+        height = parseInt(artwork?.artworkDimensions?.heightIn.value);
+        width = parseInt(artwork?.artworkDimensions?.widthIn.value);
+      } else {
+        return null
+      }
+
     let displayHeight;
     let displayWidth;
     if (height >= width) {
@@ -54,7 +66,7 @@ export function GalleryPreview({
       displayHeight = Math.floor((height / width) * displayWidth);
     }
     return {
-      ...id,
+      ...artwork,
       displayDimensions: {
         displayHeight,
         displayWidth,
@@ -117,10 +129,10 @@ export function GalleryPreview({
                   />
                 ) : (
                   <Image
-                    source={{uri: item.image}}
+                    source={{uri: item?.artworkImage?.value ?? ""}}
                     style={{
-                      height: item.displayDimensions.displayHeight,
-                      width: item.displayDimensions.displayWidth,
+                      height: item?.displayDimensions.displayHeight,
+                      width: item?.displayDimensions.displayWidth,
                       position: 'relative',
                     }}
                   />

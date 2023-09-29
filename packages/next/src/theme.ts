@@ -2,7 +2,8 @@ import {red} from '@mui/material/colors';
 import {createTheme} from '@mui/material/styles';
 import {EB_Garamond} from 'next/font/google';
 
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../styles';
+import {PRIMARY_MILK} from '../styles';
+import {PRIMARY_600, PRIMARY_50} from '@darta-styles'
 
 export const ebGaramond = EB_Garamond({
   weight: ['400', '500', '700'],
@@ -18,13 +19,13 @@ const theme = createTheme({
       main: PRIMARY_MILK,
     },
     secondary: {
-      main: PRIMARY_BLUE,
+      main: PRIMARY_600,
     },
     error: {
       main: red.A400,
     },
     background: {
-      default: PRIMARY_MILK,
+      default: PRIMARY_50,
     },
   },
   typography: {

@@ -8,7 +8,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import {DARK_GRAY, MILK, PRIMARY_BLUE} from '@darta-styles';
+import {DARK_GRAY, MILK, PRIMARY_600} from '@darta-styles';
 import {TextElement} from '../Elements/_index';
 import {icons} from '../../utils/constants';
 import {
@@ -61,7 +61,7 @@ export function UserProfile({
 
   const SSUserProfile = StyleSheet.create({
     container: {
-      backgroundColor: PRIMARY_BLUE,
+      backgroundColor: PRIMARY_600,
       borderRadius: 20,
       padding: hp('1%'),
       height: 'auto',

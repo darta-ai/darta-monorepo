@@ -1,10 +1,11 @@
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_400, PRIMARY_500} from '@darta-styles'
 
 export const authStyles = {
   signInContainer: {
     flex: 3,
     border: '1px solid',
-    borderColor: PRIMARY_BLUE,
+    borderColor: PRIMARY_400,
     borderTopRightRadius: '0px',
     borderTopLeftRadius: '0px',
     borderBottomLeftRadius: '30px',
@@ -72,7 +73,7 @@ export const welcomeStyles = {
   introContainer: {
     flex: 4,
     height: '30vh',
-    backgroundColor: PRIMARY_BLUE,
+    backgroundColor: PRIMARY_500,
     borderTopLeftRadius: '30px',
     borderTopRightRadius: '30px',
     '@media (min-width:800px)': {

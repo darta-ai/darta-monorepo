@@ -2,16 +2,7 @@ import _ from 'lodash';
 import React, {createContext, ReactNode, useReducer} from 'react';
 
 import {RatingEnum} from '../typing/types';
-import {
-  days,
-  image1Preview,
-  image2Preview,
-  images1,
-  images2,
-  images3,
-  today,
-} from '../utils/constants';
-import {Artwork, Exhibition} from '@darta-types'
+import {Artwork, Exhibition, IGalleryProfileData} from '@darta-types'
 
 export interface IUserArtworkRatings {
   [id: string]: {
@@ -72,68 +63,6 @@ export type PatUserSavedArtworkData = {
   };
 };
 
-export type GalleryData = {
-  type: string;
-  galleryId: string;
-  artworkIds: string[];
-  tombstone?: string;
-  preview?: {
-    [key: string]: {
-      id: string;
-      image: string;
-      dimensionsInches: {
-        height: number;
-        width: number;
-      };
-    };
-  };
-  text: string;
-  body: string;
-};
-
-export type PatArtworkData = {
-  darta: GalleryData;
-  savedArtwork: GalleryData;
-  inquiredArtwork: GalleryData;
-  [key: string]: GalleryData;
-};
-
-const rawArtworkData: PatArtworkData = {
-  darta: {
-    type: 'privateGallery',
-    galleryId: 'darta',
-    artworkIds: images1,
-    preview: image1Preview,
-    tombstone:
-      'featuring works by contemporary artists Robert Bordo, Tahnee Lonsdale, and more',
-    text: `${days[today]}'s opening`,
-    body: 'curated by darta',
-  },
-  savedArtwork: {
-    type: 'savedGallery',
-    galleryId: 'saved',
-    artworkIds: images2,
-    preview: image2Preview,
-    tombstone:
-      'featuring works by contemporary artists Robert Bordo, Tahnee Lonsdale, and more',
-    text: `${days[today]}'s opening`,
-    body: 'curated by darta',
-  },
-  inquiredArtwork: {
-    type: 'inquiredGallery',
-    galleryId: 'inquired',
-    artworkIds: images3,
-    preview: image1Preview,
-    tombstone:
-      'featuring works by contemporary artists Robert Bordo, Tahnee Lonsdale, and more',
-    text: `${days[today]}'s opening`,
-    body: 'curated by darta',
-  },
-};
-
-const fetchRawArtworkData = () => {
-  return rawArtworkData;
-};
 
 interface IDartaData {
   [id: string]: {
@@ -158,13 +87,22 @@ export interface IState {
   galleryTitle: string;
   tombstoneTitle: string;
   userSettings: PatUserData;
-  artworkData: PatArtworkData;
-  savedArtwork?: GalleryData;
+  savedArtwork?: IGalleryProfileData;
   // don't know what's going on up there. 
 
   exhibitionData?: {
     [key: string] : Exhibition
   }
+  currentExhibition: Exhibition;
+  galleryData?:{
+    [key: string]: IGalleryProfileData
+  },
+  currentGallery?: IGalleryProfileData;
+
+  artworkData?: {
+    [key: string]: Artwork
+  }
+  currentArtwork?: Artwork;
 }
 
 export enum ETypes {
@@ -183,6 +121,10 @@ export enum ETypes {
 
   // look at above in future
   saveExhibition = 'SAVE_EXHIBITION',
+
+  saveGallery = 'SAVE_GALLERY',
+
+  saveArtwork = 'SAVE_ARTWORK',
 }
 
 // Define the action type
@@ -214,7 +156,13 @@ interface IAction {
   saveWork?: boolean;
 
   
+  // see here after
   exhibitionData?: Exhibition;
+  currentExhibition?: Exhibition;
+  galleryData?: IGalleryProfileData;
+  currentGallery?: IGalleryProfileData;
+  artworkData?: Artwork;
+  currentArtwork?: Artwork;
 }
 
 // Define the initial state
@@ -233,9 +181,12 @@ const initialState: IState = {
     legalLastName: "legalName",
     email: "email", 
   },
-  artworkData: fetchRawArtworkData(),
+  artworkData: {} as any,
 
-  exhibitionData : {}
+  exhibitionData : {},
+  currentExhibition: {} as Exhibition,
+  galleryData: {},
+  currentGallery: {} as IGalleryProfileData,
 };
 
 // Define the reducer function
@@ -270,7 +221,7 @@ const reducer = (state: IState, action: IAction): IState => {
 
   switch (type) {
     case ETypes.setUserSettings:
-      return {...state, userSettings};
+      return state
     case ETypes.setPortrait:
       return {...state, isPortrait: !state.isPortrait};
     case ETypes.rateArtwork:
@@ -301,30 +252,30 @@ const reducer = (state: IState, action: IAction): IState => {
       }
 
     case ETypes.preLoadState:
-      if (Object.keys(state.artworkData).length === 0) {
-        return state;
-      }
-      tempGallery = state.dartaData;
-      tempState = state;
-      galleryIds = Object.keys(state.artworkData);
-      galleryIds.forEach(itemId => {
-        tempGallery[itemId] = {
-          artworkIds: state.artworkData[itemId].artworkIds,
-          id: itemId,
-          numberOfRatedWorks: 0,
-          numberOfArtworks: state.artworkData[itemId].artworkIds.length,
-          galleryIndex: 0,
-          fullDGallery: null,
-          isLoaded: false,
-        };
-        state.artworkData[itemId].artworkIds.forEach(artId => {
-          tempState.userArtworkRatings = {
-            ...tempState.userArtworkRatings,
-            [artId]: {},
-          };
-        });
-      });
-      return {...tempState, ...tempGallery};
+      // if (Object.keys(state.artworkData).length === 0) {
+      //   return state;
+      // }
+      // tempGallery = state.dartaData;
+      // tempState = state;
+      // galleryIds = Object.keys(state.artworkData);
+      // galleryIds.forEach(itemId => {
+      //   tempGallery[itemId] = {
+      //     artworkIds: state.artworkData[itemId].artworkIds,
+      //     id: itemId,
+      //     numberOfRatedWorks: 0,
+      //     numberOfArtworks: state.artworkData[itemId].artworkIds.length,
+      //     galleryIndex: 0,
+      //     fullDGallery: null,
+      //     isLoaded: false,
+      //   };
+      //   state.artworkData[itemId].artworkIds.forEach(artId => {
+      //     tempState.userArtworkRatings = {
+      //       ...tempState.userArtworkRatings,
+      //       [artId]: {},
+      //     };
+      //   });
+      // });
+      return state;
     case ETypes.loadArt:
       if (!galleryId && Object.keys(loadedDGallery).length === 0) {
         return state;
@@ -403,7 +354,6 @@ const reducer = (state: IState, action: IAction): IState => {
         tempState = _.cloneDeep(state);
         tempGallery = tempState.globalGallery;
         delete tempGallery.savedArtwork.fullDGallery[artOnDisplay.id];
-        console.log(Object.keys(tempGallery.savedArtwork.fullDGallery));
         if (state.userArtworkRatings[artworkId]) {
           if (tempGallery.numberOfRatedWorks > 0) {
             tempGallery.numberOfRatedWorks -= 1;
@@ -421,13 +371,40 @@ const reducer = (state: IState, action: IAction): IState => {
 
       // starting over here
 
+      // SET_CURRENT_EXHIBITION
+
     case ETypes.saveExhibition:
       if(!action.exhibitionData || !action.exhibitionData.exhibitionId){
         return state
       }
       return {
         ...state,
-        [action.exhibitionData.exhibitionId]: action.exhibitionData
+        exhibitionData: {
+          ...state.exhibitionData,
+          [action.exhibitionData.exhibitionId]: action.exhibitionData
+        }
+      }
+    case ETypes.saveGallery:
+      if(!action.galleryData || !action.galleryData._id){
+        return state
+      }
+      return {
+        ...state,
+        galleryData: {
+          ...state.galleryData,
+          [action.galleryData._id]: action.galleryData
+        }
+      }
+    case ETypes.saveArtwork:
+      if(!action.artworkData || !action.artworkData.artworkId){
+        return state
+      }
+      return {
+        ...state,
+        artworkData: {
+          ...state.artworkData,
+          [action.artworkData.artworkId]: action.artworkData
+        }
       }
     default:
       return state;

@@ -13,7 +13,8 @@ import React from 'react';
 
 import {aboutData} from '../../data/pamphletPages';
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
+import {PRIMARY_DARK_GREY} from '../../styles';
+import { PRIMARY_800 } from '@darta-styles';
 
 const aboutStyles = {
   container: {
@@ -57,7 +58,7 @@ const aboutStyles = {
   },
   typographyTitle: {
     fontFamily: 'Nunito Sans',
-    color: PRIMARY_BLUE,
+    color: PRIMARY_800,
     fontSize: '2rem',
     my: '3vh',
     '@media (min-width:800px)': {

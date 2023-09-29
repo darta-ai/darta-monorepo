@@ -11,7 +11,7 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {PRIMARY_BLUE} from '../../../styles';
+import {PRIMARY_600} from '@darta-styles'
 import {updateGalleryProfileAPI} from '../../API/galleries/galleryRoutes';
 import {googleMapsParser} from '../../common/nextFunctions';
 import {createArtworkStyles} from '../Artwork/styles';
@@ -303,9 +303,9 @@ export function EditProfileGallery({
         <Button
           variant="outlined"
           data-testid="edit-profile-back-button"
-          sx={{color: PRIMARY_BLUE}}
+          sx={{color: PRIMARY_600}}
           onClick={() => setIsEditingProfile(!isEditingProfile)}
-          startIcon={<ArrowBackIcon sx={{color: PRIMARY_BLUE}} />}>
+          startIcon={<ArrowBackIcon sx={{color: PRIMARY_600}} />}>
           Cancel
         </Button>
       </Box>
@@ -585,7 +585,7 @@ export function EditProfileGallery({
             variant="contained"
             type="submit"
             data-testid="save-profile-edit-button"
-            sx={{backgroundColor: PRIMARY_BLUE}}
+            sx={{backgroundColor: PRIMARY_600}}
             onClick={handleSubmit(onSubmit)}>
             Save
           </Button>

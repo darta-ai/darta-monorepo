@@ -1,14 +1,17 @@
 import {IGalleryProfileData} from '@darta-types';
-import {Box, Button, Divider, Typography} from '@mui/material';
+import {Box, Button, Card, Divider, Typography} from '@mui/material';
 import Image from 'next/image';
 import React from 'react';
 
 import {AuthContext} from '../../../pages/_app';
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_MILK} from '../../../styles';
+import {PRIMARY_600} from '@darta-styles'
+
 import {phoneNumberConverter} from '../../common/utils/phoneNumberConverter';
 import {resendEmailVerification} from '../../ThirdPartyAPIs/firebaseApp';
 import {GalleryLocationComponent} from './Components/GalleryLocationText';
 import {profileStyles} from './Components/profileStyles';
+import { cardStyles } from 'packages/next/styles/CardStyles';
 
 function GalleryStatus({
   galleryProfileData,
@@ -25,7 +28,27 @@ function GalleryStatus({
       // TO-DO: error handling
     }
   };
-  if (!user?.emailVerified) {
+  if (!user){
+    <Box data-testid="gallery-under-review">
+    <Typography variant="h4" sx={{color: 'red', textAlign: 'center'}}>
+      Something went wrong 
+    </Typography>
+    <Box sx={profileStyles.profile.galleryBioStyles}>
+      <Box sx={{m: 3}}>
+        <Typography>
+          Please log out and log back in 
+        </Typography>
+      </Box>
+      <Box sx={{mx: 3, my: 3}}>
+        <Typography>
+          If you have any questions or concerns, please reach out to us at{' '}
+          <a href="mailto:info@darta.art">info@darta.art</a>
+        </Typography>
+      </Box>
+    </Box>
+  </Box>
+  }
+  else if (!user?.emailVerified) {
     return (
       <Box data-testid="gallery-under-review">
         <Typography variant="h3" sx={{color: 'red', textAlign: 'center'}}>
@@ -42,7 +65,7 @@ function GalleryStatus({
               variant="contained"
               disabled={isResent}
               sx={{
-                backgroundColor: PRIMARY_BLUE,
+                backgroundColor: PRIMARY_600,
                 color: PRIMARY_MILK,
                 alignSelf: 'center',
               }}
@@ -106,7 +129,7 @@ function GalleryStatus({
         <Typography
           variant="h4"
           data-testid="gallery-name-display"
-          sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
+          sx={{color: PRIMARY_600, textAlign: 'center'}}>
           {galleryProfileData?.galleryName?.value}
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
@@ -123,12 +146,12 @@ function GalleryStatus({
       <Box data-testid="gallery-start-editing">
         <Typography
           variant="h4"
-          sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
+          sx={{color: PRIMARY_600, textAlign: 'center'}}>
           {galleryProfileData?.galleryName?.value}
         </Typography>
         <Typography
           variant="h6"
-          sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
+          sx={{color: PRIMARY_600, textAlign: 'center'}}>
           Click EDIT to get started.
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
@@ -165,6 +188,7 @@ export function ProfileGallery({
       my={5}
       sx={profileStyles.container}
       data-testid="profile-gallery-container">
+    <Card sx={cardStyles.root}>
       <Box sx={profileStyles.profile.galleryInfoContainer}>
         <Box sx={profileStyles.profile.galleryHeaderContainer}>
           <Box
@@ -204,7 +228,7 @@ export function ProfileGallery({
         galleryProfileData?.galleryInstagram?.value) && (
         <>
           <Box
-            sx={{width: '100%', mt: 5}}
+            sx={{width: '90%', mt: 5}}
             data-testid="profile-contact-section">
             <Typography
               variant="h5"
@@ -302,7 +326,7 @@ export function ProfileGallery({
       )}
       {galleryProfileData?.galleryLocation0?.locationString?.value && (
         <>
-          <Box sx={{width: '100%'}}>
+          <Box sx={{width: '90%'}}>
             <Typography variant="h5" sx={{textAlign: 'left'}}>
               Locations
               <Divider />
@@ -311,7 +335,7 @@ export function ProfileGallery({
           <Box
             sx={{
               display: 'flex',
-              width: '100%',
+              width: '90%',
               flexDirection: 'column',
               gap: '1vh',
             }}>
@@ -348,6 +372,7 @@ export function ProfileGallery({
           </Box>
         </>
       )}
+    </Card>
     </Box>
   );
 }

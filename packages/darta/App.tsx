@@ -1,9 +1,11 @@
 /* eslint-disable react/no-unstable-nested-components */
 import 'react-native-gesture-handler';
+import 'react-native-get-random-values';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {Exhibition} from '@darta-types'
 import {readExhibition} from './src/api/exhibitionRoutes'
 import React, {useEffect} from 'react';
@@ -16,30 +18,47 @@ import {ExhibitionStackNavigator} from './src/navigation/ExhibitionStackNavigato
 // import {UserStackNavigator} from './src/navigation/UserStackNavigator';
 import {StoreProvider} from './src/state/Store';
 import {footerColors, footerOptions} from './src/styles/styles';
+import { v4 as uuidv4 } from 'uuid';
+
+import * as SecureStore from 'expo-secure-store';
 
 export const RecommenderStack = createStackNavigator();
-export const ExhibitionStack = createStackNavigator();
 export const UserStack = createStackNavigator();
-export const Tab = createBottomTabNavigator();
+export const RootStack = createBottomTabNavigator();
+
+export const ExhibitionStack = createStackNavigator();
+export const ExhibitionStackTopTab = createMaterialTopTabNavigator();
+
+
+// 4e4548f6-3427-4335-b16e-4d7c1562ebae
 
 function App() {
   const [exhibition, setExhibition] = React.useState<Exhibition | {}>({})
-  
-  useEffect(() => {
-    const getExhibition = async () => {
-      const response = await readExhibition({exhibitionId: "Exhibitions/ba99e53d-29c0-49dd-9c5f-8761fb5655c3"})
-      console.log(response)
-      console.log({location: response.exhibitionLocation, coordinates: response.exhibitionLocation.coordinates})
-    }
-    getExhibition()
-  }, []);
+
+  // useEffect(() => {
+
+  //   const getUUID = async () =>{
+  //     let uuid = uuidv4();
+  //     let fetchUUID = await SecureStore.getItemAsync('secure_deviceid');
+  //       //if user has already signed up prior
+  //       if (fetchUUID) {
+  //         uuid = JSON.parse(fetchUUID)
+  //       }
+  //     await SecureStore.setItemAsync('secure_deviceid', JSON.stringify(uuid));
+  //     // console.log(uuid)
+  //   }
+  //   getUUID()
+  // }, [])
+  console.log('Component re-rendered')
+
   return (
     <PaperProvider>
       <StoreProvider>
         <NavigationContainer>
-          <Tab.Navigator screenOptions={{headerShown: false}}>
-            {/* <Tab.Screen
-              name="d a r t a" 
+          <RootStack.Navigator screenOptions={{headerShown: false}}>
+            <RootStack.Group>
+            {/* <RootStack.Screen
+              name="galleries" 
               component={RecommenderStackNavigator}
               options={{
                 TabBarElement: ({focused} : {focused: any}) => (
@@ -54,7 +73,7 @@ function App() {
             /> */}
 
             {/* Delete */}
-            <Tab.Screen
+            <RootStack.Screen
               name="e x h i b i t i o n"
               component={ExhibitionStackNavigator}
               options={{
@@ -82,7 +101,8 @@ function App() {
                 ...footerOptions,
               }}
             /> */}
-          </Tab.Navigator>
+            </RootStack.Group>
+          </RootStack.Navigator>
         </NavigationContainer>
       </StoreProvider>
     </PaperProvider>

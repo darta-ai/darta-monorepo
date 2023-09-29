@@ -3,7 +3,6 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {Platform} from 'react-native';
-import StaticSafeAreaInsets from 'react-native-static-safe-area-insets';
 
 import {GalleryLandingPage, Icons} from '../typing/types';
 
@@ -43,11 +42,13 @@ export const icons: Icons = {
   thumbsUpDown: 'thumbs-up-down-outline',
   saveSettings: 'content-save',
   brokenHeart: 'heart-broken',
+
+  // other
+  instagram: 'instagram',
+  phone: 'phone',
+  email: 'email',
+  website: 'web',
 };
-
-// export const getButtonSize = (wp:number, size: string) => {
-
-// };
 
 export const buttonSizes = {
   extraSmall: 15,
