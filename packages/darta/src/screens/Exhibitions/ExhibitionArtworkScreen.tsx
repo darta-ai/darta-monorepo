@@ -52,8 +52,8 @@ type ExhibitionArtworkRouteProp = RouteProp<ExhibitionStackParamList, Exhibition
 export function ExhibitionArtworkScreen({
   route, navigation
 }: {
-  route: ExhibitionArtworkRouteProp,
-  navigation: any
+  route?: ExhibitionArtworkRouteProp,
+  navigation?: any
 }) {
   const {state} = useContext(StoreContext);
 
@@ -71,7 +71,9 @@ export function ExhibitionArtworkScreen({
   let currentArtwork: Artwork[] = [];
   if (state?.exhibitionData && state.exhibitionData[exhibitionId] && state.exhibitionData[exhibitionId].artworks){
     const artwork = state.exhibitionData[exhibitionId].artworks
-    currentArtwork = Object.values(artwork)
+    if (artwork){
+      currentArtwork = Object.values(artwork)
+    }
   }
 
   const evens: Artwork[] = []

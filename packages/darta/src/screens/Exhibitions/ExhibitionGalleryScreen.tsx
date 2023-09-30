@@ -9,17 +9,19 @@ import {PRIMARY_50, PRIMARY_950, PRIMARY_300, PRIMARY_100, PRIMARY_200, PRIMARY_
 import { ExhibitionPreview } from '../../components/Previews/ExhibitionPreview';
 import {
   ExhibitionNavigatorParamList,
-  ExhibitionRootEnum
+  ExhibitionRootEnum,
+  PreviousExhibitionRootEnum
 } from '../../typing/routes';
 import { Text, Button} from 'react-native-paper'
 import { Image } from 'react-native-elements';
-import {StoreContext} from '../../state/Store';
+import {ETypes, StoreContext} from '../../state/Store';
 import {icons} from '../../utils/constants';
 import { Exhibition, IGalleryProfileData } from '@darta-types';
 import { formatUSPhoneNumber } from '../../utils/functions';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/ExhibitionTopTabNavigator';
+import { readExhibition } from '../../api/exhibitionRoutes';
 
 
 type ExhibitionHomeScreenNavigationProp = StackNavigationProp<
@@ -147,10 +149,12 @@ type ExhibitionGalleryRouteProp = RouteProp<ExhibitionStackParamList, Exhibition
 
 export function ExhibitionGalleryScreen({
   route,
+  navigation
 }: {
-  route: ExhibitionGalleryRouteProp;
+  route?: ExhibitionGalleryRouteProp;
+  navigation?: any;
 }) {
-  const {state} = useContext(StoreContext);
+  const {state, dispatch} = useContext(StoreContext);
 
   let galleryId;
   if (route?.params?.galleryId){
@@ -196,10 +200,27 @@ export function ExhibitionGalleryScreen({
 
   let previousExhibitions;
   if (gallery?.galleryExhibitions){
-    previousExhibitions = Object.values(gallery.galleryExhibitions)
+    previousExhibitions = Object.values(gallery.galleryExhibitions).filter((exhibition: Exhibition) => exhibition.exhibitionId !== route?.params?.exhibitionId)
     previousExhibitions.sort((a: Exhibition, b: Exhibition) => { 
       return new Date(b.exhibitionDates.exhibitionStartDate.value as any).getTime() - new Date(a.exhibitionDates.exhibitionStartDate.value as any).getTime()
     })
+  }
+
+
+  const handleExhibitionPress = async ({exhibitionId} : {exhibitionId: string}) => {
+    if (!exhibitionId) return
+
+    if (state.exhibitionData && state.exhibitionData[exhibitionId]){
+      navigation.navigate(PreviousExhibitionRootEnum.navigatorScreen, {exhibitionId})
+    } else{
+      const results = await readExhibition({exhibitionId});
+      dispatch({
+        type: ETypes.saveExhibition,
+        exhibitionData: results,
+      })
+      navigation.navigate(PreviousExhibitionRootEnum.navigatorScreen, {exhibitionId})
+    }
+
   }
 
   const sendToInstagram = () => {
@@ -395,7 +416,7 @@ export function ExhibitionGalleryScreen({
           )}
         </View>
         <View>
-          <TextElement style={galleryDetailsStyles.descriptionText}>Shows</TextElement>
+          <TextElement style={galleryDetailsStyles.descriptionText}>Past Shows</TextElement>
           <Divider style={galleryDetailsStyles.divider}/>
         </View>
         <View style={galleryDetailsStyles.previousShowContainer}>
@@ -404,11 +425,13 @@ export function ExhibitionGalleryScreen({
               <View key={index}>
                 <ExhibitionPreview 
                   exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
+                  exhibitionId={previousExhibition.exhibitionId}
                   exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
                   exhibitionGallery={gallery.galleryName?.value as string}
                   exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
                   exhibitionDates={previousExhibition.exhibitionDates}
                   galleryLogoLink={gallery.galleryLogo?.value as string}
+                  onPress={handleExhibitionPress}
                 />
               </View>
             )

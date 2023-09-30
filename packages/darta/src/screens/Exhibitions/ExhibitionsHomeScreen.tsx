@@ -74,6 +74,8 @@ export function ExhibitionsHomeScreen({
               <ExhibitionPreview 
                 exhibitionHeroImage="http://localhost:9000/exhibitions/251317fd-a181-4523-b1f8-55423796fe9b?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=dvaeTqeXGMAl0hdf%2F20230924%2Fus-central-1%2Fs3%2Faws4_request&X-Amz-Date=20230924T194834Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=dcc7085c88228fba9f2a5f012f6f77f35509dbf25897a1c1efbba9decb6ed58a"
                 exhibitionTitle="The Critique of Pure Reason"
+                exhibitionId={'FAKE_FIX_LATER'}
+                onPress={({exhibitionId}) => {}}
                 exhibitionGallery="All Street"
                 exhibitionArtist='IMMANUEL KANT'
                 exhibitionDates={exhibitionDates}

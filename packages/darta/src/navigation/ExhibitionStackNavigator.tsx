@@ -11,32 +11,37 @@ import {StoreContext} from '../state/Store';
 import {headerOptions} from '../styles/styles';
 import {UserRoutesEnum} from '../typing/routes';
 import {createOpeningTransition} from '../utils/openingTransition';
-import {ExhibitionRootEnum} from '../typing/routes';
+import {ExhibitionRootEnum, PreviousExhibitionRootEnum} from '../typing/routes';
 import {ExhibitionTopTabNavigator} from './ExhibitionTopTabNavigator'
 import {ArtworkNavigatorModal} from '../components/Modal/ArtworkNavigatorModal';
+import { PastExhibitionTopTabNavigator } from './PastExhibitionTopTabNavigator';
 
-export const ExhibitionStackTopTab = createMaterialTopTabNavigator();
 
-
-export function ExhibitionStackNavigator() {
+export function ExhibitionStackNavigator({route} : {route: any}) {
   const {state} = useContext(StoreContext);
-  const openingTransition = createOpeningTransition();
+  console.log('####', route.params)
+
   return (
     <ExhibitionStack.Navigator screenOptions={{headerTintColor: PRIMARY_800}}>
         <ExhibitionStack.Screen
           name={ExhibitionRootEnum.exhibitionHome}
           component={ExhibitionsHomeScreen}
-          options={{...headerOptions, headerTitle: 'exhibitions'}}
+          options={{...headerOptions, headerTitle: 'feed'}}
         />
       <ExhibitionStack.Screen
           name={ExhibitionRootEnum.TopTab}
           component={ExhibitionTopTabNavigator}
-          options={{...headerOptions, headerTitle: state.currentExhibition?.exhibitionTitle?.value!}}
+          options={{...headerOptions, headerTitle: "exhibition"}}
         />
+        <ExhibitionStack.Screen
+          name={PreviousExhibitionRootEnum.navigatorScreen}
+          component={PastExhibitionTopTabNavigator}
+          options={{...headerOptions, headerTitle: "previous exhibition"}}
+          />
         <ExhibitionStack.Screen
           name={ExhibitionRootEnum.individualArtwork}
           component={ArtworkNavigatorModal}
-          options={{...headerOptions, presentation: 'modal', headerTitle: state.tombstoneTitle}}
+          options={{...headerOptions, presentation: 'modal', headerTitle: "tombstone"}}
         />
     </ExhibitionStack.Navigator>
   );

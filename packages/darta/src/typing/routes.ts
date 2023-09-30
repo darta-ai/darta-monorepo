@@ -51,7 +51,6 @@ export enum ExhibitionRootEnum {
   TopTab = 'EXHIBITION_TOP_TAB',
 }
 
- // TO-DO
 export type ExhibitionNavigatorParamList = {
   [ExhibitionRootEnum.exhibitionHome]: undefined;
   [ExhibitionRootEnum.exhibitionDetails]: {exhibition: Exhibition};
@@ -63,5 +62,18 @@ export type ExhibitionNavigatorParamList = {
     galleryId: string,
     exhibitionId: string,
   }
-  
+}
+
+
+export enum PreviousExhibitionRootEnum {
+  artworkList = 'previous_artwork',
+  exhibitionDetails = 'previous_exhibition',
+  navigatorScreen = 'PREVIOUS_EXHIBITION_NAVIGATOR',
+}
+
+export type PreviousExhibitionParamList = {
+  [PreviousExhibitionRootEnum.artworkList]: {artworkList : Exhibition["artworks"]};
+  [ExhibitionRootEnum.exhibitionDetails]: {
+    exhibitionID: Exhibition | undefined
+  };
 }

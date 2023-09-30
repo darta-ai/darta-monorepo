@@ -108,7 +108,7 @@ type ExhibitionDetailsRouteProp = RouteProp<ExhibitionStackParamList, Exhibition
 export function ExhibitionDetailsScreen({
     route,
 }: {
-    route: ExhibitionDetailsRouteProp;
+    route?: ExhibitionDetailsRouteProp;
 }) {
   const {state} = useContext(StoreContext);
   let exhibitionId;

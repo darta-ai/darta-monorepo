@@ -1,13 +1,10 @@
-import {PRIMARY_600} from '@darta-styles';
-import React, {useContext} from 'react';
+import React from 'react';
 
-import {ExhibitionStack} from '../../App';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import {StoreContext} from '../state/Store';
-import {headerOptions} from '../styles/styles';
-import {ExhibitionRootEnum} from '../typing/routes';
+import {ExhibitionRootEnum, PreviousExhibitionRootEnum} from '../typing/routes';
 import {ExhibitionGalleryScreen, ExhibitionDetailsScreen, ExhibitionArtworkScreen} from '../screens/Exhibitions/'
-import {ArtworkNavigatorModal} from '../components/Modal/ArtworkNavigatorModal';
+import { ExhibitionStack } from '../../App';
+import {PastExhibitionTopTabNavigator, PreviousExhibitionStackTopTab} from './PastExhibitionTopTabNavigator'
 
 export const ExhibitionStackTopTab = createMaterialTopTabNavigator();
 export type ExhibitionStackParamList = {
@@ -19,27 +16,33 @@ export type ExhibitionStackParamList = {
   };
   [ExhibitionRootEnum.exhibitionGallery]: {
     galleryId?: string;
+    exhibitionId?: string;
   };
 };
 
 export function ExhibitionTopTabNavigator({route} : {route: any}) {
   return (
     <ExhibitionStackTopTab.Navigator >
+      <ExhibitionStackTopTab.Group>
       <ExhibitionStackTopTab.Screen
           name={ExhibitionRootEnum.exhibitionDetails}
           component={ExhibitionDetailsScreen}
           initialParams={{exhibitionId: route.params.exhibitionId}}
+          options={{ title: 'Exhibition' }}
         />
         <ExhibitionStackTopTab.Screen
           name={ExhibitionRootEnum.artworkList}
           component={ExhibitionArtworkScreen}
           initialParams={{exhibitionId: route.params.exhibitionId}}
+          options={{ title: 'Artwork' }}
         />
         <ExhibitionStackTopTab.Screen
           name={ExhibitionRootEnum.exhibitionGallery}
           component={ExhibitionGalleryScreen}
-          initialParams={{galleryId: route.params.galleryId}}
+          initialParams={{galleryId: route.params.galleryId, exhibitionId: route.params.exhibitionId}}
+          options={{ title: 'Gallery' }}
         />
+        </ExhibitionStackTopTab.Group>
     </ExhibitionStackTopTab.Navigator>
   );
 }
