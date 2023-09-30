@@ -21,18 +21,22 @@ import { customLocalDateString } from '../../utils/functions';
 
 export function ExhibitionPreview({
     exhibitionHeroImage,
+    exhibitionId,
     exhibitionTitle,
     exhibitionGallery, 
     exhibitionDates,
     galleryLogoLink,
-    exhibitionArtist
+    exhibitionArtist,
+    onPress
 }: {
     exhibitionHeroImage: string,
+    exhibitionId: string,
     exhibitionTitle: string,
     exhibitionGallery: string, 
     exhibitionDates: ExhibitionDates,
     galleryLogoLink: string,
-    exhibitionArtist: string
+    exhibitionArtist: string,
+    onPress: ({exhibitionId} : {exhibitionId: string}) => void
 }) {
 
   const exhibitionPreview = StyleSheet.create({
@@ -99,7 +103,7 @@ export function ExhibitionPreview({
   return (
     <>
     <TouchableOpacity 
-      onPress={() => console.log('pressed')}
+      onPress={() => onPress({exhibitionId})}
     >
       <View
         style={exhibitionPreview.container}>

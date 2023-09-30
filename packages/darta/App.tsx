@@ -74,7 +74,7 @@ function App() {
 
             {/* Delete */}
             <RootStack.Screen
-              name="e x h i b i t i o n"
+              name="exhibition feed"
               component={ExhibitionStackNavigator}
               options={{
                 TabBarElement: ({focused}: {focused: any}) => (
