@@ -4,6 +4,7 @@ import {Exhibition, GalleryState} from '@darta-types';
 import {Box, Button, Typography, CircularProgress} from '@mui/material';
 import Head from 'next/head';
 import React from 'react';
+import {PRIMARY_MILK, PRIMARY_600} from '@darta-styles';
 
 import {AuthContext} from '../../../pages/_app';
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
@@ -175,7 +176,7 @@ export function GalleryExhibition() {
               }
               sx={galleryStyles.createNewButton}>
               {isLoadingExhibition ? (
-                <CircularProgress color="secondary" />
+                <CircularProgress sx={{color: PRIMARY_MILK}} size={24} />
               ):
               (
               <Typography sx={{fontWeight: 'bold'}}>
@@ -191,11 +192,11 @@ export function GalleryExhibition() {
           {state.galleryExhibitions &&
             Object.values(state.galleryExhibitions)
               .sort((a, b) => {
-                const dateA = a?.createdAt
-                  ? new Date(a.createdAt)
+                const dateA = a?.exhibitionDates?.exhibitionEndDate?.value
+                  ? new Date(a?.exhibitionDates?.exhibitionEndDate?.value)
                   : new Date(0);
-                const dateB = b?.createdAt
-                  ? new Date(b.createdAt)
+                const dateB = b?.exhibitionDates?.exhibitionEndDate?.value
+                  ? new Date(b?.exhibitionDates?.exhibitionEndDate?.value)
                   : new Date(0);
                 return (dateB as any) - (dateA as any);
               })

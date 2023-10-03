@@ -68,7 +68,7 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
         <Box
           component="img"
           sx={headerStyles.dartaImageBox}
-          src="/static/images/dartahouseblue.png"
+          src="/static/images/dartahousewhite.png"
           data-testid="header-image"
           alt="logo"
         />

@@ -7,18 +7,24 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {Exhibition} from '@darta-types'
-import {readExhibition} from './src/api/exhibitionRoutes'
-import React, {useEffect} from 'react';
-// import {getUniqueId} from 'react-native-device-info';
+import React from 'react';
 import {Provider as PaperProvider} from 'react-native-paper';
 
 import {TabBarElement} from './src/components/Elements/TabBarElement';
 import {ExhibitionStackNavigator} from './src/navigation/ExhibitionStackNavigator';
 // import {RecommenderStackNavigator} from './src/navigation/RecommenderStackNavigator';
-// import {UserStackNavigator} from './src/navigation/UserStackNavigator';
+import {UserStackNavigator} from './src/navigation/UserStackNavigator';
 import {StoreProvider} from './src/state/Store';
 import {footerColors, footerOptions} from './src/styles/styles';
 import { v4 as uuidv4 } from 'uuid';
+import { View } from 'react-native';
+
+import Entypo from '@expo/vector-icons/Entypo';
+import * as SplashScreen from 'expo-splash-screen';
+import {AnimatedAppLoader} from './src/components/SplashScreen/SplashScreen';
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
 
 import * as SecureStore from 'expo-secure-store';
 
@@ -50,62 +56,48 @@ function App() {
   //   getUUID()
   // }, [])
   console.log('Component re-rendered')
-
+  
   return (
     <PaperProvider>
-      <StoreProvider>
-        <NavigationContainer>
-          <RootStack.Navigator screenOptions={{headerShown: false}}>
-            <RootStack.Group>
-            {/* <RootStack.Screen
-              name="galleries" 
-              component={RecommenderStackNavigator}
-              options={{
-                TabBarElement: ({focused} : {focused: any}) => (
-                  <TabBarElement
-                    focused={focused}
-                    icon="image-frame"
-                    colors={footerColors}
-                  />
-                ),
-                ...footerOptions,
-              }}
-            /> */}
-
-            {/* Delete */}
-            <RootStack.Screen
-              name="exhibition feed"
-              component={ExhibitionStackNavigator}
-              options={{
-                TabBarElement: ({focused}: {focused: any}) => (
-                  <TabBarElement
-                    focused={focused}
-                    icon="account-box-outline"
-                    colors={footerColors}
-                  />
-                ),
-                ...footerOptions,
-              }}
-            />
-            {/* <Tab.Screen
-              name="m e"
-              component={UserStackNavigator}
-              options={{
-                TabBarElement: ({focused}: {focused: any}) => (
-                  <TabBarElement
-                    focused={focused}
-                    icon="account-box-outline"
-                    colors={footerColors}
-                  />
-                ),
-                ...footerOptions,
-              }}
-            /> */}
-            </RootStack.Group>
-          </RootStack.Navigator>
-        </NavigationContainer>
-      </StoreProvider>
-    </PaperProvider>
+        <StoreProvider>
+          <AnimatedAppLoader>
+            <NavigationContainer>
+              <RootStack.Navigator screenOptions={{headerShown: false}}>
+                <RootStack.Group>
+                <RootStack.Screen
+                  name="feed"
+                  component={ExhibitionStackNavigator}
+                  options={{
+                    tabBarIcon: ({focused}: {focused: any}) => (
+                      <TabBarElement
+                        focused={focused}
+                        icon="home-group"
+                        colors={footerColors}
+                      />
+                    ),
+                    ...footerOptions,
+                  }}
+                />
+                <RootStack.Screen
+                  name="m e"
+                  component={UserStackNavigator}
+                  options={{
+                    tabBarIcon: ({focused}: {focused: any}) => (
+                      <TabBarElement
+                        focused={focused}
+                        icon="account-box-outline"
+                        colors={footerColors}
+                      />
+                    ),
+                    ...footerOptions,
+                  }}
+                />
+                </RootStack.Group>
+              </RootStack.Navigator>
+            </NavigationContainer>
+        </AnimatedAppLoader>  
+        </StoreProvider>
+      </PaperProvider>
   );
 }
 

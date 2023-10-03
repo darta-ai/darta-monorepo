@@ -8,7 +8,7 @@ import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {PRIMARY_MILK} from '../../../styles';
-import {PRIMARY_600} from '@darta-styles'
+import {PRIMARY_600, PRIMARY_200} from '@darta-styles'
 
 import {exhibitionPressReleaseToolTip} from '../../common/ToolTips/toolTips';
 import {createArtworkStyles} from '../Artwork/styles';
@@ -724,7 +724,14 @@ export function CreateExhibition({
             <Button
               variant="contained"
               data-testid="delete-exhibition-button"
-              color="error"
+              sx={{
+                backgroundColor: PRIMARY_200, 
+                alignSelf: 'center',
+                width: '15vw',
+                '@media (min-width: 800px)': {
+                  width: '10vw',
+                },
+              }}
               onClick={() => {
                 handleClickOpen();
               }}>

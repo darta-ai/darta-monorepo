@@ -29,7 +29,6 @@ export function PastExhibitionTopTabNavigator({route} : {route: any}) {
   let pastExhibitionTitle = 'past exhibition'
   if (exhibitionId && state.exhibitionData && state.exhibitionData[exhibitionId] && state.exhibitionData[exhibitionId].exhibitionTitle){
     pastExhibitionTitle = state.exhibitionData[exhibitionId].exhibitionTitle.value!
-    console.log({exhibitionId}, pastExhibitionTitle)
   }
 
 
@@ -38,13 +37,13 @@ export function PastExhibitionTopTabNavigator({route} : {route: any}) {
       <PreviousExhibitionStackTopTab.Screen
           name={PreviousExhibitionRootEnum.artworkList}
           component={ExhibitionArtworkScreen}
-          initialParams={{exhibitionId: route?.params?.exhibitionId}}
+          initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId}}
           options={{ title: 'artworks' }}
         />
       <PreviousExhibitionStackTopTab.Screen
           name={PreviousExhibitionRootEnum.exhibitionDetails}
           component={ExhibitionDetailsScreen}
-          initialParams={{exhibitionId: route?.params?.exhibitionId}}
+          initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId}}
           options={{ title: 'exhibition' }}
         />
     </PreviousExhibitionStackTopTab.Navigator>

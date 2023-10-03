@@ -1,9 +1,7 @@
 import {Exhibition} from '@darta-types';
 import axios from 'axios';
 
-// const URL = `${process.env.EXPO_PUBLIC_API_URL}exhibition`;
-
-const URL = 'http://localhost:1160/exhibition'
+const URL = `${process.env.EXPO_PUBLIC_API_URL}exhibition`;
 
 export async function readExhibition({
   exhibitionId,
@@ -22,3 +20,21 @@ export async function readExhibition({
   }
 }
 
+// listAllExhibitionsForUser
+
+export async function listAllExhibitionsPreviewsForUser({
+  limit,
+}: {
+  limit: number;
+}): Promise<Exhibition | any> {
+  try {
+    const {data} = await axios.get(`${URL}/listAllExhibitionsPreviewsForUser`, {
+      params: {
+        limit
+  }});
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message})
+    return {};
+  }
+}

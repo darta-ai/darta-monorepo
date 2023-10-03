@@ -215,4 +215,24 @@ export class ExhibitionController {
       res.status(500).send(error.message);
     }
   }
+
+  @httpGet('/listAllExhibitionsPreviewsForUser')
+  public async listAllExhibitionsPreviewsForUser(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    if (!req.query.limit) {
+      res.status(400).send("limit query parameter is required");
+      return;
+  }
+    try {
+      const limit = <number>parseInt(req.query.limit.toString());
+      const results = await this.exhibitionService.listExhibitionsPreviewsForUserByLimit({
+        limit
+      });
+      res.json(results);
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
 }

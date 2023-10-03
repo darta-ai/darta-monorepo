@@ -5,7 +5,7 @@ import React from 'react';
 
 import {AuthContext} from '../../../pages/_app';
 import {PRIMARY_MILK} from '../../../styles';
-import {PRIMARY_600} from '@darta-styles'
+import {PRIMARY_400, PRIMARY_600} from '@darta-styles'
 
 import {phoneNumberConverter} from '../../common/utils/phoneNumberConverter';
 import {resendEmailVerification} from '../../ThirdPartyAPIs/firebaseApp';
@@ -42,7 +42,7 @@ function GalleryStatus({
       <Box sx={{mx: 3, my: 3}}>
         <Typography>
           If you have any questions or concerns, please reach out to us at{' '}
-          <a href="mailto:info@darta.art">info@darta.art</a>
+          <a style={{color: PRIMARY_400}} href="mailto:info@darta.art">info@darta.art</a>
         </Typography>
       </Box>
     </Box>
@@ -89,7 +89,7 @@ function GalleryStatus({
           <Box sx={{mx: 3, my: 3}}>
             <Typography>
               With questions, please reach out to us at{' '}
-              <a href="mailto:info@darta.art">info@darta.art</a>
+              <a style={{color: PRIMARY_400}} href="mailto:info@darta.art">info@darta.art</a>
             </Typography>
           </Box>
         </Box>
@@ -117,7 +117,7 @@ function GalleryStatus({
           <Box sx={{mx: 3, my: 3}}>
             <Typography>
               If you have any questions or concerns, please reach out to us at{' '}
-              <a href="mailto:info@darta.art">info@darta.art</a>
+              <a style={{color: PRIMARY_400}} href="mailto:info@darta.art">info@darta.art</a>
             </Typography>
           </Box>
         </Box>
@@ -129,11 +129,11 @@ function GalleryStatus({
         <Typography
           variant="h4"
           data-testid="gallery-name-display"
-          sx={{color: PRIMARY_600, textAlign: 'center'}}>
+          sx={{color: PRIMARY_600, textAlign: 'left'}}>
           {galleryProfileData?.galleryName?.value}
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
-          <Box sx={{m: 2}}>
+          <Box sx={{my: 2}}>
             <Typography data-testid="gallery-bio-display">
               {galleryProfileData?.galleryBio?.value}
             </Typography>

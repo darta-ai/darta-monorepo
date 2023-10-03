@@ -118,4 +118,6 @@ export interface IExhibitionService {
   }: {
     exhibitionId: string;
   }): Promise<any>;
+
+  listExhibitionsPreviewsForUserByLimit({limit} : {limit: number}): Promise<{[key: string] : Exhibition} | void>
 }

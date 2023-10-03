@@ -25,6 +25,8 @@ export declare const PRIMARY_MILK = "#f0f7fe";
 export declare const PRIMARY_DARK_MILK = "#ddecfc";
 export declare const PRIMARY_BLUE = "#68AFEF";
 export declare const PRIMARY_DARKEST_BLUE = "#1b2b50";
+
+
 export declare const PRIMARY_50 = "#f8f5f2";
 export declare const PRIMARY_100 = "#ece2d9";
 export declare const PRIMARY_200 = "#d7c4b0";

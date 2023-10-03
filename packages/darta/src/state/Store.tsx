@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, {createContext, ReactNode, useReducer} from 'react';
 
 import {RatingEnum} from '../typing/types';
-import {Artwork, Exhibition, IGalleryProfileData} from '@darta-types'
+import {Artwork, Exhibition, ExhibitionPreview, IGalleryProfileData} from '@darta-types'
 
 export interface IUserArtworkRatings {
   [id: string]: {
@@ -93,16 +93,20 @@ export interface IState {
   exhibitionData?: {
     [key: string] : Exhibition
   }
-  currentExhibition: Exhibition;
+  exhibitionPreviews?: {
+    [key: string]: ExhibitionPreview
+  }
   galleryData?:{
     [key: string]: IGalleryProfileData
   },
-  currentGallery?: IGalleryProfileData;
 
   artworkData?: {
     [key: string]: Artwork
   }
-  currentArtwork?: Artwork;
+
+  currentExhibitionHeader?: string;
+  previousExhibitionHeader?: string;
+  currentArtworkTombstoneHeader?: string;
 }
 
 export enum ETypes {
@@ -121,10 +125,18 @@ export enum ETypes {
 
   // look at above in future
   saveExhibition = 'SAVE_EXHIBITION',
+  saveExhibitionMulti = 'SAVE_EXHIBITION_MULTI',
+  saveExhibitionPreviews = 'SAVE_EXHIBITION_PREVIEWS',
 
   saveGallery = 'SAVE_GALLERY',
+  saveGalleries= 'SAVE_GALLERIES',
 
   saveArtwork = 'SAVE_ARTWORK',
+  saveArtworkMulti = 'SAVE_ARTWORK_MULTI',
+
+  setCurrentHeader = 'SET_CURRENT_HEADER',
+  setPreviousExhibitionHeader = 'SET_PREVIOUS_EXHIBITION_HEADER',
+  setTombstoneHeader = 'SET_TOMBSTONE_HEADER',
 }
 
 // Define the action type
@@ -158,11 +170,13 @@ interface IAction {
   
   // see here after
   exhibitionData?: Exhibition;
-  currentExhibition?: Exhibition;
+  exhibitionPreviews?: {[key: string] : Exhibition}
   galleryData?: IGalleryProfileData;
-  currentGallery?: IGalleryProfileData;
   artworkData?: Artwork;
-  currentArtwork?: Artwork;
+
+  currentExhibitionHeader?: string;
+  previousExhibitionHeader?: string;
+  currentArtworkHeader?: string;
 }
 
 // Define the initial state
@@ -181,12 +195,10 @@ const initialState: IState = {
     legalLastName: "legalName",
     email: "email", 
   },
+  // here
   artworkData: {} as any,
-
   exhibitionData : {},
-  currentExhibition: {} as Exhibition,
   galleryData: {},
-  currentGallery: {} as IGalleryProfileData,
 };
 
 // Define the reducer function
@@ -384,6 +396,29 @@ const reducer = (state: IState, action: IAction): IState => {
           [action.exhibitionData.exhibitionId]: action.exhibitionData
         }
       }
+      case ETypes.saveExhibitionMulti:
+        if(!action.exhibitionData){
+          return state
+        }
+        return {
+          ...state,
+          exhibitionData: {
+            ...state.exhibitionData,
+            ...action.exhibitionData
+          }
+        }
+    case ETypes.saveExhibitionPreviews:
+      if(!action.exhibitionPreviews){
+        return state
+      }
+      return {
+        ...state,
+        exhibitionPreviews: {
+          ...state.exhibitionPreviews,
+          ...action.exhibitionPreviews
+        }
+      }
+
     case ETypes.saveGallery:
       if(!action.galleryData || !action.galleryData._id){
         return state
@@ -395,6 +430,17 @@ const reducer = (state: IState, action: IAction): IState => {
           [action.galleryData._id]: action.galleryData
         }
       }
+      case ETypes.saveGalleries:
+        if(!action.galleryData){
+          return state
+        }
+        return {
+          ...state,
+          galleryData: {
+            ...state.galleryData,
+            ...action.galleryData
+          }
+        }
     case ETypes.saveArtwork:
       if(!action.artworkData || !action.artworkData.artworkId){
         return state
@@ -406,6 +452,42 @@ const reducer = (state: IState, action: IAction): IState => {
           [action.artworkData.artworkId]: action.artworkData
         }
       }
+
+      case ETypes.saveArtworkMulti:
+        if(!action.artworkData){
+          return state
+        }
+        return {
+          ...state,
+          artworkData: {
+            ...state.artworkData,
+            ...action.artworkData
+          }
+        }
+      case ETypes.setCurrentHeader:
+        if (!action.currentExhibitionHeader) {
+          return state;
+        }
+        return {
+          ...state,
+          currentExhibitionHeader: action.currentExhibitionHeader,
+        };
+      case ETypes.setPreviousExhibitionHeader:
+        if (!action.previousExhibitionHeader) {
+          return state;
+        }
+        return {
+          ...state,
+          previousExhibitionHeader: action.previousExhibitionHeader,
+        };
+      case ETypes.setTombstoneHeader:
+        if (!action.currentArtworkHeader) {
+          return state;
+        }
+        return {
+          ...state,
+          currentArtworkTombstoneHeader: action.currentArtworkHeader,
+        };
     default:
       return state;
   }

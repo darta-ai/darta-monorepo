@@ -481,6 +481,21 @@ export class ArtworkService implements IArtworkService {
 
     // ################# Artwork Image ###############
 
+    const {artworkImage} = artwork;
+
+    let artworkImageValue = null;
+
+    if (artworkImage?.bucketName && artworkImage?.fileName) {
+      try {
+        artworkImageValue = await this.imageController.processGetFile({
+          fileName: artworkImage.fileName,
+          bucketName: artworkImage.bucketName,
+        });
+      } catch (error) {
+        throw new Error('error getting artwork image');
+      }
+    }
+
     return {
       ...artwork,
       artworkMedium: {
@@ -488,6 +503,10 @@ export class ArtworkService implements IArtworkService {
       },
       artistName: {
         value: artistNameNode?.value ?? '',
+      },
+      artworkImage: {
+        ...artworkImage,
+        value: artworkImageValue,
       },
     };
   }

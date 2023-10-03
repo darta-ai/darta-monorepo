@@ -4,12 +4,11 @@
     "slug": "darta",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/darta-icon.png",
+    "icon": "./src/assets/darta-icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/darta-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#b58a6a"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -24,12 +23,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/darta-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./src/assets/darta-icon.png",
+        "backgroundColor": "#b58a6a"
       }
     },
     "web": {
-      "favicon": "./assets/darta-icon.png"
+      "favicon": "./src/assets/darta-icon.png"
     },
     "extra": {
       "eas": {

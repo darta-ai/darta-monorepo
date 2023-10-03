@@ -5,6 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { PRIMARY_400 } from 'packages/darta-styles/dist/styles';
 import React from 'react';
 
 export function ConfirmDeleteExhibitionArtwork({
@@ -59,24 +60,12 @@ export function ConfirmDeleteExhibitionArtwork({
       data-testid="confirm-delete-artwork-modal"
       maxWidth="lg">
       <DialogTitle id="alert-dialog-title">
-        <Typography sx={{fontWeight: 'bold'}} variant="h5">
+        <Typography sx={{fontWeight: 'bold'}} variant="h6">
           Do you want to delete the artwork from darta?
         </Typography>
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description-1">
-          <Typography sx={{fontWeight: 'bold'}}>
-            Please indicate if you would like to delete the artwork OR remove it
-            from the exhibition.
-          </Typography>
-        </DialogContentText>
-        <DialogContentText id="alert-dialog-description-2">
-          <Typography sx={{fontWeight: 'bold'}}>
-            By keeping the artwork on darta will increase the views of the
-            artwork and your gallery.
-          </Typography>
-        </DialogContentText>
-        <DialogContentText id="alert-dialog-description-3">
           <Typography sx={{fontWeight: 'bold'}}>
             This action cannot be undone.
           </Typography>
@@ -89,12 +78,10 @@ export function ConfirmDeleteExhibitionArtwork({
           </Box>
         ) : (
           <>
-            <Button variant="contained" color="secondary" onClick={handleClose}>
-              <Typography sx={{fontWeight: 'bold'}}>Do Not Delete</Typography>
-            </Button>
+
             <Button
               variant="contained"
-              color="error"
+              style={{color: PRIMARY_400}}
               data-testid="confirm-delete-artwork-button"
               onClick={() => {
                 handleRemove();
@@ -106,7 +93,7 @@ export function ConfirmDeleteExhibitionArtwork({
             </Button>
             <Button
               variant="contained"
-              color="error"
+              style={{backgroundColor: PRIMARY_400}}
               data-testid="confirm-delete-artwork-button"
               onClick={() => {
                 handleDelete();
@@ -115,6 +102,9 @@ export function ConfirmDeleteExhibitionArtwork({
               <Typography sx={{fontWeight: 'bold'}}>
                 Delete Artwork From Darta
               </Typography>
+            </Button>
+            <Button variant="contained" color="secondary" onClick={handleClose}>
+              <Typography sx={{fontWeight: 'bold'}}>Do Not Delete</Typography>
             </Button>
           </>
         )}

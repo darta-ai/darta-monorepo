@@ -115,6 +115,7 @@ export async function firebaseSignIn(
 
     return {error: false, user: userCredential.user, errorMessage: '', idToken};
   } catch (error: any) {
+    console.log(error);
     return {
       error: true,
       user: undefined,

@@ -32,11 +32,11 @@ export function HeaderSignedOut({authType}: {authType: AuthEnum}) {
       <div />
       <Box data-testid="header-navigation-image-box">
         <Image
-          src="/static/images/dartahouseblue.png"
+          src="/static/images/dartahousewhite.png"
           data-testid="header-image"
           alt="me"
-          width="80"
-          height="64"
+          height={80}
+          width={80}
           onClick={() => router.push('/', undefined, {shallow: true})}
         />
       </Box>

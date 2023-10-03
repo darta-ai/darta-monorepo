@@ -298,7 +298,7 @@ export function EditProfileGallery({
   };
 
   return (
-    <Box mb={2} sx={profileStyles.container}>
+    <Box my={5} sx={profileStyles.container}>
       <Box sx={createArtworkStyles.backButton}>
         <Button
           variant="outlined"
@@ -579,9 +579,9 @@ export function EditProfileGallery({
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
-            mt: 10,
+            my: 5,
           }}>
-          <Button
+          <Button 
             variant="contained"
             type="submit"
             data-testid="save-profile-edit-button"

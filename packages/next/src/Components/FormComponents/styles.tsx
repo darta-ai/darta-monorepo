@@ -10,12 +10,6 @@ export const formStyles = {
     minWidth: '35vw',
     alignItems: 'center',
     justifyContent: 'center',
-    '@media (min-width: 1500px)': {
-      display: 'grid',
-      width: '100%',
-      height: '15vh',
-      gridTemplateColumns: '5vw 5vw 1fr',
-    },
   },
   inputTextContainerTwoColumns: {
     display: 'flex',
@@ -71,7 +65,7 @@ export const formStyles = {
     color: PRIMARY_GREY,
     height: '15px',
     '@media (min-width: 800px)': {
-      height: '20px',
+      height: '15px',
     },
   },
   formTextField: {
@@ -82,7 +76,7 @@ export const formStyles = {
     alignItems: 'center',
     alignSelf: 'center',
     '@media (min-width: 1280px)': {
-      width: '100%',
+      width: '80%',
     },
   },
   helpIconTiny: {
@@ -106,7 +100,7 @@ export const formStyles = {
     flexDirection: 'column',
     placeItems: 'center',
     gridTemplateColumns: '1fr 1fr',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1280px)': {
       display: 'none',
     },
   },

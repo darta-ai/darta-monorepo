@@ -26,12 +26,8 @@ export function ArtworkCard({
 
   const navigateToTombstone = () => {
     dispatch({
-      type: ETypes.setCurrentArtwork,
-      currentArtwork: artwork,
-    });
-    dispatch({
-      type: ETypes.setTombstone,
-      tombstoneTitle: artwork?.artworkTitle?.value ?? "",
+      type: ETypes.setTombstoneHeader,
+      currentArtworkHeader: artwork?.artworkTitle?.value ?? "",
     });
     navigation.navigate(ExhibitionRootEnum.individualArtwork, {
       artOnDisplay: artwork,
@@ -43,8 +39,8 @@ export function ArtworkCard({
   const height = parseInt(inputHeight, 10)
   const width = parseInt(inputWidth, 10)
 
-  let artHeight;
-  let artWidth;
+  let artHeight = 0;
+  let artWidth = 0;
   const maxDimension = Math.floor(wp('45%') * 0.85);
   if (height && width && height >= width) {
     artHeight = maxDimension;

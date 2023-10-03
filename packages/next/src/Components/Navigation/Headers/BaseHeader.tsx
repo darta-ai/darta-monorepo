@@ -57,11 +57,11 @@ export function BaseHeader() {
       <div />
       <Box data-testid="dartaHouseBlue">
         <Image
-          src="/static/images/dartahouseblue.png"
+          src="/static/images/dartahousewhite.png"
           data-testid="header-image"
           alt="me"
-          width="80"
-          height="64"
+          height={80}
+          width={80}
           onClick={() => router.push('/', undefined, {shallow: true})}
         />
       </Box>

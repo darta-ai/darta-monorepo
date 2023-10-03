@@ -1,9 +1,7 @@
 import {Exhibition} from '@darta-types';
 import axios from 'axios';
 
-// const URL = `${process.env.EXPO_PUBLIC_API_URL}exhibition`;
-
-const URL = 'http://localhost:1160/gallery'
+const URL = `${process.env.EXPO_PUBLIC_API_URL}gallery`;
 
 export async function readGallery({
   galleryId,
