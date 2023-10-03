@@ -15,8 +15,8 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "@darta-types": "*",
     "@darta-styles": "*",
+    "@darta-types": "*",
     "@emotion/cache": "11.11.0",
     "@emotion/react": "11.11.0",
     "@emotion/server": "11.11.0",
@@ -46,6 +46,7 @@
     "react-hook-form": "^7.43.9",
     "react-joyride": "^2.5.4",
     "react-number-format": "^5.2.2",
+    "sharp": "^0.32.6",
     "xlsx": "^0.18.5",
     "yup": "^1.1.1"
   },

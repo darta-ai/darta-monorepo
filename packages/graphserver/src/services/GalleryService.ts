@@ -13,7 +13,7 @@ import {ImageController} from '../controllers/ImageController';
 import {City, Gallery} from '../models/GalleryModel';
 import {Node} from '../models/models';
 import {IEdgeService, IGalleryService, INodeService} from './interfaces';
-import { filterOutPrivateRecordsMultiObject } from 'src/middleware/filterOutPrivateRecords';
+import { filterOutPrivateRecordsMultiObject } from '../middleware';
 
 const BUCKET_NAME = 'logo';
 
@@ -358,6 +358,21 @@ export class GalleryService implements IGalleryService {
     } catch (error: any) {
       throw new Error('Unable to create gallery admin node');
     }
+  }
+
+  public async getGalleryByExhibitionId({exhibitionId}: {exhibitionId: string}): Promise<Gallery | null>{
+
+    try {
+      const results = await this.edgeService.getEdgeWithTo({
+        edgeName: EdgeNames.FROMGalleryTOExhibition,
+        to: exhibitionId,
+      });
+      return await this.readGalleryProfileFromGalleryId({galleryId: results._from})
+    } catch(error: any){
+      console.log({error})
+    }
+
+    return null
   }
 
   // eslint-disable-next-line class-methods-use-this

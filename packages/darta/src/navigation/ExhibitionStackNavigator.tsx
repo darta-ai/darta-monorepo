@@ -8,7 +8,7 @@ import {UserInquiredArtwork} from '../components/User/UserInquiredArtwork';
 import {UserSavedArtwork} from '../components/User/UserSavedArtwork';
 import {UserSettings} from '../components/User/UserSettings';
 import {StoreContext} from '../state/Store';
-import {headerOptions} from '../styles/styles';
+import {headerOptions, modalHeaderOptions} from '../styles/styles';
 import {UserRoutesEnum} from '../typing/routes';
 import {createOpeningTransition} from '../utils/openingTransition';
 import {ExhibitionRootEnum, PreviousExhibitionRootEnum} from '../typing/routes';
@@ -19,7 +19,6 @@ import { PastExhibitionTopTabNavigator } from './PastExhibitionTopTabNavigator';
 
 export function ExhibitionStackNavigator({route} : {route: any}) {
   const {state} = useContext(StoreContext);
-  console.log('####', route.params)
 
   return (
     <ExhibitionStack.Navigator screenOptions={{headerTintColor: PRIMARY_800}}>
@@ -31,17 +30,17 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
       <ExhibitionStack.Screen
           name={ExhibitionRootEnum.TopTab}
           component={ExhibitionTopTabNavigator}
-          options={{...headerOptions, headerTitle: "exhibition"}}
+          options={{...headerOptions, headerTitle: state.currentExhibitionHeader}}
         />
         <ExhibitionStack.Screen
           name={PreviousExhibitionRootEnum.navigatorScreen}
           component={PastExhibitionTopTabNavigator}
-          options={{...headerOptions, headerTitle: "previous exhibition"}}
+          options={{...headerOptions, headerTitle: state.previousExhibitionHeader}}
           />
         <ExhibitionStack.Screen
           name={ExhibitionRootEnum.individualArtwork}
           component={ArtworkNavigatorModal}
-          options={{...headerOptions, presentation: 'modal', headerTitle: "tombstone"}}
+          options={{...modalHeaderOptions, presentation: 'modal', headerTitle: state.currentArtworkTombstoneHeader}}
         />
     </ExhibitionStack.Navigator>
   );

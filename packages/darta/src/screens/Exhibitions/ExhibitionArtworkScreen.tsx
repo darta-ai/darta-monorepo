@@ -1,14 +1,11 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useContext, useState} from 'react';
-import {View, StyleSheet, ScrollView, FlatList} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import React, {useContext} from 'react';
+import {View, StyleSheet, ScrollView, FlatList,
+  RefreshControl} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 
 import {PRIMARY_600, PRIMARY_50} from '@darta-styles';
-import {imagePrefetch} from '../../utils/functions';
-import {GalleryPreview} from '../../components/Previews/GalleryPreview';
 import {TextElement} from '../../components/Elements/_index';
-import {days, today} from '../../utils/constants';
 import {
   ExhibitionNavigatorParamList,
   ExhibitionRootEnum
@@ -17,7 +14,7 @@ import {ETypes, StoreContext} from '../../state/Store';
 import { SSDartaHome, touchableOpacity } from '../../styles/styles';
 import { readExhibition } from '../../api/exhibitionRoutes';
 import {Artwork, Exhibition, ExhibitionDates, IOpeningLocationData} from '@darta-types'
-import { ExhibitionPreview } from '../../components/Previews/ExhibitionPreview';
+import { ExhibitionPreviewMini } from '../../components/Previews/ExhibitionPreviewMini';
 import {ArtworkCard} from '../../components/Artwork/ArtworkCard'
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/ExhibitionTopTabNavigator';
@@ -55,9 +52,9 @@ export function ExhibitionArtworkScreen({
   route?: ExhibitionArtworkRouteProp,
   navigation?: any
 }) {
-  const {state} = useContext(StoreContext);
+  const {state, dispatch} = useContext(StoreContext);
 
-  let exhibitionId;
+  let exhibitionId = ""
   if (route?.params?.exhibitionId){
     exhibitionId = route.params.exhibitionId;
   } else{
@@ -68,41 +65,64 @@ export function ExhibitionArtworkScreen({
     )
   }
 
-  let currentArtwork: Artwork[] = [];
-  if (state?.exhibitionData && state.exhibitionData[exhibitionId] && state.exhibitionData[exhibitionId].artworks){
-    const artwork = state.exhibitionData[exhibitionId].artworks
-    if (artwork){
-      currentArtwork = Object.values(artwork)
-    }
-  }
+  const [currentArtwork, setCurrentArtwork] = React.useState<Artwork[] | null>(null)
+  const [oddArtwork, setOdds] = React.useState<Artwork[] | null>(null)
+  const [evenArtwork, setEvens] = React.useState<Artwork[] | null>(null)
 
-  const evens: Artwork[] = []
-  const odds: Artwork[] = []
-  currentArtwork.sort((a: Artwork, b: Artwork) => a?.exhibitionOrder! - b?.exhibitionOrder!)
-  .forEach((artwork: Artwork, index: number) => {
-    if (index % 2 === 0){
-      evens.push(artwork)
-    } else{
-      odds.push(artwork)
+  React.useEffect(()=>{
+    if (state?.exhibitionData && state.exhibitionData[exhibitionId] && state.exhibitionData[exhibitionId].artworks){
+      const artwork = state.exhibitionData[exhibitionId].artworks
+      if (artwork){
+        setCurrentArtwork(Object.values(artwork))
+        const odds: Artwork[] = [];
+        const evens: Artwork[]  = [];
+        Object.values(artwork).sort((a: Artwork, b: Artwork) => a?.exhibitionOrder! - b?.exhibitionOrder!)
+        .forEach((artwork: Artwork, index: number) => {
+          if (index % 2 === 0){
+            evens.push(artwork)
+          } else{
+            odds.push(artwork)
+          }
+        })
+        setOdds(odds)
+        setEvens(evens)
+      }
     }
-  })
+  }, [, state.exhibitionData])
 
-  const evenArtworks = evens;
-  const oddArtworks = odds
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    try{
+        const newExhibition = await readExhibition({exhibitionId: exhibitionId});
+        dispatch({
+            type: ETypes.saveExhibition,
+            exhibitionData: newExhibition,
+        })
+    } catch {
+        setRefreshing(false);
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 500)  }, []);
 
   return (
-        <View style={exhibitionDetailsStyles.container}>
+      <View style={exhibitionDetailsStyles.container}>
         <FlatList
           data={[0]}
           keyExtractor={item => item.toString()}
           style={{ marginTop: hp('2.5%')}}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} tintColor={PRIMARY_600} onRefresh={onRefresh} />}
           renderItem={() => (
             <View style={exhibitionDetailsStyles.flexContainer}>
               <View >
-                {evenArtworks && (
+                {evenArtwork && (
                   <FlatList
                     nestedScrollEnabled={false}
-                    data={evenArtworks}
+                    data={evenArtwork}
                     keyExtractor={item => item.artworkId?.toString() ?? "654321"}
                     renderItem={({item}) => (
                       <ArtworkCard
@@ -115,10 +135,10 @@ export function ExhibitionArtworkScreen({
                 )}
               </View>
               <View>
-                {oddArtworks && (
+                {oddArtwork && (
                   <FlatList
                     nestedScrollEnabled={false}
-                    data={oddArtworks}
+                    data={oddArtwork}
                     keyExtractor={item => item.artworkId?.toString() ?? "123456"}
                     renderItem={({item}) => (
                       <View>

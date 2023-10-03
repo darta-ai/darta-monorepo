@@ -15,7 +15,7 @@ import _ from 'lodash';
 import React from 'react';
 
 import {PRIMARY_MILK} from '../../../styles';
-import {PRIMARY_600} from '@darta-styles'
+import {PRIMARY_400, PRIMARY_600} from '@darta-styles'
 import {cardStyles} from '../../../styles/CardStyles';
 import {
   createAndEditArtworkForExhibition,
@@ -527,7 +527,7 @@ export function ExhibitionCard({
                 exhibition.
               </Typography>
               <Typography variant="h6">
-                Click <a href="/Galleries/Profile">here</a> to go to your
+                Click <a style={{color: PRIMARY_400}} href="/Galleries/Profile">here</a> to go to your
                 profile page.
               </Typography>
             </Box>

@@ -4,6 +4,7 @@ import React from 'react';
 
 import {welcomeStyles} from '../styles';
 import {forgotPasswordText} from '../types';
+import { PRIMARY_400 } from '@darta-styles';
 
 export function ForgotPasswordWelcome() {
   return (
@@ -79,7 +80,7 @@ export function ForgotPasswordWelcome() {
           <Box sx={welcomeStyles.footerContainer}>
             <Typography sx={welcomeStyles.footerText}>
               {forgotPasswordText.Footer}{' '}
-              <a href={`mailto: ${forgotPasswordText.HelpEmail}`}>
+              <a style={{color: PRIMARY_400}} href={`mailto: ${forgotPasswordText.HelpEmail}`}>
                 {forgotPasswordText.HelpEmail}
               </a>
             </Typography>

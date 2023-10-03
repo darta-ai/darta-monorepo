@@ -1,24 +1,40 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext} from 'react';
-import {View} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {View, StyleSheet} from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
 import {
   ExhibitionNavigatorParamList,
   ExhibitionRootEnum
 } from '../../typing/routes';
 import {ETypes, StoreContext} from '../../state/Store';
-import { SSDartaHome, touchableOpacity } from '../../styles/styles';
 import { readExhibition } from '../../api/exhibitionRoutes';
 import { listGalleryExhibitionPreviewForUser } from '../../api/galleryRoutes';
 
-import { ExhibitionDates } from '@darta-types'
-import { ExhibitionPreview } from '../../components/Previews/ExhibitionPreview';
+import { Exhibition, ExhibitionPreview, IGalleryProfileData } from '@darta-types'
 import { readGallery } from '../../api/galleryRoutes';
+import { ExhibitionPreviewCard } from '../../components/Previews/ExhibitionPreviewCard';
+import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
+import { PRIMARY_100, PRIMARY_50, PRIMARY_950 } from '@darta-styles';
+import { Button } from 'react-native-paper';
+import { TextElement } from '../../components/Elements/TextElement';
+
 
 type ExhibitionHomeScreenNavigationProp = StackNavigationProp<
 ExhibitionNavigatorParamList,
 ExhibitionRootEnum.exhibitionHome
 >;
+
+const exhibitionHomeStyle = StyleSheet.create({
+  exhibitionTogglerContainer : {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    width: '100%',
+    height: hp('10%'),
+    backgroundColor: PRIMARY_100,
+  }
+})
 
 export function ExhibitionsHomeScreen({
   navigation,
@@ -26,64 +42,66 @@ export function ExhibitionsHomeScreen({
   navigation: ExhibitionHomeScreenNavigationProp;
 }) {
   const {state, dispatch} = useContext(StoreContext);
+  const [exhibitionPreviews, setExhibitionPreviews] = React.useState<ExhibitionPreview[]>([])
+  
+  React.useEffect(()=> {
+    if (state.exhibitionPreviews) {
+      setExhibitionPreviews(Object.values(state?.exhibitionPreviews))
+    }
+  }, [])
 
-  const loadExhibition = async () => {
+
+  const loadExhibition = async ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => {
     try{
-        const results = await readExhibition({exhibitionId: 'Exhibitions/ba99e53d-29c0-49dd-9c5f-8761fb5655c3'});
-        const supplementalExhibitions = await listGalleryExhibitionPreviewForUser({galleryId: results.galleryId})
+        let exhibition =  await readExhibition({exhibitionId});
         dispatch({
-            type: ETypes.saveExhibition,
-            exhibitionData: results,
+          type: ETypes.saveExhibition,
+          exhibitionData: exhibition
         })
-        if (results.galleryId && state?.galleryData && !state?.galleryData[results.galleryId]){
-          const galleryId = results.galleryId
-          const galleryResults = await readGallery({galleryId});
-          const galleryData = {...galleryResults, galleryExhibitions: supplementalExhibitions}
-          dispatch({
-            type: ETypes.saveGallery,
-            galleryData
-          })
+        let galleryResults = {} as IGalleryProfileData;
+        if (state.galleryData && state.galleryData[galleryId]){
+          galleryResults = state.galleryData[galleryId]
+        } else {
+          galleryResults = await readGallery({galleryId});
         }
-        // TO-DO, save artwork to artworkData object in state
-        navigation.navigate(ExhibitionRootEnum.TopTab, {galleryId: results.galleryId, exhibitionId: results.exhibitionId});
+        const supplementalExhibitions = await listGalleryExhibitionPreviewForUser({galleryId})
+        dispatch({
+          type: ETypes.setCurrentHeader,
+          currentExhibitionHeader: exhibition.exhibitionTitle.value!,
+        })
+        const galleryData = {...galleryResults, galleryExhibitions: supplementalExhibitions}
+        dispatch({
+          type: ETypes.saveGallery,
+          galleryData
+        })
+        navigation.navigate(ExhibitionRootEnum.TopTab, {exhibitionId, galleryId});
     } catch(error: any) {
       console.log(error)
     }
-
-}   
-    const exhibitionDates: ExhibitionDates = {
-        exhibitionDuration: { value: "Temporary" },
-        exhibitionStartDate: { 
-            isOngoing: false,
-            value: "Mon Sep 11 2023 00:00:00 GMT-0400 (Eastern Daylight Time)" 
-        },
-        exhibitionEndDate: { 
-            isOngoing: false,
-            value: "Mon Sep 17 2023 00:00:00 GMT-0400 (Eastern Daylight Time)" },
-    }
+  }   
 
   return (
-    <View style={SSDartaHome.container}>
-      <View>
-        <TouchableOpacity
-          onPress={async () => {
-            await loadExhibition()
-          }}
-          style={touchableOpacity.touchableOpacityButtonStyling}>
-            <View>
-              <ExhibitionPreview 
-                exhibitionHeroImage="http://localhost:9000/exhibitions/251317fd-a181-4523-b1f8-55423796fe9b?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=dvaeTqeXGMAl0hdf%2F20230924%2Fus-central-1%2Fs3%2Faws4_request&X-Amz-Date=20230924T194834Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=dcc7085c88228fba9f2a5f012f6f77f35509dbf25897a1c1efbba9decb6ed58a"
-                exhibitionTitle="The Critique of Pure Reason"
-                exhibitionId={'FAKE_FIX_LATER'}
-                onPress={({exhibitionId}) => {}}
-                exhibitionGallery="All Street"
-                exhibitionArtist='IMMANUEL KANT'
-                exhibitionDates={exhibitionDates}
-                galleryLogoLink='http://localhost:9000/logo/9f1bfa72-ebb5-4343-a595-2c077a8b291c?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=dvaeTqeXGMAl0hdf%2F20230926%2Fus-central-1%2Fs3%2Faws4_request&X-Amz-Date=20230926T005727Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=8c4bd3b01833332b6f174218aa4bb4b7d3cff98ccc228290c0bc0c02ba7ede00'
+
+      <ScrollView>
+        <View style={exhibitionHomeStyle.exhibitionTogglerContainer}>
+          <Button icon="view-agenda-outline" mode="outlined" textColor={PRIMARY_950}>
+            <TextElement style={{color: PRIMARY_950, fontSize: 12}}>All</TextElement>
+          </Button>
+          <Button icon="calendar-week" mode="outlined" textColor={PRIMARY_950} >
+            <TextElement style={{color: PRIMARY_950, fontSize: 12}}>Openings</TextElement>
+          </Button>
+          <Button icon="door-open" mode="outlined" textColor={PRIMARY_950}>
+            <TextElement style={{color: PRIMARY_950, fontSize: 12}}>Closing Soon</TextElement>
+          </Button>
+        </View>
+          {exhibitionPreviews.map((exhibition) => 
+          <View key={exhibition.exhibitionId}>
+              <ExhibitionPreviewCard 
+                exhibitionPreview={exhibition}
+                onPressExhibition={loadExhibition}
               />
             </View>
-        </TouchableOpacity>
-      </View>
-    </View>
+          )}
+      </ScrollView>
   );
 }

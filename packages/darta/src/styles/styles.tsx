@@ -54,6 +54,23 @@ export const headerOptions = {
   },
 };
 
+export const modalHeaderOptions = {
+  headerTitle: 'darta',
+  headerTitleStyle: {
+    fontFamily: 'Avenir Next',
+    fontSize: 18,
+    color: Colors.PRIMARY_50,
+  },
+  headerBackTitleStyle: {
+    fontFamily: 'Avenir Next',
+    fontSize: 15,
+    color: Colors.PRIMARY_MILK
+  },
+  headerStyle: {
+    backgroundColor: Colors.PRIMARY_700,
+  },
+}
+
 export const footerOptions = {
   headerTitle: 'darta',
   tabBarLabelStyle: {

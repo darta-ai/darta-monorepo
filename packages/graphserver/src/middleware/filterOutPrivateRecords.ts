@@ -21,8 +21,9 @@ export const filterOutPrivateRecordsMultiObject = (obj: any): any => {
       if (
         // eslint-disable-next-line no-prototype-builtins
         revisedObject[object][key].hasOwnProperty('isPrivate') &&
-        revisedObject[object][key].isPrivate === true
+        revisedObject[object][key].isPrivate
       ) {
+
         delete revisedObject[object][key];
       }
     }

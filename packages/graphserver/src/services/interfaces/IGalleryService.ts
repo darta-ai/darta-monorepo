@@ -35,4 +35,5 @@ export interface IGalleryService {
   getGalleryLogo({id}: {id: string}): Promise<any>;
   generateGalleryUserId({galleryId}: {galleryId: string}): string;
   generateGalleryId({galleryId}: {galleryId: string}): string;
+  getGalleryByExhibitionId({exhibitionId}: {exhibitionId: string}): Promise<Gallery | null>;
 }

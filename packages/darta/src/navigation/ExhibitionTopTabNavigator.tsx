@@ -10,6 +10,7 @@ export const ExhibitionStackTopTab = createMaterialTopTabNavigator();
 export type ExhibitionStackParamList = {
   [ExhibitionRootEnum.exhibitionDetails]: {
     exhibitionId?: string;
+    galleryId?: string;
   };
   [ExhibitionRootEnum.artworkList]: {
     exhibitionId?: string;
@@ -27,7 +28,7 @@ export function ExhibitionTopTabNavigator({route} : {route: any}) {
       <ExhibitionStackTopTab.Screen
           name={ExhibitionRootEnum.exhibitionDetails}
           component={ExhibitionDetailsScreen}
-          initialParams={{exhibitionId: route.params.exhibitionId}}
+          initialParams={{exhibitionId: route.params.exhibitionId, galleryId: route.params.galleryId}}
           options={{ title: 'Exhibition' }}
         />
         <ExhibitionStackTopTab.Screen

@@ -4,12 +4,6 @@
       "node": {
         "extensions": [".js", ".jsx", "test.js", ".ts", ".tsx"]
       }
-      // "alias": {
-      //   "map": [
-      //     ["@darta-types", "packages/darta-types/dist/*"]
-      //   ],
-      //   "extensions": [".ts", ".js", ".jsx", ".tsx"]
-      // }
     }
   },
   "root": true,

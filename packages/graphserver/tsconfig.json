@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".", 
     "moduleResolution": "node",
+    "outDir": "./dist",
     "rootDir": "./src",
     "composite": true,
     "typeRoots": ["./node_modules/@types"],

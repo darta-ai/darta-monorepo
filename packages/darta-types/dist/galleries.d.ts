@@ -98,6 +98,11 @@ export interface DateFields {
 export interface IOpeningLocationData extends IBusinessLocationData {
     isPrivate: boolean;
 }
+export type ExhibitionPreview = {
+    artworkIds: string[];
+    exhibitionId: string;
+    galleryId: string;
+};
 export type Artwork = {
     artworkImage: Images;
     artworkId?: string;

@@ -14,7 +14,7 @@ import React from 'react';
 import {aboutData} from '../../data/pamphletPages';
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
 import {PRIMARY_DARK_GREY} from '../../styles';
-import { PRIMARY_800 } from '@darta-styles';
+import { PRIMARY_400, PRIMARY_800 } from '@darta-styles';
 
 const aboutStyles = {
   container: {
@@ -250,7 +250,7 @@ export default function About() {
                 </Typography>
                 {/* <Typography variant="body1" data-testid="founder-1-bio">{data.Person1Bio}</Typography> */}
                 <Typography variant="body1" data-testid="founder-1-email">
-                  <a
+                  <a style={{color: PRIMARY_400}}
                     href={`mailto: ${aboutData.Person1Email}`}
                     data-testid="founder-1-email-link">
                     {aboutData.Person1Email}
@@ -284,7 +284,7 @@ export default function About() {
                 </Typography>
                 {/* <Typography variant="body1" data-testid="founder-2-bio">{data.Person2Bio}</Typography> */}
                 <Typography variant="body1" data-testid="founder-2-email">
-                  <a
+                  <a style={{color: PRIMARY_400}}
                     href={`mailto: ${aboutData.Person2Email}`}
                     data-testid="founder-2-email-link">
                     {aboutData.Person2Email}

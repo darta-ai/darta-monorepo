@@ -307,7 +307,7 @@ export function UploadArtworksXlsModal({
                             alignSelf: 'center',
                             width: '50vw',
                             '@media (min-width: 800px)': {
-                              width: '10vw',
+                              width: '20vw',
                             },
                           }}
                           component="span">

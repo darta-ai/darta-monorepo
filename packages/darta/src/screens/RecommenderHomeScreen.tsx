@@ -77,10 +77,6 @@ export function RecommenderHomeScreen({
       type: ETypes.setGalleryId,
       galleryId,
     });
-    dispatch({
-      type: ETypes.setTitle,
-      galleryTitle: galleryInfo[galleryId].text,
-    });
     if (!gallery?.fullDGallery) {
       updateLoadingStatus(galleryId, true);
       try {

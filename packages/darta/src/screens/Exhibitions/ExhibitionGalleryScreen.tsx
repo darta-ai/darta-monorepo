@@ -1,14 +1,13 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext} from 'react';
-import {View, StyleSheet, Linking, ScrollView} from 'react-native';
+import {View, StyleSheet, Linking, ScrollView, RefreshControl} from 'react-native';
 import { Divider } from 'react-native-paper'
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { globalTextStyles } from '../../styles/styles';
 import {TextElement} from '../../components/Elements/_index';
-import {PRIMARY_50, PRIMARY_950, PRIMARY_300, PRIMARY_100, PRIMARY_200, PRIMARY_900, PRIMARY_800} from '@darta-styles';
-import { ExhibitionPreview } from '../../components/Previews/ExhibitionPreview';
+import {PRIMARY_50, PRIMARY_950, PRIMARY_600, PRIMARY_100, PRIMARY_200, PRIMARY_900, PRIMARY_800} from '@darta-styles';
+import { ExhibitionPreviewMini } from '../../components/Previews/ExhibitionPreviewMini';
 import {
-  ExhibitionNavigatorParamList,
   ExhibitionRootEnum,
   PreviousExhibitionRootEnum
 } from '../../typing/routes';
@@ -16,19 +15,13 @@ import { Text, Button} from 'react-native-paper'
 import { Image } from 'react-native-elements';
 import {ETypes, StoreContext} from '../../state/Store';
 import {icons} from '../../utils/constants';
-import { Exhibition, IGalleryProfileData } from '@darta-types';
+import { BusinessHours, Exhibition, IBusinessHours, IGalleryProfileData } from '@darta-types';
 import { formatUSPhoneNumber } from '../../utils/functions';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/ExhibitionTopTabNavigator';
-import { readExhibition } from '../../api/exhibitionRoutes';
-
-
-type ExhibitionHomeScreenNavigationProp = StackNavigationProp<
-ExhibitionNavigatorParamList,
-ExhibitionRootEnum.exhibitionHome
->;
-
+import { readGallery } from '../../api/galleryRoutes';
+import {readExhibition} from '../../api/exhibitionRoutes';
 
 const galleryDetailsStyles = StyleSheet.create({
   container: {
@@ -156,7 +149,7 @@ export function ExhibitionGalleryScreen({
 }) {
   const {state, dispatch} = useContext(StoreContext);
 
-  let galleryId;
+  let galleryId = "";
   if (route?.params?.galleryId){
     galleryId = route.params.galleryId;
   } else{
@@ -167,10 +160,32 @@ export function ExhibitionGalleryScreen({
     )
   }
 
-  let gallery : IGalleryProfileData = {} as IGalleryProfileData;
-  if (state?.galleryData && state.galleryData[galleryId]){
-    gallery = state.galleryData[galleryId]
-  }
+  const [gallery, setGallery] = React.useState<IGalleryProfileData>({} as IGalleryProfileData)
+
+  React.useEffect(() => {
+    if (state?.galleryData && state.galleryData[galleryId]){
+      setGallery(state.galleryData[galleryId])
+    }
+  }, [state.galleryData, galleryId])
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    try{
+        const newGallery = await readGallery({galleryId});
+        dispatch({
+            type: ETypes.saveGallery,
+            exhibitionData: newGallery,
+        })
+        setGallery(newGallery)
+    } catch {
+        setRefreshing(false);
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 500)
+  }, []);
 
   const mapRegion = {
     latitudeDelta: 0.02,
@@ -192,13 +207,13 @@ export function ExhibitionGalleryScreen({
   }
   
 
-  let hoursOfOperation;
+  let hoursOfOperation: BusinessHours = {} as BusinessHours;
 
   if (gallery.galleryLocation0?.businessHours?.hoursOfOperation){
     hoursOfOperation = gallery.galleryLocation0.businessHours.hoursOfOperation
   }
 
-  let previousExhibitions;
+  let previousExhibitions: Exhibition[] = [];
   if (gallery?.galleryExhibitions){
     previousExhibitions = Object.values(gallery.galleryExhibitions).filter((exhibition: Exhibition) => exhibition.exhibitionId !== route?.params?.exhibitionId)
     previousExhibitions.sort((a: Exhibition, b: Exhibition) => { 
@@ -209,16 +224,27 @@ export function ExhibitionGalleryScreen({
 
   const handleExhibitionPress = async ({exhibitionId} : {exhibitionId: string}) => {
     if (!exhibitionId) return
+    let exhibitionTitle: string = ""
 
     if (state.exhibitionData && state.exhibitionData[exhibitionId]){
-      navigation.navigate(PreviousExhibitionRootEnum.navigatorScreen, {exhibitionId})
+      exhibitionTitle = state.exhibitionData[exhibitionId].exhibitionTitle?.value as string
+      dispatch({
+        type: ETypes.setPreviousExhibitionHeader,
+        previousExhibitionHeader: exhibitionTitle,
+      })
+      navigation.navigate(PreviousExhibitionRootEnum.navigatorScreen, {exhibitionId, galleryId})
     } else{
       const results = await readExhibition({exhibitionId});
+      exhibitionTitle = results.exhibitionTitle?.value as string
+      dispatch({
+        type: ETypes.setPreviousExhibitionHeader,
+        previousExhibitionHeader: exhibitionTitle,
+      })
       dispatch({
         type: ETypes.saveExhibition,
         exhibitionData: results,
       })
-      navigation.navigate(PreviousExhibitionRootEnum.navigatorScreen, {exhibitionId})
+      navigation.navigate(PreviousExhibitionRootEnum.navigatorScreen, {exhibitionId, galleryId})
     }
 
   }
@@ -283,9 +309,10 @@ export function ExhibitionGalleryScreen({
       .catch((err) => console.error('An error occurred', err));
   };  
 
-
   return (
-    <ScrollView>
+    <ScrollView refreshControl={
+      <RefreshControl refreshing={refreshing} tintColor={PRIMARY_600} onRefresh={onRefresh} />}
+      >      
       <View style={galleryDetailsStyles.container}>
         <View style={galleryDetailsStyles.galleryTitleContainer}>
             <TextElement style={{...globalTextStyles.boldTitleText, fontSize: 20, color: PRIMARY_950}}>
@@ -383,7 +410,7 @@ export function ExhibitionGalleryScreen({
           <Divider style={galleryDetailsStyles.divider}/>
         </View>
         <View style={galleryDetailsStyles.addressContainer}>
-          {hoursOfOperation && (
+          {Object.values(hoursOfOperation).length !== 0 && (
           <View style={galleryDetailsStyles.hoursContainer}>
             <View style={galleryDetailsStyles.hourRow}>
               <TextElement style={galleryDetailsStyles.hour}> Mon </TextElement>
@@ -423,7 +450,7 @@ export function ExhibitionGalleryScreen({
           {previousExhibitions && previousExhibitions.map((previousExhibition : Exhibition, index : number) => {
             return (
               <View key={index}>
-                <ExhibitionPreview 
+                <ExhibitionPreviewMini 
                   exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
                   exhibitionId={previousExhibition.exhibitionId}
                   exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}

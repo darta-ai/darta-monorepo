@@ -1,10 +1,11 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext} from 'react';
-import {View, StyleSheet, ScrollView} from 'react-native';
+import {View, StyleSheet, ScrollView, RefreshControl} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { Button, Divider, Text} from 'react-native-paper';
 
-import {PRIMARY_600, PRIMARY_50, MILK, PRIMARY_950, PRIMARY_900} from '@darta-styles';
+import {PRIMARY_600, PRIMARY_50, MILK, PRIMARY_950, PRIMARY_900, PRIMARY_800} from '@darta-styles';
+import { ETypes } from '../../state/Store';
 import {TextElement} from '../../components/Elements/_index';
 import {customLocalDateString, customFormatTimeString} from '../../utils/functions';
 import {
@@ -19,7 +20,7 @@ import * as Calendar from 'expo-calendar';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/ExhibitionTopTabNavigator';
-
+import { readExhibition } from '../../api/exhibitionRoutes';
 
 
 type ExhibitionDetailsScreenNavigationProp = StackNavigationProp<
@@ -107,13 +108,17 @@ type ExhibitionDetailsRouteProp = RouteProp<ExhibitionStackParamList, Exhibition
 
 export function ExhibitionDetailsScreen({
     route,
+    navigation,
 }: {
     route?: ExhibitionDetailsRouteProp;
+    navigation?: any;
 }) {
-  const {state} = useContext(StoreContext);
-  let exhibitionId;
-  if (route?.params?.exhibitionId){
+  const {state, dispatch} = useContext(StoreContext);
+  let exhibitionId = "";
+  let galleryId = "";
+  if (route?.params?.exhibitionId && route?.params?.galleryId){
     exhibitionId = route.params.exhibitionId;
+    galleryId = route.params.galleryId;
   } else{
     return (
         <View style={exhibitionDetailsStyles.container}>
@@ -121,19 +126,34 @@ export function ExhibitionDetailsScreen({
         </View>
     )
   }
-
   
   let currentExhibition: Exhibition = {} as Exhibition;
-  if (state?.exhibitionData && state.exhibitionData[exhibitionId]) {
+  let currentGallery: IGalleryProfileData = {} as IGalleryProfileData;
+  if (state?.exhibitionData && state.exhibitionData[exhibitionId] && state.galleryData && state.galleryData[galleryId]) {
     currentExhibition = state.exhibitionData[exhibitionId];
+    currentGallery = state.galleryData[galleryId];
   }
 
-  let currentGallery: IGalleryProfileData = {}  as IGalleryProfileData;
-  if (state?.currentGallery) {
-    currentGallery = state.currentGallery;
-  }
+  const [refreshing, setRefreshing] = React.useState(false);
 
-  let exhibitionStartDate, exhibitionEndDate;
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    try{
+        const newExhibition = await readExhibition({exhibitionId: exhibitionId});
+        dispatch({
+            type: ETypes.saveExhibition,
+            exhibitionData: newExhibition,
+        })
+        navigation.navigate(ExhibitionRootEnum.TopTab, {galleryId: newExhibition.galleryId, exhibitionId: newExhibition.exhibitionId});
+    } catch {
+        setRefreshing(false);
+    }
+    setTimeout(() => {
+        setRefreshing(false);
+      }, 500)  }, []);
+
+  let exhibitionStartDate = new Date().toLocaleDateString();
+  let exhibitionEndDate = new Date().toLocaleDateString();
   let isTemporaryExhibition = false;
   if (currentExhibition?.exhibitionDates 
     && currentExhibition.exhibitionDates?.exhibitionStartDate 
@@ -148,8 +168,13 @@ export function ExhibitionDetailsScreen({
     isTemporaryExhibition = currentExhibition.exhibitionDates.exhibitionDuration.value === "Temporary";
   }
 
-  let receptionStartTime, receptionEndTime, receptionOpeningDay, receptionCloseDay, isReceptionMultipleDays, hasReception;
-
+  let receptionStartTime: string = new Date().toLocaleDateString()
+  let receptionEndTime: string = new Date().toLocaleDateString()
+  let receptionOpeningDay: string = new Date().toLocaleDateString()
+  let receptionCloseDay: string = new Date().toLocaleDateString()
+  let isReceptionMultipleDays: boolean = false;
+  let hasReception: boolean = false
+  let isReceptionInPast: boolean = true;
   let receptionOpenFullDate = new Date()
   let receptionCloseFullDate = new Date()
 
@@ -166,13 +191,14 @@ export function ExhibitionDetailsScreen({
             new Date(currentExhibition.receptionDates.receptionEndTime.value)
         );
         isReceptionMultipleDays = receptionCloseDay !== receptionOpeningDay;
+        isReceptionInPast = new Date(currentExhibition.receptionDates.receptionEndTime.value) < new Date();
         hasReception = currentExhibition.receptionDates.hasReception.value === "Yes";
         receptionOpenFullDate = new Date(currentExhibition.receptionDates.receptionStartTime.value);
         receptionCloseFullDate = new Date(currentExhibition.receptionDates.receptionEndTime.value);
     }
 
-    let receptionDateString;
-    let receptionTimeString;
+    let receptionDateString: string = ""
+    let receptionTimeString: string = ""
 
     if(isReceptionMultipleDays){
         receptionDateString = `${receptionOpeningDay} - ${receptionCloseDay}`
@@ -191,7 +217,7 @@ export function ExhibitionDetailsScreen({
     }
     let hasCoordinates = false;
 
-    if (currentExhibition.exhibitionLocation.coordinates) {
+    if (currentExhibition?.exhibitionLocation?.coordinates) {
         hasCoordinates = true;
         mapRegion.latitude = currentExhibition.exhibitionLocation.coordinates.latitude.value! as unknown as number;
         mapRegion.longitude = currentExhibition.exhibitionLocation.coordinates.longitude.value! as unknown as number;
@@ -220,7 +246,7 @@ export function ExhibitionDetailsScreen({
             }
             try{
                 await Calendar.createEventAsync(defaultCalendars[0].id, {
-                    title: `${currentExhibition?.exhibitionTitle.value} at ${galleryName}`,
+                    title: `${currentExhibition?.exhibitionTitle?.value} at ${galleryName}`,
                     startDate: receptionOpenFullDate as Date,
                     endDate: receptionCloseFullDate as Date,
                     location: currentExhibition?.exhibitionLocation?.locationString?.value!,
@@ -234,16 +260,18 @@ export function ExhibitionDetailsScreen({
     }
 
   return (
-    <ScrollView>
+    <ScrollView refreshControl={
+        <RefreshControl refreshing={refreshing} tintColor={PRIMARY_600} onRefresh={onRefresh} />}
+    >
         <View style={exhibitionDetailsStyles.container}>
             <View style={exhibitionDetailsStyles.exhibitionTitleContainer}>
                 <TextElement style={{...globalTextStyles.boldTitleText, fontSize: 20}}>
-                    {currentExhibition?.exhibitionTitle.value}
+                    {currentExhibition?.exhibitionTitle?.value}
                 </TextElement>
             </View>
         <View style={exhibitionDetailsStyles.heroImageContainer}>
             <Image 
-            source={{uri: currentExhibition?.exhibitionPrimaryImage.value!}}
+            source={{uri: currentExhibition?.exhibitionPrimaryImage?.value!}}
             style={exhibitionDetailsStyles.heroImage}
             />
             </View>
@@ -303,6 +331,9 @@ export function ExhibitionDetailsScreen({
                 </MapView>
             </View>
             <View style={{marginBottom: hp('5%')}}>
+                {!isReceptionInPast && (
+
+                
                 <Button 
                 icon={!isCalendarSuccess ? "calendar" : ""}
                 buttonColor={PRIMARY_600}
@@ -322,8 +353,9 @@ export function ExhibitionDetailsScreen({
                 )
                 }
                 </Button>
+                )}
                 {isCalendarFailure && (
-                <TextElement>hey</TextElement>
+                <TextElement sx={{color: {PRIMARY_900}}}>error occurred adding event</TextElement>
                 )}
             </View>
             <View style={exhibitionDetailsStyles.pressReleaseContainer}>
@@ -331,7 +363,7 @@ export function ExhibitionDetailsScreen({
                 Press Release
             </TextElement>
             <Divider style={exhibitionDetailsStyles.divider}/>
-            <Text style={{...globalTextStyles.centeredText, fontSize: 15, color: PRIMARY_950}}>
+            <Text style={{...globalTextStyles.baseText, fontSize: 15, color: PRIMARY_950}}>
                 {currentExhibition.exhibitionPressRelease.value}
             </Text>
             </View>

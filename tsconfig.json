@@ -27,5 +27,7 @@
     "node_modules"
   ],
   "composite": true,
-  "extends": "expo/tsconfig.base"
-}
+  "include": [
+    "./packages/darta-types/src/*",
+    "./packages/darta-styles/src/*"
+  ]}
