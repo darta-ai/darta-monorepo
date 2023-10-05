@@ -17,8 +17,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-import {PRIMARY_MILK} from '../../../styles';
-import {PRIMARY_600} from '@darta-styles'
+import {PRIMARY_50, PRIMARY_600, PRIMARY_900} from '@darta-styles'
 import {currencyConverter} from '../../common/templates';
 import {CreateArtwork} from '../Artwork/index';
 
@@ -195,8 +194,8 @@ function DartaListArtwork({
         <Box sx={dartaListDisplay.displayComponentShowMobile}>
           <Button
             sx={{
-              backgroundColor: PRIMARY_600,
-              color: PRIMARY_MILK,
+              backgroundColor: PRIMARY_900,
+              color: PRIMARY_50,
               alignSelf: 'center',
             }}
             className="exhibition-artwork-edit"
@@ -300,7 +299,7 @@ export function ExhibitionArtworkList({
 
   return (
     <List
-      sx={{width: '100%', bgcolor: PRIMARY_MILK}}
+      sx={{width: '100%', bgcolor: PRIMARY_50}}
       className="exhibition-artwork-list">
       {mappedArtworks?.map((artwork: Artwork, index: number) => (
         <Box key={artwork?.artworkId}>

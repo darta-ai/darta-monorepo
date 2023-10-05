@@ -28,6 +28,7 @@
     "expo": "^49.0.11",
     "expo-calendar": "~11.3.2",
     "expo-localization": "~14.3.0",
+    "expo-location": "~16.1.0",
     "expo-screen-orientation": "~6.0.5",
     "expo-secure-store": "~12.3.1",
     "expo-splash-screen": "~0.20.5",
@@ -54,6 +55,7 @@
     "@babel/core": "^7.22.20",
     "@types/react": "~18.2.14",
     "babel-plugin-module-resolver": "^5.0.0",
+    "eslint-config-react-native": "^4.1.0",
     "react-native-codegen": "^0.71.6",
     "typescript": "^5.1.3"
   },

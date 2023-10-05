@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   GalleryAddressFields,
   GalleryBase,
@@ -10,10 +11,10 @@ import {inject, injectable} from 'inversify';
 
 import {CollectionNames, EdgeNames} from '../config/collections';
 import {ImageController} from '../controllers/ImageController';
+import { filterOutPrivateRecordsMultiObject } from '../middleware';
 import {City, Gallery} from '../models/GalleryModel';
 import {Node} from '../models/models';
 import {IEdgeService, IGalleryService, INodeService} from './interfaces';
-import { filterOutPrivateRecordsMultiObject } from '../middleware';
 
 const BUCKET_NAME = 'logo';
 
@@ -185,7 +186,7 @@ export class GalleryService implements IGalleryService {
 
     if (gallery) {
       // Dynamically check for galleryLocationX properties
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 5; i+=1) {
         const key = `galleryLocation${i}`;
         if (gallery[key as keyof Gallery]) {
           const cityValue =
@@ -207,10 +208,10 @@ export class GalleryService implements IGalleryService {
 
             // Check if an edge between the gallery and this city already exists
             const checkEdgeQuery = `
-          FOR edge IN ${EdgeNames.GalleryToCity}
-          FILTER edge._from == @galleryId AND edge._to == @cityId
-          RETURN edge
-          `;
+            FOR edge IN ${EdgeNames.FROMGalleryToCity}
+            FILTER edge._from == @galleryId AND edge._to == @cityId
+            RETURN edge
+            `;
 
             const edgeCursor = await this.db.query(checkEdgeQuery, {
               galleryId: gallery._id,
@@ -221,7 +222,7 @@ export class GalleryService implements IGalleryService {
             // If there's no existing edge, create a new one
             if (!existingEdge) {
               const createEdgeQuery = `
-                    INSERT { _from: @galleryId, _to: @cityId } INTO ${EdgeNames.GalleryToCity}
+                    INSERT { _from: @galleryId, _to: @cityId } INTO ${EdgeNames.FROMGalleryToCity}
                 `;
               await this.db.query(createEdgeQuery, {
                 galleryId: gallery._id,
@@ -256,7 +257,7 @@ export class GalleryService implements IGalleryService {
       const isValidated: boolean | null = await cursor.next(); // Get the first result
       if (isValidated) {
         return true;
-      } else {
+      } 
         // Define the query for checking the awaiting approval array
         const query2 = `
           FOR gallery IN ${CollectionNames.GalleryApprovals}
@@ -269,7 +270,7 @@ export class GalleryService implements IGalleryService {
         const isAwaiting: boolean | null = await cursor2.next(); // Get the first result
         if (isAwaiting) {
           return false;
-        } else {
+        } 
           // Save the domain to the awaiting approval array
           const awaitingApprovalField = isGmail
             ? 'awaitingApprovalGmail'
@@ -281,8 +282,8 @@ export class GalleryService implements IGalleryService {
           `;
           await this.db.query(query3, {domain});
           return false;
-        }
-      }
+        
+      
     } catch (error: any) {
       return false;
     }

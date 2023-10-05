@@ -16,18 +16,19 @@ export const CollectionNames = {
 };
 
 export const EdgeNames = {
-  GalleryToCity: 'GalleryToCity',
-  FROMGalleryToArtwork: 'GalleryShowsArtwork',
-  FROMArtworkToMedium: 'ArtworkUsesMedium',
-  FROMArtworkTOCostBucket: 'ArtworkCosts',
-  FROMArtworkTOSizeBucket: 'ArtworkSizes',
-  FROMArtworkTOArtist: 'ArtworkArtist',
+  FROMGalleryToCity: 'FROMGalleryToCity',
+  FROMGalleryToArtwork: 'FROMGalleryToArtwork',
+  FROMArtworkToMedium: 'FROMArtworkToMedium',
+  FROMArtworkTOCostBucket: 'FROMArtworkTOCostBucket',
+  FROMArtworkTOSizeBucket: 'FROMArtworkTOSizeBucket',
+  FROMArtworkTOArtist: 'FROMArtworkTOArtist',
   FROMArtworkTOCity: 'FROMArtworkTOCity',
   FROMArtworkTOLocality: 'FROMArtworkTOLocality',
-  FROMArtworkTOCreateBucket: 'ArtworkCreatedYear',
+  FROMArtworkTOCreateBucket: 'FROMArtworkTOCreateBucket',
   FROMGalleryTOExhibition: 'FROMGalleryTOExhibition',
   FROMUserTOGallery: 'FROMUserTOGallery',
   FROMCollectionTOArtwork: 'FROMCollectionTOArtwork',
+  FROMExhibitionTOCity: 'FROMExhibitionTOCity'
 };
 
 export const RequiredContent = {

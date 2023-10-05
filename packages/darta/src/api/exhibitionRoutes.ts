@@ -26,7 +26,7 @@ export async function listAllExhibitionsPreviewsForUser({
   limit,
 }: {
   limit: number;
-}): Promise<Exhibition | any> {
+}): Promise<any> {
   try {
     const {data} = await axios.get(`${URL}/listAllExhibitionsPreviewsForUser`, {
       params: {

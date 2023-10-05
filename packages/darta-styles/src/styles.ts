@@ -1,4 +1,5 @@
 // https://uicolors.app/create
+// https://thenounproject.com/FabienJ/
 
 export const PRIMARY_COLOR = "#7444C0";
 export const SECONDARY_COLOR = "#5636B8";
@@ -32,14 +33,27 @@ export const PRIMARY_BLUE = "#68AFEF";
 
 export const PRIMARY_DARKEST_BLUE = "#1b2b50";
 
-export const PRIMARY_50 = "#f8f5f2";
-export const PRIMARY_100 = "#ece2d9";
-export const PRIMARY_200 = "#d7c4b0";
-export const PRIMARY_300 = "#c3a386";
-export const PRIMARY_400 = "#b58a6a";
-export const PRIMARY_500 = "#aa755a";
-export const PRIMARY_600 = "#945d4b";
-export const PRIMARY_700 = "#7c4a41";
-export const PRIMARY_800 = "#673d39";
-export const PRIMARY_900 = "#563331";
-export const PRIMARY_950 = "#2f1b19";
+export const ADOBE_50 = "#f8f5f2";
+export const ADOBE_100 = "#ece2d9";
+export const ADOBE_200 = "#d7c4b0";
+export const ADOBE_300 = "#c3a386";
+export const ADOBE_400 = "#b58a6a";
+export const ADOBE_500 = "#aa755a";
+export const ADOBE_600 = "#945d4b";
+export const ADOBE_700 = "#7c4a41";
+export const ADOBE_800 = "#673d39";
+export const ADOBE_900 = "#563331";
+export const ADOBE_950 = "#2f1b19";
+
+
+export const PRIMARY_50 = "#f8f8f8";
+export const PRIMARY_100 = "#ecebea";
+export const PRIMARY_200 = "#d6d4d2";
+export const PRIMARY_300 = "#bcb8b5";
+export const PRIMARY_400 = "#a09a97";
+export const PRIMARY_500 = "#8d8582";
+export const PRIMARY_600 = "#817875";
+export const PRIMARY_700 = "#6c6462";
+export const PRIMARY_800 = "#595453";
+export const PRIMARY_900 = "#4a4644";
+export const PRIMARY_950 = "#272423";

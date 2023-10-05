@@ -1,5 +1,5 @@
 import {PRIMARY_MILK} from '../../../styles';
-import {PRIMARY_600} from '@darta-styles'
+import {PRIMARY_600, PRIMARY_50} from '@darta-styles'
 
 export const createArtworkStyles = {
   container: {
@@ -9,7 +9,7 @@ export const createArtworkStyles = {
     border: '1px solid #eaeaea',
     alignSelf: 'center',
     borderRadius: '0.5vw',
-    backgroundColor: PRIMARY_MILK,
+    backgroundColor: PRIMARY_50,
     gap: '2vh',
     alignContent: 'center',
     justifyContent: 'center',
@@ -71,15 +71,16 @@ export const createArtworkStyles = {
   imageContainer: {
     alignSelf: 'center',
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     alignContent: 'center',
     maxWidth: '85vw',
     gap: '1vh',
     minHeight: '100%',
     '@media (min-width: 1280px)': {
-      minHeight: '35vh',
-      maxWidth: '35vw',
+      height: '40vh',
+      width: '100%',
     },
   },
   imageContainerExhibitions: {
@@ -88,7 +89,7 @@ export const createArtworkStyles = {
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignContent: 'center',
-    maxWidth: '40vw',
+    maxWidth: '40%',
     minHeight: '100%',
     '@media (min-width: 1280px)': {
       minHeight: '30vh',
@@ -98,24 +99,23 @@ export const createArtworkStyles = {
     maxHeight: '40vh',
     maxWidth: '40vw',
     '@media (min-width: 1280px)': {
-      maxHeight: '30vh',
+      maxHeight: '100%',
+      maxWidth: '100%',
     },
   },
   defaultImageContainer: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    height: '100%',
-    width: '100%',
-    marginTop: '1em',
+    margin: '1em',
   },
   defaultImage: {
     p: '1em',
     // width: '100%',
-    maxHeight: '40vh',
-    maxWidth: '35vw',
+    maxHeight: '38vh',
+    maxWidth: '38vw',
     alignSelf: 'center',
-    borderWidth: 30,
+    // borderWidth: 30,
   },
   inputText: {
     display: 'flex',

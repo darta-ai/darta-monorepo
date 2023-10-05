@@ -5,13 +5,14 @@ import 'react-native-get-random-values';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+// ExploreMapStackNavigator
+import { ExploreMapStackNavigator } from './src/navigation/ExploreMap/ExploreMapStackNavigator';
 import {Exhibition} from '@darta-types'
 import React from 'react';
 import {Provider as PaperProvider} from 'react-native-paper';
 
 import {TabBarElement} from './src/components/Elements/TabBarElement';
-import {ExhibitionStackNavigator} from './src/navigation/ExhibitionStackNavigator';
+import {ExhibitionStackNavigator} from './src/navigation/Exhibition/ExhibitionStackNavigator';
 // import {RecommenderStackNavigator} from './src/navigation/RecommenderStackNavigator';
 import {UserStackNavigator} from './src/navigation/UserStackNavigator';
 import {StoreProvider} from './src/state/Store';
@@ -21,7 +22,7 @@ import { View } from 'react-native';
 
 import Entypo from '@expo/vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
-import {AnimatedAppLoader} from './src/components/SplashScreen/SplashScreen';
+import {AnimatedAppLoader} from './src/screens/SplashScreen/SplashScreen';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -29,14 +30,7 @@ SplashScreen.preventAutoHideAsync();
 import * as SecureStore from 'expo-secure-store';
 
 export const RecommenderStack = createStackNavigator();
-export const UserStack = createStackNavigator();
 export const RootStack = createBottomTabNavigator();
-
-export const ExhibitionStack = createStackNavigator();
-export const ExhibitionStackTopTab = createMaterialTopTabNavigator();
-
-
-// 4e4548f6-3427-4335-b16e-4d7c1562ebae
 
 function App() {
   const [exhibition, setExhibition] = React.useState<Exhibition | {}>({})
@@ -78,8 +72,22 @@ function App() {
                     ...footerOptions,
                   }}
                 />
+                  <RootStack.Screen
+                    name="map"
+                    component={ExploreMapStackNavigator}
+                    options={{
+                      tabBarIcon: ({focused}: {focused: any}) => (
+                        <TabBarElement
+                          focused={focused}
+                          icon="map-marker-outline"
+                          colors={footerColors}
+                        />
+                      ),
+                      ...footerOptions,
+                    }}
+                  />
                 <RootStack.Screen
-                  name="m e"
+                  name="me"
                   component={UserStackNavigator}
                   options={{
                     tabBarIcon: ({focused}: {focused: any}) => (

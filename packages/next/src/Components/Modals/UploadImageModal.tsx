@@ -10,19 +10,18 @@ import {
 import Image from 'next/image';
 import React from 'react';
 
-import {PRIMARY_MILK} from '../../../styles';
-import {PRIMARY_600} from '@darta-styles'
+import {PRIMARY_600, PRIMARY_50} from '@darta-styles'
 
 
 const modalStyles = {
   dialogueContainer: {
-    color: PRIMARY_MILK,
+    color: PRIMARY_50,
   },
   button: {
     color: PRIMARY_600,
   },
   modalContainer: {
-    color: PRIMARY_MILK,
+    color: PRIMARY_50,
     display: 'flex',
     flexDirection: 'column',
     gap: '5%',

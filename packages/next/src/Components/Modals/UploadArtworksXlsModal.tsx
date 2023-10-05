@@ -19,6 +19,7 @@ import * as XLSX from 'xlsx';
 
 import {AuthContext} from '../../../pages/_app';
 import {PRIMARY_MILK} from '../../../styles';
+import { PRIMARY_100 } from '@darta-styles';
 import {parseExcelArtworkData} from '../../common/nextFunctions';
 import {useAppState} from '../State/AppContext';
 
@@ -61,7 +62,7 @@ const instructionsCarouselStyles = {
     display: 'flex',
     my: 2,
     alignItems: 'flex-start',
-    backgroundColor: PRIMARY_MILK,
+    backgroundColor: PRIMARY_100,
   },
   img: {
     overflow: 'hidden',
@@ -169,7 +170,7 @@ const uploadArtworkImages = {
     gap: 2,
   },
   paper: {
-    backgroundColor: PRIMARY_MILK,
+    backgroundColor: PRIMARY_100,
     border: '2px solid #000',
     boxShadow: 5,
     padding: 3,
@@ -244,7 +245,7 @@ export function UploadArtworksXlsModal({
         className="upload-new-artwork"
         variant="contained"
         color="primary"
-        disabled={!state.galleryProfile.isValidated || !user.emailVerified}
+        disabled={!state.galleryProfile.isValidated || !user?.emailVerified}
         onClick={handleOpen}
         sx={{
           color: PRIMARY_800,

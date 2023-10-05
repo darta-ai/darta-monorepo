@@ -115,7 +115,6 @@ export async function firebaseSignIn(
 
     return {error: false, user: userCredential.user, errorMessage: '', idToken};
   } catch (error: any) {
-    console.log(error);
     return {
       error: true,
       user: undefined,
@@ -129,9 +128,9 @@ export async function resendEmailVerification() {
     if (auth.currentUser) {
       await sendEmailVerification(auth.currentUser);
       return {success: true};
-    } else {
+    } 
       throw new Error();
-    }
+    
   } catch (error) {
     return {success: false};
   }

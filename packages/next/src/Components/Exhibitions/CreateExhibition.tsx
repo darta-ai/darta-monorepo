@@ -1,3 +1,4 @@
+import {PRIMARY_200,PRIMARY_600} from '@darta-styles'
 import {Exhibition} from '@darta-types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -8,8 +9,6 @@ import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {PRIMARY_MILK} from '../../../styles';
-import {PRIMARY_600, PRIMARY_200} from '@darta-styles'
-
 import {exhibitionPressReleaseToolTip} from '../../common/ToolTips/toolTips';
 import {createArtworkStyles} from '../Artwork/styles';
 import {
@@ -368,12 +367,6 @@ export function CreateExhibition({
       </Box>
       <Box sx={createArtworkStyles.imageContainer}>
         <Box style={createArtworkStyles.defaultImageEdit}>
-          <Box
-            sx={{
-              alignSelf: 'center',
-              alignContent: 'center',
-              justifyContent: 'center',
-            }}>
             {editPressRelease ? (
               <DartaImageInput
                 onDrop={handleDrop}
@@ -401,7 +394,6 @@ export function CreateExhibition({
                 {errors.exhibitionPrimaryImage.value?.message}
               </Typography>
             )}
-          </Box>
         </Box>
       </Box>
       <Box sx={{alignSelf: 'center'}}>
@@ -437,7 +429,7 @@ export function CreateExhibition({
             register={register}
             control={control}
             errors={errors}
-            required={true}
+            required
             helperTextString={errors.exhibitionTitle?.value?.message}
             inputAdornmentString="Title"
             toolTips={exhibitionPressReleaseToolTip}
@@ -460,7 +452,7 @@ export function CreateExhibition({
               fieldName="exhibitionType"
               inputAdornmentString="Show Type"
               control={control}
-              required={true}
+              required
               options={['Solo Show', 'Group Show']}
               setHigherLevelState={handleExhibitionArtist}
               helperTextString=""
@@ -487,7 +479,7 @@ export function CreateExhibition({
               register={register}
               control={control}
               errors={errors}
-              required={true}
+              required
               helperTextString={errors.exhibitionArtist?.value?.message}
               inputAdornmentString="Artist"
               toolTips={exhibitionPressReleaseToolTip}
@@ -503,7 +495,7 @@ export function CreateExhibition({
             data={newExhibition.exhibitionPressRelease?.value}
             register={register}
             errors={errors}
-            required={true}
+            required
             control={control}
             helperTextString={errors.exhibitionPressRelease?.value?.message}
             inputAdornmentString="Press Release"

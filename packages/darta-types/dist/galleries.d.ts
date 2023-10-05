@@ -145,6 +145,8 @@ export type ArtworkObject = {
 };
 export type BusinessAddressType = 'galleryLocation0' | 'galleryLocation1' | 'galleryLocation2' | 'galleryLocation3' | 'galleryLocation4';
 export type Exhibition = {
+    _key?: string;
+    _id?: string;
     exhibitionTitle: PublicFields;
     exhibitionPressRelease: PublicFields;
     exhibitionPrimaryImage: Images;
@@ -193,4 +195,22 @@ type GalleryDisplayValues = {
     value: string;
 };
 export type GalleryDropdownDisplay = GalleryDisplayValues[];
+export type ExhibitionMapPin = {
+    exhibitionId: string;
+    galleryId: string;
+    galleryName: PublicFields;
+    galleryLogo: Images;
+    exhibitionTitle: PublicFields;
+    exhibitionLocation: IOpeningLocationData;
+    exhibitionPrimaryImage: Images;
+    exhibitionDates: ExhibitionDates;
+    receptionDates: ReceptionDates;
+    exhibitionArtist?: PublicFields;
+    exhibitionType: {
+        value: 'Group Show' | 'Solo Show';
+    };
+    artworks?: {
+        [key: string]: Artwork;
+    };
+};
 export {};

@@ -3,7 +3,7 @@ import {createTheme} from '@mui/material/styles';
 import {EB_Garamond} from 'next/font/google';
 
 import {PRIMARY_MILK} from '../styles';
-import {PRIMARY_600, PRIMARY_50} from '@darta-styles'
+import {PRIMARY_600, PRIMARY_50, PRIMARY_950} from '@darta-styles'
 
 export const ebGaramond = EB_Garamond({
   weight: ['400', '500', '700'],
@@ -16,7 +16,10 @@ export const ebGaramond = EB_Garamond({
 const theme = createTheme({
   palette: {
     primary: {
-      main: PRIMARY_MILK,
+      main: PRIMARY_50,
+    },
+    text: {
+      primary: PRIMARY_950,
     },
     secondary: {
       main: PRIMARY_600,

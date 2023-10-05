@@ -101,8 +101,8 @@ export function GalleryProfile() {
             </Button>
           </Box>
         </Box>
-
         <Box sx={galleryStyles.pageNavigationContainer}>
+
           {isEditingProfile ? (
             <EditProfileGallery
               isEditingProfile={isEditingProfile}
@@ -116,13 +116,14 @@ export function GalleryProfile() {
               }
             />
           ) : (
-            <ProfileGallery
-              galleryProfileData={
-                {
-                  ...state.galleryProfile,
-                } as IGalleryProfileData
-              }
-            />
+              <ProfileGallery
+                galleryProfileData={
+                  {
+                    ...state.galleryProfile,
+                  } as IGalleryProfileData
+                }
+              />
+            
           )}
         </Box>
       </Box>

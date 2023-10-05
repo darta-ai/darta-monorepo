@@ -19,7 +19,7 @@ import {AppContextProvider} from '../src/Components/State/AppContext';
 import createEmotionCache from '../src/createEmotionCache';
 import theme from '../src/theme';
 import {auth} from '../src/ThirdPartyAPIs/firebaseApp';
-import {PRIMARY_50} from '@darta-styles'
+import {PRIMARY_50, PRIMARY_950} from '@darta-styles'
 
 export {app, auth, db} from '../src/ThirdPartyAPIs/firebaseApp';
 // Client-side cache, shared for the whole session of the user in the browser.

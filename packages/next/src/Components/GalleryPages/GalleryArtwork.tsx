@@ -1,14 +1,12 @@
 import 'firebase/compat/auth';
 
+import {PRIMARY_50, PRIMARY_600, PRIMARY_950} from '@darta-styles'
 import {Artwork} from '@darta-types';
 import {Box, Button, Typography} from '@mui/material';
 import Head from 'next/head';
 import React from 'react';
 
 import {AuthContext} from '../../../pages/_app';
-import {PRIMARY_MILK} from '../../../styles';
-import {PRIMARY_600} from '@darta-styles'
-
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
 import {
   createArtworkAPI,
@@ -241,7 +239,7 @@ export function GalleryArtwork() {
     return results;
   };
 
-  const filterByInquiry = (query: string | unknown): void => {
+  function filterByInquiry(query: string | unknown): any{
     let results;
     if (!inquiries) return;
     const artworksWithInquiriesIds = Object?.keys(inquiries);
@@ -273,12 +271,10 @@ export function GalleryArtwork() {
     } else {
       setDisplayArtworks(Object?.values(state.galleryArtworks));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchString]);
 
   React.useEffect(() => {
     filterByInquiry(filterString);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterString]);
 
   React.useEffect(() => {
@@ -335,11 +331,11 @@ export function GalleryArtwork() {
                 onClick={() => addNewArtwork()}
                 className="create-new-artwork"
                 disabled={
-                  !state.galleryProfile.isValidated || !user.emailVerified
+                  !state.galleryProfile.isValidated || !user?.emailVerified
                 }
                 sx={{
-                  backgroundColor: PRIMARY_600,
-                  color: PRIMARY_MILK,
+                  backgroundColor: PRIMARY_950,
+                  color: PRIMARY_50,
                   alignSelf: 'center',
                 }}>
                 <Typography sx={{fontWeight: 'bold'}}>Add Artwork</Typography>

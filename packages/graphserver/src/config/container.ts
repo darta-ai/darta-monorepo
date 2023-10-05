@@ -36,6 +36,7 @@ const TYPES = {
   UserController: 'UserController',
   IExhibitionService: 'IExhibitionService',
   ExhibitionController: 'ExhibitionController',
+  LocationController: 'LocationController'
 };
 
 const arangoContainer = container
@@ -110,5 +111,8 @@ container
 container
   .bind<Controllers.ExhibitionController>(TYPES.ExhibitionController)
   .to(Controllers.ExhibitionController);
+container
+  .bind<Controllers.LocationController>(TYPES.LocationController)
+  .to(Controllers.LocationController);
 
 export {arangoContainer, container, minioContainer, TYPES};

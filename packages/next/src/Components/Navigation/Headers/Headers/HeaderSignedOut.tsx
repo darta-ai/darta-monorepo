@@ -31,15 +31,15 @@ export function HeaderSignedOut({authType}: {authType: AuthEnum}) {
       <div />
       <div />
       <Box data-testid="header-navigation-image-box">
-        <Image
-          src="/static/images/dartahousewhite.png"
-          data-testid="header-image"
-          alt="me"
-          height={80}
-          width={80}
-          onClick={() => router.push('/', undefined, {shallow: true})}
-        />
-      </Box>
+        <Box
+            component="img"
+            sx={headerStyles.dartaHeaderBox}
+            src="/static/images/dartahousewhite.png"
+            data-testid="header-image"
+            alt="logo"
+            onClick={() => router.push('/', undefined, {shallow: true})}
+          />
+        </Box>
     </Box>
   );
 }

@@ -17,10 +17,12 @@ export class AdminService implements IAdminService {
     const edgeNames = Object.values(EdgeNames);
     collectionNames.map(async collectionName => {
       await this.ensureCollectionExists(collectionName);
+      
     });
 
-    edgeNames.map(async collectionName => {
-      await this.ensureEdgeExists(collectionName);
+    edgeNames.map(async edgeName => {
+      await this.ensureEdgeExists(edgeName);
+      console.log(edgeName)
     });
   }
 
@@ -38,9 +40,9 @@ export class AdminService implements IAdminService {
     const results = await cursor.next();
     if (results?.approved.includes(sdl)) {
       return `added ${sdl}`;
-    } else {
+    } 
       return `failed to add ${sdl}`;
-    }
+    
   }
 
   public async addMinioBucker(bucketName: string): Promise<string> {

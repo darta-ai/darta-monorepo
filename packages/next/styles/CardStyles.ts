@@ -1,15 +1,17 @@
-import {PRIMARY_DARK_MILK, PRIMARY_MILK} from './index';
+import {PRIMARY_100, PRIMARY_50} from '@darta-styles'
 
 export const cardStyles = {
   root: {
     alignItems: 'center',
     flexDirection: 'column',
     display: 'flex',
-    minHeight: '20vh',
-    width: '75vw',
-    margin: 'auto',
+    minHeight: '25vh',
     border: '1px solid darkgrey',
-    backgroundColor: PRIMARY_MILK,
+    width: '100%',
+    borderRadius: 'auto',
+    margin: 'auto',
+    padding: '1vh',
+    backgroundColor: PRIMARY_50,
   },
   exhibitionRoot: {
     alignItems: 'center',
@@ -19,7 +21,7 @@ export const cardStyles = {
     width: '85vw',
     margin: 'auto',
     border: '1px solid darkgrey',
-    backgroundColor: PRIMARY_DARK_MILK,
+    backgroundColor: PRIMARY_100,
   },
   media: {
     minHeight: '15vh',
@@ -28,8 +30,9 @@ export const cardStyles = {
     },
   },
   mediaExhibition: {
-    maxHeight: '15vh',
-    maxWidth: '40vw',
+    height: '100%',
+    width: '100%',
+    padding: '5vh',
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -42,33 +45,38 @@ export const cardStyles = {
     width: '30vw',
     fontSize: '1rem',
     fontFamily: 'Nunito Sans',
-    backgroundColor: PRIMARY_MILK,
-    border: `1px solid ${PRIMARY_MILK}`,
+    backgroundColor: PRIMARY_50,
+    border: `1px solid ${PRIMARY_50}`,
   },
   cardContainer: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     gap: '1vh',
     borderRadius: '0.5vw',
     m: '1vh',
     border: '1px solid #eaeaea',
-    width: '95%',
+    width: '100%',
     alignItems: 'center',
-    backgroundColor: PRIMARY_MILK,
+    backgroundColor: PRIMARY_50,
     '@media (min-width: 1080px)': {
       flexDirection: 'row',
-      width: '75vw',
+      minWidth: '75vw',
       minHeight: '15vh',
     },
   },
   informationContainer: {
     alignSelf: 'center',
-    width: '70vw',
+    width: '100%',
+    height: '100%',
     textOverflow: 'ellipsis',
     textAlign: 'start',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     '@media (min-width: 1080px)': {
-      width: '35vw',
+      width: '50%',
+      height: '50%',
     },
   },
   buttonContainer: {

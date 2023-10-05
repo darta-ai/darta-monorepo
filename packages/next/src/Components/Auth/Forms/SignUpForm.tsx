@@ -302,7 +302,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
           color="primary"
           type="submit"
           disabled={isGmail}
-          sx={{alignSelf: 'center', margin: '2vh', width: '15vw'}}
+          sx={{alignSelf: 'center', margin: '2vh', width: '20vw'}}
           data-testid="signUpButton">
           {executeSignUp ? (
             <CircularProgress size={24} color="secondary" />

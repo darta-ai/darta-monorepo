@@ -21,10 +21,13 @@ export class UserController {
     const {user} = req as any;
     const {galleryName, signUpWebsite, phoneNumber} = req.body;
     try {
-      const verifyGallery: Node =
-        await this.galleryService.checkDuplicateGalleries({
-          userEmail: user.email,
-        });
+      let verifyGallery: Node | any;
+      if (!user.email.includes('darta.art')) {
+        verifyGallery =
+          await this.galleryService.checkDuplicateGalleries({
+            userEmail: user.email,
+          });
+      }
       if (!verifyGallery) {
         const isValidated = await this.galleryService.verifyQualifyingGallery(
           user.email,
@@ -50,7 +53,7 @@ export class UserController {
       }
 
       await this.userService.editGalleryEdge({
-        galleryId: verifyGallery._id!,
+        galleryId: verifyGallery._id,
         uid: user.uid,
         relationship: 'USER',
       });

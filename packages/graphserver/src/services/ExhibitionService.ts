@@ -1,4 +1,6 @@
-import {Artwork, Exhibition, ExhibitionObject, IBusinessLocationData, Images} from '@darta-types';
+/* eslint-disable no-return-assign */
+// eslint-disable-next-line import/no-extraneous-dependencies
+import {Artwork, Exhibition, ExhibitionObject, ExhibitionMapPin, IBusinessLocationData, IGalleryProfileData, Images} from '@darta-types';
 import {Database} from 'arangojs';
 import {Edge} from 'arangojs/documents';
 import {inject, injectable} from 'inversify';
@@ -11,7 +13,8 @@ import {ImageController} from '../controllers/ImageController';
 import {
   filterOutPrivateRecordsMultiObject,
   filterOutPrivateRecordsSingleObject,
-} from '../middleware/';
+} from '../middleware';
+import { City } from '../models/GalleryModel';
 import {
   IArtworkService,
   IEdgeService,
@@ -100,6 +103,7 @@ export class ExhibitionService implements IExhibitionService {
   }: {
     exhibitionId: string;
   }): Promise<Exhibition | void> {
+    try{
     const results = await this.getExhibitionById({
       exhibitionId,
     });
@@ -110,92 +114,18 @@ export class ExhibitionService implements IExhibitionService {
     const cleanedExhibition = filterOutPrivateRecordsSingleObject(exhibition);
     const cleanedArtworks = filterOutPrivateRecordsMultiObject(artworks);
 
+    // eslint-disable-next-line consistent-return
     return {
       ...cleanedExhibition,
       artworks: {
         ...cleanedArtworks,
       },
     };
+  } catch (error: any){
+    throw new Error(error.message)
+  }
   }
 
-  public async editExhibition({
-    exhibition,
-  }: {
-    exhibition: Exhibition;
-  }): Promise<Exhibition | void> {
-    const exhibitionId = exhibition?.exhibitionId;
-    if (!exhibitionId) {
-      return;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {artworks, exhibitionPrimaryImage, ...remainingExhibitionProps} =
-      exhibition;
-
-    // #########################################################################
-    //                             SAVE THE EXHIBITION IMAGE
-    // #########################################################################
-
-    const {exhibitionImage} = await this.getExhibitionImage({
-      key: exhibitionId,
-    });
-
-    // Don't overwrite an image
-    let fileName: string = crypto.randomUUID();
-    if (exhibitionImage?.exhibitionPrimaryImage?.fileName) {
-      fileName = exhibitionImage.exhibitionPrimaryImage.fileName;
-    }
-
-    let bucketName = exhibitionPrimaryImage?.bucketName ?? null;
-    let value = exhibitionPrimaryImage?.value ?? null;
-    if (exhibitionPrimaryImage?.fileData) {
-      try {
-        const artworkImageResults =
-          await this.imageController.processUploadImage({
-            fileBuffer: exhibitionPrimaryImage?.fileData,
-            fileName,
-            bucketName: BUCKET_NAME,
-          });
-        ({bucketName, value} = artworkImageResults);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('error uploading image:', error);
-      }
-    }
-
-    // #########################################################################
-    //                              SAVE THE EXHIBITION
-    //                        Not including the bucketed stuff
-    // #########################################################################
-
-    const data = {
-      ...remainingExhibitionProps,
-      exhibitionPrimaryImage: {
-        bucketName,
-        value,
-        fileName,
-      },
-      updatedAt: new Date(),
-    };
-
-    let savedExhibition;
-
-    try {
-      savedExhibition = await this.nodeService.upsertNodeByKey({
-        collectionName: CollectionNames.Exhibitions,
-        key: exhibitionId,
-        data,
-      });
-    } catch (error) {
-      throw new Error('error saving artwork');
-    }
-
-    const returnExhibition: any = {
-      ...savedExhibition,
-    };
-
-    return returnExhibition;
-  }
 
   public async getExhibitionById({
     exhibitionId,
@@ -278,165 +208,141 @@ export class ExhibitionService implements IExhibitionService {
   }
 
 
-  public async listExhibitionForGallery({
-    galleryId,
+  public async editExhibition({
+    exhibition,
   }: {
-    galleryId: string;
-  }): Promise<Exhibition[] | void> {
-    const getExhibitionsQuery = `
-      WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}
-      FOR artwork IN OUTBOUND @galleryId ${EdgeNames.FROMGalleryTOExhibition}
-      RETURN artwork._id      
-    `;
+    exhibition: Exhibition;
+  }): Promise<Exhibition | void> {
+    const exhibitionId = exhibition?.exhibitionId;
+    if (!exhibitionId) {
+      return;
+    }
 
-    try {
-      const edgeCursor = await this.db.query(getExhibitionsQuery, {galleryId});
-      const exhibitionIds = (await edgeCursor.all()).filter(el => el);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const {artworks, exhibitionPrimaryImage, exhibitionLocation, ...remainingExhibitionProps} =
+      exhibition;
 
-      const galleryOwnedArtworkPromises = exhibitionIds.map(
-        async (exhibitionId: string) => {
-          return await this.getExhibitionById({exhibitionId});
-        },
-      );
+    // #########################################################################
+    //                             SAVE THE EXHIBITION IMAGE
+    // #########################################################################
 
-      const galleryExhibitions = await Promise.all(galleryOwnedArtworkPromises);
-      if (galleryExhibitions) {
-        return galleryExhibitions as Exhibition[];
+    const {exhibitionImage} = await this.getExhibitionImage({
+      key: exhibitionId,
+    });
+
+    // Don't overwrite an image
+    let fileName: string = crypto.randomUUID();
+    if (exhibitionImage?.exhibitionPrimaryImage?.fileName) {
+      fileName = exhibitionImage.exhibitionPrimaryImage.fileName;
+    }
+
+    let bucketName = exhibitionPrimaryImage?.bucketName ?? null;
+    let value = exhibitionPrimaryImage?.value ?? null;
+    if (exhibitionPrimaryImage?.fileData) {
+      try {
+        const artworkImageResults =
+          await this.imageController.processUploadImage({
+            fileBuffer: exhibitionPrimaryImage?.fileData,
+            fileName,
+            bucketName: BUCKET_NAME,
+          });
+        ({bucketName, value} = artworkImageResults);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('error uploading image:', error);
       }
-    } catch (error: any) {
-      throw new Error(error.message);
     }
-  }
 
-  public async listGalleryExhibitionsForUser({
-    galleryId,
-  }: {
-    galleryId: string;
-  }): Promise<ExhibitionObject | void>{
-    const getExhibitionsQuery = `
-    WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}
-    FOR exhibition IN OUTBOUND @galleryId ${EdgeNames.FROMGalleryTOExhibition}
-    RETURN exhibition._id      
-  `;
+    // #########################################################################
+    //                              SAVE THE EXHIBITION
+    //                        Not including the bucketed stuff
+    // #########################################################################
 
-  try {
-    const edgeCursor = await this.db.query(getExhibitionsQuery, {galleryId});
-    const exhibitionIds = (await edgeCursor.all()).filter(el => el);
-
-    const galleryOwnedArtworkPromises = exhibitionIds.map(
-      async (exhibitionId: string) => {
-        const results = await this.getExhibitionById({exhibitionId});
-        return filterOutPrivateRecordsMultiObject(results)
+    const data = {
+      ...remainingExhibitionProps,
+      exhibitionLocation: {...exhibitionLocation},
+      exhibitionPrimaryImage: {
+        bucketName,
+        value,
+        fileName,
       },
-    );
+      updatedAt: new Date(),
+    };
 
-    const galleryExhibitions = await Promise.all(galleryOwnedArtworkPromises);
-    const galleryExhibitionsObject = galleryExhibitions.reduce((acc, obj) => acc[obj.exhibitionId as string] = obj, {})
-    if (galleryExhibitions) {
-      return galleryExhibitionsObject as ExhibitionObject;
-    }
-  } catch (error: any) {
-    throw new Error(error.message);
-  }
-  }
+    let savedExhibition;
 
-
-  public async listGalleryExhibitionPreviewsForUser({
-    galleryId,
-  }: {
-    galleryId: string;
-  }): Promise<ExhibitionObject | void> {
-    const getExhibitionsQuery = `
-    WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}
-    FOR exhibition IN OUTBOUND @galleryId ${EdgeNames.FROMGalleryTOExhibition}
-    RETURN exhibition._id      
-  `;
-
-  try {
-    const edgeCursor = await this.db.query(getExhibitionsQuery, {galleryId});
-    const exhibitionIds = (await edgeCursor.all()).filter(el => el);
-
-    const galleryOwnedArtworkPromises = exhibitionIds.map(
-      async (exhibitionId: string) => {
-        const results = await this.getExhibitionPreviewById({exhibitionId});
-        return filterOutPrivateRecordsMultiObject(results)
-      },
-    );
-
-    const galleryExhibitions = await Promise.all(galleryOwnedArtworkPromises);
-    const galleryExhibitionsObject = galleryExhibitions.reduce((acc, obj) =>{ 
-      acc[obj.exhibitionId as string] = obj 
-      return acc}, 
-      {})
-    if (galleryExhibitions) {
-      return galleryExhibitionsObject;
-    }
-  } catch (error: any) {
-    throw new Error(error.message);
-  }
-  }
-
-  public async listExhibitionsPreviewsForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: Exhibition} | void> {
-    const getExhibitionsQuery = `
-      WITH ${CollectionNames.Exhibitions}
-      FOR exhibition IN ${CollectionNames.Exhibitions}
-      SORT exhibition.exhibitionDates.exhibitionStartDate.value ASC
-      LIMIT 0, @limit
-      RETURN exhibition._id      
-    `;
-  
     try {
-      const edgeCursor = await this.db.query(getExhibitionsQuery, { limit });
-      const exhibitionIds = (await edgeCursor.all()).filter(el => el);
-  
-      // Since we want a combined result, let's merge the promises for each exhibition ID.
-      const combinedPromises = exhibitionIds.map(async (exhibitionId: string) => {
-        const exhibition = filterOutPrivateRecordsMultiObject(await this.getExhibitionPreviewById({ exhibitionId }));
-        const artworks = await this.listPreviewExhibitionArtworks({ exhibitionId });
-        const gallery = filterOutPrivateRecordsMultiObject(await this.galleryService.getGalleryByExhibitionId({ exhibitionId }));
-  
-        return {
-          exhibition,
-          artworks,
-          gallery
-        };
+      savedExhibition = await this.nodeService.upsertNodeByKey({
+        collectionName: CollectionNames.Exhibitions,
+        key: exhibitionId,
+        data,
       });
-  
-      const combinedResults = await Promise.all(combinedPromises);
-  
-      // Now let's transform the combined results into the desired structures
-      const galleryExhibitionsObject: {[key: string]: any} = {};
-      const galleryObject: {[key: string]: any} = {};
-      const artworkObject: {[key: string]: any} = {};
-      const preview: {[key: string]: any} = {};
-  
-      combinedResults.forEach(result => {
-        galleryExhibitionsObject[result.exhibition.exhibitionId as string] = result.exhibition;
-        galleryObject[result.gallery._id as string] = result.gallery;
-        
-        Object.keys(result.artworks).forEach(artworkId => {
-          artworkObject[artworkId] = result.artworks[artworkId];
-        });
-  
-        // Constructing the preview
-        preview[result.exhibition.exhibitionId] = {
-          exhibitionId: result.exhibition.exhibitionId,
-          artworkIds: Object.keys(result.artworks),
-          galleryId: result.gallery._id
-        };
-      });
-  
-      return {
-        exhibitions: galleryExhibitionsObject,
-        galleries: galleryObject,
-        artwork: artworkObject,
-        exhibitionPreviews: preview
-      } as any;
-    } catch (error: any) {
-      throw new Error(error.message);
+    } catch (error) {
+      throw new Error('error saving exhibition');
     }
+
+    // #########################################################################
+    //                             SAVE THE EXHIBITION LOCATION EDGE
+    // #########################################################################
+
+    try{
+
+
+    let cityName = ""
+
+    if(exhibitionLocation?.city?.value){
+      cityName = exhibitionLocation.city.value
+    }
+
+    if (cityName) {
+      // Check if city exists and upsert it
+      const upsertCityQuery = `
+      UPSERT { value: @cityName }
+      INSERT { value: @cityName }
+      UPDATE {} IN ${CollectionNames.Cities}
+      RETURN NEW
+    `;
+
+      const cityCursor = await this.db.query(upsertCityQuery, {
+        cityName,
+      });
+      const city: City = await cityCursor.next(); // Assuming City is a type
+
+      // Check if an edge between the exhibition and this city already exists
+      const checkEdgeQuery = `
+      FOR edge IN ${EdgeNames.FROMExhibitionTOCity}
+      FILTER edge._from == @exhibitionId AND edge._to == @cityId
+      RETURN edge
+      `;
+
+      const edgeCursor = await this.db.query(checkEdgeQuery, {
+        exhibitionId: savedExhibition._id,
+        cityId: city._id,
+      });
+      const existingEdge = await edgeCursor.next();
+
+      // If there's no existing edge, create a new one
+      if (!existingEdge && city._id) {
+        await this.edgeService.upsertEdge({
+          edgeName: EdgeNames.FROMExhibitionTOCity,
+          from: savedExhibition._id,
+          to: city._id,
+          data: {
+            value: 'SHOWING'
+          }
+        })
+      }
+    }
+  } catch(error:any){
+    throw new Error('unable to add edge from exhibition to city')
   }
-  
+
+    const returnExhibition: any = {
+      ...savedExhibition,
+    };
+
+    return returnExhibition;
+  }
 
 
   public async deleteExhibition({
@@ -542,6 +448,206 @@ export class ExhibitionService implements IExhibitionService {
     return false;
 
     // You can further handle results if needed (e.g., check for errors)
+  }
+
+  public async listExhibitionForGallery({
+    galleryId,
+  }: {
+    galleryId: string;
+  }): Promise<Exhibition[] | void> {
+    const getExhibitionsQuery = `
+      WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}
+      FOR artwork IN OUTBOUND @galleryId ${EdgeNames.FROMGalleryTOExhibition}
+      RETURN artwork._id      
+    `;
+
+    try {
+      const edgeCursor = await this.db.query(getExhibitionsQuery, {galleryId});
+      const exhibitionIds = (await edgeCursor.all()).filter(el => el);
+
+      const galleryOwnedArtworkPromises = exhibitionIds.map(
+        async (exhibitionId: string) => await this.getExhibitionById({exhibitionId}),
+      );
+
+      const galleryExhibitions = await Promise.all(galleryOwnedArtworkPromises);
+      if (galleryExhibitions) {
+        return galleryExhibitions as Exhibition[];
+      }
+      throw new Error('unable to find galleryExhibitions')
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
+
+  public async listGalleryExhibitionsForUser({
+    galleryId,
+  }: {
+    galleryId: string;
+  }): Promise<ExhibitionObject | void>{
+    const getExhibitionsQuery = `
+    WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}
+    FOR exhibition IN OUTBOUND @galleryId ${EdgeNames.FROMGalleryTOExhibition}
+    RETURN exhibition._id      
+  `;
+
+  try {
+    const edgeCursor = await this.db.query(getExhibitionsQuery, {galleryId});
+    const exhibitionIds = (await edgeCursor.all()).filter(el => el);
+
+    const galleryOwnedArtworkPromises = exhibitionIds.map(
+      async (exhibitionId: string) => {
+        const results = await this.getExhibitionById({exhibitionId});
+        return filterOutPrivateRecordsMultiObject(results)
+      },
+    );
+
+    const galleryExhibitions = await Promise.all(galleryOwnedArtworkPromises);
+    const galleryExhibitionsObject = galleryExhibitions.reduce((acc, obj) => acc[obj.exhibitionId as string] = obj, {})
+    if (galleryExhibitions) {
+      return galleryExhibitionsObject as ExhibitionObject;
+    }
+    throw new Error('unable to find gallery Exhibitions')
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+  }
+
+  public async listGalleryExhibitionPreviewsForUser({
+    galleryId,
+  }: {
+    galleryId: string;
+  }): Promise<ExhibitionObject | null> {
+    const getExhibitionsQuery = `
+    WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}
+    FOR exhibition IN OUTBOUND @galleryId ${EdgeNames.FROMGalleryTOExhibition}
+    RETURN exhibition._id      
+  `;
+
+  try {
+    const edgeCursor = await this.db.query(getExhibitionsQuery, {galleryId});
+    const exhibitionIds = (await edgeCursor.all()).filter(el => el);
+
+    const galleryOwnedArtworkPromises = exhibitionIds.map(
+      async (exhibitionId: string) => {
+        const results = await this.getExhibitionPreviewById({exhibitionId});
+        return filterOutPrivateRecordsMultiObject(results)
+      },
+    );
+
+    const galleryExhibitions = await Promise.all(galleryOwnedArtworkPromises);
+    const galleryExhibitionsObject = galleryExhibitions.reduce((acc, obj) =>{ 
+      acc[obj.exhibitionId as string] = obj 
+      return acc}, 
+      {})
+    if (galleryExhibitions) {
+      return galleryExhibitionsObject;
+    } 
+      return null
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+  }
+
+  public async listExhibitionsPreviewsForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: Exhibition} | void> {
+    const getExhibitionsQuery = `
+      WITH ${CollectionNames.Exhibitions}
+      FOR exhibition IN ${CollectionNames.Exhibitions}
+      SORT exhibition.exhibitionDates.exhibitionStartDate.value ASC
+      LIMIT 0, @limit
+      RETURN exhibition._id      
+    `;
+  
+    try {
+      const edgeCursor = await this.db.query(getExhibitionsQuery, { limit });
+      const exhibitionIds = (await edgeCursor.all()).filter(el => el);
+  
+      // Since we want a combined result, let's merge the promises for each exhibition ID.
+      const combinedPromises = exhibitionIds.map(async (exhibitionId: string) => {
+        const exhibition = filterOutPrivateRecordsMultiObject(await this.getExhibitionPreviewById({ exhibitionId }));
+        const artworks = await this.listPreviewExhibitionArtworks({ exhibitionId });
+        const gallery = filterOutPrivateRecordsMultiObject(await this.galleryService.getGalleryByExhibitionId({ exhibitionId }));
+  
+        return {
+          exhibition,
+          artworks,
+          gallery
+        };
+      });
+  
+      const combinedResults = await Promise.all(combinedPromises);
+  
+      // Now let's transform the combined results into the desired structures
+      const galleryExhibitionsObject: {[key: string]: any} = {};
+      const galleryObject: {[key: string]: any} = {};
+      const artworkObject: {[key: string]: any} = {};
+      const preview: {[key: string]: any} = {};
+  
+      combinedResults.forEach(result => {
+        galleryExhibitionsObject[result.exhibition.exhibitionId as string] = result.exhibition;
+        galleryObject[result.gallery._id as string] = result.gallery;
+        
+        Object.keys(result.artworks).forEach(artworkId => {
+          artworkObject[artworkId] = result.artworks[artworkId];
+        });
+  
+        // Constructing the preview
+        preview[result.exhibition.exhibitionId] = {
+          exhibitionId: result.exhibition.exhibitionId,
+          artworkIds: Object.keys(result.artworks),
+          galleryId: result.gallery._id
+        };
+      });
+  
+      return {
+        exhibitions: galleryExhibitionsObject,
+        galleries: galleryObject,
+        artwork: artworkObject,
+        exhibitionPreviews: preview
+      } as any;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
+
+  public async listActiveExhibitionsByCity({cityName} : {cityName: string}): Promise<any>{
+
+    const findCollections = `
+    WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}, ${CollectionNames.Cities}
+    FOR city IN ${CollectionNames.Cities}
+      FILTER city.value == @cityName
+      FOR exhibition, exhibitionCityRelation IN 1..1 INBOUND city ${EdgeNames.FROMExhibitionTOCity}
+        FILTER IS_SAME_COLLECTION(${CollectionNames.Exhibitions}, exhibition)
+        AND exhibition.exhibitionDates.exhibitionEndDate > @currentDate
+
+        FOR gallery, exhibitionGalleryRelation IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
+        RETURN {
+              exhibitionId: exhibition.exhibitionId,
+              galleryId: gallery._id,
+              galleryName: gallery.galleryName,
+              galleryLogo: gallery.galleryLogo,
+              exhibitionTitle: exhibition.exhibitionTitle,
+              exhibitionLocation: exhibition.exhibitionLocation,
+              exhibitionPrimaryImage: exhibition.exhibitionPrimaryImage,
+              exhibitionArtist: exhibition.exhibitionArtist,
+              exhibitionId: exhibition.exhibitionId,
+              exhibitionDates: exhibition.exhibitionDates,
+              receptionDates: exhibition.receptionDates
+          }
+    `;
+
+    try{
+      const edgeCursor = await this.db.query(findCollections, { cityName, currentDate: new Date().toISOString() });
+      const exhibitionsAndPreviews: ExhibitionMapPin[] = await edgeCursor.all()
+      const exhibitionMapPin: {[key: string]: ExhibitionMapPin} = {};
+      exhibitionsAndPreviews.forEach((exhibitionAndPreview) => {
+        exhibitionMapPin[exhibitionAndPreview.exhibitionId] = exhibitionAndPreview
+      })
+
+      return {...exhibitionMapPin}
+    } catch(error: any){
+      console.log(error)
+    }
+    return null
   }
 
   private async getExhibitionImage({key}: {key: string}): Promise<any> {
@@ -722,15 +828,11 @@ export class ExhibitionService implements IExhibitionService {
       });
 
       const currentLength = artworkEdges.length;
-      const highestExhibitionOrder = artworkEdges.reduce((max, obj) => {
-        return obj.exhibitionOrder > max ? obj.exhibitionOrder : max;
-      }, -Infinity);
+      const highestExhibitionOrder = artworkEdges.reduce((max, obj) => obj.exhibitionOrder > max ? obj.exhibitionOrder : max, -Infinity);
 
       if (currentLength + 1 === highestExhibitionOrder) return true;
 
-      const artworkEdgesExhibitionOrder = artworkEdges.sort((a, b) => {
-        return a.exhibitionOrder - b.exhibitionOrder;
-      });
+      const artworkEdgesExhibitionOrder = artworkEdges.sort((a, b) => a.exhibitionOrder - b.exhibitionOrder);
 
       const promises = [];
       for (let i = 0; i < artworkEdgesExhibitionOrder.length; i++) {
@@ -816,7 +918,7 @@ export class ExhibitionService implements IExhibitionService {
     locationData: IBusinessLocationData;
     artworkId: string;
   }): Promise<boolean> {
-    let locality, city;
+    let locality; let city;
     const fullArtworkId = this.artworkService.generateArtworkId({artworkId});
 
     if (locationData?.locality?.value) {
@@ -939,12 +1041,8 @@ export class ExhibitionService implements IExhibitionService {
         edgeName: EdgeNames.FROMCollectionTOArtwork,
         from: fullExhibitionId,
       });
-      const desiredLocation = artworkEdges.filter((edge: Edge) => {
-        return edge.exhibitionOrder === desiredIndex;
-      });
-      const currentLocation = artworkEdges.filter((edge: Edge) => {
-        return edge.exhibitionOrder === currentIndex;
-      });
+      const desiredLocation = artworkEdges.filter((edge: Edge) => edge.exhibitionOrder === desiredIndex);
+      const currentLocation = artworkEdges.filter((edge: Edge) => edge.exhibitionOrder === currentIndex);
       if (currentLocation[0]._to !== fullArtworkId) {
         throw new Error('incorrect location!');
       }

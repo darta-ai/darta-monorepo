@@ -78,7 +78,9 @@ export function ArtworkCard({
     setSaveSpinner(true);
     try {
       await saveArtwork({updatedArtwork: savedArtwork});
-    } catch (error) {}
+    } catch (error) {
+      console.log(error)
+    }
     setSaveSpinner(false);
     setEditArtwork(!editArtwork);
   };
@@ -123,18 +125,9 @@ export function ArtworkCard({
         </Box>
       ) : (
         <Box sx={cardStyles.cardContainer}>
-          <Box sx={{width: '30vw', m: 1}}>
             <Box
               onClick={handleExpandClick}
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                maxHeight: '15vh',
-                minWidth: '25vw',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignContent: 'center',
-              }}
+              sx={cardStyles.informationContainer}
               data-testid="artwork-card-image">
               <Box
                 component="img"
@@ -143,7 +136,6 @@ export function ArtworkCard({
                 style={cardStyles.mediaExhibition}
               />
             </Box>
-          </Box>
 
           <Box sx={cardStyles.informationContainer}>
             <CardContent>

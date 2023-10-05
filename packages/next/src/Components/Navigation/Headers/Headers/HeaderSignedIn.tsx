@@ -6,6 +6,7 @@ import {firebaseSignOut} from '../../../../ThirdPartyAPIs/firebaseApp';
 import {AuthEnum} from '../../../Auth/types';
 import {useAppState} from '../../../State/AppContext';
 import {headerStyles} from '../styles';
+import { PRIMARY_50 } from 'packages/darta-styles/dist/styles';
 
 export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
   const router = useRouter();
@@ -54,7 +55,7 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
               data-testid="header-image"
             />
             <Box sx={{alignSelf: 'center'}}>
-              <Typography variant="h5">+</Typography>
+              <Typography variant="h5" style={{color: PRIMARY_50}}>+</Typography>
             </Box>
           </>
         ) : (

@@ -4,14 +4,15 @@ import Image from 'next/image';
 import React from 'react';
 
 import {AuthContext} from '../../../pages/_app';
-import {PRIMARY_MILK} from '../../../styles';
-import {PRIMARY_400, PRIMARY_600} from '@darta-styles'
+import {PRIMARY_400, PRIMARY_600, PRIMARY_300, PRIMARY_700, PRIMARY_900, PRIMARY_950} from '@darta-styles'
 
 import {phoneNumberConverter} from '../../common/utils/phoneNumberConverter';
 import {resendEmailVerification} from '../../ThirdPartyAPIs/firebaseApp';
 import {GalleryLocationComponent} from './Components/GalleryLocationText';
 import {profileStyles} from './Components/profileStyles';
-import { cardStyles } from 'packages/next/styles/CardStyles';
+import { cardStyles } from '../../../styles/CardStyles';
+import Link from 'next/link';
+
 
 function GalleryStatus({
   galleryProfileData,
@@ -30,7 +31,7 @@ function GalleryStatus({
   };
   if (!user){
     <Box data-testid="gallery-under-review">
-    <Typography variant="h4" sx={{color: 'red', textAlign: 'center'}}>
+    <Typography variant="h4" sx={{color: PRIMARY_600, textAlign: 'center'}}>
       Something went wrong 
     </Typography>
     <Box sx={profileStyles.profile.galleryBioStyles}>
@@ -42,7 +43,7 @@ function GalleryStatus({
       <Box sx={{mx: 3, my: 3}}>
         <Typography>
           If you have any questions or concerns, please reach out to us at{' '}
-          <a style={{color: PRIMARY_400}} href="mailto:info@darta.art">info@darta.art</a>
+          <a style={{color: PRIMARY_600}} href="mailto:info@darta.art">info@darta.art</a>
         </Typography>
       </Box>
     </Box>
@@ -51,7 +52,7 @@ function GalleryStatus({
   else if (!user?.emailVerified) {
     return (
       <Box data-testid="gallery-under-review">
-        <Typography variant="h3" sx={{color: 'red', textAlign: 'center'}}>
+        <Typography variant="h3" sx={{color: PRIMARY_700, textAlign: 'center'}}>
           Please verify your email
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
@@ -66,7 +67,7 @@ function GalleryStatus({
               disabled={isResent}
               sx={{
                 backgroundColor: PRIMARY_600,
-                color: PRIMARY_MILK,
+                color: PRIMARY_300,
                 alignSelf: 'center',
               }}
               onClick={() => {
@@ -97,7 +98,7 @@ function GalleryStatus({
     );
   } else if (!galleryProfileData?.isValidated) {
     return (
-      <Box data-testid="gallery-under-review">
+      <Box data-testid="gallery-under-review" style={{minHeight: '30vh'}}>
         <Typography variant="h4" sx={{color: 'red', textAlign: 'center'}}>
           Gallery Under Review
         </Typography>
@@ -125,16 +126,16 @@ function GalleryStatus({
     );
   } else if (galleryProfileData?.galleryBio?.value) {
     return (
-      <Box>
+      <Box style={{minHeight: '30vh'}}>
         <Typography
           variant="h4"
           data-testid="gallery-name-display"
-          sx={{color: PRIMARY_600, textAlign: 'left'}}>
+          sx={{color: PRIMARY_950, textAlign: 'left'}}>
           {galleryProfileData?.galleryName?.value}
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
           <Box sx={{my: 2}}>
-            <Typography data-testid="gallery-bio-display">
+            <Typography data-testid="gallery-bio-display" sx={{color: PRIMARY_900, textAlign: 'left'}}>
               {galleryProfileData?.galleryBio?.value}
             </Typography>
           </Box>
@@ -143,7 +144,7 @@ function GalleryStatus({
     );
   } else if (galleryProfileData?.galleryName?.value) {
     return (
-      <Box data-testid="gallery-start-editing">
+      <Box data-testid="gallery-start-editing" style={{minHeight: '30vh'}}>
         <Typography
           variant="h4"
           sx={{color: PRIMARY_600, textAlign: 'center'}}>
@@ -209,7 +210,7 @@ export function ProfileGallery({
                   <Image
                     src={png}
                     alt="info"
-                    style={profileStyles.profile.image}
+                    style={profileStyles.profile.defaultImage}
                     data-testid="profile-image-display"
                   />
                 </div>
@@ -223,6 +224,7 @@ export function ProfileGallery({
           </Box>
         </Box>
       </Box>
+      <Box sx={profileStyles.profile.galleryContactInfo}>
       {(galleryProfileData?.primaryContact?.value ||
         galleryProfileData?.galleryWebsite?.value ||
         galleryProfileData?.galleryInstagram?.value) && (
@@ -285,17 +287,21 @@ export function ProfileGallery({
                   sx={{textAlign: 'center', my: '1vh'}}
                   data-testid="profile-contact-website">
                   {galleryProfileData?.galleryWebsite?.value ? (
-                    <a
+                    <Link
                       target="_blank"
                       href={galleryProfileData?.galleryWebsite?.value}
-                      rel="noreferrer">
+                      rel="noreferrer"
+                      style={{ textDecoration: `${PRIMARY_950} underline` }}
+                      >
+                      <Typography style={{color: PRIMARY_950}}>
                       {galleryProfileData?.galleryWebsite?.value
                         .replace('http://www.', '')
                         .replace('http:/www.', '')
                         .replace('https:/', '')
                         .replace('https://www.', '')
                         .replace('/', '')}
-                    </a>
+                        </Typography>
+                    </Link>
                   ) : (
                     'N/A'
                   )}
@@ -372,6 +378,7 @@ export function ProfileGallery({
           </Box>
         </>
       )}
+      </Box>
     </Card>
     </Box>
   );
