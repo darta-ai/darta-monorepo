@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, {createContext, ReactNode, useReducer} from 'react';
 
 import {RatingEnum} from '../typing/types';
-import {Artwork, Exhibition, ExhibitionPreview, IGalleryProfileData} from '@darta-types'
+import {Artwork, Exhibition, ExhibitionPreview, IGalleryProfileData, MapPinCities, ExhibitionMapPin} from '@darta-types'
 
 export interface IUserArtworkRatings {
   [id: string]: {
@@ -107,6 +107,10 @@ export interface IState {
   currentExhibitionHeader?: string;
   previousExhibitionHeader?: string;
   currentArtworkTombstoneHeader?: string;
+
+  mapPins?: {
+    [city in MapPinCities]: {[key: string] : ExhibitionMapPin}
+  }
 }
 
 export enum ETypes {
@@ -137,6 +141,8 @@ export enum ETypes {
   setCurrentHeader = 'SET_CURRENT_HEADER',
   setPreviousExhibitionHeader = 'SET_PREVIOUS_EXHIBITION_HEADER',
   setTombstoneHeader = 'SET_TOMBSTONE_HEADER',
+
+  saveExhibitionMapPins = 'SAVE_EXHIBITION_MAP_PINS',
 }
 
 // Define the action type
@@ -170,13 +176,19 @@ interface IAction {
   
   // see here after
   exhibitionData?: Exhibition;
-  exhibitionPreviews?: {[key: string] : Exhibition}
+  exhibitionDataMulti?: {[key: string] : Exhibition}
+  exhibitionPreviews?: {[key: string] : ExhibitionPreview}
   galleryData?: IGalleryProfileData;
+  galleryDataMulti?: {[key: string]: IGalleryProfileData}
   artworkData?: Artwork;
+  artworkDataMulti?: {[key: string]: Artwork}
 
   currentExhibitionHeader?: string;
   previousExhibitionHeader?: string;
   currentArtworkHeader?: string;
+
+  mapPins?: {[key: string] : ExhibitionMapPin}
+  mapPinCity?: MapPinCities
 }
 
 // Define the initial state
@@ -199,6 +211,7 @@ const initialState: IState = {
   artworkData: {} as any,
   exhibitionData : {},
   galleryData: {},
+  mapPins: {} as any,
 };
 
 // Define the reducer function
@@ -397,14 +410,14 @@ const reducer = (state: IState, action: IAction): IState => {
         }
       }
       case ETypes.saveExhibitionMulti:
-        if(!action.exhibitionData){
+        if(!action.exhibitionDataMulti){
           return state
         }
         return {
           ...state,
           exhibitionData: {
             ...state.exhibitionData,
-            ...action.exhibitionData
+            ...action.exhibitionDataMulti
           }
         }
     case ETypes.saveExhibitionPreviews:
@@ -431,14 +444,14 @@ const reducer = (state: IState, action: IAction): IState => {
         }
       }
       case ETypes.saveGalleries:
-        if(!action.galleryData){
+        if(!action.galleryDataMulti){
           return state
         }
         return {
           ...state,
           galleryData: {
             ...state.galleryData,
-            ...action.galleryData
+            ...action.galleryDataMulti
           }
         }
     case ETypes.saveArtwork:
@@ -454,14 +467,14 @@ const reducer = (state: IState, action: IAction): IState => {
       }
 
       case ETypes.saveArtworkMulti:
-        if(!action.artworkData){
+        if(!action.artworkDataMulti){
           return state
         }
         return {
           ...state,
           artworkData: {
             ...state.artworkData,
-            ...action.artworkData
+            ...action.artworkDataMulti
           }
         }
       case ETypes.setCurrentHeader:
@@ -487,6 +500,20 @@ const reducer = (state: IState, action: IAction): IState => {
         return {
           ...state,
           currentArtworkTombstoneHeader: action.currentArtworkHeader,
+        };
+
+      case ETypes.saveExhibitionMapPins:
+        if (!action.mapPins && !action.mapPinCity) {
+          return state;
+        }
+        return {
+          ...state,
+          mapPins: {
+            ...state.mapPins,
+            [action.mapPinCity as string]: {
+              ...action.mapPins,
+            },
+          },
         };
     default:
       return state;

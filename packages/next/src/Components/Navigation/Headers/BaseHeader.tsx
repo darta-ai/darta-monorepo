@@ -56,12 +56,12 @@ export function BaseHeader() {
       <div />
       <div />
       <Box data-testid="dartaHouseBlue">
-        <Image
+      <Box
+          component="img"
+          sx={headerStyles.dartaHeaderBox}
           src="/static/images/dartahousewhite.png"
           data-testid="header-image"
-          alt="me"
-          height={80}
-          width={80}
+          alt="logo"
           onClick={() => router.push('/', undefined, {shallow: true})}
         />
       </Box>

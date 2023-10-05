@@ -2,12 +2,10 @@
 /* eslint-disable no-return-assign */
 import React from 'react';
 import {
-  Image,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Divider } from 'react-native-paper';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -15,7 +13,7 @@ import {
 
 import {TextElement} from '../Elements/_index';
 import {globalTextStyles} from '../../styles/styles';
-import {Artwork, Exhibition, ExhibitionDates, ExhibitionPreview, IGalleryProfileData} from '@darta-types';
+import { Exhibition, ExhibitionPreview, IGalleryProfileData} from '@darta-types';
 import { PRIMARY_700, PRIMARY_900, PRIMARY_100, PRIMARY_950, PRIMARY_50 } from '@darta-styles';
 import { customLocalDateString } from '../../utils/functions';
 import { StoreContext } from '../../state/Store';
@@ -56,10 +54,22 @@ const exhibitionPreviewStyle = StyleSheet.create({
   },
   imagePreviewContainer: {
     width: wp('90%'),
-    height: "50%",
+    height: hp("40%"),
+    marginTop: 10,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  textContainer:{
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    textAlign: 'left',
+    alignContent: 'flex-start',
+    height: hp("10%"),
+    width: '100%',
+    marginLeft: 5,
+    gap: 5,
   },
   heroImageContainer: {
     height: '70%',
@@ -75,17 +85,7 @@ const exhibitionPreviewStyle = StyleSheet.create({
     height: '100%',
     resizeMode: 'contain',
   },
-  textContainer:{
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    textAlign: 'left',
-    alignContent: 'flex-start',
-    height: "35%",
-    width: '100%',
-    marginLeft: 5,
-    gap: 5,
-  },
+
   seeMoreContainer: {
     display: 'flex',
     flexDirection: 'row',
@@ -158,7 +158,7 @@ export function ExhibitionPreviewCard({
           && exhibition.exhibitionDates?.exhibitionEndDate.value &&
           (
             <TextElement
-              style={{...globalTextStyles.baseText, color: PRIMARY_900,  fontSize: 16}}>
+              style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
               {' '}
               {exhibition.exhibitionDates?.exhibitionStartDate.value ? customLocalDateString(new Date(exhibition.exhibitionDates?.exhibitionStartDate.value)) : "Dates TBD"}
               {" - "}
@@ -167,13 +167,13 @@ export function ExhibitionPreviewCard({
           )}
           {exhibition.exhibitionDates.exhibitionDuration && 
           exhibition.exhibitionDates.exhibitionDuration.value !== "Temporary" && (
-            <TextElement style={{...globalTextStyles.baseText, color: PRIMARY_900}}>
+            <TextElement style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
               {' '}
               {exhibition.exhibitionDates.exhibitionDuration.value}
           </TextElement>
           )}
           <TextElement
-            style={{...globalTextStyles.baseText, color: PRIMARY_900,}}>
+            style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
             {' '}
             {exhibition.exhibitionLocation.locationString?.value}
           </TextElement>

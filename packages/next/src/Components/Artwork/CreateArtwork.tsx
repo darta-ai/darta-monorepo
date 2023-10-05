@@ -38,7 +38,7 @@ import {
 import {profileStyles} from '../Profile/Components/profileStyles';
 import {useAppState} from '../State/AppContext';
 import {createArtworkStyles} from './styles';
-import {PRIMARY_600, PRIMARY_200} from '@darta-styles'
+import {PRIMARY_600, PRIMARY_200, PRIMARY_900} from '@darta-styles'
 
 type currencyConverterType = {
   [key: string]: string;
@@ -399,18 +399,18 @@ export function CreateArtwork({
             {errors.artworkImage?.value?.message!}
           </Typography>
         )}
-        <Box sx={{alignSelf: 'center'}}>
-          <Button
-            sx={{width: '40vw', alignSelf: 'center'}}
-            onClick={() => setEditImage(!editImage)}
-            variant="contained">
-            <Typography
-              sx={{fontSize: '0.8rem'}}
-              data-testid="create-artwork-image-back-button-test">
-              {editImage ? 'Back' : 'Edit Image'}
-            </Typography>
-          </Button>
-        </Box>
+      </Box>
+      <Box sx={{alignSelf: 'center'}}>
+        <Button
+          sx={{width: '40vw', alignSelf: 'center'}}
+          onClick={() => setEditImage(!editImage)}
+          variant="contained">
+          <Typography
+            sx={{fontSize: '0.8rem'}}
+            data-testid="create-artwork-image-back-button-test">
+            {editImage ? 'Back' : 'Edit Image'}
+          </Typography>
+        </Button>
       </Box>
       <Box sx={createArtworkStyles.inputTextContainer}>
         <Box
@@ -715,7 +715,7 @@ export function CreateArtwork({
             disabled={saveSpinner}
             sx={{
               alignSelf: 'center',
-              backgroundColor: PRIMARY_600,
+              backgroundColor: PRIMARY_900,
               width: '30vw',
               '@media (min-width: 800px)': {
                 width: '10vw',

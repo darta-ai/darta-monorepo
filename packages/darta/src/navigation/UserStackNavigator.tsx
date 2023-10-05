@@ -1,7 +1,6 @@
 import {MILK} from '@darta-styles';
 import React, {useContext} from 'react';
 
-import {UserStack} from '../../App';
 import {ArtworkNavigatorModal} from '../components/Modal/ArtworkNavigatorModal';
 import {UserHome} from '../screens/UserHome';
 import {UserInquiredArtwork} from '../components/User/UserInquiredArtwork';
@@ -11,6 +10,11 @@ import {StoreContext} from '../state/Store';
 import {headerOptions} from '../styles/styles';
 import {UserRoutesEnum} from '../typing/routes';
 import {createOpeningTransition} from '../utils/openingTransition';
+
+import {createStackNavigator} from '@react-navigation/stack';
+
+export const UserStack = createStackNavigator();
+
 
 export function UserStackNavigator() {
   const {state} = useContext(StoreContext);

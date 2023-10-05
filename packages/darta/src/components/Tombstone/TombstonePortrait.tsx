@@ -29,7 +29,7 @@ export function TombstonePortrait({artwork,
   const width = parseInt(inputWidth, 10)
 
 
-  let displayDimensionsString;
+  let displayDimensionsString = "";
   if(artwork?.artworkDimensions.text.value){
     displayDimensionsString = artwork.artworkDimensions.text.value
     .replaceAll(/[\r\n]+/g, '')
@@ -44,7 +44,7 @@ export function TombstonePortrait({artwork,
   }
 
   
-  const maxDimension = Math.floor(wp('100%') * 0.6);
+  const maxDimension = Math.floor(wp('100%') * 0.7);
 
   let artHeight: number | undefined;
   let artWidth : number | undefined;
@@ -67,16 +67,17 @@ export function TombstonePortrait({artwork,
       alignSelf: 'center',
       justifyContent: 'center',
       width: wp('100%'),
-      height: maxDimension,
+      height: hp('40%'),
     },
     image: {
-      height: artHeight,
-      width: artWidth,
+      height: hp('35%'),
+      width: wp('90%'),
+      resizeMode: 'contain',
       alignSelf: 'center',
     },
     textContainer: {
       width: wp('90%'),
-      height: hp('30%'),
+      height: hp('20%'),
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-around',
@@ -189,8 +190,9 @@ export function TombstonePortrait({artwork,
               Save
             </Button>
           </View>
+          {artwork?.canInquire?.value !== "No" && (
           <View>
-          <Button
+            <Button
               icon={icons.inquire}
               dark
               buttonColor={PRIMARY_800}
@@ -199,6 +201,7 @@ export function TombstonePortrait({artwork,
               Inquire
             </Button>
           </View>
+          )}
         </View>
       </ScrollView>
     </View>

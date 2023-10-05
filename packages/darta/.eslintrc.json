@@ -7,5 +7,5 @@
         "no-return-await": "warn",
         "react-hooks/exhaustive-deps": "warn"
     }
-  }
+}
   

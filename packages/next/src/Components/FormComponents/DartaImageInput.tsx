@@ -4,8 +4,7 @@ import {Box, Typography} from '@mui/material';
 import React from 'react';
 import Dropzone from 'react-dropzone';
 
-import {PRIMARY_MILK} from '../../../styles';
-import {PRIMARY_600} from '@darta-styles'
+import {PRIMARY_600, PRIMARY_50} from '@darta-styles'
 
 const useStyles = {
   dropzone: {
@@ -22,7 +21,7 @@ const useStyles = {
     transition: 'border .24s ease-in-out',
     '&:hover': {
       borderColor: PRIMARY_600,
-      backgroundColor: PRIMARY_MILK,
+      backgroundColor: PRIMARY_50,
     },
   },
   icon: {

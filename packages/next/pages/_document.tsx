@@ -10,6 +10,7 @@ import Document, {
   NextScript,
 } from 'next/document';
 import React from 'react';
+import Script from "next/script";
 
 import createEmotionCache from '../src/createEmotionCache';
 import theme from '../src/theme';
@@ -24,6 +25,21 @@ export default function MyDocument({emotionStyleTags}: MyDocumentProps) {
     <Html lang="en">
       <Head>
         {/* PWA primary color */}
+        <Script
+        strategy="lazyOnload"
+        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
+        />
+
+        <Script strategy="lazyOnload">
+          {`
+                      window.dataLayer = window.dataLayer || [];
+                      function gtag(){dataLayer.push(arguments);}
+                      gtag('js', new Date());
+                      gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}', {
+                      page_path: window.location.pathname,
+                      });
+                  `}
+        </Script>
         <meta name="theme-color" content={theme.palette.primary.main} />
         <link rel="shortcut icon" href="/dartahouse.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

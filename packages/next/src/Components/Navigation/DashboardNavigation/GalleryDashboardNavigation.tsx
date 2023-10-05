@@ -20,8 +20,7 @@ import Toolbar from '@mui/material/Toolbar';
 import React from 'react';
 
 import {EGalleryDisplay} from '../../../../pages/Galleries/Profile';
-import {PRIMARY_MILK} from '../../../../styles';
-import {PRIMARY_400} from '@darta-styles'
+import {PRIMARY_400, PRIMARY_50, PRIMARY_900} from '@darta-styles'
 
 import {AuthEnum} from '../../Auth/types';
 import {HeaderSignedIn} from '../Headers/Headers/HeaderSignedIn';
@@ -68,7 +67,7 @@ const AppBar = styled(MuiAppBar, {
   shouldForwardProp: prop => prop !== 'open',
 })<AppBarProps>(({theme, open}) => ({
   zIndex: theme.zIndex.drawer + 1,
-  backgroundColor: PRIMARY_400,
+  backgroundColor: PRIMARY_900,
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -150,7 +149,7 @@ export function MiniDrawer({
             edge="start"
             sx={{
               marginRight: 5,
-              color: PRIMARY_MILK,
+              color: PRIMARY_50,
               '@media (max-width: 800px)': {
                 display: 'none',
               },

@@ -1,5 +1,5 @@
-import {PRIMARY_DARK_GREY, PRIMARY_GREY, PRIMARY_MILK} from '.';
-import {PRIMARY_600, PRIMARY_700, PRIMARY_800} from '@darta-styles'
+import {PRIMARY_DARK_GREY} from '.';
+import {PRIMARY_600, PRIMARY_700, PRIMARY_800, PRIMARY_50, PRIMARY_950, PRIMARY_900} from '@darta-styles'
 
 export const galleryStyles = {
   container: {
@@ -15,15 +15,16 @@ export const galleryStyles = {
   },
   pageNavigationContainer: {
     borderTopLeftRadius: '0px',
-    width: '100%',
+    width: '95%',
     minHeight: '90vh',
     borderTop: '0px',
     alignContent: 'center',
+    alignSelf: 'center',
     display: 'flex',
     flexDirection: 'column',
     gap: '2vw',
-    borderLeft: `0px`,
     '@media (min-width: 1080px)': {
+      width: '80%',
       borderTop: `1px solid ${PRIMARY_800}`,
     },
   },
@@ -96,7 +97,7 @@ export const galleryStyles = {
     cursor: 'default',
   },
   button: {
-    color: PRIMARY_600,
+    color: PRIMARY_900,
   },
   inputTextContainer: {
     display: 'flex',
@@ -105,9 +106,9 @@ export const galleryStyles = {
     alignItems: 'center',
   },
   createNewButton: {
-    backgroundColor: PRIMARY_600,
+    backgroundColor: PRIMARY_950,
     alignSelf: 'center',
-    color: PRIMARY_MILK,
+    color: PRIMARY_50,
     width: '35vw',
     '@media (min-width: 800px)': {
       width: '20vw',

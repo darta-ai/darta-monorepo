@@ -1,10 +1,10 @@
 import 'firebase/compat/auth';
 
+import { PRIMARY_50} from '@darta-styles';
 import {Exhibition, GalleryState} from '@darta-types';
-import {Box, Button, Typography, CircularProgress} from '@mui/material';
+import {Box, Button, CircularProgress,Typography} from '@mui/material';
 import Head from 'next/head';
 import React from 'react';
-import {PRIMARY_MILK, PRIMARY_600} from '@darta-styles';
 
 import {AuthContext} from '../../../pages/_app';
 import {galleryStyles} from '../../../styles/GalleryPageStyles';
@@ -172,11 +172,11 @@ export function GalleryExhibition() {
               type="submit"
               onClick={() => addNewExhibition()}
               disabled={
-                !state.galleryProfile.isValidated || !user.emailVerified
+                !state.galleryProfile.isValidated || !user?.emailVerified
               }
               sx={galleryStyles.createNewButton}>
               {isLoadingExhibition ? (
-                <CircularProgress sx={{color: PRIMARY_MILK}} size={24} />
+                <CircularProgress sx={{color: PRIMARY_50}} size={24} />
               ):
               (
               <Typography sx={{fontWeight: 'bold'}}>

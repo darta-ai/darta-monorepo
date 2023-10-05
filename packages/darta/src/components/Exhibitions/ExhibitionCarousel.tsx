@@ -19,8 +19,8 @@ import Animated, {
 
 const carouselStyle = StyleSheet.create({
     heroImage: {
-        width: '80%',
-        height: '80%',
+        width: '90%',
+        height: '90%',
         resizeMode: 'contain',
         alignSelf: 'center',
     },
@@ -95,7 +95,6 @@ export function ExhibitionCarousel({images} : {images: {imageUrl: string, title:
     [],
   );
 
-  const [currentIndex, setCurrentIndex] = React.useState(0);
   const carouselRef = React.useRef<any>(null);
 
   const prevSlide = () => {

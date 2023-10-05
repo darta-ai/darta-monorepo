@@ -23,6 +23,9 @@
     "emitDecoratorMetadata": true,
     "jsx": "react-jsx"
   },
+  "lib": [
+    "ES2022"
+  ],
   "exclude": [
     "node_modules"
   ],
@@ -30,4 +33,6 @@
   "include": [
     "./packages/darta-types/src/*",
     "./packages/darta-styles/src/*"
-  ]}
+  ],
+  "extends": "expo/tsconfig.base"
+}

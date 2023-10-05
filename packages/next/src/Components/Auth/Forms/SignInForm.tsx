@@ -159,7 +159,7 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
           variant="contained"
           color="primary"
           type="submit"
-          sx={{alignSelf: 'center', margin: '2vh', width: '40%'}}
+          sx={{alignSelf: 'center', margin: '2vh', width: '20vw'}}
           data-testid="signUpButton">
           {isSigningIn ? (
             <CircularProgress size={24} color="secondary" />

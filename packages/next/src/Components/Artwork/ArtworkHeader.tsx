@@ -4,7 +4,7 @@ import React from 'react';
 
 import { PRIMARY_MILK} from '../../../styles/index';
 import {UploadArtworksXlsModal} from '../Modals';
-import {PRIMARY_600} from '@darta-styles'
+import {PRIMARY_600, PRIMARY_950} from '@darta-styles'
 
 export function ArtworkHeader({
   artworkLoading,
@@ -42,7 +42,7 @@ export function ArtworkHeader({
           className="create-new-artwork"
           disabled={artworkLoading}
           sx={{
-            backgroundColor: PRIMARY_600,
+            backgroundColor: PRIMARY_950,
             color: PRIMARY_MILK,
             alignSelf: 'center',
             width: '30vw',

@@ -77,3 +77,13 @@ export type PreviousExhibitionParamList = {
     exhibitionID: Exhibition | undefined
   };
 }
+
+export enum ExploreMapRootEnum {
+  exploreMapHome = 'EXPLORE_MAP_HOME',
+  exploreMapDetails = 'EXPLORE_MAP_DETAILS',
+}
+
+export type ExploreMapParamList = {
+  [ExploreMapRootEnum.exploreMapHome]: undefined;
+  [ExploreMapRootEnum.exploreMapDetails]: undefined;
+}

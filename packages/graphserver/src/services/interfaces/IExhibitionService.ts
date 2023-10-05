@@ -1,4 +1,4 @@
-import {Artwork, Exhibition, ExhibitionObject, IBusinessLocationData} from '@darta-types';
+import {Artwork, Exhibition, ExhibitionObject, IBusinessLocationData, MapPinCities} from '@darta-types';
 
 export interface IExhibitionService {
   createExhibition({
@@ -79,7 +79,9 @@ export interface IExhibitionService {
     galleryId,
   }: {
     galleryId: string;
-  }): Promise<ExhibitionObject | void>;
+  }): Promise<ExhibitionObject | null>;
+
+  listActiveExhibitionsByCity({cityName} : {cityName: MapPinCities}): Promise<any>
 
   deleteExhibition({
     exhibitionId,

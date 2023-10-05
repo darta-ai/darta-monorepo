@@ -1,2 +1,2 @@
 export {RecommenderHomeScreen} from './RecommenderHomeScreen';
-export {ExhibitionsHomeScreen} from './Exhibitions/ExhibitionsHomeScreen'
+export {ExhibitionsHomeScreen} from './Exhibition/ExhibitionsHomeScreen'

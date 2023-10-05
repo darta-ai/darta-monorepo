@@ -1,4 +1,4 @@
-/* eslint-disable react-native/no-inline-styles */
+import {PRIMARY_400, PRIMARY_600} from '@darta-styles'
 import {Artwork, Exhibition} from '@darta-types';
 import {
   Box,
@@ -15,7 +15,6 @@ import _ from 'lodash';
 import React from 'react';
 
 import {PRIMARY_MILK} from '../../../styles';
-import {PRIMARY_400, PRIMARY_600} from '@darta-styles'
 import {cardStyles} from '../../../styles/CardStyles';
 import {
   createAndEditArtworkForExhibition,
@@ -66,10 +65,6 @@ export function ExhibitionCard({
       setArtworks(exhibition.artworks!);
     }
   }, []);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
 
   const saveExhibition = async (updatedExhibition: Exhibition) => {
     setIsEditingExhibition(true);
@@ -242,17 +237,15 @@ export function ExhibitionCard({
 
     for (const artworkId in uploadArtworks) {
       if (uploadArtworks[artworkId]) {
-        // eslint-disable-next-line no-param-reassign
-        uploadArtworks[artworkId].exhibitionOrder = counter++;
+        // eslint-disable-next-line no-param-reassign, no-multi-assign
+        uploadArtworks[artworkId].exhibitionOrder = counter += 1;
         // eslint-disable-next-line no-param-reassign
         uploadArtworks[artworkId].exhibitionId = exhibitionId;
       }
     }
 
     const artworkPromises = Object.values(uploadArtworks).map(
-      (artwork: Artwork) => {
-        return createAndEditArtworkForExhibition({exhibitionId, artwork});
-      },
+      (artwork: Artwork) => createAndEditArtworkForExhibition({exhibitionId, artwork}),
     );
     try {
       const results = await Promise.all(artworkPromises);
@@ -394,27 +387,13 @@ export function ExhibitionCard({
         </Box>
       ) : (
         <Box sx={cardStyles.cardContainer}>
-          <Box sx={{width: '35vw', m: 1}}>
+          <Box sx={cardStyles.informationContainer}>
             <Box
-              onClick={handleExpandClick}
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                maxHeight: '15vh',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignContent: 'center',
-              }}
-              data-testid="exhibition-card-image">
-              <Box>
-                <Box
-                  component="img"
-                  src={exhibition?.exhibitionPrimaryImage?.value as string}
-                  alt={exhibition?.exhibitionTitle?.value as string}
-                  style={cardStyles.mediaExhibition}
-                />
-              </Box>
-            </Box>
+              component="img"
+              src={exhibition?.exhibitionPrimaryImage?.value as string}
+              alt={exhibition?.exhibitionTitle?.value as string}
+              style={cardStyles.mediaExhibition}
+            />
           </Box>
           <Box sx={cardStyles.informationContainer}>
             <CardContent>
@@ -457,7 +436,9 @@ export function ExhibitionCard({
             {exhibition?.exhibitionPressRelease?.value && (
               <Box
                 style={{
-                  marginRight: '1vw',
+                  width: '95%',
+                  padding: '1vh',
+                  height: '100%',
                 }}>
                 <Typography color="textSecondary" sx={{textAlign: 'center'}}>
                   Press Release
@@ -474,7 +455,7 @@ export function ExhibitionCard({
                       fontFamily: 'Nunito Sans',
                     },
                   }}
-                  disabled={true}
+                  disabled
                   inputProps={ariaLabel}
                   value={exhibition?.exhibitionPressRelease?.value}
                 />
@@ -527,7 +508,7 @@ export function ExhibitionCard({
                 exhibition.
               </Typography>
               <Typography variant="h6">
-                Click <a style={{color: PRIMARY_400}} href="/Galleries/Profile">here</a> to go to your
+                Click <a style={{color: PRIMARY_600}} href="/Galleries/Profile">here</a> to go to your
                 profile page.
               </Typography>
             </Box>

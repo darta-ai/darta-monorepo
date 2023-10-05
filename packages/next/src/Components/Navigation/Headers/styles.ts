@@ -1,8 +1,7 @@
 import {
   PRIMARY_LIGHTBLUE,
-  PRIMARY_MILK,
 } from '../../../../styles';
-import {PRIMARY_600, PRIMARY_400} from '@darta-styles'
+import {PRIMARY_600, PRIMARY_700, PRIMARY_50, PRIMARY_900} from '@darta-styles'
 
 
 export const headerStyles = {
@@ -13,7 +12,7 @@ export const headerStyles = {
     justifyContent: 'space-around',
     alignItems: 'center',
     gap: '1%',
-    backgroundColor: PRIMARY_400,
+    backgroundColor: PRIMARY_900,
   },
   '@keyframes fadeInAnimation': {
     '0%': {
@@ -30,8 +29,7 @@ export const headerStyles = {
     padding: 0,
   },
   typography: {
-    fontFamily: 'Nunito Sans',
-    color: PRIMARY_MILK,
+    color: PRIMARY_50,
     fontSize: '1.2rem',
     '@media (min-width:800px)': {
       fontSize: '1.2rem',
@@ -43,8 +41,8 @@ export const headerStyles = {
     cursor: 'default',
   },
   button: {
-    backgroundColor: PRIMARY_MILK,
-    color: PRIMARY_600,
+    backgroundColor: PRIMARY_50,
+    color: PRIMARY_900,
     fontSize: '0.8rem',
     '@media (min-width:750px)': {
       fontSize: '1rem',
@@ -67,4 +65,7 @@ export const headerStyles = {
   dartaImageBox: {
     height: '5vh',
   },
+  dartaHeaderBox: {
+    height: '8vh'
+  }
 };
