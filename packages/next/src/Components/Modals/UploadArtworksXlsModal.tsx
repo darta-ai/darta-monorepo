@@ -1,5 +1,5 @@
+import * as Colors from '@darta-styles';
 import {Artwork} from '@darta-types';
-import { PRIMARY_800 } from '@darta-styles';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import {
@@ -18,8 +18,6 @@ import React from 'react';
 import * as XLSX from 'xlsx';
 
 import {AuthContext} from '../../../pages/_app';
-import {PRIMARY_MILK} from '../../../styles';
-import { PRIMARY_100 } from '@darta-styles';
 import {parseExcelArtworkData} from '../../common/nextFunctions';
 import {useAppState} from '../State/AppContext';
 
@@ -62,7 +60,7 @@ const instructionsCarouselStyles = {
     display: 'flex',
     my: 2,
     alignItems: 'flex-start',
-    backgroundColor: PRIMARY_100,
+    backgroundColor: Colors.PRIMARY_100,
   },
   img: {
     overflow: 'hidden',
@@ -170,7 +168,7 @@ const uploadArtworkImages = {
     gap: 2,
   },
   paper: {
-    backgroundColor: PRIMARY_100,
+    backgroundColor: Colors.PRIMARY_100,
     border: '2px solid #000',
     boxShadow: 5,
     padding: 3,
@@ -248,7 +246,7 @@ export function UploadArtworksXlsModal({
         disabled={!state.galleryProfile.isValidated || !user?.emailVerified}
         onClick={handleOpen}
         sx={{
-          color: PRIMARY_800,
+          color: Colors.PRIMARY_800,
           alignSelf: 'center',
           width: '30vw',
           '@media (min-width: 1080px)': {
@@ -287,7 +285,6 @@ export function UploadArtworksXlsModal({
                 <>
                   <input
                     accept=".xlsx,.xls"
-                    // eslint-disable-next-line react-native/no-inline-styles
                     style={{display: 'none'}}
                     id="contained-button-file"
                     type="file"

@@ -57,7 +57,6 @@ export function GalleryProfile() {
     if (!state?.galleryProfile?.galleryName?.value && isEditingProfile) {
       setRun(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditingProfile]);
   return (
     <>

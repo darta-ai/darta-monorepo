@@ -22,7 +22,6 @@ export class AdminService implements IAdminService {
 
     edgeNames.map(async edgeName => {
       await this.ensureEdgeExists(edgeName);
-      console.log(edgeName)
     });
   }
 

@@ -99,9 +99,11 @@ export interface IOpeningLocationData extends IBusinessLocationData {
     isPrivate: boolean;
 }
 export type ExhibitionPreview = {
-    artworkIds: string[];
+    artworkIds?: string[];
     exhibitionId: string;
     galleryId: string;
+    openingDate: string;
+    closingDate: string;
 };
 export type Artwork = {
     artworkImage: Images;

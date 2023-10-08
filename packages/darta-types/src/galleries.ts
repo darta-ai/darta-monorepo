@@ -108,9 +108,11 @@ export interface IOpeningLocationData extends IBusinessLocationData {
 }
 
 export type ExhibitionPreview = {
-  artworkIds: string[];
+  artworkIds?: string[];
   exhibitionId: string;
-  galleryId: string
+  galleryId: string;
+  openingDate: string;
+  closingDate: string;
 }
 
 export type Artwork = {

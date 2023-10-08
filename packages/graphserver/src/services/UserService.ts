@@ -164,7 +164,7 @@ export class UserService implements IUserService {
     uid: string;
     relationship: string;
   }): Promise<any> {
-    const fullGalleryId = this.galleryService.generateGalleryId({galleryId});
+    const fullGalleryId = this.galleryService.generateGalleryUserId({galleryId});
     const fullUserId = this.generateUserId({uid});
 
     try {

@@ -79,7 +79,7 @@ export function ArtworkCard({
     try {
       await saveArtwork({updatedArtwork: savedArtwork});
     } catch (error) {
-      console.log(error)
+      return
     }
     setSaveSpinner(false);
     setEditArtwork(!editArtwork);
@@ -90,9 +90,12 @@ export function ArtworkCard({
 
     try {
       await deleteArtwork({artworkId});
-    } catch (error) {}
-    setDeleteSpinner(false);
-    return setEditArtwork(false);
+    } catch (error) {
+      return
+    } finally {
+      setDeleteSpinner(false);
+      setEditArtwork(false);
+    }
   };
 
   const displayRed =
@@ -111,12 +114,8 @@ export function ArtworkCard({
       className="artwork-card">
       {displayRed ? (
         <Box
-          sx={{
-            ...cardStyles.cardContainer,
-            borderColor: 'orange',
-            borderWidth: '0.2vh',
-            justifyContent: 'center',
-          }}>
+          sx={{...cardStyles.cardContainer, mx: 'auto', width: '100%', p: 1}}
+        >
           <Typography
             data-testid="artwork-card-additional-information-warning"
             sx={{textAlign: 'center', color: 'red', fontWeight: 'bold'}}>
@@ -133,7 +132,7 @@ export function ArtworkCard({
                 component="img"
                 src={artwork?.artworkImage?.value as string}
                 alt={artwork?.artworkTitle?.value as string}
-                style={cardStyles.mediaExhibition}
+                style={cardStyles.artworkMedia}
               />
             </Box>
 

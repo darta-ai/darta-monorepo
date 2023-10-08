@@ -5,7 +5,8 @@
         "no-empty-function": "warn",
         "max-len": ["warn", { "code": 150 }],
         "no-return-await": "warn",
-        "react/jsx-props-no-spreading": "off"
+        "react/jsx-props-no-spreading": "off",
+        "camelcase": "off"
     }
   }
   

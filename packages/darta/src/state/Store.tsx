@@ -111,6 +111,9 @@ export interface IState {
   mapPins?: {
     [city in MapPinCities]: {[key: string] : ExhibitionMapPin}
   }
+
+  qrCodeExhibitionId?: string;
+  qrCodeGalleryId?: string;
 }
 
 export enum ETypes {
@@ -143,6 +146,9 @@ export enum ETypes {
   setTombstoneHeader = 'SET_TOMBSTONE_HEADER',
 
   saveExhibitionMapPins = 'SAVE_EXHIBITION_MAP_PINS',
+
+  setQRCodeExhibitionId = 'SET_QR_CODE_EXHIBITION_ID',
+  setQRCodeGalleryId = 'SET_QR_CODE_GALLERY_ID'
 }
 
 // Define the action type
@@ -189,6 +195,9 @@ interface IAction {
 
   mapPins?: {[key: string] : ExhibitionMapPin}
   mapPinCity?: MapPinCities
+
+  qRCodeExhibitionId?: string;
+  qrCodeGalleryId?: string;
 }
 
 // Define the initial state
@@ -514,6 +523,24 @@ const reducer = (state: IState, action: IAction): IState => {
               ...action.mapPins,
             },
           },
+        };
+        case ETypes.setQRCodeExhibitionId:
+        if (!action.qRCodeExhibitionId) {
+          return state;
+        }
+        
+        return {
+          ...state,
+          qrCodeExhibitionId: action.qRCodeExhibitionId,
+        };
+        case ETypes.setQRCodeGalleryId:
+        if (!action.qrCodeGalleryId) {
+          return state;
+        }
+
+        return {
+          ...state,
+          qrCodeGalleryId: action.qrCodeGalleryId,
         };
     default:
       return state;

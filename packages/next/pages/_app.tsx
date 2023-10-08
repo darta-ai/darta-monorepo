@@ -4,6 +4,7 @@ import '@fontsource/eb-garamond/400.css';
 import '@fontsource/eb-garamond/500.css';
 import '@fontsource/eb-garamond/700.css';
 
+import * as Colors from '@darta-styles'
 import {CacheProvider, EmotionCache} from '@emotion/react';
 import {Box, CircularProgress, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -19,7 +20,6 @@ import {AppContextProvider} from '../src/Components/State/AppContext';
 import createEmotionCache from '../src/createEmotionCache';
 import theme from '../src/theme';
 import {auth} from '../src/ThirdPartyAPIs/firebaseApp';
-import {PRIMARY_50, PRIMARY_950} from '@darta-styles'
 
 export {app, auth, db} from '../src/ThirdPartyAPIs/firebaseApp';
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -85,7 +85,7 @@ export default function MyApp(props: MyAppProps) {
                 <Typography>Loading...</Typography>
               </Box>
             ) : (
-              <Box sx={{backgroundColor: PRIMARY_50}}>
+              <Box sx={{backgroundColor: Colors.PRIMARY_50}}>
                 <Component {...pageProps} />
               </Box>
             )}

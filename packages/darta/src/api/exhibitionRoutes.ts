@@ -20,6 +20,19 @@ export async function readExhibition({
   }
 }
 
+export async function readMostRecentGalleryExhibitionForUser({locationId} : {locationId: string}): Promise<Exhibition | any> {
+  try {
+    const {data} = await axios.get(`${URL}/readMostRecentGalleryExhibitionForUser`, {
+      params: {
+        locationId
+  }});
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message})
+    return {};
+  }
+}
+
 // listAllExhibitionsForUser
 
 export async function listAllExhibitionsPreviewsForUser({

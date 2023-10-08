@@ -1,11 +1,12 @@
+import * as Colors from '@darta-styles'
+
 import {PRIMARY_DARK_GREY} from '../../../styles';
-import {PRIMARY_400, PRIMARY_50, PRIMARY_500} from '@darta-styles'
 
 export const authStyles = {
   signInContainer: {
     flex: 3,
     border: '1px solid',
-    borderColor: PRIMARY_400,
+    borderColor: Colors.PRIMARY_400,
     borderTopRightRadius: '0px',
     borderTopLeftRadius: '0px',
     borderBottomLeftRadius: '30px',
@@ -71,7 +72,7 @@ export const welcomeStyles = {
     flex: 4,
     height: '30vh',
     display: "none",
-    backgroundColor: PRIMARY_500,
+    backgroundColor: Colors.PRIMARY_500,
     borderTopLeftRadius: '30px',
     borderTopRightRadius: '30px',
     '@media (min-width:1080px)': {
@@ -105,7 +106,7 @@ export const welcomeStyles = {
   header: {
     fontFamily: 'Nunito Sans',
     alignText: 'center',
-    color: PRIMARY_50,
+    color: Colors.PRIMARY_50,
     fontSize: '1.5rem',
     alignSelf: 'center',
     '@media (min-width:1080px)': {
@@ -119,7 +120,7 @@ export const welcomeStyles = {
     height: '10%',
   },
   typographyTitle: {
-    color: PRIMARY_50,
+    color: Colors.PRIMARY_50,
     fontSize: '1.1rem',
     alignSelf: 'center',
     '@media (min-width:1080px)': {
@@ -134,11 +135,11 @@ export const welcomeStyles = {
     },
   },
   actionArrow: {
-    color: PRIMARY_50,
+    color: Colors.PRIMARY_50,
     height: '100%',
   },
   footerText: {
-    color: PRIMARY_50,
+    color: Colors.PRIMARY_50,
     fontSize: '1rem',
     textAlign: 'center',
     my: 2,

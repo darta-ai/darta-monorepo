@@ -1,5 +1,7 @@
-import {PRIMARY_DARK_GREY} from '../../../styles';
 import {PRIMARY_600} from '@darta-styles'
+
+import {PRIMARY_DARK_GREY} from '../../../styles';
+
 export const styles = {
   container: {
     height: 'auto',

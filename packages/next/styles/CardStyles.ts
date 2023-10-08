@@ -1,4 +1,4 @@
-import {PRIMARY_100, PRIMARY_50} from '@darta-styles'
+import {PRIMARY_50,PRIMARY_100} from '@darta-styles'
 
 export const cardStyles = {
   root: {
@@ -34,6 +34,11 @@ export const cardStyles = {
     width: '100%',
     padding: '5vh',
   },
+  artworkMedia: {
+    height: '80%',
+    width: '80%',
+    padding: '5vh',
+  },
   expand: {
     transform: 'rotate(0deg)',
     marginLeft: 'auto',
@@ -54,13 +59,14 @@ export const cardStyles = {
     justifyContent: 'flex-start',
     gap: '1vh',
     borderRadius: '0.5vw',
-    m: '1vh',
+    m: '2vh',
     border: '1px solid #eaeaea',
     width: '100%',
     alignItems: 'center',
     backgroundColor: PRIMARY_50,
     '@media (min-width: 1080px)': {
       flexDirection: 'row',
+      justifyContent: 'center',
       minWidth: '75vw',
       minHeight: '15vh',
     },
@@ -75,8 +81,8 @@ export const cardStyles = {
     flexDirection: 'column',
     alignItems: 'center',
     '@media (min-width: 1080px)': {
-      width: '50%',
-      height: '50%',
+      width: '90%',
+      height: '100%',
     },
   },
   buttonContainer: {

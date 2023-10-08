@@ -1,21 +1,20 @@
+import * as Colors from '@darta-styles'
 import {Box, Typography} from '@mui/material';
 import Link from 'next/link';
 import React from 'react';
-
-import {PRIMARY_400, PRIMARY_200, PRIMARY_50, PRIMARY_900} from '@darta-styles'
 
 const styles = {
   footerBox: {
     width: '100%',
     height: '5vh',
     zIndex: 1,
-    backgroundColor: PRIMARY_900,
+    backgroundColor: Colors.PRIMARY_900,
     '@media (min-width:800px)': {
       width: '100%',
     },
   },
   divider: {
-    color: PRIMARY_50,
+    color: Colors.PRIMARY_50,
   },
   textContainer: {
     display: 'flex',
@@ -31,13 +30,13 @@ const styles = {
   },
   typography: {
     fontFamily: 'Nunito Sans',
-    color: PRIMARY_50,
+    color: Colors.PRIMARY_50,
     fontSize: '0.75rem',
     '@media (min-width:800px)': {
       fontSize: '0.9rem',
     },
     '&:hover': {
-      color: PRIMARY_200,
+      color: Colors.PRIMARY_200,
       opacity: [0.9, 0.9, 0.9],
     },
   },

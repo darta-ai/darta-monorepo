@@ -1,5 +1,4 @@
-import {PRIMARY_MILK} from '../../../styles';
-import {PRIMARY_600, PRIMARY_50} from '@darta-styles'
+import * as Colors from '@darta-styles'
 
 export const createArtworkStyles = {
   container: {
@@ -9,7 +8,7 @@ export const createArtworkStyles = {
     border: '1px solid #eaeaea',
     alignSelf: 'center',
     borderRadius: '0.5vw',
-    backgroundColor: PRIMARY_50,
+    backgroundColor: Colors.PRIMARY_50,
     gap: '2vh',
     alignContent: 'center',
     justifyContent: 'center',
@@ -20,7 +19,7 @@ export const createArtworkStyles = {
     },
   },
   backButton: {
-    color: PRIMARY_600,
+    color: Colors.PRIMARY_600,
     alignSelf: 'flex-start',
     m: 2,
   },

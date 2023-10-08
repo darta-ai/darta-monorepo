@@ -113,17 +113,17 @@ export function ExhibitionPreviewCard({
   if (state.exhibitionData && state.exhibitionData[exhibitionPreview.exhibitionId]){
     exhibition = state.exhibitionData[exhibitionPreview.exhibitionId]
     images.push({imageUrl: exhibition.exhibitionPrimaryImage?.value!, title: ""})
+    if (exhibition.artworks){
+      Object.values(exhibition.artworks).forEach((artwork) => {
+        if (artwork.artworkImage?.value){
+          images.push({imageUrl: artwork.artworkImage?.value!, title: artwork.artworkTitle?.value!})
+        }
+      })
+    }
   } 
   let gallery = {} as IGalleryProfileData;
   if (state.galleryData && state.galleryData[exhibitionPreview.galleryId]){
     gallery = state.galleryData[exhibitionPreview.galleryId]
-  }
-  if (exhibitionPreview.artworkIds){
-    exhibitionPreview.artworkIds.forEach((artworkId) => {
-      if (state.artworkData && state.artworkData[artworkId]){
-        images.push({imageUrl: state.artworkData[artworkId].artworkImage?.value!, title: state.artworkData[artworkId].artworkTitle?.value!})
-      }
-    })
   }
 
   return (

@@ -1,4 +1,4 @@
-import {PRIMARY_400, PRIMARY_600} from '@darta-styles'
+import * as Colors from '@darta-styles'
 import {Artwork, Exhibition} from '@darta-types';
 import {
   Box,
@@ -14,7 +14,6 @@ import dayjs from 'dayjs';
 import _ from 'lodash';
 import React from 'react';
 
-import {PRIMARY_MILK} from '../../../styles';
 import {cardStyles} from '../../../styles/CardStyles';
 import {
   createAndEditArtworkForExhibition,
@@ -49,7 +48,6 @@ export function ExhibitionCard({
   exhibitionId: string;
   galleryName: string;
 }) {
-  const [expanded, setExpanded] = React.useState(false);
   const [editExhibition, setEditExhibition] = React.useState<boolean>(false);
   const [isEditingExhibition, setIsEditingExhibition] =
     React.useState<boolean>(false);
@@ -447,7 +445,7 @@ export function ExhibitionCard({
                   hiddenLabel
                   fullWidth
                   multiline
-                  rows={6}
+                  rows={12}
                   sx={{
                     '& .MuiInputBase-input.Mui-disabled': {
                       WebkitTextFillColor: '#000000',
@@ -477,7 +475,7 @@ export function ExhibitionCard({
             color={displayRed ? 'warning' : 'secondary'}
             onClick={() => setEditExhibition(!editExhibition)}
             sx={{alignSelf: 'center', m: '1vh'}}>
-            <Typography sx={{fontWeight: 'bold', color: PRIMARY_MILK}}>
+            <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_50}}>
               Edit Exhibition
             </Typography>
           </Button>
@@ -508,15 +506,15 @@ export function ExhibitionCard({
                 exhibition.
               </Typography>
               <Typography variant="h6">
-                Click <a style={{color: PRIMARY_600}} href="/Galleries/Profile">here</a> to go to your
+                Click <a style={{color: Colors.PRIMARY_600}} href="/Galleries/Profile">here</a> to go to your
                 profile page.
               </Typography>
             </Box>
           )}
         </Collapse>
         <Box>
-          <Divider variant="middle" sx={{m: 2, color: PRIMARY_600}} flexItem>
-            <Typography sx={{fontWeight: 'bold', color: PRIMARY_600}}>
+          <Divider variant="middle" sx={{m: 2, color: Colors.PRIMARY_600}} flexItem>
+            <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_600}}>
               Artworks
             </Typography>
           </Divider>

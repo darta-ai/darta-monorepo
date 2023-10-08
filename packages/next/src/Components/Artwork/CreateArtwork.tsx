@@ -1,3 +1,4 @@
+import * as Colors from '@darta-styles'
 import {Artwork} from '@darta-types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -38,7 +39,6 @@ import {
 import {profileStyles} from '../Profile/Components/profileStyles';
 import {useAppState} from '../State/AppContext';
 import {createArtworkStyles} from './styles';
-import {PRIMARY_600, PRIMARY_200, PRIMARY_900} from '@darta-styles'
 
 type currencyConverterType = {
   [key: string]: string;
@@ -181,9 +181,7 @@ export function CreateArtwork({
 
   const currencies = ['USD', 'EUR', 'GBP'];
   const [displayCurrency, setDisplayCurrency] = React.useState<string>('$');
-  const handleDisplayCurrency = (arg0: string) => {
-    return setDisplayCurrency(currencyConverter[arg0]);
-  };
+  const handleDisplayCurrency = (arg0: string) => setDisplayCurrency(currencyConverter[arg0]);
   const [editImage, setEditImage] = React.useState<boolean>(
     !tempImage && !newArtwork?.artworkImage?.value,
   );
@@ -362,9 +360,9 @@ export function CreateArtwork({
       <Box sx={createArtworkStyles.backButton}>
         <Button
           variant="outlined"
-          sx={{color: PRIMARY_600}}
+          sx={{color: Colors.PRIMARY_600}}
           onClick={() => cancelAction(false)}
-          startIcon={<ArrowBackIcon sx={{color: PRIMARY_600}} />}>
+          startIcon={<ArrowBackIcon sx={{color: Colors.PRIMARY_600}} />}>
           <Typography sx={{fontWeight: 'bold'}}>Cancel</Typography>
         </Button>
       </Box>
@@ -432,7 +430,7 @@ export function CreateArtwork({
             register={register}
             control={control}
             errors={errors}
-            required={true}
+            required
             helperTextString={errors.artworkTitle?.value?.message}
             inputAdornmentString="Title"
             toolTips={createArtworkToolTips}
@@ -447,7 +445,7 @@ export function CreateArtwork({
             data={newArtwork?.artistName?.value}
             register={register}
             errors={errors}
-            required={true}
+            required
             control={control}
             helperTextString={errors.artistName?.value?.message}
             inputAdornmentString="Artist"
@@ -481,7 +479,7 @@ export function CreateArtwork({
             errors={errors}
             helperTextString={errors.artworkMedium?.value?.message}
             control={control}
-            required={true}
+            required
             toolTips={createArtworkToolTips}
             label="Artwork Medium"
             allowPrivate={false}
@@ -495,7 +493,7 @@ export function CreateArtwork({
             data={newArtwork?.artworkCreatedYear}
             register={register}
             control={control}
-            required={true}
+            required
             errors={errors}
             toolTips={createArtworkToolTips}
             multiline={1}
@@ -520,7 +518,7 @@ export function CreateArtwork({
                 fieldName="artworkCurrency"
                 inputAdornmentString="Currency"
                 control={control}
-                required={true}
+                required
                 options={currencies}
                 setHigherLevelState={handleDisplayCurrency}
                 helperTextString={errors.artworkCurrency?.value?.message}
@@ -545,7 +543,7 @@ export function CreateArtwork({
                 inputAdornmentString="Price"
                 toolTips={createArtworkToolTips}
                 multiline={1}
-                allowPrivate={true}
+                allowPrivate
                 inputAdornmentValue={displayCurrency as string}
               />
             </Box>
@@ -555,7 +553,7 @@ export function CreateArtwork({
                 fieldName="canInquire"
                 inputAdornmentString="Users Can Inquire?"
                 control={control}
-                required={true}
+                required
                 helperTextString=""
                 errors={errors}
                 options={['Yes', 'No']}
@@ -616,7 +614,7 @@ export function CreateArtwork({
               }
               register={register}
               errors={errors}
-              required={true}
+              required
               control={control}
               helperTextString={errors.artworkDimensions?.message}
               inputAdornmentString="height"
@@ -640,7 +638,7 @@ export function CreateArtwork({
               }
               register={register}
               errors={errors}
-              required={true}
+              required
               control={control}
               helperTextString={errors.artworkDimensions?.message}
               inputAdornmentString="width"
@@ -692,7 +690,7 @@ export function CreateArtwork({
             data-testid="delete-artwork-button"
             disabled={deleteSpinner}
             sx={{
-              backgroundColor: PRIMARY_200, 
+              backgroundColor: Colors.PRIMARY_200, 
               alignSelf: 'center',
               width: '15vw',
               '@media (min-width: 800px)': {
@@ -715,7 +713,7 @@ export function CreateArtwork({
             disabled={saveSpinner}
             sx={{
               alignSelf: 'center',
-              backgroundColor: PRIMARY_900,
+              backgroundColor: Colors.PRIMARY_900,
               width: '30vw',
               '@media (min-width: 800px)': {
                 width: '10vw',

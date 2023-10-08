@@ -45,7 +45,7 @@ export function DartaAutoComplete({
   const [inputValue, setInputValue] = React.useState(data?.value || '');
 
   const handleInputChange = (event: any, value: string) => {
-    event.preventDefault;
+    event.preventDefault();
     setInputValue(value);
   };
 

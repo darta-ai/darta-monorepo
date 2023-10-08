@@ -1,4 +1,4 @@
-import {Artwork, Exhibition, ExhibitionObject, IBusinessLocationData, MapPinCities} from '@darta-types';
+import {Artwork, Exhibition, ExhibitionObject, IBusinessLocationData, IGalleryProfileData,MapPinCities} from '@darta-types';
 
 export interface IExhibitionService {
   createExhibition({
@@ -56,6 +56,9 @@ export interface IExhibitionService {
   }: {
     exhibitionId: string;
   }): Promise<Exhibition | void>;
+  readMostRecentGalleryExhibitionForUser(
+    {locationId} : {locationId: string}
+    ): Promise<{exhibition: Exhibition, gallery : IGalleryProfileData} | void> 
   editExhibition({
     exhibition,
     galleryId,

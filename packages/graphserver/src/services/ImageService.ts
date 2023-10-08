@@ -121,7 +121,7 @@ export class ImageService implements IImageService {
     bucketName: string;
   }): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.minio.presignedGetObject(bucketName, fileName, (err, url) => {
+      this.minio.presignedGetObject(bucketName, fileName,  (err, url) => {
         if (err) {
           reject(err);
         } else {

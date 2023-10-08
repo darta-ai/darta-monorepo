@@ -2,6 +2,7 @@ import { PRIMARY_400, } from "@darta-styles";
 import { Asset } from "expo-asset";
 import * as SplashScreen from "expo-splash-screen";
 import React from "react";
+import { Image } from "react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Animated,
@@ -32,30 +33,43 @@ function AnimatedSplashScreen({ children }) {
       }).start(() => setAnimationComplete(true));
     }
   }, [isAppReady]);
+  
 
   const onImageLoaded = useCallback(async () => {
     try {
-      const {galleries, exhibitions, artwork, exhibitionPreviews} : 
+      const {galleries, exhibitions, exhibitionPreviews} : 
       {galleries: {[key: string] : IGalleryProfileData}, exhibitions: {[key: string] : Exhibition}, artwork: ArtworkObject, exhibitionPreviews: {[key: string]: ExhibitionPreview}} = await listAllExhibitionsPreviewsForUser({limit: 10})
       
       const exhibitionMapPins = await listExhibitionPinsByCity({cityName: MapPinCities.newYork})
       dispatch({type: ETypes.saveExhibitionMapPins, mapPins: exhibitionMapPins, mapPinCity: MapPinCities.newYork})
       
-      const images: any = []
-
-      Object.values(artwork).forEach((artworkValue) => { 
-        if (artworkValue.artworkImage?.value){
-          images.push(Asset.loadAsync(artworkValue.artworkImage.value))
+      const artworkImages: any = []
+      let artwork: ArtworkObject = {};
+      Object.values(exhibitions).forEach((exhibitionValue) => {
+        if (exhibitionValue?.artworks){
+          artwork = {
+            ...artwork,
+            ...exhibitionValue.artworks
+          }
+          Object.values(exhibitionValue.artworks).forEach((artworkValue) => {
+            if (artworkValue.artworkImage?.value){
+              artworkImages.push(Image.prefetch(artworkValue.artworkImage.value))
+            }
+          })
         }
       })
+      Promise.all(artworkImages)
+
+
+      const exhibitionImages: any = []
 
       Object.values(exhibitions).forEach((exhibitionValue) => {
         if (exhibitionValue.exhibitionPrimaryImage?.value){
-          images.push(Asset.loadAsync(exhibitionValue.exhibitionPrimaryImage.value))
+          exhibitionImages.push(Image.prefetch(exhibitionValue.exhibitionPrimaryImage.value))
         }
       })
 
-      Promise.all(images)
+      Promise.all(exhibitionImages)
 
       dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
       dispatch({type: ETypes.saveGalleries, galleryDataMulti: galleries})

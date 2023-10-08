@@ -2,6 +2,7 @@
   "expo": {
     "name": "darta",
     "slug": "darta",
+    "scheme": "darta",
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./src/assets/darta-icon.png",
@@ -19,7 +20,8 @@
       "config": {
         "usesNonExemptEncryption": false,
         "googleMapsApiKey": "AIzaSyCgJAXkO4WoPQXTf7ENx_tejgKbiem9chc"
-      }
+      },
+      "LSApplicationQueriesSchemes" : ["darta"]
     },
     "android": {
       "adaptiveIcon": {

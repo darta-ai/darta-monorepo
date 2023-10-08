@@ -41,6 +41,11 @@ export type UserRouteStackParamList = {
   };
 }
 
+export enum RootStackEnum {
+  feed = 'feed',
+  explore = 'explore',
+  me = 'me',
+}
 
 export enum ExhibitionRootEnum {
   exhibitionHome = 'EXHIBITION_HOME',
@@ -49,6 +54,7 @@ export enum ExhibitionRootEnum {
   individualArtwork = 'individualArtwork',
   exhibitionGallery = 'gallery',
   TopTab = 'EXHIBITION_TOP_TAB',
+  qrRouter = 'QR_ROUTER',
 }
 
 export type ExhibitionNavigatorParamList = {
@@ -61,7 +67,12 @@ export type ExhibitionNavigatorParamList = {
   [ExhibitionRootEnum.TopTab]: {
     galleryId: string,
     exhibitionId: string,
-  }
+    internalAppRoute: boolean,
+    locationId?: string,
+  };
+  [ExhibitionRootEnum.qrRouter]: {
+    galleryId: string,
+  };
 }
 
 
@@ -81,9 +92,14 @@ export type PreviousExhibitionParamList = {
 export enum ExploreMapRootEnum {
   exploreMapHome = 'EXPLORE_MAP_HOME',
   exploreMapDetails = 'EXPLORE_MAP_DETAILS',
+  TopTabExhibition = 'EXPLORE_MAP_TOP_TAB_EXHIBITION',
 }
 
 export type ExploreMapParamList = {
   [ExploreMapRootEnum.exploreMapHome]: undefined;
   [ExploreMapRootEnum.exploreMapDetails]: undefined;
+  [ExploreMapRootEnum.TopTabExhibition]: {
+    galleryId: string,
+    exhibitionId: string,
+  }
 }

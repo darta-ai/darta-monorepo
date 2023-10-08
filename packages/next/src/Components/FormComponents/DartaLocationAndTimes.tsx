@@ -205,7 +205,6 @@ export function DartaLocationAndTimes({
     return () => {
       businessActive.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placeId, fetchBusinessDetails]);
 
   React.useEffect(() => {
@@ -232,7 +231,6 @@ export function DartaLocationAndTimes({
       }
       setValue(`${locationNumber}.googleMapsPlaceId.value`, placeId);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placeDetails]);
 
   const innerWidthRef = React.useRef(800);
@@ -276,7 +274,7 @@ export function DartaLocationAndTimes({
           register={register}
           control={control}
           toolTips={toolTips}
-          allowPrivate={true}
+          allowPrivate
           errors={errors}
           helperTextString={
             errors.galleryLocation0?.locationString?.value?.message as string
@@ -304,7 +302,7 @@ export function DartaLocationAndTimes({
           required={false}
           inputAdornmentString="Hours"
           toolTips={toolTips}
-          allowPrivate={true}
+          allowPrivate
           control={control}
         />
       </Box>

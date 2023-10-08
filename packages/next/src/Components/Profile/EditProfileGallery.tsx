@@ -1,3 +1,4 @@
+import * as Colors from '@darta-styles'
 import {
   BusinessAddressType,
   IGalleryProfileData,
@@ -5,17 +6,16 @@ import {
 } from '@darta-types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import {Box, Button, Typography, Card} from '@mui/material';
+import {Box, Button, Card,Typography} from '@mui/material';
 import _ from 'lodash';
 import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {PRIMARY_100, PRIMARY_600, PRIMARY_900} from '@darta-styles'
+import { cardStyles } from '../../../styles/CardStyles';
 import {updateGalleryProfileAPI} from '../../API/galleries/galleryRoutes';
 import {googleMapsParser} from '../../common/nextFunctions';
 import {createArtworkStyles} from '../Artwork/styles';
-import { cardStyles } from '../../../styles/CardStyles';
 import {
   DartaGallerySearch,
   DartaImageInput,
@@ -258,10 +258,10 @@ export function EditProfileGallery({
         setValue('galleryPhone.value', galleryPhone);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autofillDetails]);
 
-  const addLocation = () => {
+  // eslint-disable-next-line consistent-return
+  function addLocation() {
     if (!galleryProfileData?.galleryLocation1?.locationString?.value) {
       return setGalleryProfileData({
         ...galleryProfileData,
@@ -270,7 +270,7 @@ export function EditProfileGallery({
           locationId: crypto.randomUUID(),
         },
       });
-    } else if (!galleryProfileData?.galleryLocation2?.locationString?.value) {
+    } if (!galleryProfileData?.galleryLocation2?.locationString?.value) {
       return setGalleryProfileData({
         ...galleryProfileData,
         galleryLocation2: {
@@ -278,7 +278,7 @@ export function EditProfileGallery({
           locationId: crypto.randomUUID(),
         },
       });
-    } else if (!galleryProfileData?.galleryLocation3?.locationString?.value) {
+    } if (!galleryProfileData?.galleryLocation3?.locationString?.value) {
       return setGalleryProfileData({
         ...galleryProfileData,
         galleryLocation3: {
@@ -286,7 +286,7 @@ export function EditProfileGallery({
           locationId: crypto.randomUUID(),
         },
       });
-    } else if (!galleryProfileData?.galleryLocation4?.locationString?.value) {
+    } if (!galleryProfileData?.galleryLocation4?.locationString?.value) {
       return setGalleryProfileData({
         ...galleryProfileData,
         galleryLocation4: {
@@ -295,6 +295,7 @@ export function EditProfileGallery({
         },
       });
     }
+    
   };
 
   const removeLocation = (locationNumber: BusinessAddressType) => {
@@ -313,9 +314,9 @@ export function EditProfileGallery({
           <Button
             variant="outlined"
             data-testid="edit-profile-back-button"
-            sx={{color: PRIMARY_600}}
+            sx={{color: Colors.PRIMARY_600}}
             onClick={() => setIsEditingProfile(!isEditingProfile)}
-            startIcon={<ArrowBackIcon sx={{color: PRIMARY_600}} />}>
+            startIcon={<ArrowBackIcon sx={{color: Colors.PRIMARY_600}} />}>
             Cancel
           </Button>
         </Box>
@@ -361,7 +362,7 @@ export function EditProfileGallery({
               fieldName="gallerySearch"
               data={'' as any}
               register={register}
-              required={true}
+              required
               inputAdornmentString="Search"
               toolTips={toolTips}
               setAutofillDetails={setAutofillDetails}
@@ -379,7 +380,7 @@ export function EditProfileGallery({
               register={register}
               control={control}
               errors={errors}
-              required={true}
+              required
               helperTextString={errors.galleryName?.value?.message}
               inputAdornmentString="Name"
               toolTips={toolTips}
@@ -394,7 +395,7 @@ export function EditProfileGallery({
               data={galleryProfileData.galleryBio as PrivateFields}
               register={register}
               errors={errors}
-              required={true}
+              required
               control={control}
               helperTextString={errors.galleryBio?.value?.message}
               inputAdornmentString="Bio"
@@ -424,7 +425,7 @@ export function EditProfileGallery({
                 inputAdornmentString="Email"
                 toolTips={toolTips}
                 multiline={1}
-                allowPrivate={true}
+                allowPrivate
                 inputAdornmentValue={null}
               />
             </Box>
@@ -439,7 +440,7 @@ export function EditProfileGallery({
                 helperTextString={errors.galleryPhone?.value?.message}
                 inputAdornmentString="Phone"
                 toolTips={toolTips}
-                allowPrivate={true}
+                allowPrivate
                 inputAdornmentValue={null}
               />
             </Box>
@@ -460,7 +461,7 @@ export function EditProfileGallery({
                 inputAdornmentString="Website"
                 toolTips={toolTips}
                 multiline={1}
-                allowPrivate={true}
+                allowPrivate
                 inputAdornmentValue={null}
               />
             </Box>
@@ -479,7 +480,7 @@ export function EditProfileGallery({
                 inputAdornmentString="Instagram"
                 toolTips={toolTips}
                 multiline={1}
-                allowPrivate={true}
+                allowPrivate
                 inputAdornmentValue={null}
               />
             </Box>
@@ -595,7 +596,7 @@ export function EditProfileGallery({
               variant="contained"
               type="submit"
               data-testid="save-profile-edit-button"
-              sx={{backgroundColor: PRIMARY_900, color: PRIMARY_100}}
+              sx={{backgroundColor: Colors.PRIMARY_900, color: Colors.PRIMARY_100}}
               onClick={handleSubmit(onSubmit)}>
               Save
             </Button>

@@ -23,26 +23,26 @@ export const retrieveAllGalleryData = async (): Promise<GalleryState> => {
 
 export const retrieveGalleryArtworks = (
   accessToken: string,
-): Partial<GalleryState> => {
+): Partial<GalleryState> => 
   // NEED ENDPOINTS HERE
 
-  return {
+   ({
     galleryArtworks: {
       // ...preloadArtwork
     },
     accessToken,
-  };
-};
+  })
+;
 
 export const retrieveGalleryExhibitions = (
   accessToken: string,
-): Partial<GalleryState> => {
+): Partial<GalleryState> => 
   // NEED ENDPOINTS HERE
 
-  return {
+   ({
     galleryExhibitions: {
       // '02003454-b638-44a6-bb38-d418d8390729': dummyExhibition,
     },
     accessToken,
-  };
-};
+  })
+;

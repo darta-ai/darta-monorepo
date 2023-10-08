@@ -59,21 +59,20 @@ export function DartaRadioButtonsGroup({
               value={value}
               sx={{alignSelf: 'center'}}
               {...field}>
-              {options.map(option => {
-                return (
+              {options.map(option => (
                   <FormControlLabel
                     value={option}
                     key={option}
                     sx={formStyles.dartaRadioText}
                     data-testid={`${fieldName}-input-${option}`}
                     onClick={() => {
+                      // eslint-disable-next-line no-unused-expressions
                       setHigherLevelState && setHigherLevelState(option);
                     }}
                     control={<Radio color="secondary" />}
                     label={option}
                   />
-                );
-              })}
+                ))}
             </RadioGroup>
           )}
         />

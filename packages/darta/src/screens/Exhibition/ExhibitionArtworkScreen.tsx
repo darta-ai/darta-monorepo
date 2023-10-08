@@ -1,37 +1,44 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext} from 'react';
-import {View, StyleSheet, ScrollView, FlatList,
+import {View, StyleSheet, FlatList,
   RefreshControl} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
+import { ActivityIndicator } from 'react-native-paper';
 
-import {PRIMARY_600, PRIMARY_50} from '@darta-styles';
+
+import * as Colors from '@darta-styles';
 import {TextElement} from '../../components/Elements/_index';
 import {
   ExhibitionNavigatorParamList,
   ExhibitionRootEnum
 } from '../../typing/routes';
 import {ETypes, StoreContext} from '../../state/Store';
-import { SSDartaHome, touchableOpacity } from '../../styles/styles';
 import { readExhibition } from '../../api/exhibitionRoutes';
-import {Artwork, Exhibition, ExhibitionDates, IOpeningLocationData} from '@darta-types'
+import {Artwork} from '@darta-types'
 import {ArtworkCard} from '../../components/Artwork/ArtworkCard'
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
 
-type ExhibitionArtworkScreenNavigationProp = StackNavigationProp<
-ExhibitionNavigatorParamList,
-ExhibitionRootEnum.artworkList
->;
 
-const exhibitionDetailsStyles = StyleSheet.create({
+const artworkDetailsStyles = StyleSheet.create({
   container: {
       flexDirection: 'column',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      backgroundColor: PRIMARY_50,
+      backgroundColor: Colors.PRIMARY_50,
       width: '100%',
-      height: hp('100%'),
+      minHeight: '100%',
   },
+  spinnerContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: hp('10%'),
+    width: '100%',
+    height: '100%',
+    backgroundColor: Colors.PRIMARY_50,
+},
   flexContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -53,26 +60,17 @@ export function ExhibitionArtworkScreen({
 }) {
   const {state, dispatch} = useContext(StoreContext);
 
-  let exhibitionId = ""
-  if (route?.params?.exhibitionId){
-    exhibitionId = route.params.exhibitionId;
-  } else{
-    return (
-        <View style={exhibitionDetailsStyles.container}>
-            <TextElement>hey something went wrong, please refresh and try again</TextElement>
-        </View>
-    )
-  }
+  const [exhibitionId, setExhibitionId] = React.useState<string>("")
+  const [errorText, setErrorText] = React.useState<string>("");
+  const [isArtworkLoaded, setIsArtworkLoaded] = React.useState<boolean>(false);
 
-  const [currentArtwork, setCurrentArtwork] = React.useState<Artwork[] | null>(null)
   const [oddArtwork, setOdds] = React.useState<Artwork[] | null>(null)
   const [evenArtwork, setEvens] = React.useState<Artwork[] | null>(null)
 
-  React.useEffect(()=>{
+  const setArtworksFromExhibitionId = async ({exhibitionId}: {exhibitionId: string}) => {
     if (state?.exhibitionData && state.exhibitionData[exhibitionId] && state.exhibitionData[exhibitionId].artworks){
       const artwork = state.exhibitionData[exhibitionId].artworks
       if (artwork){
-        setCurrentArtwork(Object.values(artwork))
         const odds: Artwork[] = [];
         const evens: Artwork[]  = [];
         Object.values(artwork).sort((a: Artwork, b: Artwork) => a?.exhibitionOrder! - b?.exhibitionOrder!)
@@ -85,9 +83,23 @@ export function ExhibitionArtworkScreen({
         })
         setOdds(odds)
         setEvens(evens)
+        setIsArtworkLoaded(true)
+        setErrorText("")
       }
+  }
+}
+
+  React.useEffect(()=>{
+    if (route?.params?.exhibitionId){
+      setExhibitionId(route.params.exhibitionId);
+      setArtworksFromExhibitionId({exhibitionId: route.params.exhibitionId})
+    } else if (state.qrCodeExhibitionId) {
+      setExhibitionId(state.qrCodeExhibitionId);
+      setArtworksFromExhibitionId({exhibitionId: state.qrCodeExhibitionId})
+    } else {
+      setErrorText("hey something went wrong, please refresh and try again")
     }
-  }, [, state.exhibitionData])
+  }, [,state.qrCodeExhibitionId])
 
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -108,15 +120,24 @@ export function ExhibitionArtworkScreen({
     }, 500)  }, []);
 
   return (
-      <View style={exhibitionDetailsStyles.container}>
+    <>
+      {!isArtworkLoaded ? ( 
+        <View style={artworkDetailsStyles.spinnerContainer}>
+            <ActivityIndicator animating={errorText !== ""} size={35} color={Colors.PRIMARY_800} />
+            <TextElement>{errorText}</TextElement>
+        </View>
+        )
+        : 
+        (
+      <View style={artworkDetailsStyles.container}>
         <FlatList
           data={[0]}
           keyExtractor={item => item.toString()}
           style={{ marginTop: hp('2.5%')}}
           refreshControl={
-            <RefreshControl refreshing={refreshing} tintColor={PRIMARY_600} onRefresh={onRefresh} />}
+            <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}
           renderItem={() => (
-            <View style={exhibitionDetailsStyles.flexContainer}>
+            <View style={artworkDetailsStyles.flexContainer}>
               <View >
                 {evenArtwork && (
                   <FlatList
@@ -155,5 +176,7 @@ export function ExhibitionArtworkScreen({
           )}
         />
         </View>
+      )}
+    </>
   );
 }

@@ -223,8 +223,7 @@ export function InquiryTable({
               onRequestSort={handleRequestSort}
             />
             <TableBody>
-              {visibleRows.map(row => {
-                return (
+              {visibleRows.map(row => (
                   <TableRow
                     hover
                     role="checkbox"
@@ -290,7 +289,6 @@ export function InquiryTable({
                         </IconButton>
                         {row.userContactEmail && (
                           <a
-                            // eslint-disable-next-line react-native/no-inline-styles
                             style={{color: 'inherit'}}
                             href={`mailto:${row.userContactEmail}?subject=Darta%20Inquiry:%20${artist}
                           &body=Hi%20${row.user},`}>
@@ -300,8 +298,7 @@ export function InquiryTable({
                       </Typography>
                     </TableCell>
                   </TableRow>
-                );
-              })}
+                ))}
               {emptyRows > 0 && (
                 <TableRow
                   style={{

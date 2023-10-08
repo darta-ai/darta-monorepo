@@ -114,6 +114,7 @@ export function ArtworkCard({
 
     <TouchableOpacity 
       onPress={() => navigateToTombstone()}
+      key={artwork?._id}
     >
       <View style={SSArtworkSelectorCard.container}>
         <View style={SSArtworkSelectorCard.imageContainer}>

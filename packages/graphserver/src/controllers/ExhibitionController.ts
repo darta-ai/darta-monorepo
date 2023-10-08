@@ -87,6 +87,23 @@ export class ExhibitionController {
     }
   }
 
+  @httpGet('/readMostRecentGalleryExhibitionForUser')
+  public async readMostRecentExhibitionForUser(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      if (!req.query?.locationId) {
+        res.status(400).send("exhibitionId query parameter is required");
+        return;
+    }
+      const results = await this.exhibitionService.readMostRecentGalleryExhibitionForUser({locationId: req.query.locationId as string});
+      res.json(results);
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
+
   @httpPost('/edit', verifyToken)
   public async editCollection(
     @request() req: Request,
@@ -101,6 +118,45 @@ export class ExhibitionController {
       const results = await this.exhibitionService.editExhibition({
         exhibition,
         galleryId,
+      });
+      res.json(results);
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpPost('/reOrderExhibitionArtwork', verifyToken)
+  public async reOrderExhibitionArtwork(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const {user} = req as any;
+      if (!user) {
+        throw new Error('no user found');
+      }
+      const {exhibitionId, artworkId, desiredIndex, currentIndex} = req.body;
+
+      const galleryId = await this.galleryService.getGalleryIdFromUID({
+        uid: user.user_id,
+      });
+
+      const isVerified =
+        await this.exhibitionService.verifyGalleryOwnsExhibition({
+          exhibitionId,
+          galleryId,
+        });
+      if (!isVerified) {
+        throw new Error('unable to verify exhibition is owned by gallery');
+      }
+      await this.exhibitionService.reOrderExhibitionArtwork({
+        exhibitionId,
+        artworkId,
+        desiredIndex,
+        currentIndex,
+      });
+      const results = await this.exhibitionService.listAllExhibitionArtworks({
+        exhibitionId,
       });
       res.json(results);
     } catch (error: any) {
@@ -178,44 +234,6 @@ export class ExhibitionController {
     }
   }
 
-  @httpPost('/reOrderExhibitionArtwork', verifyToken)
-  public async reOrderExhibitionArtwork(
-    @request() req: Request,
-    @response() res: Response,
-  ): Promise<void> {
-    try {
-      const {user} = req as any;
-      if (!user) {
-      }
-      const {exhibitionId, artworkId, desiredIndex, currentIndex} = req.body;
-
-      const galleryId = await this.galleryService.getGalleryIdFromUID({
-        uid: user.user_id,
-      });
-
-      const isVerified =
-        await this.exhibitionService.verifyGalleryOwnsExhibition({
-          exhibitionId,
-          galleryId,
-        });
-      if (!isVerified) {
-        throw new Error('unable to verify exhibition is owned by gallery');
-      }
-      await this.exhibitionService.reOrderExhibitionArtwork({
-        exhibitionId,
-        artworkId,
-        desiredIndex,
-        currentIndex,
-      });
-      const results = await this.exhibitionService.listAllExhibitionArtworks({
-        exhibitionId,
-      });
-      res.json(results);
-    } catch (error: any) {
-      res.status(500).send(error.message);
-    }
-  }
-
   @httpGet('/listAllExhibitionsPreviewsForUser')
   public async listAllExhibitionsPreviewsForUser(
     @request() req: Request,
@@ -226,7 +244,7 @@ export class ExhibitionController {
       return;
   }
     try {
-      const limit = <number>parseInt(req.query.limit.toString());
+      const limit = <number>parseInt(req.query.limit.toString(), 10);
       const results = await this.exhibitionService.listExhibitionsPreviewsForUserByLimit({
         limit
       });

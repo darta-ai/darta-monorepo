@@ -9,7 +9,7 @@ export function GalleryHeader() {
   const {user} = React.useContext(AuthContext);
   if (user) {
     return <HeaderSignedIn authType={AuthEnum.galleries} />;
-  } else {
+  } 
     return <HeaderSignedOut authType={AuthEnum.galleries} />;
-  }
+  
 }

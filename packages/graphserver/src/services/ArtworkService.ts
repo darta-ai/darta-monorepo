@@ -138,7 +138,7 @@ export class ArtworkService implements IArtworkService {
     const artworkKey = `${CollectionNames.Artwork}/${artworkId}`;
 
     // Save the Artwork Image
-    const {currentArtworkImage} = await this.getArtworkImage({key: artworkId});
+    const currentArtworkImage = await this.getArtworkImage({key: artworkId});
 
     // Don't overwrite an image
     let fileName: string = crypto.randomUUID();
@@ -549,17 +549,18 @@ export class ArtworkService implements IArtworkService {
   }
 
   private async getArtworkImage({key}: {key: string}): Promise<any> {
+    const fullArtworkId = this.generateArtworkId({artworkId: key});
     const findGalleryKey = `
-      LET doc = DOCUMENT(CONCAT("Artwork/", @key))
+      LET doc = DOCUMENT(@key)
       RETURN {
         artworkImage: doc.artworkImage
       }
     `;
 
     try {
-      const cursor = await this.db.query(findGalleryKey, {key});
+      const cursor = await this.db.query(findGalleryKey, {key: fullArtworkId});
       const artworkImage: Images = await cursor.next();
-      return {artworkImage};
+      return artworkImage;
     } catch (error) {
       throw new Error('error getting artwork image');
     }
