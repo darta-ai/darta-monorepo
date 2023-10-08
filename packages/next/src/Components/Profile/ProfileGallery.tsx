@@ -1,17 +1,16 @@
+import * as Colors from '@darta-styles'
 import {IGalleryProfileData} from '@darta-types';
 import {Box, Button, Card, Divider, Typography} from '@mui/material';
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
 import {AuthContext} from '../../../pages/_app';
-import {PRIMARY_400, PRIMARY_600, PRIMARY_300, PRIMARY_700, PRIMARY_900, PRIMARY_950} from '@darta-styles'
-
+import { cardStyles } from '../../../styles/CardStyles';
 import {phoneNumberConverter} from '../../common/utils/phoneNumberConverter';
 import {resendEmailVerification} from '../../ThirdPartyAPIs/firebaseApp';
 import {GalleryLocationComponent} from './Components/GalleryLocationText';
 import {profileStyles} from './Components/profileStyles';
-import { cardStyles } from '../../../styles/CardStyles';
-import Link from 'next/link';
 
 
 function GalleryStatus({
@@ -31,7 +30,7 @@ function GalleryStatus({
   };
   if (!user){
     <Box data-testid="gallery-under-review">
-    <Typography variant="h4" sx={{color: PRIMARY_600, textAlign: 'center'}}>
+    <Typography variant="h4" sx={{color: Colors.PRIMARY_600, textAlign: 'center'}}>
       Something went wrong 
     </Typography>
     <Box sx={profileStyles.profile.galleryBioStyles}>
@@ -43,7 +42,7 @@ function GalleryStatus({
       <Box sx={{mx: 3, my: 3}}>
         <Typography>
           If you have any questions or concerns, please reach out to us at{' '}
-          <a style={{color: PRIMARY_600}} href="mailto:info@darta.art">info@darta.art</a>
+          <a style={{color: Colors.PRIMARY_600}} href="mailto:info@darta.art">info@darta.art</a>
         </Typography>
       </Box>
     </Box>
@@ -52,7 +51,7 @@ function GalleryStatus({
   else if (!user?.emailVerified) {
     return (
       <Box data-testid="gallery-under-review">
-        <Typography variant="h3" sx={{color: PRIMARY_700, textAlign: 'center'}}>
+        <Typography variant="h3" sx={{color: Colors.PRIMARY_700, textAlign: 'center'}}>
           Please verify your email
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
@@ -66,8 +65,8 @@ function GalleryStatus({
               variant="contained"
               disabled={isResent}
               sx={{
-                backgroundColor: PRIMARY_600,
-                color: PRIMARY_300,
+                backgroundColor: Colors.PRIMARY_600,
+                color: Colors.PRIMARY_300,
                 alignSelf: 'center',
               }}
               onClick={() => {
@@ -90,7 +89,7 @@ function GalleryStatus({
           <Box sx={{mx: 3, my: 3}}>
             <Typography>
               With questions, please reach out to us at{' '}
-              <a style={{color: PRIMARY_400}} href="mailto:info@darta.art">info@darta.art</a>
+              <a style={{color: Colors.PRIMARY_400}} href="mailto:info@darta.art">info@darta.art</a>
             </Typography>
           </Box>
         </Box>
@@ -118,7 +117,7 @@ function GalleryStatus({
           <Box sx={{mx: 3, my: 3}}>
             <Typography>
               If you have any questions or concerns, please reach out to us at{' '}
-              <a style={{color: PRIMARY_400}} href="mailto:info@darta.art">info@darta.art</a>
+              <a style={{color: Colors.PRIMARY_400}} href="mailto:info@darta.art">info@darta.art</a>
             </Typography>
           </Box>
         </Box>
@@ -130,12 +129,12 @@ function GalleryStatus({
         <Typography
           variant="h4"
           data-testid="gallery-name-display"
-          sx={{color: PRIMARY_950, textAlign: 'left'}}>
+          sx={{color: Colors.PRIMARY_950, textAlign: 'left'}}>
           {galleryProfileData?.galleryName?.value}
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
           <Box sx={{my: 2}}>
-            <Typography data-testid="gallery-bio-display" sx={{color: PRIMARY_900, textAlign: 'left'}}>
+            <Typography data-testid="gallery-bio-display" sx={{color: Colors.PRIMARY_900, textAlign: 'left'}}>
               {galleryProfileData?.galleryBio?.value}
             </Typography>
           </Box>
@@ -147,12 +146,12 @@ function GalleryStatus({
       <Box data-testid="gallery-start-editing" style={{minHeight: '30vh'}}>
         <Typography
           variant="h4"
-          sx={{color: PRIMARY_600, textAlign: 'center'}}>
+          sx={{color: Colors.PRIMARY_600, textAlign: 'center'}}>
           {galleryProfileData?.galleryName?.value}
         </Typography>
         <Typography
           variant="h6"
-          sx={{color: PRIMARY_600, textAlign: 'center'}}>
+          sx={{color: Colors.PRIMARY_600, textAlign: 'center'}}>
           Click EDIT to get started.
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
@@ -230,7 +229,7 @@ export function ProfileGallery({
         galleryProfileData?.galleryInstagram?.value) && (
         <>
           <Box
-            sx={{width: '90%', mt: 5}}
+            sx={{ mt: 5}}
             data-testid="profile-contact-section">
             <Typography
               variant="h5"
@@ -291,9 +290,9 @@ export function ProfileGallery({
                       target="_blank"
                       href={galleryProfileData?.galleryWebsite?.value}
                       rel="noreferrer"
-                      style={{ textDecoration: `${PRIMARY_950} underline` }}
+                      style={{ textDecoration: `${Colors.PRIMARY_950} underline` }}
                       >
-                      <Typography style={{color: PRIMARY_950}}>
+                      <Typography style={{color: Colors.PRIMARY_950}}>
                       {galleryProfileData?.galleryWebsite?.value
                         .replace('http://www.', '')
                         .replace('http:/www.', '')
@@ -332,7 +331,7 @@ export function ProfileGallery({
       )}
       {galleryProfileData?.galleryLocation0?.locationString?.value && (
         <>
-          <Box sx={{width: '90%'}}>
+          <Box sx={{mt: 5}}>
             <Typography variant="h5" sx={{textAlign: 'left'}}>
               Locations
               <Divider />

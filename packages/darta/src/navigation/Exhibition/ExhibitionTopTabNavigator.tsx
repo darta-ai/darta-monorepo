@@ -11,9 +11,12 @@ export type ExhibitionStackParamList = {
   [ExhibitionRootEnum.exhibitionDetails]: {
     exhibitionId?: string;
     galleryId?: string;
+    internalAppRoute: boolean;
+    locationId?: string;
   };
   [ExhibitionRootEnum.artworkList]: {
     exhibitionId?: string;
+    galleryId?: string;
   };
   [ExhibitionRootEnum.exhibitionGallery]: {
     galleryId?: string;
@@ -21,20 +24,20 @@ export type ExhibitionStackParamList = {
   };
 };
 
-export function ExhibitionTopTabNavigator({route} : {route: any}) {
+export function ExhibitionTopTabNavigator({route} : {route: any}) {  
   return (
     <ExhibitionStackTopTab.Navigator screenOptions={{...tabBarScreenOptions}}>
       <ExhibitionStackTopTab.Group>
       <ExhibitionStackTopTab.Screen
           name={ExhibitionRootEnum.exhibitionDetails}
           component={ExhibitionDetailsScreen}
-          initialParams={{exhibitionId: route.params.exhibitionId, galleryId: route.params.galleryId}}
+          initialParams={{exhibitionId: route.params.exhibitionId, galleryId: route.params.galleryId, internalAppRoute: route.params.internalAppRoute, locationId: route.params?.locationId}}
           options={{ title: 'Exhibition' }}
         />
         <ExhibitionStackTopTab.Screen
           name={ExhibitionRootEnum.artworkList}
           component={ExhibitionArtworkScreen}
-          initialParams={{exhibitionId: route.params.exhibitionId}}
+          initialParams={{exhibitionId: route.params.exhibitionId, galleryId: route.params.galleryId}}
           options={{ title: 'Artwork' }}
         />
         <ExhibitionStackTopTab.Screen

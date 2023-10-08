@@ -1,3 +1,4 @@
+import * as Colors from '@darta-styles'
 import {Artwork} from '@darta-types';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
@@ -17,7 +18,6 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-import {PRIMARY_50, PRIMARY_600, PRIMARY_900} from '@darta-styles'
 import {currencyConverter} from '../../common/templates';
 import {CreateArtwork} from '../Artwork/index';
 
@@ -194,8 +194,8 @@ function DartaListArtwork({
         <Box sx={dartaListDisplay.displayComponentShowMobile}>
           <Button
             sx={{
-              backgroundColor: PRIMARY_900,
-              color: PRIMARY_50,
+              backgroundColor: Colors.PRIMARY_900,
+              color: Colors.PRIMARY_50,
               alignSelf: 'center',
             }}
             className="exhibition-artwork-edit"
@@ -299,7 +299,7 @@ export function ExhibitionArtworkList({
 
   return (
     <List
-      sx={{width: '100%', bgcolor: PRIMARY_50}}
+      sx={{width: '100%', bgcolor: Colors.PRIMARY_50}}
       className="exhibition-artwork-list">
       {mappedArtworks?.map((artwork: Artwork, index: number) => (
         <Box key={artwork?.artworkId}>

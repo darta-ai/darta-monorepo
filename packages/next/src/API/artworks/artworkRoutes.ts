@@ -190,4 +190,5 @@ export async function listArtworksByGalleryAPI(): Promise<any> {
   } catch (error) {
     // throw new Error('Unable edit artwork')
   }
+  return null
 }

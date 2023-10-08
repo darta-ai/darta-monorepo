@@ -80,9 +80,9 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
             ...action.payload,
           },
         };
-      } else {
+      } 
         return state;
-      }
+      
     case GalleryReducerActions.SET_BATCH_ARTWORK:
       return {
         ...state,
@@ -101,9 +101,9 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
             ...payloadArtworks,
           },
         };
-      } else {
+      } 
         return state;
-      }
+      
     case GalleryReducerActions.DELETE_ARTWORK:
       if (action?.artworkId) {
         const galleryArtworks = _.cloneDeep(state.galleryArtworks);
@@ -112,9 +112,9 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
           ...state,
           galleryArtworks,
         };
-      } else {
+      } 
         return state;
-      }
+      
     case GalleryReducerActions.SET_PROFILE:
       return {...state, galleryProfile: action.payload};
     case GalleryReducerActions.SET_EXHIBITIONS:
@@ -133,9 +133,9 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
             [action?.exhibitionId]: action.payload,
           },
         };
-      } else {
+      } 
         return state;
-      }
+      
     case GalleryReducerActions.DELETE_EXHIBITION_ARTWORK:
       const galleryExhibitionsClone = _.cloneDeep(
         state.galleryExhibitions[action.exhibitionId],
@@ -157,9 +157,9 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
             },
           },
         };
-      } else {
+      } 
         return state;
-      }
+      
     case GalleryReducerActions.SAVE_EXHIBITION_ARTWORK:
       if (action?.exhibitionId && action?.artwork) {
         const {exhibitionId} = action;
@@ -176,9 +176,9 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
             },
           },
         };
-      } else {
+      } 
         return state;
-      }
+      
     case GalleryReducerActions.SET_EXHIBITION_ORDER:
       if (action?.exhibitionId && action?.exhibitionOrder) {
         const {exhibitionId} = action;
@@ -192,9 +192,9 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
             },
           },
         };
-      } else {
+      } 
         return state;
-      }
+      
 
     case GalleryReducerActions.DELETE_EXHIBITION:
       if (action?.exhibitionId) {
@@ -206,9 +206,9 @@ const reducer = (state: GalleryState, action: Action): GalleryState => {
             ...galleryExhibitionsClone,
           },
         };
-      } else {
+      } 
         return state;
-      }
+      
     default:
       return state;
   }
@@ -233,9 +233,7 @@ export function AppContextProvider({children}: AppContextProviderProps) {
     });
   }, []);
 
-  const contextValue = React.useMemo(() => {
-    return {state, dispatch};
-  }, [state, dispatch]);
+  const contextValue = React.useMemo(() => ({state, dispatch}), [state, dispatch]);
 
   return (
     <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>

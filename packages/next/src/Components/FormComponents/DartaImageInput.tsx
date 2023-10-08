@@ -1,10 +1,8 @@
-/* eslint-disable react/jsx-props-no-spreading */
+import * as Colors from '@darta-styles'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {Box, Typography} from '@mui/material';
 import React from 'react';
 import Dropzone from 'react-dropzone';
-
-import {PRIMARY_600, PRIMARY_50} from '@darta-styles'
 
 const useStyles = {
   dropzone: {
@@ -20,8 +18,8 @@ const useStyles = {
     outline: 'none',
     transition: 'border .24s ease-in-out',
     '&:hover': {
-      borderColor: PRIMARY_600,
-      backgroundColor: PRIMARY_50,
+      borderColor: Colors.PRIMARY_600,
+      backgroundColor: Colors.PRIMARY_50,
     },
   },
   icon: {

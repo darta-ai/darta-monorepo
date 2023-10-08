@@ -6,6 +6,7 @@
   ],
   "scripts": {
     "preinstall": "npx only-allow pnpm",
+    "ts:check": "tsc",
     "clean": "rm -rf ./packages/mobile/node_modules rm -rf ./packages/darta/node_modules rm -rf ./packages/next/node_modules rm -rf ./packages/graphserver/node_modules rm -rf ./node_modules rm-rf pnpm-lock.yaml"
   },
   "pnpm": {
@@ -26,8 +27,13 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.6"
   },
+  "optionalDependencies": {
+    "@darta-styles": "^x.y.z",
+    "@darta-types": "^a.b.c"
+  },
   "dependencies": {
     "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint": "^8.50.0",
     "node-libs-react-native": "^1.2.1",
     "uuid": "3.4.0",
     "watchman": "^1.0.0"

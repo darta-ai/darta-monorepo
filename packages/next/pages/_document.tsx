@@ -9,14 +9,15 @@ import Document, {
   Main,
   NextScript,
 } from 'next/document';
-import React from 'react';
 import Script from "next/script";
+import React from 'react';
 
 import createEmotionCache from '../src/createEmotionCache';
 import theme from '../src/theme';
 import {MyAppProps} from './_app';
 
 interface MyDocumentProps extends DocumentProps {
+  // eslint-disable-next-line no-undef
   emotionStyleTags: JSX.Element[];
 }
 

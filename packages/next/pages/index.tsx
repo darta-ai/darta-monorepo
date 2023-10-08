@@ -48,7 +48,7 @@ export default function Home() {
                       authType={AuthEnum.home}
                     />
                   );
-                } else {
+                } 
                   return (
                     <PamphletLeft
                       key={data?.headline}
@@ -60,7 +60,6 @@ export default function Home() {
                       authType={AuthEnum.home}
                     />
                   );
-                }
               })}
           </Box>
         )}

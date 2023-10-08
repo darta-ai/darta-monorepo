@@ -1,15 +1,16 @@
-import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext} from 'react';
-import {View, StyleSheet, ScrollView, RefreshControl} from 'react-native';
+import {View, StyleSheet, ScrollView, Platform, Linking, RefreshControl} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { Button, Divider, Text} from 'react-native-paper';
 
-import {PRIMARY_600, PRIMARY_50, MILK, PRIMARY_950, PRIMARY_900, PRIMARY_800} from '@darta-styles';
+import * as Colors from '@darta-styles';
 import { ETypes } from '../../state/Store';
 import {TextElement} from '../../components/Elements/_index';
 import {customLocalDateString, customFormatTimeString} from '../../utils/functions';
+import { ActivityIndicator } from 'react-native-paper';
+import {readMostRecentGalleryExhibitionForUser} from '../../api/exhibitionRoutes';
+import { listGalleryExhibitionPreviewForUser } from '../../api/galleryRoutes';
 import {
-  ExhibitionNavigatorParamList,
   ExhibitionRootEnum
 } from '../../typing/routes';
 import {StoreContext} from '../../state/Store';
@@ -22,12 +23,10 @@ import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
 import { readExhibition } from '../../api/exhibitionRoutes';
 import { mapStylesJson } from '../../utils/mapStylesJson';
+import { readGallery } from '../../api/galleryRoutes';
+import {icons} from '../../utils/constants';
 
 
-type ExhibitionDetailsScreenNavigationProp = StackNavigationProp<
-ExhibitionNavigatorParamList,
-ExhibitionRootEnum.exhibitionDetails
->;
 
 const exhibitionDetailsStyles = StyleSheet.create({
     exhibitionTitleContainer: {
@@ -43,10 +42,18 @@ const exhibitionDetailsStyles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        backgroundColor: PRIMARY_50,
+        backgroundColor: Colors.PRIMARY_50,
         width: '100%',
-        // height: hp('100%'),
-
+    },
+    spinnerContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: hp('10%'),
+        width: '100%',
+        height: '100%',
+        backgroundColor: Colors.PRIMARY_50,
     },
     heroImageContainer: {
         alignSelf: 'center',
@@ -61,7 +68,7 @@ const exhibitionDetailsStyles = StyleSheet.create({
         resizeMode: 'contain',
     },
     textContainer: {
-        height: hp('25%'),
+        height: hp('35%'),
         width: wp('90%'),
         display: 'flex',
         gap: wp('10%'),
@@ -80,12 +87,12 @@ const exhibitionDetailsStyles = StyleSheet.create({
     divider: {
         width: wp('20%'),
         alignSelf: 'center',
-        color: PRIMARY_950
+        color: Colors.PRIMARY_950
     },
     descriptionText: {
         ...globalTextStyles.centeredText,
         fontSize: 12,
-        color: PRIMARY_950
+        color: Colors.PRIMARY_950
     },
     mapContainer: {
         width: '80%',
@@ -114,26 +121,214 @@ export function ExhibitionDetailsScreen({
     route?: ExhibitionDetailsRouteProp;
     navigation?: any;
 }) {
+
   const {state, dispatch} = useContext(StoreContext);
-  let exhibitionId = "";
-  let galleryId = "";
-  if (route?.params?.exhibitionId && route?.params?.galleryId){
-    exhibitionId = route.params.exhibitionId;
-    galleryId = route.params.galleryId;
-  } else{
-    return (
-        <View style={exhibitionDetailsStyles.container}>
-            <TextElement>hey something went wrong, please refresh and try again</TextElement>
-        </View>
-    )
-  }
+  const [exhibitionId, setExhibitionId] = React.useState<string>("")
+  const [galleryId, setGalleryId] = React.useState<string>("")
+  const [errorText, setErrorText] = React.useState<string>("");
+  const [isGalleryLoaded, setIsGalleryLoaded] = React.useState<boolean>(false);
+
+  const [currentExhibition, setCurrentExhibition] = React.useState<Exhibition | null>(null);
+  const [currentGallery, setCurrentGallery] = React.useState<IGalleryProfileData | null>(null);
+
+  const [exhibitionStartDate, setExhibitionStartDate] = React.useState<string>(new Date().toLocaleDateString());
+  const [exhibitionEndDate, setExhibitionEndDate] = React.useState<string>(new Date().toLocaleDateString());
+  const [isTemporaryExhibition, setIsTemporaryExhibition] = React.useState<boolean>(false);
   
-  let currentExhibition: Exhibition = {} as Exhibition;
-  let currentGallery: IGalleryProfileData = {} as IGalleryProfileData;
-  if (state?.exhibitionData && state.exhibitionData[exhibitionId] && state.galleryData && state.galleryData[galleryId]) {
-    currentExhibition = state.exhibitionData[exhibitionId];
-    currentGallery = state.galleryData[galleryId];
+  const [receptionStartTime, setReceptionStartTime ] = React.useState<string>(new Date().toLocaleDateString())
+  const [receptionEndTime, setReceptionEndTime ] = React.useState<string>(new Date().toLocaleDateString())
+  const [receptionOpeningDay, setReceptionOpeningDay ] = React.useState<string>(new Date().toLocaleDateString())
+  const [receptionCloseDay, setReceptionCloseDay ] = React.useState<string>(new Date().toLocaleDateString())
+  const [isReceptionMultipleDays, setIsReceptionMultipleDays ] = React.useState<boolean>(false)
+  const [hasReception, setHasReception ] = React.useState<boolean>(false)
+  const [isReceptionInPast, setIsReceptionInPast ] = React.useState<boolean>(true);
+  const [receptionOpenFullDate, setReceptionOpenFullDate ] = React.useState<Date>(new Date())
+  const [receptionCloseFullDate, setReceptionCloseFullDate ] = React.useState<Date>(new Date())
+
+  const [receptionDateString, setReceptionDateString] = React.useState<string>("")
+  const [receptionTimeString, setReceptionTimeString] = React.useState<string>("")
+  
+  const [mapRegion, setMapRegion] = React.useState<any>({
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+    latitude: 0, 
+    longitude: 0,
+  })
+  const [hasCoordinates, setHasCoordinates] = React.useState<boolean>(false);
+
+  const [galleryName, setGalleryName] = React.useState<string>("")
+
+
+  const setExhibitionData = ({currentExhibition, currentGallery} : {currentExhibition: Exhibition, currentGallery: IGalleryProfileData}) => {
+    if (currentExhibition?.exhibitionDates 
+        && currentExhibition.exhibitionDates?.exhibitionStartDate 
+        && currentExhibition.exhibitionDates?.exhibitionEndDate
+        && currentExhibition.exhibitionDates?.exhibitionDuration
+        && currentExhibition.exhibitionDates?.exhibitionStartDate.value
+        && currentExhibition.exhibitionDates?.exhibitionEndDate.value
+        && currentExhibition.exhibitionDates?.exhibitionDuration.value 
+        ) {
+        setExhibitionStartDate(customLocalDateString(new Date(currentExhibition.exhibitionDates.exhibitionStartDate.value)));
+        setExhibitionEndDate(customLocalDateString(new Date(currentExhibition?.exhibitionDates.exhibitionEndDate.value)));
+        setIsTemporaryExhibition(currentExhibition.exhibitionDates.exhibitionDuration.value === "Temporary");
+      }
+    
+
+    if (currentExhibition?.receptionDates 
+        && currentExhibition.receptionDates?.receptionStartTime
+        && currentExhibition.receptionDates?.receptionEndTime
+        && currentExhibition.receptionDates?.hasReception
+        && currentExhibition.receptionDates.receptionStartTime.value
+        && currentExhibition.receptionDates.receptionEndTime.value){
+            setReceptionStartTime(customFormatTimeString(new Date(currentExhibition.receptionDates.receptionStartTime.value)));
+            setReceptionEndTime(customFormatTimeString(new Date(currentExhibition.receptionDates.receptionEndTime.value)));
+            setReceptionOpeningDay(customLocalDateString(new Date(currentExhibition.receptionDates.receptionEndTime.value)))
+            setReceptionCloseDay(customLocalDateString(
+                new Date(currentExhibition.receptionDates.receptionEndTime.value)
+            ))
+            setIsReceptionMultipleDays(receptionCloseDay !== receptionOpeningDay);
+            setIsReceptionInPast(new Date(currentExhibition.receptionDates.receptionEndTime.value) < new Date())
+            setHasReception(currentExhibition.receptionDates.hasReception.value === "Yes");
+            setReceptionOpenFullDate(new Date(currentExhibition.receptionDates.receptionStartTime.value));
+            setReceptionCloseFullDate(new Date(currentExhibition.receptionDates.receptionEndTime.value));
+    }
+
+    if(isReceptionMultipleDays){
+        setReceptionDateString(`${receptionOpeningDay} - ${receptionCloseDay}`)
+        setReceptionTimeString(`${receptionStartTime} - ${receptionEndTime}`)
+    } else{
+        setReceptionDateString(receptionOpeningDay)
+        setReceptionTimeString(`${receptionStartTime} - ${receptionEndTime}`)
+    }
+
+    if (currentExhibition?.exhibitionLocation?.coordinates) {
+        setHasCoordinates(true);
+        setMapRegion({
+            ...mapRegion, 
+            latitude: currentExhibition.exhibitionLocation.coordinates.latitude.value! as unknown as number,
+            longitude: currentExhibition.exhibitionLocation.coordinates.longitude.value! as unknown as number,
+        })
+    }
+    if (currentGallery?.galleryName && currentGallery.galleryName.value){
+        setGalleryName(currentGallery.galleryName.value);
+    }
   }
+
+
+  async function fetchMostRecentExhibitionData() {
+    if (!route?.params?.locationId) return
+    try {
+        const {locationId} = route.params
+        const {exhibition, gallery} = await readMostRecentGalleryExhibitionForUser({locationId})
+        const supplementalExhibitions = await listGalleryExhibitionPreviewForUser({galleryId: gallery._id})
+        const galleryData = {...gallery, galleryExhibitions: supplementalExhibitions}
+        dispatch({
+            type: ETypes.saveGallery,
+            galleryData: galleryData,
+        })
+        dispatch({
+            type: ETypes.setCurrentHeader,
+            currentExhibitionHeader: exhibition.exhibitionTitle.value!,
+          })
+        dispatch({
+            type: ETypes.saveExhibition,
+            exhibitionData: exhibition,
+        })
+        dispatch({
+            type: ETypes.setQRCodeExhibitionId,
+            qRCodeExhibitionId: exhibition.exhibitionId,
+        })
+        dispatch({
+            type: ETypes.setQRCodeGalleryId,
+            qrCodeGalleryId: gallery._id,
+        })
+        setCurrentExhibition(exhibition);
+        setCurrentGallery(galleryData);
+        setExhibitionData({currentExhibition: exhibition, currentGallery: galleryData})
+        setIsGalleryLoaded(true);
+    } catch (error: any){
+        console.log(error)
+    }
+}
+
+
+async function fetchExhibitionById() {
+    if (!route?.params?.galleryId || !route.params.exhibitionId) return
+    try {
+        const {galleryId, exhibitionId} = route.params
+        const gallery = await readGallery({galleryId})
+        const supplementalExhibitions = await listGalleryExhibitionPreviewForUser({galleryId})
+        const galleryData = {...gallery, galleryExhibitions: supplementalExhibitions}
+        dispatch({
+            type: ETypes.saveGallery,
+            galleryData: galleryData,
+        })
+        const exhibition = await readExhibition({exhibitionId})
+        dispatch({
+            type: ETypes.setCurrentHeader,
+            currentExhibitionHeader: exhibition.exhibitionTitle.value!,
+          })
+        dispatch({
+            type: ETypes.saveExhibition,
+            exhibitionData: exhibition,
+        })
+        dispatch({
+            type: ETypes.setQRCodeExhibitionId,
+            qRCodeExhibitionId: exhibition.exhibitionId,
+          })
+        dispatch({
+            type: ETypes.setQRCodeGalleryId,
+            qrCodeGalleryId: gallery._id,
+        })
+        setCurrentExhibition(exhibition);
+        setCurrentGallery(galleryData);
+        setExhibitionData({currentExhibition: exhibition, currentGallery: galleryData})
+        setIsGalleryLoaded(true);
+    } catch (error: any){
+        console.log(error)
+    }
+}
+
+  React.useEffect(() => {
+
+    function handleExhibitionData(): boolean {
+        let galleryId = ""
+        let exhibitionId = ""
+        console.log({route})
+        if (route?.params?.exhibitionId){
+            exhibitionId = route.params.exhibitionId
+            setExhibitionId(route.params.exhibitionId);
+          }
+        if (route?.params?.galleryId){
+            galleryId = route.params.galleryId
+            setGalleryId(route.params.galleryId)
+        }
+
+        if (route?.params?.galleryId && state?.exhibitionData && state.exhibitionData[exhibitionId] 
+            && state.galleryData 
+            && state.galleryData[route?.params?.galleryId]
+            ) {
+            setCurrentExhibition(state.exhibitionData[exhibitionId]);
+            setCurrentGallery(state.galleryData[route?.params?.galleryId]);
+            setIsGalleryLoaded(true);
+            return false
+        } else if(!route?.params?.internalAppRoute && route?.params?.locationId){ 
+            fetchMostRecentExhibitionData()
+            return false;
+        } else if (exhibitionId && galleryId){
+            fetchExhibitionById()
+            return false;
+        } else {
+            setErrorText('something went wrong, please refresh and try again')
+            return false
+        }
+    }
+
+
+    handleExhibitionData()
+    
+},  []);
+
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -149,85 +344,10 @@ export function ExhibitionDetailsScreen({
     } catch {
         setRefreshing(false);
     }
-    setTimeout(() => {
-        setRefreshing(false);
-      }, 500)  }, []);
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 500)  }, []);
 
-  let exhibitionStartDate = new Date().toLocaleDateString();
-  let exhibitionEndDate = new Date().toLocaleDateString();
-  let isTemporaryExhibition = false;
-  if (currentExhibition?.exhibitionDates 
-    && currentExhibition.exhibitionDates?.exhibitionStartDate 
-    && currentExhibition.exhibitionDates?.exhibitionEndDate
-    && currentExhibition.exhibitionDates?.exhibitionDuration
-    && currentExhibition.exhibitionDates?.exhibitionStartDate.value
-    && currentExhibition.exhibitionDates?.exhibitionEndDate.value
-    && currentExhibition.exhibitionDates?.exhibitionDuration.value 
-    ) {
-    exhibitionStartDate = customLocalDateString(new Date(currentExhibition.exhibitionDates.exhibitionStartDate.value));
-    exhibitionEndDate = customLocalDateString(new Date(currentExhibition?.exhibitionDates.exhibitionEndDate.value));
-    isTemporaryExhibition = currentExhibition.exhibitionDates.exhibitionDuration.value === "Temporary";
-  }
-
-  let receptionStartTime: string = new Date().toLocaleDateString()
-  let receptionEndTime: string = new Date().toLocaleDateString()
-  let receptionOpeningDay: string = new Date().toLocaleDateString()
-  let receptionCloseDay: string = new Date().toLocaleDateString()
-  let isReceptionMultipleDays: boolean = false;
-  let hasReception: boolean = false
-  let isReceptionInPast: boolean = true;
-  let receptionOpenFullDate = new Date()
-  let receptionCloseFullDate = new Date()
-
-  if (currentExhibition?.receptionDates 
-    && currentExhibition.receptionDates?.receptionStartTime
-    && currentExhibition.receptionDates?.receptionEndTime
-    && currentExhibition.receptionDates?.hasReception
-    && currentExhibition.receptionDates.receptionStartTime.value
-    && currentExhibition.receptionDates.receptionEndTime.value){
-        receptionStartTime = customFormatTimeString(new Date(currentExhibition.receptionDates.receptionStartTime.value));
-        receptionEndTime = customFormatTimeString(new Date(currentExhibition.receptionDates.receptionEndTime.value));
-        receptionOpeningDay = customLocalDateString(new Date(currentExhibition.receptionDates.receptionEndTime.value));
-        receptionCloseDay = customLocalDateString(
-            new Date(currentExhibition.receptionDates.receptionEndTime.value)
-        );
-        isReceptionMultipleDays = receptionCloseDay !== receptionOpeningDay;
-        isReceptionInPast = new Date(currentExhibition.receptionDates.receptionEndTime.value) < new Date();
-        hasReception = currentExhibition.receptionDates.hasReception.value === "Yes";
-        receptionOpenFullDate = new Date(currentExhibition.receptionDates.receptionStartTime.value);
-        receptionCloseFullDate = new Date(currentExhibition.receptionDates.receptionEndTime.value);
-    }
-
-    let receptionDateString: string = ""
-    let receptionTimeString: string = ""
-
-    if(isReceptionMultipleDays){
-        receptionDateString = `${receptionOpeningDay} - ${receptionCloseDay}`
-        receptionTimeString = `${receptionStartTime} - ${receptionEndTime}`
-    } else{
-        receptionDateString = receptionOpeningDay
-        receptionTimeString = `${receptionStartTime} - ${receptionEndTime}`
-    }
-
-
-    const mapRegion = {
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-        latitude: 0, 
-        longitude: 0,
-    }
-    let hasCoordinates = false;
-
-    if (currentExhibition?.exhibitionLocation?.coordinates) {
-        hasCoordinates = true;
-        mapRegion.latitude = currentExhibition.exhibitionLocation.coordinates.latitude.value! as unknown as number;
-        mapRegion.longitude = currentExhibition.exhibitionLocation.coordinates.longitude.value! as unknown as number;
-    }
-
-    let galleryName: any;
-    if (currentGallery.galleryName){
-        galleryName = currentGallery.galleryName.value;
-    }
 
     const [isCalendarFailure, setFailure] = React.useState<boolean>(false);
     const [isCalendarSuccess, setSuccess] = React.useState<boolean>(false);
@@ -260,10 +380,35 @@ export function ExhibitionDetailsScreen({
         }
     }
 
+    const openInMaps = (address: string) => {
+        if (!address) return;
+    
+        const formattedAddress = encodeURIComponent(address);
+        const scheme = Platform.OS === 'ios' ? 'maps:0,0?q=' : 'geo:0,0?q=';
+        const url = scheme + formattedAddress;
+      
+      
+        Linking.canOpenURL(url)
+        .then((supported) => {
+          if (supported) {
+            return Linking.openURL(url);
+          } else {
+            const browserUrl = 'https://www.google.com/maps/search/?api=1&query=' + formattedAddress;
+            return Linking.openURL(browserUrl);
+          }
+        })
+        .catch((err) => console.error('Error opening maps app:', err));
+      };  
+
   return (
-    <ScrollView refreshControl={
-        <RefreshControl refreshing={refreshing} tintColor={PRIMARY_600} onRefresh={onRefresh} />}
-    >
+    <>
+        {!isGalleryLoaded ? ( 
+        <View style={exhibitionDetailsStyles.spinnerContainer}>
+            <ActivityIndicator animating={true} size={35} color={Colors.PRIMARY_800} />
+        </View>
+        )
+        : (
+        <ScrollView refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>
         <View style={exhibitionDetailsStyles.container}>
             <View style={exhibitionDetailsStyles.exhibitionTitleContainer}>
                 <TextElement style={{...globalTextStyles.boldTitleText, fontSize: 22}}>
@@ -277,20 +422,19 @@ export function ExhibitionDetailsScreen({
             />
             </View>
             <View style={exhibitionDetailsStyles.textContainer}>
-
                 <View>
-                <TextElement style={exhibitionDetailsStyles.descriptionText}>Artist</TextElement>
-                <Divider style={exhibitionDetailsStyles.divider}/>
-                <TextElement style={{...globalTextStyles.italicTitleText, fontSize: 15}}>
-                    {currentExhibition?.exhibitionArtist?.value ?? "Group Show"}
-                </TextElement>
-                </View>
+                    <TextElement style={exhibitionDetailsStyles.descriptionText}>Artist</TextElement>
+                    <Divider style={exhibitionDetailsStyles.divider}/>
+                    <TextElement style={{...globalTextStyles.italicTitleText, fontSize: 20, marginTop: hp('1%')}}>
+                        {currentExhibition?.exhibitionArtist?.value ?? "Group Show"}
+                    </TextElement>
+                    </View>
                 <View>
                 {isTemporaryExhibition ? (
                     <>
-                <TextElement style={exhibitionDetailsStyles.descriptionText}>Dates</TextElement>
+                <TextElement style={exhibitionDetailsStyles.descriptionText}>On View</TextElement>
                 <Divider style={exhibitionDetailsStyles.divider}/>
-                <TextElement style={{...globalTextStyles.centeredText, fontSize: 15}}>
+                <TextElement style={{...globalTextStyles.centeredText, fontSize: 18, marginTop: hp('1%')}}>
                     {exhibitionStartDate} {" - "} {exhibitionEndDate}
                 </TextElement>
                 </>
@@ -301,6 +445,16 @@ export function ExhibitionDetailsScreen({
                 )
                 }
                 </View>
+                <View style={{height: hp('10%')}}>
+                <TextElement style={exhibitionDetailsStyles.descriptionText}>
+                    Location
+                </TextElement>
+                <Divider style={exhibitionDetailsStyles.divider}/>
+                    <TextElement style={{...globalTextStyles.centeredText, fontSize: 16, marginTop: hp('1%')}}>{currentExhibition?.exhibitionLocation?.locationString?.value}</TextElement>
+                </View>
+                
+            </View>
+            <View style={{margin: hp('2%')}}>
                 {hasReception && (
                     <>
                     <View>
@@ -308,14 +462,35 @@ export function ExhibitionDetailsScreen({
                             Reception
                         </TextElement>
                         <Divider style={exhibitionDetailsStyles.divider}/>
-                        <TextElement style={{...globalTextStyles.centeredText, fontSize: 15}}>
-                            {receptionDateString}
-                        </TextElement>
-                        <TextElement style={{...globalTextStyles.centeredText, fontSize: 15}}>
-                            {receptionTimeString}
+                        <TextElement style={{...globalTextStyles.centeredText, fontSize: 18, marginTop: hp('1%')}}>
+                            {receptionDateString} {": "} {receptionTimeString}
                         </TextElement>
                     </View>
                     </>
+                )}
+                {!isReceptionInPast && (
+                <Button 
+                icon={!isCalendarSuccess ? "calendar" : ""}
+                buttonColor={Colors.PRIMARY_600}
+                textColor={Colors.PRIMARY_50}
+                mode="contained"
+                disabled={isCalendarSuccess}
+                compact={true}
+                onPress={() => saveExhibitionToCalendar()}
+                >   
+                {!isCalendarSuccess ?
+                (
+                    <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_50}}>Add Reception to Calendar</TextElement>
+                )
+                :
+                (
+                    <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900}}>Added to Calendar</TextElement>
+                )
+                }
+                </Button>
+                )}
+                {isCalendarFailure && (
+                <TextElement sx={{color: Colors.PRIMARY_900}}>error occurred adding event</TextElement>
                 )}
             </View>
             <View style={exhibitionDetailsStyles.mapContainer}>
@@ -333,44 +508,29 @@ export function ExhibitionDetailsScreen({
                     />
                 </MapView>
             </View>
-            <View style={{marginBottom: hp('5%')}}>
-                {!isReceptionInPast && (
-
-                
-                <Button 
-                icon={!isCalendarSuccess ? "calendar" : ""}
-                buttonColor={PRIMARY_600}
-                textColor={MILK}
-                mode="contained"
-                disabled={isCalendarSuccess}
-                compact={true}
-                onPress={() => saveExhibitionToCalendar()}
-                >   
-                {!isCalendarSuccess ?
-                (
-                    <TextElement style={{...globalTextStyles.centeredText, color: PRIMARY_50}}>Add Reception to Calendar</TextElement>
-                )
-                :
-                (
-                    <TextElement style={{...globalTextStyles.centeredText, color: PRIMARY_900}}>Added to Calendar</TextElement>
-                )
-                }
-                </Button>
-                )}
-                {isCalendarFailure && (
-                <TextElement sx={{color: {PRIMARY_900}}}>error occurred adding event</TextElement>
-                )}
-            </View>
+            <View style={{height: hp('10%'), display: "flex", flexDirection: "row"}}>
+                <Button
+                    icon={"map"}
+                    labelStyle={{color: Colors.PRIMARY_950}}
+                    // style={{backgroundColor: Colors.PRIMARY_100}}
+                    mode="text"
+                    onPress={() => openInMaps(currentExhibition?.exhibitionLocation?.locationString?.value!)}
+                    >                
+                    <TextElement style={{...globalTextStyles.centeredText, fontSize: 16, textDecorationLine: 'underline', marginTop: hp('1%')}}>Directions</TextElement>
+                    </Button>
+                </View>
             <View style={exhibitionDetailsStyles.pressReleaseContainer}>
             <TextElement style={exhibitionDetailsStyles.descriptionText}>
                 Press Release
             </TextElement>
             <Divider style={exhibitionDetailsStyles.divider}/>
-            <Text style={{...globalTextStyles.baseText, fontSize: 15, color: PRIMARY_950}}>
-                {currentExhibition.exhibitionPressRelease.value}
+            <Text style={{...globalTextStyles.baseText, fontSize: 15, color: Colors.PRIMARY_950, marginTop: hp('1%')}}>
+                {currentExhibition?.exhibitionPressRelease?.value}
             </Text>
             </View>
         </View>
-    </ScrollView>
+        </ScrollView>
+        )}
+    </>
   );
 }

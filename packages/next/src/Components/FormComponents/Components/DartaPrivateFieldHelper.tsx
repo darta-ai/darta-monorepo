@@ -46,8 +46,7 @@ export function DartaPrivateFieldHelper({
             sx={{alignSelf: 'flex-start'}}
             name={fieldName}
             {...register(`${testIdValue}.${switchStringValue}`)}
-            render={({field}: {field: any}) => {
-              return (
+            render={({field}: {field: any}) => (
                 <FormControlLabel
                   labelPlacement="bottom"
                   label={
@@ -112,8 +111,7 @@ export function DartaPrivateFieldHelper({
                     color: PRIMARY_DARK_GREY,
                   }}
                 />
-              );
-            }}
+              )}
           />
         </InputAdornment>
       )}

@@ -1,6 +1,4 @@
-import 'firebase/compat/auth';
-
-import {PRIMARY_50, PRIMARY_600, PRIMARY_950} from '@darta-styles'
+import * as Colors from '@darta-styles'
 import {Artwork} from '@darta-types';
 import {Box, Button, Typography} from '@mui/material';
 import Head from 'next/head';
@@ -247,19 +245,24 @@ export function GalleryArtwork() {
       case 'All':
         results = searchByString(searchString);
         if (!results) return;
-        return setDisplayArtworks(results as Artwork[]);
+        setDisplayArtworks(results as Artwork[]);
+        break;
       case 'Has Inquiries':
         results = Object.values(state.galleryArtworks)?.filter(artwork =>
           artworksWithInquiriesIds.includes(artwork.artworkId!),
         );
-        return setDisplayArtworks(results);
+        setDisplayArtworks(results);
+        break;
       case 'None':
         results = Object.values(state.galleryArtworks)?.filter(
           artwork => !artworksWithInquiriesIds.includes(artwork.artworkId!),
         );
-        return setDisplayArtworks(results);
+        setDisplayArtworks(results);
+        break;
       default:
+        break;
     }
+    
   };
 
   React.useEffect(() => {
@@ -334,8 +337,8 @@ export function GalleryArtwork() {
                   !state.galleryProfile.isValidated || !user?.emailVerified
                 }
                 sx={{
-                  backgroundColor: PRIMARY_950,
-                  color: PRIMARY_50,
+                  backgroundColor: Colors.PRIMARY_950,
+                  color: Colors.PRIMARY_50,
                   alignSelf: 'center',
                 }}>
                 <Typography sx={{fontWeight: 'bold'}}>Add Artwork</Typography>

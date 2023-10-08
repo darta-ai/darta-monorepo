@@ -1,4 +1,4 @@
-import {PRIMARY_600, PRIMARY_300} from '@darta-styles'
+import {PRIMARY_300,PRIMARY_600} from '@darta-styles'
 
 export const filterStyles = {
   inputTextContainer: {

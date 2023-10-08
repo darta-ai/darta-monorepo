@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Marker, Callout } from 'react-native-maps';
-import { Image, View, StyleSheet } from 'react-native';
+import { Image, View, StyleSheet, TouchableOpacity } from 'react-native';
 import {
     heightPercentageToDP as hp,
     widthPercentageToDP as wp,
@@ -8,7 +8,7 @@ import {
 
 import { TextElement } from '../Elements/TextElement';
 import { globalTextStyles } from '../../styles/styles';
-import { Divider } from 'react-native-paper';
+import { Button, Divider } from 'react-native-paper';
 
 import * as Colors from '@darta-styles';
 import { ExhibitionMapPin } from '@darta-types';
@@ -78,8 +78,33 @@ const exhibitionPreview = StyleSheet.create({
   })
 
 
-const CustomMarker = ({ coordinate, mapPin } : {coordinate: any, mapPin: ExhibitionMapPin}) => {
+const CustomMarker = ({ 
+  coordinate, 
+  mapPin, 
+  setUpperLevelExhibition, 
+  setUpperLevelGallery,
+  setUpperLevelShowCallout
+} : {
+  coordinate: any, 
+  mapPin: ExhibitionMapPin, 
+  setUpperLevelExhibition: (id: string) => void
+  setUpperLevelGallery: (id: string) => void
+  setUpperLevelShowCallout: (bool: boolean) => void
+}) => {
   const [showCallout, setShowCallout] = useState(false);
+
+  const handleSetShowCallout = (val: boolean) => {
+    switch(val){
+      case true:
+        setUpperLevelShowCallout(true)
+        setShowCallout(true)
+        break;
+      case false:
+        setUpperLevelShowCallout(false)
+        setShowCallout(false)
+        break;
+    }
+  }
 
   let startDate = ""
   let endDate = "";
@@ -92,31 +117,33 @@ const CustomMarker = ({ coordinate, mapPin } : {coordinate: any, mapPin: Exhibit
   const date = new Date();
   let hasUpcomingOpening = false
 
-  let openingStart = "";
+
   let openingEnd = "";
 
-  if (mapPin.exhibitionDates?.exhibitionStartDate.value && mapPin.exhibitionDates?.exhibitionEndDate.value) {
-    const startDateOpening = new Date(mapPin.exhibitionDates?.exhibitionStartDate.value);
-    const endDateOpening = new Date(mapPin.exhibitionDates?.exhibitionEndDate.value);
-    hasUpcomingOpening = startDateOpening <= date && endDateOpening >= date;
+  if (mapPin.receptionDates?.receptionStartTime.value && mapPin.receptionDates?.receptionEndTime.value) {
+    const startDateOpening = new Date(mapPin.receptionDates?.receptionStartTime.value);
+    const endDateOpening = new Date(mapPin.receptionDates.receptionEndTime.value);
+    hasUpcomingOpening = endDateOpening >= date;
     if(hasUpcomingOpening){
-      openingStart = customLocalDateString(startDateOpening);
       openingEnd = customLocalDateString(endDateOpening);
     }
   }
 
-
   return (
     <Marker
       coordinate={coordinate}
-      onPress={() => setShowCallout(true)}
+      onPress={() => {
+        handleSetShowCallout(true)
+        setUpperLevelExhibition(mapPin.exhibitionId)
+        setUpperLevelGallery(mapPin.galleryId)
+      }}
       key={mapPin.exhibitionId}
       
-      pinColor={hasUpcomingOpening ? Colors.ADOBE_500 : Colors.ADOBE_300}
+      pinColor={hasUpcomingOpening ? Colors.ADOBE_500 : Colors.PRIMARY_800}
     >
       {showCallout && (
-        <Callout style={exhibitionPreview.container} onPress={() => setShowCallout(false)}>
-            <View style={exhibitionPreview.galleryContainer}>
+        <Callout style={exhibitionPreview.container} onPress={() => handleSetShowCallout(false)}>
+            <View style={exhibitionPreview.galleryContainer} >
                 <Image
                     source={{uri: mapPin.galleryLogo.value || ""}}
                     style={{width: 30, height: 30, resizeMode: 'contain'}}

@@ -44,7 +44,7 @@ export default function Home() {
                       authType={AuthEnum.galleries}
                     />
                   );
-                } else {
+                } 
                   return (
                     <PamphletLeft
                       key={d?.headline}
@@ -56,7 +56,6 @@ export default function Home() {
                       authType={AuthEnum.galleries}
                     />
                   );
-                }
               })}
           </Box>
         )}

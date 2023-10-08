@@ -1,3 +1,4 @@
+import { PRIMARY_400 } from '@darta-styles';
 import {Box, LinearProgress, Typography} from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -5,7 +6,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { PRIMARY_400 } from 'packages/darta-styles/dist/styles';
 import React from 'react';
 
 export function ConfirmDeleteExhibitionArtwork({

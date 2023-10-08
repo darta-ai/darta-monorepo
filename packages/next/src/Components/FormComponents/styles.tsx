@@ -1,5 +1,6 @@
+import * as Colors from '@darta-styles'
+
 import {PRIMARY_GREY} from '../../../styles';
-import {PRIMARY_600} from '@darta-styles'
 
 export const formStyles = {
   inputTextContainer: {
@@ -105,7 +106,7 @@ export const formStyles = {
     },
   },
   makePrivate: {
-    color: PRIMARY_600,
+    color: Colors.PRIMARY_600,
     fontSize: 15,
   },
   toolTip: {

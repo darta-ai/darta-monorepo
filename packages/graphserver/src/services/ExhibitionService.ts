@@ -1,6 +1,6 @@
 /* eslint-disable no-return-assign */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {Artwork, Exhibition, ExhibitionObject, ExhibitionMapPin, IBusinessLocationData, IGalleryProfileData, Images} from '@darta-types';
+import {Artwork, Exhibition, ExhibitionMapPin, ExhibitionObject, IBusinessLocationData, IGalleryProfileData, Images} from '@darta-types';
 import {Database} from 'arangojs';
 import {Edge} from 'arangojs/documents';
 import {inject, injectable} from 'inversify';
@@ -126,6 +126,52 @@ export class ExhibitionService implements IExhibitionService {
   }
   }
 
+  public async readMostRecentGalleryExhibitionForUser(
+    {locationId} : {locationId: string}
+    ): Promise<{exhibition: Exhibition, gallery : IGalleryProfileData} | void> {
+    const date = new Date().toISOString()
+    const mostRecentQuery = `
+      FOR exhibition in ${CollectionNames.Exhibitions}
+      FILTER exhibition.exhibitionLocation.googleMapsPlaceId.value == @locationId
+      AND exhibition.exhibitionDates.exhibitionStartDate.value <= @date
+      SORT exhibition.exhibitionDates.exhibitionEndDate.value DESC
+      LIMIT 1
+      RETURN exhibition._id
+    `
+    try{
+      const exhibitionCursor = await this.db.query(mostRecentQuery, {locationId, date});
+      const exhibitionId = await exhibitionCursor.next();
+
+      const results = await this.getExhibitionById({
+        exhibitionId,
+      });
+      if (!results) {
+        return;
+      }
+      const {artworks, ...exhibition} = results;
+      const cleanedExhibition = filterOutPrivateRecordsSingleObject(exhibition);
+      const cleanedArtworks = filterOutPrivateRecordsMultiObject(artworks);
+
+      const mostRecentGallery = await this.galleryService.getGalleryByExhibitionId({exhibitionId})
+      const cleanedGallery = filterOutPrivateRecordsSingleObject(mostRecentGallery)
+  
+      // eslint-disable-next-line consistent-return
+      return { 
+        exhibition: {
+        ...cleanedExhibition,
+        artworks: {
+          ...cleanedArtworks,
+        },
+      }, 
+        gallery: {
+          ...cleanedGallery
+        }
+    }
+    } catch (error: any){
+      console.log(error)
+      throw new Error(error.message)
+    }
+  }
 
   public async getExhibitionById({
     exhibitionId,
@@ -152,6 +198,51 @@ export class ExhibitionService implements IExhibitionService {
       exhibitionId,
     });
 
+    // REFRESH EXHIBITION PRE-SIGNED IMAGE
+
+    let imageValue;
+    if (exhibition?.exhibitionPrimaryImage?.fileName && exhibition?.exhibitionPrimaryImage?.bucketName) {
+      const {fileName, bucketName} = exhibition.exhibitionPrimaryImage;
+      imageValue = await this.imageController.processGetFile({
+        fileName,
+        bucketName,
+      });
+      exhibition.exhibitionPrimaryImage.value = imageValue;
+    }
+
+    return {
+      ...exhibition,
+      artworks: {
+        ...exhibitionArtworks,
+      },
+    };
+  }
+
+
+  public async getExhibitionByIdForUser({
+    exhibitionId,
+  }: {
+    exhibitionId: string;
+  }): Promise<Exhibition | void> {
+    const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+
+    const exhibitionQuery = `
+      LET exhibition = DOCUMENT(@fullExhibitionId)
+      RETURN exhibition      
+      `;
+
+    // LOL terrible as
+    let exhibition: Exhibition = {} as Exhibition;
+    try {
+      const cursor = await this.db.query(exhibitionQuery, {fullExhibitionId});
+      exhibition = await cursor.next();
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+
+    const exhibitionArtworks = filterOutPrivateRecordsMultiObject(await this.listAllExhibitionArtworks({
+      exhibitionId,
+    }))
     // REFRESH EXHIBITION PRE-SIGNED IMAGE
 
     let imageValue;
@@ -226,7 +317,7 @@ export class ExhibitionService implements IExhibitionService {
     //                             SAVE THE EXHIBITION IMAGE
     // #########################################################################
 
-    const {exhibitionImage} = await this.getExhibitionImage({
+    const exhibitionImage = await this.getExhibitionImage({
       key: exhibitionId,
     });
 
@@ -341,6 +432,7 @@ export class ExhibitionService implements IExhibitionService {
       ...savedExhibition,
     };
 
+    // eslint-disable-next-line consistent-return
     return returnExhibition;
   }
 
@@ -383,6 +475,7 @@ export class ExhibitionService implements IExhibitionService {
         if (deleteArtworks && artwork?.artworkId) {
           promises.push(
             this.artworkService.deleteArtwork({artworkId: artwork.artworkId}),
+            this.deleteExhibitionToArtworkEdge({exhibitionId, artworkId: artwork.artworkId})
           );
         }
 
@@ -510,13 +603,14 @@ export class ExhibitionService implements IExhibitionService {
   } catch (error: any) {
     throw new Error(error.message);
   }
-  }
+}
 
   public async listGalleryExhibitionPreviewsForUser({
     galleryId,
   }: {
     galleryId: string;
   }): Promise<ExhibitionObject | null> {
+    const galId = this.galleryService.generateGalleryId({galleryId})
     const getExhibitionsQuery = `
     WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}
     FOR exhibition IN OUTBOUND @galleryId ${EdgeNames.FROMGalleryTOExhibition}
@@ -524,7 +618,7 @@ export class ExhibitionService implements IExhibitionService {
   `;
 
   try {
-    const edgeCursor = await this.db.query(getExhibitionsQuery, {galleryId});
+    const edgeCursor = await this.db.query(getExhibitionsQuery, {galleryId: galId});
     const exhibitionIds = (await edgeCursor.all()).filter(el => el);
 
     const galleryOwnedArtworkPromises = exhibitionIds.map(
@@ -563,13 +657,11 @@ export class ExhibitionService implements IExhibitionService {
   
       // Since we want a combined result, let's merge the promises for each exhibition ID.
       const combinedPromises = exhibitionIds.map(async (exhibitionId: string) => {
-        const exhibition = filterOutPrivateRecordsMultiObject(await this.getExhibitionPreviewById({ exhibitionId }));
-        const artworks = await this.listPreviewExhibitionArtworks({ exhibitionId });
+        const exhibition = filterOutPrivateRecordsMultiObject(await this.getExhibitionByIdForUser({ exhibitionId }));
         const gallery = filterOutPrivateRecordsMultiObject(await this.galleryService.getGalleryByExhibitionId({ exhibitionId }));
   
         return {
           exhibition,
-          artworks,
           gallery
         };
       });
@@ -581,20 +673,19 @@ export class ExhibitionService implements IExhibitionService {
       const galleryObject: {[key: string]: any} = {};
       const artworkObject: {[key: string]: any} = {};
       const preview: {[key: string]: any} = {};
+
+      
   
       combinedResults.forEach(result => {
         galleryExhibitionsObject[result.exhibition.exhibitionId as string] = result.exhibition;
         galleryObject[result.gallery._id as string] = result.gallery;
         
-        Object.keys(result.artworks).forEach(artworkId => {
-          artworkObject[artworkId] = result.artworks[artworkId];
-        });
-  
         // Constructing the preview
         preview[result.exhibition.exhibitionId] = {
           exhibitionId: result.exhibition.exhibitionId,
-          artworkIds: Object.keys(result.artworks),
-          galleryId: result.gallery._id
+          galleryId: result.gallery._id,
+          openingDate: result.exhibition.exhibitionDates.exhibitionStartDate.value,
+          closingDate: result.exhibition.exhibitionDates.exhibitionEndDate.value,
         };
       });
   
@@ -605,6 +696,7 @@ export class ExhibitionService implements IExhibitionService {
         exhibitionPreviews: preview
       } as any;
     } catch (error: any) {
+      console.log(error)
       throw new Error(error.message);
     }
   }
@@ -645,23 +737,24 @@ export class ExhibitionService implements IExhibitionService {
 
       return {...exhibitionMapPin}
     } catch(error: any){
-      console.log(error)
+      // console.log(error)
     }
     return null
   }
 
   private async getExhibitionImage({key}: {key: string}): Promise<any> {
+    const exhibitionKey = this.generateExhibitionId({exhibitionId: key})
     const findGalleryKey = `
-      LET doc = DOCUMENT(CONCAT("${CollectionNames.Exhibitions}/", @key))
+      LET doc = DOCUMENT(@key)
       RETURN {
         exhibitionPrimaryImage: doc.exhibitionPrimaryImage
       }
     `;
 
     try {
-      const cursor = await this.db.query(findGalleryKey, {key});
+      const cursor = await this.db.query(findGalleryKey, {key: exhibitionKey});
       const exhibitionPrimaryImage: Images = await cursor.next();
-      return {exhibitionPrimaryImage};
+      return exhibitionPrimaryImage;
     } catch (error: any) {
       throw new Error(error.message);
     }
@@ -677,10 +770,7 @@ export class ExhibitionService implements IExhibitionService {
     let exhibitionArtworkIds;
 
     try {
-      exhibitionArtworkIds = await this.edgeService.getAllEdgesFromNode({
-        edgeName: EdgeNames.FROMCollectionTOArtwork,
-        from: fullExhibitionId,
-      });
+      exhibitionArtworkIds = await this.listAllExhibitionArtworkEdges({exhibitionId : fullExhibitionId});
     } catch (error: any) {
       throw new Error(`unable to list exhibition artworks: ${error.message}`);
     }
@@ -700,7 +790,7 @@ export class ExhibitionService implements IExhibitionService {
               }
               return artwork;
             } catch (error) {
-              throw new Error(`'Error handling artwork:', ${artworkEdge}`);
+              // throw new Error(`'Error handling artwork:', ${artworkEdge}`);
             }
           }
           return null;
@@ -717,6 +807,27 @@ export class ExhibitionService implements IExhibitionService {
       (acc, artwork) => ({...acc, [artwork.artworkId as string]: artwork}),
       {},
     );
+  }
+
+  public async listAllExhibitionArtworkEdges({
+    exhibitionId,
+  }: {
+    exhibitionId: string;
+  }): Promise<string[] | void> {
+    const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+
+    let exhibitionArtworkIds;
+
+    try {
+      exhibitionArtworkIds = await this.edgeService.getAllEdgesFromNode({
+        edgeName: EdgeNames.FROMCollectionTOArtwork,
+        from: fullExhibitionId,
+      });
+    } catch (error: any) {
+      throw new Error(`unable to list exhibition artworks: ${error.message}`);
+    }
+
+    return exhibitionArtworkIds
   }
 
   public async listPreviewExhibitionArtworks({
@@ -737,15 +848,9 @@ export class ExhibitionService implements IExhibitionService {
       throw new Error(`unable to list exhibition artworks: ${error.message}`);
     }
 
-    const previewArtworkIds = exhibitionArtworkIds.filter((artworkEdge: Edge) => {
-      if (artworkEdge.exhibitionOrder <= 5) {
-        return artworkEdge
-      }
-    })
-
     let artworkResults: Artwork[] = [];
     if (exhibitionArtworkIds) {
-      const artworkPromises = previewArtworkIds.map(
+      const artworkPromises = exhibitionArtworkIds.map(
         async (artworkEdge: Edge) => {
           if (artworkEdge) {
             try {
@@ -835,7 +940,7 @@ export class ExhibitionService implements IExhibitionService {
       const artworkEdgesExhibitionOrder = artworkEdges.sort((a, b) => a.exhibitionOrder - b.exhibitionOrder);
 
       const promises = [];
-      for (let i = 0; i < artworkEdgesExhibitionOrder.length; i++) {
+      for (let i = 0; i < artworkEdgesExhibitionOrder.length; i +=1) {
         const edge = artworkEdgesExhibitionOrder[i];
         if (edge.exhibitionOrder !== i) {
           promises.push(
@@ -1002,7 +1107,7 @@ export class ExhibitionService implements IExhibitionService {
     galleryId: string;
   }): Promise<boolean> {
     const to = this.generateExhibitionId({exhibitionId});
-    const from = this.galleryService.generateGalleryId({galleryId});
+    const from = this.galleryService.generateGalleryUserId({galleryId});
 
     try {
       const results = await this.edgeService.getEdge({
@@ -1077,6 +1182,21 @@ export class ExhibitionService implements IExhibitionService {
         `error verifying the gallery owns the artwork: ${error.message}`,
       );
     }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private separateArtworksFromExhibition({
+    exhibition,
+  }: {
+    exhibition: Exhibition;
+  }): {artworks: Artwork[]; exhibition: Exhibition} {
+    if (!exhibition.artworks) return {artworks: [], exhibition};
+    const {artworks, ...remainingExhibitionProps} = exhibition;
+
+    return {
+      artworks: Object.values(artworks),
+      exhibition: remainingExhibitionProps,
+    };
   }
 
   // eslint-disable-next-line class-methods-use-this

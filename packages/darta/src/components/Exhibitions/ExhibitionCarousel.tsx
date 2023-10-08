@@ -14,7 +14,7 @@ import Animated, {
   } from "react-native-reanimated";
   
   import { SBItem } from "./SBs/SBItem";
-  import { PRIMARY_100, PRIMARY_50 } from '@darta-styles';
+  import * as Colors from '@darta-styles';
   
 
 const carouselStyle = StyleSheet.create({
@@ -41,7 +41,7 @@ const CustomItem: React.FC<ItemProps> = ({ item, animationValue, index }) => {
     const backgroundColor = interpolateColor(
       animationValue.value,
       [-1, 0, 1],
-      [PRIMARY_100, PRIMARY_100, PRIMARY_100],
+      [Colors.PRIMARY_200, Colors.PRIMARY_100, Colors.PRIMARY_200],
     );
     
 
@@ -70,7 +70,7 @@ const CustomItem: React.FC<ItemProps> = ({ item, animationValue, index }) => {
         source={{uri: item.imageUrl}} 
         style={carouselStyle.heroImage} 
         />
-        <TextElement>{item.title}</TextElement>
+        <TextElement style={{fontFamily: "AvenirNext-Italic", color: Colors.PRIMARY_900, alignSelf: "center"}}>{item.title}</TextElement>
         </Animated.View>
     </View>
   );
@@ -108,7 +108,7 @@ export function ExhibitionCarousel({images} : {images: {imageUrl: string, title:
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <TouchableOpacity onPress={prevSlide}>
-        <Text>{"<"}</Text>
+        <TextElement>{"<"}</TextElement>
       </TouchableOpacity>
       <Carousel
         ref={carouselRef}
@@ -131,7 +131,7 @@ export function ExhibitionCarousel({images} : {images: {imageUrl: string, title:
         customAnimation={animationStyle}
       />
       <TouchableOpacity onPress={nextSlide}>
-        <Text>{">"}</Text>
+        <TextElement>{">"}</TextElement>
     </TouchableOpacity>
     </View>
   );

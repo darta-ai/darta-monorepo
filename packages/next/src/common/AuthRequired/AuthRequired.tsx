@@ -30,7 +30,6 @@ export default function authRequired(WrappedComponent: any) {
         Router.replace('/Authenticate/Galleries');
       }
       setIsLoading(false);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     return (

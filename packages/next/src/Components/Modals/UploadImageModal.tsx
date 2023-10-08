@@ -1,3 +1,4 @@
+import * as Colors from '@darta-styles'
 import {
   Box,
   Button,
@@ -10,18 +11,16 @@ import {
 import Image from 'next/image';
 import React from 'react';
 
-import {PRIMARY_600, PRIMARY_50} from '@darta-styles'
-
 
 const modalStyles = {
   dialogueContainer: {
-    color: PRIMARY_50,
+    color: Colors.PRIMARY_50,
   },
   button: {
-    color: PRIMARY_600,
+    color: Colors.PRIMARY_600,
   },
   modalContainer: {
-    color: PRIMARY_50,
+    color: Colors.PRIMARY_50,
     display: 'flex',
     flexDirection: 'column',
     gap: '5%',

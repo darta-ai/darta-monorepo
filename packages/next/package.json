@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@darta-styles": "*",
-    "@darta-types": "*",
     "@emotion/cache": "11.11.0",
     "@emotion/react": "11.11.0",
     "@emotion/server": "11.11.0",
@@ -50,11 +49,12 @@
     "yup": "^1.1.1"
   },
   "devDependencies": {
+    "@darta-types": "*",
     "@react-native-community/eslint-config": "^3.2.0",
     "@types/lodash": "^4.14.195",
     "@types/react": "^18.2.15",
     "cypress": "^12.16.0",
-    "eslint": "^8.49.0",
+    "eslint": "^8.50.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-react": "^7.33.2",

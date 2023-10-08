@@ -1,18 +1,11 @@
-import {MILK} from '@darta-styles';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import React, {useContext} from 'react';
 import {Alert, View} from 'react-native';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
 
 import {StoreContext} from '../../state/Store';
-import {SavedArtworkDisplay} from '../Artwork/SavedArtworkDisplay';
 import {TombstonePortrait} from '../Tombstone/_index';
 
 export function ArtworkNavigatorModal({route}: {route: any}) {
-  let artOnDisplay;
+  let artOnDisplay: any = null;
   if (route.params){
     ({artOnDisplay} = route.params);
   }

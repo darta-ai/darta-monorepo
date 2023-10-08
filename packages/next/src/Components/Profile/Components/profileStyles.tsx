@@ -1,8 +1,8 @@
+import * as Colors from '@darta-styles'
+
 import {
   PRIMARY_DARK_GREY,
 } from '../../../../styles';
-
-import {PRIMARY_600, PRIMARY_50, PRIMARY_900} from '@darta-styles'
 
 
 export const profileStyles = {
@@ -15,7 +15,7 @@ export const profileStyles = {
     width: '70vw',
     borderRadius: 5,
     alignSelf: 'center',
-    background: PRIMARY_50,
+    background: Colors.PRIMARY_50,
   },
   profile: {
     galleryInfoContainer: {
@@ -75,7 +75,7 @@ export const profileStyles = {
       },
     },
     editButtonProfile: {
-      color: PRIMARY_900,
+      color: Colors.PRIMARY_900,
       alignSelf: 'flex-end',
     },
     galleryHeaderContainer: {
@@ -124,6 +124,7 @@ export const profileStyles = {
       display: 'column',
       flexDirection: 'row',
       width: '100%',
+      mt: 3, 
       alignItems: 'center',
       alignSelf: 'right',
       alignText: 'center',
@@ -162,7 +163,7 @@ export const profileStyles = {
   },
   edit: {
     backButton: {
-      color: PRIMARY_900,
+      color: Colors.PRIMARY_900,
       alignSelf: 'flex-start',
     },
     inputTextContainer: {
@@ -207,7 +208,7 @@ export const profileStyles = {
       width: '80%',
     },
     saveButton: {
-      color: PRIMARY_900,
+      color: Colors.PRIMARY_900,
       alignSelf: 'center',
       m: 10,
     },

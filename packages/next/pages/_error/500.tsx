@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import React, {useEffect} from 'react';
@@ -10,12 +9,11 @@ export default function Custom500() {
     setTimeout(() => {
       router.push('/');
     }, 5000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div>
-      <h1>500 - We goof'd</h1>
+      <h1>500 - We goofed</h1>
       <p>
         The HyperText Transfer Protocol (HTTP) 500 Internal Server Error server
         error response code indicates that the server encountered an unexpected

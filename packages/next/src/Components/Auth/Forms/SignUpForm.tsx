@@ -82,7 +82,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
               email: data?.email,
             });
             router.push(`/${signUpType}/Profile`);
-          } catch (error: any) {
+          } catch (err: any) {
             setErrorAlertOpen(true);
           }
         } else {

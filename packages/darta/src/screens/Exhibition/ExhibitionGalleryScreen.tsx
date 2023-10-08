@@ -1,15 +1,17 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet, Linking, ScrollView, RefreshControl} from 'react-native';
+import {View, StyleSheet, Linking, Platform, ScrollView, RefreshControl} from 'react-native';
 import { Divider } from 'react-native-paper'
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { globalTextStyles } from '../../styles/styles';
 import {TextElement} from '../../components/Elements/_index';
-import { PRIMARY_50, PRIMARY_950, PRIMARY_600, PRIMARY_900, PRIMARY_500 } from '@darta-styles';
+import * as Colors from '@darta-styles';
 import { ExhibitionPreviewMini } from '../../components/Previews/ExhibitionPreviewMini';
 import {
   ExhibitionRootEnum,
   PreviousExhibitionRootEnum
 } from '../../typing/routes';
+import { ActivityIndicator } from 'react-native-paper';
+
 import { Text, Button} from 'react-native-paper'
 import { Image } from 'react-native-elements';
 import {ETypes, StoreContext} from '../../state/Store';
@@ -28,10 +30,20 @@ const galleryDetailsStyles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: PRIMARY_50,
+    backgroundColor: Colors.PRIMARY_50,
     width: '100%',
     gap: hp("3%")
-},
+  },
+  spinnerContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: hp('10%'),
+    width: '100%',
+    height: '100%',
+    backgroundColor: Colors.PRIMARY_50,
+  },
   galleryTitleContainer: {
       width: wp('100%'),
       display: 'flex',
@@ -72,7 +84,7 @@ const galleryDetailsStyles = StyleSheet.create({
     gap: wp('5%'),
     height: hp('13%'),
     borderRadius: 8,
-    shadowColor: PRIMARY_950,
+    shadowColor: Colors.PRIMARY_950,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1.5,
@@ -88,12 +100,12 @@ const galleryDetailsStyles = StyleSheet.create({
   divider: {
       width: wp('20%'),
       alignSelf: 'center',
-      color: PRIMARY_950
+      color: Colors.PRIMARY_950
   },
   descriptionText: {
       ...globalTextStyles.centeredText,
       fontSize: 15,
-      color: PRIMARY_950,
+      color: Colors.PRIMARY_950,
       height: hp('3%'),
       
   }, 
@@ -107,11 +119,11 @@ const galleryDetailsStyles = StyleSheet.create({
       gap: wp('5%'),
   },
   hoursContainer: {
-    backgroundColor: PRIMARY_50,
+    backgroundColor: Colors.PRIMARY_50,
     width: wp('85%'),
     borderRadius: 8,
     padding: 10,
-    shadowColor: PRIMARY_950,
+    shadowColor: Colors.PRIMARY_950,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1.5,
@@ -128,7 +140,7 @@ const galleryDetailsStyles = StyleSheet.create({
   },
   hours: {
     fontSize: 16,
-    color: PRIMARY_900,
+    color: Colors.PRIMARY_900,
   },
   addressContainer: {
     width: '85%',
@@ -142,7 +154,7 @@ const galleryDetailsStyles = StyleSheet.create({
     flex: 1,
     margin: 2,
     width: wp('20%'),
-    color: PRIMARY_900
+    color: Colors.PRIMARY_900
   },
   previousShowContainer: {
     width: '85%',
@@ -164,25 +176,89 @@ export function ExhibitionGalleryScreen({
   navigation?: any;
 }) {
   const {state, dispatch} = useContext(StoreContext);
-
-  let galleryId = "";
-  if (route?.params?.galleryId){
-    galleryId = route.params.galleryId;
-  } else{
-    return (
-        <View style={galleryDetailsStyles.container}>
-            <TextElement>hey something went wrong, please go back and try again</TextElement>
-        </View>
-    )
-  }
-
+  const [galleryId, setGalleryId] = React.useState<string>("")
+  const [errorText, setErrorText] = React.useState<string>("");
+  const [isGalleryLoaded, setIsGalleryLoaded] = React.useState<boolean>(false);
   const [gallery, setGallery] = React.useState<IGalleryProfileData>({} as IGalleryProfileData)
 
-  React.useEffect(() => {
-    if (state?.galleryData && state.galleryData[galleryId]){
-      setGallery(state.galleryData[galleryId])
+  const [mapRegion, setMapRegion] = React.useState<any>({
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+    latitude: 0, 
+    longitude: 0,
+  })
+  const [mapMarkers, setMapMarkers] = React.useState<any[]>([]); // [{latitude: 0, longitude: 0, title: "", description: ""}
+  // const [hasCoordinates, setHasCoordinates] = React.useState<boolean>(false);
+
+  const [galleryName, setGalleryName] = React.useState<string>("")
+
+  const [hoursOfOperation, setHoursOfOperation] = React.useState<BusinessHours>({} as BusinessHours);
+  const [hoursOfOperationArray, setHoursOfOperationArray] = React.useState<{day: string, open: string, close: string}[]>([]);
+  
+  const [previousExhibitions, setPreviousExhibitions] = React.useState<Exhibition[]>([])
+
+  const setGalleryData = ({inputGallery}: {inputGallery: IGalleryProfileData}) => {
+    if (inputGallery.galleryLocation0?.coordinates) {
+      setMapRegion({
+          ...mapRegion, 
+          latitude: inputGallery.galleryLocation0?.coordinates.latitude.value! as unknown as number,
+          longitude: inputGallery.galleryLocation0?.coordinates.longitude.value! as unknown as number,
+      })
+      const mapMarkers: any[] = [];
+
+      Object.keys(inputGallery).forEach((key: string) => {
+        if (inputGallery[key].coordinates){
+          mapMarkers.push({
+            latitude: inputGallery[key]?.coordinates?.latitude.value! as unknown as number,
+            longitude: inputGallery[key]?.coordinates?.longitude.value! as unknown as number,
+            title: inputGallery[key]?.locationString?.value! as string,
+            description: inputGallery[key]?.locationString?.value! as string,
+            })
+          }
+        })
+        setMapMarkers(mapMarkers)
     }
-  }, [state.galleryData, galleryId])
+    if (inputGallery?.galleryName && inputGallery.galleryName.value){
+      setGalleryName(inputGallery.galleryName.value)
+    }
+
+  const daysOrder = [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  if (inputGallery.galleryLocation0?.businessHours?.hoursOfOperation){
+    setHoursOfOperation(inputGallery.galleryLocation0.businessHours.hoursOfOperation)
+    const hoursArr = Object.entries(inputGallery.galleryLocation0.businessHours.hoursOfOperation).map(([day, hours]) => ({
+      day: day.slice(0, 3),
+      open: hours.open.value ?? "",
+      close: hours.close.value ?? ""
+    })).sort((a, b) => {
+      return daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day);
+    });
+    setHoursOfOperationArray(hoursArr)
+  }
+
+  if (inputGallery?.galleryExhibitions){
+    const previous = Object.values(inputGallery.galleryExhibitions).filter((exhibition: Exhibition) => exhibition.exhibitionId !== route?.params?.exhibitionId)
+    previous.sort((a: Exhibition, b: Exhibition) => { 
+      return new Date(b.exhibitionDates.exhibitionStartDate.value as any).getTime() - new Date(a.exhibitionDates.exhibitionStartDate.value as any).getTime()
+    })
+    setPreviousExhibitions(previous)
+  }
+    setIsGalleryLoaded(true)
+  }
+
+  React.useEffect(() => {
+    if (route?.params?.galleryId && state.galleryData){
+      setGalleryId(route.params.galleryId);
+      setGalleryData({inputGallery: state.galleryData[route.params.galleryId]})
+      setGallery(state.galleryData[route.params.galleryId])
+    } else if (state.qrCodeGalleryId && state.galleryData){
+      setGalleryId(state.qrCodeGalleryId);
+      setGalleryData({inputGallery: state.galleryData[state.qrCodeGalleryId]})
+      setGallery(state.galleryData[state.qrCodeGalleryId])
+    } else {
+      setErrorText("hey something went wrong, please refresh and try again")
+    }
+    
+  }, [state.galleryData, galleryId, state.qrCodeGalleryId])
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -190,6 +266,7 @@ export function ExhibitionGalleryScreen({
     setRefreshing(true);
     try{
         const newGallery = await readGallery({galleryId});
+        setGalleryData({inputGallery: newGallery})
         dispatch({
             type: ETypes.saveGallery,
             exhibitionData: newGallery,
@@ -202,48 +279,6 @@ export function ExhibitionGalleryScreen({
       setRefreshing(false);
     }, 500)
   }, []);
-
-  const mapRegion = {
-    latitudeDelta: 0.004,
-    longitudeDelta: 0.004,
-    latitude: 0, 
-    longitude: 0,
-  }
-  let hasCoordinates = false;
-
-  if (gallery.galleryLocation0?.coordinates) {
-      hasCoordinates = true;
-      mapRegion.latitude = gallery.galleryLocation0?.coordinates.latitude.value! as unknown as number;
-      mapRegion.longitude = gallery.galleryLocation0?.coordinates.longitude.value! as unknown as number;
-  }
-
-  let galleryName: any;
-  if (gallery?.galleryName){
-      galleryName = gallery.galleryName.value;
-  }
-  
-
-  let hoursOfOperation: BusinessHours = {} as BusinessHours;
-  let hoursOfOperationArray: {day: string, open: string, close: string}[] = [];
-  const daysOrder = [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  if (gallery.galleryLocation0?.businessHours?.hoursOfOperation){
-    hoursOfOperation = gallery.galleryLocation0.businessHours.hoursOfOperation
-    hoursOfOperationArray = Object.entries(hoursOfOperation).map(([day, hours]) => ({
-      day: day.slice(0, 3),
-      open: hours.open.value ?? "",
-      close: hours.close.value ?? ""
-    })).sort((a, b) => {
-      return daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day);
-    });
-  }
-
-  let previousExhibitions: Exhibition[] = [];
-  if (gallery?.galleryExhibitions){
-    previousExhibitions = Object.values(gallery.galleryExhibitions).filter((exhibition: Exhibition) => exhibition.exhibitionId !== route?.params?.exhibitionId)
-    previousExhibitions.sort((a: Exhibition, b: Exhibition) => { 
-      return new Date(b.exhibitionDates.exhibitionStartDate.value as any).getTime() - new Date(a.exhibitionDates.exhibitionStartDate.value as any).getTime()
-    })
-  }
 
 
   const handleExhibitionPress = async ({exhibitionId} : {exhibitionId: string}) => {
@@ -268,7 +303,6 @@ export function ExhibitionGalleryScreen({
     if (!gallery?.galleryInstagram?.value) return
     const instaHandle = gallery.galleryInstagram.value.replace('@', '')
     Linking.canOpenURL('instagram://app').then((supported) => {
-      console.log('can open instagram', supported)
     if (supported) {
         Linking.openURL(`instagram://user?username=${instaHandle}`);
     } else {
@@ -324,13 +358,38 @@ export function ExhibitionGalleryScreen({
       .catch((err) => console.error('An error occurred', err));
   };  
 
+  const openInMaps = (address: string) => {
+    if (!address) return;
+
+    const formattedAddress = encodeURIComponent(address);
+    const scheme = Platform.OS === 'ios' ? 'maps:0,0?q=' : 'geo:0,0?q=';
+    const url = scheme + formattedAddress;
+  
+  
+    Linking.canOpenURL(url)
+    .then((supported) => {
+      if (supported) {
+        return Linking.openURL(url);
+      } else {
+        const browserUrl = 'https://www.google.com/maps/search/?api=1&query=' + formattedAddress;
+        return Linking.openURL(browserUrl);
+      }
+    })
+    .catch((err) => console.error('Error opening maps app:', err));
+  };  
   return (
+    <>
+    {!isGalleryLoaded ? ( 
+    <View style={galleryDetailsStyles.spinnerContainer}>
+        <ActivityIndicator animating={true} size={35} color={Colors.PRIMARY_800} />
+    </View>
+    )
+    : (
     <ScrollView refreshControl={
-      <RefreshControl refreshing={refreshing} tintColor={PRIMARY_600} onRefresh={onRefresh} />}
-      >      
+      <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>      
       <View style={galleryDetailsStyles.container}>
         <View style={galleryDetailsStyles.galleryTitleContainer}>
-            <TextElement style={{...globalTextStyles.boldTitleText, fontSize: 20, color: PRIMARY_950}}>
+            <TextElement style={{...globalTextStyles.boldTitleText, fontSize: 20, color: Colors.PRIMARY_950}}>
                 {gallery?.galleryName?.value}
             </TextElement>
         </View>
@@ -343,7 +402,7 @@ export function ExhibitionGalleryScreen({
           )}
         </View>
         <View style={galleryDetailsStyles.galleryBioContainer}>
-          <Text style={{fontSize: 15, color: PRIMARY_950}}>
+          <Text style={{fontSize: 15, color: Colors.PRIMARY_950}}>
             {gallery?.galleryBio?.value}
           </Text>
         </View>
@@ -358,8 +417,9 @@ export function ExhibitionGalleryScreen({
           {gallery?.galleryInstagram?.value &&(
             <Button
             icon={icons.instagram}
-            labelStyle={{color: PRIMARY_950}}
-            mode="text"
+            labelStyle={{color: Colors.PRIMARY_950}}
+            style={{backgroundColor: Colors.PRIMARY_100}}
+            mode="contained"
             onPress={() => sendToInstagram()}
             >
             <TextElement>{gallery.galleryInstagram.value}</TextElement>
@@ -368,8 +428,9 @@ export function ExhibitionGalleryScreen({
           {gallery?.galleryPhone?.value && (
             <Button
             icon={icons.phone}
-            labelStyle={{color: PRIMARY_950}}
-            mode="text"
+            labelStyle={{color: Colors.PRIMARY_950}}
+            style={{backgroundColor: Colors.PRIMARY_100}}
+            mode="contained"
             onPress={() => dialNumber()}
             >
             <TextElement>{formatUSPhoneNumber(gallery?.galleryPhone?.value)}</TextElement>
@@ -380,8 +441,9 @@ export function ExhibitionGalleryScreen({
             {gallery?.primaryContact?.value && (            
               <Button
                 icon={icons.email}
-                labelStyle={{color: PRIMARY_950}}
-                mode="text"
+                labelStyle={{color: Colors.PRIMARY_950}}
+                style={{backgroundColor: Colors.PRIMARY_100}}
+                mode="contained"
                 onPress={() => sendEmail()}
               >
                 <TextElement>{gallery?.primaryContact?.value}</TextElement>
@@ -390,9 +452,10 @@ export function ExhibitionGalleryScreen({
             {gallery?.galleryWebsite?.value && (
             <Button
               icon={icons.website}
-              labelStyle={{color: PRIMARY_950}}
-              mode="text"
-              onPress={() => visitWebsite(gallery.galleryWebsite?.value!)}
+              labelStyle={{color: Colors.PRIMARY_950}}
+              style={{backgroundColor: Colors.PRIMARY_100}}
+              mode="contained"
+                onPress={() => visitWebsite(gallery.galleryWebsite?.value!)}
             >
               <TextElement>{gallery.galleryWebsite.value.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</TextElement>
             </Button>
@@ -405,7 +468,7 @@ export function ExhibitionGalleryScreen({
         </View>
         <View style={galleryDetailsStyles.locationContainer}>
           <View>
-            <TextElement style={{fontSize: 15, color: PRIMARY_900}}>{gallery?.galleryLocation0?.locationString?.value}</TextElement>
+            <TextElement style={{fontSize: 15, color: Colors.PRIMARY_900}}>{gallery?.galleryLocation0?.locationString?.value}</TextElement>
           </View>
           <MapView  
             provider={PROVIDER_GOOGLE}
@@ -428,15 +491,15 @@ export function ExhibitionGalleryScreen({
         <View >
           {hoursOfOperationArray.length > 0 && (
         <View style={galleryDetailsStyles.hoursContainer}>
-          {hoursOfOperationArray.map((day) => (
-            <>
+          {hoursOfOperationArray.map((day, index) => (
+            <View key={`${day.day}-${day.open}-${day.close}-${index}`}>
             {day.open !== "Closed" && (
-            <View key={day.day} style={galleryDetailsStyles.hoursRow}>
-              <TextElement style={galleryDetailsStyles.day}>{day.day}</TextElement>
-                <TextElement style={galleryDetailsStyles.hours}>{day.open} - {day.close}</TextElement>
+            <View style={galleryDetailsStyles.hoursRow}>
+            <TextElement style={galleryDetailsStyles.day}>{day.day}</TextElement>
+              <TextElement style={galleryDetailsStyles.hours}>{day.open} - {day.close}</TextElement>
+              </View>
+              )}
             </View>
-            )}
-            </>
           ))}
         </View>
           )}
@@ -465,5 +528,7 @@ export function ExhibitionGalleryScreen({
         </View>
       </View>
     </ScrollView>
+    )}
+    </>
   );
 }

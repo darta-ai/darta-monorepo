@@ -1,7 +1,6 @@
+import {PRIMARY_600} from '@darta-styles'
 import React from 'react';
 import Joyride, {ACTIONS, EVENTS, STATUS} from 'react-joyride';
-
-import {PRIMARY_600} from '@darta-styles'
 
 export function DartaJoyride({
   steps,

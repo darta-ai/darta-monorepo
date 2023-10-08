@@ -1,6 +1,6 @@
 import 'firebase/compat/auth';
 
-import { PRIMARY_50} from '@darta-styles';
+import * as Colors from '@darta-styles';
 import {Exhibition, GalleryState} from '@darta-types';
 import {Box, Button, CircularProgress,Typography} from '@mui/material';
 import Head from 'next/head';
@@ -103,7 +103,6 @@ export function GalleryExhibition() {
 
     const galName = state?.galleryProfile?.galleryName?.value;
     setGalleryName(galName);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [isLoadingExhibition, setLoadingExhibition] = React.useState<boolean>(false)
@@ -176,7 +175,7 @@ export function GalleryExhibition() {
               }
               sx={galleryStyles.createNewButton}>
               {isLoadingExhibition ? (
-                <CircularProgress sx={{color: PRIMARY_50}} size={24} />
+                <CircularProgress sx={{color: Colors.PRIMARY_50}} size={24} />
               ):
               (
               <Typography sx={{fontWeight: 'bold'}}>

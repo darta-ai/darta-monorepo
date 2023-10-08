@@ -1,10 +1,10 @@
 // Importing necessary modules and components
+import * as Colors from '@darta-styles';
 import {Box, Container, Link, Typography} from '@mui/material';
 import Head from 'next/head';
 import React from 'react';
 
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
-import { PRIMARY_400, PRIMARY_950 } from '@darta-styles';
 
 const useStyles = {
   container: {
@@ -94,7 +94,7 @@ function ContactElement({
       </Typography>
       <Typography sx={useStyles.contactText}>{blurb}</Typography>
       <Typography sx={useStyles.reachOutText}>
-        <a style={{color: PRIMARY_400}} href={`mailto: ${email}`}>reach out</a>
+        <a style={{color: Colors.PRIMARY_400}} href={`mailto: ${email}`}>reach out</a>
       </Typography>
     </Box>
   );

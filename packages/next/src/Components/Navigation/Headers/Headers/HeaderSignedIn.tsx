@@ -1,3 +1,4 @@
+import * as Colors from '@darta-styles';
 import {Box, Button, Typography} from '@mui/material';
 import {useRouter} from 'next/router';
 import React from 'react';
@@ -6,7 +7,6 @@ import {firebaseSignOut} from '../../../../ThirdPartyAPIs/firebaseApp';
 import {AuthEnum} from '../../../Auth/types';
 import {useAppState} from '../../../State/AppContext';
 import {headerStyles} from '../styles';
-import { PRIMARY_50 } from 'packages/darta-styles/dist/styles';
 
 export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
   const router = useRouter();
@@ -55,7 +55,7 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
               data-testid="header-image"
             />
             <Box sx={{alignSelf: 'center'}}>
-              <Typography variant="h5" style={{color: PRIMARY_50}}>+</Typography>
+              <Typography variant="h5" style={{color: Colors.PRIMARY_50}}>+</Typography>
             </Box>
           </>
         ) : (

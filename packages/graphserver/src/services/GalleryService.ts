@@ -126,7 +126,8 @@ export class GalleryService implements IGalleryService {
   }
 
   public async readGalleryProfileFromGalleryIdForUser({galleryId} : {galleryId: string}): Promise<Gallery | null> {
-    const gallery = await this.readGalleryProfileFromGalleryId({galleryId});
+    const fullGalleryId = this.generateGalleryId({galleryId});
+    const gallery = await this.readGalleryProfileFromGalleryId({galleryId: fullGalleryId});
     if (!gallery) {
       return null;
     }
@@ -346,7 +347,8 @@ export class GalleryService implements IGalleryService {
     galleryId: string;
     email: string;
   }): Promise<any> {
-    const galleryIdId = this.generateGalleryId({galleryId});
+    // TO-DO: check if gallery admin node already exists
+    const galleryIdId = this.generateGalleryUserId({galleryId});
 
     try {
       await this.nodeService.upsertNodeById({
@@ -387,7 +389,7 @@ export class GalleryService implements IGalleryService {
   public generateGalleryId({galleryId}: {galleryId: string}): string {
     return galleryId.includes(CollectionNames.Galleries)
       ? galleryId
-      : `${CollectionNames.GalleryUsers}/${galleryId}`;
+      : `${CollectionNames.Galleries}/${galleryId}`;
   }
 
   // eslint-disable-next-line class-methods-use-this
