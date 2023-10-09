@@ -42,12 +42,12 @@ export const headerOptions = {
   headerTitle: 'darta',
   headerTitleStyle: {
     fontFamily: 'Avenir Next',
-    fontSize: 18,
+    fontSize: 16,
     color: Colors.PRIMARY_50,
   },
   headerBackTitleStyle: {
     fontFamily: 'Avenir Next',
-    fontSize: 15,
+    fontSize: 14,
   },
   headerStyle: {
     backgroundColor: Colors.PRIMARY_400,
@@ -58,7 +58,7 @@ export const modalHeaderOptions = {
   headerTitle: 'darta',
   headerTitleStyle: {
     fontFamily: 'Avenir Next',
-    fontSize: 18,
+    fontSize: 16,
     color: Colors.PRIMARY_50,
   },
   headerBackTitleStyle: {
@@ -67,7 +67,7 @@ export const modalHeaderOptions = {
     color: Colors.PRIMARY_MILK
   },
   headerStyle: {
-    backgroundColor: Colors.PRIMARY_700,
+    backgroundColor: Colors.PRIMARY_400,
   },
 }
 

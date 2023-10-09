@@ -372,7 +372,7 @@ export class GalleryService implements IGalleryService {
       });
       return await this.readGalleryProfileFromGalleryId({galleryId: results._from})
     } catch(error: any){
-      console.log({error})
+      // console.log({error})
     }
 
     return null
@@ -404,8 +404,8 @@ export class GalleryService implements IGalleryService {
     let normalized = galleryName.toLowerCase();
     normalized = normalized.trim();
     normalized = normalized.replace(/\s+/g, '-');
-    normalized = normalized.replace(/[^a-z0-9\-]/g, '');
-    normalized = normalized.replace(/\-+/g, '-');
+    normalized = normalized.replace(/[^a-z0-9-]/g, '');
+    normalized = normalized.replace(/-+/g, '-');
     return normalized;
   }
 
@@ -448,6 +448,7 @@ export class GalleryService implements IGalleryService {
     normalized = normalized.toLowerCase();
 
     // Remove non-printable characters
+    // eslint-disable-next-line no-control-regex
     normalized = normalized.replace(/[\x00-\x1F\x7F-\x9F]/g, '');
 
     return normalized;

@@ -13,6 +13,8 @@ export const CollectionNames = {
 
   GalleryUsers: 'GalleryUsers',
   GalleryAdminNode: 'GalleryAdminNode',
+
+  EndUsers: 'EndUsers',
 };
 
 export const EdgeNames = {
@@ -28,7 +30,10 @@ export const EdgeNames = {
   FROMGalleryTOExhibition: 'FROMGalleryTOExhibition',
   FROMUserTOGallery: 'FROMUserTOGallery',
   FROMCollectionTOArtwork: 'FROMCollectionTOArtwork',
-  FROMExhibitionTOCity: 'FROMExhibitionTOCity'
+  FROMExhibitionTOCity: 'FROMExhibitionTOCity',
+
+  FROMEndUserTOArtwork: 'FROMEndUserTOArtwork',
+  FROMEndUserTOGallery: 'FROMEndUserTOGallery',
 };
 
 export const RequiredContent = {

@@ -135,6 +135,13 @@ export function ExploreMapHomeScreen({
     if (!exhibitionId || !galleryId){
       setLoading(false)
     }
+    if (state.exhibitionData && state.exhibitionData[exhibitionId]){
+      const exhibition = state.exhibitionData[exhibitionId]
+      dispatch({
+        type: ETypes.setCurrentHeader,
+        currentExhibitionHeader: exhibition.exhibitionTitle.value!,
+      })
+    }
     navigation.navigate(ExploreMapRootEnum.TopTabExhibition, {galleryId: galleryId, exhibitionId: exhibitionId, internalAppRoute: true});
     setLoading(false)
   }

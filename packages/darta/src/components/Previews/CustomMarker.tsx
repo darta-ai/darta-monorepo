@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Marker, Callout } from 'react-native-maps';
 import { Image, View, StyleSheet, TouchableOpacity } from 'react-native';
 import {
-    heightPercentageToDP as hp,
     widthPercentageToDP as wp,
   } from 'react-native-responsive-screen';
 
 import { TextElement } from '../Elements/TextElement';
 import { globalTextStyles } from '../../styles/styles';
-import { Button, Divider } from 'react-native-paper';
+import { Divider } from 'react-native-paper';
+
+import { simplifyAddress } from '../../utils/functions';
 
 import * as Colors from '@darta-styles';
 import { ExhibitionMapPin } from '@darta-types';
@@ -27,7 +28,7 @@ const exhibitionPreview = StyleSheet.create({
       borderColor: Colors.PRIMARY_700,
     },
     galleryContainer:{
-        height: '20%',
+        height: '30%',
         width: '95%',
         display:'flex',
         flexDirection: "row",
@@ -37,13 +38,20 @@ const exhibitionPreview = StyleSheet.create({
         justifyContent: 'flex-start',
 
     },
+    galleryNameContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
+    },
     exhibitionContainer:{
-        height: '70%',
+        height: '60%',
         width: '95%',
         display:'flex',
         flexDirection: "row",
         gap: 5,
-        justifyContent: 'space-around',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     heroImageContainer: {
       height: '100%',
@@ -54,7 +62,7 @@ const exhibitionPreview = StyleSheet.create({
       width: '100%',
       height: '100%',
       resizeMode: 'contain',
-    },
+    }, 
     textContainer:{
       width: '60%',
       height: '100%',
@@ -148,9 +156,11 @@ const CustomMarker = ({
                     source={{uri: mapPin.galleryLogo.value || ""}}
                     style={{width: 30, height: 30, resizeMode: 'contain'}}
                 />
-                <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900, fontSize: 14}}>{mapPin.galleryName.value}</TextElement>
+                <View style={exhibitionPreview.galleryNameContainer}>
+                  <TextElement style={{...globalTextStyles.centeredText, fontWeight: 'bold', color: Colors.PRIMARY_900, fontSize: 15}}>{mapPin.galleryName.value}</TextElement>
+                  <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900, fontSize: 14}}>{simplifyAddress(mapPin.exhibitionLocation.locationString?.value)}</TextElement>
+                </View>
             </View>
-            <Divider style={exhibitionPreview.divider}/>
             <View style={exhibitionPreview.exhibitionContainer}>
                 <View style={exhibitionPreview.heroImageContainer} >
                     <Image 
@@ -161,7 +171,7 @@ const CustomMarker = ({
                 <View style={exhibitionPreview.textContainer}>
                     <View>
                     <TextElement
-                        style={{color: Colors.PRIMARY_900, fontSize: 13}}>
+                        style={{color: Colors.PRIMARY_900, fontSize: 14}}>
                             {mapPin.exhibitionArtist?.value || "Group Show"}
                     </TextElement>
                     <TextElement

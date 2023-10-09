@@ -3,26 +3,21 @@ import 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {LinkingOptions, NavigationContainer, NavigationContainerRef} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { ExploreMapStackNavigator } from './src/navigation/ExploreMap/ExploreMapStackNavigator';
-import {Exhibition} from '@darta-types'
 import React from 'react';
-import {Provider as PaperProvider, Text} from 'react-native-paper';
+import {Provider as PaperProvider} from 'react-native-paper';
 
 import {TabBarElement} from './src/components/Elements/TabBarElement';
 import {ExhibitionStackNavigator} from './src/navigation/Exhibition/ExhibitionStackNavigator';
 // import {RecommenderStackNavigator} from './src/navigation/RecommenderStackNavigator';
 import {UserStackNavigator} from './src/navigation/UserStackNavigator';
-import {StoreProvider} from './src/state/Store';
+import {ETypes, StoreProvider} from './src/state/Store';
 import {footerColors, footerOptions} from './src/styles/styles';
 import * as Linking from "expo-linking";
 import { v4 as uuidv4 } from 'uuid';
-import { TextComponent, View } from 'react-native';
-import {RootStackEnum,
-  ExhibitionRootEnum,
-  PreviousExhibitionRootEnum,
-  ExploreMapRootEnum, } from './src/typing/routes'
+import {RootStackEnum, ExhibitionRootEnum } from './src/typing/routes'
 
 import Entypo from '@expo/vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
@@ -54,87 +49,7 @@ const linking: any = {
   }
 }
 
-// const linking: any = {
-//   prefixes: [prefix],
-//   config: {
-//     screens: {
-//       [RootStackEnum.feed]: {
-//         path: 'feed',
-//         screens: {
-//           // [ExhibitionRootEnum.exhibitionHome]: ExhibitionRootEnum.exhibitionHome,
-//           // [ExhibitionRootEnum.TopTab]: {
-//           //   path: 'topTab',
-//           //   screens: {
-//           //     [ExhibitionRootEnum.exhibitionDetails]: {
-//           //       path: 'exhibition/:exhibitionId/gallery/:galleryId',
-//           //       parse: {
-//           //         exhibitionId: (exhibitionId) => `${exhibitionId}`,
-//           //         galleryId: (galleryId) => `${galleryId}`,
-//           //       },
-//           //     },
-//           //     [ExhibitionRootEnum.artworkList]: 'feed/exhibition/:exhibitionId/artwork',
-//           //     [ExhibitionRootEnum.exhibitionGallery]: 'feed/gallery/:galleryId',
-//           //   },
-//           // },
-//           // [PreviousExhibitionRootEnum.navigatorScreen]: {
-//           //     screens: {
-//           //       [PreviousExhibitionRootEnum.exhibitionDetails]: 'pastExhibition/:exhibitionId',
-//           //       [PreviousExhibitionRootEnum.artworkList]: 'pastExhibition/:exhibitionId/artwork',
-//           //     },
-//           //   },
-//           // [ExhibitionRootEnum.individualArtwork]: 'artwork/:artworkId',
-//           [ExhibitionRootEnum.qrRouter]: 'qrRouter/:galleryId'
-//             // screens: {
-//             //   [ExhibitionRootEnum.qrRouter]: 'qrRouter/:galleryId',
-//             // },
-//           // },
-//           },
-//         },
-//       // [RootStackEnum.explore]: {
-//       //   screens: {
-//       //     [ExploreMapRootEnum.exploreMapHome]: ExploreMapRootEnum.exploreMapHome,
-//       //     [ExploreMapRootEnum.TopTabExhibition]: {
-//       //       screens: {
-//       //         [ExhibitionRootEnum.exhibitionDetails]: 'explore/exhibition/:exhibitionId',
-//       //         [ExhibitionRootEnum.artworkList]: 'explore/exhibition/:exhibitionId/artwork',
-//       //         [ExhibitionRootEnum.exhibitionGallery]: 'explore/exhibition/:exhibitionId/gallery/:galleryId',
-//       //       },
-//       //     },
-//       //   },
-//       // }
-//     }
-//   }
-// }
-
-
 function App() {
-
-  // useEffect(() => {
-
-  //   const getUUID = async () =>{
-  //     let uuid = uuidv4();
-  //     let fetchUUID = await SecureStore.getItemAsync('secure_deviceid');
-  //       //if user has already signed up prior
-  //       if (fetchUUID) {
-  //         uuid = JSON.parse(fetchUUID)
-  //       }
-  //     await SecureStore.setItemAsync('secure_deviceid', JSON.stringify(uuid));
-  //     // console.log(uuid)
-  //   }
-  //   getUUID()
-  // }, [])
-
-  React.useEffect(() => {
-    const subscription = Linking.addEventListener('url', handleDeepLink);
-    
-    return () => subscription.remove();
-  }, []);
-  
-  const handleDeepLink = (event) => {
-    console.log("Received link:", event.url);
-  }
-  
-
   return (
     <PaperProvider>
       <StoreProvider>
@@ -142,7 +57,6 @@ function App() {
           linking={linking}
         >
           <AnimatedAppLoader>
-            {/* <NavigationContainer linking={linking} > */}
               <RootStack.Navigator screenOptions={{headerShown: false}}>
                 <RootStack.Group>
                 <RootStack.Screen

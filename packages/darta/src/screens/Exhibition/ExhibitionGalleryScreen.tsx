@@ -17,7 +17,7 @@ import { Image } from 'react-native-elements';
 import {ETypes, StoreContext} from '../../state/Store';
 import {icons} from '../../utils/constants';
 import { BusinessHours, Exhibition, IGalleryProfileData } from '@darta-types';
-import { formatUSPhoneNumber } from '../../utils/functions';
+import { formatUSPhoneNumber, simplifyAddress } from '../../utils/functions';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
@@ -182,13 +182,13 @@ export function ExhibitionGalleryScreen({
   const [gallery, setGallery] = React.useState<IGalleryProfileData>({} as IGalleryProfileData)
 
   const [mapRegion, setMapRegion] = React.useState<any>({
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
+    latitudeDelta: 0.02,
+    longitudeDelta: 0.02,
     latitude: 0, 
     longitude: 0,
   })
-  const [mapMarkers, setMapMarkers] = React.useState<any[]>([]); // [{latitude: 0, longitude: 0, title: "", description: ""}
-  // const [hasCoordinates, setHasCoordinates] = React.useState<boolean>(false);
+  const [mapMarkers, setMapMarkers] = React.useState<any[]>([]); 
+  const [galleryAddresses, setGalleryAddresses] = React.useState<string[]>([])
 
   const [galleryName, setGalleryName] = React.useState<string>("")
 
@@ -198,13 +198,14 @@ export function ExhibitionGalleryScreen({
   const [previousExhibitions, setPreviousExhibitions] = React.useState<Exhibition[]>([])
 
   const setGalleryData = ({inputGallery}: {inputGallery: IGalleryProfileData}) => {
-    if (inputGallery.galleryLocation0?.coordinates) {
+    if (inputGallery?.galleryLocation0?.coordinates) {
       setMapRegion({
           ...mapRegion, 
           latitude: inputGallery.galleryLocation0?.coordinates.latitude.value! as unknown as number,
           longitude: inputGallery.galleryLocation0?.coordinates.longitude.value! as unknown as number,
       })
       const mapMarkers: any[] = [];
+      const galleryAddresses: string[] = []
 
       Object.keys(inputGallery).forEach((key: string) => {
         if (inputGallery[key].coordinates){
@@ -215,8 +216,12 @@ export function ExhibitionGalleryScreen({
             description: inputGallery[key]?.locationString?.value! as string,
             })
           }
+        if (inputGallery[key].locationString){
+          galleryAddresses.push(inputGallery[key]?.locationString?.value! as string)
+        }
         })
         setMapMarkers(mapMarkers)
+        setGalleryAddresses(galleryAddresses)
     }
     if (inputGallery?.galleryName && inputGallery.galleryName.value){
       setGalleryName(inputGallery.galleryName.value)
@@ -236,7 +241,8 @@ export function ExhibitionGalleryScreen({
   }
 
   if (inputGallery?.galleryExhibitions){
-    const previous = Object.values(inputGallery.galleryExhibitions).filter((exhibition: Exhibition) => exhibition.exhibitionId !== route?.params?.exhibitionId)
+    const strippedExhibitionId = route?.params?.exhibitionId?.replace("Exhibitions/", "")
+    const previous = Object.values(inputGallery.galleryExhibitions).filter((exhibition: Exhibition) => exhibition.exhibitionId !== strippedExhibitionId)
     previous.sort((a: Exhibition, b: Exhibition) => { 
       return new Date(b.exhibitionDates.exhibitionStartDate.value as any).getTime() - new Date(a.exhibitionDates.exhibitionStartDate.value as any).getTime()
     })
@@ -246,7 +252,7 @@ export function ExhibitionGalleryScreen({
   }
 
   React.useEffect(() => {
-    if (route?.params?.galleryId && state.galleryData){
+    if (route?.params?.galleryId && state.galleryData && state.galleryData[route.params.galleryId]){
       setGalleryId(route.params.galleryId);
       setGalleryData({inputGallery: state.galleryData[route.params.galleryId]})
       setGallery(state.galleryData[route.params.galleryId])
@@ -377,6 +383,8 @@ export function ExhibitionGalleryScreen({
     })
     .catch((err) => console.error('Error opening maps app:', err));
   };  
+
+  console.log({galleryAddresses})
   return (
     <>
     {!isGalleryLoaded ? ( 
@@ -390,7 +398,7 @@ export function ExhibitionGalleryScreen({
       <View style={galleryDetailsStyles.container}>
         <View style={galleryDetailsStyles.galleryTitleContainer}>
             <TextElement style={{...globalTextStyles.boldTitleText, fontSize: 20, color: Colors.PRIMARY_950}}>
-                {gallery?.galleryName?.value}
+                {galleryName}
             </TextElement>
         </View>
         <View style={galleryDetailsStyles.galleryLogoContainer}>
@@ -463,25 +471,30 @@ export function ExhibitionGalleryScreen({
           </View>
         </View>
         <View>
-          <TextElement style={galleryDetailsStyles.descriptionText}>Location</TextElement>
+          <TextElement style={galleryDetailsStyles.descriptionText}>Location{galleryAddresses.length > 1 && "s"}</TextElement>
           <Divider style={galleryDetailsStyles.divider}/>
         </View>
-        <View style={galleryDetailsStyles.locationContainer}>
-          <View>
-            <TextElement style={{fontSize: 15, color: Colors.PRIMARY_900}}>{gallery?.galleryLocation0?.locationString?.value}</TextElement>
-          </View>
+        <View style={{...galleryDetailsStyles.locationContainer, height: galleryAddresses.length > 2 ? hp('35%') : hp('30%')}}>
+            {galleryAddresses.map((address) => {
+              return (
+                <View style={{marginBottom: 3}}>
+                    <TextElement style={{fontSize: 15, color: Colors.PRIMARY_900}}>{simplifyAddress(address)}</TextElement>
+                </View>
+              )
+            })}
           <MapView  
             provider={PROVIDER_GOOGLE}
             style={{ alignSelf: 'stretch', height: '80%' }}
             region={mapRegion} 
             customMapStyle={mapStylesJson}
             >
-              <Marker
-              key={"12345"}
-              coordinate={{latitude: mapRegion.latitude, longitude: mapRegion.longitude}}
-              title={galleryName ?? "Gallery"}
-              description={gallery?.galleryLocation0?.locationString?.value!}
-              />
+              {mapMarkers && Object.values(mapMarkers).length > 0 && Object.values(mapMarkers).map((marker: any) => (
+                  <Marker
+                  key={marker.description}
+                  coordinate={{latitude: marker.latitude, longitude: marker.longitude}}
+                  description={marker.title ?? "Gallery"}
+                  />
+              ))}
             </MapView>
         </View>
         <View>

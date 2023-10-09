@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, {createContext, ReactNode, useReducer} from 'react';
 
 import {RatingEnum} from '../typing/types';
-import {Artwork, Exhibition, ExhibitionPreview, IGalleryProfileData, MapPinCities, ExhibitionMapPin} from '@darta-types'
+import {Artwork, Exhibition, ExhibitionPreview, IGalleryProfileData, MapPinCities, ExhibitionMapPin, MobileUser} from '@darta-types'
 
 export interface IUserArtworkRatings {
   [id: string]: {
@@ -86,7 +86,6 @@ export interface IState {
   userArtworkRatings: IUserArtworkRatings;
   galleryTitle: string;
   tombstoneTitle: string;
-  userSettings: PatUserData;
   savedArtwork?: IGalleryProfileData;
   // don't know what's going on up there. 
 
@@ -114,6 +113,8 @@ export interface IState {
 
   qrCodeExhibitionId?: string;
   qrCodeGalleryId?: string;
+
+  user?: MobileUser;
 }
 
 export enum ETypes {
@@ -148,7 +149,9 @@ export enum ETypes {
   saveExhibitionMapPins = 'SAVE_EXHIBITION_MAP_PINS',
 
   setQRCodeExhibitionId = 'SET_QR_CODE_EXHIBITION_ID',
-  setQRCodeGalleryId = 'SET_QR_CODE_GALLERY_ID'
+  setQRCodeGalleryId = 'SET_QR_CODE_GALLERY_ID',
+
+  setUser = 'SET_USER',
 }
 
 // Define the action type
@@ -198,6 +201,8 @@ interface IAction {
 
   qRCodeExhibitionId?: string;
   qrCodeGalleryId?: string;
+
+  userData?: MobileUser;
 }
 
 // Define the initial state
@@ -209,13 +214,6 @@ const initialState: IState = {
   isPortrait: true,
   galleryTitle: 'darta',
   tombstoneTitle: 't o m b s t o n e',
-  userSettings: {
-    profilePicture: "",
-    userName: "userName",
-    legalFirstName: "legalName", 
-    legalLastName: "legalName",
-    email: "email", 
-  },
   // here
   artworkData: {} as any,
   exhibitionData : {},
@@ -359,47 +357,6 @@ const reducer = (state: IState, action: IAction): IState => {
 
     case ETypes.setTitle:
       return {...state, galleryTitle};
-    case ETypes.setSaveArtwork:
-      if (!artOnDisplay && !artOnDisplay.id) {
-        return state;
-      }
-      if (saveWork) {
-        tempState = _.cloneDeep(state);
-        tempGallery = tempState.globalGallery;
-        if (tempGallery.savedArtwork.fullDGallery) {
-          tempGallery.savedArtwork.fullDGallery[artOnDisplay.id] = {
-            ...artOnDisplay,
-            savedAt: new Date(),
-          };
-        } else {
-          tempGallery.savedArtwork = {
-            fullDGallery: {
-              [artOnDisplay.id]: {
-                ...artOnDisplay,
-                savedAt: new Date(),
-              },
-            },
-          };
-        }
-        return {
-          ...tempState,
-        };
-      } else {
-        tempState = _.cloneDeep(state);
-        tempGallery = tempState.globalGallery;
-        delete tempGallery.savedArtwork.fullDGallery[artOnDisplay.id];
-        if (state.userArtworkRatings[artworkId]) {
-          if (tempGallery.numberOfRatedWorks > 0) {
-            tempGallery.numberOfRatedWorks -= 1;
-          }
-
-          tempState.userArtworkRatings[artworkId] = {};
-        }
-        return {
-          ...tempState,
-          ...tempGallery,
-        };
-      }
     case ETypes.setTombstone:
       return state
 
@@ -542,6 +499,17 @@ const reducer = (state: IState, action: IAction): IState => {
           ...state,
           qrCodeGalleryId: action.qrCodeGalleryId,
         };
+        case ETypes.setUser:
+          if (!action.userData) {
+            return state;
+          }
+          return {
+            ...state,
+            user: {
+              ...state.user,
+              ...action.userData,
+            },
+          };
     default:
       return state;
   }

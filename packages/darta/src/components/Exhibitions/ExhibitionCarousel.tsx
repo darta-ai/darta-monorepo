@@ -36,7 +36,7 @@ interface ItemProps {
     title: string
   }
 }
-const CustomItem: React.FC<ItemProps> = ({ item, animationValue, index }) => {
+const CustomItem: React.FC<ItemProps> = ({ item, animationValue }: {item: any, animationValue: any}) => {
   const maskStyle = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
       animationValue.value,
@@ -70,12 +70,12 @@ const CustomItem: React.FC<ItemProps> = ({ item, animationValue, index }) => {
         source={{uri: item.imageUrl}} 
         style={carouselStyle.heroImage} 
         />
-        <TextElement style={{fontFamily: "AvenirNext-Italic", color: Colors.PRIMARY_900, alignSelf: "center"}}>{item.title}</TextElement>
+        <TextElement style={{fontFamily: "AvenirNext-Italic", color: Colors.PRIMARY_900, alignSelf: "center"}}>{item?.title}</TextElement>
         </Animated.View>
     </View>
   );
 };
-export function ExhibitionCarousel({images} : {images: {imageUrl: string, title: string}[]}) {
+export function ExhibitionCarousel({images} : {images: {imageUrl: string, title?: string}[]}) {
   const animationStyle: any = React.useCallback(
     (value: number) => {
       "worklet";
@@ -123,7 +123,7 @@ export function ExhibitionCarousel({images} : {images: {imageUrl: string, title:
             <CustomItem
               key={item.title}
               index={index}
-              item={item}
+              item={item as any}
               animationValue={animationValue}
             />
           );

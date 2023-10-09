@@ -53,7 +53,7 @@ export function ExhibitionPreviewMini({
       borderWidth: 1,
     },
     heroImageContainer: {
-      height: '70%',
+      height: '65%',
       marginTop: 10,
       width: '100%',
       display:'flex',
@@ -70,9 +70,8 @@ export function ExhibitionPreviewMini({
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'flex-start',
-      gap: wp('5%'),
       width: '100%',
-      height: '20%',
+      height: '25%',
       alignItems: 'center',  
     },
     mapContainer: {
@@ -119,12 +118,17 @@ export function ExhibitionPreviewMini({
 
         <View style={exhibitionPreview.textContainer}>
           <TextElement
-            style={{...globalTextStyles.centeredText, fontWeight: 'bold', color: PRIMARY_900}}>
+            style={{...globalTextStyles.centeredText, fontWeight: 'bold', color: PRIMARY_900, fontSize: 18}}>
             {' '}
-            {exhibitionTitle} {' - '} {exhibitionArtist}
+            {exhibitionArtist}
           </TextElement>
           <TextElement
-            style={{...globalTextStyles.centeredText, fontWeight: 'bold', color: PRIMARY_900}}>
+            style={{...globalTextStyles.italicTitleText, color: PRIMARY_900, fontSize: 16}}>
+            {' '}
+            {exhibitionTitle}
+          </TextElement>
+          <TextElement
+            style={{...globalTextStyles.centeredText, color: PRIMARY_900, fontSize: 12}}>
             {' '}
             {startDate} {' - '} {endDate}
           </TextElement>
