@@ -1,4 +1,4 @@
-import {Exhibition} from '@darta-types';
+import {Exhibition, ExhibitionPreview} from '@darta-types';
 import axios from 'axios';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}exhibition`;
@@ -39,7 +39,7 @@ export async function listAllExhibitionsPreviewsForUser({
   limit,
 }: {
   limit: number;
-}): Promise<any> {
+}): Promise<{[key: string] : ExhibitionPreview}> {
   try {
     const {data} = await axios.get(`${URL}/listAllExhibitionsPreviewsForUser`, {
       params: {

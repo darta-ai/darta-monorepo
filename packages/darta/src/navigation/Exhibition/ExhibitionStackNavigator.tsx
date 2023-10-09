@@ -26,12 +26,12 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
       <ExhibitionStack.Screen
           name={ExhibitionRootEnum.TopTab}
           component={ExhibitionTopTabNavigator}
-          options={{...headerOptions, headerTitle: state.currentExhibitionHeader}}
+          options={{...headerOptions, headerTitle: state.currentExhibitionHeader ?? ""}}
         />
         <ExhibitionStack.Screen
           name={PreviousExhibitionRootEnum.navigatorScreen}
           component={PastExhibitionTopTabNavigator}
-          options={{...headerOptions, headerTitle: state.previousExhibitionHeader}}
+          options={{...headerOptions, headerTitle: state.previousExhibitionHeader ?? ""}}
           />
         <ExhibitionStack.Screen
           name={ExhibitionRootEnum.individualArtwork}

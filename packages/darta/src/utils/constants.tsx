@@ -16,6 +16,9 @@ export const galleryDimensionsLandscape = {
   height: wp('100%'),
 };
 
+
+export const USER_UUID_KEY = 'DARTA_USER_UUID';
+
 export const DEFAULT_Gallery_Image =
   'https://lh3.googleusercontent.com/pw/AMWts8A127Q1kjVXhb88Fmm8APNKph27xdQ_chFVbh42T5PClwoMztq0EIj6fMpBoAAgM9TfjIQPCrfbYOqFTLqE8XhmLWhbLEWyq1vy77WqexLXo7Ehq2mhfpXZ3L3OKQra96wrOju1sj8chqzAY3-qr_QDTA=w1778-h998-s-no';
 

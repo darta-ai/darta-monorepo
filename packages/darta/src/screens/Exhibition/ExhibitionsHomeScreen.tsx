@@ -1,7 +1,6 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext} from 'react';
-import {View, StyleSheet, RefreshControl} from 'react-native';
-import {ScrollView} from 'react-native-gesture-handler';
+import {View, StyleSheet, RefreshControl, ScrollView, FlatList} from 'react-native';
 import {
   ExhibitionNavigatorParamList,
   ExhibitionRootEnum
@@ -45,36 +44,42 @@ export function ExhibitionsHomeScreen({
 }) {
   const {state, dispatch} = useContext(StoreContext);
   const [exhibitionPreviews, setExhibitionPreviews] = React.useState<ExhibitionPreview[]>([])
+  const [numberOfPreviews, setNumberOfPreviews] = React.useState<number>(0)
   
+  const sortPreviews = (exhibitionPreviews: ExhibitionPreview[]) => {
+    return exhibitionPreviews.sort((a, b) => {
+      return b.closingDate > a.closingDate ? 1 : -1
+    })
+  }
+
   React.useEffect(()=> {
     if (state.exhibitionPreviews) {
-      setExhibitionPreviews(Object.values(state?.exhibitionPreviews).sort((a, b) => {
-        return a.openingDate > b.openingDate ? 1 : -1
-      })
-  )}
-  }, [])
+      const exhibitionPreviewsOpen: ExhibitionPreview[] = []
+      const exhibitionPreviewsClosing: ExhibitionPreview[] = []
+
+      for (const preview of Object.values(state.exhibitionPreviews)) {
+        if (preview?.closingDate?.value && preview.closingDate.value > new Date().toISOString()) {
+          exhibitionPreviewsOpen.push(preview)
+        } else {
+          exhibitionPreviewsClosing.push(preview)
+        }
+      }
+      
+      setExhibitionPreviews([...sortPreviews(exhibitionPreviewsOpen), ...sortPreviews(exhibitionPreviewsClosing)])
+    
+      setNumberOfPreviews(Object.values(state?.exhibitionPreviews).length)
+    }
+  }, [state.exhibitionPreviews])
 
   const [refreshing, setRefreshing] = React.useState(false);
+  const [bottomLoad, setBottomLoad] = React.useState(false);
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try{
-      const {galleries, exhibitions, exhibitionPreviews} : 
-      {galleries: {[key: string] : IGalleryProfileData}, exhibitions: {[key: string] : Exhibition}, artwork: ArtworkObject, exhibitionPreviews: {[key: string]: ExhibitionPreview}} = await listAllExhibitionsPreviewsForUser({limit: 10})
-
-      let artwork: ArtworkObject = {};
-      Object.values(exhibitions).forEach((exhibitionValue) => {
-        if (exhibitionValue?.artworks){
-          artwork = {
-            ...artwork,
-            ...exhibitionValue.artworks
-          }
-        }
-      })
+      const exhibitionPreviews = await listAllExhibitionsPreviewsForUser({limit: 10})
       dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
-      dispatch({type: ETypes.saveGalleries, galleryDataMulti: galleries})
-      dispatch({type: ETypes.saveArtworkMulti, artworkDataMulti: artwork})
-      dispatch({type: ETypes.saveExhibitionMulti, exhibitionDataMulti: exhibitions})
+
     } catch {
         setRefreshing(false);
     }
@@ -83,37 +88,23 @@ export function ExhibitionsHomeScreen({
     }, 500)
   }, []);
 
+  const onBottomLoad = React.useCallback(async () => {
+    setBottomLoad(true);
+    try{
+      const newLimit = numberOfPreviews + 10
+      const exhibitionPreviews = await listAllExhibitionsPreviewsForUser({limit: newLimit})
+      dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
+    } catch {
+      setBottomLoad(false);
+    } finally {
+      setBottomLoad(false);
+    }
+  }, []);
+
 
   const loadExhibition = async ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => {
     try{
         if (!exhibitionId || !galleryId) return
-        let exhibition = {} as Exhibition;
-        if(!state.exhibitionData && !state.exhibitionData?.[exhibitionId]){
-          exhibition =  await readExhibition({exhibitionId});
-          dispatch({
-            type: ETypes.saveExhibition,
-            exhibitionData: exhibition
-          })
-        } else{
-          exhibition = state.exhibitionData[exhibitionId]
-        }
-        let galleryResults = {} as IGalleryProfileData;
-        if (state.galleryData && state.galleryData[galleryId]){
-          galleryResults = state.galleryData[galleryId]
-        } else {
-          galleryResults = await readGallery({galleryId});
-        }
-        const supplementalExhibitions = await listGalleryExhibitionPreviewForUser({galleryId})
-        dispatch({
-          type: ETypes.setCurrentHeader,
-          currentExhibitionHeader: exhibition.exhibitionTitle.value!,
-        })
-        const galleryData = {...galleryResults, galleryExhibitions: supplementalExhibitions}
-        dispatch({
-          type: ETypes.saveGallery,
-          galleryData
-        })
-
         navigation.navigate(ExhibitionRootEnum.TopTab, {exhibitionId, galleryId, internalAppRoute: true});
     } catch(error: any) {
       console.log(error)
@@ -122,24 +113,19 @@ export function ExhibitionsHomeScreen({
 
   return (
 
-      <ScrollView refreshControl={
-        <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>
-          {/* <View style={exhibitionHomeStyle.exhibitionTogglerContainer}>
-            <Button icon={"weather-sunset-up"} mode="elevated" >
-            <TextElement>Opening</TextElement>
-            </Button>
-            <Button icon={"weather-sunset-down"} mode="contained">
-            <TextElement>Closing Soon</TextElement>
-            </Button>
-          </View> */}
-          {exhibitionPreviews.map((exhibition) => 
-          <View key={exhibition.exhibitionId}>
-              <ExhibitionPreviewCard 
-                exhibitionPreview={exhibition}
-                onPressExhibition={loadExhibition}
-              />
-            </View>
+      <FlatList 
+        data={exhibitionPreviews}
+        keyExtractor={(item) => item.exhibitionId}
+        renderItem={({item}) => (
+            <ExhibitionPreviewCard 
+              exhibitionPreview={item}
+              onPressExhibition={loadExhibition}
+            />
           )}
-      </ScrollView>
+        refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}
+        onEndReachedThreshold={0.1}
+        onEndReached={onBottomLoad}
+        refreshing={bottomLoad}
+        />
   );
 }

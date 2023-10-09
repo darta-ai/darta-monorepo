@@ -6,7 +6,7 @@ import { Button, Divider, Text} from 'react-native-paper';
 import * as Colors from '@darta-styles';
 import { ETypes } from '../../state/Store';
 import {TextElement} from '../../components/Elements/_index';
-import {customLocalDateString, customFormatTimeString} from '../../utils/functions';
+import {customLocalDateString, customFormatTimeString, simplifyAddress} from '../../utils/functions';
 import { ActivityIndicator } from 'react-native-paper';
 import {readMostRecentGalleryExhibitionForUser} from '../../api/exhibitionRoutes';
 import { listGalleryExhibitionPreviewForUser } from '../../api/galleryRoutes';
@@ -58,18 +58,17 @@ const exhibitionDetailsStyles = StyleSheet.create({
     heroImageContainer: {
         alignSelf: 'center',
         justifyContent: 'center',
-        width: wp('90%'),
+        width: wp('95%'),
         height: hp('40%'),
       },
     heroImage: {
-        maxHeight: hp('40%'),
         height: hp('35%'),
-        width: wp('90%'),
+        width: wp('100%'),
         resizeMode: 'contain',
     },
     textContainer: {
-        height: hp('35%'),
-        width: wp('90%'),
+        height: hp('90%'),
+        width: wp('95%'),
         display: 'flex',
         gap: wp('10%'),
         flexDirection: 'column',
@@ -78,7 +77,7 @@ const exhibitionDetailsStyles = StyleSheet.create({
     },
     openingContainer: {
         height: hp('10%'),
-        width: wp('90%'),
+        width: wp('95%'),
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -95,12 +94,11 @@ const exhibitionDetailsStyles = StyleSheet.create({
         color: Colors.PRIMARY_950
     },
     mapContainer: {
-        width: '80%',
+        width: '90%',
         borderWidth: 1,
         borderColor: 'black',
-        height: hp('30%'),
+        height: hp('25%'),
         display: 'flex',
-        margin: wp('5%'),
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -135,8 +133,6 @@ export function ExhibitionDetailsScreen({
   const [exhibitionEndDate, setExhibitionEndDate] = React.useState<string>(new Date().toLocaleDateString());
   const [isTemporaryExhibition, setIsTemporaryExhibition] = React.useState<boolean>(false);
   
-  const [receptionStartTime, setReceptionStartTime ] = React.useState<string>(new Date().toLocaleDateString())
-  const [receptionEndTime, setReceptionEndTime ] = React.useState<string>(new Date().toLocaleDateString())
   const [receptionOpeningDay, setReceptionOpeningDay ] = React.useState<string>(new Date().toLocaleDateString())
   const [receptionCloseDay, setReceptionCloseDay ] = React.useState<string>(new Date().toLocaleDateString())
   const [isReceptionMultipleDays, setIsReceptionMultipleDays ] = React.useState<boolean>(false)
@@ -180,26 +176,28 @@ export function ExhibitionDetailsScreen({
         && currentExhibition.receptionDates?.hasReception
         && currentExhibition.receptionDates.receptionStartTime.value
         && currentExhibition.receptionDates.receptionEndTime.value){
-            setReceptionStartTime(customFormatTimeString(new Date(currentExhibition.receptionDates.receptionStartTime.value)));
-            setReceptionEndTime(customFormatTimeString(new Date(currentExhibition.receptionDates.receptionEndTime.value)));
-            setReceptionOpeningDay(customLocalDateString(new Date(currentExhibition.receptionDates.receptionEndTime.value)))
-            setReceptionCloseDay(customLocalDateString(
-                new Date(currentExhibition.receptionDates.receptionEndTime.value)
-            ))
+            const receptionStartDay = customLocalDateString(new Date(currentExhibition.receptionDates.receptionEndTime.value))
+            const receptionEndDay = customLocalDateString(new Date(currentExhibition.receptionDates.receptionEndTime.value))
+
+            setReceptionOpeningDay(receptionStartDay)
+            setReceptionCloseDay(receptionEndDay)
             setIsReceptionMultipleDays(receptionCloseDay !== receptionOpeningDay);
-            setIsReceptionInPast(new Date(currentExhibition.receptionDates.receptionEndTime.value) < new Date())
+            const receptionInPast = new Date(currentExhibition.receptionDates.receptionEndTime.value) > new Date()
+            setIsReceptionInPast(receptionInPast)
             setHasReception(currentExhibition.receptionDates.hasReception.value === "Yes");
             setReceptionOpenFullDate(new Date(currentExhibition.receptionDates.receptionStartTime.value));
             setReceptionCloseFullDate(new Date(currentExhibition.receptionDates.receptionEndTime.value));
+
+            if(isReceptionMultipleDays){
+                setReceptionDateString(`${receptionStartDay} - ${receptionEndDay}`)
+                setReceptionTimeString(`${customFormatTimeString(new Date(currentExhibition.receptionDates.receptionStartTime.value))} - ${customFormatTimeString(new Date(currentExhibition.receptionDates.receptionEndTime.value))}`)
+            } else{
+                setReceptionDateString(receptionStartDay)
+                setReceptionTimeString(`${customFormatTimeString(new Date(currentExhibition.receptionDates.receptionStartTime.value))} - ${customFormatTimeString(new Date(currentExhibition.receptionDates.receptionEndTime.value))}`)
+            }
     }
 
-    if(isReceptionMultipleDays){
-        setReceptionDateString(`${receptionOpeningDay} - ${receptionCloseDay}`)
-        setReceptionTimeString(`${receptionStartTime} - ${receptionEndTime}`)
-    } else{
-        setReceptionDateString(receptionOpeningDay)
-        setReceptionTimeString(`${receptionStartTime} - ${receptionEndTime}`)
-    }
+
 
     if (currentExhibition?.exhibitionLocation?.coordinates) {
         setHasCoordinates(true);
@@ -256,14 +254,18 @@ async function fetchExhibitionById() {
     if (!route?.params?.galleryId || !route.params.exhibitionId) return
     try {
         const {galleryId, exhibitionId} = route.params
-        const gallery = await readGallery({galleryId})
-        const supplementalExhibitions = await listGalleryExhibitionPreviewForUser({galleryId})
-        const galleryData = {...gallery, galleryExhibitions: supplementalExhibitions}
+        const [gallery, supplementalExhibitions, exhibition] = await Promise.all([
+            readGallery({ galleryId }),
+            listGalleryExhibitionPreviewForUser({ galleryId }),
+            readExhibition({ exhibitionId })
+        ]);
+        
+        const galleryData = { ...gallery, galleryExhibitions: supplementalExhibitions };
+        
         dispatch({
             type: ETypes.saveGallery,
             galleryData: galleryData,
         })
-        const exhibition = await readExhibition({exhibitionId})
         dispatch({
             type: ETypes.setCurrentHeader,
             currentExhibitionHeader: exhibition.exhibitionTitle.value!,
@@ -294,7 +296,6 @@ async function fetchExhibitionById() {
     function handleExhibitionData(): boolean {
         let galleryId = ""
         let exhibitionId = ""
-        console.log({route})
         if (route?.params?.exhibitionId){
             exhibitionId = route.params.exhibitionId
             setExhibitionId(route.params.exhibitionId);
@@ -310,6 +311,7 @@ async function fetchExhibitionById() {
             ) {
             setCurrentExhibition(state.exhibitionData[exhibitionId]);
             setCurrentGallery(state.galleryData[route?.params?.galleryId]);
+            setExhibitionData({currentExhibition: state.exhibitionData[exhibitionId], currentGallery: state.galleryData[route?.params?.galleryId]})
             setIsGalleryLoaded(true);
             return false
         } else if(!route?.params?.internalAppRoute && route?.params?.locationId){ 
@@ -400,6 +402,7 @@ async function fetchExhibitionById() {
         .catch((err) => console.error('Error opening maps app:', err));
       };  
 
+
   return (
     <>
         {!isGalleryLoaded ? ( 
@@ -420,84 +423,51 @@ async function fetchExhibitionById() {
             source={{uri: currentExhibition?.exhibitionPrimaryImage?.value!}}
             style={exhibitionDetailsStyles.heroImage}
             />
-            </View>
-            <View style={exhibitionDetailsStyles.textContainer}>
-                <View>
-                    <TextElement style={exhibitionDetailsStyles.descriptionText}>Artist</TextElement>
-                    <Divider style={exhibitionDetailsStyles.divider}/>
-                    <TextElement style={{...globalTextStyles.italicTitleText, fontSize: 20, marginTop: hp('1%')}}>
-                        {currentExhibition?.exhibitionArtist?.value ?? "Group Show"}
-                    </TextElement>
-                    </View>
-                <View>
-                {isTemporaryExhibition ? (
-                    <>
-                <TextElement style={exhibitionDetailsStyles.descriptionText}>On View</TextElement>
+        </View>
+        <View style={{...exhibitionDetailsStyles.textContainer, height: hasReception && isReceptionInPast ? hp('100%') : hp('80%')}}>
+            <View>
+                <TextElement style={exhibitionDetailsStyles.descriptionText}>Artist</TextElement>
                 <Divider style={exhibitionDetailsStyles.divider}/>
-                <TextElement style={{...globalTextStyles.centeredText, fontSize: 18, marginTop: hp('1%')}}>
-                    {exhibitionStartDate} {" - "} {exhibitionEndDate}
+                <TextElement style={{...globalTextStyles.italicTitleText, fontSize: 20, marginTop: hp('1%')}}>
+                    {currentExhibition?.exhibitionArtist?.value ?? "Group Show"}
                 </TextElement>
-                </>
-                )
-                :
-                (
-                <TextElement style={{...globalTextStyles.centeredText}}>Ongoing</TextElement>
-                )
-                }
-                </View>
-                <View style={{height: hp('10%')}}>
-                <TextElement style={exhibitionDetailsStyles.descriptionText}>
-                    Location
-                </TextElement>
-                <Divider style={exhibitionDetailsStyles.divider}/>
-                    <TextElement style={{...globalTextStyles.centeredText, fontSize: 16, marginTop: hp('1%')}}>{currentExhibition?.exhibitionLocation?.locationString?.value}</TextElement>
-                </View>
-                
             </View>
-            <View style={{margin: hp('2%')}}>
-                {hasReception && (
-                    <>
-                    <View>
-                        <TextElement style={exhibitionDetailsStyles.descriptionText}>
-                            Reception
-                        </TextElement>
-                        <Divider style={exhibitionDetailsStyles.divider}/>
-                        <TextElement style={{...globalTextStyles.centeredText, fontSize: 18, marginTop: hp('1%')}}>
-                            {receptionDateString} {": "} {receptionTimeString}
-                        </TextElement>
-                    </View>
-                    </>
-                )}
-                {!isReceptionInPast && (
-                <Button 
-                icon={!isCalendarSuccess ? "calendar" : ""}
-                buttonColor={Colors.PRIMARY_600}
-                textColor={Colors.PRIMARY_50}
-                mode="contained"
-                disabled={isCalendarSuccess}
-                compact={true}
-                onPress={() => saveExhibitionToCalendar()}
-                >   
-                {!isCalendarSuccess ?
-                (
-                    <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_50}}>Add Reception to Calendar</TextElement>
-                )
-                :
-                (
-                    <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900}}>Added to Calendar</TextElement>
-                )
-                }
+            <View>
+            {isTemporaryExhibition ? (
+            <View>
+            <TextElement style={exhibitionDetailsStyles.descriptionText}>On View</TextElement>
+            <Divider style={exhibitionDetailsStyles.divider}/>
+            <TextElement style={{...globalTextStyles.centeredText, fontSize: 18, marginTop: hp('1%')}}>
+                {exhibitionStartDate} {" - "} {exhibitionEndDate}
+            </TextElement>
+            </View>
+            )
+            :
+            (
+            <TextElement style={{...globalTextStyles.centeredText}}>Ongoing</TextElement>
+            )
+            }
+            </View>
+            <View>
+            <TextElement style={exhibitionDetailsStyles.descriptionText}>
+                Location
+            </TextElement>
+            <Divider style={exhibitionDetailsStyles.divider}/>
+                <TextElement style={{...globalTextStyles.centeredText, fontSize: 18, marginTop: hp('1%')}}>{simplifyAddress(currentExhibition?.exhibitionLocation?.locationString?.value)}</TextElement>
+                <Button
+                icon={"map"}
+                labelStyle={{color: Colors.PRIMARY_950}}
+                mode="text"
+                onPress={() => openInMaps(currentExhibition?.exhibitionLocation?.locationString?.value!)}
+                >                
+                <TextElement style={{...globalTextStyles.centeredText, textDecorationLine: 'underline', marginTop: hp('1%')}}>Open in Maps</TextElement>
                 </Button>
-                )}
-                {isCalendarFailure && (
-                <TextElement sx={{color: Colors.PRIMARY_900}}>error occurred adding event</TextElement>
-                )}
             </View>
             <View style={exhibitionDetailsStyles.mapContainer}>
                 <MapView  
                 customMapStyle={mapStylesJson}
                 provider={PROVIDER_GOOGLE}
-                style={{ alignSelf: 'stretch', height: '100%' }}
+                style={{ alignSelf: 'stretch', height: '100%', width: '100%'}}
                 region={mapRegion} 
                 >
                     <Marker
@@ -508,17 +478,53 @@ async function fetchExhibitionById() {
                     />
                 </MapView>
             </View>
-            <View style={{height: hp('10%'), display: "flex", flexDirection: "row"}}>
-                <Button
-                    icon={"map"}
-                    labelStyle={{color: Colors.PRIMARY_950}}
-                    // style={{backgroundColor: Colors.PRIMARY_100}}
-                    mode="text"
-                    onPress={() => openInMaps(currentExhibition?.exhibitionLocation?.locationString?.value!)}
-                    >                
-                    <TextElement style={{...globalTextStyles.centeredText, fontSize: 16, textDecorationLine: 'underline', marginTop: hp('1%')}}>Directions</TextElement>
-                    </Button>
+            <View style={{margin: hp('2%')}}>
+            {hasReception && isReceptionInPast && (
+                <>
+                <View>
+                    <TextElement style={exhibitionDetailsStyles.descriptionText}>
+                        Reception
+                    </TextElement>
+                    <Divider style={exhibitionDetailsStyles.divider}/>
+                    <TextElement style={{...globalTextStyles.centeredText, fontSize: 20, marginTop: hp('1%')}}>
+                        {receptionDateString}
+                    </TextElement>
+                    <TextElement style={{...globalTextStyles.centeredText, fontSize: 20}}>
+                        {receptionTimeString}
+                    </TextElement>
                 </View>
+                {!isReceptionInPast && (
+                    <Button 
+                    icon={!isCalendarSuccess ? "calendar" : ""}
+                    textColor={Colors.PRIMARY_900}
+                    mode="text"
+                    disabled={isCalendarSuccess}
+                    compact={true}
+                    labelStyle={{color: Colors.PRIMARY_950}}
+                    onPress={() => saveExhibitionToCalendar()}
+                    >   
+                        {!isCalendarSuccess ?
+                        (
+                            <TextElement style={{...globalTextStyles.centeredText, textDecorationLine: 'underline'}}>Add Reception to Calendar</TextElement>
+                        )
+                        :
+                        (
+                            <TextElement style={{...globalTextStyles.centeredText, textDecorationLine: 'underline' }}>Added to Calendar</TextElement>
+                        )
+                        }
+                    </Button>
+                )}
+                </>
+            )}
+
+            {isCalendarFailure && (
+            <TextElement sx={{color: Colors.PRIMARY_900}}>error occurred adding event</TextElement>
+            )}
+        </View>
+            
+        </View>
+
+
             <View style={exhibitionDetailsStyles.pressReleaseContainer}>
             <TextElement style={exhibitionDetailsStyles.descriptionText}>
                 Press Release

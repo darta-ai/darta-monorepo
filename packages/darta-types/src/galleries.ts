@@ -107,12 +107,33 @@ export interface IOpeningLocationData extends IBusinessLocationData {
   isPrivate: boolean;
 }
 
+export type ArtworkPreview = {
+  [key: string]: {
+    _id: string;
+    artworkImage: {value : string};
+    artworkTitle: {value : string};
+  }
+}
+
 export type ExhibitionPreview = {
-  artworkIds?: string[];
+  artworkPreviews: ArtworkPreview;
   exhibitionId: string;
   galleryId: string;
-  openingDate: string;
-  closingDate: string;
+  openingDate: PublicFields;
+  closingDate: PublicFields;
+  galleryLogo: Images;
+  galleryName: PublicFields;
+  exhibitionArtist: PublicFields;
+  exhibitionTitle: PublicFields;
+  exhibitionLocation: {
+    exhibitionLocationString: PublicFields;
+    coordinates: CoordinateFields;
+  };
+  exhibitionPrimaryImage: {
+    value: string;
+  };
+  exhibitionDates: ExhibitionDates;
+  receptionDates: ReceptionDates;
 }
 
 export type Artwork = {

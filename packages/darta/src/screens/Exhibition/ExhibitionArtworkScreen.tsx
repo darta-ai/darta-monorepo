@@ -90,7 +90,7 @@ export function ExhibitionArtworkScreen({
 }
 
   React.useEffect(()=>{
-    if (route?.params?.exhibitionId){
+    if (route?.params?.exhibitionId && state.exhibitionData && state.exhibitionData[route.params.exhibitionId]){
       setExhibitionId(route.params.exhibitionId);
       setArtworksFromExhibitionId({exhibitionId: route.params.exhibitionId})
     } else if (state.qrCodeExhibitionId) {
@@ -99,7 +99,7 @@ export function ExhibitionArtworkScreen({
     } else {
       setErrorText("hey something went wrong, please refresh and try again")
     }
-  }, [,state.qrCodeExhibitionId])
+  }, [,state.qrCodeExhibitionId, state.exhibitionData])
 
 
   const [refreshing, setRefreshing] = React.useState(false);

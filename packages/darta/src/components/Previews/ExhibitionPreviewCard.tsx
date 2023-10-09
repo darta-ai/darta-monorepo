@@ -15,7 +15,7 @@ import {TextElement} from '../Elements/_index';
 import {globalTextStyles} from '../../styles/styles';
 import { Exhibition, ExhibitionPreview, IGalleryProfileData} from '@darta-types';
 import { PRIMARY_700, PRIMARY_900, PRIMARY_100, PRIMARY_950, PRIMARY_50 } from '@darta-styles';
-import { customLocalDateString } from '../../utils/functions';
+import { customLocalDateString, simplifyAddress } from '../../utils/functions';
 import { StoreContext } from '../../state/Store';
 import { GalleryIcon } from '../Elements/_index';
 import { ExhibitionCarousel } from '../../components/Exhibitions/ExhibitionCarousel';
@@ -105,34 +105,27 @@ export function ExhibitionPreviewCard({
     exhibitionPreview: ExhibitionPreview
     onPressExhibition: ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => void,
 }) {
-
   const {state} = React.useContext(StoreContext);
 
-  let images = [] as any[];
-  let exhibition = {} as Exhibition;
-  if (state.exhibitionData && state.exhibitionData[exhibitionPreview.exhibitionId]){
-    exhibition = state.exhibitionData[exhibitionPreview.exhibitionId]
-    images.push({imageUrl: exhibition.exhibitionPrimaryImage?.value!, title: ""})
-    if (exhibition.artworks){
-      Object.values(exhibition.artworks).forEach((artwork) => {
-        if (artwork.artworkImage?.value){
-          images.push({imageUrl: artwork.artworkImage?.value!, title: artwork.artworkTitle?.value!})
-        }
+  const [images, setImages] = React.useState<{imageUrl: string, title?: string}[]>([])
+
+  React.useEffect(() => {
+    if (exhibitionPreview?.artworkPreviews){
+      const images = Object.values(exhibitionPreview.artworkPreviews).map((image) => {
+        return {imageUrl: image.artworkImage?.value, title: image.artworkTitle?.value}
       })
-    }
-  } 
-  let gallery = {} as IGalleryProfileData;
-  if (state.galleryData && state.galleryData[exhibitionPreview.galleryId]){
-    gallery = state.galleryData[exhibitionPreview.galleryId]
-  }
+      const primaryImage = {imageUrl: exhibitionPreview.exhibitionPrimaryImage?.value}
+      setImages([primaryImage, ...images])
+    } 
+  }, [])
 
   return (
     <>
       <View
         style={exhibitionPreviewStyle.container}>
           <View style={exhibitionPreviewStyle.galleryIconContainer}>
-              <GalleryIcon galleryLogo={gallery.galleryLogo?.value!}/>
-              <TextElement style={exhibitionPreviewStyle.galleryNameComponent}>{gallery.galleryName?.value!}</TextElement>
+              <GalleryIcon galleryLogo={exhibitionPreview?.galleryLogo?.value!}/>
+              <TextElement style={exhibitionPreviewStyle.galleryNameComponent}>{exhibitionPreview?.galleryName.value}</TextElement>
           </View>
           <View style={exhibitionPreviewStyle.imagePreviewContainer}>
             < ExhibitionCarousel images={images} />
@@ -143,43 +136,34 @@ export function ExhibitionPreviewCard({
             <TextElement
               style={{...globalTextStyles.baseText, fontWeight: 'bold', color: PRIMARY_900, fontSize: 20}}>
               {' '}
-              {exhibition.exhibitionTitle.value} 
+              {exhibitionPreview.exhibitionTitle.value} 
             </TextElement>
             <TextElement
               style={{...globalTextStyles.baseText, fontStyle: 'italic', color: PRIMARY_900, fontSize: 16}}>
               {' '}
-              {exhibition.exhibitionArtist?.value ? exhibition.exhibitionArtist.value : "Group Show"}
+              {exhibitionPreview?.exhibitionArtist?.value ? exhibitionPreview?.exhibitionArtist?.value : "Group Show"}
             </TextElement>
           </View>
           <View>
-          {exhibition.exhibitionDates.exhibitionDuration &&  
-          exhibition.exhibitionDates.exhibitionDuration.value === "Temporary" 
-          && exhibition.exhibitionDates?.exhibitionStartDate.value 
-          && exhibition.exhibitionDates?.exhibitionEndDate.value &&
+          {exhibitionPreview?.closingDate?.value &&  
+          exhibitionPreview?.openingDate?.value && 
           (
             <TextElement
               style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
               {' '}
-              {exhibition.exhibitionDates?.exhibitionStartDate.value ? customLocalDateString(new Date(exhibition.exhibitionDates?.exhibitionStartDate.value)) : "Dates TBD"}
+              {exhibitionPreview.openingDate?.value ? customLocalDateString(new Date(exhibitionPreview.openingDate?.value)) : "Opening unavailable"}
               {" - "}
-              {exhibition.exhibitionDates?.exhibitionEndDate.value ? customLocalDateString(new Date(exhibition.exhibitionDates?.exhibitionEndDate.value)) : "Dates TBD"}
+              {exhibitionPreview.closingDate?.value ? customLocalDateString(new Date(exhibitionPreview.closingDate?.value)) : "Closing unavailable"}
             </TextElement>
-          )}
-          {exhibition.exhibitionDates.exhibitionDuration && 
-          exhibition.exhibitionDates.exhibitionDuration.value !== "Temporary" && (
-            <TextElement style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
-              {' '}
-              {exhibition.exhibitionDates.exhibitionDuration.value}
-          </TextElement>
           )}
           <TextElement
             style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
             {' '}
-            {exhibition.exhibitionLocation.locationString?.value}
+            {simplifyAddress(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString.value)}
           </TextElement>
           </View>
         </View>
-          <TouchableOpacity style={exhibitionPreviewStyle.seeMoreContainer} onPress={() => onPressExhibition({exhibitionId: exhibition.exhibitionId, galleryId: gallery._id!})}>
+          <TouchableOpacity style={exhibitionPreviewStyle.seeMoreContainer} onPress={() => onPressExhibition({exhibitionId: exhibitionPreview?.exhibitionId, galleryId: exhibitionPreview?.galleryId})}>
               <TextElement style={{color: PRIMARY_50}}>See More</TextElement>
           </TouchableOpacity>
       </View>

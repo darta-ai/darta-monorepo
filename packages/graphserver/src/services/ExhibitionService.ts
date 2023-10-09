@@ -1,6 +1,6 @@
 /* eslint-disable no-return-assign */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {Artwork, Exhibition, ExhibitionMapPin, ExhibitionObject, IBusinessLocationData, IGalleryProfileData, Images} from '@darta-types';
+import {Artwork, Exhibition, ExhibitionMapPin, ExhibitionObject, ExhibitionPreview, IBusinessLocationData, IGalleryProfileData, Images} from '@darta-types';
 import {Database} from 'arangojs';
 import {Edge} from 'arangojs/documents';
 import {inject, injectable} from 'inversify';
@@ -642,59 +642,62 @@ export class ExhibitionService implements IExhibitionService {
   }
   }
 
-  public async listExhibitionsPreviewsForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: Exhibition} | void> {
-    const getExhibitionsQuery = `
-      WITH ${CollectionNames.Exhibitions}
+  public async listExhibitionsPreviewsForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: ExhibitionPreview} | void> {
+ 
+    const getExhibitionPreviewQuery = `
+    WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}
+    LET exhibitions = (
       FOR exhibition IN ${CollectionNames.Exhibitions}
-      SORT exhibition.exhibitionDates.exhibitionStartDate.value ASC
+      SORT exhibition.exhibitionDates.exhibitionStartDate.value DESC
       LIMIT 0, @limit
-      RETURN exhibition._id      
-    `;
+      RETURN exhibition
+    )
+    
+    FOR exhibition IN exhibitions
+        LET gallery = (
+            FOR g, edge IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
+                RETURN g
+        )[0]
+        LET artworks = (
+            FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
+            RETURN {
+                [artwork._id]: {
+                    _id: artwork._id,
+                    artworkImage: artwork.artworkImage,
+                    artworkTitle: artwork.artworkTitle
+                }
+            }
+        )
+        
+    RETURN {
+        artworkPreviews: artworks,
+        exhibitionId: exhibition._id,
+        galleryId: gallery._id,
+        openingDate: {value: exhibition.exhibitionDates.exhibitionStartDate.value},
+        closingDate: {value: exhibition.exhibitionDates.exhibitionEndDate.value},
+        galleryLogo: gallery.galleryLogo,
+        galleryName: gallery.galleryName,
+        exhibitionTitle: exhibition.exhibitionTitle,
+        exhibitionArtist: exhibition.exhibitionArtist,
+        exhibitionLocation: {
+            exhibitionLocationString: exhibition.exhibitionLocation.locationString,
+            coordinates: exhibition.exhibitionLocation.coordinates
+        },
+        exhibitionPrimaryImage: {
+            value: exhibition.exhibitionPrimaryImage.value
+        },
+        receptionDates: exhibition.receptionDates
+    }
+    `
   
     try {
-      const edgeCursor = await this.db.query(getExhibitionsQuery, { limit });
-      const exhibitionIds = (await edgeCursor.all()).filter(el => el);
-  
-      // Since we want a combined result, let's merge the promises for each exhibition ID.
-      const combinedPromises = exhibitionIds.map(async (exhibitionId: string) => {
-        const exhibition = filterOutPrivateRecordsMultiObject(await this.getExhibitionByIdForUser({ exhibitionId }));
-        const gallery = filterOutPrivateRecordsMultiObject(await this.galleryService.getGalleryByExhibitionId({ exhibitionId }));
-  
-        return {
-          exhibition,
-          gallery
-        };
-      });
-  
-      const combinedResults = await Promise.all(combinedPromises);
-  
-      // Now let's transform the combined results into the desired structures
-      const galleryExhibitionsObject: {[key: string]: any} = {};
-      const galleryObject: {[key: string]: any} = {};
-      const artworkObject: {[key: string]: any} = {};
-      const preview: {[key: string]: any} = {};
+      const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit });
+      const exhibitionPreviews = (await edgeCursor.all()).filter(el => el);
 
-      
+      return exhibitionPreviews.reduce((acc, obj) =>{
+        acc[obj.exhibitionId as string] = {...obj, artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2}), {})}
+        return acc}, {})
   
-      combinedResults.forEach(result => {
-        galleryExhibitionsObject[result.exhibition.exhibitionId as string] = result.exhibition;
-        galleryObject[result.gallery._id as string] = result.gallery;
-        
-        // Constructing the preview
-        preview[result.exhibition.exhibitionId] = {
-          exhibitionId: result.exhibition.exhibitionId,
-          galleryId: result.gallery._id,
-          openingDate: result.exhibition.exhibitionDates.exhibitionStartDate.value,
-          closingDate: result.exhibition.exhibitionDates.exhibitionEndDate.value,
-        };
-      });
-  
-      return {
-        exhibitions: galleryExhibitionsObject,
-        galleries: galleryObject,
-        artwork: artworkObject,
-        exhibitionPreviews: preview
-      } as any;
     } catch (error: any) {
       console.log(error)
       throw new Error(error.message);

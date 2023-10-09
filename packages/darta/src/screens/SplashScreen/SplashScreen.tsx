@@ -13,13 +13,18 @@ import { listAllExhibitionsPreviewsForUser } from "../../api/exhibitionRoutes";
 import { ETypes, StoreContext } from "../../state/Store";
 import { ArtworkObject, Exhibition, ExhibitionPreview, IGalleryProfileData, MapPinCities } from "@darta-types";
 import { listExhibitionPinsByCity } from "../../api/locationRoutes";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {USER_UUID_KEY} from '../../utils/constants'
+import { v4 as uuidv4 } from 'uuid';
+
+
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
 });
 
 function AnimatedSplashScreen({ children }) {
-  const {dispatch} = React.useContext(StoreContext)
+  const {state, dispatch} = React.useContext(StoreContext)
   const animation = useMemo(() => new Animated.Value(1), []);
   const [isAppReady, setAppReady] = useState(false);
   const [isSplashAnimationComplete, setAnimationComplete] = useState(false);
@@ -34,47 +39,76 @@ function AnimatedSplashScreen({ children }) {
     }
   }, [isAppReady]);
   
+  const getUserUuid = async () => {
+      try {
+          let userUuid = await AsyncStorage.getItem(USER_UUID_KEY);
+          
+          if (!userUuid) {
+              userUuid = uuidv4();
+              if(userUuid) {
+                await AsyncStorage.setItem(USER_UUID_KEY, userUuid)
+                
+              };
+          }
+
+          return userUuid;
+      } catch (error) {
+          console.error('Failed to get user UUID:', error);
+          return null;
+      }
+  }
 
   const onImageLoaded = useCallback(async () => {
     try {
-      const {galleries, exhibitions, exhibitionPreviews} : 
-      {galleries: {[key: string] : IGalleryProfileData}, exhibitions: {[key: string] : Exhibition}, artwork: ArtworkObject, exhibitionPreviews: {[key: string]: ExhibitionPreview}} = await listAllExhibitionsPreviewsForUser({limit: 10})
+      const userUuid = await getUserUuid();
+      if (userUuid) {
+        dispatch({
+          type: ETypes.setUser,
+          userData: {
+            uuid : userUuid
+          }
+        })
+      }
+
+      const exhibitionPreviews = await listAllExhibitionsPreviewsForUser({limit: 2})
       
       const exhibitionMapPins = await listExhibitionPinsByCity({cityName: MapPinCities.newYork})
       dispatch({type: ETypes.saveExhibitionMapPins, mapPins: exhibitionMapPins, mapPinCity: MapPinCities.newYork})
       
+      
+
+      const imageUrls: string[] = []
       const artworkImages: any = []
-      let artwork: ArtworkObject = {};
-      Object.values(exhibitions).forEach((exhibitionValue) => {
-        if (exhibitionValue?.artworks){
-          artwork = {
-            ...artwork,
-            ...exhibitionValue.artworks
-          }
-          Object.values(exhibitionValue.artworks).forEach((artworkValue) => {
-            if (artworkValue.artworkImage?.value){
-              artworkImages.push(Image.prefetch(artworkValue.artworkImage.value))
-            }
-          })
-        }
-      })
-      Promise.all(artworkImages)
-
-
       const exhibitionImages: any = []
-
-      Object.values(exhibitions).forEach((exhibitionValue) => {
-        if (exhibitionValue.exhibitionPrimaryImage?.value){
-          exhibitionImages.push(Image.prefetch(exhibitionValue.exhibitionPrimaryImage.value))
+      Object.values(exhibitionPreviews).forEach((exhibitionValue) => {
+        if (exhibitionValue?.artworkPreviews){
+          Object.values(exhibitionValue?.artworkPreviews).forEach((artwork) => {
+            artworkImages.push(
+              Image.prefetch(artwork?.artworkImage.value)
+            )
+            imageUrls.push(artwork?.artworkImage.value)
+          })
+        } if (exhibitionValue?.exhibitionPrimaryImage?.value){
+          exhibitionImages.push(
+            Image.prefetch(exhibitionValue.exhibitionPrimaryImage?.value)
+          )
+        } if (exhibitionValue?.galleryLogo.value){
+          exhibitionImages.push(
+            Image.prefetch(exhibitionValue?.galleryLogo.value)
+          )
         }
       })
+      
+      try{
+        Promise.all(artworkImages)
+  
+        Promise.all(exhibitionImages)
+      } catch {
 
-      Promise.all(exhibitionImages)
+      }
 
       dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
-      dispatch({type: ETypes.saveGalleries, galleryDataMulti: galleries})
-      dispatch({type: ETypes.saveArtworkMulti, artworkDataMulti: artwork})
-      dispatch({type: ETypes.saveExhibitionMulti, exhibitionDataMulti: exhibitions})
+
       await SplashScreen.hideAsync();
     } catch (e) {
       console.log(e)
