@@ -413,8 +413,10 @@ export function ExhibitionCard({
                 color="textSecondary">
                 {exhibition?.exhibitionLocation?.locationString?.value}
               </Typography>
-              {exhibition?.exhibitionDates?.exhibitionStartDate?.value &&
-                exhibition?.exhibitionDates?.exhibitionEndDate?.value && (
+              {exhibition.exhibitionDates.exhibitionDuration && 
+                exhibition.exhibitionDates.exhibitionDuration.value !== "Ongoing/Indefinite" &&
+               exhibition?.exhibitionDates?.exhibitionStartDate?.value &&
+                exhibition?.exhibitionDates?.exhibitionEndDate?.value ? (
                   <Typography
                     data-testid="artwork-card-exhibition-dates"
                     variant="h6"
@@ -427,7 +429,15 @@ export function ExhibitionCard({
                       exhibition?.exhibitionDates?.exhibitionEndDate?.value,
                     ).format('MM/DD/YYYY')}
                   </Typography>
-                )}
+                ): (
+                  <Typography
+                    data-testid="artwork-card-exhibition-dates"
+                    variant="h6"
+                    color="textSecondary">
+                    {exhibition?.exhibitionDates?.exhibitionDuration?.value}
+                  </Typography>
+                )
+                }
             </CardContent>
           </Box>
           <Box sx={cardStyles.informationContainer}>

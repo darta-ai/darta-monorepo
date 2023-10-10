@@ -23,7 +23,7 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
         <ExploreMapStack.Screen
           name={ExploreMapRootEnum.TopTabExhibition}
           component={ExhibitionTopTabNavigator}
-          options={{...headerOptions, headerTitle: state.currentExhibitionHeader}}
+          options={{...headerOptions, headerTitle: state.currentExhibitionHeader ?? ""}}
         />
     </ExploreMapStack.Navigator>
   );

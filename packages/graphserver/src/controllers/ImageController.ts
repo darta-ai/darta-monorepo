@@ -40,9 +40,9 @@ export class ImageController {
         bucketName,
         value: url,
       };
-    } else {
+    } 
       throw new Error('Did not receive a fileBuffer or fileName');
-    }
+    
   }
 
   @httpPost('/uploadImage', upload.single('galleryLogo'))

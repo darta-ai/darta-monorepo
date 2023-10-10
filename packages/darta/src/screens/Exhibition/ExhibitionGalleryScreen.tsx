@@ -384,7 +384,6 @@ export function ExhibitionGalleryScreen({
     .catch((err) => console.error('Error opening maps app:', err));
   };  
 
-  console.log({galleryAddresses})
   return (
     <>
     {!isGalleryLoaded ? ( 

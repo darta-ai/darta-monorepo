@@ -112,6 +112,8 @@ export async function listExhibitionsByGalleryAPI(): Promise<any> {
     }
     return {};
   } catch (error) {
+    console.log(error)
+
     return{}
   }
 }

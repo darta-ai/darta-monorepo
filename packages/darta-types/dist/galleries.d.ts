@@ -115,6 +115,9 @@ export type ExhibitionPreview = {
     galleryId: string;
     openingDate: PublicFields;
     closingDate: PublicFields;
+    exhibitionDuration: {
+        value: 'Temporary' | 'Ongoing/Indefinite';
+    };
     galleryLogo: Images;
     galleryName: PublicFields;
     exhibitionArtist: PublicFields;

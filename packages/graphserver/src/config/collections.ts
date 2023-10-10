@@ -14,7 +14,7 @@ export const CollectionNames = {
   GalleryUsers: 'GalleryUsers',
   GalleryAdminNode: 'GalleryAdminNode',
 
-  EndUsers: 'EndUsers',
+  DartaUsers: 'DartaUsers',
 };
 
 export const EdgeNames = {

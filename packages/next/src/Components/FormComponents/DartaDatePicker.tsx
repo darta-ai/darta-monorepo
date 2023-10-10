@@ -85,7 +85,12 @@ export function DartaDatePicker({
                   },
                 }}
                 onChange={(newValue: any) => {
-                  const date = newValue.toDate().toISOString();
+                  const dateObj = newValue.toDate()
+                      // Set time to the end of the day
+                  dateObj.setHours(23, 59, 59, 999);
+
+                  // Convert to ISO string
+                  const date = dateObj.toISOString();
                   field.onChange(date);
                   if (setHigherLevelState) {
                     setHigherLevelState(newValue);
