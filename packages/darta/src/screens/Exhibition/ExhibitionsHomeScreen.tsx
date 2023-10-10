@@ -48,24 +48,30 @@ export function ExhibitionsHomeScreen({
   
   const sortPreviews = (exhibitionPreviews: ExhibitionPreview[]) => {
     return exhibitionPreviews.sort((a, b) => {
-      return b.closingDate > a.closingDate ? 1 : -1
+      return a.closingDate >= b.closingDate ? 1 : -1
     })
   }
 
   React.useEffect(()=> {
     if (state.exhibitionPreviews) {
       const exhibitionPreviewsOpen: ExhibitionPreview[] = []
-      const exhibitionPreviewsClosing: ExhibitionPreview[] = []
+      const exhibitionPreviewsClosed: ExhibitionPreview[] = []
 
       for (const preview of Object.values(state.exhibitionPreviews)) {
-        if (preview?.closingDate?.value && preview.closingDate.value > new Date().toISOString()) {
+        if (preview.exhibitionDuration.value && preview.exhibitionDuration.value === "Ongoing/Indefinite"){
+          break
+        }
+        else if (preview?.closingDate?.value && preview.closingDate.value >= new Date().toISOString()) {
           exhibitionPreviewsOpen.push(preview)
         } else {
-          exhibitionPreviewsClosing.push(preview)
+          exhibitionPreviewsClosed.push(preview)
         }
       }
+
+      sortPreviews(exhibitionPreviewsOpen)
+      sortPreviews(exhibitionPreviewsClosed)
       
-      setExhibitionPreviews([...sortPreviews(exhibitionPreviewsOpen), ...sortPreviews(exhibitionPreviewsClosing)])
+      setExhibitionPreviews([...exhibitionPreviewsOpen, ...exhibitionPreviewsClosed])
     
       setNumberOfPreviews(Object.values(state?.exhibitionPreviews).length)
     }
@@ -112,7 +118,7 @@ export function ExhibitionsHomeScreen({
   }   
 
   return (
-
+    <>
       <FlatList 
         data={exhibitionPreviews}
         keyExtractor={(item) => item.exhibitionId}
@@ -127,5 +133,6 @@ export function ExhibitionsHomeScreen({
         onEndReached={onBottomLoad}
         refreshing={bottomLoad}
         />
+    </>
   );
 }

@@ -14,9 +14,10 @@ import { ETypes, StoreContext } from "../../state/Store";
 import { ArtworkObject, Exhibition, ExhibitionPreview, IGalleryProfileData, MapPinCities } from "@darta-types";
 import { listExhibitionPinsByCity } from "../../api/locationRoutes";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {USER_UUID_KEY} from '../../utils/constants'
+import {USER_UID_KEY} from '../../utils/constants'
 import { v4 as uuidv4 } from 'uuid';
-
+import auth from '@react-native-firebase/auth';
+import { createUser } from "../../api/userRoutes";
 
 
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -39,33 +40,37 @@ function AnimatedSplashScreen({ children }) {
     }
   }, [isAppReady]);
   
-  const getUserUuid = async () => {
+  const getUserLocalUid = async () => {
+    // await auth()
+    // .signOut()
+    // .then(() => console.log('User signed out!'));
+    // await AsyncStorage.setItem(USER_UID_KEY, "")
       try {
-          let userUuid = await AsyncStorage.getItem(USER_UUID_KEY);
-          
-          if (!userUuid) {
-              userUuid = uuidv4();
-              if(userUuid) {
-                await AsyncStorage.setItem(USER_UUID_KEY, userUuid)
-                
+          let userUid = await AsyncStorage.getItem(USER_UID_KEY);
+          const uid = auth().currentUser?.uid
+          if (!userUid && !uid) {
+              userUid = uuidv4();
+              if(userUid) {
+                await AsyncStorage.setItem(USER_UID_KEY, userUid)
+                await createUser({localStorageUid: userUid})
               };
           }
 
-          return userUuid;
+          return userUid;
       } catch (error) {
-          console.error('Failed to get user UUID:', error);
+          console.error('Failed to get user UID:', error);
           return null;
       }
   }
 
   const onImageLoaded = useCallback(async () => {
     try {
-      const userUuid = await getUserUuid();
+      const userUuid = await getUserLocalUid();
       if (userUuid) {
         dispatch({
           type: ETypes.setUser,
           userData: {
-            uuid : userUuid
+            localStorageUid: userUuid
           }
         })
       }

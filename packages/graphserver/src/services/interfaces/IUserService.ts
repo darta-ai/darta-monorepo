@@ -1,3 +1,5 @@
+import { Images } from '@darta-types/dist';
+
 import {Node} from '../../models/models';
 
 export interface IUserService {
@@ -25,9 +27,11 @@ export interface IUserService {
     email: string;
     uid: string;
   }): Promise<boolean>;
-  readGalleryUser({uid}: {uid: string}): Promise<Node | null>;
-  deleteGalleryUser(): Promise<boolean>;
-
+  createDartaUser({
+    localStorageUid
+  }: {
+    localStorageUid: string;
+  }): Promise<boolean>;
   createGalleryEdge({
     galleryId,
     uid,
@@ -37,6 +41,8 @@ export interface IUserService {
     uid: string;
     relationship: string;
   }): Promise<boolean>;
+  readGalleryUser({uid}: {uid: string}): Promise<Node | null>;
+  
   readGalleryEdgeRelationship({uid}: {uid: string}): Promise<string | boolean>;
   editGalleryEdge({
     galleryId,
@@ -47,4 +53,22 @@ export interface IUserService {
     uid: string;
     relationship: string;
   }): Promise<any>;
+  editDartaUser({
+    profilePicture,
+    userName,
+    email,
+    legalFirstName,
+    legalLastName,
+    uid,
+  }: {
+    profilePicture?: Images;
+    userName?: string;
+    email?: string;
+    legalFirstName?: string;
+    legalLastName?: string;
+    uid?: string;
+  }): Promise<any>
+  checkIfGalleryUserExists({uid}: {uid: string}): Promise<boolean>;
+  deleteDartaUser(): Promise<boolean>;
+  deleteGalleryUser(): Promise<boolean>;
 }

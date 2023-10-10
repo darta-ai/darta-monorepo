@@ -62,4 +62,50 @@ export class UserController {
       res.status(500).send(error.message);
     }
   }
+  
+  // eslint-disable-next-line class-methods-use-this
+  @httpPost('/newDartaUser')
+  public async newDartaUser(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    const {localStorageUid} = req.body;
+    try {
+      await this.userService.createDartaUser({
+        localStorageUid,
+      });
+      
+      res.status(200).send(localStorageUid);
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpPost('/editDartaUser')
+  public async editDartaUser(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    const {profilePicture,
+      userName,
+      legalFirstName,
+      legalLastName,
+      uid} = req.body;
+    try {
+      if (!profilePicture || !userName || !legalFirstName || !legalLastName || !uid) {
+        throw new Error('Missing required fields');
+      }
+      const results = await this.userService.editDartaUser({
+        profilePicture,
+        userName,
+        legalFirstName,
+        legalLastName,
+        uid
+      });
+      
+      res.status(200).send(results);
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
 }

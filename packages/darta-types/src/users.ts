@@ -11,6 +11,6 @@ export type MobileUser =  {
     legalFirstName?: string;
     legalLastName?: string;
     email?: string;
-    uuid: string;
-    firebaseUuid?: string;
+    uid?: string;
+    localStorageUid?: string;
 }

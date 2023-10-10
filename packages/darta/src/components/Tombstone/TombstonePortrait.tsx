@@ -17,9 +17,17 @@ import {globalTextStyles} from '../../styles/styles';
 
 
 
-export function TombstonePortrait({artwork,
-  inquireAlert}: {artwork: Artwork,
-    inquireAlert: () => void}) {
+export function TombstonePortrait({
+  artwork,
+  inquireAlert,
+  likeArtwork, 
+  saveArtwork,
+}: {
+  artwork: Artwork,
+  likeArtwork: () => void,
+  saveArtwork: () => void,
+  inquireAlert: () => void
+}) {
 
 
   let inputHeight = artwork?.artworkDimensions?.heightIn?.value ?? "1"
@@ -62,6 +70,8 @@ export function TombstonePortrait({artwork,
       flexDirection: 'column',
       justifyContent: 'center',
       alignContent: 'center',
+      gap: 10,
+      marginTop: hp('5%'),
     },
     imageContainer: {
       alignSelf: 'center',
@@ -70,8 +80,8 @@ export function TombstonePortrait({artwork,
       height: hp('40%'),
     },
     image: {
-      height: hp('35%'),
-      width: wp('90%'),
+      height: '100%',
+      width: '100%',
       resizeMode: 'contain',
       alignSelf: 'center',
     },
@@ -108,7 +118,6 @@ export function TombstonePortrait({artwork,
   });
   return (
     <View style={{backgroundColor: MILK, height: hp('100%')}}>
-      <SafeAreaView>
         <View style={SSTombstonePortrait.container}>
           <ScrollView
             scrollEventThrottle={7}
@@ -124,7 +133,6 @@ export function TombstonePortrait({artwork,
             </View>
           </ScrollView>
         </View>
-      </SafeAreaView>
       <ScrollView scrollEventThrottle={7}>
         <View style={SSTombstonePortrait.textContainer}>
           <TextElement

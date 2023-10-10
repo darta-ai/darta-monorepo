@@ -13,7 +13,7 @@ import {TabBarElement} from './src/components/Elements/TabBarElement';
 import {ExhibitionStackNavigator} from './src/navigation/Exhibition/ExhibitionStackNavigator';
 // import {RecommenderStackNavigator} from './src/navigation/RecommenderStackNavigator';
 import {UserStackNavigator} from './src/navigation/UserStackNavigator';
-import {ETypes, StoreProvider} from './src/state/Store';
+import {ETypes, StoreContext, StoreProvider} from './src/state/Store';
 import {footerColors, footerOptions} from './src/styles/styles';
 import * as Linking from "expo-linking";
 import { v4 as uuidv4 } from 'uuid';
@@ -30,6 +30,7 @@ import * as SecureStore from 'expo-secure-store';
 
 export const RecommenderStack = createStackNavigator();
 export const RootStack = createBottomTabNavigator();
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 // exp://192.168.1.35:8081/--/feed/topTab/exhibition/6e02911e-b578-4962-b248-6285d412c3e3/gallery/Galleries/8501288
 
@@ -50,6 +51,30 @@ const linking: any = {
 }
 
 function App() {
+  const {state, dispatch} = React.useContext( StoreContext );
+
+  React.useEffect(() => {
+    auth().onAuthStateChanged((userState: FirebaseAuthTypes.User | null) => {
+      console.log("userState", userState)
+      if (userState?.uid && userState.email) {
+        dispatch({
+          type: ETypes.setUser,
+          userData: {
+            uid: userState.uid,
+            email: userState.email,
+          }
+        })
+      } else{
+        dispatch({
+          type: ETypes.setUser,
+          userData: {
+            uid: "",
+            email: "",
+          }
+        })
+      }
+      })
+  }, []);
   return (
     <PaperProvider>
       <StoreProvider>

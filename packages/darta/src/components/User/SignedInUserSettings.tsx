@@ -7,14 +7,9 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import * as ImagePicker from 'expo-image-picker';
 
-import {
-  MILK,
-  PRIMARY_600,
-  PRIMARY_DARK_GREY,
-  PRIMARY_DARK_RED,
-  PRIMARY_MILK,
-} from '@darta-styles';
+import * as Colors from '@darta-styles';
 import {TextElement} from '../Elements/_index';
 import {buttonSizes, icons} from '../../utils/constants';
 import {galleryInteractionStyles, globalTextStyles} from '../../styles/styles';
@@ -36,9 +31,9 @@ enum SignedInActions {
 type FormData = {
   profilePicture: FieldState;
   userName: FieldState;
-  legalName: FieldState;
+  legalFirstName: FieldState;
+  legalLastName: FieldState;
   email: FieldState;
-  phone: FieldState;
   uniqueId?: string;
 };
 
@@ -69,7 +64,7 @@ export const SSSignedInUserSettings = StyleSheet.create({
     fontFamily: 'AvenirNext-Bold',
     fontSize: 15,
     alignSelf: 'flex-start',
-    color: PRIMARY_DARK_GREY,
+    color: Colors.PRIMARY_700,
   },
   textEditContainer: {
     flexDirection: 'row',
@@ -112,23 +107,23 @@ export function UserSettingsSignedIn() {
     userName: {
       isEditing: false,
     },
-    legalName: {
+    legalFirstName: {
+      isEditing: false,
+    },
+    legalLastName: {
       isEditing: false,
     },
     email: {
       isEditing: false,
     },
-    phone: {
-      isEditing: false,
-    },
   });
   const {handleSubmit, control, getValues, setValue} = useForm({
     defaultValues: {
-      profilePicture: state.userSettings.profilePicture,
-      userName: state.userSettings.userName,
-      legalName: state.userSettings.legalName,
-      email: state.userSettings.email,
-      phone: state.userSettings.phone,
+      profilePicture: state.user?.profilePicture?.value,
+      userName: state.user?.userName,
+      legalFirstName: state.user?.legalFirstName,
+      legalLastName: state.user?.legalLastName,
+      email: state.user?.email
     },
   });
 
@@ -136,9 +131,9 @@ export function UserSettingsSignedIn() {
     const isShowing =
       (formData.profilePicture.isEditing as boolean) ||
       (formData.userName.isEditing as boolean) ||
-      (formData.legalName.isEditing as boolean) ||
-      (formData.email.isEditing as boolean) ||
-      (formData.phone.isEditing as boolean);
+      (formData.legalFirstName.isEditing as boolean) ||
+      (formData.legalLastName.isEditing as boolean) ||
+      (formData.email.isEditing as boolean) 
     setShowOnlyOne(isShowing);
   }, [formData]);
 
@@ -150,9 +145,9 @@ export function UserSettingsSignedIn() {
     setFormData({
       profilePicture: defaultFieldState(),
       userName: defaultFieldState(),
-      legalName: defaultFieldState(),
-      email: defaultFieldState(),
-      phone: defaultFieldState(),
+      legalFirstName: defaultFieldState(),
+      legalLastName: defaultFieldState(),
+      email: defaultFieldState()
     });
     setShowOnlyOne(false);
     handleExpandElements();
@@ -160,6 +155,23 @@ export function UserSettingsSignedIn() {
 
   const [tempImage, setTempImage] = useState<any>({uri: '', type: ''});
   const [tempValue, setTempValue] = useState<string>('');
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      // setImage(result.assets[0].uri);
+    }
+  };
+
 
   const handleButtonClick = async (formName: SignedInActions) => {
     // profile picture stuff
@@ -172,12 +184,7 @@ export function UserSettingsSignedIn() {
             [formName]: {isEditing: true},
           });
           handleShrinkElements();
-          // await launchImageLibrary({mediaType: 'photo'}, response => {
-          //   if (response?.assets) {
-          //     const results = response.assets[0];
-          //     setTempImage({uri: results.uri, type: results.type});
-          //   }
-          // });
+          pickImage()
         } else {
           setFormData({
             ...formData,
@@ -217,12 +224,12 @@ export function UserSettingsSignedIn() {
         resetUi();
         setTempImage({uri: ''});
       }
-      dispatch({
-        type: ETypes.setUserSettings,
-        userSettings: {
-          ...getValues(),
-        },
-      });
+      // dispatch({
+      //   type: ETypes.setUserSettings,
+      //   userSettings: {
+      //     ...getValues(),
+      //   },
+      // });
       resetUi();
     };
 
@@ -243,7 +250,7 @@ export function UserSettingsSignedIn() {
         ) : (
           <Image
             source={{
-              uri: state.userSettings.profilePicture,
+              uri: state.user?.profilePicture?.value!,
             }}
             style={SSSignedInUserSettings.image}
           />
@@ -253,12 +260,12 @@ export function UserSettingsSignedIn() {
           icon={formData.profilePicture.isEditing ? icons.cancel : icons.cog}
           iconColor={
             formData.profilePicture.isEditing
-              ? PRIMARY_DARK_RED
-              : PRIMARY_DARK_GREY
+              ? Colors.ADOBE_900
+              : Colors.PRIMARY_700
           }
           mode="outlined"
           size={buttonSizes.extraSmall}
-          containerColor={MILK}
+          containerColor={Colors.PRIMARY_50}
           style={galleryInteractionStyles.secondaryButton}
           accessibilityLabel="edit photo"
           testID="editPhoto"
@@ -295,12 +302,12 @@ export function UserSettingsSignedIn() {
                       label="user name"
                       testID="userNameInput"
                       mode="outlined"
-                      activeOutlineColor={PRIMARY_600}
+                      activeOutlineColor={Colors.PRIMARY_600}
                       theme={{
                         fonts: {default: {fontFamily: 'AvenirNext-Bold'}},
                       }}
                       style={{
-                        backgroundColor: PRIMARY_MILK,
+                        backgroundColor: Colors.PRIMARY_50,
                         fontFamily: 'AvenirNext-Bold',
                       }}
                     />
@@ -308,7 +315,7 @@ export function UserSettingsSignedIn() {
                 />
               ) : (
                 <TextElement style={SSSignedInUserSettings.text}>
-                  {state.userSettings.userName}
+                  {state.user?.userName}
                 </TextElement>
               )}
             </View>
@@ -332,18 +339,18 @@ export function UserSettingsSignedIn() {
         </View>
       </Animated.View>
       <Animated.View
-        style={!formData.legalName.isEditing && {height: heightAnim}}>
+        style={!formData.legalFirstName && {height: heightAnim}}>
         <View style={SSSignedInUserSettings.divider} />
         <View
           style={
-            !formData.legalName.isEditing && showOnlyOne && {display: 'none'}
+            !formData.legalFirstName.isEditing && showOnlyOne && {display: 'none'}
           }>
           <TextElement style={SSSignedInUserSettings.header}>name</TextElement>
           <View style={SSSignedInUserSettings.textEditContainer}>
             <View style={{width: wp('60%')}}>
-              {formData.legalName.isEditing ? (
+              {formData.legalFirstName.isEditing ? (
                 <Controller
-                  name="legalName"
+                  name="legalFirstName"
                   rules={{required: true}}
                   control={control}
                   render={({field: {onChange, onBlur, value}}) => (
@@ -367,21 +374,21 @@ export function UserSettingsSignedIn() {
                 />
               ) : (
                 <TextElement style={SSSignedInUserSettings.text}>
-                  {state.userSettings.legalName}
+                  {state.user?.legalFirstName}
                 </TextElement>
               )}
             </View>
             <View>
               <IconButton
-                icon={formData.legalName.isEditing ? icons.cancel : icons.cog}
+                icon={formData.legalFirstName.isEditing ? icons.cancel : icons.cog}
                 iconColor={
-                  formData.legalName.isEditing
+                  formData.legalFirstName.isEditing
                     ? PRIMARY_DARK_RED
                     : PRIMARY_DARK_GREY
                 }
                 mode="outlined"
                 size={buttonSizes.extraSmall}
-                containerColor={MILK}
+                containerColor={Colors.PRIMARY_50}
                 style={galleryInteractionStyles.secondaryButton}
                 accessibilityLabel="edit name"
                 testID="editName"
@@ -446,16 +453,16 @@ export function UserSettingsSignedIn() {
           </View>
         </View>
       </Animated.View>
-      <Animated.View style={!formData.phone.isEditing && {height: heightAnim}}>
+      <Animated.View style={!formData.legalLastName.isEditing && {height: heightAnim}}>
         <View style={SSSignedInUserSettings.divider} />
         <View
-          style={!formData.phone.isEditing && showOnlyOne && {display: 'none'}}>
+          style={!formData.legalLastName.isEditing && showOnlyOne && {display: 'none'}}>
           <TextElement style={SSSignedInUserSettings.header}>phone</TextElement>
           <View style={SSSignedInUserSettings.textEditContainer}>
             <View style={{width: wp('60%')}}>
-              {formData.phone.isEditing ? (
+              {formData.legalLastName.isEditing ? (
                 <Controller
-                  name="phone"
+                  name="legalLastName"
                   rules={{required: true}}
                   control={control}
                   render={({field: {onChange, onBlur, value}}) => (
@@ -479,16 +486,16 @@ export function UserSettingsSignedIn() {
                 />
               ) : (
                 <TextElement style={SSSignedInUserSettings.text}>
-                  {state.userSettings.phone}
+                  {state.user?.legalLastName}
                 </TextElement>
               )}
             </View>
-            {/* <IconButton
-              icon={formData.phone.isEditing ? icons.minus : icons.cog}
+            <IconButton
+              icon={formData.legalLastName.isEditing ? icons.minus : icons.cog}
               mode="outlined"
               size={buttonSizes.extraSmall}
               iconColor={
-                formData.phone.isEditing ? PRIMARY_DARK_BLUE : PRIMARY_DARK_GREY
+                formData.legalLastName.isEditing ? PRIMARY_DARK_BLUE : PRIMARY_DARK_GREY
               }
               containerColor={MILK}
               style={galleryInteractionStyles.secondaryButton}
@@ -496,7 +503,7 @@ export function UserSettingsSignedIn() {
               testID="editName"
               animated
               onPress={() => handleButtonClick(SignedInActions.phone)}
-            /> */}
+            />
           </View>
         </View>
       </Animated.View>

@@ -17,7 +17,7 @@ import {
   DartaDropdown,
   DartaImageInput,
   DartaRadioButtonsGroup,
-  DartaSwitch,
+  // DartaSwitch,
   DartaTextInput,
 } from '../FormComponents/index';
 import {DartaConfirmExhibitionDelete} from '../Modals/DartaConfirmExhibitionDelete';
@@ -276,9 +276,9 @@ export function CreateExhibition({
     setOpen(false);
   };
 
-  const [keepLocationPrivate, setKeepLocationPrivate] = React.useState<boolean>(
-    !newExhibition?.exhibitionLocation?.isPrivate,
-  );
+  // const [keepLocationPrivate, setKeepLocationPrivate] = React.useState<boolean>(
+  //   !newExhibition?.exhibitionLocation?.isPrivate,
+  // );
 
   const [isOngoingExhibition, setIsOngoingExhibition] = React.useState<boolean>(
     newExhibition?.exhibitionDates?.exhibitionDuration?.value === 'Temporary',
@@ -298,7 +298,7 @@ export function CreateExhibition({
     }
   };
 
-  const [showArtistField, setShowArtist] = React.useState<boolean>(false);
+  const [showArtistField, setShowArtist] = React.useState<boolean>(true);
 
   const handleExhibitionArtist = (arg0: string) => {
     switch (arg0) {
@@ -514,27 +514,7 @@ export function CreateExhibition({
           }}>
           <Typography variant="h6">Location</Typography>
           <Box sx={createArtworkStyles.multiLineContainer}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignContent: 'center',
-              }}>
-              <DartaSwitch
-                toolTips={exhibitionPressReleaseToolTip}
-                control={control}
-                register={register}
-                fieldName="exhibitionLocation.isPrivate"
-                inputAdornmentString="Location Visibility"
-                data={newExhibition.exhibitionLocation?.isPrivate}
-                switchState={keepLocationPrivate}
-                handleSwitchStateChange={setKeepLocationPrivate}
-                trueStatement="Private"
-                falseStatement="Public"
-              />
-            </Box>
+            {/* REMOVING PRIVATE LOCATION TOGGLE FOR NOW */}
           </Box>
           <Box key="price" sx={createArtworkStyles.inputText}>
             <DartaDropdown

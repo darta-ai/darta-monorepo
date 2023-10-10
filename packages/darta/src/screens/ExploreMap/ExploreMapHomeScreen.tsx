@@ -4,9 +4,6 @@ import {View, StyleSheet, ScrollView, RefreshControl} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import * as Location from 'expo-location';
 import {Button} from 'react-native-paper';
-import { readExhibition } from '../../api/exhibitionRoutes';
-import { readGallery } from '../../api/galleryRoutes';
-import { mdiMapMarkerAccount } from '@mdi/js';
 
 import * as Colors from '@darta-styles';
 import { mapStylesJson } from '../../utils/mapStylesJson';
@@ -14,7 +11,7 @@ import {
   ExploreMapRootEnum
 } from '../../typing/routes';
 import {ETypes, StoreContext} from '../../state/Store';
-import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import { ExhibitionMapPin, MapPinCities } from '@darta-types';
 import CustomMarker from '../../components/Previews/CustomMarker';
 import { listExhibitionPinsByCity } from "../../api/locationRoutes";

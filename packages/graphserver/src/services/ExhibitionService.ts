@@ -168,7 +168,6 @@ export class ExhibitionService implements IExhibitionService {
         }
     }
     } catch (error: any){
-      console.log(error)
       throw new Error(error.message)
     }
   }
@@ -673,6 +672,7 @@ export class ExhibitionService implements IExhibitionService {
         artworkPreviews: artworks,
         exhibitionId: exhibition._id,
         galleryId: gallery._id,
+        exhibitionDuration: exhibition.exhibitionDates,
         openingDate: {value: exhibition.exhibitionDates.exhibitionStartDate.value},
         closingDate: {value: exhibition.exhibitionDates.exhibitionEndDate.value},
         galleryLogo: gallery.galleryLogo,
@@ -699,7 +699,6 @@ export class ExhibitionService implements IExhibitionService {
         return acc}, {})
   
     } catch (error: any) {
-      console.log(error)
       throw new Error(error.message);
     }
   }

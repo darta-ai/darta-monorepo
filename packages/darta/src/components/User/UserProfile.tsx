@@ -83,7 +83,7 @@ export function UserProfile({
       <View>
         <Animated.Image
           source={{
-            uri: state.userSettings.profilePicture,
+            uri: state?.user?.profilePicture?.value!,
           }}
           style={userProfileStyles.image}
         />
@@ -93,7 +93,7 @@ export function UserProfile({
           <TextElement
             style={[globalTextStyles.titleText, {color: MILK}]}
             numberOfLines={1}>
-            {state.userSettings.userName}
+            {state?.user?.userName}
           </TextElement>
         </View>
       </View>

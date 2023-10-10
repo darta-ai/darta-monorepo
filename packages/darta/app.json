@@ -21,13 +21,15 @@
         "usesNonExemptEncryption": false,
         "googleMapsApiKey": "AIzaSyCgJAXkO4WoPQXTf7ENx_tejgKbiem9chc"
       },
-      "LSApplicationQueriesSchemes" : ["darta"]
+      "googleServicesFile": "./googleService/GoogleService-Info-dev.plist"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/darta-icon.png",
         "backgroundColor": "#b58a6a"
-      }
+      },
+      "package": "com.darta.darta",
+      "googleServicesFile": "./googleService/GoogleService-Info.plist"
     },
     "web": {
       "favicon": "./src/assets/darta-icon.png"
@@ -40,8 +42,23 @@
     "plugins": [
       "expo-localization",
       "@react-native-firebase/app",
-      "@react-native-firebase/perf",
-      "@react-native-firebase/crashlytics",
+      "@react-native-firebase/auth",
+      "expo-screen-orientation",
+      "expo-location",
+      "./plugins/react-native-maps-plugin",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos so you can create a profile."
+    
+        }
+      ],
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "The app needs to access your calendar."
+        }
+      ],
       [
         "expo-build-properties",
         {
@@ -53,14 +70,17 @@
     ]
   },
   "plugins": [
+    "expo-screen-orientation",
+    "expo-calendar",
+    "expo-location",
+    "./plugins/react-native-maps-plugin",
+    
     [
-      "expo-screen-orientation",
-      "expo-calendar",
-      "expo-location",
+      "expo-build-properties",
       {
-        "initialOrientation": "PORTRAIT",
-        "calendarPermission": "The app needs to access your calendar.",
-        "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        "ios": {
+          "useFrameworks": "static"
+        }
       }
     ]
   ]
