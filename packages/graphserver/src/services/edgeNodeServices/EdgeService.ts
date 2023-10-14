@@ -20,11 +20,11 @@ export class EdgeService implements IEdgeService {
     data: any;
   }): Promise<any> {
     const query = `
-            UPSERT { _from: @from, _to: @to }
-            INSERT MERGE(@data, { _from: @from, _to: @to })
-            UPDATE @data INTO @@edgeName   
-            RETURN NEW         
-            `;
+    UPSERT { _from: @from, _to: @to }
+    INSERT MERGE(@data, { _from: @from, _to: @to })
+    UPDATE @data INTO @@edgeName   
+    RETURN NEW         
+    `;
 
     const results = await this.db.query(query, {
       '@edgeName': edgeName,

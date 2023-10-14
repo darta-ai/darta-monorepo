@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, {createContext, ReactNode, useReducer} from 'react';
 
 import {RatingEnum} from '../typing/types';
-import {Artwork, Exhibition, ExhibitionPreview, IGalleryProfileData, MapPinCities, ExhibitionMapPin, MobileUser} from '@darta-types'
+import {Artwork, Exhibition, ExhibitionPreview, IGalleryProfileData, MapPinCities, ExhibitionMapPin, MobileUser, GalleryPreview} from '@darta-types'
 
 export interface IUserArtworkRatings {
   [id: string]: {
@@ -106,6 +106,7 @@ export interface IState {
   currentExhibitionHeader?: string;
   previousExhibitionHeader?: string;
   currentArtworkTombstoneHeader?: string;
+  userExhibitionHeader?: string;
 
   mapPins?: {
     [city in MapPinCities]: {[key: string] : ExhibitionMapPin}
@@ -115,6 +116,20 @@ export interface IState {
   qrCodeGalleryId?: string;
 
   user?: MobileUser;
+
+  artworkId?: string;
+
+  userSavedArtwork?: {[key: string] : boolean}
+  userLikedArtwork?: {[key: string] : boolean}
+  userInquiredArtwork?: {[key: string] : boolean}
+  userGalleryFollowed?: {[key: string] : boolean}
+
+  userArtworkViewTimes?: {[key: string] : number}
+
+  galleryPreviews?: {[key: string] : GalleryPreview}
+
+  fullyLoadedGalleries?: {[key: string] : boolean}
+  fullyLoadedExhibitions?: {[key: string] : boolean}
 }
 
 export enum ETypes {
@@ -145,6 +160,7 @@ export enum ETypes {
   setCurrentHeader = 'SET_CURRENT_HEADER',
   setPreviousExhibitionHeader = 'SET_PREVIOUS_EXHIBITION_HEADER',
   setTombstoneHeader = 'SET_TOMBSTONE_HEADER',
+  setUserExhibitionHeader = 'SET_USER_EXHIBITION_HEADER',
 
   saveExhibitionMapPins = 'SAVE_EXHIBITION_MAP_PINS',
 
@@ -152,6 +168,29 @@ export enum ETypes {
   setQRCodeGalleryId = 'SET_QR_CODE_GALLERY_ID',
 
   setUser = 'SET_USER',
+
+  setUserSavedArtwork = 'SET_USER_SAVED_ARTWORK',
+  setUserSavedArtworkMulti = 'SET_USER_SAVED_ARTWORK_MULTI',
+  removeUserSavedArtwork = 'REMOVE_USER_SAVED_ARTWORK',
+
+  setUserLikedArtwork = 'SET_USER_LIKED_ARTWORK',
+  setUserLikedArtworkMulti = 'SET_USER_LIKED_ARTWORK_MULTI',
+  removeUserLikedArtwork = 'REMOVE_USER_LIKED_ARTWORK',
+
+  setUserInquiredArtwork = 'SET_USER_INQUIRED_ARTWORK',
+  setUserInquiredArtworkMulti = 'SET_USER_INQUIRED_ARTWORK_MULTI',
+  removeUserInquiredArtwork = 'REMOVE_USER_INQUIRED_ARTWORK',
+
+  setUserArtworkViewTimes = 'SET_USER_ARTWORK_VIEW_TIMES',
+
+  setGalleryPreviewMulti = 'SET_GALLERY_PREVIEW_MULTI',
+
+  setUserFollowGalleries = 'SET_USER_FOLLOW_GALLERIES',
+  setUserFollowGalleriesMulti = 'SET_USER_FOLLOW_GALLERIES_MULTI',
+  removeUserFollowGalleries = 'REMOVE_USER_FOLLOW_GALLERIES',
+
+  setFullyLoadedGalleries = 'SET_FULLY_LOADED_GALLERIES',
+  setFullyLoadedExhibitions = 'SET_FULLY_LOADED_EXHIBITIONS',
 }
 
 // Define the action type
@@ -163,7 +202,6 @@ interface IAction {
 
   // for INDEX
   currentIndex?: number;
-  galleryId?: string;
   artworkOnDisplayId?: string;
 
   // for LOAD
@@ -190,10 +228,11 @@ interface IAction {
   galleryData?: IGalleryProfileData;
   galleryDataMulti?: {[key: string]: IGalleryProfileData}
   artworkData?: Artwork;
-  artworkDataMulti?: {[key: string]: Artwork}
+  artworkDataMulti?: {[key: string]: Artwork | null} 
 
   currentExhibitionHeader?: string;
   previousExhibitionHeader?: string;
+  userExhibitionHeader?: string;
   currentArtworkHeader?: string;
 
   mapPins?: {[key: string] : ExhibitionMapPin}
@@ -203,6 +242,17 @@ interface IAction {
   qrCodeGalleryId?: string;
 
   userData?: MobileUser;
+
+  artworkId?: string;
+  artworkIds?: {[key: string] : boolean};
+
+  galleryId?: string;
+  galleryFollowIds?: {[key: string] : boolean};
+  galleryPreviews?: {[key: string] : GalleryPreview};
+
+  fullyLoadedGalleries?: {[key: string] : boolean};
+  fullyLoadedExhibitions?: {[key: string] : boolean};
+
 }
 
 // Define the initial state
@@ -226,7 +276,6 @@ const reducer = (state: IState, action: IAction): IState => {
   const {
     type,
     rating = 'default',
-    galleryId = '',
     currentIndex = 0,
     loadedDGallery = [],
     artworkOnDisplayId = 'string',
@@ -256,104 +305,6 @@ const reducer = (state: IState, action: IAction): IState => {
       return state
     case ETypes.setPortrait:
       return {...state, isPortrait: !state.isPortrait};
-    case ETypes.rateArtwork:
-      if (!rating && !artworkOnDisplayId) {
-        return state;
-      }
-      currentRating = state.userArtworkRatings[artworkId];
-      if (rating === RatingEnum.unrated) {
-        // eslint-disable-next-line no-multi-assign, no-param-reassign
-        tempState = state.userArtworkRatings[artworkId] = {};
-        tempGallery = state.dartaData[galleryOnDisplayId];
-        if (tempGallery.numberOfRatedWorks > 0) {
-          tempGallery.numberOfRatedWorks -= 1;
-        }
-        return {...state, ...tempState, ...tempGallery};
-      } else {
-        // eslint-disable-next-line no-multi-assign, no-param-reassign
-        tempState = state.userArtworkRatings[artworkId] = {[rating]: true};
-        tempGallery = state.dartaData[galleryOnDisplayId];
-        if (
-          !currentRating[RatingEnum.like] &&
-          !currentRating[RatingEnum.dislike] &&
-          !currentRating[RatingEnum.save]
-        ) {
-          tempGallery.numberOfRatedWorks += 1;
-        }
-        return {...state, ...tempState, ...tempGallery};
-      }
-
-    case ETypes.preLoadState:
-      // if (Object.keys(state.artworkData).length === 0) {
-      //   return state;
-      // }
-      // tempGallery = state.dartaData;
-      // tempState = state;
-      // galleryIds = Object.keys(state.artworkData);
-      // galleryIds.forEach(itemId => {
-      //   tempGallery[itemId] = {
-      //     artworkIds: state.artworkData[itemId].artworkIds,
-      //     id: itemId,
-      //     numberOfRatedWorks: 0,
-      //     numberOfArtworks: state.artworkData[itemId].artworkIds.length,
-      //     galleryIndex: 0,
-      //     fullDGallery: null,
-      //     isLoaded: false,
-      //   };
-      //   state.artworkData[itemId].artworkIds.forEach(artId => {
-      //     tempState.userArtworkRatings = {
-      //       ...tempState.userArtworkRatings,
-      //       [artId]: {},
-      //     };
-      //   });
-      // });
-      return state;
-    case ETypes.loadArt:
-      if (!galleryId && Object.keys(loadedDGallery).length === 0) {
-        return state;
-      }
-      tempGallery = state.dartaData;
-      if (tempGallery[galleryId].fullDGallery) {
-        fullGallery = tempGallery[galleryId].fullDGallery;
-        fullGallery = {
-          ...loadedDGallery,
-          ...fullGallery,
-        };
-      } else {
-        fullGallery = loadedDGallery;
-      }
-      tempGallery[galleryId] = {
-        artworkIds: tempGallery[galleryId].artworkIds,
-        id: galleryId,
-        numberOfRatedWorks: 0,
-        numberOfArtworks: Object.keys(loadedDGallery).length,
-        galleryIndex: 0,
-        fullDGallery: {...fullGallery},
-        isLoaded: true,
-      };
-      // const
-      return {
-        ...state,
-        ...tempGallery,
-      };
-    case ETypes.setGalleryId:
-      if (!galleryId) {
-        return state;
-      }
-      return {...state, galleryOnDisplayId: galleryId};
-
-    case ETypes.indexArt:
-      if (!currentIndex && !artworkOnDisplayId) {
-        return state;
-      }
-      tempGallery = state.dartaData[galleryId];
-      tempGallery.galleryIndex = currentIndex;
-      return {
-        ...state,
-        ...tempGallery,
-        artworkOnDisplayId:
-          state.dartaData[galleryId].artworkIds[currentIndex],
-      };
 
     case ETypes.setTitle:
       return {...state, galleryTitle};
@@ -365,14 +316,14 @@ const reducer = (state: IState, action: IAction): IState => {
       // SET_CURRENT_EXHIBITION
 
     case ETypes.saveExhibition:
-      if(!action.exhibitionData || !action.exhibitionData.exhibitionId){
+      if(!action.exhibitionData || !action.exhibitionData._id){
         return state
       }
       return {
         ...state,
         exhibitionData: {
           ...state.exhibitionData,
-          [action.exhibitionData.exhibitionId]: action.exhibitionData
+          [action.exhibitionData._id]: action.exhibitionData
         }
       }
       case ETypes.saveExhibitionMulti:
@@ -459,6 +410,14 @@ const reducer = (state: IState, action: IAction): IState => {
           ...state,
           previousExhibitionHeader: action.previousExhibitionHeader,
         };
+      case ETypes.setUserExhibitionHeader:
+          if (!action.userExhibitionHeader) {
+            return state;
+          }
+          return {
+            ...state,
+            userExhibitionHeader: action.userExhibitionHeader,
+          };
       case ETypes.setTombstoneHeader:
         if (!action.currentArtworkHeader) {
           return state;
@@ -510,6 +469,184 @@ const reducer = (state: IState, action: IAction): IState => {
               ...action.userData,
             },
           };
+          case ETypes.setUserInquiredArtwork:
+            if (!action?.artworkId){
+              return state;
+            }
+            return {
+              ...state,
+              userInquiredArtwork: {
+                ...state.userInquiredArtwork,
+                [action.artworkId]: true,
+              },
+            };
+          case ETypes.setUserInquiredArtworkMulti:
+              if (!action?.artworkIds){
+                return state;
+              }
+              return {
+                ...state,
+                userInquiredArtwork: {
+                  ...state.userInquiredArtwork,
+                  ...action.artworkIds
+                },
+              };
+          case ETypes.removeUserInquiredArtwork:
+            if (!action?.artworkId){
+                return state;
+              }
+              return {
+                ...state,
+                userInquiredArtwork: {
+                  ...state.userInquiredArtwork,
+                  [action.artworkId]: false,
+                },
+              };
+          case ETypes.setUserLikedArtwork:
+            if (!action?.artworkId){
+              return state;
+            }
+            return {
+              ...state,
+              userLikedArtwork: {
+                ...state.userLikedArtwork,
+                [action.artworkId]: true,
+              },
+            };
+          case ETypes.setUserLikedArtworkMulti:
+              if (!action?.artworkIds){
+                return state;
+              }
+              return {
+                ...state,
+                userLikedArtwork: {
+                  ...state.userLikedArtwork,
+                  ...action.artworkIds
+                },
+              };
+          case ETypes.removeUserLikedArtwork:
+            if (!action?.artworkId){
+                return state;
+              }
+              return {
+                ...state,
+                userLikedArtwork: {
+                  ...state.userLikedArtwork,
+                  [action.artworkId]: false,
+                },
+              };
+          case ETypes.setUserSavedArtwork:
+            if (!action?.artworkId){
+              return state;
+            }
+            return {
+              ...state,
+              userSavedArtwork: {
+                ...state.userSavedArtwork,
+                [action.artworkId]: true,
+              },
+            };
+          case ETypes.setUserSavedArtworkMulti:
+              if (!action?.artworkIds){
+                return state;
+              }
+              return {
+                ...state,
+                userSavedArtwork: {
+                  ...state.userSavedArtwork,
+                  ...action.artworkIds
+                },
+              };
+          case ETypes.removeUserSavedArtwork:
+            if (!action?.artworkId){
+                return state;
+              }
+              return {
+                ...state,
+                userSavedArtwork: {
+                  ...state.userSavedArtwork,
+                  [action.artworkId]: false,
+                },
+              };
+
+          case ETypes.setGalleryPreviewMulti:
+                if (!action?.galleryPreviews){
+                  return state;
+                }
+                return {
+                  ...state,
+                  galleryPreviews: {
+                    ...state.galleryPreviews,
+                    ...action.galleryPreviews
+                  },
+                };
+            case ETypes.setUserFollowGalleries:
+              if (!action?.galleryId){
+                  return state;
+                }
+                return {
+                  ...state,
+                  userGalleryFollowed: {
+                    ...state.userGalleryFollowed,
+                    [action.galleryId]: true,
+                  },
+              };
+            case ETypes.removeUserFollowGalleries:
+                if (!action?.galleryId){
+                  return state;
+                }
+                return {
+                  ...state,
+                  userGalleryFollowed: {
+                    ...state.userGalleryFollowed,
+                    [action.galleryId]: false,
+                  },
+              };
+            case ETypes.setUserFollowGalleriesMulti:
+              if (!action?.galleryFollowIds){
+                return state;
+                }
+                return {
+                  ...state,
+                  userGalleryFollowed: {
+                    ...state.userGalleryFollowed,
+                    ...action.galleryFollowIds
+                  },
+              };
+
+              case ETypes.setUserFollowGalleriesMulti:
+                if (!action?.galleryFollowIds){
+                  return state;
+                  }
+                  return {
+                    ...state,
+                    userGalleryFollowed: {
+                      ...state.userGalleryFollowed,
+                      ...action.galleryFollowIds
+                    },
+                };
+      case ETypes.setFullyLoadedGalleries:
+        if (!action?.fullyLoadedGalleries){
+          return state;
+        }
+        return {
+          ...state,
+          fullyLoadedGalleries: {
+            ...state.fullyLoadedGalleries,
+            ...action.fullyLoadedGalleries
+          },
+        };
+      case ETypes.setFullyLoadedExhibitions:
+        if (!action?.fullyLoadedExhibitions){
+          return state;
+        }
+        return {
+          ...state,
+          fullyLoadedExhibitions: {
+            ...state.fullyLoadedExhibitions,
+            ...action.fullyLoadedExhibitions
+          },
+        };
     default:
       return state;
   }

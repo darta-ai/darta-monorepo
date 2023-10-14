@@ -58,17 +58,18 @@ const exhibitionDetailsStyles = StyleSheet.create({
     heroImageContainer: {
         alignSelf: 'center',
         justifyContent: 'center',
-        width: wp('95%'),
+        width: wp('100%'),
         height: hp('40%'),
       },
     heroImage: {
         height: hp('35%'),
         width: wp('100%'),
         resizeMode: 'contain',
+        backgroundColor: 'transparent'
     },
     textContainer: {
         height: hp('90%'),
-        width: wp('95%'),
+        width: wp('100%'),
         display: 'flex',
         gap: wp('10%'),
         flexDirection: 'column',
@@ -261,7 +262,7 @@ async function fetchExhibitionById() {
         ]);
         
         const galleryData = { ...gallery, galleryExhibitions: supplementalExhibitions };
-        
+
         dispatch({
             type: ETypes.saveGallery,
             galleryData: galleryData,
@@ -282,6 +283,15 @@ async function fetchExhibitionById() {
             type: ETypes.setQRCodeGalleryId,
             qrCodeGalleryId: gallery._id,
         })
+        dispatch({
+            type: ETypes.setFullyLoadedExhibitions,
+            fullyLoadedExhibitions: {[exhibition._id] : true},
+        })
+        dispatch({
+            type: ETypes.setFullyLoadedGalleries,
+            fullyLoadedGalleries: {[gallery._id] : true},
+        })
+        
         setCurrentExhibition(exhibition);
         setCurrentGallery(galleryData);
         setExhibitionData({currentExhibition: exhibition, currentGallery: galleryData})
@@ -304,8 +314,27 @@ async function fetchExhibitionById() {
             galleryId = route.params.galleryId
             setGalleryId(route.params.galleryId)
         }
-
-        if (route?.params?.galleryId && state?.exhibitionData && state.exhibitionData[exhibitionId] 
+        if (exhibitionId && 
+            galleryId && 
+            state?.exhibitionData &&
+            state?.galleryData &&
+            state.fullyLoadedExhibitions && 
+            state.fullyLoadedExhibitions[exhibitionId] && 
+            state.fullyLoadedGalleries 
+            && state.fullyLoadedGalleries[galleryId]){
+                const exhibition = state.exhibitionData[exhibitionId]
+                const gallery = state.galleryData[galleryId]
+                dispatch({
+                    type: ETypes.setCurrentHeader,
+                    currentExhibitionHeader: exhibition.exhibitionTitle.value!,
+                  })
+                setCurrentExhibition(exhibition);
+                setCurrentGallery(gallery);
+                setExhibitionData({currentExhibition: exhibition, currentGallery: gallery})
+                setIsGalleryLoaded(true);
+                return false
+            }   
+        else if (route?.params?.galleryId && state?.exhibitionData && state.exhibitionData[exhibitionId] 
             && state.galleryData 
             && state.galleryData[route?.params?.galleryId]
             ) {
@@ -325,10 +354,8 @@ async function fetchExhibitionById() {
             return false
         }
     }
-
-
     handleExhibitionData()
-    
+  
 },  []);
 
 
@@ -341,6 +368,10 @@ async function fetchExhibitionById() {
         dispatch({
             type: ETypes.saveExhibition,
             exhibitionData: newExhibition,
+        })
+        dispatch({
+            type: ETypes.setFullyLoadedExhibitions,
+            fullyLoadedExhibitions: {[newExhibition.exhibitionId] : true},
         })
         navigation.navigate(ExhibitionRootEnum.TopTab, {galleryId: newExhibition.galleryId, exhibitionId: newExhibition.exhibitionId});
     } catch {

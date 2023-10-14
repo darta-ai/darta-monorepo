@@ -92,7 +92,7 @@ export class GalleryController {
     if (!req.query.galleryId) {
       res.status(400).send("galleryId query parameter is required");
       return;
-  }
+    }
     try {
       const exhibitions = await this.exhibitionService.listGalleryExhibitionPreviewsForUser(
         {galleryId: req.query.galleryId as string}
@@ -126,4 +126,5 @@ export class GalleryController {
       res.status(500).send(error.message);
     }
   }
+
 }

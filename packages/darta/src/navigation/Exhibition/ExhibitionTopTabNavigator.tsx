@@ -21,6 +21,7 @@ export type ExhibitionStackParamList = {
   [ExhibitionRootEnum.exhibitionGallery]: {
     galleryId?: string;
     exhibitionId?: string;
+    navigationRoute?: string;
   };
 };
 
@@ -43,7 +44,7 @@ export function ExhibitionTopTabNavigator({route} : {route: any}) {
         <ExhibitionStackTopTab.Screen
           name={ExhibitionRootEnum.exhibitionGallery}
           component={ExhibitionGalleryScreen}
-          initialParams={{galleryId: route.params.galleryId, exhibitionId: route.params.exhibitionId}}
+          initialParams={{galleryId: route.params.galleryId, exhibitionId: route.params.exhibitionId, navigationRoute: route.params.navigationRoute}}
           options={{ title: 'Gallery' }}
         />
         </ExhibitionStackTopTab.Group>

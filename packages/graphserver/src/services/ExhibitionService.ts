@@ -1,11 +1,18 @@
 /* eslint-disable no-return-assign */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {Artwork, Exhibition, ExhibitionMapPin, ExhibitionObject, ExhibitionPreview, IBusinessLocationData, IGalleryProfileData, Images} from '@darta-types';
+import {
+  Artwork, 
+  Exhibition, 
+  ExhibitionMapPin, 
+  ExhibitionObject, 
+  ExhibitionPreview, 
+  IBusinessLocationData, 
+  IGalleryProfileData, 
+  Images} from '@darta-types';
 import {Database} from 'arangojs';
 import {Edge} from 'arangojs/documents';
 import {inject, injectable} from 'inversify';
 import _ from 'lodash';
-import {Client} from 'minio';
 
 import {CollectionNames, EdgeNames} from '../config/collections';
 import {newExhibitionShell} from '../config/templates';
@@ -31,7 +38,6 @@ export class ExhibitionService implements IExhibitionService {
     @inject('Database') private readonly db: Database,
     @inject('IEdgeService') private readonly edgeService: IEdgeService,
     @inject('IArtworkService') private readonly artworkService: IArtworkService,
-    @inject('MinioClient') private readonly minio: Client,
     @inject('ImageController')
     private readonly imageController: ImageController,
     @inject('INodeService') private readonly nodeService: INodeService,
@@ -95,7 +101,7 @@ export class ExhibitionService implements IExhibitionService {
   }: {
     exhibitionId: string;
   }): Promise<Exhibition | void> {
-    return await this.getExhibitionById({exhibitionId});
+    return this.getExhibitionById({exhibitionId});
   }
 
   public async readGalleryExhibitionForUser({
@@ -251,6 +257,7 @@ export class ExhibitionService implements IExhibitionService {
         fileName,
         bucketName,
       });
+      this.refreshExhibitionHeroImage({exhibitionId, url: imageValue})
       exhibition.exhibitionPrimaryImage.value = imageValue;
     }
 
@@ -433,6 +440,30 @@ export class ExhibitionService implements IExhibitionService {
 
     // eslint-disable-next-line consistent-return
     return returnExhibition;
+  }
+
+  public async refreshExhibitionHeroImage({
+    exhibitionId,
+    url,
+  }: {
+    exhibitionId: string;
+    url: string;
+  }): Promise<void> {
+    const exhibitId = this.generateExhibitionId({exhibitionId});
+
+    try {
+      await this.nodeService.upsertNodeById({
+        collectionName: CollectionNames.Exhibitions,
+        id: exhibitId,
+        data: {
+          exhibitionPrimaryImage: {
+            value: url
+          },
+        },
+      });
+    } catch (error) {
+      throw new Error('unable to refresh exhibition hero image');
+    }
   }
 
 
@@ -692,7 +723,7 @@ export class ExhibitionService implements IExhibitionService {
   
     try {
       const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit });
-      const exhibitionPreviews = (await edgeCursor.all()).filter(el => el);
+      const exhibitionPreviews = (await edgeCursor.all()).filter((el) => el && Object?.values(el.artworkPreviews)?.length > 0);
 
       return exhibitionPreviews.reduce((acc, obj) =>{
         acc[obj.exhibitionId as string] = {...obj, artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2}), {})}
@@ -1109,8 +1140,7 @@ export class ExhibitionService implements IExhibitionService {
     galleryId: string;
   }): Promise<boolean> {
     const to = this.generateExhibitionId({exhibitionId});
-    const from = this.galleryService.generateGalleryUserId({galleryId});
-
+    const from = this.galleryService.generateGalleryId({galleryId});
     try {
       const results = await this.edgeService.getEdge({
         edgeName: EdgeNames.FROMGalleryTOExhibition,
@@ -1184,21 +1214,6 @@ export class ExhibitionService implements IExhibitionService {
         `error verifying the gallery owns the artwork: ${error.message}`,
       );
     }
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private separateArtworksFromExhibition({
-    exhibition,
-  }: {
-    exhibition: Exhibition;
-  }): {artworks: Artwork[]; exhibition: Exhibition} {
-    if (!exhibition.artworks) return {artworks: [], exhibition};
-    const {artworks, ...remainingExhibitionProps} = exhibition;
-
-    return {
-      artworks: Object.values(artworks),
-      exhibition: remainingExhibitionProps,
-    };
   }
 
   // eslint-disable-next-line class-methods-use-this

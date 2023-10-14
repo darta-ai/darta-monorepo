@@ -242,4 +242,9 @@ export type ExhibitionMapPin = {
         [key: string]: Artwork;
     };
 };
+export type GalleryPreview = {
+    galleryLogo: Images;
+    galleryName: PublicFields;
+    _id: string;
+};
 export {};

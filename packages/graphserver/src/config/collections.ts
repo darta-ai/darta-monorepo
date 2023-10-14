@@ -29,11 +29,23 @@ export const EdgeNames = {
   FROMArtworkTOCreateBucket: 'FROMArtworkTOCreateBucket',
   FROMGalleryTOExhibition: 'FROMGalleryTOExhibition',
   FROMUserTOGallery: 'FROMUserTOGallery',
-  FROMCollectionTOArtwork: 'FROMCollectionTOArtwork',
+  FROMCollectionTOArtwork: 'FROMExhibitionsTOArtwork',
   FROMExhibitionTOCity: 'FROMExhibitionTOCity',
 
-  FROMEndUserTOArtwork: 'FROMEndUserTOArtwork',
-  FROMEndUserTOGallery: 'FROMEndUserTOGallery',
+  FROMDartaUserTOArtworkLIKE: 'FROMDartaUserTOArtworkLIKE',
+  FROMDartaUserTOArtworkDISLIKE: 'FROMDartaUserTOArtworkDISLIKE',
+  FROMDartaUserTOArtworkINQUIRE: 'FROMDartaUserTOArtworkINQUIRE',
+  FROMDartaUserTOArtworkSAVE: 'FROMDartaUserTOArtworkSAVE',
+  FROMDartaUserTOArtworkVIEWED: 'FROMDartaUserTOArtworkVIEWED',
+  FROMDartaUserTOArtworkVIEW_TIME: 'FROMDartaUserTOArtworkVIEW_TIME',
+
+  FROMDartaUserTOGalleryVIEWED: 'FROMDartaUserTOGalleryVIEWED',
+  FROMDartaUserTOGalleryVIEW_TIME: 'FROMDartaUserTOGalleryVIEW_TIME',
+  FROMDartaUserTOGalleryFOLLOWS: 'FROMDartaUserTOGalleryFOLLOWS',
+
+  FROMDartaUserTOExhibitionVIEWED: 'FROMDartaUserTOExhibitionVIEWED',
+  FROMDartaUserTOExhibitionVIEW_TIME: 'FROMDartaUserTOExhibitionVIEW_TIME',
+
 };
 
 export const RequiredContent = {

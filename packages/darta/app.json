@@ -3,13 +3,13 @@
     "name": "darta",
     "slug": "darta",
     "scheme": "darta",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./src/assets/darta-icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
       "resizeMode": "contain",
-      "backgroundColor": "#989898"
+      "backgroundColor": "#817875"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,7 +21,10 @@
         "usesNonExemptEncryption": false,
         "googleMapsApiKey": "AIzaSyCgJAXkO4WoPQXTf7ENx_tejgKbiem9chc"
       },
-      "googleServicesFile": "./googleService/GoogleService-Info-dev.plist"
+      "googleServicesFile": "./googleService/GoogleService-Info.plist", 
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["instagram"]
+      }
     },
     "android": {
       "adaptiveIcon": {

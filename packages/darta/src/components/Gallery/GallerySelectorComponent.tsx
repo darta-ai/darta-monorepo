@@ -1,4 +1,4 @@
-import {DARK_GRAY, MILK, PRIMARY_600, PRIMARY_DARK_GREY} from '@darta-styles';
+import {DARK_GRAY, PRIMARY_50, PRIMARY_600, PRIMARY_DARK_GREY} from '@darta-styles';
 import React from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -19,7 +19,7 @@ const SSGallerySelectorComponent = StyleSheet.create({
     flexDirection: 'row',
     alignContent: 'center',
     alignSelf: 'center',
-    backgroundColor: MILK,
+    backgroundColor: PRIMARY_50,
     borderTopRightRadius: hp('2%'),
     borderBottomRightRadius: 5,
     justifyContent: 'center',
@@ -34,7 +34,7 @@ const SSGallerySelectorComponent = StyleSheet.create({
     alignSelf: 'center',
   },
   badge: {
-    backgroundColor: MILK,
+    backgroundColor: PRIMARY_50,
     margin: hp('1%'),
   },
   badgeText: {

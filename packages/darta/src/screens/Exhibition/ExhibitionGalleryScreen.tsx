@@ -1,16 +1,18 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet, Linking, Platform, ScrollView, RefreshControl} from 'react-native';
+import {View, StyleSheet, Linking, Platform, ScrollView, RefreshControl, Animated} from 'react-native';
 import { Divider } from 'react-native-paper'
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { globalTextStyles } from '../../styles/styles';
 import {TextElement} from '../../components/Elements/_index';
 import * as Colors from '@darta-styles';
 import { ExhibitionPreviewMini } from '../../components/Previews/ExhibitionPreviewMini';
+import { createGalleryRelationship, deleteGalleryRelationship } from '../../utils/apiCalls';
 import {
   ExhibitionRootEnum,
   PreviousExhibitionRootEnum
 } from '../../typing/routes';
 import { ActivityIndicator } from 'react-native-paper';
+import auth from '@react-native-firebase/auth';
 
 import { Text, Button} from 'react-native-paper'
 import { Image } from 'react-native-elements';
@@ -24,6 +26,7 @@ import { ExhibitionStackParamList } from '../../navigation/Exhibition/Exhibition
 import { readGallery } from '../../api/galleryRoutes';
 import {readExhibition} from '../../api/exhibitionRoutes';
 import { mapStylesJson } from '../../utils/mapStylesJson';
+import { NeedAccountDialog } from '../../components/Dialog/NeedAccountDialog';
 
 const galleryDetailsStyles = StyleSheet.create({
   container: {
@@ -32,7 +35,8 @@ const galleryDetailsStyles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.PRIMARY_50,
     width: '100%',
-    gap: hp("3%")
+    gap: hp("3%"),
+    paddingBottom: hp('5%'),
   },
   spinnerContainer: {
     display: 'flex',
@@ -66,7 +70,7 @@ const galleryDetailsStyles = StyleSheet.create({
       resizeMode: 'contain',
   },
   galleryBioContainer: {
-      minHeight: hp('15%'),
+      minHeight: hp('10%'),
       height: "auto",
       width: wp('90%'),
       display: 'flex',
@@ -76,13 +80,17 @@ const galleryDetailsStyles = StyleSheet.create({
       justifyContent: 'flex-start',
       alignItems: 'center',
   },
+  galleryFollowContainer: {
+    minHeight: hp('10%'),
+},
   contactButtonContainer: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     gap: wp('5%'),
-    height: hp('13%'),
+    height: hp('20%'),
+    width: wp('100%'),
     borderRadius: 8,
     shadowColor: Colors.PRIMARY_950,
     shadowOffset: { width: 0, height: 1 },
@@ -95,7 +103,13 @@ const galleryDetailsStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    gap: wp('5%'),
+    height: '100%',
+    gap: wp('2%'),
+  },
+  fontStyleButtons:{
+    color: Colors.PRIMARY_950, 
+    fontSize: 13,
+    width: wp('25%'),
   },
   divider: {
       width: wp('20%'),
@@ -111,7 +125,7 @@ const galleryDetailsStyles = StyleSheet.create({
   }, 
   locationContainer: {
       width: '85%',
-      height: hp('30%'),
+      height: hp('35%'),
       margin: 10, 
       display: 'flex',
       justifyContent: 'center',
@@ -180,6 +194,7 @@ export function ExhibitionGalleryScreen({
   const [errorText, setErrorText] = React.useState<string>("");
   const [isGalleryLoaded, setIsGalleryLoaded] = React.useState<boolean>(false);
   const [gallery, setGallery] = React.useState<IGalleryProfileData>({} as IGalleryProfileData)
+  const [dialogVisible, setDialogVisible] = React.useState<boolean>(false)
 
   const [mapRegion, setMapRegion] = React.useState<any>({
     latitudeDelta: 0.02,
@@ -286,6 +301,81 @@ export function ExhibitionGalleryScreen({
     }, 500)
   }, []);
 
+  const followGallery = async () => {
+    if (auth().currentUser === null) {
+      return setDialogVisible(true)
+    }
+    try{
+      await createGalleryRelationship({galleryId})
+      dispatch({
+        type: ETypes.setUserFollowGalleries,
+        galleryId,
+      })
+      setFollowsGallery(true)
+      dispatch({
+        type: ETypes.setUserFollowGalleries,
+        galleryId,
+      })
+    } catch {
+      throw new Error("Something went wrong, please try again")
+    }
+  }
+
+  const unFollowGallery = async () => { 
+    try{
+      await deleteGalleryRelationship({galleryId})
+      dispatch({
+        type: ETypes.removeUserFollowGalleries,
+        galleryId,
+      })
+      setFollowsGallery(false)
+    } catch {
+      throw new Error("Something went wrong, please try again")
+    }
+  }
+
+  const [followsGallery, setFollowsGallery] = React.useState<boolean>(false)
+  const [isSetOneVisible, setIsSetOneVisible] = React.useState(true);
+
+  const opacitySetOne = React.useRef(new Animated.Value(1)).current; 
+  const opacitySetTwo = React.useRef(new Animated.Value(0)).current;
+  const translateX = React.useRef(new Animated.Value(0)).current;
+
+  const toggleButtons = () => {
+    Animated.parallel([
+      Animated.timing(opacitySetOne, {
+        toValue: followsGallery ? 0 : 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacitySetTwo, {
+        toValue: followsGallery ? 1 : 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateX, {
+        toValue: followsGallery ? 100 : 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setIsSetOneVisible(!isSetOneVisible);
+    });
+  };
+
+  React.useEffect(() =>{
+    console.log({followsGallery, state: state.userGalleryFollowed})
+    if (state.userGalleryFollowed && state.userGalleryFollowed[galleryId]){
+      setFollowsGallery(true)
+    } else {
+      setFollowsGallery(false)
+    }
+  }, [,state.userGalleryFollowed])
+
+  React.useEffect(() => {
+    toggleButtons()
+  }, [followsGallery])
+
 
   const handleExhibitionPress = async ({exhibitionId} : {exhibitionId: string}) => {
     if (!exhibitionId) return
@@ -298,10 +388,18 @@ export function ExhibitionGalleryScreen({
         previousExhibitionHeader: exhibitionTitle,
       })
       dispatch({
+        type: ETypes.setUserExhibitionHeader,
+        userExhibitionHeader: exhibitionTitle,
+      })
+      dispatch({
         type: ETypes.saveExhibition,
         exhibitionData: results,
       })
-      navigation.navigate(PreviousExhibitionRootEnum.navigatorScreen, {exhibitionId, galleryId})
+      if (route?.params.navigationRoute) {
+        navigation.navigate(route?.params.navigationRoute, {exhibitionId, galleryId})
+      } else{
+        navigation.navigate(PreviousExhibitionRootEnum.navigatorScreen, {exhibitionId, galleryId})
+      }
 
   }
 
@@ -413,18 +511,66 @@ export function ExhibitionGalleryScreen({
             {gallery?.galleryBio?.value}
           </Text>
         </View>
+        <View style={galleryDetailsStyles.galleryFollowContainer}>
+        <Animated.View style={{opacity: opacitySetOne, transform: [{ translateX: translateX }] }}>
+          {!followsGallery && (
+            <Button
+            icon={"plus-box"}
+            labelStyle={{color: Colors.PRIMARY_100}}
+            style={{backgroundColor: Colors.PRIMARY_950}}
+            mode="contained"
+            onPress={() => followGallery()}
+            >Follow Gallery</Button>
+          )}
+        </Animated.View>
+        <Animated.View style={{opacity: opacitySetTwo, transform: [{ translateX: Animated.subtract(100, translateX) }]}}>
+        {followsGallery && (
+            <Button
+            icon={"minus-box"}
+            labelStyle={{color: Colors.PRIMARY_950}}
+            style={{backgroundColor: Colors.PRIMARY_100}}
+            mode="contained"
+            onPress={() => unFollowGallery()}
+            >Unfollow Gallery</Button>
+          )}
+        </Animated.View>
+
+        </View>
+        <View>
+          <TextElement style={galleryDetailsStyles.descriptionText}>Past Shows</TextElement>
+          <Divider style={galleryDetailsStyles.divider}/>
+        </View>
+        <View style={galleryDetailsStyles.previousShowContainer}>
+          {previousExhibitions && previousExhibitions.map((previousExhibition : Exhibition, index : number) => {
+            return (
+              <View key={`${index}-${previousExhibition.exhibitionId}`}>
+                <ExhibitionPreviewMini 
+                  exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
+                  exhibitionId={previousExhibition.exhibitionId}
+                  exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
+                  exhibitionGallery={gallery.galleryName?.value as string}
+                  exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
+                  exhibitionDates={previousExhibition.exhibitionDates}
+                  galleryLogoLink={gallery.galleryLogo?.value as string}
+                  onPress={handleExhibitionPress}
+                />
+              </View>
+            )
+          })}
+        </View>
         <View>
           <TextElement style={galleryDetailsStyles.descriptionText}>
               Contact
           </TextElement>
           <Divider style={galleryDetailsStyles.divider}/>
         </View>
+
         <View style={galleryDetailsStyles.contactButtonContainer}>
           <View style={galleryDetailsStyles.rowButtonContainer}>
           {gallery?.galleryInstagram?.value &&(
             <Button
             icon={icons.instagram}
-            labelStyle={{color: Colors.PRIMARY_950}}
+            labelStyle={galleryDetailsStyles.fontStyleButtons}
             style={{backgroundColor: Colors.PRIMARY_100}}
             mode="contained"
             onPress={() => sendToInstagram()}
@@ -435,7 +581,7 @@ export function ExhibitionGalleryScreen({
           {gallery?.galleryPhone?.value && (
             <Button
             icon={icons.phone}
-            labelStyle={{color: Colors.PRIMARY_950}}
+            labelStyle={galleryDetailsStyles.fontStyleButtons}
             style={{backgroundColor: Colors.PRIMARY_100}}
             mode="contained"
             onPress={() => dialNumber()}
@@ -448,7 +594,7 @@ export function ExhibitionGalleryScreen({
             {gallery?.primaryContact?.value && (            
               <Button
                 icon={icons.email}
-                labelStyle={{color: Colors.PRIMARY_950}}
+                labelStyle={galleryDetailsStyles.fontStyleButtons}
                 style={{backgroundColor: Colors.PRIMARY_100}}
                 mode="contained"
                 onPress={() => sendEmail()}
@@ -459,7 +605,7 @@ export function ExhibitionGalleryScreen({
             {gallery?.galleryWebsite?.value && (
             <Button
               icon={icons.website}
-              labelStyle={{color: Colors.PRIMARY_950}}
+              labelStyle={galleryDetailsStyles.fontStyleButtons}
               style={{backgroundColor: Colors.PRIMARY_100}}
               mode="contained"
                 onPress={() => visitWebsite(gallery.galleryWebsite?.value!)}
@@ -473,17 +619,32 @@ export function ExhibitionGalleryScreen({
           <TextElement style={galleryDetailsStyles.descriptionText}>Location{galleryAddresses.length > 1 && "s"}</TextElement>
           <Divider style={galleryDetailsStyles.divider}/>
         </View>
-        <View style={{...galleryDetailsStyles.locationContainer, height: galleryAddresses.length > 2 ? hp('35%') : hp('30%')}}>
+        <View style={{...galleryDetailsStyles.locationContainer, height: galleryAddresses.length >= 2 ? hp('10%') : hp('5%')}}>
             {galleryAddresses.map((address) => {
               return (
-                <View style={{marginBottom: 3}}>
-                    <TextElement style={{fontSize: 15, color: Colors.PRIMARY_900}}>{simplifyAddress(address)}</TextElement>
+                <View style={{marginBottom: 3}} key={address}>
+                  <Button
+                    icon={"map"}
+                    labelStyle={{color: Colors.PRIMARY_950}}
+                    mode="text"
+                    onPress={() => openInMaps(address)}
+                    >                
+                    <TextElement style={{...globalTextStyles.centeredText, textDecorationLine: 'underline', marginTop: hp('1%')}}>{simplifyAddress(address)}</TextElement>
+                    </Button>
                 </View>
               )
             })}
+        </View>
+        <View>
+          <TextElement style={galleryDetailsStyles.descriptionText}>
+              Map
+          </TextElement>
+          <Divider style={galleryDetailsStyles.divider}/>
+        </View>
+        <View style={{height: hp('30%'), width: wp('90%')}}>
           <MapView  
             provider={PROVIDER_GOOGLE}
-            style={{ alignSelf: 'stretch', height: '80%' }}
+            style={{ alignSelf: 'stretch', height: '100%' }}
             region={mapRegion} 
             customMapStyle={mapStylesJson}
             >
@@ -495,7 +656,7 @@ export function ExhibitionGalleryScreen({
                   />
               ))}
             </MapView>
-        </View>
+          </View>
         <View>
           <TextElement style={galleryDetailsStyles.descriptionText}>Hours</TextElement>
           <Divider style={galleryDetailsStyles.divider}/>
@@ -516,31 +677,14 @@ export function ExhibitionGalleryScreen({
         </View>
           )}
         </View>
-        <View>
-          <TextElement style={galleryDetailsStyles.descriptionText}>Past Shows</TextElement>
-          <Divider style={galleryDetailsStyles.divider}/>
-        </View>
-        <View style={galleryDetailsStyles.previousShowContainer}>
-          {previousExhibitions && previousExhibitions.map((previousExhibition : Exhibition, index : number) => {
-            return (
-              <View key={index}>
-                <ExhibitionPreviewMini 
-                  exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
-                  exhibitionId={previousExhibition.exhibitionId}
-                  exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
-                  exhibitionGallery={gallery.galleryName?.value as string}
-                  exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
-                  exhibitionDates={previousExhibition.exhibitionDates}
-                  galleryLogoLink={gallery.galleryLogo?.value as string}
-                  onPress={handleExhibitionPress}
-                />
-              </View>
-            )
-          })}
-        </View>
+
       </View>
     </ScrollView>
     )}
+    <NeedAccountDialog 
+        dialogVisible={dialogVisible}
+        setDialogVisible={setDialogVisible}
+      />
     </>
   );
 }

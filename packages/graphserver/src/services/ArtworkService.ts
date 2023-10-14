@@ -12,6 +12,7 @@ import {
   IEdgeService,
   IGalleryService,
   INodeService,
+  IUserService
 } from './interfaces';
 import {ArtworkAndGallery} from './interfaces/IArtworkService';
 
@@ -26,6 +27,7 @@ export class ArtworkService implements IArtworkService {
     @inject('IEdgeService') private readonly edgeService: IEdgeService,
     @inject('INodeService') private readonly nodeService: INodeService,
     @inject('IGalleryService') private readonly galleryService: IGalleryService,
+    @inject('IUserService') private readonly userService: IUserService,
   ) {}
 
   public async createArtwork({
@@ -83,6 +85,35 @@ export class ArtworkService implements IArtworkService {
     }
 
     return newArtwork;
+  }
+
+  // eslint-disable-next-line consistent-return
+  public async createUserArtworkRelationship({
+    uid,
+    action,
+    artworkId,
+  }: {
+    uid: string;
+    action: 'LIKE' | 'DISLIKE' | 'SAVE' | 'INQUIRE' | 'VIEWED';
+    artworkId: string;
+  }): Promise<void> {
+    try {
+      const localStorageUid = await this.userService.getLocalStorageIdFromUID({uid});
+      const userId = this.userService.generateDartaUserId({localStorageUid});
+      const artId = this.generateArtworkId({artworkId});
+      const edgeKey = `FROMDartaUserTOArtwork${action}`;
+      await this.edgeService.upsertEdge({
+        edgeName: EdgeNames[edgeKey as keyof typeof EdgeNames],
+        from: userId,
+        to: artId,
+        data: {
+          value: action,
+          date: new Date().toISOString()}
+        });
+         
+    } catch (error: any) {
+      return error.message;
+    }
   }
 
   public async readArtwork(artworkId: string): Promise<Artwork | null> {
@@ -407,6 +438,33 @@ export class ArtworkService implements IArtworkService {
     return true;
   }
 
+
+  // eslint-disable-next-line consistent-return
+  public async deleteUserArtworkRelationship({
+    uid,
+    action,
+    artworkId,
+  }: {
+    uid: string;
+    action: 'LIKE' | 'DISLIKE' | 'SAVE' | 'INQUIRE' | 'VIEWED';
+    artworkId: string;
+  }): Promise<void> {
+    try {
+      const localStorageUid = await this.userService.getLocalStorageIdFromUID({uid});
+      const userId = this.userService.generateDartaUserId({localStorageUid});
+      const artId = this.generateArtworkId({artworkId});
+      const edgeKey = `FROMDartaUserTOArtwork${action}`;
+      await this.edgeService.deleteEdge({
+        edgeName: EdgeNames[edgeKey as keyof typeof EdgeNames],
+        from: userId,
+        to: artId
+      });
+         
+    } catch (error: any) {
+      return error.message;
+    }
+  }
+
   public async listArtworksByGallery({
     galleryId,
   }: {
@@ -423,15 +481,53 @@ export class ArtworkService implements IArtworkService {
       const artworkIds = (await edgeCursor.all()).filter(el => el);
 
       const galleryOwnedArtworkPromises = artworkIds.map(
-        async (artworkId: string) => {
-          return await this.getArtworkById(artworkId);
-        },
+        async (artworkId: string) => this.getArtworkById(artworkId),
       );
 
       const galleryOwnedArtwork = await Promise.all(
         galleryOwnedArtworkPromises,
       );
       return galleryOwnedArtwork;
+    } catch (error) {
+      throw new Error('error getting artworks');
+    }
+  }
+
+  public async listUserRelationshipArtworkByLimit({
+    uid,
+    limit,
+    action,
+  }: {
+    uid: string;
+    limit: number;
+    action: string
+  }): Promise<{[key: string] : Artwork}>{
+    try {
+      const localStorageUid = await this.userService.getLocalStorageIdFromUID({uid});
+      const userId = this.userService.generateDartaUserId({localStorageUid});
+      const edgeKey = `FROMDartaUserTOArtwork${action}`;
+      const edgeName = EdgeNames[edgeKey as keyof typeof EdgeNames];
+      const edgeCursor = await this.db.query(`
+      WITH ${CollectionNames.DartaUsers}, ${CollectionNames.Artwork}, ${EdgeNames.FROMArtworkTOArtist}, ${CollectionNames.ArtworkArtists}
+      FOR artwork, edge IN OUTBOUND @userId @edgeName
+          FOR artist IN OUTBOUND artwork ${EdgeNames.FROMArtworkTOArtist}
+          SORT edge.date DESC
+          LIMIT 0, @limit
+          RETURN {
+              artwork,
+              artistName: artist.value
+          }
+      `, {userId, edgeName, limit});
+      const artworks = await edgeCursor.all();
+      const mergedArray = artworks.map(item => ({
+        ...item.artwork,
+        artistName: {value: item.artistName}
+      }))
+      const artworkMap = mergedArray.reduce((acc: any, artwork: Artwork) => {
+        acc[artwork?._id as string] = artwork;
+        return acc;
+      }, {});
+      return artworkMap;
     } catch (error) {
       throw new Error('error getting artworks');
     }
@@ -491,6 +587,7 @@ export class ArtworkService implements IArtworkService {
           fileName: artworkImage.fileName,
           bucketName: artworkImage.bucketName,
         });
+        await this.refreshArtworkImage({artworkId, url: artworkImageValue})
       } catch (error) {
         throw new Error('error getting artwork image');
       }
@@ -610,6 +707,31 @@ export class ArtworkService implements IArtworkService {
     }
   }
 
+  public async refreshArtworkImage({
+    artworkId,
+    url,
+  }: {
+    artworkId: string;
+    url: string;
+  }): Promise<void> {
+    const exhibitId = this.generateArtworkId({artworkId});
+
+    try {
+      await this.nodeService.upsertNodeById({
+        collectionName: CollectionNames.Artwork,
+        id: exhibitId,
+        data: {
+          artworkImage: {
+            value: url
+          },
+        },
+      });
+    } catch (error) {
+      throw new Error('unable to refresh gallery image');
+    }
+  }
+
+
   public async swapArtworkOrder({
     artworkId,
     order,
@@ -650,7 +772,7 @@ export class ArtworkService implements IArtworkService {
       return defaultReturn;
     }
 
-    const priceNum = parseInt(price);
+    const priceNum = parseInt(price, 10);
 
     if (Number.isNaN(priceNum)) {
       return defaultReturn;
@@ -736,14 +858,14 @@ export class ArtworkService implements IArtworkService {
 
     if (difference <= 5) {
       return 'within-the-last-5-years';
-    } else if (difference <= 10) {
+    } if (difference <= 10) {
       return '5-10-years-ago';
-    } else if (difference <= 19) {
+    } if (difference <= 19) {
       return '10-19-years-ago';
-    } else if (difference <= 50) {
+    } if (difference <= 50) {
       return '20-50-years-ago';
-    } else {
+    } 
       return '51+-years-ago';
-    }
+    
   }
 }

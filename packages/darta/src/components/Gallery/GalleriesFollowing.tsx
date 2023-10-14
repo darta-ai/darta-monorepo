@@ -8,22 +8,27 @@ import {
 import {TextElement} from '../Elements/_index';
 import {globalTextStyles} from '../../styles/styles';
 import {ExploreCarouselCards} from '../Explore/Carousel/ExploreCarouselCards';
+import {GalleryPreviewMini} from '../Previews/GalleryPreviewMini';
+import { StoreContext } from '../../state/Store';
+import { GalleryPreview } from '@darta-types/dist';
 
-export function ArtworksCarousel({
+export function GalleriesFollowing({
   headline,
-  exploreData,
 }: {
   headline: string;
-  exploreData: {
-    [key: string]: {
-      id: string;
-      name: string;
-      preview: string;
-      type: string;
-      logo?: string;
-    };
-  };
 }) {
+  const {state, dispatch} = React.useContext(StoreContext);
+
+  const [galleriesFollowing, setGalleriesFollowing] = React.useState<{[key: string]: GalleryPreview}>([] as any);
+
+  React.useEffect(() => {
+    if (state.userGalleryFollowed && state.galleryPreviews) {
+      const {userGalleryFollowed, galleryPreviews} = state;
+      console.log({userGalleryFollowed, galleryPreviews})
+
+    }
+  },[])
+
   return (
     <View
       style={{
@@ -50,7 +55,6 @@ export function ArtworksCarousel({
           alignSelf: 'center',
           justifyContent: 'center',
         }}>
-        <ExploreCarouselCards data={exploreData} />
       </View>
     </View>
   );

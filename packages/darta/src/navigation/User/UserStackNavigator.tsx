@@ -1,17 +1,19 @@
-import {MILK} from '@darta-styles';
+import {MILK, PRIMARY_950} from '@darta-styles';
 import React, {useContext} from 'react';
 
-import {ArtworkNavigatorModal} from '../components/Modal/ArtworkNavigatorModal';
-import {UserHome} from '../screens/UserHome';
-import {UserInquiredArtwork} from '../components/User/UserInquiredArtwork';
-import {UserSavedArtwork} from '../components/User/UserSavedArtwork';
-import {UserSettings} from '../components/User/UserSettings';
-import {StoreContext} from '../state/Store';
-import {headerOptions} from '../styles/styles';
-import {UserRoutesEnum} from '../typing/routes';
-import {createOpeningTransition} from '../utils/openingTransition';
+import {ArtworkScreen} from '../../screens/Artwork/ArtworkScreen';
+import {UserHome} from '../../screens/UserHome';
+import {UserInquiredArtwork} from '../../components/User/UserInquiredArtwork';
+import {UserSavedArtwork} from '../../components/User/UserSavedArtwork';
+import {UserSettings} from '../../components/User/UserSettings';
+import {StoreContext} from '../../state/Store';
+import {headerOptions} from '../../styles/styles';
+import {UserRoutesEnum} from '../../typing/routes';
+import {createOpeningTransition} from '../../utils/openingTransition';
 
 import {createStackNavigator} from '@react-navigation/stack';
+import { GalleryAndArtworkTopTabNavigator } from './GalleryAndArtworkTopTabNavigator';
+import { PastExhibitionTopTabNavigator } from '../Exhibition/PastExhibitionTopTabNavigator';
 
 export const UserStack = createStackNavigator();
 
@@ -19,35 +21,13 @@ export const UserStack = createStackNavigator();
 export function UserStackNavigator() {
   const {state} = useContext(StoreContext);
   const openingTransition = createOpeningTransition();
-  const leftToRightAnimation = {
-    cardStyleInterpolator: ({
-      current,
-      layouts,
-    }: {
-      current: any;
-      layouts: any;
-    }) => {
-      return {
-        cardStyle: {
-          transform: [
-            {
-              translateX: current.progress.interpolate({
-                inputRange: [0, 1],
-                outputRange: [-layouts.screen.width, 0],
-              }),
-            },
-          ],
-        },
-      };
-    },
-  };
   return (
-    <UserStack.Navigator screenOptions={{headerTintColor: MILK}}>
+    <UserStack.Navigator screenOptions={{headerTintColor: PRIMARY_950}}>
       <UserStack.Group>
         <UserStack.Screen
           name={UserRoutesEnum.home}
           component={UserHome}
-          options={{...headerOptions, headerTitle: 'home'}}
+          options={{...headerOptions, headerTitle: 'me'}}
         />
         <UserStack.Screen
           name={UserRoutesEnum.userSettings}
@@ -55,7 +35,6 @@ export function UserStackNavigator() {
           options={{
             ...headerOptions,
             headerTitle: 'settings',
-            ...leftToRightAnimation,
           }}
         />
         <UserStack.Screen
@@ -64,7 +43,6 @@ export function UserStackNavigator() {
           options={{
             ...headerOptions,
             headerTitle: 's a v e d',
-            ...openingTransition,
           }}
         />
         <UserStack.Screen
@@ -75,12 +53,22 @@ export function UserStackNavigator() {
             headerTitle: 'i n q u i r e d',
           }}
         />
+        <UserStack.Screen 
+          name={UserRoutesEnum.UserGalleryAndArtwork}
+          component={GalleryAndArtworkTopTabNavigator}
+          options={{...headerOptions, headerTitle: state.currentArtworkTombstoneHeader}}
+        />
+        <UserStack.Screen
+          name={UserRoutesEnum.UserPastTopTabNavigator}
+          component={PastExhibitionTopTabNavigator}
+          options={{...headerOptions, headerTitle: state.previousExhibitionHeader ?? ""}}
+          />
       </UserStack.Group>
 
       <UserStack.Group screenOptions={{presentation: 'modal'}}>
         <UserStack.Screen
           name={UserRoutesEnum.SavedArtworkModal}
-          component={ArtworkNavigatorModal}
+          component={ArtworkScreen}
           options={{...headerOptions, headerTitle: state.tombstoneTitle}}
         />
       </UserStack.Group>

@@ -11,15 +11,12 @@ import {Provider as PaperProvider} from 'react-native-paper';
 
 import {TabBarElement} from './src/components/Elements/TabBarElement';
 import {ExhibitionStackNavigator} from './src/navigation/Exhibition/ExhibitionStackNavigator';
-// import {RecommenderStackNavigator} from './src/navigation/RecommenderStackNavigator';
-import {UserStackNavigator} from './src/navigation/UserStackNavigator';
+import {UserStackNavigator} from './src/navigation/User/UserStackNavigator';
 import {ETypes, StoreContext, StoreProvider} from './src/state/Store';
 import {footerColors, footerOptions} from './src/styles/styles';
 import * as Linking from "expo-linking";
-import { v4 as uuidv4 } from 'uuid';
 import {RootStackEnum, ExhibitionRootEnum } from './src/typing/routes'
 
-import Entypo from '@expo/vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
 import {AnimatedAppLoader} from './src/screens/SplashScreen/SplashScreen';
 
@@ -55,7 +52,6 @@ function App() {
 
   React.useEffect(() => {
     auth().onAuthStateChanged((userState: FirebaseAuthTypes.User | null) => {
-      console.log("userState", userState)
       if (userState?.uid && userState.email) {
         dispatch({
           type: ETypes.setUser,

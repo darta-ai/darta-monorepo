@@ -252,5 +252,10 @@ export type ExhibitionMapPin = {
   };
 }
 
+export type GalleryPreview = {
+  galleryLogo: Images;
+  galleryName: PublicFields;
+  _id: string;
+}
 
 export {};

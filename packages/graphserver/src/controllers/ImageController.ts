@@ -81,11 +81,11 @@ export class ImageController {
     bucketName: string;
   }) {
     try {
-      const metadata = await this.imageService.fetchImage({
+      const url = await this.imageService.getPresignedUrl({
         fileName,
         bucketName,
       });
-      return metadata;
+      return url;
     } catch (error: any) {
       throw new Error(`received an error from minio ${error?.message}`);
     }

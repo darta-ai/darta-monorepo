@@ -18,6 +18,7 @@ export type PreviousExhibitionStackParamList = {
 };
 
 export function PastExhibitionTopTabNavigator({route} : {route: any}) {
+
   const {state} = useContext(StoreContext);
   let exhibitionId = "";
   if (route?.params?.exhibitionId){

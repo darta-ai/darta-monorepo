@@ -43,14 +43,15 @@ export const headerOptions = {
   headerTitleStyle: {
     fontFamily: 'Avenir Next',
     fontSize: 16,
-    color: Colors.PRIMARY_50,
+    color: Colors.PRIMARY_950,
   },
   headerBackTitleStyle: {
     fontFamily: 'Avenir Next',
     fontSize: 14,
+    color: Colors.PRIMARY_900
   },
   headerStyle: {
-    backgroundColor: Colors.PRIMARY_400,
+    backgroundColor: Colors.PRIMARY_200,
   },
 };
 
@@ -59,15 +60,15 @@ export const modalHeaderOptions = {
   headerTitleStyle: {
     fontFamily: 'Avenir Next',
     fontSize: 16,
-    color: Colors.PRIMARY_50,
+    color: Colors.PRIMARY_950,
   },
   headerBackTitleStyle: {
     fontFamily: 'Avenir Next',
     fontSize: 15,
-    color: Colors.PRIMARY_MILK
+    color: Colors.PRIMARY_900
   },
   headerStyle: {
-    backgroundColor: Colors.PRIMARY_400,
+    backgroundColor: Colors.PRIMARY_200,
   },
 }
 
@@ -76,15 +77,15 @@ export const footerOptions = {
   tabBarLabelStyle: {
     fontFamily: 'Avenir Next',
     fontSize: 15,
-    color: Colors.PRIMARY_50,
+    color: Colors.PRIMARY_900,
   },
   tabBarStyle: {
-    backgroundColor: Colors.PRIMARY_400,
+    backgroundColor: Colors.PRIMARY_200,
   },
 };
 export const footerColors = {
-  focused: Colors.PRIMARY_50,
-  notFocused: Colors.PRIMARY_200,
+  focused: Colors.PRIMARY_950,
+  notFocused: Colors.PRIMARY_600,
 };
 
 

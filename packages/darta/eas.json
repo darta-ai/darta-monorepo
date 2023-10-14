@@ -32,7 +32,12 @@
     "preview": {
       "distribution": "internal",
       "developmentClient": true,
-      "ios": { "simulator": true }
+      "ios": { "simulator": true },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.darta.art/",
+        "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyDToUzSItfm8m8MSAAGmQq8Xt8zNub_phA",
+        "ENVIRONMENT": "prod"
+      }
     },
     "production": {
       "env": {

@@ -1,4 +1,4 @@
-import { Images } from '@darta-types/dist';
+import { GalleryPreview, Images } from '@darta-types/dist';
 
 import {Node} from '../../models/models';
 
@@ -41,9 +41,13 @@ export interface IUserService {
     uid: string;
     relationship: string;
   }): Promise<boolean>;
+  createDartaUserGalleryRelationship({uid, galleryId} : {uid: string, galleryId: string}): Promise<void>
+
   readGalleryUser({uid}: {uid: string}): Promise<Node | null>;
   
   readGalleryEdgeRelationship({uid}: {uid: string}): Promise<string | boolean>;
+
+  readDartaUser({localStorageUid}: {localStorageUid: string}): Promise<Node | null>;
   editGalleryEdge({
     galleryId,
     uid,
@@ -57,6 +61,7 @@ export interface IUserService {
     profilePicture,
     userName,
     email,
+    localStorageUid,
     legalFirstName,
     legalLastName,
     uid,
@@ -66,9 +71,16 @@ export interface IUserService {
     email?: string;
     legalFirstName?: string;
     legalLastName?: string;
+    localStorageUid: string;
     uid?: string;
   }): Promise<any>
   checkIfGalleryUserExists({uid}: {uid: string}): Promise<boolean>;
-  deleteDartaUser(): Promise<boolean>;
   deleteGalleryUser(): Promise<boolean>;
+  deleteDartaUser({localStorageUid} : {localStorageUid: string}): Promise<boolean>;
+  deleteDartaUserGalleryRelationship({uid, galleryId} : {uid: string, galleryId: string}): Promise<void>
+  
+  listDartaUserFollowsGallery({uid} : {uid: string}): Promise<GalleryPreview[]>
+  generateGalleryUserId({uid}: {uid: string}): string
+  generateDartaUserId({localStorageUid}: {localStorageUid: string}): string
+  getLocalStorageIdFromUID({uid}: {uid: string}): Promise<string>;
 }
