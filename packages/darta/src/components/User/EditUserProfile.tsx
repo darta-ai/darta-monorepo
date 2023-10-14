@@ -3,17 +3,23 @@ import {Controller, useForm} from 'react-hook-form';
 import {Animated, Image, ScrollView, StyleSheet, View} from 'react-native';
 // import {launchImageLibrary} from 'react-native-image-picker';
 import {Button, IconButton, TextInput} from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { USER_UID_KEY } from '../../utils/constants';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import * as ImagePicker from 'expo-image-picker';
+import auth from '@react-native-firebase/auth';
+import * as FileSystem from 'expo-file-system';
 
 import * as Colors from '@darta-styles';
 import {TextElement} from '../Elements/_index';
 import {buttonSizes, icons} from '../../utils/constants';
 import {galleryInteractionStyles, globalTextStyles} from '../../styles/styles';
 import {ETypes, StoreContext} from '../../state/Store';
+import { editDartaUserAccount } from '../../api/userRoutes';
+import { DeleteAccountDialog } from '../Dialog/DeleteAccountDialog';
 
 type FieldState = {
   isEditing?: boolean;
@@ -23,9 +29,9 @@ type FieldState = {
 enum SignedInActions {
   profilePicture = 'profilePicture',
   userName = 'userName',
-  legalName = 'legalName',
+  legalFirstName= 'legalFirstName',
+  legalLastName = 'legalLastName',
   email = 'email',
-  phone = 'phone',
 }
 
 type FormData = {
@@ -43,6 +49,7 @@ export const SSSignedInUserSettings = StyleSheet.create({
     alignContent: 'center',
     alignSelf: 'center',
     width: wp('100%'),
+    height: hp('100%'),
     marginBottom: hp('5%'),
   },
   divider: {
@@ -73,11 +80,11 @@ export const SSSignedInUserSettings = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     width: wp('80%'),
-    height: hp('4.5%'),
+    height: hp('3.5%'),
   },
 });
 
-export function UserSettingsSignedIn() {
+export function EditUserProfile({navigation} : {navigation: any}) {
   const {state, dispatch} = useContext(StoreContext);
 
   const [showOnlyOne, setShowOnlyOne] = useState(false);
@@ -87,7 +94,7 @@ export function UserSettingsSignedIn() {
   const handleShrinkElements = useCallback(() => {
     Animated.timing(heightAnim, {
       toValue: 0,
-      duration: 500,
+      duration: 800,
       useNativeDriver: false,
     }).start();
   }, [heightAnim]);
@@ -95,7 +102,7 @@ export function UserSettingsSignedIn() {
   const handleExpandElements = useCallback(() => {
     Animated.timing(heightAnim, {
       toValue: Math.floor(hp('15%')),
-      duration: 500,
+      duration: 502,
       useNativeDriver: false,
     }).start();
   }, [heightAnim]);
@@ -123,7 +130,7 @@ export function UserSettingsSignedIn() {
       userName: state.user?.userName,
       legalFirstName: state.user?.legalFirstName,
       legalLastName: state.user?.legalLastName,
-      email: state.user?.email
+      email: state.user?.email as string | null,
     },
   });
 
@@ -135,7 +142,16 @@ export function UserSettingsSignedIn() {
       (formData.legalLastName.isEditing as boolean) ||
       (formData.email.isEditing as boolean) 
     setShowOnlyOne(isShowing);
-  }, [formData]);
+
+    const setEmail = async () => {
+      const email = auth().currentUser;
+      if (email) {
+        setValue('email', email.email);
+      }
+    }
+
+    setEmail()
+  }, [,formData]);
 
   const defaultFieldState = () => ({
     isEditing: false,
@@ -155,9 +171,9 @@ export function UserSettingsSignedIn() {
 
   const [tempImage, setTempImage] = useState<any>({uri: '', type: ''});
   const [tempValue, setTempValue] = useState<string>('');
+  const [tempBuffer, setTempBuffer] = useState<any>(null);
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -165,12 +181,17 @@ export function UserSettingsSignedIn() {
       quality: 1,
     });
 
-    console.log(result);
-
-    if (!result.canceled) {
-      // setImage(result.assets[0].uri);
+    if (result && !result.canceled && result.assets && result.assets[0]) {
+      const { uri, type } = result.assets[0];
+      // Read the file content using Expo's FileSystem
+      const fileContent = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+      const dataUrl = `data:image/png;base64,${fileContent}`;
+      setTempBuffer(dataUrl)
+      
+      // Now, the fileContent is the base64 encoded string of your image
+      setTempImage({ uri, type });
     }
-  };
+};
 
 
   const handleButtonClick = async (formName: SignedInActions) => {
@@ -197,9 +218,10 @@ export function UserSettingsSignedIn() {
       default:
         // eslint-disable-next-line no-case-declarations
         const {isEditing} = formData[formName];
+        const values = getValues(formName)
         if (!isEditing) {
           handleShrinkElements();
-          setTempValue(getValues(formName));
+          setTempValue(values ? values : '');
           setFormData({
             ...formData,
             [formName]: {isEditing: true},
@@ -212,72 +234,122 @@ export function UserSettingsSignedIn() {
     }
   };
 
+  const [loading, setLoading] = React.useState<boolean>(false);
+
   const onSave = async () =>
-    // data: unknown
-    {
-      // here need to do some backend stuff
-
-      /// need to make this a blob and then upload to s3
-
+  {
+      setLoading(true)
+      const localStorageUid = state.user?.localStorageUid ?? await AsyncStorage.getItem(USER_UID_KEY);
+      const value = getValues()
+     if (formData.userName.isEditing) {
+        const results = await editDartaUserAccount({userName: value.userName, localStorageUid: localStorageUid!})
+       dispatch({
+          type: ETypes.setUser,
+          userData: {
+            ...state.user,
+            userName: results.userName
+          }
+       })
+     }
+    if (formData.legalFirstName.isEditing) {
+      const results = await editDartaUserAccount({legalFirstName: value.legalFirstName, localStorageUid: localStorageUid!})
+      dispatch({
+          type: ETypes.setUser,
+          userData: {
+            ...state.user,
+            legalFirstName: results.legalFirstName
+          }
+      })
+   }
+   if (formData.legalLastName.isEditing) {
+    const results = await editDartaUserAccount({legalLastName: value.legalLastName, localStorageUid: localStorageUid!})
+        dispatch({
+            type: ETypes.setUser,
+            userData: {
+              ...state.user,
+              legalLastName: results.legalLastName
+            }
+        })
+    }
       if (formData.profilePicture.isEditing) {
+        const results = await editDartaUserAccount({profilePicture: {
+          fileData: tempBuffer
+        }, localStorageUid: localStorageUid!})
+        if (results?.profilePicture?.value) {
+          dispatch({
+            type: ETypes.setUser,
+            userData: {
+              ...state.user,
+              profilePicture: {
+                value: results.profilePicture.value
+              }
+            }
+          })
+          setTempImage({uri: results.profilePicture.value});
+        }
         setValue('profilePicture', tempImage.uri);
         resetUi();
-        setTempImage({uri: ''});
+
       }
-      // dispatch({
-      //   type: ETypes.setUserSettings,
-      //   userSettings: {
-      //     ...getValues(),
-      //   },
-      // });
+ 
       resetUi();
+      setLoading(false)
     };
 
-  return (
-    <ScrollView style={{height: hp('100%')}}>
-      <View style={[SSSignedInUserSettings.divider, {borderBottomWidth: 0}]} />
-      <TextElement style={SSSignedInUserSettings.header}>
-        profile picture
-      </TextElement>
-      <View style={[SSSignedInUserSettings.textEditContainer]}>
-        {formData.profilePicture.isEditing && tempImage.uri ? (
-          <Image
-            source={{
-              uri: tempImage.uri,
-            }}
-            style={SSSignedInUserSettings.image}
-          />
-        ) : (
-          <Image
-            source={{
-              uri: state.user?.profilePicture?.value!,
-            }}
-            style={SSSignedInUserSettings.image}
-          />
-        )}
+    const [dialogVisible, setDialogVisible] = useState<boolean>(false)
 
-        <IconButton
-          icon={formData.profilePicture.isEditing ? icons.cancel : icons.cog}
-          iconColor={
-            formData.profilePicture.isEditing
-              ? Colors.ADOBE_900
-              : Colors.PRIMARY_700
-          }
-          mode="outlined"
-          size={buttonSizes.extraSmall}
-          containerColor={Colors.PRIMARY_50}
-          style={galleryInteractionStyles.secondaryButton}
-          accessibilityLabel="edit photo"
-          testID="editPhoto"
-          animated
-          onPress={() => {
-            handleButtonClick(SignedInActions.profilePicture);
-          }}
-        />
-      </View>
+  return (
+    <ScrollView style={showOnlyOne && {marginTop: hp('5%')}}>
+      <Animated.View
+        style={!formData.profilePicture.isEditing && {height: heightAnim}}>
+        <View style={[SSSignedInUserSettings.divider, {borderBottomWidth: 0}, showOnlyOne && {display: 'none'}]} />
+        <View style={
+            !formData.profilePicture.isEditing && showOnlyOne && {display: 'none'}
+          }>
+          <TextElement style={SSSignedInUserSettings.header}>
+            profile picture
+          </TextElement>
+          <View style={[SSSignedInUserSettings.textEditContainer]}>
+            {formData.profilePicture.isEditing && tempImage.uri ? (
+              <Image
+                source={{
+                  uri: tempImage.uri,
+                }}
+                style={SSSignedInUserSettings.image}
+              />
+            ) : (
+              <Image
+                source={{
+                  uri: state.user?.profilePicture?.value!,
+                }}
+                style={SSSignedInUserSettings.image}
+              />
+            )}
+
+            <IconButton
+              icon={formData.profilePicture.isEditing ? icons.cancel : icons.cog}
+              iconColor={
+                formData.profilePicture.isEditing
+                ? Colors.PRIMARY_500
+                : Colors.PRIMARY_900
+              }
+              mode="outlined"
+              size={buttonSizes.extraSmall}
+              containerColor={Colors.PRIMARY_50}
+              style={galleryInteractionStyles.secondaryButton}
+              accessibilityLabel="edit photo"
+              testID="editPhoto"
+              animated
+              onPress={() => {
+                handleButtonClick(SignedInActions.profilePicture);
+              }}
+            />
+          </View>
+        </View>
+      </Animated.View>
       <Animated.View
         style={!formData.userName.isEditing && {height: heightAnim}}>
-        <View style={SSSignedInUserSettings.divider} />
+        <View style={[SSSignedInUserSettings.divider, showOnlyOne && {display: 'none'}]} />
         <View
           style={
             !formData.userName.isEditing && showOnlyOne && {display: 'none'}
@@ -303,12 +375,14 @@ export function UserSettingsSignedIn() {
                       testID="userNameInput"
                       mode="outlined"
                       activeOutlineColor={Colors.PRIMARY_600}
+                      textColor={Colors.PRIMARY_700}
                       theme={{
-                        fonts: {default: {fontFamily: 'AvenirNext-Bold'}},
+                        fonts: {default: {fontFamily: 'AvenirNext-Bold'}}
                       }}
                       style={{
                         backgroundColor: Colors.PRIMARY_50,
                         fontFamily: 'AvenirNext-Bold',
+                        color: Colors.PRIMARY_700,
                       }}
                     />
                   )}
@@ -323,12 +397,12 @@ export function UserSettingsSignedIn() {
               icon={formData.userName.isEditing ? icons.cancel : icons.cog}
               iconColor={
                 formData.userName.isEditing
-                  ? PRIMARY_DARK_RED
-                  : PRIMARY_DARK_GREY
+                ? Colors.PRIMARY_500
+                : Colors.PRIMARY_900
               }
               mode="outlined"
               size={buttonSizes.extraSmall}
-              containerColor={MILK}
+              containerColor={Colors.PRIMARY_50}
               style={galleryInteractionStyles.secondaryButton}
               accessibilityLabel="edit username"
               testID="editUserName"
@@ -340,12 +414,12 @@ export function UserSettingsSignedIn() {
       </Animated.View>
       <Animated.View
         style={!formData.legalFirstName && {height: heightAnim}}>
-        <View style={SSSignedInUserSettings.divider} />
+        <View style={[SSSignedInUserSettings.divider, showOnlyOne && {display: 'none'}]} />
         <View
           style={
             !formData.legalFirstName.isEditing && showOnlyOne && {display: 'none'}
           }>
-          <TextElement style={SSSignedInUserSettings.header}>name</TextElement>
+          <TextElement style={SSSignedInUserSettings.header}>first name</TextElement>
           <View style={SSSignedInUserSettings.textEditContainer}>
             <View style={{width: wp('60%')}}>
               {formData.legalFirstName.isEditing ? (
@@ -364,10 +438,12 @@ export function UserSettingsSignedIn() {
                       label="full name"
                       mode="outlined"
                       autoComplete="name"
-                      activeOutlineColor={PRIMARY_600}
+                      activeOutlineColor={Colors.PRIMARY_600}
+                      textColor={Colors.PRIMARY_700}
                       style={{
-                        backgroundColor: PRIMARY_MILK,
+                        backgroundColor: Colors.PRIMARY_50,
                         fontFamily: 'AvenirNext-Bold',
+                        color: Colors.PRIMARY_700,
                       }}
                     />
                   )}
@@ -383,8 +459,8 @@ export function UserSettingsSignedIn() {
                 icon={formData.legalFirstName.isEditing ? icons.cancel : icons.cog}
                 iconColor={
                   formData.legalFirstName.isEditing
-                    ? PRIMARY_DARK_RED
-                    : PRIMARY_DARK_GREY
+                  ? Colors.PRIMARY_500
+                  : Colors.PRIMARY_900
                 }
                 mode="outlined"
                 size={buttonSizes.extraSmall}
@@ -393,71 +469,17 @@ export function UserSettingsSignedIn() {
                 accessibilityLabel="edit name"
                 testID="editName"
                 animated
-                onPress={() => handleButtonClick(SignedInActions.legalName)}
+                onPress={() => handleButtonClick(SignedInActions.legalFirstName)}
               />
             </View>
           </View>
         </View>
       </Animated.View>
-      <Animated.View style={!formData.email.isEditing && {height: heightAnim}}>
-        <View style={SSSignedInUserSettings.divider} />
-        <View
-          style={!formData.email.isEditing && showOnlyOne && {display: 'none'}}>
-          <TextElement style={SSSignedInUserSettings.header}>email</TextElement>
-          <View style={SSSignedInUserSettings.textEditContainer}>
-            <View style={{width: wp('60%')}}>
-              {formData.email.isEditing ? (
-                <Controller
-                  name="email"
-                  rules={{required: true}}
-                  control={control}
-                  render={({field: {onChange, onBlur, value}}) => (
-                    <TextInput
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      value={value}
-                      multiline
-                      autoFocus
-                      label="email"
-                      testID="emailInput"
-                      mode="outlined"
-                      autoComplete="email"
-                      activeOutlineColor={PRIMARY_600}
-                      style={{
-                        backgroundColor: PRIMARY_MILK,
-                        fontFamily: 'AvenirNext-Bold',
-                      }}
-                    />
-                  )}
-                />
-              ) : (
-                <TextElement style={SSSignedInUserSettings.text}>
-                  {getValues().email}
-                </TextElement>
-              )}
-            </View>
-            <IconButton
-              icon={formData.email.isEditing ? icons.cancel : icons.cog}
-              iconColor={
-                formData.email.isEditing ? PRIMARY_DARK_RED : PRIMARY_DARK_GREY
-              }
-              mode="outlined"
-              size={buttonSizes.extraSmall}
-              containerColor={MILK}
-              style={galleryInteractionStyles.secondaryButton}
-              accessibilityLabel="edit name"
-              testID="editName"
-              animated
-              onPress={() => handleButtonClick(SignedInActions.email)}
-            />
-          </View>
-        </View>
-      </Animated.View>
       <Animated.View style={!formData.legalLastName.isEditing && {height: heightAnim}}>
-        <View style={SSSignedInUserSettings.divider} />
+        <View style={[SSSignedInUserSettings.divider, showOnlyOne && {display: 'none'}]} />
         <View
           style={!formData.legalLastName.isEditing && showOnlyOne && {display: 'none'}}>
-          <TextElement style={SSSignedInUserSettings.header}>phone</TextElement>
+          <TextElement style={SSSignedInUserSettings.header}>last name</TextElement>
           <View style={SSSignedInUserSettings.textEditContainer}>
             <View style={{width: wp('60%')}}>
               {formData.legalLastName.isEditing ? (
@@ -472,14 +494,16 @@ export function UserSettingsSignedIn() {
                       onChangeText={onChange}
                       onBlur={onBlur}
                       value={value}
-                      label="phone number"
+                      label="last name"
                       testID="phoneInput"
                       mode="outlined"
                       autoComplete="tel"
-                      activeOutlineColor={PRIMARY_600}
+                      textColor={Colors.PRIMARY_700}
+                      activeOutlineColor={Colors.PRIMARY_600}
                       style={{
-                        backgroundColor: PRIMARY_MILK,
+                        backgroundColor: Colors.PRIMARY_50,
                         fontFamily: 'AvenirNext-Bold',
+                        color: Colors.PRIMARY_700,
                       }}
                     />
                   )}
@@ -495,26 +519,86 @@ export function UserSettingsSignedIn() {
               mode="outlined"
               size={buttonSizes.extraSmall}
               iconColor={
-                formData.legalLastName.isEditing ? PRIMARY_DARK_BLUE : PRIMARY_DARK_GREY
+                formData.legalLastName.isEditing 
+                ? Colors.PRIMARY_500
+                : Colors.PRIMARY_900
               }
-              containerColor={MILK}
+              containerColor={Colors.PRIMARY_50}
               style={galleryInteractionStyles.secondaryButton}
               accessibilityLabel="edit name"
               testID="editName"
               animated
-              onPress={() => handleButtonClick(SignedInActions.phone)}
+              onPress={() => handleButtonClick(SignedInActions.legalLastName)}
             />
           </View>
         </View>
       </Animated.View>
-
+      <Animated.View style={!formData.email.isEditing && {height: heightAnim}}>
+        <View style={[SSSignedInUserSettings.divider, showOnlyOne && {display: 'none'}]} />
+        <View
+          style={!formData.email.isEditing && showOnlyOne && {display: 'none'}}>
+          <TextElement style={SSSignedInUserSettings.header}>email</TextElement>
+          <View style={SSSignedInUserSettings.textEditContainer}>
+            <View style={{width: wp('60%')}}>
+              {formData.email.isEditing ? (
+                <Controller
+                  name="email"
+                  rules={{required: true}}
+                  control={control}
+                  render={({field: {onChange, onBlur, value}}) => (
+                    <TextInput
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      value={value as string}
+                      multiline
+                      autoFocus
+                      label="email"
+                      testID="emailInput"
+                      mode="outlined"
+                      autoComplete="email"
+                      textColor={Colors.PRIMARY_700}
+                      activeOutlineColor={Colors.PRIMARY_600}
+                      style={{
+                        backgroundColor: Colors.PRIMARY_50,
+                        fontFamily: 'AvenirNext-Bold',
+                        color: Colors.PRIMARY_700,
+                      }}
+                    />
+                  )}
+                />
+              ) : (
+                <TextElement style={SSSignedInUserSettings.text}>
+                  {getValues().email}
+                </TextElement>
+              )}
+            </View>
+            <IconButton
+              icon={formData.email.isEditing ? icons.minus : icons.cog}
+              mode="outlined"
+              size={buttonSizes.extraSmall}
+              iconColor={
+                formData.email.isEditing 
+                ? Colors.PRIMARY_500
+                : Colors.PRIMARY_900
+              }
+              containerColor={Colors.PRIMARY_50}
+              style={galleryInteractionStyles.secondaryButton}
+              accessibilityLabel="edit name"
+              testID="editName"
+              animated
+              onPress={() => handleButtonClick(SignedInActions.email)}
+            />
+          </View>
+        </View>
+      </Animated.View>
       {showOnlyOne && (
         <View style={{alignContent: 'center'}}>
           <Button
             icon={icons.saveSettings}
             mode="contained"
-            buttonColor={PRIMARY_600}
-            textColor={MILK}
+            buttonColor={Colors.PRIMARY_600}
+            textColor={Colors.PRIMARY_50}
+            loading={loading}
             style={{
               width: wp('80%'),
               marginTop: hp('5%'),
@@ -525,6 +609,27 @@ export function UserSettingsSignedIn() {
           </Button>
         </View>
       )}
+      {!showOnlyOne && (
+        <View style={{alignContent: 'center'}}>
+          <Button
+            icon="delete-alert"
+            mode="contained"
+            buttonColor={Colors.PRIMARY_950}
+            textColor={Colors.PRIMARY_50}
+            style={{
+              width: wp('80%'),
+              marginTop: hp('5%'),
+              alignSelf: 'center',
+            }}
+            onPress={() => setDialogVisible(true)}>
+            Delete Profile
+          </Button>
+        </View>
+      )}
+      <DeleteAccountDialog 
+        dialogVisible={dialogVisible}
+        setDialogVisible={setDialogVisible}
+      />
     </ScrollView>
   );
 }

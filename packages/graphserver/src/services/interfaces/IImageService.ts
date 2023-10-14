@@ -26,4 +26,11 @@ export interface IImageService {
     bucketName: string;
     fileName: string;
   }): Promise<any>;
+  getPresignedUrl({
+    bucketName,
+    fileName,
+  }: {
+    bucketName: string;
+    fileName: string;
+  }): Promise<any>;
 }

@@ -1,1 +1,0 @@
-export {ArtworkNavigatorModal} from './ArtworkNavigatorModal';

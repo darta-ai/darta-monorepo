@@ -7,7 +7,7 @@ import {
 
 import { TextElement } from '../Elements/TextElement';
 import { globalTextStyles } from '../../styles/styles';
-import { Divider } from 'react-native-paper';
+import { Button, Divider } from 'react-native-paper';
 
 import { simplifyAddress } from '../../utils/functions';
 

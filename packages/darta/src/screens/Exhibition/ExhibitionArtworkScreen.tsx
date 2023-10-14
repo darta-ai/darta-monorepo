@@ -1,21 +1,18 @@
-import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext} from 'react';
-import {View, StyleSheet, FlatList,
-  RefreshControl} from 'react-native';
+import {View, StyleSheet, Image} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { ActivityIndicator } from 'react-native-paper';
+import { ArtworkList } from '../../components/Artwork/ArtworkList';
 
 
 import * as Colors from '@darta-styles';
 import {TextElement} from '../../components/Elements/_index';
 import {
-  ExhibitionNavigatorParamList,
   ExhibitionRootEnum
 } from '../../typing/routes';
 import {ETypes, StoreContext} from '../../state/Store';
 import { readExhibition } from '../../api/exhibitionRoutes';
 import {Artwork} from '@darta-types'
-import {ArtworkCard} from '../../components/Artwork/ArtworkCard'
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
 
@@ -38,7 +35,7 @@ const artworkDetailsStyles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: Colors.PRIMARY_50,
-},
+  },
   flexContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -64,12 +61,19 @@ export function ExhibitionArtworkScreen({
   const [errorText, setErrorText] = React.useState<string>("");
   const [isArtworkLoaded, setIsArtworkLoaded] = React.useState<boolean>(false);
 
-  const [oddArtwork, setOdds] = React.useState<Artwork[] | null>(null)
-  const [evenArtwork, setEvens] = React.useState<Artwork[] | null>(null)
+  const [oddArtwork, setOddsArtwork] = React.useState<Artwork[] | null>(null)
+  const [evenArtwork, setEvensArtwork] = React.useState<Artwork[] | null>(null)
 
   const setArtworksFromExhibitionId = async ({exhibitionId}: {exhibitionId: string}) => {
-    if (state?.exhibitionData && state.exhibitionData[exhibitionId] && state.exhibitionData[exhibitionId].artworks){
-      const artwork = state.exhibitionData[exhibitionId].artworks
+      let artwork: {[key: string] : Artwork} = {}
+      if (state.exhibitionData && state.exhibitionData[exhibitionId] && state.exhibitionData[exhibitionId].artworks){
+        artwork = state.exhibitionData[exhibitionId].artworks ?? {}
+      } else {
+        setIsArtworkLoaded(false)
+        const results = await fetchArtworkByExhibitionById()
+        console.log({results})
+        artwork = results ?? {}
+      }
       if (artwork){
         const odds: Artwork[] = [];
         const evens: Artwork[]  = [];
@@ -81,17 +85,53 @@ export function ExhibitionArtworkScreen({
             odds.push(artwork)
           }
         })
-        setOdds(odds)
-        setEvens(evens)
+        setOddsArtwork(odds)
+        setEvensArtwork(evens)
         setIsArtworkLoaded(true)
         setErrorText("")
-      }
+  } else {
+    setErrorText("hey something went wrong, please refresh and try again")
   }
+}
+
+async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork} | null> {
+  if (!route?.params?.exhibitionId) return null;
+  try {
+      const { exhibitionId} = route.params
+      const exhibition = await readExhibition({ exhibitionId })
+
+      const artworkPromises = Object.values(exhibition.artworks)
+      .map((artwork: Artwork) => {
+          if (artwork.artworkImage.value){
+              return Image.prefetch(artwork.artworkImage.value)
+          }
+      })
+      Promise.all(artworkPromises)
+
+      dispatch({
+          type: ETypes.saveExhibition,
+          exhibitionData: exhibition,
+      })
+      dispatch({
+          type: ETypes.setQRCodeExhibitionId,
+          qRCodeExhibitionId: exhibition.exhibitionId,
+        })
+      dispatch({
+          type: ETypes.setFullyLoadedExhibitions,
+          fullyLoadedExhibitions: {[exhibition._id] : true},
+      })
+      return exhibition.artworks
+  } catch (error: any){
+      console.log(error)
+  }
+  return null
 }
 
   React.useEffect(()=>{
     if (route?.params?.exhibitionId && state.exhibitionData && state.exhibitionData[route.params.exhibitionId]){
       setExhibitionId(route.params.exhibitionId);
+      setArtworksFromExhibitionId({exhibitionId: route.params.exhibitionId})
+    } else if (route?.params?.exhibitionId){
       setArtworksFromExhibitionId({exhibitionId: route.params.exhibitionId})
     } else if (state.qrCodeExhibitionId) {
       setExhibitionId(state.qrCodeExhibitionId);
@@ -99,7 +139,7 @@ export function ExhibitionArtworkScreen({
     } else {
       setErrorText("hey something went wrong, please refresh and try again")
     }
-  }, [,state.qrCodeExhibitionId, state.exhibitionData])
+  }, [,state.qrCodeExhibitionId])
 
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -119,63 +159,27 @@ export function ExhibitionArtworkScreen({
       setRefreshing(false);
     }, 500)  }, []);
 
+
+
   return (
     <>
       {!isArtworkLoaded ? ( 
         <View style={artworkDetailsStyles.spinnerContainer}>
-            <ActivityIndicator animating={errorText !== ""} size={35} color={Colors.PRIMARY_800} />
+            <ActivityIndicator animating={true} size={35} color={Colors.PRIMARY_800} />
             <TextElement>{errorText}</TextElement>
         </View>
         )
         : 
         (
-      <View style={artworkDetailsStyles.container}>
-        <FlatList
-          data={[0]}
-          keyExtractor={item => item.toString()}
-          style={{ marginTop: hp('2.5%')}}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}
-          renderItem={() => (
-            <View style={artworkDetailsStyles.flexContainer}>
-              <View >
-                {evenArtwork && (
-                  <FlatList
-                    nestedScrollEnabled={false}
-                    data={evenArtwork}
-                    keyExtractor={item => item.artworkId?.toString() ?? "654321"}
-                    renderItem={({item}) => (
-                      <ArtworkCard
-                        artwork={item}
-                        displayLeft={true}
-                        navigation={navigation}
-                      />
-                    )}
-                  />
-                )}
-              </View>
-              <View>
-                {oddArtwork && (
-                  <FlatList
-                    nestedScrollEnabled={false}
-                    data={oddArtwork}
-                    keyExtractor={item => item.artworkId?.toString() ?? "123456"}
-                    renderItem={({item}) => (
-                      <View>
-                      <ArtworkCard
-                        artwork={item}
-                        displayLeft={false}
-                        navigation={navigation}
-                      />
-                      </View>
-                    )}
-                  />
-                )}
-              </View>
-            </View>
-          )}
+          <ArtworkList 
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          evenArtwork={evenArtwork as Artwork[]}
+          oddArtwork={oddArtwork as Artwork[]}
+          navigation={navigation}
+          navigateTo={ExhibitionRootEnum.individualArtwork}
+          navigateToParams={ExhibitionRootEnum.TopTab}
         />
-        </View>
       )}
     </>
   );

@@ -12,9 +12,9 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import {MILK} from '@darta-styles';
+import * as Colors from '@darta-styles';
 import {getButtonSizes} from '../utils/functions';
-import {ArtworksCarousel} from '../components/Artwork/ArtworkCarousel';
+import {GalleriesFollowing} from '../components/Gallery/GalleriesFollowing';
 import {UserPersonalWorkSelector} from '../components/User/UserPersonalWorkSelector';
 import {UserProfile} from '../components/User/UserProfile';
 
@@ -24,14 +24,15 @@ const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 export const userHomeStyles = StyleSheet.create({
   userHomeContainer: {
-    backgroundColor: MILK,
+    backgroundColor: Colors.PRIMARY_100,
     flex: 1,
     flexDirection: 'column',
     alignContent: 'center',
+    justifyContent: 'flex-start',
     paddingTop: hp('3%'),
   },
   header: {
-    backgroundColor: MILK,
+    backgroundColor: Colors.PRIMARY_100,
     overflow: 'hidden',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
@@ -88,7 +89,7 @@ export function UserHome({navigation}: {navigation: any}) {
 
   const imageWidthInterpolate = scrollY.interpolate({
     inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [hp('15%'), hp('5%')],
+    outputRange: [hp('17.5%'), hp('5%')],
     extrapolate: 'clamp',
   });
 
@@ -112,9 +113,8 @@ export function UserHome({navigation}: {navigation: any}) {
           localButtonSizes={localButtonSizes}
         />
       </Animated.View>
-      <ScrollView onScroll={handleScroll} scrollEventThrottle={16}>
-        <View>
-          <ScrollView>
+      <ScrollView onScroll={handleScroll} scrollEventThrottle={16} style={{height: hp('60%'), marginTop: hp('5%')}}>
+        <View> 
             <View>
               <UserPersonalWorkSelector
                 navigation={navigation}
@@ -123,12 +123,10 @@ export function UserHome({navigation}: {navigation: any}) {
               />
             </View>
             <View>
-              <ArtworksCarousel
-                headline="| e x p l o r e"
-                exploreData={exploreData}
+              <GalleriesFollowing
+                headline="| f o l l o w i n g"
               />
             </View>
-          </ScrollView>
         </View>
       </ScrollView>
     </View>

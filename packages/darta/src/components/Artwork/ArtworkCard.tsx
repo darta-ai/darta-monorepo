@@ -6,10 +6,9 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import {PRIMARY_600, PRIMARY_GREY, PRIMARY_900, PRIMARY_200} from '@darta-styles';
+import {PRIMARY_600, PRIMARY_900, PRIMARY_200} from '@darta-styles';
 import {Artwork} from '@darta-types'
 import {TextElement} from '../Elements/_index';
-import {UserRoutesEnum} from '../../typing/routes'
 import {ETypes, StoreContext} from '../../state/Store';
 import { ExhibitionRootEnum } from '../../typing/routes';
 
@@ -17,10 +16,14 @@ export function ArtworkCard({
   artwork,
   displayLeft,
   navigation,
+  navigateTo,
+  navigateToParams
 }: {
   artwork: Artwork;
   displayLeft: boolean;
-  navigation: any;
+  navigation: any,
+  navigateTo: string,
+  navigateToParams: string
 }) {
   const {dispatch} = useContext(StoreContext);
 
@@ -29,10 +32,12 @@ export function ArtworkCard({
       type: ETypes.setTombstoneHeader,
       currentArtworkHeader: artwork?.artworkTitle?.value ?? "",
     });
-    navigation.navigate(ExhibitionRootEnum.individualArtwork, {
+    navigation.navigate(navigateTo, {
       artOnDisplay: artwork,
+      navigateToParams: navigateToParams
     });
   };
+
   let inputHeight = artwork?.artworkDimensions?.heightIn?.value ?? "1"
   let inputWidth = artwork?.artworkDimensions?.widthIn?.value ?? "1"
 
@@ -127,10 +132,10 @@ export function ArtworkCard({
         </View>
         <View style={SSArtworkSelectorCard.textContainer}>
           <TextElement style={SSArtworkSelectorCard.imageArtistText}>
-            {artwork?.artistName.value}
+            {artwork?.artistName?.value}
           </TextElement>
           <TextElement style={SSArtworkSelectorCard.imageTitle}>
-            {artwork?.artworkTitle.value}
+            {artwork?.artworkTitle?.value}
           </TextElement>
           <TextElement style={SSArtworkSelectorCard.imagePrice}>
             {displayPrice}

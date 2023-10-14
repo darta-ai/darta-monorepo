@@ -106,9 +106,6 @@ export function ExhibitionPreviewMini({
     >
       <View
         style={exhibitionPreview.container}>
-            <View style={exhibitionPreview.galleryIcon}>
-              {/* <GalleryIcon galleryLogo={galleryLogoLink}/> */}
-            </View>
           <View style={exhibitionPreview.heroImageContainer} >
             <Image 
                 source={{uri: exhibitionHeroImage}} 

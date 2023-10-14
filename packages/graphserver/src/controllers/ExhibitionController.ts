@@ -8,6 +8,7 @@ import {
   response,
 } from 'inversify-express-utils';
 
+import { standardConsoleLog } from '../config/templates';
 import {verifyToken} from '../middleware/accessTokenVerify';
 import {IExhibitionService, IGalleryService} from '../services/interfaces';
 
@@ -34,6 +35,7 @@ export class ExhibitionController {
       });
       res.json(newCollection);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/create', request: null})
       res.status(500).send(error.message);
     }
   }
@@ -63,6 +65,7 @@ export class ExhibitionController {
       });
       res.json(results);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/readForGallery', request: req?.body})
       res.status(500).send(error.message);
     }
   }
@@ -83,6 +86,7 @@ export class ExhibitionController {
       });
       res.json(results);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/readForUser', request: req?.query})
       res.status(500).send(error.message);
     }
   }
@@ -100,6 +104,7 @@ export class ExhibitionController {
       const results = await this.exhibitionService.readMostRecentGalleryExhibitionForUser({locationId: req.query.locationId as string});
       res.json(results);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/readMostRecentGalleryExhibitionForUser', request: req?.query})
       res.status(500).send(error.message);
     }
   }
@@ -110,8 +115,8 @@ export class ExhibitionController {
     @response() res: Response,
   ): Promise<void> {
     const {user} = req as any;
-    const {exhibition} = req.body;
     try {
+      const {exhibition} = req.body;
       const galleryId = await this.galleryService.getGalleryIdFromUID({
         uid: user.user_id,
       });
@@ -121,6 +126,7 @@ export class ExhibitionController {
       });
       res.json(results);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/edit', request: req?.body})
       res.status(500).send(error.message);
     }
   }
@@ -160,6 +166,7 @@ export class ExhibitionController {
       });
       res.json(results);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/reOrderExhibitionArtwork', request: req?.body})
       res.status(500).send(error.message);
     }
   }
@@ -185,6 +192,7 @@ export class ExhibitionController {
         res.status(500).send('unable to delete exhibition');
       }
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/deleteExhibitionOnly', request: req?.body})
       res.status(500).send(error.message);
     }
   }
@@ -211,6 +219,7 @@ export class ExhibitionController {
         throw new Error('unable to delete exhibition');
       }
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/deleteExhibitionAndArtwork', request: req?.body})
       res.status(500).send(error.message);
     }
   }
@@ -230,6 +239,7 @@ export class ExhibitionController {
       });
       res.json(results);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/listForGallery', request: user?.user_id})
       res.status(500).send(error.message);
     }
   }
@@ -250,6 +260,7 @@ export class ExhibitionController {
       });
       res.json(results);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/listForGallery', request: req?.query})
       res.status(500).send(error.message);
     }
   }

@@ -1,6 +1,32 @@
 import {Image} from 'react-native';
 
 import {buttonSizes} from './constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { v4 as uuidv4 } from 'uuid';
+import {USER_UID_KEY} from './constants'
+import {createUser} from '../api/userRoutes'
+import auth from '@react-native-firebase/auth';
+
+ 
+export const getUserLocalUid = async () => {
+  // await AsyncStorage.setItem(USER_UID_KEY, "")
+    try {
+        let userUid = await AsyncStorage.getItem(USER_UID_KEY);
+        const uid = auth().currentUser?.uid
+        if (!userUid && !uid) {
+            userUid = uuidv4();
+            if(userUid) {
+              await AsyncStorage.setItem(USER_UID_KEY, userUid)
+              await createUser({localStorageUid: userUid})
+            };
+        }
+
+        return userUid;
+    } catch (error) {
+        console.error('Failed to get user UID:', error);
+        return null;
+    }
+}
 
 export const imagePrefetch = async (imageUrls: string[]) => {
   const imagePrefetchResults: boolean[] = await Promise.all(
@@ -62,7 +88,7 @@ export function simplifyAddress(address: string | undefined | null) {
   const state = parts[2].split(' ')[1];
 
   // Join back and return
-  return `${addr}, ${city}, ${state}`;
+  return `${addr},${city}, ${state}`;
 }
 
 export const getButtonSizes = (hp: number) => {

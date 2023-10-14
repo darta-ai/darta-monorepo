@@ -1,34 +1,38 @@
 import React from 'react';
-import {Image, StyleSheet, View} from 'react-native';
+import {Image, StyleSheet, View, Animated} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Button} from 'react-native-paper';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
-import {Artwork} from '@darta-types';
-import {MILK, PRIMARY_300, PRIMARY_950, PRIMARY_600, PRIMARY_800} from '@darta-styles'
+import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
+import * as Colors from '@darta-styles'
 import {TextElement} from '../Elements/_index';
 import {icons} from '../../utils/constants';
 import {globalTextStyles} from '../../styles/styles';
-
-
+import { ETypes, StoreContext } from '../../state/Store';
+import { deleteArtworkRelationship } from '../../utils/apiCalls';
 
 
 export function TombstonePortrait({
   artwork,
+  saveLoading,
+  likeLoading,
   inquireAlert,
   likeArtwork, 
   saveArtwork,
 }: {
   artwork: Artwork,
-  likeArtwork: () => void,
-  saveArtwork: () => void,
-  inquireAlert: () => void
+  saveLoading: boolean,
+  likeLoading: boolean,
+  likeArtwork: ({artworkId} : {artworkId: string}) => void,
+  saveArtwork: ({artworkId} : {artworkId: string}) => void,
+  inquireAlert: ({artworkId} : {artworkId: string}) => void,
 }) {
 
+  const {state, dispatch} = React.useContext(StoreContext);
 
   let inputHeight = artwork?.artworkDimensions?.heightIn?.value ?? "1"
   let inputWidth = artwork?.artworkDimensions?.widthIn?.value ?? "1"
@@ -40,10 +44,10 @@ export function TombstonePortrait({
   let displayDimensionsString = "";
   if(artwork?.artworkDimensions.text.value){
     displayDimensionsString = artwork.artworkDimensions.text.value
-    .replaceAll(/[\r\n]+/g, '')
-    .replaceAll(' ', '')
-    .replaceAll('x', ' x ')
-    .replace(';', '; ')
+    .replace(/[\r\n]+/g, '')
+    .replace(/ /g, '')
+    .replace(/x/g, ' x ')
+    .replace(/;/g, '; ')
   }
   let displayPrice = "";
 
@@ -71,12 +75,12 @@ export function TombstonePortrait({
       justifyContent: 'center',
       alignContent: 'center',
       gap: 10,
-      marginTop: hp('5%'),
+      marginTop: hp('2%'),
     },
     imageContainer: {
       alignSelf: 'center',
       justifyContent: 'center',
-      width: wp('100%'),
+      width: wp('90%'),
       height: hp('40%'),
     },
     image: {
@@ -100,13 +104,13 @@ export function TombstonePortrait({
       fontSize: 20,
       textAlign: 'center',
     },
-    artTitle: {fontSize: 17, textAlign: 'center', color: PRIMARY_950},
-    artMedium: {fontSize: 15, textAlign: 'center', color: PRIMARY_950},
-    artDimensions: {fontSize: 12, color: PRIMARY_950},
+    artTitle: {fontSize: 17, textAlign: 'center', color: Colors.PRIMARY_950},
+    artMedium: {fontSize: 15, textAlign: 'center', color: Colors.PRIMARY_950},
+    artDimensions: {fontSize: 12, color: Colors.PRIMARY_950},
     artPrice: {
       textAlign: 'center',
       fontSize: 14,
-      color: PRIMARY_950
+      color: Colors.PRIMARY_950
     },
     inquireButton: {
       flex: 1,
@@ -116,8 +120,95 @@ export function TombstonePortrait({
       marginTop: hp('2%'),
     },
   });
+
+
+  const [isSetOneVisible, setIsSetOneVisible] = React.useState(true);
+  const opacitySetOne = React.useRef(new Animated.Value(1)).current; 
+  const opacitySetTwo = React.useRef(new Animated.Value(0)).current;
+  const translateY = React.useRef(new Animated.Value(0)).current;
+
+  const toggleButtons = () => {
+    Animated.parallel([
+      Animated.timing(opacitySetOne, {
+        toValue: isSetOneVisible ? 0 : 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacitySetTwo, {
+        toValue: isSetOneVisible ? 1 : 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: isSetOneVisible ? 100 : 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setIsSetOneVisible(!isSetOneVisible);
+    });
+  };
+  const [artworkStatus, setArtworkStatus] = React.useState<USER_ARTWORK_EDGE_RELATIONSHIP | null>(null);
+  const [buttonColor, setButtonColor] = React.useState<string>(Colors.PRIMARY_300);
+  const [buttonIcon, setButtonIcon] = React.useState<string>(icons.like);
+
+  React.useEffect(() => {
+    const artworkId = artwork?._id!;
+    if (state.userLikedArtwork?.[artworkId]){
+      setArtworkStatus(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE)
+      setButtonColor(Colors.PRIMARY_300)
+      setButtonIcon(icons.like)
+      toggleButtons()
+    }
+    else if (state.userSavedArtwork?.[artworkId]){
+      setArtworkStatus(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE)
+      setButtonColor(Colors.PRIMARY_600)
+      setButtonIcon(icons.save)
+      toggleButtons()
+    }
+    else if (state.userInquiredArtwork?.[artworkId]){
+      setArtworkStatus(USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE)
+      setButtonColor(Colors.PRIMARY_800)
+      setButtonIcon(icons.inquire)
+      toggleButtons()
+    }
+    
+  }, [state.userInquiredArtwork, state.userSavedArtwork, state.userLikedArtwork]);
+
+  const removeRating = async (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => {
+    try {
+      await deleteArtworkRelationship({artworkId: artwork._id!, action: rating})
+
+      switch(rating){
+        case USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE:
+          dispatch({
+            type: ETypes.removeUserInquiredArtwork,
+            artworkId: artwork._id!,
+          })
+          break;
+        case USER_ARTWORK_EDGE_RELATIONSHIP.SAVE:
+          dispatch({
+            type: ETypes.removeUserSavedArtwork,
+            artworkId: artwork._id!,
+          })
+          break;
+        case USER_ARTWORK_EDGE_RELATIONSHIP.LIKE:
+          dispatch({
+            type: ETypes.removeUserLikedArtwork,
+            artworkId: artwork._id!,
+          })
+          break;
+      }
+      toggleButtons()
+    } catch(error){
+      console.log(error)
+    } finally {
+      
+    }
+  }
+
   return (
-    <View style={{backgroundColor: MILK, height: hp('100%')}}>
+    <View style={{backgroundColor: Colors.PRIMARY_50, height: hp('100%')}}>
         <View style={SSTombstonePortrait.container}>
           <ScrollView
             scrollEventThrottle={7}
@@ -171,46 +262,67 @@ export function TombstonePortrait({
           </TextElement>
           <TextElement
             style={[
-              globalTextStyles.italicTitleText,
+              globalTextStyles.baseText,
               SSTombstonePortrait.artPrice,
             ]}>
             {displayPrice}
           </TextElement>
         </View>
-        <View style={SSTombstonePortrait.inquireButton}>
-          <View>
-            <Button
-              icon={icons.like}
-              dark
-              buttonColor={PRIMARY_300}
-              mode="contained"
-              onPress={() => inquireAlert()}>
-              Like
-            </Button>
-          </View>
-          <View>
-            <Button
-              icon={icons.save}
-              dark
-              buttonColor={PRIMARY_600}
-              mode="contained"
-              onPress={() => inquireAlert()}>
-              Save
-            </Button>
-          </View>
-          {artwork?.canInquire?.value !== "No" && (
-          <View>
-            <Button
-              icon={icons.inquire}
-              dark
-              buttonColor={PRIMARY_800}
-              mode="contained"
-              onPress={() => inquireAlert()}>
-              Inquire
-            </Button>
-          </View>
+        <Animated.View style={{...SSTombstonePortrait.inquireButton, opacity: opacitySetOne, transform: [{ translateY: translateY }] }}>
+          {isSetOneVisible && (
+            <>
+              <View>
+                <Button
+                  icon={icons.like}
+                  dark
+                  buttonColor={Colors.PRIMARY_300}
+                  loading={likeLoading}
+                  mode="contained"
+                  onPress={() => likeArtwork({artworkId: artwork._id!})}>
+                  Like
+                </Button>
+              </View>
+              <View>
+                <Button
+                  icon={icons.save}
+                  dark
+                  loading={saveLoading}
+                  buttonColor={Colors.PRIMARY_600}
+                  mode="contained"
+                  onPress={() => saveArtwork({artworkId: artwork._id!})}>
+                  Save
+                </Button>
+              </View>
+              {artwork?.canInquire?.value !== "No" && (
+              <View>
+                <Button
+                  icon={icons.inquire}
+                  dark
+                  buttonColor={Colors.PRIMARY_800}
+                  mode="contained"
+                  onPress={() => inquireAlert({artworkId: artwork._id!})}>
+                  Inquire
+                </Button>
+              </View>
+              )}
+            </>
           )}
-        </View>
+        </Animated.View>
+        <Animated.View style={{...SSTombstonePortrait.inquireButton, opacity: opacitySetTwo, transform: [{ translateY: Animated.subtract(100, translateY) }]}}>
+        {!isSetOneVisible && (
+          <View style={{width: '50%'}}>
+            <Button
+              icon={buttonIcon}
+              dark
+              buttonColor={buttonColor}
+              loading={likeLoading}
+              mode="contained"
+              onPress={() => artworkStatus && removeRating(artworkStatus)}>
+              remove {artworkStatus?.toLowerCase()}
+            </Button>
+          </View>
+        )}
+        </Animated.View>
       </ScrollView>
     </View>
   );

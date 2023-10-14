@@ -6,7 +6,7 @@ import {StoreContext} from '../../state/Store';
 import {headerOptions, modalHeaderOptions} from '../../styles/styles';
 import {ExhibitionRootEnum, PreviousExhibitionRootEnum} from '../../typing/routes';
 import {ExhibitionTopTabNavigator} from './ExhibitionTopTabNavigator'
-import {ArtworkNavigatorModal} from '../../components/Modal/ArtworkNavigatorModal';
+import {ArtworkScreen} from '../../screens/Artwork/ArtworkScreen';
 import { PastExhibitionTopTabNavigator } from './PastExhibitionTopTabNavigator';
 import {createStackNavigator} from '@react-navigation/stack';
 
@@ -35,7 +35,7 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
           />
         <ExhibitionStack.Screen
           name={ExhibitionRootEnum.individualArtwork}
-          component={ArtworkNavigatorModal}
+          component={ArtworkScreen}
           options={{...modalHeaderOptions, presentation: 'modal', headerTitle: state.currentArtworkTombstoneHeader}}
         />
     </ExhibitionStack.Navigator>

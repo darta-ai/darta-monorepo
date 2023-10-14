@@ -3,6 +3,7 @@
 import {
   GalleryAddressFields,
   GalleryBase,
+  GalleryPreview,
   IGalleryProfileData,
   Images,
 } from '@darta-types';
@@ -21,9 +22,8 @@ const BUCKET_NAME = 'logo';
 @injectable()
 export class GalleryService implements IGalleryService {
   constructor(
+    @inject('ImageController') private readonly imageController: ImageController,
     @inject('Database') private readonly db: Database,
-    @inject('ImageController')
-    private readonly imageController: ImageController,
     @inject('IEdgeService') private readonly edgeService: IEdgeService,
     @inject('INodeService') private readonly nodeService: INodeService,
   ) {}
@@ -110,19 +110,22 @@ export class GalleryService implements IGalleryService {
           bucketName: galleryLogo?.bucketName,
           fileName: galleryLogo?.fileName,
         });
+        await this.refreshGalleryProfileLogo({galleryId, url})
       } catch (error: any) {
         // eslint-disable-next-line no-console
         console.log(error);
         url = '';
       }
     }
-    return {
+    const results = {
       ...gallery,
       galleryLogo: {
-        ...gallery.galleryLogo,
+        ...galleryLogo,
         value: url,
       },
     };
+    // await this.reSaveGalleryImageByGalleryId({id: results.galleryId})
+    return results
   }
 
   public async readGalleryProfileFromGalleryIdForUser({galleryId} : {galleryId: string}): Promise<Gallery | null> {
@@ -182,7 +185,7 @@ export class GalleryService implements IGalleryService {
         },
       });
     } catch (error) {
-      throw new Error('unable to upsert node for gallery');
+      throw new Error('unable to upsert node for gallery on edit');
     }
 
     if (gallery) {
@@ -236,6 +239,30 @@ export class GalleryService implements IGalleryService {
     }
 
     return gallery;
+  }
+
+  public async refreshGalleryProfileLogo({
+    galleryId,
+    url,
+  }: {
+    galleryId: string;
+    url: string;
+  }): Promise<void> {
+    const galId = this.generateGalleryId({galleryId});
+
+    try {
+      await this.nodeService.upsertNodeById({
+        collectionName: CollectionNames.Galleries,
+        id: galId,
+        data: {
+          galleryLogo: {
+            value: url
+          },
+        },
+      });
+    } catch (error) {
+      throw new Error('unable refresh gallery profile logo');
+    }
   }
 
   public async deleteGalleryProfile(): Promise<void> {
@@ -377,6 +404,7 @@ export class GalleryService implements IGalleryService {
 
     return null
   }
+
 
   // eslint-disable-next-line class-methods-use-this
   public generateGalleryUserId({galleryId}: {galleryId: string}): string {

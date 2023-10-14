@@ -40,59 +40,10 @@ export function UserPersonalWorkSelector({
     });
 
   const navigateToSaved = async () => {
-    setShowActivityIndicator({
-      ...showActivityIndicator,
-      [UserScreenSelectorEnum.savedArtwork]: true,
-    });
-    if (
-      !state.dartaData.savedArtwork?.isLoaded ||
-      !state.artworkData.savedArtwork?.artworkIds
-    ) {
-      try {
-        dispatch({
-          type: ETypes.loadArt,
-          loadedDGallery: [],
-          galleryId: UserScreenSelectorEnum.savedArtwork,
-        });
-      } catch (e) {
-        Alert.alert('Unable to load saved artwork 🧑‍💻🤦');
-      }
-    }
-
-    setShowActivityIndicator({
-      ...showActivityIndicator,
-      [UserScreenSelectorEnum.savedArtwork]: false,
-    });
     return navigation.navigate(UserRoutesEnum.userSavedArtwork);
   };
 
   const navigateToInquired = async () => {
-    setShowActivityIndicator({
-      ...showActivityIndicator,
-      [UserScreenSelectorEnum.inquiredArtwork]: true,
-    });
-    if (
-      !state.dartaData.savedArtwork?.isLoaded ||
-      !state.artworkData.savedArtwork?.artworkIds
-    ) {
-      try {
-        // fullImages = await getImages(
-        //   state.artworkData.inquiredArtwork.artworkIds,
-        // );
-        dispatch({
-          type: ETypes.loadArt,
-          loadedDGallery: [],
-          galleryId: 'inquiredArtwork',
-        });
-      } catch (e) {
-        Alert.alert('Unable to load saved artwork 🧑‍💻🤦');
-      }
-    }
-
-    setShowActivityIndicator({
-      ...showActivityIndicator,
-      [UserScreenSelectorEnum.inquiredArtwork]: false,
-    });
     return navigation.navigate(UserRoutesEnum.userInquiredArtwork);
   };
   const SSUserScreenSelector = StyleSheet.create({
@@ -110,6 +61,9 @@ export function UserPersonalWorkSelector({
     optionsContainer: {
       alignSelf: 'center',
       justifyContent: 'center',
+      flexDirection: 'column',
+      alignContent: 'center',
+      gap: hp('1%'),
     },
   });
   return (

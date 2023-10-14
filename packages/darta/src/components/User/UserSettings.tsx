@@ -6,7 +6,7 @@ import {
 } from 'react-native-responsive-screen';
 
 // import {deviceInformation} from '../../../App';
-import {UserSettingsSignedIn} from './SignedInUserSettings';
+import {EditUserProfile} from './EditUserProfile';
 
 export const SSUserSettings = StyleSheet.create({
   container: {
@@ -18,21 +18,14 @@ export const SSUserSettings = StyleSheet.create({
   },
 });
 
-export function UserSettings() {
-  // can delete - for uuid settings
-  // const [uniqueId, setUniqueId] = useState<string>('');
-  // useEffect(() => {
-  //   const getDeviceInformation = async () => {
-  //     const {uniqueId} = await deviceInformation();
-  //     setUniqueId(uniqueId);
-  //   };
-  //   getDeviceInformation();
-  // }, []);
+export function UserSettings({navigation} : {navigation: any}) {
 
   return (
     <View style={SSUserSettings.container}>
       <View>
-        <UserSettingsSignedIn />
+        <EditUserProfile 
+          navigation={navigation}
+        />
       </View>
     </View>
   );

@@ -8,6 +8,7 @@ import {
   response,
 } from 'inversify-express-utils';
 
+import { standardConsoleLog } from '../config/templates';
 import {filterOutPrivateRecordsSingleObject, verifyToken} from '../middleware';
 import {
   IArtworkService,
@@ -36,6 +37,7 @@ export class ArtworkController {
       const newArtwork = await this.artworkService.createArtwork({galleryId});
       res.json(newArtwork);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/create', request: user?.user_id})
       res.status(500).send(error.message);
     }
   }
@@ -66,6 +68,7 @@ export class ArtworkController {
         artwork: {...artwork, exhibitionOrder: Number(exhibitionOrder)},
       });
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/createArtworkForExhibition', request: user?.user_id})
       res.status(500).send(error.message);
     }
   }
@@ -106,15 +109,60 @@ export class ArtworkController {
     }
   }
 
-  // OPEN Endpoint
-  @httpGet('/readArtwork')
-  public async readArtwork(
+
+  @httpPost('/createUserArtworkRelationship')
+  public async createUserArtworkRelationship(
     @request() req: Request,
     @response() res: Response,
   ): Promise<void> {
-    const {artworkId} = req.body;
+    const {uid, action, artworkId}  = req.body;
+    if (!uid || !action || !artworkId) {
+      res.status(500).send('missing localStorageUid or action');
+      return;
+    }
     try {
-      const artwork = await this.artworkService.readArtwork(artworkId);
+      await this.artworkService.createUserArtworkRelationship({
+        uid,
+        action,
+        artworkId,
+      });
+      res.status(200).send("successfully created user artwork relationship");
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpPost('/deleteUserArtworkRelationship')
+  public async deleteUserArtworkRelationship(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    const {uid, action, artworkId}  = req.body;
+    if (!uid || !action || !artworkId) {
+      res.status(500).send('missing localStorageUid or action');
+      return;
+    }
+    try {
+      await this.artworkService.deleteUserArtworkRelationship({
+        uid,
+        action,
+        artworkId,
+      });
+      res.status(200).send("successfully created user artwork relationship");
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  // OPEN Endpoint
+  @httpGet('/readArtworkForUser')
+  public async readArtworkForUser(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const {artworkId} = req.query;
+      const artwork = await this.artworkService.readArtwork(artworkId as string);
       // removing anything that isPrivate
       const artworkResults = filterOutPrivateRecordsSingleObject(artwork);
       res.json(artworkResults);
@@ -319,6 +367,27 @@ export class ArtworkController {
       });
       res.json(galleryArtwork);
     } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpGet('/listUserArtworkRelationships')
+  public async listUserLikedArtwork(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const {uid, limit, action} = req.query;
+      if (!uid || !limit || !action) {
+        res.status(500).send('missing localStorageUid or limit or action');
+        return;
+      }
+      const galleryArtwork = await this.artworkService.listUserRelationshipArtworkByLimit({
+        uid: uid.toString(), limit: Number(limit), action: action.toString(),
+      });
+      res.json(galleryArtwork);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/listUserLikedArtwork', request: req?.query})
       res.status(500).send(error.message);
     }
   }

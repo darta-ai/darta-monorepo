@@ -90,7 +90,7 @@ export class ImageService implements IImageService {
         bucketName,
         fileName,
         imageBuffer,
-        400,
+        600,
         metadata,
         (err, etag) => {
           if (err) {
@@ -100,6 +100,24 @@ export class ImageService implements IImageService {
           }
         },
       );
+    });
+  }
+
+  getPresignedUrl({
+    bucketName,
+    fileName,
+  }: {
+    bucketName: string;
+    fileName: string;
+  }): Promise<any>{
+    return new Promise((resolve, reject) => {
+      this.minio.presignedGetObject(bucketName, fileName,  (err, url) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(url);
+        }
+      });
     });
   }
 

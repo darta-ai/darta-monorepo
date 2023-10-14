@@ -11,6 +11,9 @@ export enum UserRoutesEnum {
     userSavedArtwork = 'USER_SAVED_ARTWORK',
     userInquiredArtwork = 'USER_INQUIRED_ARTWORK',
     SavedArtworkModal = 'TOMBSTONE',
+    UserGalleryAndArtwork = 'USER_GALLERY_AND_ARTWORK',
+    UserPastTopTabNavigator = 'USER_PAST_TOP_TAB_NAVIGATOR',
+    UserGallery = 'USER_GALLERY',
   }
   
   // TO-DO

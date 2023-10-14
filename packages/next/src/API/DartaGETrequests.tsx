@@ -21,7 +21,6 @@ export const retrieveAllGalleryData = async (): Promise<GalleryState> => {
       user: {},
     };
   } catch (e) {
-    console.error(e)
     return {
       galleryProfile: {} as any,
       galleryArtworks: {},
