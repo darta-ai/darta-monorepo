@@ -68,7 +68,7 @@ export class ArtworkService implements IArtworkService {
       });
       newArtwork = await createArtworkCursor.next();
     } catch (error: any) {
-      throw new Error('error creating artwork');
+      throw new Error('error creating artwork at createArtwork');
     }
 
     // create the edge between the gallery and the artwork
@@ -81,7 +81,7 @@ export class ArtworkService implements IArtworkService {
         data: {value: 'created'},
       });
     } catch (error: any) {
-      throw new Error('error creating artwork edge');
+      throw new Error('error creating artwork edge at createArtwork');
     }
 
     return newArtwork;
@@ -127,23 +127,28 @@ export class ArtworkService implements IArtworkService {
     artworkId: string,
   ): Promise<ArtworkAndGallery> {
     // TO-DO: build out?
-    const artwork = await this.getArtworkById(artworkId);
+    try {
+      const artwork = await this.getArtworkById(artworkId);
 
-    // ############## get gallery ##############
-
-    let galleryEdge: Edge;
-    let gallery = null;
-
-    if (artwork?._id) {
-      galleryEdge = await this.edgeService.getEdgeWithTo({
-        edgeName: EdgeNames.FROMGalleryToArtwork,
-        to: artwork._id,
-      });
-      gallery = await this.galleryService.readGalleryProfileFromGalleryId({
-        galleryId: galleryEdge._from,
-      });
+      // ############## get gallery ##############
+  
+      let galleryEdge: Edge;
+      let gallery = null;
+  
+      if (artwork?._id) {
+        galleryEdge = await this.edgeService.getEdgeWithTo({
+          edgeName: EdgeNames.FROMGalleryToArtwork,
+          to: artwork._id,
+        });
+        gallery = await this.galleryService.readGalleryProfileFromGalleryId({
+          galleryId: galleryEdge._from,
+        });
+      }
+      return {artwork, gallery};
+    } catch (error){
+      throw new Error('error reading artwork and gallery at readArtworkAndGallery')
     }
-    return {artwork, gallery};
+
   }
 
   public async editArtwork({
@@ -163,6 +168,9 @@ export class ArtworkService implements IArtworkService {
       artworkDimensions,
       artistName,
       artworkCreatedYear,
+      artworkCategory,
+      artworkStyleTags,
+      artworkVisualTags,
       ...remainingArtworkProps
     } = artwork;
 
@@ -189,8 +197,8 @@ export class ArtworkService implements IArtworkService {
             bucketName: BUCKET_NAME,
           });
         ({bucketName, value} = artworkImageResults);
-      } catch (error) {
-        throw new Error('error uploading image');
+      } catch (error: any) {
+        throw new Error(`error uploading image at editArtwork: ${error?.message}`);
       }
     }
 
@@ -218,8 +226,8 @@ export class ArtworkService implements IArtworkService {
         key: artworkId,
         data,
       });
-    } catch (error) {
-      throw new Error('error saving artwork');
+    } catch (error: any) {
+      throw new Error(`error saving artwork at editArtwork: ${error?.message}`);
     }
 
     // Artist Node
@@ -258,25 +266,64 @@ export class ArtworkService implements IArtworkService {
       });
     }
 
+    // artworkStyleTags
+    let styleTagPromises: any[] = [];
+    if (artworkStyleTags?.length) {
+      styleTagPromises = artworkStyleTags.map(tag =>
+        this.nodeService.upsertNodeByKey({
+          collectionName: CollectionNames.ArtworkStyleTags,
+          data: {value: tag},
+        }),
+      );
+    }
+
+    // artworkVisualTags
+    let visualTagPromises: any[] = [];
+    if (artworkVisualTags?.length) {
+      visualTagPromises = artworkVisualTags.map(tag =>
+        this.nodeService.upsertNodeByKey({
+          collectionName: CollectionNames.ArtworkVisualTags,
+          data: {value: tag},
+        }),
+      );
+    }
+
+    // artworkCategory
+    let categoryPromise;
+    if (artworkCategory?.value) {
+      categoryPromise = this.nodeService.upsertNodeByKey({
+        collectionName: CollectionNames.ArtworkCategories,
+        data: {value: artworkCategory.value},
+      });
+    }
+
+
+
     // Execute node promises in parallel
-    const [artistNode, mediumNode, priceNode, sizeNode, yearNode] =
+    const [artistNode, mediumNode, priceNode, sizeNode, yearNode, categoryNode] =
       await Promise.all([
         artistPromise,
         mediumPromise,
         pricePromise,
         sizePromise,
         yearPromise,
+        categoryPromise
       ]);
+
+    const styleTagNode = await Promise.all(styleTagPromises)
+
+    const visualTagNode = await Promise.all(visualTagPromises)
+  
 
     // Handle edge creations
 
-    const edgesToCreate = [];
+    const edgesToCreate = [];    
 
     if (artworkId && artistNode?._id) {
       edgesToCreate.push({
         edgeName: EdgeNames.FROMArtworkTOArtist,
         from: artworkKey,
-        newTo: artistNode._id,
+        to: artistNode._id,
         data: {
           value: 'ARTIST',
         },
@@ -287,7 +334,7 @@ export class ArtworkService implements IArtworkService {
       edgesToCreate.push({
         edgeName: EdgeNames.FROMArtworkToMedium,
         from: artworkKey,
-        newTo: mediumNode._id,
+        to: mediumNode._id,
         data: {
           value: 'USES',
         },
@@ -298,7 +345,7 @@ export class ArtworkService implements IArtworkService {
       edgesToCreate.push({
         edgeName: EdgeNames.FROMArtworkTOCostBucket,
         from: artworkKey,
-        newTo: priceNode._id,
+        to: priceNode._id,
         data: {
           value: 'COST',
         },
@@ -309,7 +356,7 @@ export class ArtworkService implements IArtworkService {
       edgesToCreate.push({
         edgeName: EdgeNames.FROMArtworkTOSizeBucket,
         from: artworkKey,
-        newTo: sizeNode._id,
+        to: sizeNode._id,
         data: {
           value: 'SIZE',
         },
@@ -320,17 +367,71 @@ export class ArtworkService implements IArtworkService {
       edgesToCreate.push({
         edgeName: EdgeNames.FROMArtworkTOCreateBucket,
         from: artworkKey,
-        newTo: yearNode._id,
+        to: yearNode._id,
         data: {
           value: 'YEAR CREATED',
         },
       });
     }
 
+    if (categoryPromise && categoryNode?._id) {
+      edgesToCreate.push({
+        edgeName: EdgeNames.FROMArtworkTOCategory,
+        from: artworkKey,
+        to: categoryNode._id,
+        data: {
+          value: 'CATEGORY',
+        },
+      });
+    }
+    
     const edgePromises = edgesToCreate.map(edge =>
-      this.edgeService.replaceMediumEdge(edge),
+      this.edgeService.validateAndCreateEdges(edge),
     );
-    await Promise.all(edgePromises);
+    try{
+      await Promise.all(edgePromises);
+    } catch (error: any) {
+      throw new Error (`error creating edges at editArtwork: ${error?.message}`)
+    }
+
+    const tagEdgesToCreate = [];
+    const rawEdges = [];
+
+    if (styleTagNode?.length) {
+      const styleTagEdgePromises = styleTagNode.map(tag => ({
+        edgeName: EdgeNames.FROMArtworkTOStyleTag,
+        from: artworkKey,
+        to: tag._id,
+        data: {
+          value: 'STYLE TAG',
+        },
+      }))
+      rawEdges.push(...styleTagEdgePromises)
+      tagEdgesToCreate.push(...styleTagEdgePromises)
+    }
+
+    if (visualTagNode?.length) {
+      const visualTagEdgePromises = visualTagNode.map(tag => ({
+        edgeName: EdgeNames.FROMArtworkTOVisualTag,
+        from: artworkKey,
+        to: tag._id,
+        data: {
+          value: 'VISUAL TAG',
+        },
+      }))
+      rawEdges.push(...visualTagEdgePromises)
+      tagEdgesToCreate.push(...visualTagEdgePromises)
+    }
+
+    const tagEdgePromises = tagEdgesToCreate.map(edge =>
+      this.edgeService.validateAndCreateEdges(edge),
+    );
+
+    try{
+      await Promise.all(tagEdgePromises);
+    } catch (error: any) {
+      throw new Error (`error creating edges at editArtwork: ${error?.message}`)
+    }
 
     return {
       ...savedArtwork,
@@ -365,7 +466,7 @@ export class ArtworkService implements IArtworkService {
           bucketName: artworkImage.bucketName,
         });
       } catch {
-        throw new Error('error deleting artwork image');
+        throw new Error('error deleting artwork image: deleteArtwork');
       }
     }
 
@@ -378,7 +479,7 @@ export class ArtworkService implements IArtworkService {
         to: key,
       });
     } catch (error) {
-      throw new Error('error deleting gallery edge');
+      throw new Error('error deleting gallery edge: deleteArtwork');
     }
 
     // Artist Edge
@@ -489,7 +590,7 @@ export class ArtworkService implements IArtworkService {
       );
       return galleryOwnedArtwork;
     } catch (error) {
-      throw new Error('error getting artworks');
+      throw new Error('error getting artworks at listArtworksByGallery');
     }
   }
 
@@ -539,55 +640,88 @@ export class ArtworkService implements IArtworkService {
       : `${CollectionNames.Artwork}/${artworkId}`;
 
     const artworkQuery = `
-      LET artwork = DOCUMENT(@artworkId)
-      RETURN artwork      
-      `;
+    WITH ${CollectionNames.Artwork}, ${CollectionNames.ArtworkArtists}, ${CollectionNames.ArtworkMediums}, ${CollectionNames.ArtworkCategories}, ${CollectionNames.ArtworkStyleTags}, ${CollectionNames.ArtworkVisualTags}
+    FOR artwork IN ${CollectionNames.Artwork}
+      FILTER artwork._id == @artworkId
+      LET artist = (
+          FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkTOArtist}
+          RETURN v
+      )[0]
+      LET medium = (
+          FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkToMedium}
+          RETURN v
+      )[0]
+      LET visualTags = (
+        FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkTOVisualTag}
+        RETURN v
+      )
+      LET styleTags = (
+        FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkTOStyleTag}
+        RETURN v
+      )
+      LET category = (
+        FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkTOCategory}
+        RETURN v
+      )[0]
+    RETURN {
+        art: artwork,
+        artist: artist.value,
+        medium: medium.value,
+        visualTags: visualTags,
+        styleTags: styleTags,
+        category: category.value
+    }`;
 
     let artwork: Artwork;
 
+    let result;
     try {
       const edgeCursor = await this.db.query(artworkQuery, {
         artworkId: fullArtworkId,
       });
-      artwork = await edgeCursor.next();
+      result = await edgeCursor.next();
+      const {art, artist, medium, visualTags, styleTags, category} = result
+      
+      let artworkVisualTags;
+      if (visualTags.length){
+        artworkVisualTags = visualTags.map((el: any) => el?.value)
+      }
+
+      let artworkStyleTags;
+      if (visualTags.length){
+        artworkStyleTags = styleTags.map((el: any) => el?.value)
+      }
+
+      artwork = {
+        ...art,
+        artistName: {value: artist},
+        artworkMedium: {value: medium},
+        artworkVisualTags,
+        artworkStyleTags,
+        artworkCategory: {value: category}
+      }
+
+      // console.log({artwork})
     } catch (error) {
       return null;
     }
 
-    // ################# Get Artist ###############
-    let artistNameNode: Node | null = null;
-
-    try {
-      artistNameNode = await this.getArtistFromArtworkId(fullArtworkId);
-    } catch (error) {
-      throw new Error('error getting artist');
-    }
-
-    // ################# Get Medium ###############
-    let mediumNameNode: Node | null = null;
-
-    try {
-      const results = await this.getMediumFromArtworkId(fullArtworkId);
-      if (results) {
-        mediumNameNode = results;
-      }
-    } catch (error) {
-      throw new Error('error getting medium');
-    }
-
-    // ################# Artwork Image ###############
-
     const {artworkImage} = artwork;
 
-    let artworkImageValue = null;
+    let shouldRegenerate;
+    if (artworkImage?.value) {
+      shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: artworkImage.value})
+    }
+    let artworkImageValue = artworkImage.value;
 
-    if (artworkImage?.bucketName && artworkImage?.fileName) {
+    if(!shouldRegenerate && artworkImage?.bucketName && artworkImage?.fileName){
       try {
         artworkImageValue = await this.imageController.processGetFile({
           fileName: artworkImage.fileName,
           bucketName: artworkImage.bucketName,
         });
-        await this.refreshArtworkImage({artworkId, url: artworkImageValue})
+        // I DON'T KNOW WHAT TO DO WITH THIS
+        // await this.refreshArtworkImage({artworkId, url: artworkImageValue})
       } catch (error) {
         throw new Error('error getting artwork image');
       }
@@ -595,12 +729,6 @@ export class ArtworkService implements IArtworkService {
 
     return {
       ...artwork,
-      artworkMedium: {
-        value: mediumNameNode?.value ?? '',
-      },
-      artistName: {
-        value: artistNameNode?.value ?? '',
-      },
       artworkImage: {
         ...artworkImage,
         value: artworkImageValue,

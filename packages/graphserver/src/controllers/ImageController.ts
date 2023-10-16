@@ -136,4 +136,12 @@ export class ImageController {
       throw new Error(`received an error from minio ${error?.message}`);
     }
   }
+
+  public async shouldRegenerateUrl({
+    url
+  }: {
+    url: string;
+  }) {
+    return this.imageService.shouldRegenerateUrl({url});
+  }
 }

@@ -1,5 +1,7 @@
 import * as Colors from '@darta-styles'
 import {Artwork, Exhibition} from '@darta-types';
+import Block from '@mui/icons-material/Block';
+import SendIcon from '@mui/icons-material/Send';
 import {
   Box,
   Button,
@@ -42,11 +44,13 @@ export function ExhibitionCard({
   galleryLocations,
   exhibitionId,
   galleryName,
+  isLatestExhibition
 }: {
   exhibition: Exhibition;
   galleryLocations: string[];
   exhibitionId: string;
   galleryName: string;
+  isLatestExhibition: boolean;
 }) {
   const [editExhibition, setEditExhibition] = React.useState<boolean>(false);
   const [isEditingExhibition, setIsEditingExhibition] =
@@ -57,6 +61,8 @@ export function ExhibitionCard({
   const [artworkLoading, setArtworkLoading] = React.useState<boolean>(false);
   const [isSwappingLoading, setIsSwappingLoading] =
     React.useState<boolean>(false);
+  
+  const [showArtworks, setShowArtwork] = React.useState<boolean>(isLatestExhibition);
 
   React.useEffect(() => {
     if (exhibition?.artworks) {
@@ -64,8 +70,7 @@ export function ExhibitionCard({
     }
   }, []);
 
-  const saveExhibition = async (updatedExhibition: Exhibition) => {
-    setIsEditingExhibition(true);
+  const setExhibitionStateAndDB = async (updatedExhibition: Exhibition) => {
     const exhibitionClone = _.cloneDeep(updatedExhibition);
     const exhibitionLocation =
       exhibitionClone?.exhibitionLocation?.locationString?.value;
@@ -98,10 +103,15 @@ export function ExhibitionCard({
         type: GalleryReducerActions.SAVE_NEW_ARTWORK,
         payload: results.artworks as any,
       });
-      setEditExhibition(!editExhibition);
     } catch (error) {
-      setErrorAlertOpen(true);
-    }
+      setErrorAlertOpen(true)
+    } 
+  }
+
+  const saveExhibition = async (updatedExhibition: Exhibition) => {
+    setIsEditingExhibition(true);
+    await setExhibitionStateAndDB(updatedExhibition)
+    setEditExhibition(!editExhibition);
     setIsEditingExhibition(false);
   };
 
@@ -472,23 +482,65 @@ export function ExhibitionCard({
           </Box>
         </Box>
       )}
-      <Box>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
+            gap: '5%',
+            alignItems: 'center',
+            width: '100%',
+            '@media (max-width: 1080px)': {
+              flexDirection: 'column',
+            },
           }}>
+            {exhibition.published ? (
+              <Button
+              variant="contained"
+              className="exhibition-publish-button"
+              style={{backgroundColor: Colors.PRIMARY_200}}
+              onClick={() => setExhibitionStateAndDB({...exhibition, published: false})}
+              startIcon={<Block style={{color: Colors.PRIMARY_600}} />}
+              sx={{alignSelf: 'center', m: '1vh'}}>
+              <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_600}}>
+                Remove Published
+              </Typography>
+            </Button>
+            ) : (
+              <Button
+              variant="contained"
+              className="exhibition-publish-button"
+              style={{backgroundColor: Colors.PRIMARY_900}}
+              onClick={() => setExhibitionStateAndDB({...exhibition, published: true})}
+              endIcon={<SendIcon style={{color: Colors.PRIMARY_50}} />}
+              sx={{alignSelf: 'center', m: '1vh'}}>
+              <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_50}}>
+                Publish Exhibition
+              </Typography>
+            </Button>
+            )}
           <Button
             variant="contained"
             className="exhibition-edit-button"
-            color={displayRed ? 'warning' : 'secondary'}
+            style={{backgroundColor: Colors.PRIMARY_700}}
             onClick={() => setEditExhibition(!editExhibition)}
             sx={{alignSelf: 'center', m: '1vh'}}>
             <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_50}}>
               Edit Exhibition
             </Typography>
           </Button>
+          <Box>
+          <Button
+            variant="contained"
+            className="exhibition-edit-button"
+            style={{backgroundColor: Colors.PRIMARY_900}}
+            onClick={() => setShowArtwork(!showArtworks)}
+            sx={{alignSelf: 'center', m: '1vh'}}>
+            <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_50}}>
+              {showArtworks ? 'Hide Artworks' : 'Show Artworks'}
+            </Typography>
+          </Button>
+        </Box>
         </Box>
         <Collapse in={editExhibition}>
           {editExhibition && galleryName && (
@@ -522,19 +574,22 @@ export function ExhibitionCard({
             </Box>
           )}
         </Collapse>
+        <Collapse in={showArtworks}>
         <Box>
           <Divider variant="middle" sx={{m: 2, color: Colors.PRIMARY_600}} flexItem>
             <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_600}}>
-              Artworks
+              Artwork
             </Typography>
           </Divider>
+        </Box>
+        <Box>
           <ArtworkHeader
             artworkLoading={artworkLoading}
             addNewArtwork={addNewArtwork}
             handleBatchUpload={handleBatchUpload}
           />
         </Box>
-        {exhibition?.artworks && (
+        {showArtworks && exhibition?.artworks && (
           <ExhibitionArtworkList
             artworks={exhibition?.artworks}
             isSwappingLoading={isSwappingLoading}
@@ -547,8 +602,9 @@ export function ExhibitionCard({
             }
             handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
           />
-        )}
-      </Box>
+          )}
+
+      </Collapse>
       <DartaErrorAlert
         errorAlertOpen={errorAlertOpen}
         setErrorAlertOpen={setErrorAlertOpen}

@@ -11,8 +11,7 @@ export const profileStyles = {
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    gap: '2vh',
-    width: '70vw',
+    gap: '3vh',
     borderRadius: 5,
     alignSelf: 'center',
     background: Colors.PRIMARY_50,
@@ -26,7 +25,7 @@ export const profileStyles = {
       gap: '5%',
       width: '90%',
       alignSelf: 'center',
-      '@media (max-width: 1080px)': {
+      '@media (max-width: 1280px)': {
         flexDirection: 'row',
         justifyContent: 'center',
         alignContent: 'center',
@@ -42,8 +41,8 @@ export const profileStyles = {
       alignSelf: 'center',
       textAlign: 'center',
       '@media (max-width: 1080px)': {
-        height: '100%',
-        width: '100%',
+        height: '95%',
+        width: '95%',
       },
     },
     image: {
@@ -144,8 +143,8 @@ export const profileStyles = {
       width: '100%',
       '@media (max-width: 1080px)': {
         margin: '4em',
-        height: '25vh',
-        width: '25vw',
+        maxHeight: '25vh',
+        maxWidth: '25vw',
       },
     },
     addressText: {
@@ -188,6 +187,7 @@ export const profileStyles = {
       mt: 7,
       width: '100%',
     },
+
     defaultImageEdit: {
       marginTop: '1em',
       width: '25vw',

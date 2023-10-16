@@ -1,4 +1,4 @@
-import { PRIMARY_400 } from '@darta-styles';
+import { PRIMARY_50, PRIMARY_400, PRIMARY_800 } from '@darta-styles';
 import {Box, LinearProgress, Typography} from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -74,14 +74,14 @@ export function ConfirmDeleteExhibitionArtwork({
       <DialogActions>
         {isSpinner ? (
           <Box sx={{width: '100%'}}>
-            <LinearProgress color="error" />
+            <LinearProgress color="primary" />
           </Box>
         ) : (
           <>
 
             <Button
               variant="contained"
-              style={{color: PRIMARY_400}}
+              style={{backgroundColor: PRIMARY_400}}
               data-testid="confirm-delete-artwork-button"
               onClick={() => {
                 handleRemove();
@@ -103,8 +103,8 @@ export function ConfirmDeleteExhibitionArtwork({
                 Delete Artwork From Darta
               </Typography>
             </Button>
-            <Button variant="contained" color="secondary" onClick={handleClose}>
-              <Typography sx={{fontWeight: 'bold'}}>Do Not Delete</Typography>
+            <Button variant="contained" style={{backgroundColor: PRIMARY_800}} onClick={handleClose}>
+              <Typography sx={{fontWeight: 'bold', color: PRIMARY_50}}>Do Not Delete</Typography>
             </Button>
           </>
         )}

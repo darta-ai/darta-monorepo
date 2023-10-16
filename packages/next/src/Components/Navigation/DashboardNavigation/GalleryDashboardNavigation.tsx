@@ -147,7 +147,6 @@ export function MiniDrawer({
             onClick={handleDrawerOpen}
             edge="start"
             sx={{
-              marginRight: 5,
               color: Colors.PRIMARY_50,
               '@media (max-width: 800px)': {
                 display: 'none',
@@ -222,22 +221,3 @@ export function MiniDrawer({
     </Box>
   );
 }
-
-// here is a wrapper component that will be used to wrap the pages that need to be protected by MiniDrawer
-// export function SideNavigationWrapper({
-//   children,
-//   setCurrentDisplay,
-// }: {
-//   children: any;
-//   setCurrentDisplay: (arg0: EGalleryDisplay) => void;
-// }) {
-//   return (
-//     <Box sx={{display: 'flex'}}>
-//       <MiniDrawer setCurrentDisplay={setCurrentDisplay} />
-//       <Box component="main" sx={{flexGrow: 1, p: 3}}>
-//         <DrawerHeader />
-//         {children}
-//       </Box>
-//     </Box>
-//   );
-// }

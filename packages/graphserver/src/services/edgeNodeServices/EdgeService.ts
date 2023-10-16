@@ -263,8 +263,8 @@ export class EdgeService implements IEdgeService {
     if (currentEdge) {
       try {
         await this.deleteEdge({edgeName, from, to: currentEdge._to});
-      } catch (err) {
-        throw new Error('error at delete Edge');
+      } catch (err: any) {
+        throw new Error(`error at delete Edge: ${err?.message}`);
       }
     }
 
@@ -273,6 +273,42 @@ export class EdgeService implements IEdgeService {
       await this.upsertEdge({edgeName, from, to: newTo, data});
     } catch (err) {
       throw new Error('error at upsertEdge');
+    }
+  }
+
+  public async validateAndCreateEdges({
+    edgeName,
+    from,
+    to,
+    data,
+  }: {
+    edgeName: string;
+    from: string;
+    to: string;
+    data: any;
+  }): Promise<void> {
+    // Get the current edge (if it exists) for the artwork
+    let currentEdge;
+    try {
+      currentEdge = await this.getCurrentMediumEdge(edgeName, from);
+    } catch (err) {
+      throw new Error('errors at current edge');
+    }
+
+    // If it exists, delete it
+    if (currentEdge && currentEdge._to !== to) {
+      try {
+        await this.deleteEdge({edgeName, from, to: currentEdge._to});
+      } catch (err: any) {
+        throw new Error(`error at delete Edge: ${err?.message}`);
+      }
+
+    }
+      // Create a new edge for the new medium
+      try {
+        await this.upsertEdge({edgeName, from, to, data});
+      } catch (err) {
+        throw new Error('error at upsertEdge');
     }
   }
 }

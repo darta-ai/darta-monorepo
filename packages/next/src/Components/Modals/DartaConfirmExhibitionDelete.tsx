@@ -67,7 +67,7 @@ export function DartaConfirmExhibitionDelete({
       <DialogActions>
         {isSpinner ? (
           <Box sx={{width: '100%'}}>
-            <LinearProgress color="error" />
+            <LinearProgress color="primary" />
           </Box>
         ) : (
           <>

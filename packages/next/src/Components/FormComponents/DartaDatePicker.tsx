@@ -39,10 +39,8 @@ export function DartaDatePicker({
 }) {
   const testIdValue = fieldName.replace('.', '-');
   return (
-    <>
-      <Box>
-        <Box>
-          <Tooltip
+    <Box sx={formStyles.datePickerContainer}>
+        <Tooltip
             title={
               <Typography
                 data-testid={`${testIdValue}-tooltip-text`}
@@ -59,9 +57,6 @@ export function DartaDatePicker({
               />
             </IconButton>
           </Tooltip>
-        </Box>
-      </Box>
-      <Box>
         <Controller
           key={fieldName}
           name={fieldName}
@@ -101,7 +96,6 @@ export function DartaDatePicker({
           )}
         />
       </Box>
-    </>
   );
 }
 

@@ -33,4 +33,7 @@ export interface IImageService {
     bucketName: string;
     fileName: string;
   }): Promise<any>;
+  shouldRegenerateUrl({
+    url
+  }: {url: string}): boolean;
 }

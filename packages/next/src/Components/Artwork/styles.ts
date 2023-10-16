@@ -4,7 +4,7 @@ export const createArtworkStyles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    width: '95%',
+    width: '100%',
     border: '1px solid #eaeaea',
     alignSelf: 'center',
     borderRadius: '0.5vw',
@@ -33,6 +33,37 @@ export const createArtworkStyles = {
     '@media (min-width: 1280px)': {
       width: '100%',
       flexDirection: 'row',
+    },
+  },
+  imageAndKeyInformationContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '95%',
+    alignSelf: 'center',
+    backgroundColor: Colors.PRIMARY_50,
+    alignContent: 'flex-start',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: '5vh',
+    '@media (min-width: 1280px)': {
+      flexDirection: 'row',
+      width: '100%',
+    },
+  },
+  keyInformationContainer: {
+    minWidth: '40vh',
+    alignItems: 'flex-start',
+    display: 'flex',
+    margin: '1em',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignSelf: 'center',
+    gap: '2vh',
+    '@media (min-width: 1280px)': {
+      alignSelf: 'flex-start',
+      gap: '1vh',
+      minWidth: '50vh',
     },
   },
   dimensionsAndPricingContainer: {
@@ -82,6 +113,31 @@ export const createArtworkStyles = {
       width: '100%',
     },
   },
+  imageButtonContainer: {
+    alignSelf: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+    maxWidth: '85vw',
+    gap: '1vh',
+    minHeight: '100%',
+    '@media (min-width: 1280px)': {
+      width: '100%',
+    },
+  },
+  imageEditContainer: {
+    height: 'auto',
+    width: '95%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    '@media (min-width: 1280px)': {
+      width: '30vw',
+    },
+  },
   imageContainerExhibitions: {
     alignSelf: 'center',
     display: 'flex',
@@ -110,11 +166,14 @@ export const createArtworkStyles = {
   },
   defaultImage: {
     p: '1em',
-    // width: '100%',
+    width: '100%',
     maxHeight: '38vh',
     maxWidth: '38vw',
     alignSelf: 'center',
-    // borderWidth: 30,
+    '@media (min-width: 1280px)': {
+      maxHeight: '50vh',
+      maxWidth: '50vw',
+    },
   },
   inputText: {
     display: 'flex',
@@ -139,9 +198,9 @@ export const createArtworkStyles = {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     height: '100%',
-    width: '95%',
-    gap: '5vh',
+    minWidth: '95%',
     mt: '1em',
     '@media (max-width: 1280px)': {
       gap: '3vh',

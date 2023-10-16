@@ -1,5 +1,6 @@
+import {PRIMARY_50, PRIMARY_600, PRIMARY_700, PRIMARY_800, PRIMARY_900,PRIMARY_950} from '@darta-styles'
+
 import {PRIMARY_DARK_GREY} from '.';
-import {PRIMARY_600, PRIMARY_700, PRIMARY_800, PRIMARY_50, PRIMARY_950, PRIMARY_900} from '@darta-styles'
 
 export const galleryStyles = {
   container: {

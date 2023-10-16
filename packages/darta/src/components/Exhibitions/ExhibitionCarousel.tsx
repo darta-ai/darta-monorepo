@@ -15,6 +15,8 @@ import Animated, {
   
   import { SBItem } from "./SBs/SBItem";
   import * as Colors from '@darta-styles';
+
+  const image404 = require('../../assets/image404.png');
   
 
 const carouselStyle = StyleSheet.create({
@@ -37,6 +39,8 @@ interface ItemProps {
   }
 }
 const CustomItem: React.FC<ItemProps> = ({ item, animationValue }: {item: any, animationValue: any}) => {
+
+  const image = item?.imageUrl ? {uri: item.imageUrl} : image404;
   const maskStyle = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
       animationValue.value,
@@ -67,7 +71,7 @@ const CustomItem: React.FC<ItemProps> = ({ item, animationValue }: {item: any, a
         ]}
       >
         <Image 
-        source={{uri: item.imageUrl}} 
+        source={image} 
         style={carouselStyle.heroImage} 
         />
         <TextElement style={{fontFamily: "AvenirNext-Italic", color: Colors.PRIMARY_900, alignSelf: "center"}}>{item?.title}</TextElement>

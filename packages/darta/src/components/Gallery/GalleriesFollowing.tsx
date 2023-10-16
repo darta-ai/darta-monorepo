@@ -8,7 +8,6 @@ import {
 import {TextElement} from '../Elements/_index';
 import {globalTextStyles} from '../../styles/styles';
 import {ExploreCarouselCards} from '../Explore/Carousel/ExploreCarouselCards';
-import {GalleryPreviewMini} from '../Previews/GalleryPreviewMini';
 import { StoreContext } from '../../state/Store';
 import { GalleryPreview } from '@darta-types/dist';
 
@@ -24,7 +23,6 @@ export function GalleriesFollowing({
   React.useEffect(() => {
     if (state.userGalleryFollowed && state.galleryPreviews) {
       const {userGalleryFollowed, galleryPreviews} = state;
-      console.log({userGalleryFollowed, galleryPreviews})
 
     }
   },[])

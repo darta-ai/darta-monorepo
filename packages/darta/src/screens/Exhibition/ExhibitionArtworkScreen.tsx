@@ -71,7 +71,6 @@ export function ExhibitionArtworkScreen({
       } else {
         setIsArtworkLoaded(false)
         const results = await fetchArtworkByExhibitionById()
-        console.log({results})
         artwork = results ?? {}
       }
       if (artwork){
@@ -128,10 +127,8 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
 }
 
   React.useEffect(()=>{
-    if (route?.params?.exhibitionId && state.exhibitionData && state.exhibitionData[route.params.exhibitionId]){
+    if (route?.params?.exhibitionId){
       setExhibitionId(route.params.exhibitionId);
-      setArtworksFromExhibitionId({exhibitionId: route.params.exhibitionId})
-    } else if (route?.params?.exhibitionId){
       setArtworksFromExhibitionId({exhibitionId: route.params.exhibitionId})
     } else if (state.qrCodeExhibitionId) {
       setExhibitionId(state.qrCodeExhibitionId);

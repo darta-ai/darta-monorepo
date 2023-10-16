@@ -320,6 +320,7 @@ export function EditProfileGallery({
             Cancel
           </Button>
         </Box>
+        <Box sx={createArtworkStyles.imageEditContainer}>
         <Box sx={createArtworkStyles.imageContainer}>
           <Box sx={createArtworkStyles.defaultImageEdit}>
             {editImage ? (
@@ -336,10 +337,11 @@ export function EditProfileGallery({
                   ''
                 }
                 alt="gallery logo"
-                sx={createArtworkStyles.defaultImageEdit}
+                sx={createArtworkStyles.defaultImage}
               />
             )}
           </Box>
+        </Box>
         </Box>
         <Box sx={{alignSelf: 'center'}}>
           <Button
@@ -384,7 +386,6 @@ export function EditProfileGallery({
               helperTextString={errors.galleryName?.value?.message}
               inputAdornmentString="Name"
               toolTips={toolTips}
-              multiline={1}
               allowPrivate={false}
               inputAdornmentValue={null}
             />
@@ -400,7 +401,6 @@ export function EditProfileGallery({
               helperTextString={errors.galleryBio?.value?.message}
               inputAdornmentString="Bio"
               toolTips={toolTips}
-              multiline={4}
               allowPrivate={false}
               inputAdornmentValue={null}
             />
@@ -424,7 +424,6 @@ export function EditProfileGallery({
                 helperTextString={errors.primaryContact?.value?.message}
                 inputAdornmentString="Email"
                 toolTips={toolTips}
-                multiline={1}
                 allowPrivate
                 inputAdornmentValue={null}
               />
@@ -460,7 +459,6 @@ export function EditProfileGallery({
                 helperTextString={errors.galleryWebsite?.value?.message}
                 inputAdornmentString="Website"
                 toolTips={toolTips}
-                multiline={1}
                 allowPrivate
                 inputAdornmentValue={null}
               />
@@ -479,7 +477,6 @@ export function EditProfileGallery({
                 helperTextString={errors.galleryInstagram?.value?.message}
                 inputAdornmentString="Instagram"
                 toolTips={toolTips}
-                multiline={1}
                 allowPrivate
                 inputAdornmentValue={null}
               />

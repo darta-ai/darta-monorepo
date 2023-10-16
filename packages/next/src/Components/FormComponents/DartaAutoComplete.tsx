@@ -72,7 +72,6 @@ export function DartaAutoComplete({
           ? formStyles.inputTextContainer
           : formStyles.inputTextContainerTwoColumns
       }>
-      {' '}
       <DartaInputAdornment
         fieldName={fieldName}
         required={required}
@@ -86,7 +85,6 @@ export function DartaAutoComplete({
           data={data}
           register={register}
           control={control}
-          allowPrivate={allowPrivate}
           isPrivate={isPrivate}
           testIdValue={testIdValue}
           setIsPrivate={setIsPrivate}
