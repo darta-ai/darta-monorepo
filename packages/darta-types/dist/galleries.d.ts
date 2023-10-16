@@ -139,6 +139,7 @@ export type Artwork = {
     artworkImagesArray?: PublicFields[] | any[];
     artworkTitle: PublicFields;
     artistName: PublicFields;
+    artworkCategory: PublicFields;
     artworkDescription?: PublicFields;
     artworkCurrency?: PublicFields;
     artworkPrice?: PrivateFields;
@@ -154,6 +155,8 @@ export type Artwork = {
     exhibitionId: string | null;
     galleryId?: string;
     _id?: string;
+    artworkStyleTags?: string[];
+    artworkVisualTags?: string[];
 };
 export type ExhibitionDates = {
     exhibitionStartDate: DateFields;
@@ -201,6 +204,9 @@ export type Exhibition = {
     receptionDates: ReceptionDates;
     createdAt: string | null;
     updatedAt?: string | null;
+    exhibitionArtistStatement?: PublicFields;
+    artworkStyleTags?: string[];
+    artworkVisualTags?: string[];
 };
 export type ExhibitionObject = {
     [key: string]: Exhibition;

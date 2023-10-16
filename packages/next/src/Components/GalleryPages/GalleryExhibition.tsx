@@ -36,6 +36,10 @@ const exhibitionSteps = [
     content: 'You can edit the details of the exhibition here.',
   },
   {
+    target: '.exhibition-publish-button',
+    content: 'When your exhibition is ready for users to view, click here.',
+  },
+  {
     target: '.create-new-artwork',
     content: 'You can add artworks to the exhibition by clicking here.',
   },
@@ -98,12 +102,32 @@ export function GalleryExhibition() {
 
   const [galleryLocations, setGalleryLocations] = React.useState<string[]>([]);
   const [galleryName, setGalleryName] = React.useState<string | null>();
+  const [latestExhibitionDate, setLatestExhibitionDate] = React.useState<string>(new Date().toISOString());
+  const [latestExhibitionId, setLatestExhibitionId] = React.useState<string>('');
   React.useEffect(() => {
     setGalleryLocations(getGalleryLocations(state));
 
     const galName = state?.galleryProfile?.galleryName?.value;
     setGalleryName(galName);
-  }, []);
+
+    const latestExhibition = Object.values(state?.galleryExhibitions).sort((a, b) => {
+      const dateA = a?.exhibitionDates?.exhibitionEndDate?.value
+        ? new Date(a?.exhibitionDates?.exhibitionEndDate?.value)
+        : new Date(0);
+      const dateB = b?.exhibitionDates?.exhibitionEndDate?.value
+        ? new Date(b?.exhibitionDates?.exhibitionEndDate?.value)
+        : new Date(0);
+      return (dateB as any) - (dateA as any);
+    })[0];
+
+    if (latestExhibition?.exhibitionDates?.exhibitionEndDate?.value){
+      setLatestExhibitionDate(latestExhibition.exhibitionDates.exhibitionEndDate.value)
+    } 
+    if (latestExhibition?.exhibitionId){
+      setLatestExhibitionId(latestExhibition.exhibitionId)
+    }
+  // eslint-disable-next-line no-sparse-arrays
+  }, [, state.galleryExhibitions]);
 
   const [isLoadingExhibition, setLoadingExhibition] = React.useState<boolean>(false)
 
@@ -193,10 +217,10 @@ export function GalleryExhibition() {
               .sort((a, b) => {
                 const dateA = a?.exhibitionDates?.exhibitionEndDate?.value
                   ? new Date(a?.exhibitionDates?.exhibitionEndDate?.value)
-                  : new Date(0);
+                  : new Date(latestExhibitionDate);
                 const dateB = b?.exhibitionDates?.exhibitionEndDate?.value
                   ? new Date(b?.exhibitionDates?.exhibitionEndDate?.value)
-                  : new Date(0);
+                  : new Date(latestExhibitionDate);
                 return (dateB as any) - (dateA as any);
               })
               .map((exhibition: Exhibition) => (
@@ -206,6 +230,7 @@ export function GalleryExhibition() {
                     galleryLocations={galleryLocations}
                     exhibitionId={exhibition?.exhibitionId}
                     galleryName={galleryName as string}
+                    isLatestExhibition={exhibition?.exhibitionId === latestExhibitionId ?? false}
                   />
                 </Box>
               ))}
@@ -216,6 +241,7 @@ export function GalleryExhibition() {
                 galleryLocations={galleryLocations}
                 exhibitionId="00000-00000-0000"
                 galleryName={galleryName as string}
+                isLatestExhibition
               />
             </Box>
           )}

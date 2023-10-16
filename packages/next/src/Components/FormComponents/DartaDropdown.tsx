@@ -1,16 +1,14 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {
   Box,
-  IconButton,
   MenuItem,
   Select,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import React from 'react';
 import {Controller} from 'react-hook-form';
 
+import { DartaInputAdornment } from './Components';
 import {formStyles} from './styles';
 
 export function DartaDropdown({
@@ -20,6 +18,8 @@ export function DartaDropdown({
   register,
   control,
   helperTextString,
+  required,
+  inputAdornmentString,
 }: {
   options: string[];
   toolTips: {
@@ -29,6 +29,8 @@ export function DartaDropdown({
   register: any;
   control: any;
   helperTextString: string | undefined;
+  required: boolean;
+  inputAdornmentString: string;
 }) {
   const innerWidthRef = React.useRef(800);
   React.useEffect(() => {
@@ -38,45 +40,15 @@ export function DartaDropdown({
   const testIdValue = fieldName.replace('.', '-');
   return (
     <Box
-      sx={{
-        alignSelf: 'center',
-        justifyContent: 'center',
-        alignItems: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-      }}>
-      <Box
-        sx={{
-          alignSelf: 'center',
-          justifyContent: 'center',
-          alignItems: 'center',
-          display: 'flex',
-          flexDirection: 'row',
-          height: '100%',
-        }}>
-        <Box>
-          <Box>
-            <Tooltip
-              title={
-                <Typography
-                  sx={{textAlign: 'center'}}
-                  data-testid={`${testIdValue}-tooltip-text`}>
-                  {toolTips[fieldName]}
-                </Typography>
-              }
-              placement="top">
-              <IconButton>
-                <HelpOutlineIcon
-                  data-testid={`${testIdValue}-tooltip-button`}
-                  fontSize="medium"
-                  sx={formStyles.helpIcon}
-                />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
-        <Box sx={formStyles.dropDown}>
+      sx={formStyles.inputTextContainerTwoColumns}>
+      <DartaInputAdornment
+        fieldName={fieldName}
+        required={required}
+        inputAdornmentString={inputAdornmentString}
+        toolTips={toolTips}
+        testIdValue={testIdValue}
+      />
+      <Box>
           <Controller
             control={control}
             name={`${fieldName}`}
@@ -84,25 +56,23 @@ export function DartaDropdown({
             {...register(`${fieldName}.${'value'}`)}
             render={({field}) => (
               <Select
-                id="autocomplete"
-                inputvalue={field.value}
+                id="dropdown"
+                inputvalue={field.value || ''}
                 key={field.value}
-                sx={formStyles.dropDown}
+                sx={{...formStyles.formTextField, fontSize: 'auto',}}
                 data-testid={`${testIdValue}-select-field`}
                 {...(field as any)}>
                 {options.map((option, index) => (
-                  <MenuItem
-                    key={option}
-                    value={option}
-                    data-testid={`${fieldName}-input-field-option-${index}`}>
-                    {option}
-                  </MenuItem>
+                    <MenuItem
+                      key={option}
+                      value={option}
+                      data-testid={`${fieldName}-input-field-option-${index}`}>
+                      {option}
+                    </MenuItem>
                 ))}
               </Select>
             )}
           />
-        </Box>
-      </Box>
       {helperTextString && (
         <Typography
           data-testid={`${testIdValue}-text-error-field`}
@@ -110,6 +80,7 @@ export function DartaDropdown({
           {helperTextString}
         </Typography>
       )}
+      </Box>  
     </Box>
   );
 }

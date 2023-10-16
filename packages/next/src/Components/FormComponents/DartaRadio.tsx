@@ -38,7 +38,7 @@ export function DartaRadioButtonsGroup({
   const testIdValue = fieldName.replace('.', '-');
 
   return (
-    <Box sx={formStyles.underHeadingContainer}>
+    <Box sx={formStyles.inputTextContainerTwoColumns}>
       <DartaInputAdornment
         fieldName={fieldName}
         required={required}
@@ -46,7 +46,7 @@ export function DartaRadioButtonsGroup({
         toolTips={toolTips}
         testIdValue={testIdValue}
       />
-      <Box sx={{ml: 3}}>
+    <Box sx={{ml: 5}}>
         <Controller
           control={control}
           name={`${fieldName}.${'value'}`}

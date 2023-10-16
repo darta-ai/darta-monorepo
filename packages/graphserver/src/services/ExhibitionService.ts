@@ -1181,7 +1181,7 @@ export class ExhibitionService implements IExhibitionService {
       const desiredLocation = artworkEdges.filter((edge: Edge) => edge.exhibitionOrder === desiredIndex);
       const currentLocation = artworkEdges.filter((edge: Edge) => edge.exhibitionOrder === currentIndex);
       if (currentLocation[0]._to !== fullArtworkId) {
-        throw new Error('incorrect location!');
+        return this.reOrderExhibitionToArtworkEdgesAfterDelete({exhibitionId})
       }
       const promises = [
         this.edgeService.upsertEdge({
@@ -1211,7 +1211,7 @@ export class ExhibitionService implements IExhibitionService {
       return this.reOrderExhibitionToArtworkEdgesAfterDelete({exhibitionId});
     } catch (error: any) {
       throw new Error(
-        `error verifying the gallery owns the artwork: ${error.message}`,
+        `error reordering artwork: ${error.message}`,
       );
     }
   }

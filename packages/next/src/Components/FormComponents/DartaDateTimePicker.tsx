@@ -40,10 +40,8 @@ export function DartaDateTimePicker({
 }) {
   const testIdValue = fieldName.replace('.', '-');
   return (
-    <>
-      <Box>
-        <Box>
-          <Tooltip
+    <Box sx={formStyles.datePickerContainer}>
+      <Tooltip
             title={
               <Typography
                 data-testid={`${testIdValue}-tooltip-text`}
@@ -51,7 +49,7 @@ export function DartaDateTimePicker({
                 {toolTips[fieldName]}
               </Typography>
             }
-            placement="top">
+            placement="left-start">
             <IconButton>
               <HelpOutlineIcon
                 data-testid={`${testIdValue}-tooltip-button`}
@@ -60,9 +58,6 @@ export function DartaDateTimePicker({
               />
             </IconButton>
           </Tooltip>
-        </Box>
-      </Box>
-      <Box>
         <Controller
           key={fieldName}
           name={fieldName}
@@ -98,7 +93,6 @@ export function DartaDateTimePicker({
           )}
         />
       </Box>
-    </>
   );
 }
 

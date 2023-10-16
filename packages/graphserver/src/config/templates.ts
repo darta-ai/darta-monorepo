@@ -62,6 +62,7 @@ export const newArtworkShell: Artwork = {
   createdAt: '',
   updatedAt: '',
   exhibitionOrder: 0,
+  artworkCategory: {value : ''},
 };
 
 export const newExhibitionShell: Exhibition = {

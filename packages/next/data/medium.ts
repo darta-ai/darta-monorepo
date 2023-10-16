@@ -4,6 +4,7 @@ type Medium = {
   value: string;
 };
 
+
 export const mediums: Medium[] = [
   {
     label: 'Oil paint on panel',
