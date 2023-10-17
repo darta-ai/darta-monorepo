@@ -92,6 +92,7 @@ export const newExhibitionShell: Exhibition = {
   },
   createdAt: null,
   updatedAt: null,
+  artworkCategory: {value : ''},
 };
 
 export const currencyConverter: CurrencyConverterType = {

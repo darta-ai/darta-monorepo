@@ -9,18 +9,17 @@ import {UserSettings} from '../../components/User/UserSettings';
 import {StoreContext} from '../../state/Store';
 import {headerOptions} from '../../styles/styles';
 import {UserRoutesEnum} from '../../typing/routes';
-import {createOpeningTransition} from '../../utils/openingTransition';
 
 import {createStackNavigator} from '@react-navigation/stack';
 import { GalleryAndArtworkTopTabNavigator } from './GalleryAndArtworkTopTabNavigator';
 import { PastExhibitionTopTabNavigator } from '../Exhibition/PastExhibitionTopTabNavigator';
+import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
 
 export const UserStack = createStackNavigator();
 
 
-export function UserStackNavigator() {
+export function UserStackNavigator({route} : {route: any}) {
   const {state} = useContext(StoreContext);
-  const openingTransition = createOpeningTransition();
   return (
     <UserStack.Navigator screenOptions={{headerTintColor: PRIMARY_950}}>
       <UserStack.Group>
@@ -62,6 +61,12 @@ export function UserStackNavigator() {
           name={UserRoutesEnum.UserPastTopTabNavigator}
           component={PastExhibitionTopTabNavigator}
           options={{...headerOptions, headerTitle: state.previousExhibitionHeader ?? ""}}
+          />
+        <UserStack.Screen
+          name={UserRoutesEnum.UserGallery}
+          component={ExhibitionGalleryScreen}
+          initialParams={{galleryId: route.params?.artOnDisplay.galleryId}}
+          options={{...headerOptions, headerTitle: state.galleryHeader ?? ""}}
           />
       </UserStack.Group>
 

@@ -18,7 +18,7 @@ import React from 'react';
 
 import {cardStyles} from '../../../styles/CardStyles';
 import {
-  createAndEditArtworkForExhibition,
+  // createAndEditArtworkForExhibition,
   createArtworkForExhibitionAPI,
   deleteExhibitionArtwork,
   editArtworkForExhibitionAPI,
@@ -230,55 +230,55 @@ export function ExhibitionCard({
     return Promise.resolve(false);
   };
 
-  const handleBatchUpload = async (uploadArtworks: {
-    [key: string]: Artwork;
-  }): Promise<boolean> => {
-    const newExhibition: Exhibition = _.cloneDeep(
-      state?.galleryExhibitions[exhibitionId],
-    );
+  // const handleBatchUpload = async (uploadArtworks: {
+  //   [key: string]: Artwork;
+  // }): Promise<boolean> => {
+  //   const newExhibition: Exhibition = _.cloneDeep(
+  //     state?.galleryExhibitions[exhibitionId],
+  //   );
 
-    if (!newExhibition || !newExhibition?.artworks) {
-      Promise.resolve(false);
-    }
+  //   if (!newExhibition || !newExhibition?.artworks) {
+  //     Promise.resolve(false);
+  //   }
 
-    let counter = Object.values(newExhibition.artworks!).length;
+  //   let counter = Object.values(newExhibition.artworks!).length;
 
-    for (const artworkId in uploadArtworks) {
-      if (uploadArtworks[artworkId]) {
-        // eslint-disable-next-line no-param-reassign, no-multi-assign
-        uploadArtworks[artworkId].exhibitionOrder = counter += 1;
-        // eslint-disable-next-line no-param-reassign
-        uploadArtworks[artworkId].exhibitionId = exhibitionId;
-      }
-    }
+  //   for (const artworkId in uploadArtworks) {
+  //     if (uploadArtworks[artworkId]) {
+  //       // eslint-disable-next-line no-param-reassign, no-multi-assign
+  //       uploadArtworks[artworkId].exhibitionOrder = counter += 1;
+  //       // eslint-disable-next-line no-param-reassign
+  //       uploadArtworks[artworkId].exhibitionId = exhibitionId;
+  //     }
+  //   }
 
-    const artworkPromises = Object.values(uploadArtworks).map(
-      (artwork: Artwork) => createAndEditArtworkForExhibition({exhibitionId, artwork}),
-    );
-    try {
-      const results = await Promise.all(artworkPromises);
+  //   const artworkPromises = Object.values(uploadArtworks).map(
+  //     (artwork: Artwork) => createAndEditArtworkForExhibition({exhibitionId, artwork}),
+  //   );
+  //   try {
+  //     const results = await Promise.all(artworkPromises);
 
-      const resultsObj = results.reduce(
-        (acc, artwork) => ({...acc, [artwork?.artworkId as string]: artwork}),
-        {},
-      );
+  //     const resultsObj = results.reduce(
+  //       (acc, artwork) => ({...acc, [artwork?.artworkId as string]: artwork}),
+  //       {},
+  //     );
 
-      dispatch({
-        type: GalleryReducerActions.SAVE_EXHIBITION_ARTWORK,
-        exhibitionId,
-        artwork: resultsObj,
-      });
+  //     dispatch({
+  //       type: GalleryReducerActions.SAVE_EXHIBITION_ARTWORK,
+  //       exhibitionId,
+  //       artwork: resultsObj,
+  //     });
 
-      dispatch({
-        type: GalleryReducerActions.SET_BATCH_ARTWORK,
-        payload: resultsObj,
-      });
-      return Promise.resolve(true);
-    } catch (error) {
-      setErrorAlertOpen(true);
-      return Promise.resolve(false);
-    }
-  };
+  //     dispatch({
+  //       type: GalleryReducerActions.SET_BATCH_ARTWORK,
+  //       payload: resultsObj,
+  //     });
+  //     return Promise.resolve(true);
+  //   } catch (error) {
+  //     setErrorAlertOpen(true);
+  //     return Promise.resolve(false);
+  //   }
+  // };
 
   const deleteExhibition = async ({
     exhibitionId,
@@ -586,7 +586,7 @@ export function ExhibitionCard({
           <ArtworkHeader
             artworkLoading={artworkLoading}
             addNewArtwork={addNewArtwork}
-            handleBatchUpload={handleBatchUpload}
+            // handleBatchUpload={handleBatchUpload}
           />
         </Box>
         {showArtworks && exhibition?.artworks && (

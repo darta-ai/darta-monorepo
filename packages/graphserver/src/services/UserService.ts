@@ -383,7 +383,7 @@ export class UserService implements IUserService {
           FOR v, e IN 1..1 OUTBOUND @userId ${EdgeNames.FROMDartaUserTOGalleryFOLLOWS}
           RETURN {
             galleryName: v.galleryName,
-            galleryId: v._id,
+            _id: v._id,
             galleryLogo: v.galleryLogo,
           }
         `;
@@ -391,6 +391,7 @@ export class UserService implements IUserService {
           userId,
         });
         const galleries: GalleryPreview[] = await cursor.all();
+      
         return galleries
       } catch (error: any){
         throw new Error(error)

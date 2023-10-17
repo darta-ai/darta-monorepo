@@ -133,7 +133,7 @@ export function ExhibitionPreviewMini({
       <TextElement
       style={{...globalTextStyles.centeredText, textDecorationLine: 'underline', fontSize: 12}}>
       {' '}
-      click to view
+      tap to view
     </TextElement>
       </View>
       </TouchableOpacity>

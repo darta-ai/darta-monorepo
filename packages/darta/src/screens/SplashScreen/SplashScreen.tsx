@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { listAllExhibitionsPreviewsForUser } from "../../api/exhibitionRoutes";
 import { ETypes, StoreContext } from "../../state/Store";
-import { Artwork, MapPinCities, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types";
+import { Artwork, GalleryPreview, MapPinCities, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types";
 import { listExhibitionPinsByCity } from "../../api/locationRoutes";
 import { getDartaUser } from "../../api/userRoutes";
 import { getUserLocalUid } from "../../utils/functions";
@@ -40,7 +40,7 @@ function AnimatedSplashScreen({ children }) {
   }, [isAppReady]);
  
 
-  const onImageLoaded2 = useCallback(async () => {
+  const onImageLoaded = useCallback(async () => {
     try {
       const userUuid = await getUserLocalUid();
   
@@ -53,14 +53,22 @@ function AnimatedSplashScreen({ children }) {
         savedArtwork,
         inquiredArtwork
       ] = await Promise.all([
-        userUuid ? getDartaUser({ localStorageUid: userUuid }) : null,
+        // user
+        userUuid ? getDartaUser() : null,
+        //galleryFollows
         listGalleryRelationships(),
+        //exhibitionPreviews
         listAllExhibitionsPreviewsForUser({ limit: 2 }),
+        // exhibitionMapPins
         listExhibitionPinsByCity({ cityName: MapPinCities.newYork }),
+        // likedArtwork
         listUserArtwork({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 10 }),
+        // savedArtwork
         listUserArtwork({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 10 }),
+        // inquiredArtwork
         listUserArtwork({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10 })
       ]);
+
   
       if (user) {
         dispatch({
@@ -70,9 +78,14 @@ function AnimatedSplashScreen({ children }) {
       }
   
       if (galleryFollows?.length) {
+        const galleryPreviews: {[key: string] : GalleryPreview} = galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: el }), {})
         dispatch({
           type: ETypes.setGalleryPreviewMulti,
-          galleryPreviews: galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: true }), {})
+          galleryPreviews
+        });
+        dispatch({
+          type: ETypes.setUserFollowGalleriesMulti,
+          galleryFollowIds: galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: true }), {})
         });
       }
   
@@ -84,9 +97,10 @@ function AnimatedSplashScreen({ children }) {
         });
       }
   
-      const processArtworkData = (data, dispatchType) => {
+      const processArtworkData = (data: any, dispatchType: ETypes) => {
         if (data && Object.values(data).length > 0) {
-          const artworkIds = Object.values(data).reduce((acc, el) => ({ ...acc, [el?._id]: true }), {});
+          let artworkIds: { [key: string]: boolean } = {};
+          artworkIds = Object.values(data).reduce((acc: any, el: any) => ({ ...acc, [el?._id]: true }), {}) as { [key: string]: boolean };
           dispatch({
             type: dispatchType,
             artworkIds
@@ -94,12 +108,12 @@ function AnimatedSplashScreen({ children }) {
         }
         return data;
       };
-  
+
       const likedArtworkData = processArtworkData(likedArtwork, ETypes.setUserLikedArtworkMulti);
       const savedArtworkData = processArtworkData(savedArtwork, ETypes.setUserSavedArtworkMulti);
       const inquiredArtworkData = processArtworkData(inquiredArtwork, ETypes.setUserInquiredArtworkMulti);
   
-      const combinedArtwork = { ...likedArtworkData, ...savedArtworkData, ...inquiredArtworkData };
+      const combinedArtwork: {[key: string] : Artwork} = { ...likedArtworkData, ...savedArtworkData, ...inquiredArtworkData };
       if (combinedArtwork && Object.values(combinedArtwork).length > 0) {
         dispatch({
           type: ETypes.saveArtworkMulti,
@@ -109,29 +123,31 @@ function AnimatedSplashScreen({ children }) {
   
       const prefetchImageUrls: Promise<boolean>[] = [];
   
-      const addImageUrlToPrefetch = url => {
+      const addImageUrlToPrefetch = (url: string) => {
         if (url) {
           prefetchImageUrls.push(Image.prefetch(url));
         }
       };
   
       for (let artworkValue of Object.values(combinedArtwork)) {
-        addImageUrlToPrefetch(artworkValue?.artworkImage?.value);
+        if (artworkValue?.artworkImage?.value){
+          addImageUrlToPrefetch(artworkValue?.artworkImage?.value);
+        }
       }
   
       for (let exhibitionValue of Object.values(exhibitionPreviews)) {
         if (exhibitionValue?.artworkPreviews) {
           for (let art of Object.values(exhibitionValue?.artworkPreviews)) {
-            addImageUrlToPrefetch(art?.artworkImage.value);
+            addImageUrlToPrefetch(art?.artworkImage?.value);
           }
         }
         
         addImageUrlToPrefetch(exhibitionValue?.exhibitionPrimaryImage?.value);
-        addImageUrlToPrefetch(exhibitionValue?.galleryLogo?.value);
+        if (exhibitionValue?.galleryLogo?.value) addImageUrlToPrefetch(exhibitionValue?.galleryLogo?.value);
       }
       
   
-      await Promise.all(prefetchImageUrls);
+      Promise.all(prefetchImageUrls);
   
       dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
   
@@ -143,127 +159,7 @@ function AnimatedSplashScreen({ children }) {
     }
   }, []);
   
-  
 
-  const onImageLoaded = useCallback(async () => {
-    // auth().signOut()
-    try {
-      const userUuid = await getUserLocalUid();
-      if (userUuid) {
-        const user = await getDartaUser({localStorageUid: userUuid})
-        dispatch({
-          type: ETypes.setUser,
-          userData: {
-            ...user
-          }
-        })
-      }
-      const galleryFollows = await listGalleryRelationships()
-      if (galleryFollows && galleryFollows.length > 0){
-        const galleryFollowsIds = galleryFollows.reduce((acc, el) => ({...acc, [el?._id as string] : true}), {})
-        dispatch({
-          type: ETypes.setGalleryPreviewMulti,
-          galleryPreviews: galleryFollowsIds
-        })
-      }
-
-      const imageUrls: string[] = []
-      const artworkImages: any = []
-      const exhibitionImages: any = []
-
-      const exhibitionPreviews = await listAllExhibitionsPreviewsForUser({limit: 2})
-      
-      const exhibitionMapPins = await listExhibitionPinsByCity({cityName: MapPinCities.newYork})
-      dispatch({type: ETypes.saveExhibitionMapPins, mapPins: exhibitionMapPins, mapPinCity: MapPinCities.newYork})
-
-      
-      const likedArtwork = await listUserArtwork({action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 10})
-      const savedArtwork = await listUserArtwork({action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 10})
-      const inquiredArtwork = await listUserArtwork({action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10})
-
-
-      let likedArtworkIds = {}
-      let savedArtworkIds = {}
-      let inquiredArtworkIds = {}
-      if (likedArtwork && Object.values(likedArtwork).length > 0){
-        likedArtworkIds = Object.values(likedArtwork).reduce((acc, el) => ({...acc, [el?._id as string] : true}), {})
-      }
-      if (savedArtwork && Object.values(savedArtwork).length > 0){
-        savedArtworkIds = Object.values(savedArtwork).reduce((acc, el) => ({...acc, [el?._id as string] : true}), {})
-      }
-      if (inquiredArtwork && Object.values(inquiredArtwork).length > 0){
-        inquiredArtworkIds = Object.values(inquiredArtwork).reduce((acc, el) => ({...acc, [el?._id as string] : true}), {})
-      }
-
-      dispatch({
-        type: ETypes.setUserLikedArtworkMulti,
-        artworkIds: likedArtworkIds
-      })
-
-      dispatch({
-        type: ETypes.setUserSavedArtworkMulti,
-        artworkIds: savedArtworkIds
-      })
-      
-      dispatch({
-        type: ETypes.setUserInquiredArtworkMulti,
-        artworkIds: inquiredArtworkIds
-      })
-
-      const artwork: {[key: string]: Artwork} = {...likedArtwork, ...savedArtwork, ...inquiredArtwork}
-
-      if (artwork && Object.values(artwork).length > 0){
-        dispatch({
-          type: ETypes.saveArtworkMulti,
-          artworkDataMulti: artwork
-        })
-      }
-      
-
-      Object.values(artwork).forEach((artworkValue) => {
-        if (artworkValue?.artworkImage?.value){
-          artworkImages.push(
-            Image.prefetch(artworkValue?.artworkImage.value)
-          )
-        }
-      })
-
-      Object.values(exhibitionPreviews).forEach((exhibitionValue) => {
-        if (exhibitionValue?.artworkPreviews){
-          Object.values(exhibitionValue?.artworkPreviews).forEach((art) => {
-            artworkImages.push(
-              Image.prefetch(art?.artworkImage.value)
-            )
-            art = {...artwork, ...art}
-            imageUrls.push(art?.artworkImage.value)
-          })
-        } if (exhibitionValue?.exhibitionPrimaryImage?.value){
-          exhibitionImages.push(
-            Image.prefetch(exhibitionValue.exhibitionPrimaryImage?.value)
-          )
-        } if (exhibitionValue?.galleryLogo.value){
-          exhibitionImages.push(
-            Image.prefetch(exhibitionValue?.galleryLogo.value)
-          )
-        }
-      })
-      try{
-        Promise.all(exhibitionImages)
-        Promise.all(artworkImages)
-  
-      } catch {
-
-      }
-
-      dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
-
-      await SplashScreen.hideAsync();
-    } catch (e) {
-      console.log(e)
-    } finally {
-      setAppReady(true);
-    }
-  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -296,7 +192,7 @@ function AnimatedSplashScreen({ children }) {
               ],
             }}
             source={require('../../assets/dartahousewhite.png')}
-            onLoadEnd={onImageLoaded2}
+            onLoadEnd={onImageLoaded}
             fadeDuration={30}
           />
         </Animated.View>

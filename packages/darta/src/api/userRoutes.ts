@@ -1,5 +1,7 @@
 import axios from 'axios';
-import { Exhibition, Images, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
+import { Exhibition, GalleryPreview, Images, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { USER_UID_KEY } from '../utils/constants';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}users`;
 
@@ -53,12 +55,9 @@ export async function createDartaUserFollowGallery({
   }
 }
 
-export async function getDartaUser({
-  localStorageUid,
-}: {
-  localStorageUid: string;
-}): Promise<any> {
+export async function getDartaUser(): Promise<any> {
 try {
+  const localStorageUid = await AsyncStorage.getItem(USER_UID_KEY);
   const {data} = await axios.get(`${URL}/getDartaUser`, {params: {localStorageUid}});
   return data;
 } catch (error:any) {
@@ -105,7 +104,7 @@ export async function listDartaUserFollowsGallery({
   uid,
 }: {
   uid: string;
-}): Promise<Exhibition | any> {
+}): Promise<GalleryPreview | any> {
   try {
     const {data} = await axios.get(`${URL}/listDartaUserFollowsGallery`, {
       params: {

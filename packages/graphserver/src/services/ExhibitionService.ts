@@ -117,6 +117,7 @@ export class ExhibitionService implements IExhibitionService {
       return;
     }
     const {artworks, ...exhibition} = results;
+
     const cleanedExhibition = filterOutPrivateRecordsSingleObject(exhibition);
     const cleanedArtworks = filterOutPrivateRecordsMultiObject(artworks);
 
@@ -250,8 +251,16 @@ export class ExhibitionService implements IExhibitionService {
     }))
     // REFRESH EXHIBITION PRE-SIGNED IMAGE
 
+    
+    const {exhibitionPrimaryImage} = exhibition
+    
     let imageValue;
-    if (exhibition?.exhibitionPrimaryImage?.fileName && exhibition?.exhibitionPrimaryImage?.bucketName) {
+
+    let shouldRegenerate;
+    if (exhibitionPrimaryImage?.value) {
+      shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: exhibitionPrimaryImage.value})
+    }
+    if (shouldRegenerate && exhibition?.exhibitionPrimaryImage?.fileName && exhibition?.exhibitionPrimaryImage?.bucketName) {
       const {fileName, bucketName} = exhibition.exhibitionPrimaryImage;
       imageValue = await this.imageController.processGetFile({
         fileName,
@@ -259,6 +268,8 @@ export class ExhibitionService implements IExhibitionService {
       });
       this.refreshExhibitionHeroImage({exhibitionId, url: imageValue})
       exhibition.exhibitionPrimaryImage.value = imageValue;
+    } else {
+      imageValue = exhibitionPrimaryImage?.value
     }
 
     return {
@@ -266,6 +277,10 @@ export class ExhibitionService implements IExhibitionService {
       artworks: {
         ...exhibitionArtworks,
       },
+      exhibitionPrimaryImage: {
+        ...exhibitionPrimaryImage,
+        value: imageValue
+      }
     };
   }
 
@@ -679,6 +694,7 @@ export class ExhibitionService implements IExhibitionService {
     LET exhibitions = (
       FOR exhibition IN ${CollectionNames.Exhibitions}
       SORT exhibition.exhibitionDates.exhibitionStartDate.value DESC
+      FILTER exhibition.published == true
       LIMIT 0, @limit
       RETURN exhibition
     )

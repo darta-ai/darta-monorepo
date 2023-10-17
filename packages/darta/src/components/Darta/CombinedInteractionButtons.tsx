@@ -86,10 +86,9 @@ export function CombinedInteractionButtons({
     setCurrentArtRating(ratingObject || {});
   };
 
-  useEffect(() => {
-    modifyDisplayRating();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
+  // useEffect(() => {
+  //   modifyDisplayRating();
+  // }, [state]);
 
   const ratingContainer = isPortrait
     ? galleryInteractionStyles.containerPortrait

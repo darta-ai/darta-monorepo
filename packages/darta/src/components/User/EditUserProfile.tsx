@@ -1,7 +1,7 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {Animated, Image, ScrollView, StyleSheet, View} from 'react-native';
-// import {launchImageLibrary} from 'react-native-image-picker';
+import { RefreshControl } from 'react-native';
 import {Button, IconButton, TextInput} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { USER_UID_KEY } from '../../utils/constants';
@@ -18,7 +18,7 @@ import {TextElement} from '../Elements/_index';
 import {buttonSizes, icons} from '../../utils/constants';
 import {galleryInteractionStyles, globalTextStyles} from '../../styles/styles';
 import {ETypes, StoreContext} from '../../state/Store';
-import { editDartaUserAccount } from '../../api/userRoutes';
+import { editDartaUserAccount, getDartaUser } from '../../api/userRoutes';
 import { DeleteAccountDialog } from '../Dialog/DeleteAccountDialog';
 
 type FieldState = {
@@ -193,7 +193,6 @@ export function EditUserProfile({navigation} : {navigation: any}) {
     }
 };
 
-
   const handleButtonClick = async (formName: SignedInActions) => {
     // profile picture stuff
 
@@ -298,8 +297,29 @@ export function EditUserProfile({navigation} : {navigation: any}) {
 
     const [dialogVisible, setDialogVisible] = useState<boolean>(false)
 
+    const [refreshing, setRefreshing] = React.useState(false)
+    
+    const onRefresh = React.useCallback(async () => {
+      setRefreshing(true);
+      try{
+          const user = await getDartaUser();
+          dispatch({
+            type: ETypes.setUser,
+            userData: user
+          });
+      } catch {
+          setRefreshing(false);
+      }
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 500)
+    }, []);
+
   return (
-    <ScrollView style={showOnlyOne && {marginTop: hp('5%')}}>
+    <ScrollView style={showOnlyOne && {marginTop: hp('5%')}} 
+    refreshControl={
+      <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}
+    >
       <Animated.View
         style={!formData.profilePicture.isEditing && {height: heightAnim}}>
         <View style={[SSSignedInUserSettings.divider, {borderBottomWidth: 0}, showOnlyOne && {display: 'none'}]} />

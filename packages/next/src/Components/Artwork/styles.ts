@@ -44,15 +44,29 @@ export const createArtworkStyles = {
     alignContent: 'flex-start',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    gap: '5vh',
+    gap: '2vh',
     '@media (min-width: 1280px)': {
       flexDirection: 'row',
       width: '100%',
     },
   },
-  keyInformationContainer: {
-    minWidth: '40vh',
+  locationContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '80%',
+    alignSelf: 'center',
+    backgroundColor: Colors.PRIMARY_50,
+    alignContent: 'flex-start',
+    justifyContent: 'flex-start',
     alignItems: 'flex-start',
+    gap: '1vh',
+    '@media (min-width: 1280px)': {
+      width: '95%',
+    },
+  },
+  keyInformationContainer: {
+    width: '40vh',
+    alignItems: 'center',
     display: 'flex',
     margin: '1em',
     flexDirection: 'column',
@@ -63,7 +77,7 @@ export const createArtworkStyles = {
     '@media (min-width: 1280px)': {
       alignSelf: 'flex-start',
       gap: '1vh',
-      minWidth: '50vh',
+      width: '60vh',
     },
   },
   dimensionsAndPricingContainer: {
@@ -151,8 +165,8 @@ export const createArtworkStyles = {
     },
   },
   defaultImageEdit: {
-    maxHeight: '40vh',
-    maxWidth: '40vw',
+    maxHeight: '45vh',
+    maxWidth: '45vw',
     '@media (min-width: 1280px)': {
       maxHeight: '100%',
       maxWidth: '100%',

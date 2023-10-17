@@ -16,7 +16,7 @@ const galleryIconStyles = StyleSheet.create({
         width: 40,
         height: 40,
         resizeMode: 'contain',
-        backgroundColor: PRIMARY_50
+        backgroundColor: 'transparent'
     }
 })
   return (

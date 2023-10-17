@@ -28,6 +28,8 @@ import * as SecureStore from 'expo-secure-store';
 export const RecommenderStack = createStackNavigator();
 export const RootStack = createBottomTabNavigator();
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { DartaRecommenderView } from './src/screens/DartaRecommenderView';
+import { DartaRecommenderNavigator } from './src/navigation/DartaRecommender/DartaRecommenderNavigator';
 
 // exp://192.168.1.35:8081/--/feed/topTab/exhibition/6e02911e-b578-4962-b248-6285d412c3e3/gallery/Galleries/8501288
 
@@ -94,6 +96,20 @@ function App() {
                     ...footerOptions,
                   }}
                 />
+                <RootStack.Screen
+                  name={RootStackEnum.darta}
+                  component={DartaRecommenderNavigator}
+                  options={{
+                    tabBarIcon: ({focused}: {focused: any}) => (
+                      <TabBarElement
+                        focused={focused}
+                        icon="arrow-decision-outline"
+                        colors={footerColors}
+                      />
+                    ),
+                    ...footerOptions,
+                  }}
+                />
                   <RootStack.Screen
                     name={RootStackEnum.explore}
                     component={ExploreMapStackNavigator}
@@ -101,7 +117,7 @@ function App() {
                       tabBarIcon: ({focused}: {focused: any}) => (
                         <TabBarElement
                           focused={focused}
-                          icon="map-marker-outline"
+                          icon="map-marker-radius-outline"
                           colors={footerColors}
                         />
                       ),

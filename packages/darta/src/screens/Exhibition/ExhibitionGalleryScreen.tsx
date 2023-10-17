@@ -266,19 +266,45 @@ export function ExhibitionGalleryScreen({
     setIsGalleryLoaded(true)
   }
 
+
+
   React.useEffect(() => {
-    if (route?.params?.galleryId && state.galleryData && state.galleryData[route.params.galleryId]){
-      setGalleryId(route.params.galleryId);
-      setGalleryData({inputGallery: state.galleryData[route.params.galleryId]})
-      setGallery(state.galleryData[route.params.galleryId])
-    } else if (state.qrCodeGalleryId && state.galleryData){
-      setGalleryId(state.qrCodeGalleryId);
-      setGalleryData({inputGallery: state.galleryData[state.qrCodeGalleryId]})
-      setGallery(state.galleryData[state.qrCodeGalleryId])
-    } else {
-      setErrorText("hey something went wrong, please refresh and try again")
+    const setState = async () => {
+      if (route?.params?.galleryId && state.galleryData && state.galleryData[route.params.galleryId]){
+        const gal = state.galleryData[route.params.galleryId]
+        setGalleryId(route.params.galleryId);
+        setGalleryData({inputGallery: gal})
+        setGallery(gal)
+        dispatch({
+          type: ETypes.setGalleryHeader,
+          galleryHeader: gal.galleryName.value ?? "",
+        })
+      } else if (state.qrCodeGalleryId && state.galleryData){
+        setGalleryId(state.qrCodeGalleryId);
+        setGalleryData({inputGallery: state.galleryData[state.qrCodeGalleryId]})
+        setGallery(state.galleryData[state.qrCodeGalleryId])
+      } else if (route?.params?.galleryId && !route.params?.exhibitionId) { 
+        const gal: IGalleryProfileData = await readGallery({galleryId: route?.params?.galleryId})
+        if (gal?._id){
+          setGalleryId(gal._id);
+          setGalleryData({inputGallery: gal})
+          setGallery(gal)
+          dispatch({
+            type: ETypes.saveGallery,
+            galleryData: gal,
+          })
+          console.log({gal})
+          dispatch({
+            type: ETypes.setGalleryHeader,
+            galleryHeader: gal.galleryName.value ?? "",
+          })
+        }
+      }else {
+        setErrorText("hey something went wrong, please refresh and try again")
+      }
     }
-    
+
+    setState()
   }, [state.galleryData, galleryId, state.qrCodeGalleryId])
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -364,13 +390,12 @@ export function ExhibitionGalleryScreen({
   };
 
   React.useEffect(() =>{
-    console.log({followsGallery, state: state.userGalleryFollowed})
     if (state.userGalleryFollowed && state.userGalleryFollowed[galleryId]){
       setFollowsGallery(true)
     } else {
       setFollowsGallery(false)
     }
-  }, [,state.userGalleryFollowed])
+  }, [galleryId])
 
   React.useEffect(() => {
     toggleButtons()
@@ -537,28 +562,6 @@ export function ExhibitionGalleryScreen({
 
         </View>
         <View>
-          <TextElement style={galleryDetailsStyles.descriptionText}>Past Shows</TextElement>
-          <Divider style={galleryDetailsStyles.divider}/>
-        </View>
-        <View style={galleryDetailsStyles.previousShowContainer}>
-          {previousExhibitions && previousExhibitions.map((previousExhibition : Exhibition, index : number) => {
-            return (
-              <View key={`${index}-${previousExhibition.exhibitionId}`}>
-                <ExhibitionPreviewMini 
-                  exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
-                  exhibitionId={previousExhibition.exhibitionId}
-                  exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
-                  exhibitionGallery={gallery.galleryName?.value as string}
-                  exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
-                  exhibitionDates={previousExhibition.exhibitionDates}
-                  galleryLogoLink={gallery.galleryLogo?.value as string}
-                  onPress={handleExhibitionPress}
-                />
-              </View>
-            )
-          })}
-        </View>
-        <View>
           <TextElement style={galleryDetailsStyles.descriptionText}>
               Contact
           </TextElement>
@@ -677,7 +680,28 @@ export function ExhibitionGalleryScreen({
         </View>
           )}
         </View>
-
+        <View>
+          <TextElement style={galleryDetailsStyles.descriptionText}>Past Shows</TextElement>
+          <Divider style={galleryDetailsStyles.divider}/>
+        </View>
+        <View style={galleryDetailsStyles.previousShowContainer}>
+          {previousExhibitions && previousExhibitions.map((previousExhibition : Exhibition, index : number) => {
+            return (
+              <View key={`${index}-${previousExhibition.exhibitionId}`}>
+                <ExhibitionPreviewMini 
+                  exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
+                  exhibitionId={previousExhibition.exhibitionId}
+                  exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
+                  exhibitionGallery={gallery.galleryName?.value as string}
+                  exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
+                  exhibitionDates={previousExhibition.exhibitionDates}
+                  galleryLogoLink={gallery.galleryLogo?.value as string}
+                  onPress={handleExhibitionPress}
+                />
+              </View>
+            )
+          })}
+        </View>
       </View>
     </ScrollView>
     )}

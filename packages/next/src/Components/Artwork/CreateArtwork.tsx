@@ -359,10 +359,18 @@ export function CreateArtwork({
       if (exhibition?.exhibitionArtist && exhibition.exhibitionArtist.value) {
         setValue('artistName.value', exhibition.exhibitionArtist.value);
       }
+      if (exhibition?.artworkStyleTags && !newArtwork.artworkStyleTags?.length) {
+        setValue('artworkStyleTags', exhibition?.artworkStyleTags);
+      }
+      if (exhibition?.artworkVisualTags && !newArtwork.artworkVisualTags?.length) {
+        setValue('artworkVisualTags', exhibition?.artworkVisualTags);
+      }
+      if (exhibition?.artworkCategory && exhibition.artworkCategory.value && !newArtwork.artworkCategory?.value) {
+        setValue('artworkCategory.value', exhibition?.artworkCategory.value);
+      }
     }
   }, []);
   const isInExhibition = isInExhibitionRef.current;
-
   return (
     <Box mb={2} sx={profileStyles.container}>
       <Box sx={createArtworkStyles.backButton}>
@@ -378,17 +386,18 @@ export function CreateArtwork({
         <Box sx={createArtworkStyles.keyInformationContainer}>
           <Box sx={createArtworkStyles.imageContainer}>
             <Box style={createArtworkStyles.defaultImageEdit}>
+              <Box>
               {editImage ? (
-                <>
+                <Box sx={createArtworkStyles.defaultImageContainer}>
                   <DartaImageInput
-                    onDrop={handleDrop}
-                    instructions="Drag and drop an image of your artwork here, or click to select an image to upload."
-                  />
-                  <CroppingMattersModal
-                    open={croppingModalOpen || false}
-                    onClose={handleCloseModal}
-                  />
-                </>
+                      onDrop={handleDrop}
+                      instructions="Drag and drop an image of your artwork here, or click to select an image to upload."
+                    />
+                    <CroppingMattersModal
+                      open={croppingModalOpen || false}
+                      onClose={handleCloseModal}
+                    />
+                </Box>
               ) : (
                 <Box sx={createArtworkStyles.defaultImageContainer}>
                   <Box
@@ -399,6 +408,7 @@ export function CreateArtwork({
                   />
                 </Box>
               )}
+              </Box>
             {errors.artworkImage && (
               <Typography
                 data-testid="artwork-image-error"
@@ -679,7 +689,7 @@ export function CreateArtwork({
             toolTips={createArtworkToolTips}
             label="Artwork Style Tags"
             allowPrivate={false}
-            inputAdornmentString="Style/Movement"
+            inputAdornmentString="Style"
             inputOptions={stylesAndMovements as any}
           />
         </Box>

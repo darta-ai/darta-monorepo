@@ -125,6 +125,7 @@ export function UserHome({navigation}: {navigation: any}) {
             <View>
               <GalleriesFollowing
                 headline="| f o l l o w i n g"
+                navigation={navigation}
               />
             </View>
         </View>

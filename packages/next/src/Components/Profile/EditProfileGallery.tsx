@@ -6,13 +6,12 @@ import {
 } from '@darta-types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import {Box, Button, Card,Typography} from '@mui/material';
+import {Box, Button, Typography} from '@mui/material';
 import _ from 'lodash';
 import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import { cardStyles } from '../../../styles/CardStyles';
 import {updateGalleryProfileAPI} from '../../API/galleries/galleryRoutes';
 import {googleMapsParser} from '../../common/nextFunctions';
 import {createArtworkStyles} from '../Artwork/styles';
@@ -103,7 +102,7 @@ export function EditProfileGallery({
       }),
     }),
     primaryContact: yup.object().shape({
-      value: yup.string().email('A valid email address is required'),
+      value: yup.string().email('A valid email address is required').required(),
       isPrivate: yup.boolean().optional(),
     }),
     galleryPhone: yup.object().shape({
@@ -309,88 +308,160 @@ export function EditProfileGallery({
 
   return (
     <Box my={5} sx={profileStyles.container}>
-      <Card sx={cardStyles.root}>
-        <Box sx={createArtworkStyles.backButton}>
-          <Button
-            variant="outlined"
-            data-testid="edit-profile-back-button"
-            sx={{color: Colors.PRIMARY_600}}
-            onClick={() => setIsEditingProfile(!isEditingProfile)}
-            startIcon={<ArrowBackIcon sx={{color: Colors.PRIMARY_600}} />}>
-            Cancel
-          </Button>
-        </Box>
-        <Box sx={createArtworkStyles.imageEditContainer}>
-        <Box sx={createArtworkStyles.imageContainer}>
-          <Box sx={createArtworkStyles.defaultImageEdit}>
-            {editImage ? (
-              <DartaImageInput
-                onDrop={handleDrop}
-                instructions="Drag and drop your logo here or click to select a file to upload."
-              />
-            ) : (
-              <Box
-                component="img"
-                src={
-                  tempImage ??
-                  (galleryProfileData?.galleryLogo?.value as string) ??
-                  ''
-                }
-                alt="gallery logo"
-                sx={createArtworkStyles.defaultImage}
-              />
-            )}
+      <Box sx={createArtworkStyles.backButton}>
+        <Button
+          variant="outlined"
+          data-testid="edit-profile-back-button"
+          sx={{color: Colors.PRIMARY_600}}
+          onClick={() => setIsEditingProfile(!isEditingProfile)}
+          startIcon={<ArrowBackIcon sx={{color: Colors.PRIMARY_600}} />}>
+          Cancel
+        </Button>
+      </Box>
+      <Box sx={createArtworkStyles.imageAndKeyInformationContainer}>
+        <Box sx={createArtworkStyles.keyInformationContainer}>
+            <Box sx={createArtworkStyles.imageContainer}>
+              <Box sx={createArtworkStyles.defaultImageEdit}>
+                {editImage ? (
+                  <DartaImageInput
+                    onDrop={handleDrop}
+                    instructions="Drag and drop your logo here or click to select a file to upload."
+                  />
+                ) : (
+                  <Box
+                    component="img"
+                    src={
+                      tempImage ??
+                      (galleryProfileData?.galleryLogo?.value as string) ??
+                      ''
+                    }
+                    alt="gallery logo"
+                    sx={createArtworkStyles.defaultImage}
+                  />
+                )}
+              </Box>
           </Box>
-        </Box>
-        </Box>
         <Box sx={{alignSelf: 'center'}}>
-          <Button
-            sx={{width: '40vw', alignSelf: 'center'}}
-            onClick={() => setEditImage(!editImage)}
-            data-testid="edit-image-button"
-            variant="contained">
-            <Typography
-              sx={{fontSize: '0.8rem'}}
-              data-testid="create-gallery-image-back-button-test">
-              {editImage ? 'Back' : 'Edit Image'}
-            </Typography>
-          </Button>
-        </Box>
-        <Box sx={createArtworkStyles.inputTextContainer}>
-          <Box
-            key="gallerySearch"
-            sx={{...createArtworkStyles.inputText, mt: 10}}>
-            <DartaGallerySearch
-              fieldName="gallerySearch"
-              data={'' as any}
-              register={register}
-              required
-              inputAdornmentString="Search"
-              toolTips={toolTips}
-              setAutofillDetails={setAutofillDetails}
-              setPlaceId={setPlaceId}
-              placeId={placeId}
-            />
+            <Button
+              sx={{width: '30vw', alignSelf: 'center'}}
+              onClick={() => setEditImage(!editImage)}
+              data-testid="edit-image-button"
+              variant="contained">
+              <Typography
+                sx={{fontSize: '0.8rem'}}
+                data-testid="create-gallery-image-back-button-test">
+                {editImage ? 'Back' : 'Edit Image'}
+              </Typography>
+            </Button>
           </Box>
-          <Box key="galleryName" sx={createArtworkStyles.inputText}>
+        </Box>
+        <Box sx={createArtworkStyles.keyInformationContainer}>
+          <Box key="gallerySearch" sx={createArtworkStyles.multiLineContainer}>
+            <DartaGallerySearch
+                fieldName="gallerySearch"
+                data={'' as any}
+                register={register}
+                required
+                inputAdornmentString="Search"
+                toolTips={toolTips}
+                setAutofillDetails={setAutofillDetails}
+                setPlaceId={setPlaceId}
+                placeId={placeId}
+              />
+          </Box>
+          <Box key="galleryName" sx={createArtworkStyles.multiLineContainer}>
             <DartaTextInput
-              fieldName="galleryName"
-              data={
-                getValues('galleryName') ||
-                (galleryProfileData.galleryName as PrivateFields)
-              }
+                fieldName="galleryName"
+                data={
+                  getValues('galleryName') ||
+                  (galleryProfileData.galleryName as PrivateFields)
+                }
+                register={register}
+                control={control}
+                errors={errors}
+                required
+                helperTextString={errors.galleryName?.value?.message}
+                inputAdornmentString="Name"
+                toolTips={toolTips}
+                allowPrivate={false}
+                inputAdornmentValue={null}
+              />
+          </Box>
+        </Box>
+      </Box>
+      <Box sx={createArtworkStyles.imageAndKeyInformationContainer}>
+        <Box sx={createArtworkStyles.keyInformationContainer}>
+          <Typography variant="h6" sx={{alignSelf: 'center'}}>Contact</Typography>
+          <Box key="primaryContact" sx={createArtworkStyles.multiLineContainer}>
+            <DartaTextInput
+              fieldName="primaryContact"
+              data={galleryProfileData.primaryContact}
               register={register}
-              control={control}
               errors={errors}
               required
-              helperTextString={errors.galleryName?.value?.message}
-              inputAdornmentString="Name"
+              control={control}
+              helperTextString={errors.primaryContact?.value?.message}
+              inputAdornmentString="Email"
               toolTips={toolTips}
               allowPrivate={false}
               inputAdornmentValue={null}
             />
           </Box>
-          <Box key="galleryBio" sx={createArtworkStyles.inputText}>
+          <Box key="galleryPhone" sx={createArtworkStyles.multiLineContainer} >
+            <DartaPhoneNumber
+              fieldName="galleryPhone"
+              data={galleryProfileData.galleryPhone}
+              register={register}
+              errors={errors}
+              required={false}
+              control={control}
+              helperTextString={errors.galleryPhone?.value?.message}
+              inputAdornmentString="Phone"
+              toolTips={toolTips}
+              allowPrivate={false}
+              inputAdornmentValue={null}
+            />
+          </Box>
+          <Box key="galleryWebsite" sx={createArtworkStyles.multiLineContainer}>
+            <DartaTextInput
+              fieldName="galleryWebsite"
+              data={
+                (getValues('galleryWebsite') as PrivateFields) ||
+                galleryProfileData.galleryWebsite || "@"
+              }
+              register={register}
+              errors={errors}
+              required={false}
+              control={control}
+              helperTextString={errors.galleryWebsite?.value?.message}
+              inputAdornmentString="Website"
+              toolTips={toolTips}
+              allowPrivate={false}
+              inputAdornmentValue={null}
+            />
+          </Box>
+          <Box key="galleryInstagram" sx={createArtworkStyles.multiLineContainer} >
+            <DartaTextInput
+              fieldName="galleryInstagram"
+              data={
+                (getValues('galleryInstagram') as PrivateFields) ||
+                galleryProfileData.galleryInstagram
+              }
+              register={register}
+              errors={errors}
+              required={false}
+              control={control}
+              helperTextString={errors.galleryInstagram?.value?.message}
+              inputAdornmentString="Instagram"
+              toolTips={toolTips}
+              allowPrivate={false}
+              inputAdornmentValue={null}
+            />
+          </Box>
+        </Box>
+        <Box sx={createArtworkStyles.keyInformationContainer}>
+        <Typography variant="h6" sx={{alignSelf: 'center'}}>Bio</Typography>
+        <Box key="galleryBio" sx={createArtworkStyles.multiLineContainer}>
             <DartaTextInput
               fieldName="galleryBio"
               data={galleryProfileData.galleryBio as PrivateFields}
@@ -405,100 +476,19 @@ export function EditProfileGallery({
               inputAdornmentValue={null}
             />
           </Box>
-          <Box
-            key="gallerySocialMedia"
-            sx={{
-              justifyContent: 'space-around',
-            }}>
-            <Typography variant="h5">Contact</Typography>
-          </Box>
-          <Box key="primaryContact" sx={createArtworkStyles.multiLineContainer}>
-            <Box key="inputText">
-              <DartaTextInput
-                fieldName="primaryContact"
-                data={galleryProfileData.primaryContact}
-                register={register}
-                errors={errors}
-                required={false}
-                control={control}
-                helperTextString={errors.primaryContact?.value?.message}
-                inputAdornmentString="Email"
-                toolTips={toolTips}
-                allowPrivate
-                inputAdornmentValue={null}
-              />
-            </Box>
-            <Box key="galleryPhone">
-              <DartaPhoneNumber
-                fieldName="galleryPhone"
-                data={galleryProfileData.galleryPhone}
-                register={register}
-                errors={errors}
-                required={false}
-                control={control}
-                helperTextString={errors.galleryPhone?.value?.message}
-                inputAdornmentString="Phone"
-                toolTips={toolTips}
-                allowPrivate
-                inputAdornmentValue={null}
-              />
-            </Box>
-          </Box>
-          <Box key="galleryWebsite" sx={createArtworkStyles.multiLineContainer}>
-            <Box key="galleryWebsite">
-              <DartaTextInput
-                fieldName="galleryWebsite"
-                data={
-                  (getValues('galleryWebsite') as PrivateFields) ||
-                  galleryProfileData.galleryWebsite
-                }
-                register={register}
-                errors={errors}
-                required={false}
-                control={control}
-                helperTextString={errors.galleryWebsite?.value?.message}
-                inputAdornmentString="Website"
-                toolTips={toolTips}
-                allowPrivate
-                inputAdornmentValue={null}
-              />
-            </Box>
-            <Box key="galleryInstagram">
-              <DartaTextInput
-                fieldName="galleryInstagram"
-                data={
-                  (getValues('galleryInstagram') as PrivateFields) ||
-                  galleryProfileData.galleryInstagram
-                }
-                register={register}
-                errors={errors}
-                required={false}
-                control={control}
-                helperTextString={errors.galleryInstagram?.value?.message}
-                inputAdornmentString="Instagram"
-                toolTips={toolTips}
-                allowPrivate
-                inputAdornmentValue={null}
-              />
-            </Box>
-          </Box>
-          <Box
-            key="galleryLocations"
-            sx={{
-              ...createArtworkStyles.inputText,
-              justifyContent: 'space-around',
-              flexDirection: 'column',
-              gap: '2vh',
-            }}>
-            <Typography variant="h5">Locations</Typography>
-            <Button
-              variant="contained"
-              data-testid="add-location"
-              onClick={() => addLocation()}>
-              Add Location
-            </Button>
-          </Box>
-          <Box key="galleryLocation" sx={createArtworkStyles.inputText}>
+        </Box>
+      </Box>
+      <Box sx={{display: "flex", flexDirection: "row", gap: '4vw', alignContent: 'center', justifyContent: "center"}}>
+        <Typography variant="h5">Locations</Typography>
+          <Button
+          sx={{backgroundColor: Colors.PRIMARY_900, color: Colors.PRIMARY_100}}
+          data-testid="add-location"
+          onClick={() => addLocation()}>
+          Add Location
+        </Button>
+      </Box>
+      <Box sx={createArtworkStyles.locationContainer}>
+        <Box key="galleryLocation" sx={createArtworkStyles.multiLineContainer}>
             <DartaLocationAndTimes
               locationNumber="galleryLocation0"
               data={galleryProfileData.galleryLocation0 as any}
@@ -512,27 +502,31 @@ export function EditProfileGallery({
               galleryProfileData={galleryProfileData}
               locationDisplay="Location 1"
             />
+        </Box>
+      </Box>
+      <Box sx={createArtworkStyles.locationContainer}>
+        {galleryProfileData.galleryLocation1 && (
+          <Box key="galleryLocation" sx={{...createArtworkStyles.multiLineContainer, width: '100%'}}>
+            <DartaLocationAndTimes
+              locationNumber="galleryLocation1"
+              data={galleryProfileData.galleryLocation1 as any}
+              register={register}
+              toolTips={toolTipsLocations}
+              getValues={getValues}
+              setValue={setValue}
+              removeLocation={removeLocation}
+              errors={errors}
+              control={control}
+              galleryProfileData={galleryProfileData}
+              locationDisplay="Location 2"
+            />
           </Box>
-          {galleryProfileData.galleryLocation1 && (
-            <Box key="galleryLocation" sx={createArtworkStyles.inputText}>
-              <DartaLocationAndTimes
-                locationNumber="galleryLocation1"
-                data={galleryProfileData.galleryLocation1 as any}
-                register={register}
-                toolTips={toolTipsLocations}
-                getValues={getValues}
-                setValue={setValue}
-                removeLocation={removeLocation}
-                errors={errors}
-                control={control}
-                galleryProfileData={galleryProfileData}
-                locationDisplay="Location 2"
-              />
-            </Box>
-          )}
+        )}
+      </Box>
+      <Box sx={createArtworkStyles.locationContainer}>
           {galleryProfileData.galleryLocation2 && (
-            <Box key="galleryLocation" sx={createArtworkStyles.inputText}>
-              <DartaLocationAndTimes
+          <Box key="galleryLocation" sx={{...createArtworkStyles.multiLineContainer, width: '100%'}}>
+            <DartaLocationAndTimes
                 locationNumber="galleryLocation2"
                 data={galleryProfileData.galleryLocation2 as any}
                 register={register}
@@ -547,9 +541,11 @@ export function EditProfileGallery({
               />
             </Box>
           )}
+      </Box>
+      <Box sx={createArtworkStyles.locationContainer}>
           {galleryProfileData.galleryLocation3 && (
-            <Box key="galleryLocation" sx={createArtworkStyles.inputText}>
-              <DartaLocationAndTimes
+          <Box key="galleryLocation" sx={{...createArtworkStyles.multiLineContainer, width: '100%', alignSelf: "center"}}>
+            <DartaLocationAndTimes
                 locationNumber="galleryLocation3"
                 data={galleryProfileData.galleryLocation3 as any}
                 register={register}
@@ -564,8 +560,9 @@ export function EditProfileGallery({
               />
             </Box>
           )}
+        </Box>
           {galleryProfileData.galleryLocation4 && (
-            <Box key="galleryLocation" sx={createArtworkStyles.inputText}>
+            <Box sx={createArtworkStyles.locationContainer}>
               <DartaLocationAndTimes
                 locationNumber="galleryLocation4"
                 data={galleryProfileData.galleryLocation4 as any}
@@ -581,25 +578,16 @@ export function EditProfileGallery({
               />
             </Box>
           )}
-
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              my: 5,
-            }}>
+          <Box sx={{...createArtworkStyles.multiLineContainer}}>
             <Button 
               variant="contained"
               type="submit"
               data-testid="save-profile-edit-button"
               sx={{backgroundColor: Colors.PRIMARY_900, color: Colors.PRIMARY_100}}
               onClick={handleSubmit(onSubmit)}>
-              Save
+              Save Gallery
             </Button>
           </Box>
-        </Box>
-      </Card>
-    </Box>
+      </Box>
   );
 }

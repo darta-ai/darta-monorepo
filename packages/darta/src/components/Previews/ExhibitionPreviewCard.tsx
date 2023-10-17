@@ -42,8 +42,9 @@ const exhibitionPreviewStyle = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',           
     height: "10%",
-    width: '95%',
-    marginLeft: 5,
+    width: '90%',
+    borderBottomColor: PRIMARY_700,
+    borderBottomWidth: 1,
   },
   galleryNameComponent: {
     fontSize: 18,

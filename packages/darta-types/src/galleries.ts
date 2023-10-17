@@ -216,6 +216,7 @@ export type Exhibition = {
   exhibitionArtistStatement?: PublicFields;
   artworkStyleTags?: string[];
   artworkVisualTags?: string[];
+  artworkCategory: PublicFields;
 };
 export type ExhibitionObject = {
   [key: string]: Exhibition;

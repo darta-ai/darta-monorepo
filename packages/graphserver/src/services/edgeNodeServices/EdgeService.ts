@@ -35,6 +35,29 @@ export class EdgeService implements IEdgeService {
     return results;
   }
 
+  private async addEdge({
+    edgeName,
+    from,
+    to,
+    data = {},
+  }: {
+    edgeName: string;
+    from: string;
+    to: string;
+    data: any;
+  }): Promise<void> {
+    const query = `
+    INSERT MERGE(@data, { _from: @from, _to: @to }) INTO @@edgeName
+    `;
+
+    await this.db.query(query, {
+      '@edgeName': edgeName,
+      from,
+      to,
+      data,
+    });
+  }
+
   public async getEdge({
     edgeName,
     from,
@@ -271,44 +294,51 @@ export class EdgeService implements IEdgeService {
     // Create a new edge for the new medium
     try {
       await this.upsertEdge({edgeName, from, to: newTo, data});
-    } catch (err) {
-      throw new Error('error at upsertEdge');
+    } catch (err: any) {
+      throw new Error(`error at upsertEdge: ${err?.message}`);
     }
   }
 
-  public async validateAndCreateEdges({
-    edgeName,
-    from,
-    to,
-    data,
-  }: {
-    edgeName: string;
+  public async validateAndCreateEdges({ edgesToCreate, edgeName, from }: { edgesToCreate : {
     from: string;
     to: string;
     data: any;
-  }): Promise<void> {
-    // Get the current edge (if it exists) for the artwork
-    let currentEdge;
-    try {
-      currentEdge = await this.getCurrentMediumEdge(edgeName, from);
-    } catch (err) {
-      throw new Error('errors at current edge');
-    }
+  }[], edgeName: string, from: string}): Promise<void> {
 
-    // If it exists, delete it
-    if (currentEdge && currentEdge._to !== to) {
-      try {
-        await this.deleteEdge({edgeName, from, to: currentEdge._to});
-      } catch (err: any) {
-        throw new Error(`error at delete Edge: ${err?.message}`);
-      }
+    try{ 
+      const edges = await this.getAllEdgesFromNode({edgeName, from});
 
-    }
-      // Create a new edge for the new medium
-      try {
-        await this.upsertEdge({edgeName, from, to, data});
-      } catch (err) {
-        throw new Error('error at upsertEdge');
+      const toEdges = edges.map((edge) => edge._to);
+
+      // get all the to's from the edges to create
+      const tos = edgesToCreate.map((edge) => edge.to);
+
+      // get the difference between the two
+      const difference = tos.filter((to) => !toEdges.includes(to));
+
+
+      // create the edges that are not in the db
+      difference.forEach(async (to) => {
+        const edgeToCreate = edgesToCreate.find((edge) => edge.to === to);
+        if (edgeToCreate) {
+          await this.upsertEdge({
+            edgeName,
+            from,
+            to,
+            data: edgeToCreate.data,
+          });
+        }
+      })
+
+      // delete the edges that are not in the edges to create
+      const edgesToDelete = edges.filter((edge) => !tos.includes(edge._to));
+
+      edgesToDelete.forEach(async (edge) => {
+        await this.deleteEdge({edgeName, from, to: edge._to});
+      })
+       
+    } catch(error: any){
+      throw new Error(`error at validateAndCreateEdges: ${error?.message}`);
     }
   }
 }

@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}location`;
 
+
 export async function listExhibitionPinsByCity({
   cityName,
 }: {
@@ -15,7 +16,7 @@ export async function listExhibitionPinsByCity({
   }});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message})
+    console.log({error: error, message: error.message, where: 'listExhibitionPinsByCity'})
     return {};
   }
 }

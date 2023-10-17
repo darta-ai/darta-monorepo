@@ -1,4 +1,4 @@
-import {Exhibition} from '@darta-types';
+import {Exhibition, GalleryPreview, IGalleryProfileData} from '@darta-types';
 import axios from 'axios';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}gallery`;
@@ -7,7 +7,7 @@ export async function readGallery({
   galleryId,
 }: {
   galleryId: string;
-}): Promise<Exhibition | any> {
+}): Promise<IGalleryProfileData | any> {
   try {
     const {data} = await axios.get(`${URL}/galleryProfileForUser`, {
       params: {
@@ -43,7 +43,7 @@ export async function listDartaUserFollowsGallery({
   uid,
 }: {
   uid: string;
-}): Promise<Exhibition | any> {
+}): Promise<GalleryPreview | any> {
   try {
     const {data} = await axios.get(`${URL}/listDartaUserFollowsGallery`, {
       params: {
@@ -70,7 +70,7 @@ export async function deleteDartaUserFollowGallery({
   });
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message})
+    console.log({error: error, message: error.message, where: 'deleteDartaUserFollowGallery'})
     return {};
   }
 }

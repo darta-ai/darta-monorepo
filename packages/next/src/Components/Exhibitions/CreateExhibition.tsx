@@ -366,7 +366,7 @@ export function CreateExhibition({
         </Button>
       </Box>
       <Box sx={createArtworkStyles.imageAndKeyInformationContainer}>
-        <Box sx={createArtworkStyles.imageEditContainer}>
+        <Box sx={createArtworkStyles.keyInformationContainer}>
           <Box sx={createArtworkStyles.imageContainer}>
             <Box style={createArtworkStyles.defaultImageEdit}>
                 {editPressRelease ? (
@@ -616,51 +616,54 @@ export function CreateExhibition({
         )}
       </Box>
     </Box>
-    <Box key="artworkCategory" sx={createArtworkStyles.multiLineContainer}>
-      <DartaDropdown
-        fieldName="artworkCategory"
-        options={category as any}
-        register={register}
-        helperTextString=""
-        control={control}
-        required={false}
-        toolTips={exhibitionPressReleaseToolTip}
-        inputAdornmentString="Artwork"
-      />
-    </Box>
-    <Box key="tags" sx={createArtworkStyles.multiLineContainer}>
-        <DartaAutoCompleteMulti
-          fieldName="artworkStyleTags"
-          data={newExhibition?.artworkStyleTags}
+    <Box sx={createArtworkStyles.locationContainer}>
+      <Box key="artworkCategory" sx={createArtworkStyles.multiLineContainer}>
+        <DartaDropdown
+          fieldName="artworkCategory"
+          options={category as any}
           register={register}
-          errors={errors}
-          helperTextString={errors.artworkStyleTags?.message}
+          helperTextString=""
           control={control}
           required={false}
           toolTips={exhibitionPressReleaseToolTip}
-          label="Artwork Style Tags"
-          allowPrivate={false}
-          inputAdornmentString="Style"
-          inputOptions={stylesAndMovements as any}
-        />
+          inputAdornmentString="Category"
+          />
       </Box>
       <Box key="tags" sx={createArtworkStyles.multiLineContainer}>
-        <DartaAutoCompleteMulti
-          fieldName="artworkVisualTags"
-          data={newExhibition?.artworkVisualTags}
-          register={register}
-          errors={errors}
-          helperTextString={errors.artworkVisualTags?.message}
-          control={control}
-          required={false}
-          toolTips={exhibitionPressReleaseToolTip}
-          label="Artwork Visual Tags"
-          allowPrivate={false}
-          inputAdornmentString="Style"
-          inputOptions={visualQualities as any}
-        />
+          <DartaAutoCompleteMulti
+            fieldName="artworkStyleTags"
+            data={newExhibition?.artworkStyleTags}
+            register={register}
+            errors={errors}
+            helperTextString={errors.artworkStyleTags?.message}
+            control={control}
+            required={false}
+            toolTips={exhibitionPressReleaseToolTip}
+            label="Artwork Style Tags"
+            allowPrivate={false}
+            inputAdornmentString="Style"
+            inputOptions={stylesAndMovements as any}
+          />
+        </Box>
+        <Box key="tags" sx={createArtworkStyles.multiLineContainer}>
+          <DartaAutoCompleteMulti
+            fieldName="artworkVisualTags"
+            data={newExhibition?.artworkVisualTags}
+            register={register}
+            errors={errors}
+            helperTextString={errors.artworkVisualTags?.message}
+            control={control}
+            required={false}
+            toolTips={exhibitionPressReleaseToolTip}
+            label="Artwork Visual Tags"
+            allowPrivate={false}
+            inputAdornmentString="Visual Tags"
+            inputOptions={visualQualities as any}
+          />
+        </Box>
       </Box>
-    <Box key="exhibitionPressRelease" sx={createArtworkStyles.multiLineContainer}>
+      <Box sx={createArtworkStyles.locationContainer}>
+      <Box key="exhibitionPressRelease" sx={createArtworkStyles.multiLineContainer}>
         <DartaTextInput
           fieldName="exhibitionPressRelease"
           data={newExhibition.exhibitionPressRelease?.value}
@@ -690,6 +693,7 @@ export function CreateExhibition({
           inputAdornmentValue={null}
         />
       </Box>
+    </Box>
         <Box sx={createArtworkStyles.inputTextContainer}>
           <Box sx={createArtworkStyles.saveButtonContainer}>
             <Button

@@ -386,7 +386,7 @@ export class ArtworkService implements IArtworkService {
     }
     
     const edgePromises = edgesToCreate.map(edge =>
-      this.edgeService.validateAndCreateEdges(edge),
+      this.edgeService.upsertEdge(edge),
     );
     try{
       await Promise.all(edgePromises);
@@ -395,20 +395,20 @@ export class ArtworkService implements IArtworkService {
     }
 
     const tagEdgesToCreate = [];
-    const rawEdges = [];
 
     if (styleTagNode?.length) {
       const styleTagEdgePromises = styleTagNode.map(tag => ({
-        edgeName: EdgeNames.FROMArtworkTOStyleTag,
         from: artworkKey,
         to: tag._id,
         data: {
           value: 'STYLE TAG',
         },
       }))
-      rawEdges.push(...styleTagEdgePromises)
       tagEdgesToCreate.push(...styleTagEdgePromises)
     }
+
+
+    const visualEdgesToCreate = [];
 
     if (visualTagNode?.length) {
       const visualTagEdgePromises = visualTagNode.map(tag => ({
@@ -419,16 +419,20 @@ export class ArtworkService implements IArtworkService {
           value: 'VISUAL TAG',
         },
       }))
-      rawEdges.push(...visualTagEdgePromises)
-      tagEdgesToCreate.push(...visualTagEdgePromises)
+      visualEdgesToCreate.push(...visualTagEdgePromises)
     }
 
-    const tagEdgePromises = tagEdgesToCreate.map(edge =>
-      this.edgeService.validateAndCreateEdges(edge),
-    );
-
     try{
-      await Promise.all(tagEdgePromises);
+      await this.edgeService.validateAndCreateEdges({
+        edgeName: EdgeNames.FROMArtworkTOStyleTag,
+        from: artworkKey,
+        edgesToCreate: tagEdgesToCreate
+      })  
+      await this.edgeService.validateAndCreateEdges({
+        edgeName: EdgeNames.FROMArtworkTOVisualTag,
+        from: artworkKey,
+        edgesToCreate: visualEdgesToCreate
+      })
     } catch (error: any) {
       throw new Error (`error creating edges at editArtwork: ${error?.message}`)
     }
@@ -437,6 +441,9 @@ export class ArtworkService implements IArtworkService {
       ...savedArtwork,
       artistName: {value: artistNode?.value ?? null},
       artworkMedium: {value: mediumNode?.value ?? null},
+      artworkPrice: {value: priceNode?.value ?? null},
+      artworkCategory: {value: categoryNode?.value ?? null},
+      artworkCreatedYear: {value: yearNode?.value ?? null},
     };
   }
 
@@ -514,6 +521,27 @@ export class ArtworkService implements IArtworkService {
 
     edgesToDelete.push({
       edgeName: EdgeNames.FROMArtworkTOCreateBucket,
+      from: key,
+    });
+
+    // Artwork Style Tags
+
+    edgesToDelete.push({
+      edgeName: EdgeNames.FROMArtworkTOStyleTag,
+      from: key,
+    });
+
+    // Artwork Visual Tags
+
+    edgesToDelete.push({
+      edgeName: EdgeNames.FROMArtworkTOVisualTag,
+      from: key,
+    });
+
+    // Artwork Category
+
+    edgesToDelete.push({
+      edgeName: EdgeNames.FROMArtworkTOCategory,
       from: key,
     });
 
@@ -687,6 +715,7 @@ export class ArtworkService implements IArtworkService {
         artworkVisualTags = visualTags.map((el: any) => el?.value)
       }
 
+
       let artworkStyleTags;
       if (visualTags.length){
         artworkStyleTags = styleTags.map((el: any) => el?.value)
@@ -714,14 +743,12 @@ export class ArtworkService implements IArtworkService {
     }
     let artworkImageValue = artworkImage.value;
 
-    if(!shouldRegenerate && artworkImage?.bucketName && artworkImage?.fileName){
+    if(shouldRegenerate && artworkImage?.bucketName && artworkImage?.fileName){
       try {
         artworkImageValue = await this.imageController.processGetFile({
           fileName: artworkImage.fileName,
           bucketName: artworkImage.bucketName,
         });
-        // I DON'T KNOW WHAT TO DO WITH THIS
-        // await this.refreshArtworkImage({artworkId, url: artworkImageValue})
       } catch (error) {
         throw new Error('error getting artwork image');
       }

@@ -26,7 +26,7 @@ export enum EGalleryDisplay {
 
 const profileStyles = {
   display: 'flex',
-  flexDirection: 'row',
+  flexDirection: 'column',
   alignContent: 'center',
   width: '100%',
   height: '100%',
@@ -68,7 +68,7 @@ function Gallery() {
   return (
     <Box sx={profileStyles}>
       <MiniDrawer setCurrentDisplay={setCurrentDisplay} />
-      <Box component="main" sx={{flexGrow: 1, p: 3}}>
+      <Box component="main" sx={{flexGrow: 2, p: 3, mt: 10}}>
         {currentDisplay === EGalleryDisplay.Load && <LoadProfile />}
         {currentDisplay === EGalleryDisplay.Profile && <GalleryProfile />}
         {currentDisplay === EGalleryDisplay.Exhibitions && (
