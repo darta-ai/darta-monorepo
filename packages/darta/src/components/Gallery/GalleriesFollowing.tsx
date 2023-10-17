@@ -7,25 +7,41 @@ import {
 
 import {TextElement} from '../Elements/_index';
 import {globalTextStyles} from '../../styles/styles';
-import {ExploreCarouselCards} from '../Explore/Carousel/ExploreCarouselCards';
 import { StoreContext } from '../../state/Store';
-import { GalleryPreview } from '@darta-types/dist';
+import { GalleryPreview } from '@darta-types';
+import { GalleryPreviewMini } from '../Previews/GalleryPreviewMini';
 
 export function GalleriesFollowing({
   headline,
+  navigation,
 }: {
   headline: string;
+  navigation: any;
 }) {
-  const {state, dispatch} = React.useContext(StoreContext);
+  const {state} = React.useContext(StoreContext);
 
-  const [galleriesFollowing, setGalleriesFollowing] = React.useState<{[key: string]: GalleryPreview}>([] as any);
+  const [galleriesFollowing, setGalleriesFollowing] = React.useState<GalleryPreview[]>([] as any);
 
   React.useEffect(() => {
     if (state.userGalleryFollowed && state.galleryPreviews) {
       const {userGalleryFollowed, galleryPreviews} = state;
+      const result: GalleryPreview[] = [];
 
+      for (const key in userGalleryFollowed) {
+        if (userGalleryFollowed[key] === true && galleryPreviews[key]) {
+          result.push(galleryPreviews[key]);
+        }
+      }
+      result.sort((a, b) => {
+        // Assuming galleryName is a string
+        if (a.galleryName < b.galleryName) return -1;
+        if (a.galleryName > b.galleryName) return 1;
+        return 0;
+      });
+      setGalleriesFollowing(result)
+      
     }
-  },[])
+  },[state.userGalleryFollowed,state.galleryPreviews])
 
   return (
     <View
@@ -53,7 +69,18 @@ export function GalleriesFollowing({
           alignSelf: 'center',
           justifyContent: 'center',
         }}>
+          {galleriesFollowing.map((galleryPreview: GalleryPreview) => 
+            <View key={galleryPreview._id}>
+              <GalleryPreviewMini
+                galleryId={galleryPreview._id}
+                galleryName={galleryPreview.galleryName ?? {}}
+                galleryLogo={galleryPreview.galleryLogo ?? {}}
+                navigation={navigation}
+              />
+            </View>
+          )}
       </View>
+      
     </View>
   );
 }

@@ -166,7 +166,7 @@ export function GalleryExhibition() {
         <title>Darta | Exhibition</title>
         <meta
           name="description"
-          content="Your profile page for your gallery on Darta."
+          content="Your exhibition page for your gallery on Darta."
         />
       </Head>
 

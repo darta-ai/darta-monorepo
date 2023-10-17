@@ -7,6 +7,7 @@ import { ExploreMapRootEnum} from '../../typing/routes';
 import { ExploreMapHomeScreen } from '../../screens/ExploreMap/ExploreMapHomeScreen';
 import {createStackNavigator} from '@react-navigation/stack';
 import { ExhibitionTopTabNavigator } from '../Exhibition/ExhibitionTopTabNavigator';
+import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
 
 export const ExploreMapStack = createStackNavigator();
 
@@ -24,6 +25,12 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
           name={ExploreMapRootEnum.TopTabExhibition}
           component={ExhibitionTopTabNavigator}
           options={{...headerOptions, headerTitle: state.currentExhibitionHeader ?? ""}}
+        />
+        <ExploreMapStack.Screen
+          name={ExploreMapRootEnum.exploreMapGallery}
+          component={ExhibitionGalleryScreen}
+          initialParams={{galleryId: route.params?.galleryId}}
+          options={{...headerOptions, headerTitle: state.galleryHeader ?? ""}}
         />
     </ExploreMapStack.Navigator>
   );

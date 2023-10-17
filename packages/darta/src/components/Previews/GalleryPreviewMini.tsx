@@ -4,6 +4,8 @@ import React from 'react';
 import {
   Image,
   TouchableOpacity,
+  View,
+  StyleSheet
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -12,39 +14,89 @@ import {
 
 import {TextElement} from '../Elements/_index';
 import { Images, PublicFields } from '@darta-types';
+import * as Colors from '@darta-styles'
+import { globalTextStyles } from '../../styles/styles';
+import { ETypes, StoreContext } from '../../state/Store';
+import { UserRoutesEnum } from '../../typing/routes';
+
+
 
 export function GalleryPreviewMini({
   galleryId,
   galleryName,
-  galleryImage,
-  showGallery,
+  galleryLogo,
+  navigation,
 }: {
   galleryId: string;
   galleryName: PublicFields;
-  galleryImage: Images;
-  showGallery: (galleryId: string) => void;
+  galleryLogo: Images;
+  navigation: any
 }) {
+
+  const {state, dispatch} = React.useContext(StoreContext)
+
+  const showGallery = () => {
+    dispatch({
+      type: ETypes.setGalleryHeader,
+      galleryHeader: galleryName?.value ?? ""
+    })
+    navigation.navigate(UserRoutesEnum.UserGallery, {galleryId: galleryId})
+  }
+
+  const galleryPreviewMiniStyles = StyleSheet.create({
+    container: {
+      height: hp('10%'),
+      width: wp('90%'),
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: Colors.PRIMARY_50,
+      borderColor: Colors.PRIMARY_800,
+      borderWidth: 0.5,
+      borderTopLeftRadius: hp('1%'),
+      borderBottomLeftRadius: hp('2%'),
+      borderTopRightRadius: hp('2%'),
+      borderBottomRightRadius: 5,
+    },
+    imageContainer: {
+      borderTopLeftRadius: hp('1%'),
+      borderBottomLeftRadius: hp('2%'),
+      width: wp('30%'),
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',    
+      flex: 0.5,
+    },
+    image: {
+      resizeMode: 'contain',
+      height: '100%',
+      width:  wp('20%'),
+    },
+    prettyBlueLine: {
+      flex: 0.05,
+      borderLeftColor: Colors.PRIMARY_600,
+      borderLeftWidth: 3,
+      borderTopLeftRadius: hp('0.5%'),
+      borderBottomLeftRadius: hp('10%'),
+      height: '100%',
+    }
+  }) 
   
   return (
     <TouchableOpacity
-    onPress={() => showGallery(galleryId)}
-    style={{
-    display: 'flex',
-    flexDirection: 'row',
-    height: hp('25%'),
-    marginTop: hp('1%'),
-    justifyContent: 'space-around',
-    }}
+    onPress={() => showGallery()}
     >
-        <Image
-        source={{uri: galleryImage?.value ?? ""}}
-        style={{
-            height: hp('10%'),
-            width:  wp('10%'),
-            position: 'relative'
-        }}
-        />
-        <TextElement>{galleryName.value}</TextElement>
+      <View style={galleryPreviewMiniStyles.container}>
+        <View style={galleryPreviewMiniStyles.imageContainer}> 
+          <Image
+            source={{uri: galleryLogo?.value ?? ""}}
+            style={galleryPreviewMiniStyles.image}
+          />
+        </View>
+        <View style={galleryPreviewMiniStyles.prettyBlueLine}></View>
+        <View>
+          <TextElement style={[globalTextStyles.titleText, {color: Colors.PRIMARY_DARK_GREY}]}>{galleryName.value}</TextElement>
+        </View>
+      </View>
     </TouchableOpacity>
   );
 }

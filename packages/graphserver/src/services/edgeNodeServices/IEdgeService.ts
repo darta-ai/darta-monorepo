@@ -88,15 +88,12 @@ export interface IEdgeService {
     edgeName: string;
     to: string;
   }): Promise<any[]>;
-  validateAndCreateEdges({
-    edgeName,
-    from,
-    to,
-    data,
-  }: {
-    edgeName: string;
+  validateAndCreateEdges({ edgesToCreate, edgeName, from }: { edgesToCreate : {
     from: string;
     to: string;
     data: any;
-  }): Promise<void>;
+  }[], 
+  edgeName: string,
+  from: string
+}): Promise<void>;
 }

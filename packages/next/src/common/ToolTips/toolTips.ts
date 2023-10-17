@@ -38,8 +38,9 @@ export const exhibitionPressReleaseToolTip = {
   exhibitionArtist: 'The artists in the exhibition. Required.',
   exhibitionType: 'The type of exhibition. Required.',
   exhibitionArtistStatement: 'An artist statement is optional.',
-  artworkCategory: 'The category of the artwork. Helpful for discoverability of the exhibition. Optional.',
-  artworkStyleTags: 'Optional. The tags you would like to include for the artwork. Helpful for discoverability of the exhibition.',
+  artworkCategory: ' Optional.The category of the artwork. Helpful for discoverability of the exhibition.',
+  artworkStyleTags: 'Optional. The style or movement tags you would like to include for the artwork. Helpful for discoverability of the exhibition.',
+  artworkVisualTags: 'Optional. The visual tags you would like to include for the artwork. Helpful for discoverability of the exhibition.',
   exhibitionPressRelease:
     'An exhibition description or press release text helps improve user experience. Required.',
   'exhibitionLocation.locationString':

@@ -12,8 +12,7 @@ const useStyles = {
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'pointer',
-    height: '80%',
-    padding: '2vh',
+    height: '100%',
     width: '100%',
     outline: 'none',
     transition: 'border .24s ease-in-out',
@@ -27,7 +26,7 @@ const useStyles = {
     marginBottom: '2vh',
   },
   text: {
-    marginBottom: '2vh',
+    // marginBottom: '2vh',
     fontSize: '1rem',
     textAlign: 'center',
     '@media (min-width: 800px)': {

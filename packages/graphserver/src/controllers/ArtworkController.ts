@@ -128,6 +128,7 @@ export class ArtworkController {
       });
       res.status(200).send("successfully created user artwork relationship");
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/createUserArtworkRelationship', request: req?.body})
       res.status(500).send(error.message);
     }
   }
@@ -150,6 +151,7 @@ export class ArtworkController {
       });
       res.status(200).send("successfully created user artwork relationship");
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/deleteUserArtworkRelationship', request: req?.body})
       res.status(500).send(error.message);
     }
   }
@@ -167,6 +169,7 @@ export class ArtworkController {
       const artworkResults = filterOutPrivateRecordsSingleObject(artwork);
       res.json(artworkResults);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/readArtworkForUser', request: req?.query})
       res.status(500).send(error.message);
     }
   }
@@ -186,6 +189,7 @@ export class ArtworkController {
       await filterOutPrivateRecordsSingleObject(results);
       res.json(results);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/readArtworkAndGallery', request: req?.body})
       res.status(500).send(error.message);
     }
   }
@@ -212,6 +216,7 @@ export class ArtworkController {
       const newArtwork = await this.artworkService.editArtwork({artwork});
       res.json(newArtwork);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/edit', request: req?.body})
       res.status(500).send(error.message);
     }
   }
@@ -238,6 +243,7 @@ export class ArtworkController {
       const results = await this.artworkService.editArtwork({artwork});
       res.json(results);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/editArtworkForExhibition', request: req?.body})
       res.status(500).send(error.message);
     }
   }
@@ -387,7 +393,7 @@ export class ArtworkController {
       });
       res.json(galleryArtwork);
     } catch (error: any) {
-      standardConsoleLog({message: error?.message, data: 'artwork/listUserLikedArtwork', request: req?.query})
+      standardConsoleLog({message: error?.message, data: 'artwork/listUserArtworkRelationships', request: req?.query})
       res.status(500).send(error.message);
     }
   }

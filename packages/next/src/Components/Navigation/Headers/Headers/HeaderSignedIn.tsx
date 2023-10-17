@@ -32,15 +32,6 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
         data-testid="header-navigation-signOut-button">
         Sign Out
       </Button>
-      {/* <Button
-        onClick={async () => {
-          
-        }}
-        sx={headerStyles.button}
-        variant="contained"
-        data-testid="header-navigation-dashboard-button">
-        Dashboard
-      </Button> */}
       <div />
       <div />
       <Box
@@ -75,5 +66,6 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
         />
       </Box>
     </Box>
+
   );
 }

@@ -10,8 +10,9 @@ import React, {
 import {Animated, ImageSourcePropType, StyleSheet, View} from 'react-native';
 // import {OrientationLocker, PORTRAIT} from 'react-native-orientation-locker';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import * as Colors from '@darta-styles'
 
 import {getButtonSizes} from '../utils/functions';
 import {
@@ -52,22 +53,34 @@ export function DartaRecommenderView({
 }) {
   const {state, dispatch} = useContext(StoreContext);
 
+  // Need to make this happen from the backend 
+
+  let recommendationIds
+
+  const [numberOfArtworks, setNumberOfArtworks] = useState<number>(0);
+  const [recommendationArtworks, setRecommendationArtworks] = useState<any>([]);
+
+  React.useEffect(() => {
+    if (state.artworkData){
+      recommendationIds = state.artworkData
+      setRecommendationArtworks(Object.keys(state.artworkData))
+      setNumberOfArtworks(recommendationIds.length)
+      console.log('!!!')
+    }
+  }, [])
+
+
   const {galleryOnDisplayId} = state;
 
-  const {
-    numberOfArtworks,
-    id: galleryId,
-    fullDGallery,
-  } = state.dartaData[galleryOnDisplayId];
 
   const {userArtworkRatings} = state;
 
-  const arrayGallery: Artwork[] = Object.values(fullDGallery);
+  const arrayGallery: Artwork[] = Object.values(state.artworkData);
 
   const [fullGallery] = useState<Artwork[]>(arrayGallery);
 
   const [artOnDisplay, setArtOnDisplay] = useState<Artwork | undefined>(
-    fullGallery.at(state.dartaData[galleryId].galleryIndex),
+  //  TO-DO
   );
   const [backgroundImage] = useState<ImageSourcePropType>({
     uri: galleryWallRaw,
@@ -86,9 +99,9 @@ export function DartaRecommenderView({
 
   useEffect(() => {
     setArtOnDisplay(
-      fullGallery.at(state.dartaData[galleryId].galleryIndex),
+      // fullGallery.at(state.dartaData[galleryId].galleryIndex),
     );
-  }, [fullGallery, galleryId, state]);
+  }, [fullGallery, state]);
 
   const openOrCloseContainer = (
     openIdentifier: OpenStateEnum,
@@ -229,7 +242,7 @@ export function DartaRecommenderView({
         currentIndex: currentIndex - 1,
       });
     }
-  }, [dispatch, galleryId, state.dartaData]);
+  }, [dispatch, state.dartaData]);
 
   const toggleArtTombstone = () => {
     dispatch({
@@ -265,11 +278,12 @@ export function DartaRecommenderView({
 
   const SSDartaGalleryView = StyleSheet.create({
     container: {
-      margin: state.isPortrait ? hp('0%') : hp('2%'),
+      height: '100%',
+      width: wp('100%'),
+      backgroundColor: Colors.PRIMARY_200,
       justifyContent: 'center',
       alignSelf: 'center',
       alignItems: 'center',
-      marginTop: state.isPortrait ? hp('1%') : hp('17%'),
     },
     artOnDisplayContainer: {
       transform: state.isPortrait ? [{rotate: '0deg'}] : [{rotate: '90deg'}],
@@ -292,14 +306,8 @@ export function DartaRecommenderView({
   });
 
   return (
-    <SafeAreaProvider>
+    <GestureHandlerRootView>
       <View style={SSDartaGalleryView.container}>
-        {/* <OrientationLocker
-          orientation={PORTRAIT}
-          onDeviceChange={(orientation: string) => {
-            screenRotation(orientation);
-          }}
-        /> */}
         <View
           style={[
             backgroundContainerDimensionsPixels,
@@ -353,6 +361,6 @@ export function DartaRecommenderView({
           </View>
         </View>
       </View>
-    </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

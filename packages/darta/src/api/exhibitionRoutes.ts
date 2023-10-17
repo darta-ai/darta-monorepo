@@ -15,7 +15,7 @@ export async function readExhibition({
   }});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message})
+    console.log({error: error, message: error.message, where: 'readExhibition'})
     return {};
   }
 }
@@ -28,7 +28,7 @@ export async function readMostRecentGalleryExhibitionForUser({locationId} : {loc
   }});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message})
+    console.log({error: error, message: error.message, where: 'readMostRecentGalleryExhibitionForUser'})
     return {};
   }
 }
@@ -47,7 +47,7 @@ export async function listAllExhibitionsPreviewsForUser({
   }});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message})
+    console.log({error: error, message: error.message, where: 'listAllExhibitionsPreviewsForUser'})
     return {};
   }
 }

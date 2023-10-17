@@ -9,6 +9,7 @@ import * as Colors from '@darta-styles'
 import { TextElement } from '../Elements/TextElement';
 import { firebaseSignIn } from '../../api/firebase';
 import { ETypes, StoreContext } from '../../state/Store';
+import { getDartaUser } from '../../api/userRoutes';
 
 
 export const SignIn = ({
@@ -35,12 +36,14 @@ export const SignIn = ({
     try {      
       const firebaseRes = await firebaseSignIn({ email, password });
       const user = firebaseRes?.user;
+      const dartaUser = await getDartaUser()
       if (user && user.uid && user.email){
         dispatch({
           type: ETypes.setUser,
           userData: {
             uid: user.uid,
             email: user.email,
+            ...dartaUser
           }
         })            
       }

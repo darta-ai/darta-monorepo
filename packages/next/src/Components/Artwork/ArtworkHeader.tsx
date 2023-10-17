@@ -1,19 +1,19 @@
 import * as Colors from '@darta-styles'
-import {Artwork} from '@darta-types';
+// import {Artwork} from '@darta-types';
 import {Box, Button, CircularProgress, Typography} from '@mui/material';
 import React from 'react';
 
 import { PRIMARY_MILK} from '../../../styles/index';
-import {UploadArtworksXlsModal} from '../Modals';
+// import {UploadArtworksXlsModal} from '../Modals';
 
 export function ArtworkHeader({
   artworkLoading,
   addNewArtwork,
-  handleBatchUpload,
+  // handleBatchUpload,
 }: {
   artworkLoading: boolean;
   addNewArtwork: () => void;
-  handleBatchUpload: (artworks: {[key: string]: Artwork}) => void;
+  // handleBatchUpload: (artworks: {[key: string]: Artwork}) => void;
 }) {
   return (
     <Box
@@ -58,7 +58,7 @@ export function ArtworkHeader({
             </Typography>
           )}
         </Button>
-        <UploadArtworksXlsModal handleBatchUpload={handleBatchUpload} />
+        {/* <UploadArtworksXlsModal handleBatchUpload={handleBatchUpload} /> */}
       </Box>
     </Box>
   );

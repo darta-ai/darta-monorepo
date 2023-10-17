@@ -105,6 +105,7 @@ export interface IState {
 
   currentExhibitionHeader?: string;
   previousExhibitionHeader?: string;
+  galleryHeader?: string;
   currentArtworkTombstoneHeader?: string;
   userExhibitionHeader?: string;
 
@@ -158,6 +159,7 @@ export enum ETypes {
   saveArtworkMulti = 'SAVE_ARTWORK_MULTI',
 
   setCurrentHeader = 'SET_CURRENT_HEADER',
+  setGalleryHeader = 'SET_GALLERY_HEADER',
   setPreviousExhibitionHeader = 'SET_PREVIOUS_EXHIBITION_HEADER',
   setTombstoneHeader = 'SET_TOMBSTONE_HEADER',
   setUserExhibitionHeader = 'SET_USER_EXHIBITION_HEADER',
@@ -232,6 +234,7 @@ interface IAction {
 
   currentExhibitionHeader?: string;
   previousExhibitionHeader?: string;
+  galleryHeader?: string;
   userExhibitionHeader?: string;
   currentArtworkHeader?: string;
 
@@ -426,7 +429,15 @@ const reducer = (state: IState, action: IAction): IState => {
           ...state,
           currentArtworkTombstoneHeader: action.currentArtworkHeader,
         };
-
+      case ETypes.setGalleryHeader:
+          if (!action.galleryHeader) {
+            return state;
+          }
+          return {
+            ...state,
+            galleryHeader: action.galleryHeader,
+          };
+  
       case ETypes.saveExhibitionMapPins:
         if (!action.mapPins && !action.mapPinCity) {
           return state;
@@ -569,62 +580,50 @@ const reducer = (state: IState, action: IAction): IState => {
                 },
               };
 
-          case ETypes.setGalleryPreviewMulti:
-                if (!action?.galleryPreviews){
-                  return state;
-                }
-                return {
-                  ...state,
-                  galleryPreviews: {
-                    ...state.galleryPreviews,
-                    ...action.galleryPreviews
-                  },
-                };
-            case ETypes.setUserFollowGalleries:
-              if (!action?.galleryId){
-                  return state;
-                }
-                return {
-                  ...state,
-                  userGalleryFollowed: {
-                    ...state.userGalleryFollowed,
-                    [action.galleryId]: true,
-                  },
-              };
-            case ETypes.removeUserFollowGalleries:
-                if (!action?.galleryId){
-                  return state;
-                }
-                return {
-                  ...state,
-                  userGalleryFollowed: {
-                    ...state.userGalleryFollowed,
-                    [action.galleryId]: false,
-                  },
-              };
-            case ETypes.setUserFollowGalleriesMulti:
-              if (!action?.galleryFollowIds){
+        case ETypes.setGalleryPreviewMulti:
+              if (!action?.galleryPreviews){
                 return state;
-                }
-                return {
-                  ...state,
-                  userGalleryFollowed: {
-                    ...state.userGalleryFollowed,
-                    ...action.galleryFollowIds
-                  },
+              }
+              return {
+                ...state,
+                galleryPreviews: {
+                  ...state.galleryPreviews,
+                  ...action.galleryPreviews
+                },
               };
-
-              case ETypes.setUserFollowGalleriesMulti:
-                if (!action?.galleryFollowIds){
-                  return state;
-                  }
-                  return {
-                    ...state,
-                    userGalleryFollowed: {
-                      ...state.userGalleryFollowed,
-                      ...action.galleryFollowIds
-                    },
-                };
+        case ETypes.setUserFollowGalleries:
+          if (!action?.galleryId){
+              return state;
+            }
+            return {
+              ...state,
+              userGalleryFollowed: {
+                ...state.userGalleryFollowed,
+                [action.galleryId]: true,
+              },
+          };
+        case ETypes.removeUserFollowGalleries:
+            if (!action?.galleryId){
+              return state;
+            }
+            return {
+              ...state,
+              userGalleryFollowed: {
+                ...state.userGalleryFollowed,
+                [action.galleryId]: false,
+              },
+          };
+        case ETypes.setUserFollowGalleriesMulti:
+          if (!action?.galleryFollowIds){
+            return state;
+            }
+            return {
+              ...state,
+              userGalleryFollowed: {
+                ...state.userGalleryFollowed,
+                ...action.galleryFollowIds
+              },
+          };
       case ETypes.setFullyLoadedGalleries:
         if (!action?.fullyLoadedGalleries){
           return state;

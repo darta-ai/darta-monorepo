@@ -1,3 +1,4 @@
+import * as Colors from '@darta-styles'
 import {
   BusinessAddressType,
   IBusinessLocationData,
@@ -257,7 +258,7 @@ export function DartaLocationAndTimes({
         {locationNumber !== 'galleryLocation0' && (
           <Button
             variant="contained"
-            color="error"
+            sx={{backgroundColor: Colors.PRIMARY_100, color: Colors.PRIMARY_900}}
             data-testid={`${locationNumber}-remove-location-button`}
             onClick={() => removeLocation(locationNumber)}>
             Remove Location
