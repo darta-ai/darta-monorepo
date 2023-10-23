@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Marker, Callout } from 'react-native-maps';
-import { Image, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, View, StyleSheet } from 'react-native';
 import {
     widthPercentageToDP as wp,
   } from 'react-native-responsive-screen';
 
+import FastImage from 'react-native-fast-image'
 import { TextElement } from '../Elements/TextElement';
 import { globalTextStyles } from '../../styles/styles';
-import { Button, Divider } from 'react-native-paper';
 
 import { simplifyAddress } from '../../utils/functions';
 
@@ -29,7 +29,7 @@ const CustomMarker = ({
 }) => {
 
   const {state, dispatch} = React.useContext(StoreContext);
-  const [showCallout, setShowCallout] = useState(false);
+  const [showCallout, setShowCallout] = useState(true);
 
   const navigateToExhibitionScreens = async () => {
     if (!mapPin.exhibitionId || !mapPin.galleryId){
@@ -42,7 +42,7 @@ const CustomMarker = ({
         currentExhibitionHeader: exhibition.exhibitionTitle.value!,
       })
     }
-    navigation.navigate(ExploreMapRootEnum.TopTabExhibition, {galleryId: mapPin.galleryId, exhibitionId: mapPin.exhibitionId, internalAppRoute: true});
+    navigation.navigate(ExploreMapRootEnum.TopTabExhibition, {galleryId: mapPin.galleryId, exhibitionId: mapPin._id, internalAppRoute: true});
   }
 
   const navigateToGalleryScreen = async () => {
@@ -156,7 +156,7 @@ const CustomMarker = ({
     <Marker
       coordinate={coordinate}
       key={mapPin.exhibitionId}
-      onPress={() => setShowCallout(true)}
+      onTouchStart={() => setShowCallout(true)}
       pinColor={hasUpcomingOpening ? Colors.ADOBE_500 : Colors.PRIMARY_800}
     >
       {showCallout && (
@@ -164,9 +164,10 @@ const CustomMarker = ({
         onTouchStart={() => setShowCallout(false)} 
         onPress={() => {chooseRouteAndNavigate()}}>
             <View style={exhibitionPreview.galleryContainer} >
-                <Image
+                <FastImage
                     source={{uri: mapPin.galleryLogo.value || ""}}
-                    style={{width: 30, height: 30, resizeMode: 'contain'}}
+                    style={{width: 30, height: 30}}
+                    resizeMode={FastImage.resizeMode.contain}
                 />
                 <View style={exhibitionPreview.galleryNameContainer}>
                   <TextElement style={{...globalTextStyles.centeredText, fontWeight: 'bold', color: Colors.PRIMARY_900, fontSize: 15}}>{mapPin.galleryName.value}</TextElement>
@@ -176,9 +177,10 @@ const CustomMarker = ({
             {hasCurrentShow && (
             <View style={exhibitionPreview.exhibitionContainer}>
                 <View style={exhibitionPreview.heroImageContainer} >
-                    <Image 
+                    <FastImage 
                         source={{uri: mapPin?.exhibitionPrimaryImage.value || ""}} 
                         style={exhibitionPreview.heroImage} 
+                        resizeMode={FastImage.resizeMode.contain}
                     />
                 </View>
                 <View style={exhibitionPreview.textContainer}>

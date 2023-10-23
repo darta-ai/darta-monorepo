@@ -13,7 +13,7 @@ export function BaseHeader() {
   const userIsAuthenticated = user !== null;
   const userIsArtist = user?.displayName === AuthEnum.artists;
 
-  const galleryRoute = `/Galleries/Home`;
+  const galleryRoute = `/Authenticate/Galleries`;
   // const artistRoute = `/Artists/Home`;
 
   // const showArtistLink =
@@ -23,17 +23,6 @@ export function BaseHeader() {
 
   return (
     <Box sx={headerStyles.headerBox} data-testid="header-box">
-      {/* {showArtistLink && (
-        <Button
-          onClick={async () => {
-            await router.push(artistRoute);
-          }}
-          sx={headerStyles.button}
-          variant="contained"
-          data-testid="header-link-artists">
-          artists
-        </Button>
-      )} */}
       {showGalleryLink && (
         <Button
           onClick={async () => {
@@ -42,14 +31,9 @@ export function BaseHeader() {
           sx={headerStyles.button}
           variant="contained"
           data-testid="header-link-gallery">
-          for galleries
+          Gallery Login
         </Button>
       )}
-      {/* <Link href={`/Authenticate/${AuthEnum.curators}`}>
-        <Typography component="div" sx={styles.typography}>
-          curators
-        </Typography>
-      </Link> */}
       <div />
       <div />
       <div />

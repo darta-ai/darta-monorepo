@@ -9,7 +9,7 @@ import {PrivateFields} from '../Profile/types';
 import {DartaInputAdornment, DartaPrivateFieldHelper} from './Components';
 import {formStyles} from './styles';
 
-export function DartaAutoCompleteMulti({
+export const DartaAutoCompleteMulti = React.forwardRef(({
   fieldName,
   data,
   register,
@@ -39,7 +39,7 @@ export function DartaAutoCompleteMulti({
     value?: string;
     category?: string;
   }>;
-}) {
+}, ) => {
   const testIdValue = fieldName.replace('.', '-');
 
   const style = allowPrivate ? formStyles.inputTextContainer : formStyles.inputTextContainerTwoColumns;
@@ -73,7 +73,7 @@ export function DartaAutoCompleteMulti({
           render={({ field }) => (
             <Autocomplete
                 multiple
-                id="autocomplete"
+                id="autocompleteMulti"
                 value={Array.isArray(field.value) ? field.value : []}
                 options={inputOptions}
                 freeSolo
@@ -98,6 +98,5 @@ export function DartaAutoCompleteMulti({
         />
       </Box>
     </Box>
-);
-
-}
+    );
+  })

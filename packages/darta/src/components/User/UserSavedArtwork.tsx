@@ -6,7 +6,7 @@ import { ArtworkList } from '../Artwork/ArtworkList';
 import { TextElement } from '../Elements/TextElement';
 import { Image } from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import { listUserArtwork } from '../../utils/apiCalls';
+import { listUserArtworkAPI } from '../../utils/apiCalls';
 import { RefreshControl, ScrollView } from 'react-native';
 import * as Colors from '@darta-styles';
 import { UserRoutesEnum } from '../../typing/routes';
@@ -54,7 +54,7 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try{
-      const savedArtwork = await listUserArtwork({action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 10})
+      const savedArtwork = await listUserArtworkAPI({action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 10})
       let savedArtworkIds = {}
       if (savedArtwork && Object.values(savedArtwork).length > 0){
         savedArtworkIds = Object.values(savedArtwork).reduce((acc, el) => ({...acc, [el?._id as string] : true}), {})

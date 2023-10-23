@@ -26,7 +26,7 @@ export function UserStackNavigator({route} : {route: any}) {
         <UserStack.Screen
           name={UserRoutesEnum.home}
           component={UserHome}
-          options={{...headerOptions, headerTitle: 'me'}}
+          options={{...headerOptions, headerTitle: 'you'}}
         />
         <UserStack.Screen
           name={UserRoutesEnum.userSettings}
@@ -65,7 +65,7 @@ export function UserStackNavigator({route} : {route: any}) {
         <UserStack.Screen
           name={UserRoutesEnum.UserGallery}
           component={ExhibitionGalleryScreen}
-          initialParams={{galleryId: route.params?.artOnDisplay.galleryId}}
+          initialParams={{galleryId: route.params?.artOnDisplay.galleryId, navigationRoute: UserRoutesEnum.UserPastTopTabNavigator, showPastExhibitions: true}}
           options={{...headerOptions, headerTitle: state.galleryHeader ?? ""}}
           />
       </UserStack.Group>

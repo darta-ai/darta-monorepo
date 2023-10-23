@@ -38,7 +38,10 @@ export type UserRouteStackParamList = {
    // TO-DO
   export type GalleryRootStackParamList = {
     [GalleryNavigatorEnum.galleryHome]: undefined;
-    [GalleryNavigatorEnum.gallery]: undefined;
+    [GalleryNavigatorEnum.gallery]: {
+      navigation: any,
+      artOnDisplay: Artwork | undefined;
+    };
     [GalleryNavigatorEnum.tombstone]: {
       artOnDisplay: Artwork | undefined;
   };
@@ -46,7 +49,7 @@ export type UserRouteStackParamList = {
 
 export enum RootStackEnum {
   feed = 'feed',
-  explore = 'explore',
+  view = 'view',
   me = 'me',
   darta = 'darta',
 }
@@ -112,5 +115,15 @@ export type ExploreMapParamList = {
 export enum RecommenderRoutesEnum {
   recommenderHome = 'RECOMMENDER_HOME',
   recommenderDetails = 'RECOMMENDER_DETAILS',
+  recommenderGallery = 'RECOMMENDER_GALLERY',
   TopTabExhibition = 'RECOMMENDER_TOP_TAB_EXHIBITION',
+}
+
+export type RecommenderParamList = {
+  [RecommenderRoutesEnum.recommenderHome]: undefined;
+  [RecommenderRoutesEnum.recommenderDetails]: undefined;
+  [RecommenderRoutesEnum.TopTabExhibition]: {
+    galleryId: string,
+    exhibitionId: string,
+  }
 }

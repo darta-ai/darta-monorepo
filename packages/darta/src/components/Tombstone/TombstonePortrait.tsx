@@ -6,6 +6,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import FastImage from 'react-native-fast-image'
 
 import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
 import * as Colors from '@darta-styles'
@@ -13,7 +14,14 @@ import {TextElement} from '../Elements/_index';
 import {icons} from '../../utils/constants';
 import {globalTextStyles} from '../../styles/styles';
 import { ETypes, StoreContext } from '../../state/Store';
-import { deleteArtworkRelationship } from '../../utils/apiCalls';
+import { deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
+
+export const currencyConverter = {
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+};
+
 
 
 export function TombstonePortrait({
@@ -42,7 +50,7 @@ export function TombstonePortrait({
 
 
   let displayDimensionsString = "";
-  if(artwork?.artworkDimensions.text.value){
+  if(artwork?.artworkDimensions?.text?.value){
     displayDimensionsString = artwork.artworkDimensions.text.value
     .replace(/[\r\n]+/g, '')
     .replace(/ /g, '')
@@ -52,7 +60,11 @@ export function TombstonePortrait({
   let displayPrice = "";
 
   if (artwork?.artworkPrice?.value){
-    displayPrice = "$" + parseInt(artwork?.artworkPrice?.value, 10)?.toLocaleString()
+    const currency = artwork?.artworkCurrency?.value ?? "USD"
+    const displayCurrency = currencyConverter[currency]
+    displayPrice = displayCurrency + parseInt(artwork?.artworkPrice?.value, 10)?.toLocaleString()
+  } else {
+    displayPrice = "Price Upon Request"
   }
 
   
@@ -81,7 +93,7 @@ export function TombstonePortrait({
       alignSelf: 'center',
       justifyContent: 'center',
       width: wp('90%'),
-      height: hp('40%'),
+      height: hp('35%'),
     },
     image: {
       height: '100%',
@@ -127,6 +139,13 @@ export function TombstonePortrait({
   const opacitySetTwo = React.useRef(new Animated.Value(0)).current;
   const translateY = React.useRef(new Animated.Value(0)).current;
 
+  React.useEffect(() => {
+    opacitySetOne.addListener(() => {})
+    opacitySetTwo.addListener(() => {})
+    translateY.addListener(() => {})
+  }, [])
+
+
   const toggleButtons = () => {
     Animated.parallel([
       Animated.timing(opacitySetOne, {
@@ -154,16 +173,15 @@ export function TombstonePortrait({
 
   React.useEffect(() => {
     const artworkId = artwork?._id!;
-    if (state.userLikedArtwork?.[artworkId]){
-      setArtworkStatus(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE)
-      setButtonColor(Colors.PRIMARY_300)
-      setButtonIcon(icons.like)
-      toggleButtons()
-    }
-    else if (state.userSavedArtwork?.[artworkId]){
+    if (state.userSavedArtwork?.[artworkId]){
       setArtworkStatus(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE)
       setButtonColor(Colors.PRIMARY_600)
       setButtonIcon(icons.save)
+      toggleButtons()
+    } else if (state.userLikedArtwork?.[artworkId]){
+      setArtworkStatus(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE)
+      setButtonColor(Colors.PRIMARY_300)
+      setButtonIcon(icons.like)
       toggleButtons()
     }
     else if (state.userInquiredArtwork?.[artworkId]){
@@ -177,7 +195,7 @@ export function TombstonePortrait({
 
   const removeRating = async (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => {
     try {
-      await deleteArtworkRelationship({artworkId: artwork._id!, action: rating})
+      await deleteArtworkRelationshipAPI({artworkId: artwork._id!, action: rating})
 
       switch(rating){
         case USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE:
@@ -217,9 +235,10 @@ export function TombstonePortrait({
             scrollToOverflowEnabled={false}
             centerContent>
             <View style={SSTombstonePortrait.imageContainer}>
-              <Image
+              <FastImage
                 source={{uri: artwork?.artworkImage?.value!}}
                 style={SSTombstonePortrait.image}
+                resizeMode={FastImage.resizeMode.contain}
               />
             </View>
           </ScrollView>

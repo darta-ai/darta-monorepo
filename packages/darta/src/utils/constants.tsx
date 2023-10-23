@@ -2,13 +2,12 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {Platform} from 'react-native';
 
 import {GalleryLandingPage, Icons} from '../typing/types';
 
 export const galleryDimensionsPortrait = {
-  height: hp('80%'),
-  width: wp('95%'),
+  height: hp('70%'),
+  width: wp('100%'),
 };
 
 export const galleryDimensionsLandscape = {
@@ -18,6 +17,8 @@ export const galleryDimensionsLandscape = {
 
 
 export const USER_UID_KEY = 'DARTA_USER_UID';
+
+export const HAS_ONBOARD_DARTA = 'HAS_ONBOARD_DARTA';
 
 export const DEFAULT_Gallery_Image =
   'https://lh3.googleusercontent.com/pw/AMWts8A127Q1kjVXhb88Fmm8APNKph27xdQ_chFVbh42T5PClwoMztq0EIj6fMpBoAAgM9TfjIQPCrfbYOqFTLqE8XhmLWhbLEWyq1vy77WqexLXo7Ehq2mhfpXZ3L3OKQra96wrOju1sj8chqzAY3-qr_QDTA=w1778-h998-s-no';
@@ -39,7 +40,7 @@ export const icons: Icons = {
   thinking: 'lightbulb-outline',
   viewSettings: 'eye-settings-outline',
   downWardsNavigation: 'down',
-  learnMore: 'bookshelf',
+  learnMore: 'information',
   inquire: 'message-processing-outline',
   cog: 'cog-outline',
   thumbsUpDown: 'thumbs-up-down-outline',

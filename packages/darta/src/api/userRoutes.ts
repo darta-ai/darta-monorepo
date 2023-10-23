@@ -1,37 +1,36 @@
 import axios from 'axios';
 import { Exhibition, GalleryPreview, Images, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { USER_UID_KEY } from '../utils/constants';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}users`;
+console.log({URL})
 
 export async function createUser({
-    localStorageUid,
+    uid,
 }: {
-    localStorageUid: string;
+    uid: string;
 }): Promise<any> {
   try {
-    const {data} = await axios.post(`${URL}/createNewDartaUser`, {localStorageUid});
+    const {data} = await axios.post(`${URL}/createNewDartaUser`, {uid});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message})
+    console.log({error: error, message: error.message, where: 'createUser'})
     return {};
   }
 }
 
 
 export async function createUserArtworkEdge({
-  localStorageUid,
+  uid,
   action
 }: {
-  localStorageUid: string;
+  uid: string;
   action: USER_ARTWORK_EDGE_RELATIONSHIP
 }): Promise<any> {
   try {
-    const {data} = await axios.post(`${URL}/createUserArtworkEdge`, {localStorageUid, action});
+    const {data} = await axios.post(`${URL}/createUserArtworkEdge`, {uid, action});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message})
+    console.log({error: error, message: error.message, where: 'createUserArtworkEdge'})
     return error.message;
   }
 }
@@ -55,13 +54,13 @@ export async function createDartaUserFollowGallery({
   }
 }
 
-export async function getDartaUser(): Promise<any> {
+export async function getDartaUser({uid} : {uid: string}): Promise<any> {
 try {
-  const localStorageUid = await AsyncStorage.getItem(USER_UID_KEY);
-  const {data} = await axios.get(`${URL}/getDartaUser`, {params: {localStorageUid}});
+  const {data} = await axios.get(`${URL}/getDartaUser`, {params: {uid}});
   return data;
 } catch (error:any) {
-  console.log({error: error, message: error.message})
+  console.log({error})
+  console.log({error: error, message: error.message, where: 'getDartaUser'})
   return {};
 }
 }
@@ -74,7 +73,6 @@ export async function editDartaUserAccount({
   legalLastName,
   email,
   uid,
-  localStorageUid,
 }: {
   profilePicture?: Images
   userName?: string;
@@ -82,16 +80,15 @@ export async function editDartaUserAccount({
   legalLastName?: string;
   email?: string;
   uid?: string;
-  localStorageUid: string;
 }): Promise<any> {
+  console.log({uid})
   try {
     const {data} = await axios.post(`${URL}/editDartaUser`, {profilePicture,
       userName,
       legalFirstName,
       legalLastName,
-      uid,
       email,
-      localStorageUid});
+      uid});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message})
@@ -118,12 +115,12 @@ export async function listDartaUserFollowsGallery({
 }
 
 export async function deleteDartaUser({
-  localStorageUid,
+  uid,
 }: {
-  localStorageUid: string;
+  uid: string;
 }): Promise<any> {
   try {
-    const {data} = await axios.post(`${URL}/deleteDartaUser`, {localStorageUid});
+    const {data} = await axios.post(`${URL}/deleteDartaUser`, {uid});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message})

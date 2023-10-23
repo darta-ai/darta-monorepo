@@ -205,60 +205,13 @@ export class ExhibitionService implements IExhibitionService {
     });
 
     // REFRESH EXHIBITION PRE-SIGNED IMAGE
-
-    let imageValue;
-    if (exhibition?.exhibitionPrimaryImage?.fileName && exhibition?.exhibitionPrimaryImage?.bucketName) {
-      const {fileName, bucketName} = exhibition.exhibitionPrimaryImage;
-      imageValue = await this.imageController.processGetFile({
-        fileName,
-        bucketName,
-      });
-      exhibition.exhibitionPrimaryImage.value = imageValue;
-    }
-
-    return {
-      ...exhibition,
-      artworks: {
-        ...exhibitionArtworks,
-      },
-    };
-  }
-
-
-  public async getExhibitionByIdForUser({
-    exhibitionId,
-  }: {
-    exhibitionId: string;
-  }): Promise<Exhibition | void> {
-    const fullExhibitionId = this.generateExhibitionId({exhibitionId});
-
-    const exhibitionQuery = `
-      LET exhibition = DOCUMENT(@fullExhibitionId)
-      RETURN exhibition      
-      `;
-
-    // LOL terrible as
-    let exhibition: Exhibition = {} as Exhibition;
-    try {
-      const cursor = await this.db.query(exhibitionQuery, {fullExhibitionId});
-      exhibition = await cursor.next();
-    } catch (error: any) {
-      throw new Error(error.message);
-    }
-
-    const exhibitionArtworks = filterOutPrivateRecordsMultiObject(await this.listAllExhibitionArtworks({
-      exhibitionId,
-    }))
-    // REFRESH EXHIBITION PRE-SIGNED IMAGE
-
     
-    const {exhibitionPrimaryImage} = exhibition
-    
+
     let imageValue;
 
     let shouldRegenerate;
-    if (exhibitionPrimaryImage?.value) {
-      shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: exhibitionPrimaryImage.value})
+    if (exhibition?.exhibitionPrimaryImage?.value) {
+      shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: exhibition?.exhibitionPrimaryImage.value})
     }
     if (shouldRegenerate && exhibition?.exhibitionPrimaryImage?.fileName && exhibition?.exhibitionPrimaryImage?.bucketName) {
       const {fileName, bucketName} = exhibition.exhibitionPrimaryImage;
@@ -269,20 +222,17 @@ export class ExhibitionService implements IExhibitionService {
       this.refreshExhibitionHeroImage({exhibitionId, url: imageValue})
       exhibition.exhibitionPrimaryImage.value = imageValue;
     } else {
-      imageValue = exhibitionPrimaryImage?.value
+      imageValue = exhibition?.exhibitionPrimaryImage?.value
     }
-
     return {
       ...exhibition,
       artworks: {
         ...exhibitionArtworks,
       },
-      exhibitionPrimaryImage: {
-        ...exhibitionPrimaryImage,
-        value: imageValue
-      }
     };
   }
+
+
 
   public async getExhibitionPreviewById({
     exhibitionId,
@@ -301,6 +251,7 @@ export class ExhibitionService implements IExhibitionService {
         exhibitionId: exhibition.exhibitionId,
         exhibitionDates: exhibition.exhibitionDates,
         createdAt: exhibition.createdAt,
+        _id: exhibition._id
       }      
       `;
 
@@ -659,6 +610,7 @@ export class ExhibitionService implements IExhibitionService {
     const getExhibitionsQuery = `
     WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}
     FOR exhibition IN OUTBOUND @galleryId ${EdgeNames.FROMGalleryTOExhibition}
+    FILTER exhibition.published == true
     RETURN exhibition._id      
   `;
 
@@ -706,6 +658,7 @@ export class ExhibitionService implements IExhibitionService {
         )[0]
         LET artworks = (
             FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
+            SORT artworkEdge.exhibitionOrder ASC
             RETURN {
                 [artwork._id]: {
                     _id: artwork._id,
@@ -772,7 +725,8 @@ export class ExhibitionService implements IExhibitionService {
               exhibitionArtist: exhibition.exhibitionArtist,
               exhibitionId: exhibition.exhibitionId,
               exhibitionDates: exhibition.exhibitionDates,
-              receptionDates: exhibition.receptionDates
+              receptionDates: exhibition.receptionDates,
+              _id: exhibition._id
           }
     `;
 

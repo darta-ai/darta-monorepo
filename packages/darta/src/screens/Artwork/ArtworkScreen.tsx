@@ -1,13 +1,21 @@
 import React, {useContext} from 'react';
-import {Alert, View} from 'react-native';
+import {Alert, View, Vibration} from 'react-native';
 import {ETypes, StoreContext} from '../../state/Store';
 import {TombstonePortrait} from '../../components/Tombstone/_index';
 import {NeedAccountDialog} from '../../components/Dialog/NeedAccountDialog';
 import { createUserArtworkRelationship } from '../../api/artworkRoutes';
 import { IGalleryProfileData, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
-import { createArtworkRelationship } from '../../utils/apiCalls';
+import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
 import auth from '@react-native-firebase/auth';
 import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
+import { GalleryNavigatorEnum, GalleryRootStackParamList } from '../../typing/routes';
+import { RouteProp } from '@react-navigation/native';
+
+
+type ProfileScreenNavigationProp = RouteProp<
+  GalleryRootStackParamList,
+  GalleryNavigatorEnum.gallery
+>;
 
 
 export function ArtworkScreen({route}: {route: any}) {
@@ -20,7 +28,7 @@ export function ArtworkScreen({route}: {route: any}) {
 
   const {state, dispatch} = useContext(StoreContext);
 
-  const [galleryName, setGalleryName] = React.useState<string>();
+  // const [galleryName, setGalleryName] = React.useState<string>();
 
 
   const fetchFullGallery = async ({galleryId}: {galleryId: string}): Promise<IGalleryProfileData | null> => {
@@ -45,20 +53,20 @@ export function ArtworkScreen({route}: {route: any}) {
     return null
   }
 
-  React.useEffect(() => {
+  // React.useEffect(() => {
 
-    const fetchGallery = async () => {
-      const galleryId = artOnDisplay?.galleryId;
-      if (galleryId && !state?.galleryData?.[galleryId]){
-        const galleryData = await fetchFullGallery({galleryId})
-        if(galleryData){
-          setGalleryName(galleryData.galleryName.value ?? "the gallery");
-        }
-      }
-    }
-    fetchGallery()
+  //   const fetchGallery = async () => {
+  //     const galleryId = artOnDisplay?.galleryId;
+  //     if (galleryId && !state?.galleryData?.[galleryId]){
+  //       const galleryData = await fetchFullGallery({galleryId})
+  //       if(galleryData){
+  //         setGalleryName(galleryData.galleryName.value ?? "the gallery");
+  //       }
+  //     }
+  //   }
+  //   fetchGallery()
 
-  }, [, state?.galleryData]);
+  // }, [, state?.galleryData]);
   
   const [saveLoading, setSaveLoading] = React.useState(false);  
   const [likeLoading, setLikeLoading] = React.useState(false);
@@ -69,11 +77,12 @@ export function ArtworkScreen({route}: {route: any}) {
     }
     setLikeLoading(true)
     try {
-      await createArtworkRelationship({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
+      await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
       dispatch({
         type: ETypes.setUserLikedArtwork,
         artworkId,
       })
+      
     } catch(error){
       console.log(error)
     } finally {
@@ -88,7 +97,7 @@ export function ArtworkScreen({route}: {route: any}) {
     }
     setSaveLoading(true)
     try {
-      await createArtworkRelationship({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
+      await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
       dispatch({
         type: ETypes.setUserSavedArtworkMulti,
         artworkIds: {[artworkId]: true},
@@ -109,7 +118,7 @@ export function ArtworkScreen({route}: {route: any}) {
       return setDialogVisible(true)
     }
     try {
-      await createArtworkRelationship({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE})
+      await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE})
       dispatch({
         type: ETypes.setUserInquiredArtwork,
         artworkId,
@@ -122,19 +131,21 @@ export function ArtworkScreen({route}: {route: any}) {
   const inquireAlert = ({artworkId} : {artworkId: string}) =>
   {
     if (auth().currentUser === null) {
-      return setDialogVisible(true)
+      // TO-DO WAIT FOR FIREBASE FIX
+      // return setDialogVisible(true)
+      // console.log(auth)
     }
-    const email = auth().currentUser?.email;
+    const email = auth().currentUser?.email ?? state.user?.email;
     if (email){
-      Alert.alert(`We'll let ${galleryName} know you're interested`, 'How would you like to get in contact?', [
-        {
-          text: `${email}`,
-          onPress: () => inquireArtwork({artworkId}),
-        },
+      Alert.alert(`Share your email and full name with the gallery?`, `Do you consent to sharing ${email}?`, [
         {
           text: 'Cancel',
           onPress: () => {},
           style: 'destructive',
+        },
+        {
+          text: `Yes, share`,
+          onPress: () => inquireArtwork({artworkId}),
         },
       ])
     } else {

@@ -1,27 +1,23 @@
 import {Image} from 'react-native';
 
 import {buttonSizes} from './constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { v4 as uuidv4 } from 'uuid';
-import {USER_UID_KEY} from './constants'
 import {createUser} from '../api/userRoutes'
 import auth from '@react-native-firebase/auth';
 
  
-export const getUserLocalUid = async () => {
+export const getUserUid = async () => {
   // await AsyncStorage.setItem(USER_UID_KEY, "")
+  
     try {
-        let userUid = await AsyncStorage.getItem(USER_UID_KEY);
-        const uid = auth().currentUser?.uid
-        if (!userUid && !uid) {
-            userUid = uuidv4();
-            if(userUid) {
-              await AsyncStorage.setItem(USER_UID_KEY, userUid)
-              await createUser({localStorageUid: userUid})
-            };
+        let uid = auth().currentUser?.uid
+        if (!uid) {
+            const user = await auth().signInAnonymously()
+            if(user.user?.uid) {
+              await createUser({uid: user.user?.uid})
+            }
         }
-
-        return userUid;
+        console.log({uid})
+        return uid;
     } catch (error) {
         console.error('Failed to get user UID:', error);
         return null;

@@ -20,6 +20,18 @@ export function GalleriesFollowing({
 }) {
   const {state} = React.useContext(StoreContext);
 
+  const GalleriesFollowingStyles = StyleSheet.create({
+    container: {
+      flexDirection: 'column',
+      alignContent: 'center',
+      alignSelf: 'center',
+      marginTop: hp('2%'),
+      marginBottom: hp('2%'),
+      width: wp('90%'),
+      gap: hp('2%'),
+    }
+  })
+
   const [galleriesFollowing, setGalleriesFollowing] = React.useState<GalleryPreview[]>([] as any);
 
   React.useEffect(() => {
@@ -45,14 +57,7 @@ export function GalleriesFollowing({
 
   return (
     <View
-      style={{
-        flexDirection: 'column',
-        alignContent: 'center',
-        alignSelf: 'center',
-        marginTop: hp('2%'),
-        marginBottom: hp('2%'),
-        width: wp('90%'),
-      }}>
+      style={GalleriesFollowingStyles.container}>
       <View
         style={{
           borderBottomColor: 'black',
@@ -64,23 +69,23 @@ export function GalleriesFollowing({
           {headline}
         </TextElement>
       </View>
+      {galleriesFollowing.map((galleryPreview: GalleryPreview) => 
       <View
+        key={galleryPreview._id}
         style={{
           alignSelf: 'center',
           justifyContent: 'center',
         }}>
-          {galleriesFollowing.map((galleryPreview: GalleryPreview) => 
-            <View key={galleryPreview._id}>
+          <View>
               <GalleryPreviewMini
-                galleryId={galleryPreview._id}
-                galleryName={galleryPreview.galleryName ?? {}}
-                galleryLogo={galleryPreview.galleryLogo ?? {}}
-                navigation={navigation}
+              galleryId={galleryPreview._id}
+              galleryName={galleryPreview.galleryName ?? {}}
+              galleryLogo={galleryPreview.galleryLogo ?? {}}
+              navigation={navigation}
               />
+              </View>
             </View>
           )}
       </View>
-      
-    </View>
   );
 }

@@ -62,6 +62,7 @@ export const newArtworkShell: Artwork = {
   updatedAt: '',
   artworkId: '',
   exhibitionOrder: 0,
+  artworkCategory: { value : ''},
 };
 
 export const newExhibitionShell: Exhibition = {
@@ -91,6 +92,7 @@ export const newExhibitionShell: Exhibition = {
   },
   createdAt: null,
   updatedAt: null,
+  artworkCategory: { value : ''},
 };
 
 export const currencyConverter: CurrencyConverterType = {

@@ -74,7 +74,12 @@ export const createArtworkStyles = {
     alignContent: 'center',
     alignSelf: 'center',
     gap: '2vh',
-    '@media (min-width: 1280px)': {
+    '@media (min-width: 900px)': {
+      alignSelf: 'flex-start',
+      gap: '1vh',
+      width: '50vh',
+    },
+    '@media (min-width: 1480px)': {
       alignSelf: 'flex-start',
       gap: '1vh',
       width: '60vh',
@@ -185,9 +190,10 @@ export const createArtworkStyles = {
     maxWidth: '38vw',
     alignSelf: 'center',
     '@media (min-width: 1280px)': {
-      maxHeight: '50vh',
+      maxHeight: '40vh',
       maxWidth: '50vw',
     },
+    // backgroundColor: Colors.PRIMARY_100,
   },
   inputText: {
     display: 'flex',

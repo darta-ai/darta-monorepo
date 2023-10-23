@@ -1,11 +1,14 @@
 import auth from '@react-native-firebase/auth';
+import firebase from '@react-native-firebase/app'
+import { editDartaUserAccount } from './userRoutes';
 
 export const firebaseSignUp = async ({email, password}: {email: string, password: string}) => {
 
     try {
-        const res = await auth().createUserWithEmailAndPassword(email, password);
-        console.log(res)
-        return res;
+        const credential = firebase.auth.EmailAuthProvider.credential(email, password);
+        const linking = await auth().currentUser?.linkWithCredential(credential);
+        const res3 = await editDartaUserAccount({uid: auth().currentUser?.uid, email})
+        return res3;
     } catch(e){
         if (e.code === 'auth/email-already-in-use') {
             throw new Error('That email address is already in use!');
@@ -14,6 +17,7 @@ export const firebaseSignUp = async ({email, password}: {email: string, password
           if (e.code === 'auth/invalid-email') {
             throw new Error('That email address is invalid!');
           }
+        console.log({e})
     }
 }
 
@@ -47,7 +51,6 @@ export const firebaseSetUser = async ({type, data}: {type: FirebaseSetUserEnum, 
       const res = await auth().currentUser?.updateProfile({
         [type]: data,
       })
-      console.log(res)
       return res;
   } catch(e){
       
@@ -62,6 +65,22 @@ export const firebaseDeleteUser = async ({password} : {password: string}) => {
     }
 
     await auth().signInWithEmailAndPassword(user.email!, password);
+    const results = await user?.delete()
+    return results;
+  } catch(e){
+    throw new Error ('Unable to delete user')
+  }
+}
+
+
+export const firebaseSignOut = async ({password} : {password: string}) => {
+  try {
+    const user = auth().currentUser;
+    if (!user) {
+      throw new Error('No user found');
+    }
+
+    await auth().signOut()
     const results = await user?.delete()
     return results;
   } catch(e){

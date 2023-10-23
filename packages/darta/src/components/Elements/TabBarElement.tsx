@@ -9,7 +9,7 @@ export function TabBarElement({focused, icon, colors}: TabBarElementT) {
   const iconFocused = focused ? colors.focused : colors.notFocused;
   return (
     <View style={styles.iconMenu}>
-      <IconElement icon={icon} size={25} iconColor={iconFocused} />
+      <IconElement icon={icon} size={22} iconColor={iconFocused} />
     </View>
   );
 }

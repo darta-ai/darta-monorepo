@@ -8,6 +8,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import FastImage from 'react-native-fast-image'
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import {runOnJS} from 'react-native-reanimated';
 import {
@@ -15,10 +16,11 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import {OpenStateEnum, RatingEnum} from '../../typing/types';
-import {Artwork} from '@darta-types'
+import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types'
 import {galleryStyles} from '../../styles/styles';
 import {ETypes, StoreContext} from '../../state/Store';
+import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
+import { Onboard } from '../Darta/Onboard';
 
 export function ArtOnWall({
   artOnDisplay,
@@ -42,14 +44,14 @@ export function ArtOnWall({
   artworkDimensions: Artwork['artworkDimensions'] | undefined;
   isPortrait: boolean;
   wallHeight: number;
-  rateArtwork: (rating: RatingEnum, openIdentifier: OpenStateEnum) => void;
+  rateArtwork: (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => void;
   setCurrentZoomScale: (arg0: number) => void;
   toggleArtForward: () => void;
   toggleArtBackward: () => void;
 }) {
   const {state, dispatch} = useContext(StoreContext);
 
-  const [isPanActionEnabled, seIsPanActionEnabled] = useState(true);
+  const [isPanActionEnabled, setIsPanActionEnabled] = useState(true);
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -58,46 +60,91 @@ export function ArtOnWall({
     swipeDown = 'swipeDown',
   }
 
-  const handleArtRatingGesture = useCallback(
-    (gesture: ArtRatingGesture) => {
-      const {artworkOnDisplayId, userArtworkRatings} = state;
+  React.useEffect(() => {
+    const setSaw = async () => {
+      try{
+        if (artOnDisplay?._id) {
+          createArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.VIEWED})
+        }
+      } catch(err: any){
+      }
+    }
+    setSaw()
+  }, [artOnDisplay])
 
-      const currentArtworkRating = userArtworkRatings[artworkOnDisplayId];
+  const handleArtRatingGesture = useCallback(
+    async (gesture: ArtRatingGesture) => {
+      const artworkOnDisplayId = artOnDisplay._id;
+      const likedArtworks = state.userLikedArtwork;
+      const dislikedArtworks = state.userDislikedArtwork;
+      const savedArtworks = state.userSavedArtwork;
+
+      const userLiked = likedArtworks?.[artworkOnDisplayId!] || false
+      const userSaved = savedArtworks?.[artworkOnDisplayId!] || false
+      const userDisliked = dislikedArtworks?.[artworkOnDisplayId!] || false
+
       switch (gesture) {
         case ArtRatingGesture.swipeUp:
-          if (currentArtworkRating[RatingEnum.like]) {
+          if (userLiked) {
+            rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE);
+            break;
+          } else if (userDisliked) {
             dispatch({
-              type: ETypes.setSaveArtwork,
-              artOnDisplay,
-              saveWork: true,
-            });
-            rateArtwork(RatingEnum.save, OpenStateEnum.swiped);
+              type: ETypes.removeUserDislikedArtwork,
+              artworkId: artOnDisplay._id,
+            })
+            try{
+              await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE})
+            } catch {
+              console.log("error removing disliked artwork")
+            }
+            rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED);
             break;
-          } else if (currentArtworkRating[RatingEnum.dislike]) {
-            rateArtwork(RatingEnum.unrated, OpenStateEnum.swiped);
-            break;
-          } else if (currentArtworkRating[RatingEnum.save]) {
+          } else if (userSaved) {
             break;
           } else {
-            rateArtwork(RatingEnum.like, OpenStateEnum.swiped);
+            rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE);
             break;
           }
         case ArtRatingGesture.swipeDown:
-          if (currentArtworkRating[RatingEnum.save]) {
-            rateArtwork(RatingEnum.like, OpenStateEnum.swiped);
+          if (userSaved) {
+
             dispatch({
-              type: ETypes.setSaveArtwork,
-              artOnDisplay,
-              saveWork: false,
-            });
+              type: ETypes.removeUserSavedArtwork,
+              artworkId: artOnDisplay._id,
+            })
+            try{
+              await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
+            } catch {
+              console.log("error removing disliked artwork")
+            }
+            rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE);
             break;
-          } else if (currentArtworkRating[RatingEnum.like]) {
-            rateArtwork(RatingEnum.unrated, OpenStateEnum.swiped);
+          } else if (userLiked) {
+            dispatch({
+              type: ETypes.removeUserLikedArtwork,
+              artworkId: artOnDisplay._id,
+            })
+            try{
+              await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
+            } catch {
+              console.log("error removing disliked artwork")
+            }
+            rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED);
             break;
-          } else if (currentArtworkRating[RatingEnum.dislike]) {
+          } else if (userDisliked) {
             break;
           } else {
-            rateArtwork(RatingEnum.dislike, OpenStateEnum.swiped);
+            dispatch({
+              type: ETypes.removeUserDislikedArtwork,
+              artworkId: artOnDisplay._id,
+            })
+            try{
+              await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE})
+            } catch {
+              console.log("error removing disliked artwork")
+            }
+            rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE);
             break;
           }
       }
@@ -121,8 +168,8 @@ export function ArtOnWall({
   let artHeightPixels = 0;
   let artWidthPixels = 0;
   if (artworkDimensions && artworkDimensions.heightIn.value && artworkDimensions.widthIn.value) {
-    artHeightInches = parseInt(artworkDimensions.heightIn.value, 10);
-    artWidthInches = parseInt(artworkDimensions.widthIn.value, 10);
+    artHeightInches = parseInt(artworkDimensions.heightIn.value);
+    artWidthInches = parseInt(artworkDimensions.widthIn.value);
 
     const pixelsPerInchHeight =
       backgroundImageDimensionsPixels.height / backgroundHeightInches;
@@ -139,27 +186,35 @@ export function ArtOnWall({
 
     artImageLocation = {
       top:
-        0.45 * backgroundImageDimensionsPixels.height - 0.5 * artHeightPixels,
+        0.5 * backgroundImageDimensionsPixels.height - 0.5 * artHeightPixels,
       left:
-        0.485 * backgroundImageDimensionsPixels.width - 0.5 * artWidthPixels,
+        0.5 * backgroundImageDimensionsPixels.width - 0.5 * artWidthPixels,
     };
   }
 
   const handleDoubleTap = () => {
     if (isPanActionEnabled) {
-      seIsPanActionEnabled(false);
+      setIsPanActionEnabled(false);
       const targetScale = 3;
 
       // Calculate the translation values
       setCurrentZoomScale(targetScale);
 
-      scrollViewRef.current?.scrollTo({
-        x: wp('90%'),
-        y: hp('75%'),
-        animated: false,
-      });
+      if (state.isPortrait){
+        scrollViewRef.current?.scrollTo({
+          x: wp('100%'),
+          y: hp('70%'),
+          animated: false,
+        });
+      } else {
+        scrollViewRef.current?.scrollTo({
+          x: hp('75%'),
+          y: wp('100%'),
+          animated: false,
+        });
+      }
     } else {
-      seIsPanActionEnabled(true);
+      setIsPanActionEnabled(true);
       setCurrentZoomScale(1);
       scrollViewRef.current?.scrollToEnd({animated: false});
     }
@@ -245,16 +300,18 @@ export function ArtOnWall({
     },
     screenContainer: {
       width: backgroundImageDimensionsPixels.width,
-      height: backgroundImageDimensionsPixels.height,
+      // height: hp('100%'),
     },
     artContainer: {
       top: artImageLocation?.top,
       left: artImageLocation?.left,
-    },
-    artwork: {
-      borderRadius: 0.5,
       height: artImageSize?.height,
       width: artImageSize?.width,
+    },
+    artwork: {
+      height: artImageSize?.height,
+      // width: artImageSize?.width,
+      resizeMode: 'contain',
     },
     activityIndicator: {
       top: isPortrait ? hp('35%') : hp('20%'),
@@ -267,13 +324,12 @@ export function ArtOnWall({
       <ScrollView
         ref={scrollViewRef}
         scrollEnabled={!isPanActionEnabled}
-        // pinchGestureEnabled={isPanActionEnabled}
         onScrollEndDrag={({nativeEvent: {zoomScale}}) => {
           setCurrentZoomScale(zoomScale);
           if (zoomScale <= 1.1) {
-            seIsPanActionEnabled(true);
+            setIsPanActionEnabled(true);
           } else {
-            seIsPanActionEnabled(false);
+            setIsPanActionEnabled(false);
           }
         }}
         zoomScale={currentZoomScale}
@@ -288,14 +344,16 @@ export function ArtOnWall({
         snapToAlignment="center">
         <GestureDetector gesture={doubleTapGesture}>
           <ImageBackground source={backgroundImage}>
-            <View>
+            <Onboard />
+            <View >
               <View style={galleryStylesPortrait.screenContainer}>
                 <View style={galleryStylesPortrait.artContainer}>
                   <View style={galleryStyles.frameStyle}>
                     {artImage ? (
-                      <Image
-                        source={{uri: artImage}}
+                      <FastImage
+                        source={{uri: artImage, priority: FastImage.priority.normal}}
                         style={galleryStylesPortrait.artwork}
+                        resizeMode={FastImage.resizeMode.contain}
                       />
                     ) : (
                       <ActivityIndicator

@@ -3,7 +3,7 @@ import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import {ExhibitionRootEnum} from '../../typing/routes';
 import {ExhibitionGalleryScreen, ExhibitionDetailsScreen, ExhibitionArtworkScreen} from '../../screens/Exhibition'
-import { tabBarScreenOptions } from '../../theme/themeConstants';
+import { tabBarOptions, tabBarScreenOptions } from '../../theme/themeConstants';
 
 
 export const ExhibitionStackTopTab = createMaterialTopTabNavigator();
@@ -22,6 +22,7 @@ export type ExhibitionStackParamList = {
     galleryId?: string;
     exhibitionId?: string;
     navigationRoute?: string;
+    showPastExhibitions: boolean
   };
 };
 
@@ -44,7 +45,7 @@ export function ExhibitionTopTabNavigator({route} : {route: any}) {
         <ExhibitionStackTopTab.Screen
           name={ExhibitionRootEnum.exhibitionGallery}
           component={ExhibitionGalleryScreen}
-          initialParams={{galleryId: route.params.galleryId, exhibitionId: route.params.exhibitionId, navigationRoute: route.params.navigationRoute}}
+          initialParams={{galleryId: route.params.galleryId, exhibitionId: route.params.exhibitionId, navigationRoute: route.params.navigationRoute, showPastExhibitions: true}}
           options={{ title: 'Gallery' }}
         />
         </ExhibitionStackTopTab.Group>

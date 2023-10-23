@@ -21,7 +21,7 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
         <ExhibitionStack.Screen
           name={ExhibitionRootEnum.exhibitionHome}
           component={ExhibitionsHomeScreen}
-          options={{...headerOptions, headerTitle: 'feed'}}
+          options={{...headerOptions, headerTitle: 'exhibitions'}}
         />
       <ExhibitionStack.Screen
           name={ExhibitionRootEnum.TopTab}

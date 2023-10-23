@@ -31,7 +31,8 @@ export async function listGalleryExhibitionPreviewForUser({
     const {data} = await axios.get(`${URL}/listGalleryExhibitionPreviewForUser`, {
       params: {
         galleryId
-  }});
+      }
+    });
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'listGalleryExhibitionPreviewForUser'})
@@ -58,15 +59,15 @@ export async function listDartaUserFollowsGallery({
 
 export async function deleteDartaUserFollowGallery({
   galleryId,
-  localStorageUid,
+  uid,
 }: {
   galleryId: string;
-  localStorageUid: string;
+  uid: string;
 }): Promise<Exhibition | any> {
   try {
     const {data} = await axios.post(`${URL}/deleteDartaUserFollowGallery`, {
       galleryId,
-      localStorageUid
+      uid
   });
     return data;
   } catch (error:any) {

@@ -1,14 +1,10 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Animated, StyleSheet, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
-import {
-  PRIMARY_600,
-  PRIMARY_GREY,
-  PRIMARY_PROGRESS,
-  PRIMARY_RED,
-} from '@darta-styles';
+import * as Colors from '@darta-styles'
+
 import {
   ButtonSizesT,
   IUserArtworkRated,
@@ -19,8 +15,10 @@ import {TextElement} from '../Elements/_index';
 import {icons} from '../../utils/constants';
 import {galleryInteractionStyles, globalTextStyles} from '../../styles/styles';
 import {StoreContext} from '../../state/Store';
+import { Artwork, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
 
 export function CombinedInteractionButtons({
+  artOnDisplay,
   fadeAnimRating,
   localButtonSizes,
   isPortrait,
@@ -29,11 +27,12 @@ export function CombinedInteractionButtons({
   toggleArtTombstone,
   toggleButtonView,
 }: {
+  artOnDisplay: Artwork;
   fadeAnimRating: Animated.Value;
   localButtonSizes: ButtonSizesT;
   isPortrait: boolean;
   openRatings: boolean;
-  rateArtwork: (rating: RatingEnum, openIdentifier: OpenStateEnum) => void;
+  rateArtwork: (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => void;
   toggleArtTombstone: () => void;
   toggleButtonView: (
     openIdentifier: OpenStateEnum,
@@ -41,64 +40,68 @@ export function CombinedInteractionButtons({
   ) => void;
 }) {
   const [ratingDisplayIcon, setRatingDisplayIcon] = useState<string>(
-    icons.save,
+    icons.thumbsUpDown,
   );
   const [ratingDisplayColor, setRatingDisplayColor] =
-    useState<string>(PRIMARY_GREY);
+    useState<string>(Colors.PRIMARY_500);
 
   const [isRated, setIsRated] = useState<boolean>(false);
 
-  const [currentArtRating, setCurrentArtRating] = useState<IUserArtworkRated>(
-    {},
-  );
+  const [currentArtRating, setCurrentArtRating] = useState<IUserArtworkRated>({});
 
   const {state} = useContext(StoreContext);
 
-  const modifyDisplayRating = () => {
-    const {artworkOnDisplayId} = state;
-    const ratingObject = state.userArtworkRatings[artworkOnDisplayId];
+  React.useEffect(() => {
+    modifyDisplayRating()
+  }, [artOnDisplay, state.userLikedArtwork, state.userDislikedArtwork, state.userSavedArtwork])
 
-    if (ratingObject) {
-      const ratingString = Object.keys(ratingObject)[0];
-      setRatingDisplayIcon(icons[ratingString] || icons.thumbsUpDown);
-      switch (ratingString) {
-        case RatingEnum.like:
-          setRatingDisplayColor(PRIMARY_600);
-          break;
-        case RatingEnum.dislike:
-          setRatingDisplayColor(PRIMARY_RED);
-          break;
-        case RatingEnum.save:
-          setRatingDisplayColor(PRIMARY_PROGRESS);
-          break;
-        default:
-          setRatingDisplayColor(PRIMARY_GREY);
-          break;
-      }
+  const modifyDisplayRating = () => {
+    const artworkOnDisplayId = artOnDisplay?._id;
+    const likedArtworks = state?.userLikedArtwork;
+    const dislikedArtworks = state?.userDislikedArtwork;
+    const savedArtworks = state?.userSavedArtwork;
+    
+    const userLiked = likedArtworks?.[artworkOnDisplayId!] || false
+    const userSaved = savedArtworks?.[artworkOnDisplayId!] || false
+    const userDisliked = dislikedArtworks?.[artworkOnDisplayId!] || false
+
+     if (userSaved){
+      setCurrentArtRating({[RatingEnum.save]: true})
+      setRatingDisplayColor(Colors.PRIMARY_PROGRESS)
+      setIsRated(true)
+      setRatingDisplayIcon(icons.save)
+    } else if (userLiked){
+      setCurrentArtRating({[RatingEnum.like]: true})
+      setRatingDisplayColor(Colors.PRIMARY_800)
+      setIsRated(true)
+      setRatingDisplayIcon(icons.like)
+    } else if (userDisliked){
+      setCurrentArtRating({[RatingEnum.dislike]: true})
+      setRatingDisplayColor(Colors.PRIMARY_200)
+      setIsRated(true)
+      setRatingDisplayIcon(icons.dislike)
     } else {
-      toggleButtonView(OpenStateEnum.openRatings, false);
+      setRatingDisplayColor(Colors.PRIMARY_900)
+      setCurrentArtRating({})
+      setIsRated(false)
+      setRatingDisplayIcon(icons.thumbsUpDown)
     }
-    const ratingBool =
-      ratingObject[RatingEnum.save] ||
-      ratingObject[RatingEnum.dislike] ||
-      ratingObject[RatingEnum.like];
-    setIsRated(ratingBool as boolean);
-    setCurrentArtRating(ratingObject || {});
   };
 
-  // useEffect(() => {
-  //   modifyDisplayRating();
-  // }, [state]);
-
-  const ratingContainer = isPortrait
-    ? galleryInteractionStyles.containerPortrait
-    : galleryInteractionStyles.containerLandscape;
-
   const SSCombinedInteractionButtons = StyleSheet.create({
-    container: {
+    containerPortrait: {
+      flex: 1,
       flexDirection: 'row',
-      bottom: '10%',
-      maxHeight: hp('10%'),
+      justifyContent: 'space-around',
+      alignItems: 'center',
+      gap: 30
+    },
+    containerLandscape: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100%',
     },
     iconButtonTombstone: {
       flex: 1,
@@ -111,33 +114,29 @@ export function CombinedInteractionButtons({
     animatedView: {
       flexDirection: 'row',
       justifyContent: 'flex-end',
+      gap: 10,
       alignSelf: 'center',
       alignItems: 'center',
+      width: '100%',
     },
     globalTextJustifyEnd: {
       justifyContent: 'flex-end',
     },
     viewOptionsIconButton: {
       flex: 1,
-      alignItems: 'flex-end',
+      alignItems: 'center',
       height: '100%',
+      width: '0%'
     },
   });
 
+  const ratingContainer = isPortrait
+  ? SSCombinedInteractionButtons.containerPortrait
+  : SSCombinedInteractionButtons.containerLandscape;
+
+
   return (
-    <View style={[ratingContainer, SSCombinedInteractionButtons.container]}>
-      <View style={SSCombinedInteractionButtons.iconButtonTombstone}>
-        <IconButton
-          icon={icons.learnMore}
-          mode="outlined"
-          size={localButtonSizes.medium}
-          iconColor={PRIMARY_GREY}
-          style={galleryInteractionStyles.secondaryButton}
-          accessibilityLabel="view tombstone"
-          testID="tombstone"
-          onPress={() => toggleArtTombstone()}
-        />
-      </View>
+    <View style={ratingContainer}>
       <View style={SSCombinedInteractionButtons.iconButtonContainer}>
         <Animated.View
           style={[
@@ -153,7 +152,7 @@ export function CombinedInteractionButtons({
               disabled={!openRatings}
               icon={icons.like}
               iconColor={
-                currentArtRating[RatingEnum.like] ? PRIMARY_600 : PRIMARY_GREY
+                currentArtRating[RatingEnum.like] ? Colors.PRIMARY_800 : Colors.PRIMARY_200
               }
               mode={
                 currentArtRating[RatingEnum.like] ? 'contained' : 'outlined'
@@ -162,10 +161,10 @@ export function CombinedInteractionButtons({
               style={galleryInteractionStyles.secondaryButton}
               testID="likeButton"
               onPress={() => {
-                rateArtwork(RatingEnum.like, OpenStateEnum.openRatings);
+                rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE);
               }}
             />
-            <TextElement
+            {/* <TextElement
               style={[
                 globalTextStyles.centeredText,
                 galleryInteractionStyles.textLabelsStyle,
@@ -173,7 +172,7 @@ export function CombinedInteractionButtons({
               ]}>
               like
               {currentArtRating[RatingEnum.like] && 'd'}
-            </TextElement>
+            </TextElement> */}
           </View>
           <View>
             <IconButton
@@ -185,25 +184,25 @@ export function CombinedInteractionButtons({
               }
               iconColor={
                 currentArtRating[RatingEnum.save]
-                  ? PRIMARY_PROGRESS
-                  : PRIMARY_GREY
+                  ? Colors.PRIMARY_PROGRESS
+                  : Colors.PRIMARY_200
               }
               icon={icons.save}
               size={localButtonSizes.medium}
               style={galleryInteractionStyles.secondaryButton}
               testID="saveButton"
               onPress={() => {
-                rateArtwork(RatingEnum.save, OpenStateEnum.openRatings);
+                rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE);
               }}
             />
-            <TextElement
+            {/* <TextElement
               style={[
                 globalTextStyles.centeredText,
                 galleryInteractionStyles.textLabelsStyle,
               ]}>
               save
               {currentArtRating[RatingEnum.save] && 'd'}
-            </TextElement>
+            </TextElement> */}
           </View>
           <View>
             <IconButton
@@ -214,8 +213,8 @@ export function CombinedInteractionButtons({
               }
               iconColor={
                 currentArtRating[RatingEnum.dislike]
-                  ? PRIMARY_RED
-                  : PRIMARY_GREY
+                  ? Colors.PRIMARY_100
+                  : Colors.PRIMARY_200
               }
               disabled={!openRatings}
               icon={icons.dislike}
@@ -223,17 +222,17 @@ export function CombinedInteractionButtons({
               style={galleryInteractionStyles.secondaryButton}
               testID="dislikeButton"
               onPress={() => {
-                rateArtwork(RatingEnum.dislike, OpenStateEnum.openRatings);
+                rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE);
               }}
             />
-            <TextElement
+            {/* <TextElement
               style={[
                 globalTextStyles.centeredText,
                 galleryInteractionStyles.textLabelsStyle,
               ]}>
               dislike
               {currentArtRating[RatingEnum.dislike] && 'd'}
-            </TextElement>
+            </TextElement> */}
           </View>
         </Animated.View>
       </View>
@@ -242,7 +241,7 @@ export function CombinedInteractionButtons({
           animated
           mode={isRated ? 'contained' : 'outlined'}
           icon={openRatings ? icons.minus : ratingDisplayIcon}
-          size={isRated ? localButtonSizes.large : localButtonSizes.medium}
+          size={localButtonSizes.medium}
           iconColor={ratingDisplayColor}
           style={galleryInteractionStyles.mainButtonPortrait}
           accessibilityLabel="Options"

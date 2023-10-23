@@ -31,6 +31,7 @@ export interface IGalleryService {
   }): Promise<Gallery | null>;
   deleteGalleryProfile(): Promise<void>;
   verifyQualifyingGallery(domain: string): Promise<boolean>;
+  getGalleryFromDomain({userEmail}: {userEmail: string}): Promise<Gallery | null>;
   getGalleryIdFromUID({uid}: {uid: string}): Promise<string>;
   getGalleryLogo({id}: {id: string}): Promise<any>;
   generateGalleryUserId({galleryId}: {galleryId: string}): string;

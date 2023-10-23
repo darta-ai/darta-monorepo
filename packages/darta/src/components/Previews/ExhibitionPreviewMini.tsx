@@ -15,7 +15,7 @@ import {
 import {TextElement} from '../Elements/_index';
 import {globalTextStyles} from '../../styles/styles';
 import {ExhibitionDates} from '@darta-types';
-import { PRIMARY_700, PRIMARY_900, PRIMARY_100 } from '@darta-styles';
+import { PRIMARY_700, PRIMARY_900, PRIMARY_100, PRIMARY_50 } from '@darta-styles';
 import { customLocalDateString } from '../../utils/functions';
 
 
@@ -49,7 +49,7 @@ export function ExhibitionPreviewMini({
       alignItems: 'center',
       borderRadius: 5,
       borderColor: PRIMARY_700,
-      backgroundColor: PRIMARY_100,
+      backgroundColor: PRIMARY_50,
       borderWidth: 1,
     },
     heroImageContainer: {

@@ -2,8 +2,9 @@ import {Request, Response} from 'express';
 import {inject} from 'inversify';
 import {controller, httpGet, httpPost, request, response} from 'inversify-express-utils';
 
+import { standardConsoleLog } from '../config/templates';
 import {verifyToken} from '../middleware/accessTokenVerify';
-import {Node} from '../models/models';
+import { Gallery } from '../models/GalleryModel';
 import {IGalleryService, IUserService} from '../services/interfaces';
 
 @controller('/users')
@@ -21,18 +22,13 @@ export class UserController {
     const {user} = req as any;
     const {galleryName, signUpWebsite, phoneNumber} = req.body;
     try {
-      let verifyGallery: Node | any;
-      if (!user.email.includes('darta.art')) {
-        verifyGallery =
-          await this.galleryService.checkDuplicateGalleries({
-            userEmail: user.email,
-          });
-      }
+      const verifyGallery: Gallery | null = await this.galleryService.getGalleryFromDomain({
+        userEmail: user.email,
+      });
       if (!verifyGallery) {
         const isValidated = await this.galleryService.verifyQualifyingGallery(
           user.email,
         );
-
         const {_id, ...gallery} =
           await this.galleryService.createGalleryProfile({
             galleryName,
@@ -50,15 +46,21 @@ export class UserController {
           validated: isValidated,
         });
         res.status(200).send(gallery);
+        return  
       }
 
-      await this.userService.editGalleryEdge({
-        galleryId: verifyGallery._id,
-        uid: user.uid,
-        relationship: 'USER',
-      });
-      res.status(200).send(verifyGallery);
+      if (verifyGallery._id) {
+        await this.userService.editGalleryToUserEdge({
+          galleryId: verifyGallery._id,
+          uid: user.uid,
+          relationship: 'USER',
+        });
+        res.status(200).send(verifyGallery);
+      } else {
+        throw new Error('!! no gallery _id !!')
+      }
     } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req?.body, request: 'users/newGallery'})
       res.status(500).send(error.message);
     }
   }
@@ -69,14 +71,15 @@ export class UserController {
     @request() req: Request,
     @response() res: Response,
   ): Promise<void> {
-    const {localStorageUid} = req.body;
+    const {uid} = req.body;
     try {
       await this.userService.createDartaUser({
-        localStorageUid,
+        uid,
       });
       
-      res.status(200).send(localStorageUid);
+      res.status(200).send(uid);
     } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req?.body, request: 'users/createNewDartaUser'})
       res.status(500).send(error.message);
     }
   }
@@ -87,7 +90,7 @@ export class UserController {
     @response() res: Response,
   ): Promise<void> {
     if (!req.body.uid || !req.body.galleryId) {
-      res.status(400).send("localStorageUid or galleryId query parameter is required");
+      res.status(400).send("uid or galleryId query parameter is required");
       return;
     }
     try {
@@ -100,7 +103,7 @@ export class UserController {
 
       res.status(200).send("created user gallery connection");
     } catch (error: any) {
-      // console.log(error);
+      standardConsoleLog({message: error.message, data: req?.body, request: 'users/createDartaUserFollowGallery'})
       res.status(500).send(error.message);
     }
   }
@@ -111,16 +114,17 @@ export class UserController {
     @response() res: Response,
   ): Promise<void> {
     try {
-      const {localStorageUid} = req.query;
-      if (!localStorageUid) {
+      const {uid} = req.query;
+      if (!uid) {
         throw new Error('Missing required fields');
       }
       const results = await this.userService.readDartaUser({
-        localStorageUid: localStorageUid as string,
+        uid: uid as string,
       });
       
       res.status(200).send(results);
     } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req.query, request: 'users/getDartaUser'})
       res.status(500).send(error.message);
     }
   }
@@ -136,24 +140,24 @@ export class UserController {
         legalFirstName,
         legalLastName,
         email, 
-        localStorageUid,
         uid
       } = req.body;
-      if (!localStorageUid) {
+      if (!uid) {
         throw new Error('Missing required fields');
       }
+
       const results = await this.userService.editDartaUser({
         profilePicture: profilePicture as any,
         userName: userName as string,
         legalFirstName: legalFirstName as string,
         legalLastName: legalLastName as string,
         email: email as string, 
-        localStorageUid: localStorageUid as string,
         uid: uid as string
       });
       
       res.status(200).send(results);
     } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req?.body, request: 'users/editDartaUser'})
       res.status(500).send(error.message);
     }
   }
@@ -165,17 +169,18 @@ export class UserController {
   ): Promise<void> {
     try {
       const {
-        localStorageUid
+        uid
       } = req.body;
-      if (!localStorageUid) {
+      if (!uid) {
         throw new Error('Missing required fields');
       }
       const results = await this.userService.deleteDartaUser({
-        localStorageUid: localStorageUid as string,
+        uid: uid as string,
       });
       
       res.status(200).send(results);
     } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req.body, request: 'users/deleteDartaUser'})
       res.status(500).send(error.message);
     }
   }
@@ -199,7 +204,7 @@ export class UserController {
 
       res.status(200).send("created user gallery connection");
     } catch (error: any) {
-      console.log(error);
+      standardConsoleLog({message: error.message, data: req.body, request: 'deleteDartaUserFollowGallery/dartaUserUnFollowGallery'})
       res.status(500).send(error.message);
     }
   }
@@ -210,7 +215,7 @@ export class UserController {
     @response() res: Response,
   ): Promise<void> {
     if (!req.query.uid) {
-      res.status(400).send("localStorageUid query parameter is required");
+      res.status(400).send("uid query parameter is required");
       return;
     }
     try {
@@ -221,7 +226,7 @@ export class UserController {
       res.json(results);
       
     } catch (error: any) {
-      // console.log(error);
+      standardConsoleLog({message: error.message, data: req.query, request: 'users/listDartaUserFollowsGallery'})
       res.status(500).send(error.message);
     }
   }

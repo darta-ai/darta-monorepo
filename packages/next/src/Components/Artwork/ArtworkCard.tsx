@@ -1,5 +1,5 @@
 import * as Colors from '@darta-styles';
-import {Artwork} from '@darta-types';
+import {Artwork,InquiryArtworkData} from '@darta-types';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Box,
@@ -15,7 +15,6 @@ import React from 'react';
 
 import {cardStyles} from '../../../styles/CardStyles';
 import {currencyConverter} from '../../common/templates';
-import {InquiryArtworkData} from '../../dummyData';
 import { DartaDialogue } from '../Modals';
 import {useAppState} from '../State/AppContext';
 import {InquiryTable} from '../Tables/InquiryTable';

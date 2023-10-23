@@ -1,41 +1,23 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext} from 'react';
-import {View, StyleSheet, RefreshControl, ScrollView, FlatList} from 'react-native';
+import { RefreshControl, FlatList} from 'react-native';
 import {
   ExhibitionNavigatorParamList,
   ExhibitionRootEnum
 } from '../../typing/routes';
 import {ETypes, StoreContext} from '../../state/Store';
-import { readExhibition } from '../../api/exhibitionRoutes';
-import { listGalleryExhibitionPreviewForUser } from '../../api/galleryRoutes';
 import { listAllExhibitionsPreviewsForUser } from "../../api/exhibitionRoutes";
-import {Button} from 'react-native-paper';
 
 
-import { ExhibitionPreview, IGalleryProfileData, Exhibition, ArtworkObject } from '@darta-types'
-import { readGallery } from '../../api/galleryRoutes';
+import { ExhibitionPreview } from '@darta-types'
 import { ExhibitionPreviewCard } from '../../components/Previews/ExhibitionPreviewCard';
-import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import * as Colors from '@darta-styles';
-import { TextElement } from '../../components/Elements/TextElement';
 
 
 type ExhibitionHomeScreenNavigationProp = StackNavigationProp<
 ExhibitionNavigatorParamList,
 ExhibitionRootEnum.exhibitionHome
 >;
-
-const exhibitionHomeStyle = StyleSheet.create({
-  exhibitionTogglerContainer : {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    width: '100%',
-    height: hp('10%'),
-    backgroundColor: Colors.PRIMARY_100,
-  }
-})
 
 export function ExhibitionsHomeScreen({
   navigation,
@@ -132,6 +114,7 @@ export function ExhibitionsHomeScreen({
         onEndReachedThreshold={0.1}
         onEndReached={onBottomLoad}
         refreshing={bottomLoad}
+        style={{backgroundColor: Colors.PRIMARY_100}}
         />
     </>
   );

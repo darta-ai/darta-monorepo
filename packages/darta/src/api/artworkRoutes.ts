@@ -51,7 +51,7 @@ export async function deleteUserArtworkRelationship({
   }
 }
 
-export async function listUserArtworkRelationships({
+export async function listUserArtworkAPIRelationships({
   uid,
   action, 
   limit

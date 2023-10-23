@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet, Image} from 'react-native';
+import {View, StyleSheet, Image, ScrollView, RefreshControl} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { ActivityIndicator } from 'react-native-paper';
 import { ArtworkList } from '../../components/Artwork/ArtworkList';
@@ -29,8 +29,6 @@ const artworkDetailsStyles = StyleSheet.create({
   spinnerContainer: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
     gap: hp('10%'),
     width: '100%',
     height: '100%',
@@ -68,11 +66,7 @@ export function ExhibitionArtworkScreen({
       let artwork: {[key: string] : Artwork} = {}
       if (state.exhibitionData && state.exhibitionData[exhibitionId] && state.exhibitionData[exhibitionId].artworks){
         artwork = state.exhibitionData[exhibitionId].artworks ?? {}
-      } else {
-        setIsArtworkLoaded(false)
-        const results = await fetchArtworkByExhibitionById()
-        artwork = results ?? {}
-      }
+      } 
       if (artwork){
         const odds: Artwork[] = [];
         const evens: Artwork[]  = [];
@@ -99,14 +93,13 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
       const { exhibitionId} = route.params
       const exhibition = await readExhibition({ exhibitionId })
 
-      const artworkPromises = Object.values(exhibition.artworks)
-      .map((artwork: Artwork) => {
-          if (artwork.artworkImage.value){
-              return Image.prefetch(artwork.artworkImage.value)
-          }
+      const artworkPromises = (Object.values(exhibition.artworks) as Artwork[]).map((artwork: Artwork) => {
+        if (artwork.artworkImage.value){
+          return Image.prefetch(artwork.artworkImage.value)
+        }
       })
       Promise.all(artworkPromises)
-
+      
       dispatch({
           type: ETypes.saveExhibition,
           exhibitionData: exhibition,
@@ -126,25 +119,24 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
   return null
 }
 
+
   React.useEffect(()=>{
-    if (route?.params?.exhibitionId){
+    if (route?.params?.exhibitionId && state.exhibitionData && state.exhibitionData[route?.params?.exhibitionId] && state.exhibitionData[route?.params?.exhibitionId].artworks){
       setExhibitionId(route.params.exhibitionId);
       setArtworksFromExhibitionId({exhibitionId: route.params.exhibitionId})
-    } else if (state.qrCodeExhibitionId) {
-      setExhibitionId(state.qrCodeExhibitionId);
-      setArtworksFromExhibitionId({exhibitionId: state.qrCodeExhibitionId})
     } else {
-      setErrorText("hey something went wrong, please refresh and try again")
+      setErrorText('something went wrong, please refresh and try again')
     }
-  }, [,state.qrCodeExhibitionId])
 
+  }, [state.exhibitionData, state.currentExhibitionHeader])
 
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try{
-        const newExhibition = await readExhibition({exhibitionId: exhibitionId});
+        const exhibId = route?.params.exhibitionId ?? exhibitionId
+        const newExhibition = await readExhibition({exhibitionId: exhibId});
         dispatch({
             type: ETypes.saveExhibition,
             exhibitionData: newExhibition,
@@ -161,10 +153,11 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
   return (
     <>
       {!isArtworkLoaded ? ( 
-        <View style={artworkDetailsStyles.spinnerContainer}>
-            <ActivityIndicator animating={true} size={35} color={Colors.PRIMARY_800} />
-            <TextElement>{errorText}</TextElement>
-        </View>
+          <ScrollView style={artworkDetailsStyles.spinnerContainer} contentContainerStyle={{alignItems: 'center', justifyContent: 'center'}} refreshControl={
+            <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>      
+                <ActivityIndicator animating={true} size={35} color={Colors.PRIMARY_800} />
+                <TextElement>{errorText}</TextElement>
+            </ScrollView>
         )
         : 
         (

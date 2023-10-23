@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { TouchableOpacity, Text, View, Image, StyleSheet, Button} from 'react-native';
+import { TouchableOpacity, View, StyleSheet} from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
+import FastImage from 'react-native-fast-image'
 import { TextElement } from '../Elements/TextElement';
 import {
     heightPercentageToDP as hp,
@@ -70,9 +71,11 @@ const CustomItem: React.FC<ItemProps> = ({ item, animationValue }: {item: any, a
           maskStyle,
         ]}
       >
-        <Image 
-        source={image} 
+        <FastImage 
+        source={{...image, priority: FastImage.priority.normal,
+        }} 
         style={carouselStyle.heroImage} 
+        resizeMode={FastImage.resizeMode.contain}
         />
         <TextElement style={{fontFamily: "AvenirNext-Italic", color: Colors.PRIMARY_900, alignSelf: "center"}}>{item?.title}</TextElement>
         </Animated.View>

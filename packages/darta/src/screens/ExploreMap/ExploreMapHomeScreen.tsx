@@ -14,7 +14,7 @@ import { listExhibitionPinsByCity } from "../../api/locationRoutes";
 
 const exploreMapStyles = StyleSheet.create({
     container: {
-      height: '100%',
+        height: '95%',
         width: wp('100%'),
         backgroundColor: Colors.PRIMARY_100,
         flexDirection: 'column',
@@ -90,7 +90,6 @@ export function ExploreMapHomeScreen({
     // 40.7158° N, 73.9970° W
 
 
-  const [userLocation, setUserLocation] = React.useState<LocationType | null>(null);
 
   React.useEffect(() => {
     (async () => {
@@ -98,16 +97,6 @@ export function ExploreMapHomeScreen({
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         return;
-      }
-
-      let loc = await Location.getCurrentPositionAsync({});
-      if (loc.coords.latitude && loc.coords.longitude){
-        setUserLocation({
-          latitude: loc.coords.latitude,
-          longitude: loc.coords.longitude,
-          latitudeDelta: 0.00,
-          longitudeDelta: 0.05,
-        });
       }
     })();
   }, []);

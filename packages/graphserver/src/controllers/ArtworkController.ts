@@ -117,7 +117,7 @@ export class ArtworkController {
   ): Promise<void> {
     const {uid, action, artworkId}  = req.body;
     if (!uid || !action || !artworkId) {
-      res.status(500).send('missing localStorageUid or action');
+      res.status(500).send('missing uid or action');
       return;
     }
     try {
@@ -140,7 +140,7 @@ export class ArtworkController {
   ): Promise<void> {
     const {uid, action, artworkId}  = req.body;
     if (!uid || !action || !artworkId) {
-      res.status(500).send('missing localStorageUid or action');
+      res.status(500).send('missing uid or action');
       return;
     }
     try {
@@ -247,6 +247,27 @@ export class ArtworkController {
       res.status(500).send(error.message);
     }
   }
+
+
+  @httpPost('/editArtworkInquiry', verifyToken)
+  public async editArtworkInquiry(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    // eslint-disable-next-line camelcase
+    const {edge_id, status} = req.body
+    try {
+      const inquiry = await this.artworkService.editArtworkInquiry({
+        // eslint-disable-next-line camelcase
+        edgeId: edge_id, status,
+      });
+      res.json(inquiry);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/listArtworkInquires', request: req?.body})
+      res.status(500).send(error.message);
+    }
+  }
+
 
   @httpPost('/swapArtworkOrder', verifyToken)
   public async swapArtworkOrder(
@@ -377,6 +398,27 @@ export class ArtworkController {
     }
   }
 
+  @httpGet('/listArtworkInquires', verifyToken)
+  public async listArtworkInquires(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    const {user} = req as any;
+    try {
+      const galleryId = await this.galleryService.getGalleryIdFromUID({
+        uid: user.user_id,
+      });
+      const inquires = await this.artworkService.listArtworkInquiresByGallery({
+        galleryId,
+      });
+      res.json(inquires);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/listArtworkInquires', request: user?.user_id})
+      res.status(500).send(error.message);
+    }
+  }
+
+
   @httpGet('/listUserArtworkRelationships')
   public async listUserLikedArtwork(
     @request() req: Request,
@@ -385,7 +427,7 @@ export class ArtworkController {
     try {
       const {uid, limit, action} = req.query;
       if (!uid || !limit || !action) {
-        res.status(500).send('missing localStorageUid or limit or action');
+        res.status(500).send('missing uid or limit or action');
         return;
       }
       const galleryArtwork = await this.artworkService.listUserRelationshipArtworkByLimit({

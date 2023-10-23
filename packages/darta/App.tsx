@@ -6,10 +6,14 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { ExploreMapStackNavigator } from './src/navigation/ExploreMap/ExploreMapStackNavigator';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import React from 'react';
 import {Provider as PaperProvider} from 'react-native-paper';
+import * as Colors from '@darta-styles';
 
-import {TabBarElement} from './src/components/Elements/TabBarElement';
+import {
+  MD3LightTheme as DefaultTheme,
+} from 'react-native-paper';
 import {ExhibitionStackNavigator} from './src/navigation/Exhibition/ExhibitionStackNavigator';
 import {UserStackNavigator} from './src/navigation/User/UserStackNavigator';
 import {ETypes, StoreContext, StoreProvider} from './src/state/Store';
@@ -24,16 +28,15 @@ import {AnimatedAppLoader} from './src/screens/SplashScreen/SplashScreen';
 SplashScreen.preventAutoHideAsync();
 
 import * as SecureStore from 'expo-secure-store';
-
-export const RecommenderStack = createStackNavigator();
-export const RootStack = createBottomTabNavigator();
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { DartaRecommenderView } from './src/screens/DartaRecommenderView';
 import { DartaRecommenderNavigator } from './src/navigation/DartaRecommender/DartaRecommenderNavigator';
 
 // exp://192.168.1.35:8081/--/feed/topTab/exhibition/6e02911e-b578-4962-b248-6285d412c3e3/gallery/Galleries/8501288
 
 // npx uri-scheme open exp://192.168.1.35:8081/--/feed/exhibition/:6e02911e-b578-4962-b248-6285d412c3e3/gallery/:Galleries/8501288 --ios   
+export const RecommenderStack = createStackNavigator();
+export const RootStack = createMaterialBottomTabNavigator();
 const prefix = Linking.createURL("/");
 const linking: any = {
   prefixes: [prefix],
@@ -48,6 +51,21 @@ const linking: any = {
     }
   }
 }
+
+
+const theme = {
+  ...DefaultTheme,
+  // Specify custom property
+  myOwnProperty: true,
+  // Specify custom property in nested object
+  colors: {
+    ...DefaultTheme.colors,
+    myOwnColor: '#BADA55',
+    secondaryContainer: Colors.PRIMARY_50,
+    underlineColor: 'transparent', background: '#003489'
+  },
+};
+
 
 function App() {
   const {state, dispatch} = React.useContext( StoreContext );
@@ -74,71 +92,60 @@ function App() {
       })
   }, []);
   return (
-    <PaperProvider>
+    <PaperProvider theme={theme}>
       <StoreProvider>
         <NavigationContainer
           linking={linking}
         >
           <AnimatedAppLoader>
-              <RootStack.Navigator screenOptions={{headerShown: false}}>
-                <RootStack.Group>
+              <RootStack.Navigator 
+              initialRouteName="explore"
+              activeColor={Colors.PRIMARY_800}
+              inactiveColor={Colors.PRIMARY_400}
+              barStyle={{ backgroundColor: Colors.PRIMARY_200, paddingBottom: 0 }}
+              >
                 <RootStack.Screen
-                  name={RootStackEnum.feed}
-                  component={ExhibitionStackNavigator}
-                  options={{
-                    tabBarIcon: ({focused}: {focused: any}) => (
-                      <TabBarElement
-                        focused={focused}
-                        icon="home-group"
-                        colors={footerColors}
-                      />
-                    ),
-                    ...footerOptions,
-                  }}
-                />
-                <RootStack.Screen
-                  name={RootStackEnum.darta}
+                  name="view"
                   component={DartaRecommenderNavigator}
                   options={{
-                    tabBarIcon: ({focused}: {focused: any}) => (
-                      <TabBarElement
-                        focused={focused}
-                        icon="arrow-decision-outline"
-                        colors={footerColors}
-                      />
-                    ),
-                    ...footerOptions,
+                    tabBarLabel: "view",
+                    tabBarIcon: ({ color, focused }) => {
+                      return (
+                      <MaterialCommunityIcons name="eye-circle-outline" color={color} size={focused ? 25 : 20} />
+                    )}
+                   }}
+                />
+                <RootStack.Screen
+                  name="exhibitions"
+                  component={ExhibitionStackNavigator}
+                  options={{
+                    tabBarLabel: "exhibitions",
+                    tabBarIcon: ({ color, focused }) => (
+                      <MaterialCommunityIcons name="home-circle-outline" color={color} size={focused ? 25 : 20} />
+                    )
                   }}
                 />
+
                   <RootStack.Screen
-                    name={RootStackEnum.explore}
+                    name="visit"
                     component={ExploreMapStackNavigator}
                     options={{
-                      tabBarIcon: ({focused}: {focused: any}) => (
-                        <TabBarElement
-                          focused={focused}
-                          icon="map-marker-radius-outline"
-                          colors={footerColors}
-                        />
-                      ),
-                      ...footerOptions,
+                      tabBarLabel: "visit",
+                      tabBarIcon: ({ color, focused }) => (
+                        <MaterialCommunityIcons name="map-marker-circle" color={color} size={focused ? 25 : 20} />
+                      )
                     }}
                   />
                 <RootStack.Screen
-                  name={RootStackEnum.me}
+                  name="you"
                   component={UserStackNavigator}
                   options={{
-                    tabBarIcon: ({focused}: {focused: any}) => (
-                      <TabBarElement
-                        focused={focused}
-                        icon="account-box-outline"
-                        colors={footerColors}
-                      />
-                    ),
-                    ...footerOptions,
+                    tabBarLabel: "you",
+                    tabBarIcon: ({ color, focused }) => (
+                      <MaterialCommunityIcons name="account-circle-outline" color={color} size={focused ? 25 : 20} />
+                    )
                   }}
                 />
-                </RootStack.Group>
               </RootStack.Navigator>
             </AnimatedAppLoader>  
           </NavigationContainer>
