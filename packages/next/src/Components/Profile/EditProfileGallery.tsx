@@ -43,6 +43,8 @@ const toolTips = {
     'If you have a second address, please include it here. We only support two locations at this time.',
   primaryContact:
     'A primary email address lets users reach out directly with questions. Typically, info@email.',
+  galleryInternalEmail:
+    'darta will contact you when a user inquires about an artwork. This email will not be displayed publicly.',
   gallerySearch:
     'Search for your gallery to see if it already exists on google maps. We populate the data from google.',
   galleryPhone:
@@ -101,8 +103,8 @@ export function EditProfileGallery({
         isPrivate: yup.boolean().optional(),
       }),
     }),
-    primaryContact: yup.object().shape({
-      value: yup.string().email('A valid email address is required').required(),
+    galleryInternalEmail: yup.object().shape({
+      value: yup.string().email('A valid email address is required').required('A valid email address is required'),
       isPrivate: yup.boolean().optional(),
     }),
     galleryPhone: yup.object().shape({
@@ -387,6 +389,24 @@ export function EditProfileGallery({
                 inputAdornmentValue={null}
               />
           </Box>
+          <Box key="galleryInternalEmail" sx={createArtworkStyles.multiLineContainer}>
+            <DartaTextInput
+                fieldName="galleryInternalEmail"
+                data={
+                  getValues('galleryInternalEmail') ||
+                  (galleryProfileData.galleryInternalEmail as PrivateFields)
+                }
+                register={register}
+                control={control}
+                errors={errors}
+                required
+                helperTextString={errors.galleryInternalEmail?.value?.message}
+                inputAdornmentString="Internal Email"
+                toolTips={toolTips}
+                allowPrivate={false}
+                inputAdornmentValue={null}
+              />
+          </Box>
         </Box>
       </Box>
       <Box sx={createArtworkStyles.imageAndKeyInformationContainer}>
@@ -398,10 +418,10 @@ export function EditProfileGallery({
               data={galleryProfileData.primaryContact}
               register={register}
               errors={errors}
-              required
+              required={false}
               control={control}
               helperTextString={errors.primaryContact?.value?.message}
-              inputAdornmentString="Email"
+              inputAdornmentString="External Email"
               toolTips={toolTips}
               allowPrivate={false}
               inputAdornmentValue={null}

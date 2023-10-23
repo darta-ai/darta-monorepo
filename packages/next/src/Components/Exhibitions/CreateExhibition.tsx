@@ -629,7 +629,7 @@ export function CreateExhibition({
           inputAdornmentString="Category"
           />
       </Box>
-      <Box key="tags" sx={createArtworkStyles.multiLineContainer}>
+      <Box key="artworkStyleTags" sx={createArtworkStyles.multiLineContainer}>
           <DartaAutoCompleteMulti
             fieldName="artworkStyleTags"
             data={newExhibition?.artworkStyleTags}
@@ -645,7 +645,7 @@ export function CreateExhibition({
             inputOptions={stylesAndMovements as any}
           />
         </Box>
-        <Box key="tags" sx={createArtworkStyles.multiLineContainer}>
+        <Box key="artworkVisualTags" sx={createArtworkStyles.multiLineContainer}>
           <DartaAutoCompleteMulti
             fieldName="artworkVisualTags"
             data={newExhibition?.artworkVisualTags}

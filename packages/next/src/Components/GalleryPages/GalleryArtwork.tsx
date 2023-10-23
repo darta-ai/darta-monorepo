@@ -1,6 +1,8 @@
+/* eslint-disable no-underscore-dangle */
 import * as Colors from '@darta-styles'
-import {Artwork} from '@darta-types';
+import {Artwork,  InquiryArtworkData } from '@darta-types';
 import {Box, Button, Typography} from '@mui/material';
+import Pagination from '@mui/material/Pagination';
 import Head from 'next/head';
 import React from 'react';
 
@@ -11,13 +13,12 @@ import {
   deleteArtworkAPI,
   deleteExhibitionArtwork,
   editArtworkAPI,
+  listArtworkInquiresAPI,
   removeArtworkFromExhibition,
 } from '../../API/artworks/artworkRoutes';
 // import authRequired from 'common/AuthRequired/AuthRequired';
 import {
   artwork1,
-  galleryInquiriesDummyData,
-  InquiryArtworkData,
 } from '../../dummyData';
 import {ArtworkCard} from '../Artwork/index';
 import {DartaRadioFilter, DartaTextFilter} from '../Filters';
@@ -54,10 +55,6 @@ const artworkSteps = [
     target: '.artwork-card',
     content: 'When an artwork is created, it will appear here.',
   },
-  {
-    target: '.artwork-card-edit',
-    content: 'You can edit the details of the artwork here.',
-  },
 ];
 
 export function GalleryArtwork() {
@@ -69,19 +66,6 @@ export function GalleryArtwork() {
     [key: string]: InquiryArtworkData[];
   } | null>(null);
   const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
-
-  React.useEffect(() => {
-    const inquiriesArray = Object.values(galleryInquiriesDummyData);
-    const sortedInquiries: {[key: string]: InquiryArtworkData[]} = {};
-    inquiriesArray.forEach((inquiry: InquiryArtworkData) => {
-      if (sortedInquiries[inquiry.artworkId!]) {
-        sortedInquiries[inquiry.artworkId!].push(inquiry);
-      } else {
-        sortedInquiries[inquiry.artworkId!] = [inquiry];
-      }
-    });
-    setInquiries(sortedInquiries);
-  }, []);
 
   const handleBatchUpload = (uploadArtworks: {[key: string]: Artwork}) => {
     dispatch({
@@ -117,14 +101,14 @@ export function GalleryArtwork() {
       if (results && results?.exhibitionId && results?.artworkId) {
         dispatch({
           type: GalleryReducerActions.SAVE_EXHIBITION_ARTWORK,
-          artwork: {[results.artworkId]: results},
+          artwork: {[results.artworkId]: updatedArtwork},
           exhibitionId: results.exhibitionId,
         });
       }
       if (results && results?.artworkId) {
         dispatch({
           type: GalleryReducerActions.SAVE_NEW_ARTWORK,
-          payload: {[results.artworkId as string]: results},
+          payload: {[results.artworkId as string]: updatedArtwork},
         });
       } else {
         throw new Error('unable to edit artwork');
@@ -204,21 +188,37 @@ export function GalleryArtwork() {
 
   const [croppingModalOpen, setCroppingModalOpen] = React.useState(true);
 
+  
+  const [page, setPage] = React.useState(1);
+  const [resultsPerPage] = React.useState(7)
+  const [numberOfPages] = React.useState(Math.ceil(Object.values(state.galleryArtworks).length / resultsPerPage))
+  
+  const getArtworksByPagination = (value: number) => {
+    const startIndex = (value - 1) * resultsPerPage;
+    const endIndex = startIndex + resultsPerPage;
+    const paginatedResults = Object.values(state.galleryArtworks).slice(startIndex, endIndex);
+    return paginatedResults
+  };
+
+  const handlePaginationChange = (event: any, value: number) => {
+    setPage(value);
+    const results = getArtworksByPagination(value)
+    setDisplayArtworks(results)
+  };
+
   const [searchString, setSearchString] = React.useState<string | undefined>();
   const [filterString, setFilterString] = React.useState<string | undefined>();
-  const [
-    isSortedAscending,
-    // setIsSortedAscending
-  ] = React.useState<boolean>(true);
 
   const searchByString = (
     query: string | undefined,
-    currentArtworks = state.galleryArtworks,
+   
   ): Artwork[] | unknown[] => {
-    if (!query) return Object.values(currentArtworks);
-    let results = Object.values(currentArtworks);
-    if (displayArtworks) {
-      results = Object.values(displayArtworks).filter((item: Artwork) => {
+
+    if (!query) {
+      return getArtworksByPagination(page)
+    }
+    const currentArtworks = state.galleryArtworks;
+    return Object.values(currentArtworks).filter((item: Artwork) => {
         const {artistName, artworkTitle} = item;
         const medium = item?.artworkMedium;
         const lowercaseQuery = query.toLowerCase();
@@ -232,9 +232,6 @@ export function GalleryArtwork() {
           lowercaseArtworkTitle?.includes(lowercaseQuery)
         );
       });
-    }
-
-    return results;
   };
 
   function filterByInquiry(query: string | unknown): any{
@@ -249,21 +246,41 @@ export function GalleryArtwork() {
         break;
       case 'Has Inquiries':
         results = Object.values(state.galleryArtworks)?.filter(artwork =>
-          artworksWithInquiriesIds.includes(artwork.artworkId!),
+          artworksWithInquiriesIds.includes(artwork._id!),
         );
         setDisplayArtworks(results);
         break;
       case 'None':
         results = Object.values(state.galleryArtworks)?.filter(
-          artwork => !artworksWithInquiriesIds.includes(artwork.artworkId!),
+          artwork => !artworksWithInquiriesIds.includes(artwork._id!),
         );
         setDisplayArtworks(results);
         break;
       default:
         break;
     }
-    
   };
+
+
+  // Inquires
+  React.useEffect(() => {
+    const fetchInquires = async () => {
+      const res = await listArtworkInquiresAPI()
+      const inquiriesArray:InquiryArtworkData[] = Object.values(res);
+      const sortedInquiries: {[key: string]: InquiryArtworkData[]} = {};
+      inquiriesArray.forEach((inquiry: InquiryArtworkData) => {
+        if (sortedInquiries[inquiry.artwork_id!]) {
+          sortedInquiries[inquiry.artwork_id!].push(inquiry);
+        } else {
+          sortedInquiries[inquiry.artwork_id!] = [inquiry];
+        }
+      });
+      setInquiries(sortedInquiries);
+    }
+    fetchInquires()
+    const results = getArtworksByPagination(1)
+    setDisplayArtworks(results)
+  }, []);
 
   React.useEffect(() => {
     if (searchString) {
@@ -272,7 +289,8 @@ export function GalleryArtwork() {
         setDisplayArtworks(searchResults as Artwork[]);
       }
     } else {
-      setDisplayArtworks(Object?.values(state.galleryArtworks));
+      const results = getArtworksByPagination(page)
+      setDisplayArtworks(results)
     }
   }, [searchString]);
 
@@ -281,7 +299,8 @@ export function GalleryArtwork() {
   }, [filterString]);
 
   React.useEffect(() => {
-    setDisplayArtworks(Object?.values(state.galleryArtworks));
+    const results = getArtworksByPagination(page)
+    setDisplayArtworks(results)
   }, [state.galleryArtworks]);
 
   const toolTips = {
@@ -366,11 +385,9 @@ export function GalleryArtwork() {
                 />
               </Box>
             </Box>
-
             {inquiries && displayArtworks && (
               <Box sx={{display: 'flex', gap: '1vh', flexDirection: 'column'}}>
-                {isSortedAscending
-                  ? displayArtworks
+                {displayArtworks
                       ?.sort((a, b) => {
                         const dateA = a?.createdAt
                           ? new Date(a.createdAt)
@@ -389,7 +406,7 @@ export function GalleryArtwork() {
                             croppingModalOpen={croppingModalOpen}
                             setCroppingModalOpen={setCroppingModalOpen}
                             inquiries={
-                              inquiries[artwork?.artworkId!] ??
+                              inquiries[artwork?._id!] ??
                               ([] as InquiryArtworkData[])
                             }
                             handleRemoveArtworkFromExhibition={
@@ -401,37 +418,8 @@ export function GalleryArtwork() {
                           />
                         </Box>
                       ))
-                  : displayArtworks
-                      ?.sort((a, b) => {
-                        const dateA = a?.createdAt
-                          ? new Date(a.createdAt)
-                          : new Date(0);
-                        const dateB = b?.createdAt
-                          ? new Date(b.createdAt)
-                          : new Date(0);
-                        return (dateA as any) - (dateB as any);
-                      })
-                      .map(artwork => (
-                        <Box>
-                          <ArtworkCard
-                            artwork={artwork as Artwork}
-                            saveArtwork={saveArtwork}
-                            deleteArtwork={deleteArtwork}
-                            croppingModalOpen={croppingModalOpen}
-                            setCroppingModalOpen={setCroppingModalOpen}
-                            inquiries={
-                              inquiries[artwork?.artworkId!] ??
-                              ([] as InquiryArtworkData[])
-                            }
-                            handleRemoveArtworkFromExhibition={
-                              handleRemoveArtworkFromExhibition
-                            }
-                            handleDeleteArtworkFromDarta={
-                              handleDeleteArtworkFromDarta
-                            }
-                          />
-                        </Box>
-                      ))}
+                          }
+                  
               </Box>
             )}
             {stepIndex >= 5 && run && (
@@ -450,6 +438,9 @@ export function GalleryArtwork() {
                 />
               </Box>
             )}
+          </Box>
+          <Box style={{alignSelf: 'center'}}>
+            {!searchString && (<Pagination count={numberOfPages} page={page} onChange={handlePaginationChange}/>)}
           </Box>
         </Box>
       </Box>

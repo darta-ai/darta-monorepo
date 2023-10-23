@@ -6,7 +6,8 @@ import { globalTextStyles } from '../../styles/styles';
 import {TextElement} from '../../components/Elements/_index';
 import * as Colors from '@darta-styles';
 import { ExhibitionPreviewMini } from '../../components/Previews/ExhibitionPreviewMini';
-import { createGalleryRelationship, deleteGalleryRelationship } from '../../utils/apiCalls';
+import FastImage from 'react-native-fast-image'
+import { createGalleryRelationshipAPI, deleteGalleryRelationshipAPI } from '../../utils/apiCalls';
 import {
   ExhibitionRootEnum,
   PreviousExhibitionRootEnum
@@ -15,7 +16,6 @@ import { ActivityIndicator } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 
 import { Text, Button} from 'react-native-paper'
-import { Image } from 'react-native-elements';
 import {ETypes, StoreContext} from '../../state/Store';
 import {icons} from '../../utils/constants';
 import { BusinessHours, Exhibition, IGalleryProfileData } from '@darta-types';
@@ -23,7 +23,7 @@ import { formatUSPhoneNumber, simplifyAddress } from '../../utils/functions';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
-import { readGallery } from '../../api/galleryRoutes';
+import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
 import {readExhibition} from '../../api/exhibitionRoutes';
 import { mapStylesJson } from '../../utils/mapStylesJson';
 import { NeedAccountDialog } from '../../components/Dialog/NeedAccountDialog';
@@ -284,19 +284,26 @@ export function ExhibitionGalleryScreen({
         setGalleryData({inputGallery: state.galleryData[state.qrCodeGalleryId]})
         setGallery(state.galleryData[state.qrCodeGalleryId])
       } else if (route?.params?.galleryId && !route.params?.exhibitionId) { 
-        const gal: IGalleryProfileData = await readGallery({galleryId: route?.params?.galleryId})
-        if (gal?._id){
-          setGalleryId(gal._id);
-          setGalleryData({inputGallery: gal})
-          setGallery(gal)
+        let galleryData: IGalleryProfileData = {} as IGalleryProfileData
+        try{
+          const gal = await readGallery({galleryId: route?.params?.galleryId})
+          const supplementalExhibitions = await listGalleryExhibitionPreviewForUser({galleryId: gal._id!})
+          galleryData = {...gal, galleryExhibitions: supplementalExhibitions}
+        } catch(error){
+          console.log(error)
+          //TO-DO: error
+        }
+        if (galleryData?._id){
+          setGalleryId(galleryData._id);
+          setGalleryData({inputGallery: galleryData})
+          setGallery(galleryData)
           dispatch({
             type: ETypes.saveGallery,
-            galleryData: gal,
+            galleryData: galleryData,
           })
-          console.log({gal})
           dispatch({
             type: ETypes.setGalleryHeader,
-            galleryHeader: gal.galleryName.value ?? "",
+            galleryHeader: galleryData.galleryName.value ?? "",
           })
         }
       }else {
@@ -332,7 +339,7 @@ export function ExhibitionGalleryScreen({
       return setDialogVisible(true)
     }
     try{
-      await createGalleryRelationship({galleryId})
+      await createGalleryRelationshipAPI({galleryId})
       dispatch({
         type: ETypes.setUserFollowGalleries,
         galleryId,
@@ -349,7 +356,7 @@ export function ExhibitionGalleryScreen({
 
   const unFollowGallery = async () => { 
     try{
-      await deleteGalleryRelationship({galleryId})
+      await deleteGalleryRelationshipAPI({galleryId})
       dispatch({
         type: ETypes.removeUserFollowGalleries,
         galleryId,
@@ -366,6 +373,12 @@ export function ExhibitionGalleryScreen({
   const opacitySetOne = React.useRef(new Animated.Value(1)).current; 
   const opacitySetTwo = React.useRef(new Animated.Value(0)).current;
   const translateX = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    opacitySetOne.addListener(() => {})
+    opacitySetTwo.addListener(() => {})
+    translateX.addListener(() => {})
+  }, [])
 
   const toggleButtons = () => {
     Animated.parallel([
@@ -406,20 +419,24 @@ export function ExhibitionGalleryScreen({
     if (!exhibitionId) return
     let exhibitionTitle: string = ""
 
+    if (state.exhibitionData && state.exhibitionData[exhibitionId]){
       const results = await readExhibition({exhibitionId});
       exhibitionTitle = results.exhibitionTitle?.value as string
-      dispatch({
-        type: ETypes.setPreviousExhibitionHeader,
-        previousExhibitionHeader: exhibitionTitle,
+      await Promise.resolve(() => {
+        dispatch({
+          type: ETypes.setPreviousExhibitionHeader,
+          previousExhibitionHeader: exhibitionTitle,
+        })
+        dispatch({
+          type: ETypes.setUserExhibitionHeader,
+          userExhibitionHeader: exhibitionTitle,
+        })
+        dispatch({
+          type: ETypes.saveExhibition,
+          exhibitionData: results,
+        })
       })
-      dispatch({
-        type: ETypes.setUserExhibitionHeader,
-        userExhibitionHeader: exhibitionTitle,
-      })
-      dispatch({
-        type: ETypes.saveExhibition,
-        exhibitionData: results,
-      })
+    }
       if (route?.params.navigationRoute) {
         navigation.navigate(route?.params.navigationRoute, {exhibitionId, galleryId})
       } else{
@@ -525,9 +542,10 @@ export function ExhibitionGalleryScreen({
         </View>
         <View style={galleryDetailsStyles.galleryLogoContainer}>
           {gallery?.galleryLogo?.value && (
-          <Image 
+          <FastImage 
           source={{uri: gallery?.galleryLogo?.value ?? ""}}
           style={galleryDetailsStyles.heroImage}
+          resizeMode={FastImage.resizeMode.contain}
           />
           )}
         </View>
@@ -680,28 +698,32 @@ export function ExhibitionGalleryScreen({
         </View>
           )}
         </View>
+        {route?.params?.showPastExhibitions && (
+          <>
         <View>
           <TextElement style={galleryDetailsStyles.descriptionText}>Past Shows</TextElement>
           <Divider style={galleryDetailsStyles.divider}/>
         </View>
         <View style={galleryDetailsStyles.previousShowContainer}>
           {previousExhibitions && previousExhibitions.map((previousExhibition : Exhibition, index : number) => {
-            return (
-              <View key={`${index}-${previousExhibition.exhibitionId}`}>
-                <ExhibitionPreviewMini 
-                  exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
-                  exhibitionId={previousExhibition.exhibitionId}
-                  exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
-                  exhibitionGallery={gallery.galleryName?.value as string}
-                  exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
-                  exhibitionDates={previousExhibition.exhibitionDates}
-                  galleryLogoLink={gallery.galleryLogo?.value as string}
-                  onPress={handleExhibitionPress}
-                />
-              </View>
-            )
-          })}
-        </View>
+              return (
+                <View key={`${index}-${previousExhibition.exhibitionId}`}>
+                  <ExhibitionPreviewMini 
+                    exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
+                    exhibitionId={previousExhibition._id!}
+                    exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
+                    exhibitionGallery={gallery.galleryName?.value as string}
+                    exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
+                    exhibitionDates={previousExhibition.exhibitionDates}
+                    galleryLogoLink={gallery.galleryLogo?.value as string}
+                    onPress={handleExhibitionPress}
+                  />
+                </View>
+              )
+            })}
+          </View>
+          </>
+            )}
       </View>
     </ScrollView>
     )}

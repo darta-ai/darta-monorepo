@@ -227,6 +227,7 @@ export const parseExcelArtworkData = (
       artworkCreatedYear: {value: item?.Year},
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      artworkCategory: {value: null},
     };
   });
   return artworkObject;

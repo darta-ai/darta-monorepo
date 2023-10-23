@@ -50,7 +50,7 @@ export function DartaTextInput({
   
   React.useEffect(() => {
     const windowWidth = window.innerWidth;
-    const divisor = windowWidth > 1280 ? 50 : 120;
+    const divisor = windowWidth > 1280 ? 80 : 120;
     const newLines = Math.ceil(inputValue.length / divisor);
     numberOfLines(newLines);
   }, [inputValue])

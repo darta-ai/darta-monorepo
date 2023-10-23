@@ -8,7 +8,8 @@ export const category: string[] = [
     'Mixed Media', 
     'Work on Paper', 
     'Installation', 
-    'Other'
+    'Other',
+    '',
   ]
 
 export const stylesAndMovements = [

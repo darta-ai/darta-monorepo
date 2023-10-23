@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View } from 'react-native';
-import { Button, Dialog, TextInput } from 'react-native-paper';
+import { Button, Dialog, TextInput, useTheme } from 'react-native-paper';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -10,7 +10,7 @@ import { TextElement } from '../Elements/TextElement';
 import { firebaseSignIn } from '../../api/firebase';
 import { ETypes, StoreContext } from '../../state/Store';
 import { getDartaUser } from '../../api/userRoutes';
-
+import auth from '@react-native-firebase/auth'
 
 export const SignIn = ({
     setDialogVisible, 
@@ -22,6 +22,8 @@ export const SignIn = ({
 
   const {dispatch} = React.useContext(StoreContext);
 
+  const theme = useTheme()
+  const { colors } = theme;
   const [email, setEmail] = React.useState<string>()
   const [password, setPassword] = React.useState<string>()
   const [error, setError] = React.useState<string>("")
@@ -36,7 +38,7 @@ export const SignIn = ({
     try {      
       const firebaseRes = await firebaseSignIn({ email, password });
       const user = firebaseRes?.user;
-      const dartaUser = await getDartaUser()
+      const dartaUser = await getDartaUser({uid: user?.uid})
       if (user && user.uid && user.email){
         dispatch({
           type: ETypes.setUser,
@@ -70,13 +72,15 @@ export const SignIn = ({
         }}
         >
     <TextInput
-    style={{backgroundColor: Colors.PRIMARY_700}}
+    style={{backgroundColor: Colors.PRIMARY_200}}
+    theme={{...theme, colors: {...colors, primary: Colors.PRIMARY_900}}}
     label="Email"
     value={email}
     onChangeText={text => setEmail(text)}
     />
     <TextInput
-    style={{backgroundColor: Colors.PRIMARY_700}}
+    style={{backgroundColor: Colors.PRIMARY_200}}
+    theme={{...theme, colors: {...colors, primary: Colors.PRIMARY_900}}}
     label="Password"
     secureTextEntry={true} 
     value={password}

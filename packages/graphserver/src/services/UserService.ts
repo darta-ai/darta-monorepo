@@ -1,4 +1,4 @@
-import { GalleryPreview, Images } from '@darta-types/dist';
+import { GalleryPreview, Images, MobileUser } from '@darta-types';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 
@@ -50,8 +50,8 @@ export class UserService implements IUserService {
         gallery,
         validated,
       });
-    } catch (error) {
-      throw new Error('Unable to create gallery user');
+    } catch (error: any) {
+      throw new Error(`Unable to create gallery user ${error?.message}`);
     }
 
     try {
@@ -60,8 +60,8 @@ export class UserService implements IUserService {
         uid,
         relationship,
       });
-    } catch (error) {
-      throw new Error('Unable to create gallery edge');
+    } catch (error: any) {
+      throw new Error(`Unable to create gallery edge ${error?.message}`);
     }
   }
 
@@ -89,16 +89,15 @@ export class UserService implements IUserService {
         },
       });
       return true;
-    } catch (error) {
-      throw new Error('Unable to create gallery user');
+    } catch (error: any) {
+      throw new Error(`Unable to create gallery user ${error?.message}`);
     }
   }
 
 
   public async createDartaUserGalleryRelationship({uid, galleryId} : {uid: string, galleryId: string}): Promise<void> {
     const galleryUserId = this.galleryService.generateGalleryId({galleryId});
-    const id = await this.getLocalStorageIdFromUID({uid});
-    const userId = this.generateDartaUserId({localStorageUid: id});
+    const userId = this.generateDartaUserId({uid});
     try {
       await this.edgeService.upsertEdge({
         edgeName: EdgeNames.FROMDartaUserTOGalleryFOLLOWS,
@@ -109,29 +108,28 @@ export class UserService implements IUserService {
           createdAt: new Date().toISOString(),
         }
       });
-    } catch (error) {
-      throw new Error('unable to create darta user gallery connection');
+    } catch (error:any) {
+      throw new Error(`unable to create darta user gallery connection ${error?.message}`);
     }
   }
 
 
   public async createDartaUser({
-    localStorageUid,
+    uid,
   }: {
-    localStorageUid: string;
+    uid: string;
   }): Promise<boolean> {
     try {
       await this.nodeService.upsertNodeByKey({
         collectionName: CollectionNames.DartaUsers,
-        key: localStorageUid,
+        key: uid,
         data: {
-          value: localStorageUid,
-          localStorageUid,
+          value: uid
         },
       });
       return true;
-    } catch (error) {
-      throw new Error('Unable to create gallery user');
+    } catch (error: any) {
+      throw new Error(`Unable to create darta user ${error?.message}`);
     }
   }
 
@@ -162,8 +160,8 @@ export class UserService implements IUserService {
         },
       });
       return true;
-    } catch (error) {
-      throw new Error('Unable to create gallery edge');
+    } catch (error: any) {
+      throw new Error(`Unable to create gallery edge ${error?.message}`);
     }
   }
 
@@ -177,8 +175,8 @@ export class UserService implements IUserService {
       if (results) {
         return results;
       }
-    } catch (error) {
-      throw new Error('Unable to read gallery user');
+    } catch (error: any) {
+      throw new Error(`Unable to read gallery user ${error?.message}`);
     }
     return null;
   }
@@ -195,13 +193,13 @@ export class UserService implements IUserService {
         from: `${CollectionNames.GalleryUsers}/${uid}`,
       });
       return results;
-    } catch (error) {
-      throw new Error('Unable to read gallery edge relationship');
+    } catch (error:any) {
+      throw new Error(`Unable to read gallery edge ${error?.message}`);
     }
   }
 
-  public async readDartaUser({localStorageUid}: {localStorageUid: string}): Promise<Node | null>{
-    const id = this.generateDartaUserId({localStorageUid});
+  public async readDartaUser({uid}: {uid: string}): Promise<MobileUser | null>{
+    const id = this.generateDartaUserId({uid});
     try {
       const results = await this.nodeService.getNodeById({
         collectionName: CollectionNames.DartaUsers,
@@ -210,13 +208,13 @@ export class UserService implements IUserService {
       if (results) {
         return results;
       }
-    } catch (error) {
-      throw new Error('Unable to read darta user');
+    } catch (error: any) {
+      throw new Error(`Unable to read darta user ${error?.message}`);
     }
     return null;
   }
 
-  public async editGalleryEdge({
+  public async editGalleryToUserEdge({
     galleryId,
     uid,
     relationship,
@@ -225,7 +223,7 @@ export class UserService implements IUserService {
     uid: string;
     relationship: string;
   }): Promise<any> {
-    const fullGalleryId = this.galleryService.generateGalleryUserId({galleryId});
+    const fullGalleryId = this.galleryService.generateGalleryId({galleryId});
     const fullUserId = this.generateGalleryUserId({uid});
 
     try {
@@ -238,8 +236,8 @@ export class UserService implements IUserService {
         },
       });
       return results;
-    } catch (error) {
-      throw new Error('Unable to edit gallery edge');
+    } catch (error: any) {
+      throw new Error(`Unable to edit gallery edge ${error?.message}`);
     }
   }
 
@@ -251,33 +249,41 @@ export class UserService implements IUserService {
     legalLastName,
     email,
     uid,
-    localStorageUid,
   }: {
     profilePicture?: Images
     userName?: string;
     legalFirstName?: string;
     legalLastName?: string;
     email?: string;
-    uid?: string;
-    localStorageUid: string;
+    uid: string;
   }): Promise<any> {
-    const fullUserId = this.generateDartaUserId({localStorageUid});
+    if (!uid) return false;
+    const fullUserId = this.generateDartaUserId({uid});
     
     // ##### profile picture #####
 
     // const profilePic = await this.getUserProfilePicture({uid});
 
     // Don't overwrite an image
+
+    let profilePic: Images = {}
+
+    try{
+      profilePic = await this.getUserProfilePicture({uid});
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log({error})
+    }
+    
     let fileName: string = crypto.randomUUID();
     if (profilePicture?.fileName) {
       fileName = profilePicture.fileName;
     }
 
-    let bucketName = profilePicture?.bucketName ?? BUCKET_NAME;
-    let value = profilePicture?.value ?? null;
+    let bucketName = profilePic?.bucketName ?? BUCKET_NAME;
+    let value = profilePic?.value ?? null;
 
     if (profilePicture?.fileData && typeof profilePicture?.fileData === 'string') {
-      
       try {
         const artworkImageResults =
           await this.imageController.processUploadImage({
@@ -321,9 +327,9 @@ export class UserService implements IUserService {
     }
 
     // eslint-disable-next-line class-methods-use-this
-    public async deleteDartaUser({localStorageUid} : {localStorageUid: string}): Promise<boolean> {
+    public async deleteDartaUser({uid} : {uid: string}): Promise<boolean> {
       try {
-        const id = this.generateDartaUserId({localStorageUid});
+        const id = this.generateDartaUserId({uid});
         await this.nodeService.deleteNode({
           collectionName: CollectionNames.DartaUsers,
           id,
@@ -333,13 +339,10 @@ export class UserService implements IUserService {
             edgeName,
             from: id,
           })
-          .catch((error) => {
+          .catch((error) => 
             // Handle or log individual error
-            console.error(`Error deleting edge ${edgeName} for user ${id}:`, error);
-            
-            // Return a custom error object to collate later if desired
-            return { error: true, edgeName, errorMessage: error.message };
-          }));
+                         ({ error: true, edgeName, errorMessage: error?.message })
+          ));
         
         const results = await Promise.all(deletePromises);
         
@@ -348,8 +351,6 @@ export class UserService implements IUserService {
         
         if (errors.length) {
           // Handle the collated errors in some way
-          // This is optional and depends on how you'd like to manage multiple errors
-          console.error('Errors occurred during edge deletion:', errors);
         }
         
         return true;
@@ -360,8 +361,7 @@ export class UserService implements IUserService {
 
   public async deleteDartaUserGalleryRelationship({uid, galleryId} : {uid: string, galleryId: string}): Promise<void> {
     const galleryUserId = this.galleryService.generateGalleryId({galleryId});
-    const id = await this.getLocalStorageIdFromUID({uid});
-    const userId = this.generateDartaUserId({localStorageUid: id});
+    const userId = this.generateDartaUserId({uid});
       try {
         await this.edgeService.deleteEdge({
           edgeName: EdgeNames.FROMDartaUserTOGalleryFOLLOWS,
@@ -376,8 +376,7 @@ export class UserService implements IUserService {
     public async listDartaUserFollowsGallery({uid} : {uid: string}): Promise<GalleryPreview[]>{
     
       try{
-        const id = await this.getLocalStorageIdFromUID({uid});
-        const userId = this.generateDartaUserId({localStorageUid: id});
+        const userId = this.generateDartaUserId({uid});
         const query = `
           WITH ${CollectionNames.Galleries}, ${CollectionNames.DartaUsers}, ${EdgeNames.FROMDartaUserTOGalleryFOLLOWS}
           FOR v, e IN 1..1 OUTBOUND @userId ${EdgeNames.FROMDartaUserTOGalleryFOLLOWS}
@@ -408,47 +407,26 @@ export class UserService implements IUserService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  public generateDartaUserId({localStorageUid}: {localStorageUid: string}): string {
-    return localStorageUid.includes(CollectionNames.DartaUsers)
-      ? localStorageUid
-      : `${CollectionNames.DartaUsers}/${localStorageUid}`;
+  public generateDartaUserId({uid}: {uid: string}): string {
+    return uid.includes(CollectionNames.DartaUsers)
+      ? uid
+      : `${CollectionNames.DartaUsers}/${uid}`;
   }
 
   private async getUserProfilePicture({uid}: {uid: string}): Promise<any> {
-    const exhibitionKey = this.getLocalStorageIdFromUID({uid})
+    const key = this.generateDartaUserId({uid});
     const findGalleryKey = `
       LET doc = DOCUMENT(@key)
-      RETURN {
-        exhibitionPrimaryImage: doc.exhibitionPrimaryImage
-      }
+      RETURN doc.profilePicture
     `;
 
     try {
-      const cursor = await this.db.query(findGalleryKey, {key: exhibitionKey});
+      const cursor = await this.db.query(findGalleryKey, {key});
       const exhibitionPrimaryImage: Images = await cursor.next();
       return exhibitionPrimaryImage;
     } catch (error: any) {
-      throw new Error(error.message);
+      throw new Error(error?.message);
     }
   }
 
-  public async getLocalStorageIdFromUID({uid}: {uid: string}): Promise<string>{
-    try {
-      const query = `
-        FOR user in ${CollectionNames.DartaUsers}
-        FILTER user.uid == @uid
-        RETURN user.localStorageUid
-      `
-
-      const cursor = await this.db.query(query, {uid});
-
-      const results = await cursor.next();
-      if (results) {
-        return results;
-      }
-    } catch (error) {
-      throw new Error('Unable to read darta user');
-    }
-    return '';
-  }
 }

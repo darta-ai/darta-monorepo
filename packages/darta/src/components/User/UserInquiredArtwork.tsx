@@ -12,7 +12,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import { listUserArtwork } from '../../utils/apiCalls';
+import { listUserArtworkAPI } from '../../utils/apiCalls';
 import { UserRoutesEnum } from '../../typing/routes';
 
 export const dartaLogo = StyleSheet.create({
@@ -68,7 +68,7 @@ export function UserInquiredArtwork({navigation}: {navigation: any}) {
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try{
-      const inquiredArt = await listUserArtwork({action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10})
+      const inquiredArt = await listUserArtworkAPI({action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10})
       let inquiredArtworkIds = {}
       if (inquiredArt && Object.values(inquiredArt).length > 0){
         inquiredArtworkIds = Object.values(inquiredArt).reduce((acc, el) => ({...acc, [el?._id as string] : true}), {})

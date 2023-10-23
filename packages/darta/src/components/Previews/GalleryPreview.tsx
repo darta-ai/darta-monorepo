@@ -13,6 +13,8 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import FastImage from 'react-native-fast-image'
+
 
 import {TextElement, GalleryIcon} from '../Elements/_index';
 import {DEFAULT_Gallery_Image} from '../../utils/constants';
@@ -128,13 +130,14 @@ export function GalleryPreview({
                     }}
                   />
                 ) : (
-                  <Image
+                  <FastImage
                     source={{uri: item?.artworkImage?.value ?? ""}}
                     style={{
                       height: item?.displayDimensions.displayHeight,
                       width: item?.displayDimensions.displayWidth,
                       position: 'relative',
                     }}
+                    resizeMode={FastImage.resizeMode.contain}
                   />
                 )}
               </View>

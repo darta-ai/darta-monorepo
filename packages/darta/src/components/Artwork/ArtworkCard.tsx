@@ -41,8 +41,8 @@ export function ArtworkCard({
   let inputHeight = artwork?.artworkDimensions?.heightIn?.value ?? "1"
   let inputWidth = artwork?.artworkDimensions?.widthIn?.value ?? "1"
 
-  const height = parseInt(inputHeight, 10)
-  const width = parseInt(inputWidth, 10)
+  const height = parseInt(inputHeight)
+  const width = parseInt(inputWidth)
 
   let artHeight = 0;
   let artWidth = 0;
@@ -50,6 +50,7 @@ export function ArtworkCard({
   if (height && width && height >= width) {
     artHeight = maxDimension;
     artWidth = Math.floor((width / height) * artHeight);
+    artWidth= artWidth > maxDimension ? maxDimension : 100
   }
   if (height && width && height < width) {
     artWidth = maxDimension;
@@ -115,6 +116,7 @@ export function ArtworkCard({
       color: PRIMARY_900,
     },
   });
+
   return (
 
     <TouchableOpacity 
@@ -127,7 +129,7 @@ export function ArtworkCard({
             source={{
               uri: artwork.artworkImage?.value ?? "",
             }}
-            style={{height: artHeight, width: artWidth}}
+            style={{height: artHeight, width: artWidth, resizeMode: 'contain'}}
           />
         </View>
         <View style={SSArtworkSelectorCard.textContainer}>

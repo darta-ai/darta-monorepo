@@ -1,3 +1,4 @@
+import {InquiryArtworkData} from '@darta-types';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SendIcon from '@mui/icons-material/Send';
 import Box from '@mui/material/Box';
@@ -17,12 +18,15 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 
-import {InquiryArtworkData} from '../../dummyData';
+import { editArtworkInquiryAPI } from '../../API/artworks/artworkRoutes';
+import { formStyles } from '../FormComponents/styles';
 
 const tableStyles = {
   container: {
-    '@media (min-width: 800px)': {
-      width: '80vw',
+    minWidth: '100%',
+    width: '90vw',
+    '@media (min-width: 1280px)': {
+      width: '70vw',
     },
   },
 };
@@ -35,7 +39,7 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
   {
-    id: 'user',
+    id: 'legalFirstName',
     date: false,
     label: 'Inquirer',
   },
@@ -45,7 +49,7 @@ const headCells: readonly HeadCell[] = [
     label: 'Status',
   },
   {
-    id: 'userContactEmail',
+    id: 'email',
     date: false,
     label: 'Contact',
   },
@@ -111,22 +115,33 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     <TableHead>
       <TableRow>
         <TableCell padding="checkbox" />
-        {headCells.map(headCell => (
+        {headCells.map(headCell => {
+        const isStatusCell = headCell.label === 'Status';
+        if (isStatusCell){
+          return (
+            <TableCell
+              key={headCell.id}
+              sx={formStyles.hiddenOnMobile}
+              sortDirection={orderBy === headCell.id ? order : false}>
+                <TableSortLabel
+                  active={orderBy === headCell.id}
+                  direction={orderBy === headCell.id ? order : 'asc'}
+                  onClick={createSortHandler(headCell.id)}>
+                  <Typography variant="h6">{headCell.label}</Typography>
+                </TableSortLabel>
+            </TableCell>
+          )
+        } 
+          return (
           <TableCell
-            key={headCell.id}
-            sortDirection={orderBy === headCell.id ? order : false}>
-            {headCell.label === 'Status' ? (
-              <TableSortLabel
-                active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : 'asc'}
-                onClick={createSortHandler(headCell.id)}>
-                <Typography variant="h6">{headCell.label}</Typography>
-              </TableSortLabel>
-            ) : (
-              <Typography variant="h6">{headCell.label}</Typography>
-            )}
-          </TableCell>
-        ))}
+          key={headCell.id}
+          sortDirection={orderBy === headCell.id ? order : false}>
+            <Typography variant="h6">{headCell.label}</Typography>
+            </TableCell>
+            )
+          }
+          )
+        }
       </TableRow>
     </TableHead>
   );
@@ -143,30 +158,32 @@ export function InquiryTable({
   if (inquiryData) {
     inquiryDataArray = Object.values(inquiryData);
   }
-  const [rows] = React.useState<any[] | undefined>(inquiryDataArray);
+  const [rows, setRows] = React.useState<any[] | undefined>(inquiryDataArray);
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] =
     React.useState<keyof InquiryArtworkData>('updatedAt');
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const handleArtworkStatusChange = () =>
-    // event: SelectChangeEvent
-    {
-      // const {name, value} = event.target;
-      // // NEED BACKEND CALL TO UPDATE STATUS
-      // if (tableRows) {
-      //   setRows(tableRows =>
-      //     tableRows.map(row =>
-      //       row.id === name
-      //         ? {
-      //             ...row,
-      //             status: value as String,
-      //           }
-      //         : row,
-      //     ),
-      //   );
-      // }
+  const handleArtworkStatusChange = async ({value, row} : {value: string, row: InquiryArtworkData}) => {
+      try{
+        const {status} = await editArtworkInquiryAPI({
+          edge_id: row.edge_id,
+          status: value,
+        });
+        if (status) {
+          const updatedRows = rows?.map((r) => {
+            if (r.edge_id === row.edge_id) {
+              return {...r, status: value}
+            }
+            return r
+          })
+          setRows(updatedRows)
+        }
+      } catch (error: any) {
+        // TO-DO: throw error for frontend
+        // console.log(error)
+      }
     };
 
   const handleRequestSort = (
@@ -228,49 +245,54 @@ export function InquiryTable({
                     hover
                     role="checkbox"
                     tabIndex={-1}
-                    key={row.id}
+                    key={row.artwork_id}
                     sx={{cursor: 'pointer'}}>
                     <TableCell padding="checkbox" />
-                    <TableCell sx={{maxWidth: '10vh'}} align="left">
-                      <Typography fontSize="medium">{row.user}</Typography>
+                    <TableCell sx={{maxWidth: '5vw'}} align="left">
+                      <Typography fontSize="medium">{`${row.legalFirstName} ${row.legalLastName}`}</Typography>
                     </TableCell>
 
-                    <TableCell sx={{maxWidth: '15vh'}} align="left">
+                    <TableCell sx={{...formStyles.hiddenOnMobile, maxWidth: '5vw'}} align="left">
                       <FormControl fullWidth>
                         <Select
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
-                          value={row.status as string}
-                          name={row.id.toString()}
-                          onChange={handleArtworkStatusChange}>
+                          value={row?.status as string}
+                          name={row?.status?.toString()}
+                          onChange={(e) => handleArtworkStatusChange({value: e?.target?.value!, row: row as InquiryArtworkData})}>
                           <MenuItem value="inquired">
                             <Typography fontSize="small">Inquired</Typography>
                           </MenuItem>
-                          <MenuItem value="responded">
+                          <MenuItem value="gallery_responded">
                             <Typography fontSize="small">Responded</Typography>
                           </MenuItem>
                           <MenuItem value="negotiation">
                             <Typography fontSize="small">
-                              Negotiation
+                              In Negotiation
                             </Typography>
                           </MenuItem>
                           <MenuItem value="accepted">
                             <Typography fontSize="small">Accepted</Typography>
-                          </MenuItem>
-                          <MenuItem value="purchase_agreement_sent">
-                            <Typography fontSize="small">
-                              Purchase Agreement Sent
-                            </Typography>
                           </MenuItem>
                           <MenuItem value="payment_received">
                             <Typography fontSize="small">
                               Payment Received
                             </Typography>
                           </MenuItem>
-                          <MenuItem value="declined">
+                          <MenuItem value="artwork_sent">
+                            <Typography fontSize="small">
+                              Artwork Sent
+                            </Typography>
+                          </MenuItem>
+                          <MenuItem value="closed">
+                            <Typography fontSize="small">
+                              Closed
+                            </Typography>
+                          </MenuItem>
+                          <MenuItem value="gallery_declined">
                             <Typography fontSize="small">Declined</Typography>
                           </MenuItem>
-                          <MenuItem value="archived">
+                          <MenuItem value="gallery_archived">
                             <Typography fontSize="small">Archived</Typography>
                           </MenuItem>
                         </Select>
@@ -280,18 +302,18 @@ export function InquiryTable({
                       sx={{maxWidth: '10vh', textOverflow: 'ellipsis'}}
                       align="left">
                       <Typography fontSize="medium">
-                        {row.userContactEmail}
+                        {row?.email}
                         <IconButton
                           onClick={() =>
-                            copyToClipboard(row.userContactEmail as string)
+                            copyToClipboard(row?.email as string)
                           }>
                           <ContentCopyIcon fontSize="small" />
                         </IconButton>
-                        {row.userContactEmail && (
+                        {row?.email && (
                           <a
                             style={{color: 'inherit'}}
-                            href={`mailto:${row.userContactEmail}?subject=Darta%20Inquiry:%20${artist}
-                          &body=Hi%20${row.user},`}>
+                            href={`mailto:${row?.email}?subject=Darta%20Inquiry:%20${artist}
+                          &body=Hi%20${row.legalFirstName} ${row.legalLastName},`}>
                             <SendIcon fontSize="small" />
                           </a>
                         )}

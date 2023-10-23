@@ -33,10 +33,12 @@ const TYPES = {
   NodeService: 'NodeService',
   INodeService: 'INodeService',
   IUserService: 'IUserService',
+  IRecommenderService: 'IRecommenderService',
   UserController: 'UserController',
   IExhibitionService: 'IExhibitionService',
   ExhibitionController: 'ExhibitionController',
-  LocationController: 'LocationController'
+  LocationController: 'LocationController',
+  RecommenderController: 'RecommenderController',
 };
 
 const arangoContainer = container
@@ -92,6 +94,10 @@ container
   .bind<Services.IExhibitionService>(TYPES.IExhibitionService)
   .to(Services.ExhibitionService);
 
+container
+  .bind<Services.IRecommenderService>(TYPES.IRecommenderService)
+  .to(Services.RecommenderService);
+
 // Bind controllers
 container
   .bind<Controllers.GalleryController>(TYPES.GalleryController)
@@ -114,5 +120,7 @@ container
 container
   .bind<Controllers.LocationController>(TYPES.LocationController)
   .to(Controllers.LocationController);
+container
+.bind<Controllers.RecommenderController>(TYPES.RecommenderController)
 
 export {arangoContainer, container, minioContainer, TYPES};

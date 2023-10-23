@@ -81,6 +81,10 @@ export function UserHome({navigation}: {navigation: any}) {
   const localButtonSizes = getButtonSizes(hp('100%'));
   const scrollY = useRef(new Animated.Value(0)).current;
 
+  React.useEffect(() => {
+    scrollY.addListener(() => {})
+  },[])
+
   const headerHeightInterpolate = scrollY.interpolate({
     inputRange: [0, HEADER_SCROLL_DISTANCE],
     outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],

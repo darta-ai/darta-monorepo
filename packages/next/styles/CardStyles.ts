@@ -80,6 +80,10 @@ export const cardStyles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    '@media (min-width: 800px)': {
+      width: '50%',
+      height: '100%',
+    },
     '@media (min-width: 1080px)': {
       width: '90%',
       height: '100%',

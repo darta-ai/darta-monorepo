@@ -16,7 +16,7 @@ import {
 import {ETypes, StoreContext} from '../state/Store';
 import {globalTextStyles} from '../styles/styles';
 
-type ProfileScreenNavigationProp = StackNavigationProp<
+type RecommenderHomeScreenProp = StackNavigationProp<
   GalleryRootStackParamList,
   GalleryNavigatorEnum.galleryHome
 >;
@@ -24,7 +24,7 @@ type ProfileScreenNavigationProp = StackNavigationProp<
 export function RecommenderHomeScreen({
   navigation,
 }: {
-  navigation: ProfileScreenNavigationProp;
+  navigation: RecommenderHomeScreenProp;
 }) {
   const {state, dispatch} = useContext(StoreContext);
   const galleryInfo = state.artworkData;

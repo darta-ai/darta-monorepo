@@ -34,7 +34,7 @@ const dartaListDisplay = {
   displayComponentShowMobile: {
     width: '12vw',
     fontSize: '0.8rem',
-    '@media (min-width: 780px)': {
+    '@media (min-width: 1280px)': {
       width: '6vw',
     },
   },
@@ -42,7 +42,7 @@ const dartaListDisplay = {
     width: '8vw',
     fontSize: '0.8rem',
     display: 'none',
-    '@media (min-width: 780px)': {
+    '@media (min-width: 1280px)': {
       display: 'flex',
       flexDirection: 'column',
       width: '10vw',
@@ -99,14 +99,14 @@ function DartaListArtwork({
   };
 
   return (
-    <Box key={artwork?.artworkTitle?.value}>
+    <Box style={{minWidth: "75vw"}} key={artwork?.artworkTitle?.value}>
       <ListItem>
         <Box
           sx={dartaListDisplay.toggleContainer}
           className="edit-artwork-order">
           <Box>
             <IconButton
-              disabled={index === 0 || isSwappingLoading}
+              disabled={artwork.exhibitionOrder === 0 || isSwappingLoading}
               onClick={() =>
                 swapExhibitionOrder({
                   artworkId: artwork?.artworkId as string,
@@ -294,7 +294,7 @@ export function ExhibitionArtworkList({
         Number(a?.exhibitionOrder) - Number(b?.exhibitionOrder),
     );
     setMappedArtworks(tempMappedArtworks);
-    setArrayLength(tempMappedArtworks.length);
+    setArrayLength(tempMappedArtworks?.length);
   }, [artworks]);
 
   return (

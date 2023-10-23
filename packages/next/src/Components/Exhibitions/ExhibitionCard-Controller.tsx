@@ -64,10 +64,11 @@ export function ExhibitionCard({
   
   const [showArtworks, setShowArtwork] = React.useState<boolean>(isLatestExhibition);
 
+
   React.useEffect(() => {
     if (exhibition?.artworks) {
       setArtworks(exhibition.artworks!);
-    }
+    } 
   }, []);
 
   const setExhibitionStateAndDB = async (updatedExhibition: Exhibition) => {
@@ -117,7 +118,7 @@ export function ExhibitionCard({
 
   const addNewArtwork = async () => {
     setArtworkLoading(true);
-    const exhibitionOrder = Object?.keys(artworks).length;
+    const exhibitionOrder = Object?.keys(artworks)?.length;
 
     try {
       const {artwork} = await createArtworkForExhibitionAPI({

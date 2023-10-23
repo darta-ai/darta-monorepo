@@ -33,6 +33,5 @@
   "include": [
     "./packages/darta-types/src/*",
     "./packages/darta-styles/src/*"
-  ],
-  "extends": "expo/tsconfig.base"
+  ]
 }

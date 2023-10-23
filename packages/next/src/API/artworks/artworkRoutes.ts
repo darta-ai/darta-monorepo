@@ -193,3 +193,28 @@ export async function listArtworksByGalleryAPI(): Promise<any> {
   }
   return null
 }
+
+export async function listArtworkInquiresAPI(): Promise<any> {
+  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  try {
+    const response = await axios.get(`${URL}/listArtworkInquires`, {
+      headers: {authorization: `Bearer ${idToken}`},
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(`Unable to list artwork inquires: ${error?.message}`)
+  }
+}
+
+export async function editArtworkInquiryAPI({edge_id, status}: {edge_id: string, status: string}): Promise<any> {
+  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  try {
+    const response = await axios.post(`${URL}/editArtworkInquiry`, {edge_id, status}, {
+      headers: {authorization: `Bearer ${idToken}`},
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(`Unable to list artwork inquires: ${error?.message}`)
+  }
+}
+

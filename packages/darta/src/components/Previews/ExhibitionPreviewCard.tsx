@@ -13,10 +13,9 @@ import {
 
 import {TextElement} from '../Elements/_index';
 import {globalTextStyles} from '../../styles/styles';
-import { Exhibition, ExhibitionPreview, IGalleryProfileData} from '@darta-types';
-import { PRIMARY_700, PRIMARY_900, PRIMARY_100, PRIMARY_950, PRIMARY_50 } from '@darta-styles';
+import { ExhibitionPreview } from '@darta-types';
+import { PRIMARY_700, PRIMARY_900, PRIMARY_100, PRIMARY_950, PRIMARY_50, PRIMARY_400 } from '@darta-styles';
 import { customLocalDateString, simplifyAddress } from '../../utils/functions';
-import { StoreContext } from '../../state/Store';
 import { GalleryIcon } from '../Elements/_index';
 import { ExhibitionCarousel } from '../../components/Exhibitions/ExhibitionCarousel';
 
@@ -27,14 +26,15 @@ const exhibitionPreviewStyle = StyleSheet.create({
     alignContent: 'center',
     alignSelf : 'center',
     height: hp('65%'),
-    width: wp('90%'),
-    margin: hp('1%'),
+    width: wp('100%'),
+    marginBottom: hp('0.5%'),
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderRadius: 5,
-    borderColor: PRIMARY_700,
+    // borderRadius: 5,
+    borderColor: PRIMARY_400,
     backgroundColor: PRIMARY_100,
-    borderWidth: 1,
+    borderBottomWidth: 0.5,
+    // borderStyle: 'dashed',
   },
   galleryIconContainer: {
     display: 'flex',
@@ -64,10 +64,11 @@ const exhibitionPreviewStyle = StyleSheet.create({
   textContainer:{
     display: 'flex',
     flexDirection: 'column',
+    padding: 10,
     justifyContent: 'space-around',
     textAlign: 'left',
     alignContent: 'flex-start',
-    height: hp("10%"),
+    height: hp("12.5%"),
     width: '100%',
     marginLeft: 5,
     gap: 5,
@@ -95,6 +96,7 @@ const exhibitionPreviewStyle = StyleSheet.create({
     height: "5%",
     width: '100%',
     backgroundColor: PRIMARY_950,
+    
   },
 
 })
@@ -106,7 +108,6 @@ export function ExhibitionPreviewCard({
     exhibitionPreview: ExhibitionPreview
     onPressExhibition: ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => void,
 }) {
-  const {state} = React.useContext(StoreContext);
 
   const [images, setImages] = React.useState<{imageUrl: string, title?: string}[]>([])
 
@@ -129,7 +130,9 @@ export function ExhibitionPreviewCard({
               <TextElement style={exhibitionPreviewStyle.galleryNameComponent}>{exhibitionPreview?.galleryName.value}</TextElement>
           </View>
           <View style={exhibitionPreviewStyle.imagePreviewContainer}>
-            < ExhibitionCarousel images={images} />
+            <TouchableOpacity onPress={() => onPressExhibition({exhibitionId: exhibitionPreview?.exhibitionId, galleryId: exhibitionPreview?.galleryId})}>
+              < ExhibitionCarousel images={images} />
+            </TouchableOpacity>
           </View>
 
         <View style={exhibitionPreviewStyle.textContainer}>
@@ -164,9 +167,9 @@ export function ExhibitionPreviewCard({
           </TextElement>
           </View>
         </View>
-          <TouchableOpacity style={exhibitionPreviewStyle.seeMoreContainer} onPress={() => onPressExhibition({exhibitionId: exhibitionPreview?.exhibitionId, galleryId: exhibitionPreview?.galleryId})}>
+          {/* <TouchableOpacity style={exhibitionPreviewStyle.seeMoreContainer} >
               <TextElement style={{color: PRIMARY_50}}>See More</TextElement>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
       </View>
     </>
   );

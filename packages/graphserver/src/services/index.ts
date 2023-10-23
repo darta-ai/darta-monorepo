@@ -13,6 +13,7 @@ export {
   IGalleryService,
   IImageService,
   INodeService,
-  IUserService,
-} from './interfaces';
+  IRecommenderService, 
+  IUserService} from './interfaces';
+export {RecommenderService} from './RecommenderService';
 export {UserService} from './UserService';

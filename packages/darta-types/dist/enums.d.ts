@@ -7,7 +7,8 @@ export declare enum USER_ARTWORK_EDGE_RELATIONSHIP {
     INQUIRE = "INQUIRE",
     SAVE = "SAVE",
     VIEWED = "VIEWED",
-    VIEW_TIME = "VIEW_TIME"
+    VIEW_TIME = "VIEW_TIME",
+    UNRATED = "UNRATED"
 }
 export declare enum USER_GALLERY_EDGE_RELATIONSHIP {
     VIEWED = "VIEWED",

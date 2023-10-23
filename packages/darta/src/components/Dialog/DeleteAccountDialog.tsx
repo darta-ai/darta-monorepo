@@ -8,11 +8,10 @@ import {
 import * as Colors from '@darta-styles'
 import { TextElement } from '../Elements/TextElement';
 import { firebaseDeleteUser } from '../../api/firebase';
-import { ETypes, StoreContext } from '../../state/Store';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {USER_UID_KEY} from '../../utils/constants'
+import { StoreContext } from '../../state/Store';
 import {deleteDartaUser, createUser} from '../../api/userRoutes'
 import { useNavigation } from '@react-navigation/native';
+import auth from '@react-native-firebase/auth'
 
 
 export const DeleteAccountDialog = ({
@@ -39,11 +38,11 @@ export const DeleteAccountDialog = ({
 
     setLoading(true)
     try {      
-      const localStorageUid = state?.user?.localStorageUid ?? await AsyncStorage.getItem(USER_UID_KEY);
+      const uid = auth().currentUser?.uid
       await firebaseDeleteUser({password});
-      if (localStorageUid) {
-        await deleteDartaUser({ localStorageUid: localStorageUid });
-        await createUser({localStorageUid})
+      if (uid) {
+        await deleteDartaUser({ uid });
+        await createUser({uid})
         hideDialog()
       }
       

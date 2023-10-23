@@ -37,7 +37,7 @@ const exhibitionSteps = [
   },
   {
     target: '.exhibition-publish-button',
-    content: 'When your exhibition is ready for users to view, click here.',
+    content: 'When your exhibition is ready for users to view, click here. Users will not see an exhibition until you publish it.',
   },
   {
     target: '.create-new-artwork',

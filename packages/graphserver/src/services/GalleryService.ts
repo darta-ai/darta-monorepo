@@ -3,7 +3,6 @@
 import {
   GalleryAddressFields,
   GalleryBase,
-  GalleryPreview,
   IGalleryProfileData,
   Images,
 } from '@darta-types';
@@ -15,7 +14,7 @@ import {ImageController} from '../controllers/ImageController';
 import { filterOutPrivateRecordsMultiObject } from '../middleware';
 import {City, Gallery} from '../models/GalleryModel';
 import {Node} from '../models/models';
-import {IEdgeService, IGalleryService, INodeService} from './interfaces';
+import {IAdminService,IEdgeService, IGalleryService, INodeService} from './interfaces';
 
 const BUCKET_NAME = 'logo';
 
@@ -26,6 +25,7 @@ export class GalleryService implements IGalleryService {
     @inject('Database') private readonly db: Database,
     @inject('IEdgeService') private readonly edgeService: IEdgeService,
     @inject('INodeService') private readonly nodeService: INodeService,
+    @inject('IAdminService') private readonly adminService: IAdminService,
   ) {}
 
   public async createGalleryProfile({
@@ -53,6 +53,17 @@ export class GalleryService implements IGalleryService {
         galleryId: metaData?._id,
         email: userEmail,
       });
+      try{
+        await this.adminService.sgSendEmail({
+          to: 'tj@darta.art',
+          from: '',
+          subject: 'New Gallery Signup',
+          text: `Gallery Name: ${galleryName.value} \n Gallery Email: ${userEmail}`,
+        })
+      } catch (error: any) {
+        // eslint-disable-next-line no-console
+        console.log({error})
+      }
       return {
         ...newGallery,
         _id: metaData?._id,
@@ -367,6 +378,30 @@ export class GalleryService implements IGalleryService {
     }
   }
 
+
+  public async getGalleryFromDomain({userEmail}: {userEmail: string}): Promise<Gallery | null>{
+    const normalizedGalleryDomain = this.normalizeGalleryDomain({userEmail});
+
+    const checkGalleryDuplicates = `
+      WITH ${CollectionNames.Galleries}
+      FOR gallery in ${CollectionNames.Galleries}
+      FILTER @normalizedGalleryDomain == gallery.normalizedGalleryDomain
+      RETURN gallery
+    `;
+
+    try {
+      const cursor = await this.db.query(checkGalleryDuplicates, {
+        normalizedGalleryDomain,
+      });
+      const galleryExists: Gallery = await cursor.next();
+      return galleryExists;
+    } catch (error) {
+      throw new Error('ahhhhh');
+    }
+  }
+
+
+
   public async createGalleryAdminNode({
     galleryId,
     email,
@@ -404,7 +439,6 @@ export class GalleryService implements IGalleryService {
 
     return null
   }
-
 
   // eslint-disable-next-line class-methods-use-this
   public generateGalleryUserId({galleryId}: {galleryId: string}): string {

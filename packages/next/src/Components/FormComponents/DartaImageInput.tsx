@@ -61,7 +61,7 @@ export function DartaImageInput({
           <CloudUploadIcon sx={useStyles.icon} />
 
           <Typography variant="caption" sx={useStyles.fileAcceptanceText}>
-            Only accept files with extensions: jpg, jpeg,png, pdf
+            Accept files: jpg, jpeg, png, pdf
           </Typography>
         </Box>
       )}

@@ -1,4 +1,4 @@
-import { GalleryPreview, Images } from '@darta-types/dist';
+import { GalleryPreview, Images, MobileUser } from '@darta-types';
 
 import {Node} from '../../models/models';
 
@@ -28,9 +28,9 @@ export interface IUserService {
     uid: string;
   }): Promise<boolean>;
   createDartaUser({
-    localStorageUid
+    uid
   }: {
-    localStorageUid: string;
+    uid: string;
   }): Promise<boolean>;
   createGalleryEdge({
     galleryId,
@@ -47,8 +47,8 @@ export interface IUserService {
   
   readGalleryEdgeRelationship({uid}: {uid: string}): Promise<string | boolean>;
 
-  readDartaUser({localStorageUid}: {localStorageUid: string}): Promise<Node | null>;
-  editGalleryEdge({
+  readDartaUser({uid}: {uid: string}): Promise<MobileUser| null>;
+  editGalleryToUserEdge({
     galleryId,
     uid,
     relationship,
@@ -61,7 +61,6 @@ export interface IUserService {
     profilePicture,
     userName,
     email,
-    localStorageUid,
     legalFirstName,
     legalLastName,
     uid,
@@ -71,16 +70,14 @@ export interface IUserService {
     email?: string;
     legalFirstName?: string;
     legalLastName?: string;
-    localStorageUid: string;
     uid?: string;
   }): Promise<any>
   checkIfGalleryUserExists({uid}: {uid: string}): Promise<boolean>;
   deleteGalleryUser(): Promise<boolean>;
-  deleteDartaUser({localStorageUid} : {localStorageUid: string}): Promise<boolean>;
+  deleteDartaUser({uid} : {uid: string}): Promise<boolean>;
   deleteDartaUserGalleryRelationship({uid, galleryId} : {uid: string, galleryId: string}): Promise<void>
   
   listDartaUserFollowsGallery({uid} : {uid: string}): Promise<GalleryPreview[]>
   generateGalleryUserId({uid}: {uid: string}): string
-  generateDartaUserId({localStorageUid}: {localStorageUid: string}): string
-  getLocalStorageIdFromUID({uid}: {uid: string}): Promise<string>;
+  generateDartaUserId({uid}: {uid: string}): string
 }

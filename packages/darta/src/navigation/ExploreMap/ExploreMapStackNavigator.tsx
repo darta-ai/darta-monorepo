@@ -19,7 +19,7 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
         <ExploreMapStack.Screen
           name={ExploreMapRootEnum.exploreMapHome}
           component={ExploreMapHomeScreen}
-          options={{...headerOptions, headerTitle: 'explore'}}
+          options={{...headerOptions, headerTitle: 'visit'}}
         />
         <ExploreMapStack.Screen
           name={ExploreMapRootEnum.TopTabExhibition}
@@ -29,7 +29,7 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
         <ExploreMapStack.Screen
           name={ExploreMapRootEnum.exploreMapGallery}
           component={ExhibitionGalleryScreen}
-          initialParams={{galleryId: route.params?.galleryId}}
+          initialParams={{galleryId: route.params?.galleryId, showPastExhibitions: true}}
           options={{...headerOptions, headerTitle: state.galleryHeader ?? ""}}
         />
     </ExploreMapStack.Navigator>

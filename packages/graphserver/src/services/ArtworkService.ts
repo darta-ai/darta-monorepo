@@ -1,19 +1,20 @@
-import {Artwork, Dimensions, Images} from '@darta-types';
+import {Artwork, Dimensions, IGalleryProfileData, Images} from '@darta-types';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 import _ from 'lodash';
 
 import {CollectionNames, EdgeNames} from '../config/collections';
-import {newArtworkShell} from '../config/templates';
+import {newArtworkShell, standardConsoleLog} from '../config/templates';
 import {ImageController} from '../controllers/ImageController';
 import {ArtworkNode, Edge, Node} from '../models/models';
 import {
+  IAdminService,
   IArtworkService,
   IEdgeService,
   IGalleryService,
   INodeService,
-  IUserService
-} from './interfaces';
+  IUserService} from './interfaces';
+import { DynamicTemplateData } from './interfaces/IAdminService';
 import {ArtworkAndGallery} from './interfaces/IArtworkService';
 
 const BUCKET_NAME = 'artwork';
@@ -28,6 +29,7 @@ export class ArtworkService implements IArtworkService {
     @inject('INodeService') private readonly nodeService: INodeService,
     @inject('IGalleryService') private readonly galleryService: IGalleryService,
     @inject('IUserService') private readonly userService: IUserService,
+    @inject('IAdminService') private readonly adminService: IAdminService,
   ) {}
 
   public async createArtwork({
@@ -98,19 +100,27 @@ export class ArtworkService implements IArtworkService {
     artworkId: string;
   }): Promise<void> {
     try {
-      const localStorageUid = await this.userService.getLocalStorageIdFromUID({uid});
-      const userId = this.userService.generateDartaUserId({localStorageUid});
+      const userId = this.userService.generateDartaUserId({uid});
       const artId = this.generateArtworkId({artworkId});
       const edgeKey = `FROMDartaUserTOArtwork${action}`;
+      const data: any = {
+        value: action,
+        createdAt: new Date().toISOString(),
+      }
+      const userIsInquiring = action === 'INQUIRE';
+      if (userIsInquiring) {
+        data.status = 'inquired'
+      }
       await this.edgeService.upsertEdge({
         edgeName: EdgeNames[edgeKey as keyof typeof EdgeNames],
         from: userId,
         to: artId,
-        data: {
-          value: action,
-          date: new Date().toISOString()}
+        data,
         });
          
+        if (userIsInquiring){
+          await this.sendInquiryEmail({artworkId, userId})
+        }
     } catch (error: any) {
       return error.message;
     }
@@ -441,10 +451,35 @@ export class ArtworkService implements IArtworkService {
       ...savedArtwork,
       artistName: {value: artistNode?.value ?? null},
       artworkMedium: {value: mediumNode?.value ?? null},
-      artworkPrice: {value: priceNode?.value ?? null},
+      artworkPrice,
       artworkCategory: {value: categoryNode?.value ?? null},
-      artworkCreatedYear: {value: yearNode?.value ?? null},
+      artworkCreatedYear,
+      artworkStyleTags, 
+      artworkVisualTags
     };
+  }
+
+  public async editArtworkInquiry({
+    edgeId, 
+    status
+  }: {
+    edgeId: string;
+    status: string;
+  }) : Promise<Edge | void>{
+    try{
+      const query = `
+      FOR doc IN ${EdgeNames.FROMDartaUserTOArtworkINQUIRE}
+      FILTER doc._id == @edgeId
+      UPDATE doc WITH { status: @status } IN ${EdgeNames.FROMDartaUserTOArtworkINQUIRE}
+      RETURN doc
+      `
+
+      const edgeCursor = await this.db.query(query, {edgeId, status});
+      const res = await edgeCursor.next()
+      return res
+    }catch(error:any){
+      throw new Error(`error editing artwork inquiry at editArtworkInqury: ${error?.message}`)
+    }
   }
 
   public async deleteArtwork({
@@ -545,6 +580,14 @@ export class ArtworkService implements IArtworkService {
       from: key,
     });
 
+    if (artwork.exhibitionId) {
+      edgesToDelete.push({
+        edgeName: EdgeNames.FROMCollectionTOArtwork,
+        from: artwork.exhibitionId.includes(CollectionNames.Exhibitions) ? 
+          artwork.exhibitionId : `${CollectionNames.Exhibitions}/${artwork.exhibitionId}`,
+      });
+    }
+
     const edgePromises = edgesToDelete.map(edge =>
       this.edgeService.deleteEdgeWithFrom(edge),
     );
@@ -579,8 +622,7 @@ export class ArtworkService implements IArtworkService {
     artworkId: string;
   }): Promise<void> {
     try {
-      const localStorageUid = await this.userService.getLocalStorageIdFromUID({uid});
-      const userId = this.userService.generateDartaUserId({localStorageUid});
+      const userId = this.userService.generateDartaUserId({uid});
       const artId = this.generateArtworkId({artworkId});
       const edgeKey = `FROMDartaUserTOArtwork${action}`;
       await this.edgeService.deleteEdge({
@@ -622,6 +664,43 @@ export class ArtworkService implements IArtworkService {
     }
   }
 
+  public async listArtworkInquiresByGallery({
+    galleryId,
+  }: {
+    galleryId: string;
+  }): Promise<any> {
+    const getArtworksQuery = `
+    WITH ${CollectionNames.Artwork}, ${CollectionNames.Galleries}, ${EdgeNames.FROMGalleryToArtwork}, ${CollectionNames.DartaUsers}, ${EdgeNames.FROMDartaUserTOArtworkINQUIRE}
+      FOR gallery IN ${CollectionNames.Galleries}
+      FILTER gallery._id == @galleryId 
+      FOR artwork IN 1..1 OUTBOUND gallery ${EdgeNames.FROMGalleryToArtwork}
+      FOR user, edge IN 1..1 INBOUND artwork ${EdgeNames.FROMDartaUserTOArtworkINQUIRE}
+      RETURN {
+        legalFirstName: user.legalFirstName,
+        legalLastName: user.legalLastName,
+        email: user.email,
+        artwork_id: artwork._id,
+        createdAt: edge.createdAt,
+        updatedAt: edge.updatedAt,
+        status: edge.status, 
+        edge_id: edge._id
+      }
+    `;
+
+    try {
+      const edgeCursor = await this.db.query(getArtworksQuery, {galleryId});
+      const dartaUsers = (await edgeCursor.all()).filter(el => el);
+      const dartaUsersObj = dartaUsers.reduce((acc: any, user: any) => {
+        acc[user.artworkId] = user;
+        return acc;
+      }
+      , {})
+      return dartaUsersObj;
+    } catch (error: any) {
+      throw new Error(`error getting artworks at listArtworksByGallery: ${error?.message}`);
+    }
+  }
+
   public async listUserRelationshipArtworkByLimit({
     uid,
     limit,
@@ -632,8 +711,7 @@ export class ArtworkService implements IArtworkService {
     action: string
   }): Promise<{[key: string] : Artwork}>{
     try {
-      const localStorageUid = await this.userService.getLocalStorageIdFromUID({uid});
-      const userId = this.userService.generateDartaUserId({localStorageUid});
+      const userId = this.userService.generateDartaUserId({uid});
       const edgeKey = `FROMDartaUserTOArtwork${action}`;
       const edgeName = EdgeNames[edgeKey as keyof typeof EdgeNames];
       const edgeCursor = await this.db.query(`
@@ -730,7 +808,6 @@ export class ArtworkService implements IArtworkService {
         artworkCategory: {value: category}
       }
 
-      // console.log({artwork})
     } catch (error) {
       return null;
     }
@@ -749,6 +826,9 @@ export class ArtworkService implements IArtworkService {
           fileName: artworkImage.fileName,
           bucketName: artworkImage.bucketName,
         });
+        if (artworkImageValue){
+          await this.refreshArtworkImage({artworkId, url: artworkImageValue})
+        }
       } catch (error) {
         throw new Error('error getting artwork image');
       }
@@ -799,6 +879,55 @@ export class ArtworkService implements IArtworkService {
       throw new Error('error confirming gallery artwork edge');
     }
   }
+
+  private async sendInquiryEmail({artworkId, userId}: {artworkId: string, userId: string}){
+
+    const artwork = await this.getArtworkById(artworkId)
+    const user = await this.userService.readDartaUser({uid: userId})
+    let gallery: IGalleryProfileData = {} as IGalleryProfileData
+    if (artwork?.galleryId){
+      const results = await this.galleryService.readGalleryProfileFromGalleryId({galleryId: artwork?.galleryId})
+      if (results){
+        gallery = results
+      }
+    } else{
+      const query = `
+      WITH ${CollectionNames.Artwork}, ${CollectionNames.Galleries}, ${EdgeNames.FROMGalleryToArtwork}
+      FOR artwork IN ${CollectionNames.Artwork}
+      FILTER artwork._id == @artworkId
+      FOR gallery IN 1..1 INBOUND artwork ${EdgeNames.FROMGalleryToArtwork}
+      RETURN gallery
+      `
+      const cursor = await this.db.query(query, {artworkId})
+      gallery = await cursor.next()
+    }
+
+    if (gallery?.galleryInternalEmail?.value 
+      && user?.email 
+      && gallery.galleryName.value 
+      && artwork?.artworkTitle?.value 
+      && artwork?.artistName?.value){
+      const dynamicTemplateData: DynamicTemplateData = {
+        artworkTitle: artwork?.artworkTitle?.value,
+        artistName: artwork?.artistName?.value,
+        userFirstName: user.legalFirstName ?? "",
+        userLastName: user.legalLastName ?? "",
+        userEmail: user.email,
+        galleryName: gallery.galleryName.value,
+      }
+    try{
+      await this.adminService.sgSendEmailInquireTemplate({
+        to: gallery?.galleryInternalEmail?.value, 
+        from: 'tj@darta.art',
+        dynamicTemplateData
+      })
+    }catch(error: any){
+      standardConsoleLog({request: 'ArtworkService', data: 'sendInquiryEmail', message: error?.message})
+    }
+  } else {
+    standardConsoleLog({request: 'ArtworkService', data: 'sendInquiryEmail', message: "did not have necessary data for email request"})
+  }
+}
 
   private async getArtworkImage({key}: {key: string}): Promise<any> {
     const fullArtworkId = this.generateArtworkId({artworkId: key});

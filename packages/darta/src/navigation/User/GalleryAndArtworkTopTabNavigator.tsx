@@ -21,7 +21,7 @@ export function GalleryAndArtworkTopTabNavigator({route} : {route: any}) {
       <GalleryAndArtworkTopTab.Screen
           name={PreviousExhibitionRootEnum.exhibitionDetails}
           component={ExhibitionGalleryScreen}
-          initialParams={{galleryId: route.params?.artOnDisplay.galleryId, navigationRoute: UserRoutesEnum.UserPastTopTabNavigator}}
+          initialParams={{galleryId: route.params?.artOnDisplay.galleryId, navigationRoute: UserRoutesEnum.UserPastTopTabNavigator, showPastExhibitions: true}}
           options={{ title: 'gallery' }}
         />
     </GalleryAndArtworkTopTab.Navigator>

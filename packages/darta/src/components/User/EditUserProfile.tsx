@@ -3,12 +3,12 @@ import {Controller, useForm} from 'react-hook-form';
 import {Animated, Image, ScrollView, StyleSheet, View} from 'react-native';
 import { RefreshControl } from 'react-native';
 import {Button, IconButton, TextInput} from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { USER_UID_KEY } from '../../utils/constants';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import FastImage from 'react-native-fast-image'
+
 import * as ImagePicker from 'expo-image-picker';
 import auth from '@react-native-firebase/auth';
 import * as FileSystem from 'expo-file-system';
@@ -20,6 +20,7 @@ import {galleryInteractionStyles, globalTextStyles} from '../../styles/styles';
 import {ETypes, StoreContext} from '../../state/Store';
 import { editDartaUserAccount, getDartaUser } from '../../api/userRoutes';
 import { DeleteAccountDialog } from '../Dialog/DeleteAccountDialog';
+import { UserRoutesEnum } from '../../typing/routes';
 
 type FieldState = {
   isEditing?: boolean;
@@ -91,6 +92,10 @@ export function EditUserProfile({navigation} : {navigation: any}) {
 
   const [heightAnim] = useState(new Animated.Value(Math.floor(hp('15%'))));
 
+  React.useEffect(() => {
+    heightAnim.addListener(() => {});
+  }, [])
+
   const handleShrinkElements = useCallback(() => {
     Animated.timing(heightAnim, {
       toValue: 0,
@@ -144,9 +149,11 @@ export function EditUserProfile({navigation} : {navigation: any}) {
     setShowOnlyOne(isShowing);
 
     const setEmail = async () => {
-      const email = auth().currentUser;
-      if (email) {
-        setValue('email', email.email);
+      const user = auth().currentUser;
+      if (user && user.email) {
+        setValue('email', user.email);
+      } else if (state.user?.email) {
+        setValue('email', state.user?.email);
       }
     }
 
@@ -238,10 +245,11 @@ export function EditUserProfile({navigation} : {navigation: any}) {
   const onSave = async () =>
   {
       setLoading(true)
-      const localStorageUid = state.user?.localStorageUid ?? await AsyncStorage.getItem(USER_UID_KEY);
+      const uid = auth().currentUser?.uid
+      console.log(uid)
       const value = getValues()
-     if (formData.userName.isEditing) {
-        const results = await editDartaUserAccount({userName: value.userName, localStorageUid: localStorageUid!})
+     if (formData.userName.isEditing && uid) {
+        const results = await editDartaUserAccount({userName: value.userName, uid})
        dispatch({
           type: ETypes.setUser,
           userData: {
@@ -250,8 +258,8 @@ export function EditUserProfile({navigation} : {navigation: any}) {
           }
        })
      }
-    if (formData.legalFirstName.isEditing) {
-      const results = await editDartaUserAccount({legalFirstName: value.legalFirstName, localStorageUid: localStorageUid!})
+    else if (formData.legalFirstName.isEditing && uid) {
+      const results = await editDartaUserAccount({legalFirstName: value.legalFirstName, uid})
       dispatch({
           type: ETypes.setUser,
           userData: {
@@ -260,8 +268,8 @@ export function EditUserProfile({navigation} : {navigation: any}) {
           }
       })
    }
-   if (formData.legalLastName.isEditing) {
-    const results = await editDartaUserAccount({legalLastName: value.legalLastName, localStorageUid: localStorageUid!})
+   else if (formData.legalLastName.isEditing && uid) {
+    const results = await editDartaUserAccount({legalLastName: value.legalLastName, uid})
         dispatch({
             type: ETypes.setUser,
             userData: {
@@ -270,10 +278,10 @@ export function EditUserProfile({navigation} : {navigation: any}) {
             }
         })
     }
-      if (formData.profilePicture.isEditing) {
+    else if (formData.profilePicture.isEditing && uid) {
         const results = await editDartaUserAccount({profilePicture: {
           fileData: tempBuffer
-        }, localStorageUid: localStorageUid!})
+        }, uid})
         if (results?.profilePicture?.value) {
           dispatch({
             type: ETypes.setUser,
@@ -290,6 +298,16 @@ export function EditUserProfile({navigation} : {navigation: any}) {
         resetUi();
 
       }
+    else if (formData.email.isEditing && uid && value.email) {
+        const results = await editDartaUserAccount({email: value.email, uid})
+            dispatch({
+                type: ETypes.setUser,
+                userData: {
+                  ...state.user,
+                  email: results.email
+                }
+            })
+        }
  
       resetUi();
       setLoading(false)
@@ -302,7 +320,9 @@ export function EditUserProfile({navigation} : {navigation: any}) {
     const onRefresh = React.useCallback(async () => {
       setRefreshing(true);
       try{
-          const user = await getDartaUser();
+          const uid = auth().currentUser?.uid
+          if (!uid) return
+          const user = await getDartaUser({uid});
           dispatch({
             type: ETypes.setUser,
             userData: user
@@ -314,6 +334,25 @@ export function EditUserProfile({navigation} : {navigation: any}) {
         setRefreshing(false);
       }, 500)
     }, []);
+
+    const signOut = async () => { 
+      await auth().signOut()
+      dispatch({
+        type: ETypes.setUser,
+        userData: {
+          uid: "",
+          email: "",
+          userName: "",
+          legalFirstName: "",
+          legalLastName: "",
+          profilePicture: {
+            value: ""
+          }
+        }
+      })
+      navigation.navigate(UserRoutesEnum.home)
+    }
+
 
   return (
     <ScrollView style={showOnlyOne && {marginTop: hp('5%')}} 
@@ -331,11 +370,13 @@ export function EditUserProfile({navigation} : {navigation: any}) {
           </TextElement>
           <View style={[SSSignedInUserSettings.textEditContainer]}>
             {formData.profilePicture.isEditing && tempImage.uri ? (
-              <Image
+              <FastImage
                 source={{
                   uri: tempImage.uri,
                 }}
                 style={SSSignedInUserSettings.image}
+                resizeMode={FastImage.resizeMode.contain}
+
               />
             ) : (
               <Image
@@ -630,20 +671,37 @@ export function EditUserProfile({navigation} : {navigation: any}) {
         </View>
       )}
       {!showOnlyOne && (
-        <View style={{alignContent: 'center'}}>
-          <Button
-            icon="delete-alert"
-            mode="contained"
-            buttonColor={Colors.PRIMARY_950}
-            textColor={Colors.PRIMARY_50}
-            style={{
-              width: wp('80%'),
-              marginTop: hp('5%'),
-              alignSelf: 'center',
-            }}
-            onPress={() => setDialogVisible(true)}>
-            Delete Profile
-          </Button>
+        <View>
+          <View style={{alignContent: 'center'}}>
+            {/* <Button
+              icon="account-arrow-left"
+              mode="contained"
+              buttonColor={Colors.PRIMARY_400}
+              textColor={Colors.PRIMARY_50}
+              style={{
+                width: wp('80%'),
+                marginTop: hp('5%'),
+                alignSelf: 'center',
+              }}
+              onPress={() => signOut()}>
+              Sign Out
+            </Button> */}
+          </View>
+          <View style={{alignContent: 'center'}}>
+            <Button
+              icon="delete-alert"
+              mode="contained"
+              buttonColor={Colors.PRIMARY_950}
+              textColor={Colors.PRIMARY_50}
+              style={{
+                width: wp('80%'),
+                marginTop: hp('5%'),
+                alignSelf: 'center',
+              }}
+              onPress={() => setDialogVisible(true)}>
+              Delete Profile
+            </Button>
+          </View>
         </View>
       )}
       <DeleteAccountDialog 

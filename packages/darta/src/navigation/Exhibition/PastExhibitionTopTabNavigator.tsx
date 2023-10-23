@@ -34,16 +34,16 @@ export function PastExhibitionTopTabNavigator({route} : {route: any}) {
   return (
     <PreviousExhibitionStackTopTab.Navigator screenOptions={{...tabBarScreenOptions}}>
       <PreviousExhibitionStackTopTab.Screen
-          name={PreviousExhibitionRootEnum.artworkList}
-          component={ExhibitionArtworkScreen}
-          initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId}}
-          options={{ title: 'artworks' }}
-        />
-      <PreviousExhibitionStackTopTab.Screen
           name={PreviousExhibitionRootEnum.exhibitionDetails}
           component={ExhibitionDetailsScreen}
           initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId}}
           options={{ title: 'exhibition' }}
+        />
+      <PreviousExhibitionStackTopTab.Screen
+          name={PreviousExhibitionRootEnum.artworkList}
+          component={ExhibitionArtworkScreen}
+          initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId}}
+          options={{ title: 'artworks' }}
         />
     </PreviousExhibitionStackTopTab.Navigator>
   );

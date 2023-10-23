@@ -56,6 +56,7 @@ export function GalleryPreviewMini({
       borderBottomLeftRadius: hp('2%'),
       borderTopRightRadius: hp('2%'),
       borderBottomRightRadius: 5,
+      marginTop: 1, 
     },
     imageContainer: {
       borderTopLeftRadius: hp('1%'),

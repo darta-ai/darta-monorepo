@@ -80,7 +80,6 @@ export function DartaPhoneNumber({
           switchStringValue="isPrivate"
         />
       )}
-      <Box sx={formStyles.formTextField}>
         <Controller
           control={control}
           name={fieldName}
@@ -116,6 +115,5 @@ export function DartaPhoneNumber({
           )}
         />
       </Box>
-    </Box>
   );
 }

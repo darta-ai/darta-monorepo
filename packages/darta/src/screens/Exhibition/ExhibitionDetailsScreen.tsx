@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import {View, StyleSheet, ScrollView, Platform, Linking, RefreshControl} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { Button, Divider, Text} from 'react-native-paper';
+import FastImage from 'react-native-fast-image'
 
 import * as Colors from '@darta-styles';
 import { ETypes } from '../../state/Store';
@@ -15,7 +16,6 @@ import {
 } from '../../typing/routes';
 import {StoreContext} from '../../state/Store';
 import {Exhibition, IGalleryProfileData} from '@darta-types'
-import { Image } from 'react-native-elements';
 import {globalTextStyles} from '../../styles/styles'
 import * as Calendar from 'expo-calendar';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
@@ -104,6 +104,7 @@ const exhibitionDetailsStyles = StyleSheet.create({
         alignItems: 'center',
     },
     pressReleaseContainer: {
+        marginTop: hp('2%'),
         width: '85%',
         display: 'flex',
         justifyContent: 'center',
@@ -215,6 +216,7 @@ export function ExhibitionDetailsScreen({
 
 
   async function fetchMostRecentExhibitionData() {
+    console.log('triggered most recent exhibition')
     if (!route?.params?.locationId) return
     try {
         const {locationId} = route.params
@@ -251,7 +253,8 @@ export function ExhibitionDetailsScreen({
 }
 
 
-async function fetchExhibitionById() {
+
+async function fetchExhibitionById(): Promise<{exhibition: Exhibition, galleryData: IGalleryProfileData} | void> {
     if (!route?.params?.galleryId || !route.params.exhibitionId) return
     try {
         const {galleryId, exhibitionId} = route.params
@@ -259,47 +262,42 @@ async function fetchExhibitionById() {
             readGallery({ galleryId }),
             listGalleryExhibitionPreviewForUser({ galleryId }),
             readExhibition({ exhibitionId })
-        ]);
-        
+        ])
+
         const galleryData = { ...gallery, galleryExhibitions: supplementalExhibitions };
 
-        dispatch({
-            type: ETypes.saveGallery,
-            galleryData: galleryData,
-        })
-        dispatch({
-            type: ETypes.setCurrentHeader,
-            currentExhibitionHeader: exhibition.exhibitionTitle.value!,
-          })
-        dispatch({
-            type: ETypes.saveExhibition,
-            exhibitionData: exhibition,
-        })
-        dispatch({
-            type: ETypes.setQRCodeExhibitionId,
-            qRCodeExhibitionId: exhibition.exhibitionId,
-          })
-        dispatch({
-            type: ETypes.setQRCodeGalleryId,
-            qrCodeGalleryId: gallery._id,
-        })
-        dispatch({
-            type: ETypes.setFullyLoadedExhibitions,
-            fullyLoadedExhibitions: {[exhibition._id] : true},
-        })
-        dispatch({
-            type: ETypes.setFullyLoadedGalleries,
-            fullyLoadedGalleries: {[gallery._id] : true},
-        })
-        
         setCurrentExhibition(exhibition);
         setCurrentGallery(galleryData);
         setExhibitionData({currentExhibition: exhibition, currentGallery: galleryData})
         setIsGalleryLoaded(true);
+
+
+        return {exhibition, galleryData}
+
     } catch (error: any){
-        console.log(error)
+        // TO-DO: error handling
     }
 }
+
+    const setExhibitionDataInState = async () => {
+        const data = await fetchExhibitionById()
+        if (!data) return
+        const {exhibition, galleryData} = data
+        Promise.resolve().then(() =>{
+            dispatch({
+                type: ETypes.saveGallery,
+                galleryData: galleryData,
+            })
+            dispatch({
+                type: ETypes.setCurrentHeader,
+                currentExhibitionHeader: exhibition.exhibitionTitle.value!,
+              })
+            dispatch({
+                type: ETypes.saveExhibition,
+                exhibitionData: exhibition,
+            })
+    })
+    }
 
   React.useEffect(() => {
 
@@ -308,12 +306,11 @@ async function fetchExhibitionById() {
         let exhibitionId = ""
         if (route?.params?.exhibitionId){
             exhibitionId = route.params.exhibitionId
-            setExhibitionId(route.params.exhibitionId);
           }
         if (route?.params?.galleryId){
             galleryId = route.params.galleryId
-            setGalleryId(route.params.galleryId)
         }
+        // If already loaded
         if (exhibitionId && 
             galleryId && 
             state?.exhibitionData &&
@@ -334,29 +331,29 @@ async function fetchExhibitionById() {
                 setIsGalleryLoaded(true);
                 return false
             }   
-        else if (route?.params?.galleryId && state?.exhibitionData && state.exhibitionData[exhibitionId] 
-            && state.galleryData 
-            && state.galleryData[route?.params?.galleryId]
-            ) {
-            setCurrentExhibition(state.exhibitionData[exhibitionId]);
-            setCurrentGallery(state.galleryData[route?.params?.galleryId]);
-            setExhibitionData({currentExhibition: state.exhibitionData[exhibitionId], currentGallery: state.galleryData[route?.params?.galleryId]})
-            setIsGalleryLoaded(true);
-            return false
-        } else if(!route?.params?.internalAppRoute && route?.params?.locationId){ 
-            fetchMostRecentExhibitionData()
-            return false;
-        } else if (exhibitionId && galleryId){
-            fetchExhibitionById()
-            return false;
-        } else {
-            setErrorText('something went wrong, please refresh and try again')
-            return false
+            else if (route?.params?.galleryId && state?.exhibitionData && state.exhibitionData[exhibitionId] 
+                && state.galleryData 
+                && state.galleryData[route?.params?.galleryId]
+                ) {
+                setCurrentExhibition(state.exhibitionData[exhibitionId]);
+                setCurrentGallery(state.galleryData[route?.params?.galleryId]);
+                setExhibitionData({currentExhibition: state.exhibitionData[exhibitionId], currentGallery: state.galleryData[route?.params?.galleryId]})
+                setIsGalleryLoaded(true);
+                return false
+            } else if(!route?.params?.internalAppRoute && route?.params?.locationId){ 
+                fetchMostRecentExhibitionData()
+                return false;
+            } else if (exhibitionId && galleryId){
+                setExhibitionDataInState()
+                return false;
+            } else {
+                setErrorText('something went wrong, please refresh and try again')
+                return false
+            }
         }
-    }
-    handleExhibitionData()
-  
-},  []);
+        handleExhibitionData()
+    
+    }, []);
 
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -433,7 +430,6 @@ async function fetchExhibitionById() {
         .catch((err) => console.error('Error opening maps app:', err));
       };  
 
-
   return (
     <>
         {!isGalleryLoaded ? ( 
@@ -450,9 +446,10 @@ async function fetchExhibitionById() {
                 </TextElement>
             </View>
         <View style={exhibitionDetailsStyles.heroImageContainer}>
-            <Image 
+            <FastImage 
             source={{uri: currentExhibition?.exhibitionPrimaryImage?.value!}}
             style={exhibitionDetailsStyles.heroImage}
+            resizeMode={FastImage.resizeMode.contain}
             />
         </View>
         <View style={{...exhibitionDetailsStyles.textContainer, height: hasReception && isReceptionInPast ? hp('100%') : hp('80%')}}>
@@ -554,17 +551,28 @@ async function fetchExhibitionById() {
         </View>
             
         </View>
-
-
-            <View style={exhibitionDetailsStyles.pressReleaseContainer}>
-            <TextElement style={exhibitionDetailsStyles.descriptionText}>
-                Press Release
-            </TextElement>
-            <Divider style={exhibitionDetailsStyles.divider}/>
-            <Text style={{...globalTextStyles.baseText, fontSize: 15, color: Colors.PRIMARY_950, marginTop: hp('1%')}}>
-                {currentExhibition?.exhibitionPressRelease?.value}
-            </Text>
-            </View>
+            {currentExhibition?.exhibitionPressRelease?.value && (
+                <View style={exhibitionDetailsStyles.pressReleaseContainer}>
+                    <TextElement style={exhibitionDetailsStyles.descriptionText}>
+                        Press Release
+                    </TextElement>
+                    <Divider style={exhibitionDetailsStyles.divider}/>
+                    <Text style={{...globalTextStyles.baseText, fontSize: 15, color: Colors.PRIMARY_950, marginTop: hp('1%')}}>
+                        {currentExhibition?.exhibitionPressRelease?.value}
+                    </Text>
+                </View>
+            )}
+            {currentExhibition?.exhibitionArtistStatement?.value && (
+                <View style={exhibitionDetailsStyles.pressReleaseContainer}>
+                    <TextElement style={exhibitionDetailsStyles.descriptionText}>
+                        Artist Statement
+                    </TextElement>
+                    <Divider style={exhibitionDetailsStyles.divider}/>
+                    <Text style={{...globalTextStyles.baseText, fontSize: 15, color: Colors.PRIMARY_950, marginTop: hp('1%')}}>
+                        {currentExhibition?.exhibitionArtistStatement?.value}
+                    </Text>
+                </View>
+            )}
         </View>
         </ScrollView>
         )}

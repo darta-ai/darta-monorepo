@@ -123,6 +123,7 @@ export interface IState {
   userSavedArtwork?: {[key: string] : boolean}
   userLikedArtwork?: {[key: string] : boolean}
   userInquiredArtwork?: {[key: string] : boolean}
+  userDislikedArtwork?: {[key: string] : boolean}
   userGalleryFollowed?: {[key: string] : boolean}
 
   userArtworkViewTimes?: {[key: string] : number}
@@ -131,6 +132,9 @@ export interface IState {
 
   fullyLoadedGalleries?: {[key: string] : boolean}
   fullyLoadedExhibitions?: {[key: string] : boolean}
+
+  artworksToRate?: {[key: string] : Artwork}
+  artworkRatingIndex?: number
 }
 
 export enum ETypes {
@@ -183,6 +187,10 @@ export enum ETypes {
   setUserInquiredArtworkMulti = 'SET_USER_INQUIRED_ARTWORK_MULTI',
   removeUserInquiredArtwork = 'REMOVE_USER_INQUIRED_ARTWORK',
 
+  setUserDislikedArtwork = 'SET_USER_DISLIKED_ARTWORK',
+  setUserDislikedArtworkMulti = 'SET_USER_DISLIKED_ARTWORK_MULTI',
+  removeUserDislikedArtwork = 'REMOVE_USER_DISLIKED_ARTWORK',
+
   setUserArtworkViewTimes = 'SET_USER_ARTWORK_VIEW_TIMES',
 
   setGalleryPreviewMulti = 'SET_GALLERY_PREVIEW_MULTI',
@@ -193,6 +201,9 @@ export enum ETypes {
 
   setFullyLoadedGalleries = 'SET_FULLY_LOADED_GALLERIES',
   setFullyLoadedExhibitions = 'SET_FULLY_LOADED_EXHIBITIONS',
+
+  setArtworksToRate = 'SET_ARTWORKS_TO_RATE',
+  setRatingIndex = 'SET_RATING_INDEX'
 }
 
 // Define the action type
@@ -256,6 +267,8 @@ interface IAction {
   fullyLoadedGalleries?: {[key: string] : boolean};
   fullyLoadedExhibitions?: {[key: string] : boolean};
 
+  artworksToRate?: {[key: string] : Artwork};
+  artworkRatingIndex?: number;
 }
 
 // Define the initial state
@@ -272,6 +285,8 @@ const initialState: IState = {
   exhibitionData : {},
   galleryData: {},
   mapPins: {} as any,
+  userDislikedArtwork: {},
+  artworkRatingIndex: 0,
 };
 
 // Define the reducer function
@@ -513,6 +528,28 @@ const reducer = (state: IState, action: IAction): IState => {
                   [action.artworkId]: false,
                 },
               };
+              case ETypes.setUserDislikedArtwork:
+                if (!action?.artworkId){
+                  return state;
+                }
+                return {
+                  ...state,
+                  userDislikedArtwork: {
+                    ...state.userDislikedArtwork,
+                    [action.artworkId]: true,
+                  },
+                };
+              case ETypes.removeUserDislikedArtwork:
+                if (!action?.artworkId){
+                    return state;
+                  }
+                  return {
+                    ...state,
+                    userDislikedArtwork: {
+                      ...state.userDislikedArtwork,
+                      [action.artworkId]: false,
+                    },
+                  };
           case ETypes.setUserLikedArtwork:
             if (!action?.artworkId){
               return state;
@@ -646,6 +683,25 @@ const reducer = (state: IState, action: IAction): IState => {
             ...action.fullyLoadedExhibitions
           },
         };
+        case ETypes.setArtworksToRate:
+          if (!action?.artworksToRate){
+            return state;
+          }
+          return {
+            ...state,
+            artworksToRate: {
+              ...state.artworksToRate,
+              ...action.artworksToRate
+            },
+          };
+          case ETypes.setRatingIndex:
+            if (!action?.artworkRatingIndex){
+              return state;
+            }
+            return {
+              ...state,
+              artworkRatingIndex: action.artworkRatingIndex,
+            };
     default:
       return state;
   }

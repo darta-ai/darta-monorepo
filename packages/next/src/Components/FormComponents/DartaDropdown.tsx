@@ -66,6 +66,7 @@ export function DartaDropdown({
                     <MenuItem
                       key={option}
                       value={option}
+                      sx={{width: 'inherit'}}
                       data-testid={`${fieldName}-input-field-option-${index}`}>
                       {option}
                     </MenuItem>

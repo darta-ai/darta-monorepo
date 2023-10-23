@@ -18,7 +18,7 @@ const server = new InversifyExpressServer(container);
 
 
 const corsOptions = {
-  origin: ['http://localhost:1169', 'exp://192.168.1.35:8081', 'https://darta.art', 'https://www.darta.art']
+  origin: ['http://localhost:1169', 'exp://192.168.1.35:8081', 'http://192.168.1.35:8081', 'https://darta.art', 'https://www.darta.art']
 };
 
 // Configure and start the server
@@ -38,7 +38,8 @@ const httpServer = http.createServer(app);
 
 let n = 0;
 app.get('/', (req: Request, res: Response) => {
-  res.send(`${++n}`);
+  n += 1;
+  res.send(`${n}`);
 });
 
 app.get('/ping', (req: Request, res: Response) => {

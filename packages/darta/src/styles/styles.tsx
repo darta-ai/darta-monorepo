@@ -349,27 +349,12 @@ export const galleryPreviewStyles = StyleSheet.create({
   },
 });
 export const galleryComponentStyles = StyleSheet.create({
-  interactionContainerPortrait: {
-    position: 'absolute',
-    alignSelf: 'center',
-    width: wp('90%'),
-    height: hp('12%'),
-    top: hp('67%'),
-    marginLeft: 1,
-  },
-  interactionContainerLandscape: {
-    position: 'absolute',
-    alignSelf: 'center',
-    height: wp('20%'),
-    width: hp('60%'),
-    top: wp('80%'),
-  },
   viewContainerPortrait: {
     position: 'absolute',
     width: wp('15%'),
     left: wp('80%'),
     height: hp('5%'),
-    top: hp('1%'),
+    top: hp('3%'),
   },
   viewContainerLandscape: {
     position: 'absolute',
@@ -421,15 +406,15 @@ export const galleryInteractionStyles = StyleSheet.create({
   mainButtonPortrait: {
     borderRadius: 30,
     opacity: 0.9,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.PRIMARY_50,
   },
   mainButtonLandscape: {
     borderRadius: 30,
     opacity: 0.9,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.PRIMARY_50,
   },
   secondaryButton: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.PRIMARY_50,
     color: 'black',
     opacity: 0.9,
   },
@@ -491,8 +476,8 @@ export const viewOptionsStyles = StyleSheet.create({
     flexDirection: 'column',
   },
   viewOptionsButtonStyle: {
-    backgroundColor: '#fff',
-    opacity: 0.9,
+    backgroundColor: Colors.PRIMARY_100,
+    opacity: 0.8,
   },
 });
 

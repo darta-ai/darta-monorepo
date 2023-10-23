@@ -282,22 +282,22 @@ export function CreateArtwork({
       setValue(
         'artworkDimensions.text.value',
         `
-        ${data.artworkDimensions.heightIn.value} x
-        ${data.artworkDimensions.widthIn.value} x 
-        ${data.artworkDimensions.depthIn?.value}in;
-        ${data.artworkDimensions.heightCm.value} x
-        ${data.artworkDimensions.widthCm.value} x 
-        ${data.artworkDimensions.depthCm?.value}cm
+        ${data.artworkDimensions.heightIn.value.trim()} x
+        ${data.artworkDimensions.widthIn.value.trim()} x 
+        ${data.artworkDimensions.depthIn?.value.trim()}in;
+        ${data.artworkDimensions.heightCm.value.trim()} x
+        ${data.artworkDimensions.widthCm.value.trim()} x 
+        ${data.artworkDimensions.depthCm?.value.trim()}cm
          `,
       );
     } else {
       setValue(
         'artworkDimensions.text.value',
         `
-        ${data.artworkDimensions.heightIn.value} x
-        ${data.artworkDimensions.widthIn.value}in; 
-        ${data.artworkDimensions.heightCm.value} x 
-        ${data.artworkDimensions.widthCm.value}cm
+        ${data.artworkDimensions.heightIn.value.trim()} x
+        ${data.artworkDimensions.widthIn.value.trim()}in; 
+        ${data.artworkDimensions.heightCm.value.trim()} x 
+        ${data.artworkDimensions.widthCm.value.trim()}cm
         `,
       );
     }
@@ -493,7 +493,7 @@ export function CreateArtwork({
                 control={
                   <Switch color="secondary" onChange={handleMeasurementChange} />
                 }
-                label="centimeters"
+                label={!isInchesMeasurement ? "inches" : "centimeters"}
                 labelPlacement="start"
               />
           </FormGroup>
@@ -671,7 +671,7 @@ export function CreateArtwork({
             label="Artwork Medium"
             allowPrivate={false}
             inputAdornmentString="Medium"
-            inputOptions={mediums as any}
+            inputOptions={mediums}
           />
         </Box>
       </Box>
@@ -785,9 +785,6 @@ export function CreateArtwork({
             handleClose={handleClose}
             exhibitionId={newArtwork.exhibitionId}
             handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
-            handleRemoveArtworkFromExhibition={
-              handleRemoveArtworkFromExhibition
-            }
           />
         )}
       {handleDelete && !isInExhibition && (

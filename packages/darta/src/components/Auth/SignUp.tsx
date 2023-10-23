@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View } from 'react-native';
-import { Button, Dialog, TextInput } from 'react-native-paper';
+import { Button, Dialog, TextInput, useTheme } from 'react-native-paper';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -10,8 +10,6 @@ import { TextElement } from '../Elements/TextElement';
 import { editDartaUserAccount } from '../../api/userRoutes';
 import { firebaseSignUp } from '../../api/firebase';
 import { ETypes, StoreContext } from '../../state/Store';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {USER_UID_KEY} from '../../utils/constants'
 
 
 export const SignUp = ({
@@ -24,6 +22,8 @@ export const SignUp = ({
 
   const {state, dispatch} = React.useContext(StoreContext);
 
+  const theme = useTheme()
+  const { colors } = theme;
   const [email, setEmail] = React.useState<string>()
   const [password, setPassword] = React.useState<string>()
   const [confirmPassword, setConfirmPassword] = React.useState<string>()
@@ -57,10 +57,9 @@ export const SignUp = ({
           }
         })            
       }
-      const localStorageUid = state?.user?.localStorageUid ?? await AsyncStorage.getItem(USER_UID_KEY);
           
-      if (localStorageUid && firebaseRes?.user?.uid) {
-        await editDartaUserAccount({ uid: firebaseRes.user.uid, email, localStorageUid: localStorageUid });
+      if (firebaseRes?.user?.uid) {
+        await editDartaUserAccount({ uid: firebaseRes.user.uid, email});
       }
       setDialogVisible(false)
     } catch (err) {
@@ -77,7 +76,7 @@ export const SignUp = ({
 
   return (
   <View>
-    <Dialog.Title >You need an account first</Dialog.Title>
+    <Dialog.Title >You'll need an account first</Dialog.Title>
     <Dialog.Content style={{
         display: 'flex', 
         flexDirection: 'column', 
@@ -86,21 +85,25 @@ export const SignUp = ({
         }}
         >
     <TextInput
-    style={{backgroundColor: Colors.PRIMARY_700}}
+    style={{backgroundColor: Colors.PRIMARY_200}}
     label="Email"
+    theme={{...theme, colors: {...colors, primary: Colors.PRIMARY_900}}}
     value={email}
     onChangeText={text => setEmail(text)}
     />
     <TextInput
-    style={{backgroundColor: Colors.PRIMARY_700}}
+    style={{backgroundColor: Colors.PRIMARY_200}}
+    underlineColor="transparent"
     label="Password"
+    theme={{...theme, colors: {...colors, primary: Colors.PRIMARY_900}}}
     secureTextEntry={true} 
     value={password}
     onChangeText={text => setPassword(text)}
     />
     <TextInput
-    style={{backgroundColor: Colors.PRIMARY_700}}
+    style={{backgroundColor: Colors.PRIMARY_200}}
     label="Confirm Password"
+    theme={{...theme, colors: {...colors, primary: Colors.PRIMARY_900}}}
     secureTextEntry={true} 
     value={confirmPassword}
     onChangeText={text => setConfirmPassword(text)}

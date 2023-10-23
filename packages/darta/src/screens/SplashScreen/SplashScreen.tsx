@@ -14,10 +14,9 @@ import { ETypes, StoreContext } from "../../state/Store";
 import { Artwork, GalleryPreview, MapPinCities, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types";
 import { listExhibitionPinsByCity } from "../../api/locationRoutes";
 import { getDartaUser } from "../../api/userRoutes";
-import { getUserLocalUid } from "../../utils/functions";
-import { listGalleryRelationships, listUserArtwork } from "../../utils/apiCalls";
-import { listDartaUserFollowsGallery } from "../../api/galleryRoutes";
-
+import { getUserUid } from "../../utils/functions";
+import { listArtworksToRateAPI, listGalleryRelationshipsAPI, listUserArtworkAPI } from "../../utils/apiCalls";
+import { DEFAULT_Gallery_Image } from "../../utils/constants";
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -42,7 +41,7 @@ function AnimatedSplashScreen({ children }) {
 
   const onImageLoaded = useCallback(async () => {
     try {
-      const userUuid = await getUserLocalUid();
+      const uid = await getUserUid();
   
       const [
         user,
@@ -51,22 +50,25 @@ function AnimatedSplashScreen({ children }) {
         exhibitionMapPins,
         likedArtwork,
         savedArtwork,
-        inquiredArtwork
+        inquiredArtwork,
+        artworksToRate
       ] = await Promise.all([
         // user
-        userUuid ? getDartaUser() : null,
+        uid ? getDartaUser({uid}) : null,
         //galleryFollows
-        listGalleryRelationships(),
+        listGalleryRelationshipsAPI(),
         //exhibitionPreviews
         listAllExhibitionsPreviewsForUser({ limit: 2 }),
         // exhibitionMapPins
         listExhibitionPinsByCity({ cityName: MapPinCities.newYork }),
         // likedArtwork
-        listUserArtwork({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 10 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 10 }),
         // savedArtwork
-        listUserArtwork({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 10 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 10 }),
         // inquiredArtwork
-        listUserArtwork({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10 })
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10 }),
+        // artworksToRate
+        listArtworksToRateAPI({startNumber: 0, endNumber: 10})
       ]);
 
   
@@ -75,6 +77,13 @@ function AnimatedSplashScreen({ children }) {
           type: ETypes.setUser,
           userData: user
         });
+      }
+
+      if(artworksToRate){
+        dispatch({
+          type: ETypes.setArtworksToRate,
+          artworksToRate
+        })
       }
   
       if (galleryFollows?.length) {
@@ -148,6 +157,7 @@ function AnimatedSplashScreen({ children }) {
       
   
       Promise.all(prefetchImageUrls);
+      await Image.prefetch(DEFAULT_Gallery_Image)
   
       dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
   

@@ -76,6 +76,7 @@ interface GalleryFields extends GalleryBase {
     galleryInstagram?: PrivateFields;
     galleryId?: string;
     galleryExhibitions?: ExhibitionObject;
+    galleryInternalEmail?: PublicFields;
 }
 export interface IGalleryProfileData extends GalleryFields, GalleryAddressFields {
 }
@@ -248,6 +249,7 @@ export type ExhibitionMapPin = {
     artworks?: {
         [key: string]: Artwork;
     };
+    _id?: string;
 };
 export type GalleryPreview = {
     galleryLogo: Images;

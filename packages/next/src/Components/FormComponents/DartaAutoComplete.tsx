@@ -40,38 +40,28 @@ export function DartaAutoComplete({
     category?: string;
   }>;
 }) {
-  const [isPrivate, setIsPrivate] = React.useState<boolean>(data?.isPrivate!);
-  const [options, setOptions] = React.useState([...inputOptions]);
-  const [inputValue, setInputValue] = React.useState(data?.value || '');
 
-  const handleInputChange = (event: any, value: string) => {
-    event.preventDefault();
-    setInputValue(value);
-  };
+  // const handleInputChange = (event: any, value: string) => {
+  //   event.preventDefault();
+  //   setInputValue(value);
+  // };
 
-  const innerWidthRef = React.useRef(800);
-  React.useEffect(() => {
-    innerWidthRef.current = window.innerWidth;
-  }, []);
+  // const handleAddNewOption = () => {
+  //   const newOption = {
+  //     label: inputValue.trim(),
+  //     value: inputValue.trim(),
+  //   };
 
-  const handleAddNewOption = () => {
-    const newOption = {
-      label: inputValue.trim(),
-      value: inputValue.trim(),
-    };
-
-    if (newOption) {
-      setOptions([...options, newOption]);
-    }
-  };
+  //   if (newOption) {
+  //     setOptions([...options, newOption]);
+  //   }
+  // };
   const testIdValue = fieldName.replace('.', '-');
+  const style = allowPrivate ? formStyles.inputTextContainer : formStyles.inputTextContainerTwoColumns;
+
   return (
     <Box
-      sx={
-        allowPrivate
-          ? formStyles.inputTextContainer
-          : formStyles.inputTextContainerTwoColumns
-      }>
+      sx={{...style}}>
       <DartaInputAdornment
         fieldName={fieldName}
         required={required}
@@ -85,9 +75,9 @@ export function DartaAutoComplete({
           data={data}
           register={register}
           control={control}
-          isPrivate={isPrivate}
+          isPrivate={false}
+          setIsPrivate={() => { }}
           testIdValue={testIdValue}
-          setIsPrivate={setIsPrivate}
           switchStringValue="isPrivate"
         />
       )}
@@ -96,33 +86,40 @@ export function DartaAutoComplete({
           key={fieldName}
           control={control}
           name={`${fieldName}.${'value'}`}
-          render={({field}) => (
-            <Autocomplete
-              freeSolo
-              id="autocomplete"
-              inputValue={field.value}
-              options={inputOptions}
-              onInputChange={(event, newValue) => {
-                field.onChange(newValue);
-                handleInputChange(event, newValue);
-              }}
-              onBlur={handleAddNewOption}
-              renderInput={params => (
-                <Box sx={formStyles.formTextField}>
-                  <TextField
-                    {...(params as any)}
-                    key={params.id}
-                    label={label}
-                    {...register(`${fieldName}.${'value'}`)}
-                    error={!!errors[fieldName]}
-                    variant="outlined"
-                    data-testid={`${fieldName}-input-field`}
-                  />
-                </Box>
-              )}
-            />
-          )}
-        />
+          {...register(`${fieldName}.${'value'}`)}
+          render={({field}) => {
+            if (true) {
+              return (
+                <Autocomplete
+                  freeSolo
+                  autoSelect
+                  id="autocomplete"
+                  inputValue={field?.value}
+                  options={inputOptions}
+                  onInputChange={(_event, newValue) => {
+                    field.onChange(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <Box sx={formStyles.formTextField}>
+                      <TextField
+                        {...(params as any)}
+                        key={params?.id}
+                        label={label}
+                        error={!!errors[fieldName]}
+                        variant="outlined"
+                        data-testid={`${fieldName}-input-field`}
+                      />
+                    </Box>
+                  )}
+                />
+                )
+            } 
+              return (
+                <Box/>
+              )
+            
+            
+            }}/>
         {errors[fieldName]?.value && (
           <Typography
             data-testid={`${testIdValue}-text-error-field`}
