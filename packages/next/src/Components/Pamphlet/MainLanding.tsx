@@ -13,7 +13,7 @@ const data1 = {
 const source1 = "/static/Home/Intro.mp4" 
 
 const data2 = {
-    headline: 'Good Taste Is Subjective',
+    headline: 'Taste Is Subjective',
     explainer1: 'With swipe-based art discovery, swipe up on the art you like, and we\'ll find more that suits',
     explainer2: 'Download darta and start training your digital art advisor today',
   };
@@ -31,15 +31,15 @@ const data3 = {
 
 const pages: ((props: AnimatedProps<{ style: React.CSSProperties }>) => React.ReactElement)[] = [
     ({ style }) => <animated.div style={{ ...style, 
-        position: 'absolute', top: 0, left: 0, right: 0 }}><IntroComponent data={data1} source={source1} /></animated.div>,
+        position: 'absolute', top: 30, left: 0, right: 0 }}><IntroComponent data={data1} source={source1} /></animated.div>,
     ({ style }) => <animated.div style={{ ...style, 
-        position: 'absolute', top: 0, left: 0, right: 0 }}><IntroComponent data={data2} source={source2} /></animated.div>,
+        position: 'absolute', top: 30, left: 0, right: 0 }}><IntroComponent data={data2} source={source2} /></animated.div>,
     ({ style }) => <animated.div style={{ ...style, 
-        position: 'absolute', top: 0, left: 0, right: 0 }}><IntroComponent data={data3} source={source3} /></animated.div>,
+        position: 'absolute', top: 30, left: 0, right: 0 }}><IntroComponent data={data3} source={source3} /></animated.div>,
   ]
 
   export function MainLanding() {
-    const duration = 2000;
+    const duration = 1500;
     const incrementDuration = duration / 10;
 
     const [currentIndex, setCurrentIndex] = React.useState<number>(0);
@@ -69,7 +69,13 @@ const pages: ((props: AnimatedProps<{ style: React.CSSProperties }>) => React.Re
 
     return (
         <Box onClick={() => setCurrentIndex((currentIndex + 1) % 3)} style={{position: 'relative'}}>
-            <Box sx={{height: '5%', width: '100%', padding: '1%'}}>
+            <Box sx={{
+                height: '5%', 
+                width: '100%', 
+                padding: '1%', 
+                display: 'flex', 
+                justifyContent: 'flex-end',
+                }}>
                 <CircularProgress 
                     variant="determinate" 
                     value={progress}

@@ -7,9 +7,8 @@ import {
 } from 'react-native-responsive-screen';
 import * as Colors from '@darta-styles'
 import { TextElement } from '../Elements/TextElement';
-import { editDartaUserAccount } from '../../api/userRoutes';
-import { firebaseSignUp } from '../../api/firebase';
 import { ETypes, StoreContext } from '../../state/Store';
+import { editDartaUserAccountAPI } from '../../utils/apiCalls';
 
 
 export const SignUp = ({
@@ -24,19 +23,15 @@ export const SignUp = ({
 
   const theme = useTheme()
   const { colors } = theme;
-  const [email, setEmail] = React.useState<string>()
-  const [password, setPassword] = React.useState<string>()
-  const [confirmPassword, setConfirmPassword] = React.useState<string>()
+  const [email, setEmail] = React.useState<string>(state.user?.email ?? "")
+  const [firstName, setFirstName] = React.useState<string>(state.user?.legalFirstName ?? "")
+  const [lastName, setLastName] = React.useState<string>(state.user?.legalLastName ?? "")
   const [error, setError] = React.useState<string>("")
   const [loading, setLoading] = React.useState<boolean>(false)
 
   const validateData = async () => {
-    if (!email || !password || !confirmPassword){
+    if (!email || !firstName || !lastName){
       setError("Please fill out all fields")
-      return false
-    }
-    if (password !== confirmPassword){
-      setError("Passwords do not match")
       return false
     }
     if (!email.match(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)){
@@ -46,20 +41,15 @@ export const SignUp = ({
     
     try {      
       setLoading(true)
-      const firebaseRes = await firebaseSignUp({ email, password });
-      const user = firebaseRes?.user;
-      if (user && user.uid && user.email){
+      const res = await editDartaUserAccountAPI({data : { email, legalFirstName: firstName, legalLastName: lastName }});
+      console.log({res})
+      if (res){
         dispatch({
           type: ETypes.setUser,
           userData: {
-            uid: user.uid,
-            email: user.email,
+            ...res
           }
         })            
-      }
-          
-      if (firebaseRes?.user?.uid) {
-        await editDartaUserAccount({ uid: firebaseRes.user.uid, email});
       }
       setDialogVisible(false)
     } catch (err) {
@@ -76,7 +66,7 @@ export const SignUp = ({
 
   return (
   <View>
-    <Dialog.Title >You'll need an account first</Dialog.Title>
+    <Dialog.Title style={{color: Colors.PRIMARY_50}}>You'll need an account first</Dialog.Title>
     <Dialog.Content style={{
         display: 'flex', 
         flexDirection: 'column', 
@@ -94,19 +84,17 @@ export const SignUp = ({
     <TextInput
     style={{backgroundColor: Colors.PRIMARY_200}}
     underlineColor="transparent"
-    label="Password"
+    label="First Name"
     theme={{...theme, colors: {...colors, primary: Colors.PRIMARY_900}}}
-    secureTextEntry={true} 
-    value={password}
-    onChangeText={text => setPassword(text)}
+    value={firstName}
+    onChangeText={text => setFirstName(text)}
     />
     <TextInput
     style={{backgroundColor: Colors.PRIMARY_200}}
-    label="Confirm Password"
+    label="Last Name"
     theme={{...theme, colors: {...colors, primary: Colors.PRIMARY_900}}}
-    secureTextEntry={true} 
-    value={confirmPassword}
-    onChangeText={text => setConfirmPassword(text)}
+    value={lastName}
+    onChangeText={text => setLastName(text)}
     />
     {error && (
         <TextElement style={{color: Colors.PRIMARY_50, fontSize: 20, fontWeight: 'bold', textAlign: 'center'}}>{error}</TextElement>

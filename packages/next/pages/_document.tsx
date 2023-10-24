@@ -30,7 +30,7 @@ export default function MyDocument({emotionStyleTags}: MyDocumentProps) {
         strategy="lazyOnload"
         src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
         />
-
+        <meta name="apple-itunes-app" content="app-id=6469072913" />
         <Script strategy="lazyOnload">
           {`
                       window.dataLayer = window.dataLayer || [];

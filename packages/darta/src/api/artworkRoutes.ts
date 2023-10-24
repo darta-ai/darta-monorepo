@@ -9,7 +9,6 @@ export async function readArtworkForUser({artworkId} : {artworkId: string}){
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'readArtworkForUser'})
-    console.log('error at read artwork')
     return error.message;
   }
 }

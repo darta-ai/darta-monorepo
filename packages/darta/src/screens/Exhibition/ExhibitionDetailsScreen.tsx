@@ -216,7 +216,6 @@ export function ExhibitionDetailsScreen({
 
 
   async function fetchMostRecentExhibitionData() {
-    console.log('triggered most recent exhibition')
     if (!route?.params?.locationId) return
     try {
         const {locationId} = route.params

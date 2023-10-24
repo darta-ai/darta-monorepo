@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  RefreshControl,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -17,6 +18,9 @@ import {getButtonSizes} from '../utils/functions';
 import {GalleriesFollowing} from '../components/Gallery/GalleriesFollowing';
 import {UserPersonalWorkSelector} from '../components/User/UserPersonalWorkSelector';
 import {UserProfile} from '../components/User/UserProfile';
+import { ETypes, StoreContext } from '../state/Store';
+import { listGalleryRelationshipsAPI, listUserArtworkAPI } from '../utils/apiCalls';
+import { GalleryPreview, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
 
 const HEADER_MAX_HEIGHT = hp('20%');
 const HEADER_MIN_HEIGHT = hp('10%');
@@ -40,44 +44,9 @@ export const userHomeStyles = StyleSheet.create({
   },
 });
 
-const exploreData = {
-  '0': {
-    name: 'Liliane Tomasko',
-    details: 'los angeles based artist',
-    id: '506b34324466170002001bef',
-    preview:
-      'https://d32dm0rphc51dk.cloudfront.net/dYP6Mb47wE9tutjWMK4xgA/larger.jpg',
-    type: 'artist',
-  },
-  '1': {
-    name: 'All Street',
-    details: 'LES gallery',
-    id: '5a74ae26c9dc246d3cec9b16',
-    preview:
-      'https://d32dm0rphc51dk.cloudfront.net/8_wVaGb1c3Il5x_cpbzZRw/larger.jpg',
-    type: 'gallery',
-    logo: 'https://images.squarespace-cdn.com/content/v1/62337b61c3a3126b7627f968/b811248e-cf21-4c2c-a1e8-80252fc99a6a/favicon.ico?format=100w',
-  },
-  '2': {
-    name: 'Deathly Still',
-    details: 'curated works by amy curation',
-    id: '60b26fc611c5550012ddfec9',
-    preview:
-      'https://d32dm0rphc51dk.cloudfront.net/V3-CQH0rCzu-K_BY1RDUyw/larger.jpg',
-    type: 'curator',
-    logo: 'https://s3.amazonaws.com/files.collageplatform.com.prod/image_cache/favicon/application/599f12405a4091c6048b4568/17a4320352e109937d45258c89ac8a91.png',
-  },
-  '3': {
-    name: 'Simon Ko',
-    details: 'new york based artist',
-    id: '60b8ed5ce542ef000f5f55e8',
-    preview:
-      'https://d32dm0rphc51dk.cloudfront.net/LL1Rsz2uFtNduINKDxeEMA/larger.jpg',
-    type: 'artist',
-  },
-};
 
 export function UserHome({navigation}: {navigation: any}) {
+  const {dispatch} = React.useContext(StoreContext);
   const localButtonSizes = getButtonSizes(hp('100%'));
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -107,6 +76,51 @@ export function UserHome({navigation}: {navigation: any}) {
       },
     },
   );
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    try{
+      const [galleryFollows, savedArtwork, inquiredArtwork] = await Promise.all([
+        listGalleryRelationshipsAPI(),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 100 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 100 }),
+      ])
+
+      const processArtworkData = (data: any, dispatchType: ETypes) => {
+        if (data && Object.values(data).length > 0) {
+          let artworkIds: { [key: string]: boolean } = {};
+          artworkIds = Object.values(data).reduce((acc: any, el: any) => ({ ...acc, [el?._id]: true }), {}) as { [key: string]: boolean };
+          dispatch({
+            type: dispatchType,
+            artworkIds
+          });
+        }
+        return data;
+      };
+
+      processArtworkData(savedArtwork, ETypes.setUserSavedArtworkMulti);
+      processArtworkData(inquiredArtwork, ETypes.setUserInquiredArtworkMulti);
+
+      if (galleryFollows?.length) {
+        const galleryPreviews: {[key: string] : GalleryPreview} = galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: el }), {})
+        dispatch({
+          type: ETypes.setGalleryPreviewMulti,
+          galleryPreviews
+        });
+        dispatch({
+          type: ETypes.setUserFollowGalleriesMulti,
+          galleryFollowIds: galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: true }), {})
+        });
+      }
+      } catch {
+        setRefreshing(false);
+    }
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 500)  }, []);
   return (
     <View style={userHomeStyles.userHomeContainer}>
       <Animated.View
@@ -117,7 +131,7 @@ export function UserHome({navigation}: {navigation: any}) {
           localButtonSizes={localButtonSizes}
         />
       </Animated.View>
-      <ScrollView onScroll={handleScroll} scrollEventThrottle={16} style={{height: hp('60%'), marginTop: hp('5%')}}>
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />} onScroll={handleScroll} scrollEventThrottle={16} style={{height: hp('60%'), marginTop: hp('5%')}}>
         <View> 
             <View>
               <UserPersonalWorkSelector

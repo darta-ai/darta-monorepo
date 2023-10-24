@@ -35,6 +35,7 @@ export class RecommenderService implements IRecommenderService {
     endNumber: number;
   }): Promise<{[key: string] : Artwork}> {
     const userId = this.userService.generateDartaUserId({uid});
+    const count = endNumber - startNumber;
     const ArtworkQuery = `
     WITH ${CollectionNames.Artwork}, ${CollectionNames.ArtworkArtists}, ${CollectionNames.Galleries}, ${CollectionNames.ArtworkMediums}
     LET allArtwork = (
@@ -67,7 +68,7 @@ export class RecommenderService implements IRecommenderService {
           RETURN v
         )[0]
       
-        LIMIT @limit
+        LIMIT @limit, @count
         RETURN {
           artwork: art,
           medium: medium.value,
@@ -77,7 +78,7 @@ export class RecommenderService implements IRecommenderService {
     `
 
     try {
-      const cursor = await this.db.query(ArtworkQuery, {userId, limit: endNumber});
+      const cursor = await this.db.query(ArtworkQuery, {userId, limit: endNumber, count});
       const artworks: any = await cursor.all();
       const processedData = artworks.map((item: any) => ({
           ...item.artwork,
@@ -91,7 +92,6 @@ export class RecommenderService implements IRecommenderService {
         results[counter.toString()] = filterOutPrivateRecordsSingleObject(artwork);
         counter+=1;
       }
-      // console.log({results})
       return results;
     } catch (error: any) {
       throw new Error(error.message);

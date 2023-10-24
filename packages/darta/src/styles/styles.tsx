@@ -91,17 +91,6 @@ export const footerColors = {
 
 export default StyleSheet.create({
   // COMPONENT - CARD ITEM
-  containerCardItem: {
-    backgroundColor: Colors.PRIMARY_50,
-    borderRadius: 8,
-    alignItems: 'center',
-    margin: 2,
-    elevation: 1,
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    shadowColor: Colors.BLACK,
-    shadowOffset: {height: 0, width: 0},
-  },
   matchesCardItem: {
     marginTop: -35,
     backgroundColor: Colors.PRIMARY_COLOR,
@@ -380,9 +369,11 @@ export const galleryStyles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 4,
     borderColor: 'grey',
+    shadowColor: 'grey',
+    backgroundColor: 'transparent',
     width: '100%',
     height: '100%',
-    shadowOffset: {width: -2, height: 4},
+    shadowOffset: {width: -1, height: 4},
     paddingBottom: 0.3,
     paddingLeft: 0.3,
   },

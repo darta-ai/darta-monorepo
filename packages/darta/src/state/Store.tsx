@@ -241,7 +241,7 @@ interface IAction {
   galleryData?: IGalleryProfileData;
   galleryDataMulti?: {[key: string]: IGalleryProfileData}
   artworkData?: Artwork;
-  artworkDataMulti?: {[key: string]: Artwork | null} 
+  artworkDataMulti?: {[key: string]: Artwork } | void 
 
   currentExhibitionHeader?: string;
   previousExhibitionHeader?: string;

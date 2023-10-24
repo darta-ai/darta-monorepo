@@ -3,7 +3,7 @@
     "name": "darta",
     "slug": "darta",
     "scheme": "darta",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./src/assets/darta-icon.png",
     "userInterfaceStyle": "dark",
@@ -24,7 +24,11 @@
       "googleServicesFile": "./googleService/GoogleService-Info.plist", 
       "infoPlist": {
         "LSApplicationQueriesSchemes": ["instagram"]
-      }
+      },
+      "associatedDomains": [
+        "applinks:darta.art",
+        "applinks:f47a-2603-7000-4001-17cf-f508-e235-43ab-ba29.ngrok-free.app"
+      ]
     },
     "android": {
       "adaptiveIcon": {

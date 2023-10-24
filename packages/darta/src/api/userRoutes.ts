@@ -2,7 +2,6 @@ import axios from 'axios';
 import { Exhibition, GalleryPreview, Images, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}users`;
-console.log({URL})
 
 export async function createUser({
     uid,
@@ -81,7 +80,6 @@ export async function editDartaUserAccount({
   email?: string;
   uid?: string;
 }): Promise<any> {
-  console.log({uid})
   try {
     const {data} = await axios.post(`${URL}/editDartaUser`, {profilePicture,
       userName,

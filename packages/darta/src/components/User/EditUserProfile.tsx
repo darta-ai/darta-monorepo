@@ -246,7 +246,6 @@ export function EditUserProfile({navigation} : {navigation: any}) {
   {
       setLoading(true)
       const uid = auth().currentUser?.uid
-      console.log(uid)
       const value = getValues()
      if (formData.userName.isEditing && uid) {
         const results = await editDartaUserAccount({userName: value.userName, uid})

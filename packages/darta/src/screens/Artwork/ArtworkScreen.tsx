@@ -3,9 +3,8 @@ import {Alert, View, Vibration} from 'react-native';
 import {ETypes, StoreContext} from '../../state/Store';
 import {TombstonePortrait} from '../../components/Tombstone/_index';
 import {NeedAccountDialog} from '../../components/Dialog/NeedAccountDialog';
-import { createUserArtworkRelationship } from '../../api/artworkRoutes';
 import { IGalleryProfileData, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
-import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
+import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
 import auth from '@react-native-firebase/auth';
 import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
 import { GalleryNavigatorEnum, GalleryRootStackParamList } from '../../typing/routes';
@@ -123,6 +122,7 @@ export function ArtworkScreen({route}: {route: any}) {
         type: ETypes.setUserInquiredArtwork,
         artworkId,
       })
+      inquireSuccessAlert()
     } catch(error){
       console.log(error)
     } 
@@ -136,15 +136,18 @@ export function ArtworkScreen({route}: {route: any}) {
       // console.log(auth)
     }
     const email = auth().currentUser?.email ?? state.user?.email;
-    if (email){
-      Alert.alert(`Share your email and full name with the gallery?`, `Do you consent to sharing ${email}?`, [
+    const firstName = state.user?.legalFirstName;
+    const lastName = state.user?.legalLastName;
+    const galleryName = state.galleryData?.[artOnDisplay?.galleryId]?.galleryName?.value ?? "the gallery";
+    if (email && firstName && lastName){
+      Alert.alert(`Share your name and email with ${galleryName}?`, `We will email ${galleryName} and let them know you're interested`, [
         {
           text: 'Cancel',
           onPress: () => {},
           style: 'destructive',
         },
         {
-          text: `Yes, share`,
+          text: `Yes`,
           onPress: () => inquireArtwork({artworkId}),
         },
       ])
@@ -152,6 +155,15 @@ export function ArtworkScreen({route}: {route: any}) {
       setDialogVisible(true)
     }
   };
+
+  const inquireSuccessAlert = () => {
+    Alert.alert(`We've let the gallery know.`, `If they are interested in proceeding, they will reach out to you directly`, [
+      {
+        text: `Ok`,
+        onPress: () => {},
+      },
+    ])
+  }
 
   return (
     <View>

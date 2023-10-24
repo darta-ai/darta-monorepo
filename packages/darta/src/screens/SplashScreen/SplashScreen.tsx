@@ -58,15 +58,15 @@ function AnimatedSplashScreen({ children }) {
         //galleryFollows
         listGalleryRelationshipsAPI(),
         //exhibitionPreviews
-        listAllExhibitionsPreviewsForUser({ limit: 2 }),
+        listAllExhibitionsPreviewsForUser({ limit: 10 }),
         // exhibitionMapPins
         listExhibitionPinsByCity({ cityName: MapPinCities.newYork }),
         // likedArtwork
-        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 10 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 100 }),
         // savedArtwork
-        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 10 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 100 }),
         // inquiredArtwork
-        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 100 }),
         // artworksToRate
         listArtworksToRateAPI({startNumber: 0, endNumber: 10})
       ]);

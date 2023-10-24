@@ -32,7 +32,7 @@ export const icons: Icons = {
   menu: 'menu',
   like: 'thumb-up-outline',
   dislike: 'thumb-down-outline',
-  save: 'heart',
+  save: 'heart-circle-outline',
   minus: 'minus',
   screenRotation: 'screen-rotation',
   navigateLeft: 'pan-left',
@@ -41,11 +41,12 @@ export const icons: Icons = {
   viewSettings: 'eye-settings-outline',
   downWardsNavigation: 'down',
   learnMore: 'information',
-  inquire: 'message-processing-outline',
+  inquire: 'bell-circle-outline',
   cog: 'cog-outline',
   thumbsUpDown: 'thumbs-up-down-outline',
   saveSettings: 'content-save',
   brokenHeart: 'heart-broken',
+  removeRating: 'close-circle-outline',
 
   // other
   instagram: 'instagram',

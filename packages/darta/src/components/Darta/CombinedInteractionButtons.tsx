@@ -1,7 +1,6 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Animated, StyleSheet, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
-import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import * as Colors from '@darta-styles'
 
@@ -11,11 +10,11 @@ import {
   OpenStateEnum,
   RatingEnum,
 } from '../../typing/types';
-import {TextElement} from '../Elements/_index';
 import {icons} from '../../utils/constants';
-import {galleryInteractionStyles, globalTextStyles} from '../../styles/styles';
-import {StoreContext} from '../../state/Store';
+import {galleryInteractionStyles} from '../../styles/styles';
+import {ETypes, StoreContext} from '../../state/Store';
 import { Artwork, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
+import { deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
 
 export function CombinedInteractionButtons({
   artOnDisplay,
@@ -24,7 +23,6 @@ export function CombinedInteractionButtons({
   isPortrait,
   openRatings,
   rateArtwork,
-  toggleArtTombstone,
   toggleButtonView,
 }: {
   artOnDisplay: Artwork;
@@ -33,7 +31,6 @@ export function CombinedInteractionButtons({
   isPortrait: boolean;
   openRatings: boolean;
   rateArtwork: (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => void;
-  toggleArtTombstone: () => void;
   toggleButtonView: (
     openIdentifier: OpenStateEnum,
     instructions?: boolean,
@@ -49,11 +46,47 @@ export function CombinedInteractionButtons({
 
   const [currentArtRating, setCurrentArtRating] = useState<IUserArtworkRated>({});
 
-  const {state} = useContext(StoreContext);
+  const {state, dispatch} = useContext(StoreContext);
 
   React.useEffect(() => {
     modifyDisplayRating()
   }, [artOnDisplay, state.userLikedArtwork, state.userDislikedArtwork, state.userSavedArtwork])
+
+  const handleArtworkRating = async (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => {
+    const artworkOnDisplayId = artOnDisplay?._id;
+    const likedArtworks = state?.userLikedArtwork;
+    const dislikedArtworks = state?.userDislikedArtwork;
+    const savedArtworks = state?.userSavedArtwork;
+    const userLiked = likedArtworks?.[artworkOnDisplayId!] || false
+    const userSaved = savedArtworks?.[artworkOnDisplayId!] || false
+    const userDisliked = dislikedArtworks?.[artworkOnDisplayId!] || false
+
+    if (userLiked && rating === USER_ARTWORK_EDGE_RELATIONSHIP.LIKE){
+      await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
+      dispatch({
+        type: ETypes.removeUserLikedArtwork,
+        artworkId: artOnDisplay._id,
+      })
+      return USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED
+    } else if (userSaved && rating === USER_ARTWORK_EDGE_RELATIONSHIP.SAVE){
+      await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
+      dispatch({
+        type: ETypes.removeUserSavedArtwork,
+        artworkId: artOnDisplay._id,
+      })
+      return USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED
+    } else if (userDisliked && rating === USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE){
+      dispatch({
+        type: ETypes.removeUserDislikedArtwork,
+        artworkId: artOnDisplay._id,
+      })
+      await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE})
+      return USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED
+    } else {
+      return rating
+    }
+
+  }
 
   const modifyDisplayRating = () => {
     const artworkOnDisplayId = artOnDisplay?._id;
@@ -77,7 +110,7 @@ export function CombinedInteractionButtons({
       setRatingDisplayIcon(icons.like)
     } else if (userDisliked){
       setCurrentArtRating({[RatingEnum.dislike]: true})
-      setRatingDisplayColor(Colors.PRIMARY_200)
+      setRatingDisplayColor(Colors.PRIMARY_800)
       setIsRated(true)
       setRatingDisplayIcon(icons.dislike)
     } else {
@@ -160,19 +193,10 @@ export function CombinedInteractionButtons({
               size={localButtonSizes.medium}
               style={galleryInteractionStyles.secondaryButton}
               testID="likeButton"
-              onPress={() => {
-                rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE);
+              onPress={async () => {
+                rateArtwork(await handleArtworkRating(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE));
               }}
             />
-            {/* <TextElement
-              style={[
-                globalTextStyles.centeredText,
-                galleryInteractionStyles.textLabelsStyle,
-                SSCombinedInteractionButtons.globalTextJustifyEnd,
-              ]}>
-              like
-              {currentArtRating[RatingEnum.like] && 'd'}
-            </TextElement> */}
           </View>
           <View>
             <IconButton
@@ -191,18 +215,10 @@ export function CombinedInteractionButtons({
               size={localButtonSizes.medium}
               style={galleryInteractionStyles.secondaryButton}
               testID="saveButton"
-              onPress={() => {
-                rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE);
+              onPress={async () => {
+                rateArtwork(await handleArtworkRating(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE));
               }}
             />
-            {/* <TextElement
-              style={[
-                globalTextStyles.centeredText,
-                galleryInteractionStyles.textLabelsStyle,
-              ]}>
-              save
-              {currentArtRating[RatingEnum.save] && 'd'}
-            </TextElement> */}
           </View>
           <View>
             <IconButton
@@ -213,7 +229,7 @@ export function CombinedInteractionButtons({
               }
               iconColor={
                 currentArtRating[RatingEnum.dislike]
-                  ? Colors.PRIMARY_100
+                  ? Colors.PRIMARY_800
                   : Colors.PRIMARY_200
               }
               disabled={!openRatings}
@@ -221,18 +237,10 @@ export function CombinedInteractionButtons({
               size={localButtonSizes.medium}
               style={galleryInteractionStyles.secondaryButton}
               testID="dislikeButton"
-              onPress={() => {
-                rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE);
+              onPress={async () => {
+                rateArtwork(await handleArtworkRating(USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE));
               }}
             />
-            {/* <TextElement
-              style={[
-                globalTextStyles.centeredText,
-                galleryInteractionStyles.textLabelsStyle,
-              ]}>
-              dislike
-              {currentArtRating[RatingEnum.dislike] && 'd'}
-            </TextElement> */}
           </View>
         </Animated.View>
       </View>
