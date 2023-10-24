@@ -258,7 +258,8 @@ export class UserService implements IUserService {
     uid: string;
   }): Promise<any> {
     if (!uid) return false;
-    const fullUserId = this.generateDartaUserId({uid});
+    // const fullUserId = this.generateDartaUserId({uid});
+    // console.log({fullUserId})
     
     // ##### profile picture #####
 
@@ -297,9 +298,9 @@ export class UserService implements IUserService {
       }
     }
 
-    const results = await this.nodeService.upsertNodeById({
+    const results = await this.nodeService.upsertNodeByKey({
       collectionName: CollectionNames.DartaUsers,
-      id: fullUserId,
+      key: uid,
       data: {
         userName,
         uid,

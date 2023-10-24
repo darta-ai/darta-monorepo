@@ -1,0 +1,27 @@
+{
+    "applinks": {
+      "details": [
+        {
+          "appIDs": [
+            "Q48593UT73.com.darta.darta"
+          ],
+          "components": [
+            {
+              "/": "*",
+              "comment": "Matches all routes"
+            }
+          ]
+        }
+      ]
+    },
+    "activitycontinuation": {
+      "apps": [
+        "Q48593UT73.com.darta.darta"
+      ]
+    },
+    "webcredentials": {
+      "apps": [
+        "Q48593UT73.com.darta.darta"
+      ]
+    }
+  }

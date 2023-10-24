@@ -38,7 +38,7 @@ export function IntroComponent({data, source} : {data: dataType, source: string 
           </Box>
         </Box>
       <Box sx={splashStyles.phonePreviewContainer}>
-        <video style={{height: '100%', width: '100%'}} autoPlay loop muted playsInline>
+        <video style={{height: '100%', minWidth: '100%'}} autoPlay loop muted playsInline>
             <source src={source} type="video/mp4" />
         </video>
       </Box>

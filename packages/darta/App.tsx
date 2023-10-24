@@ -66,9 +66,13 @@ const theme = {
   },
 };
 
-
 function App() {
   const {state, dispatch} = React.useContext( StoreContext );
+
+  Linking.addEventListener('url', (event) => {
+      // console.log("Received deep link:", event.url);
+      // Handle the deep link as needed
+  });
 
   React.useEffect(() => {
     auth().onAuthStateChanged((userState: FirebaseAuthTypes.User | null) => {

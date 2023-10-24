@@ -1,6 +1,6 @@
-import { Artwork, GalleryPreview, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types/dist";
+import { Artwork, GalleryPreview, Images, MobileUser, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types/dist";
 import { createUserArtworkRelationship, deleteUserArtworkRelationship, listUserArtworkAPIRelationships } from "../api/artworkRoutes";
-import { createDartaUserFollowGallery, deleteDartaUserFollowGallery, listDartaUserFollowsGallery } from "../api/userRoutes";
+import { createDartaUserFollowGallery, deleteDartaUserFollowGallery, editDartaUserAccount, listDartaUserFollowsGallery } from "../api/userRoutes";
 import {listArtworksToRate} from "../api/recommenderRoutes";
 import auth from '@react-native-firebase/auth';
 
@@ -77,6 +77,28 @@ export const listArtworksToRateAPI = async ({startNumber, endNumber} :{startNumb
         const uid = auth().currentUser?.uid;
         if (uid) {
         return await listArtworksToRate({uid, startNumber, endNumber});
+        }
+    } catch (error){
+        console.log(error)
+        throw new Error(error)
+    }
+}
+
+export const editDartaUserAccountAPI = async ({
+    data
+  }: {
+    data : {
+    profilePicture?: Images
+    userName?: string;
+    legalFirstName?: string;
+    legalLastName?: string;
+    email?: string;
+    }
+  }): Promise<MobileUser | void> => {
+    try{
+        const uid = auth().currentUser?.uid;
+        if (uid) {
+        return await editDartaUserAccount({uid, ...data});
         }
     } catch (error){
         console.log(error)

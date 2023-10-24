@@ -6,6 +6,7 @@ import {
   ImageSourcePropType,
   ScrollView,
   StyleSheet,
+  Animated,
   View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image'
@@ -23,13 +24,14 @@ import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI } from '../.
 import { Onboard } from '../Darta/Onboard';
 
 export function ArtOnWall({
+  artworkDimensions,
   artOnDisplay,
   artImage,
   backgroundImage,
   backgroundImageDimensionsPixels,
   currentZoomScale,
-  artworkDimensions,
   isPortrait,
+  opacityAnimatedValue,
   wallHeight,
   rateArtwork,
   setCurrentZoomScale,
@@ -43,6 +45,7 @@ export function ArtOnWall({
   currentZoomScale: number;
   artworkDimensions: Artwork['artworkDimensions'] | undefined;
   isPortrait: boolean;
+  opacityAnimatedValue: any;
   wallHeight: number;
   rateArtwork: (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => void;
   setCurrentZoomScale: (arg0: number) => void;
@@ -300,7 +303,7 @@ export function ArtOnWall({
     },
     screenContainer: {
       width: backgroundImageDimensionsPixels.width,
-      // height: hp('100%'),
+      height: hp('100%'),
     },
     artContainer: {
       top: artImageLocation?.top,
@@ -310,7 +313,7 @@ export function ArtOnWall({
     },
     artwork: {
       height: artImageSize?.height,
-      // width: artImageSize?.width,
+      width: artImageSize?.width,
       resizeMode: 'contain',
     },
     activityIndicator: {
@@ -350,16 +353,18 @@ export function ArtOnWall({
                 <View style={galleryStylesPortrait.artContainer}>
                   <View style={galleryStyles.frameStyle}>
                     {artImage ? (
-                      <FastImage
-                        source={{uri: artImage, priority: FastImage.priority.normal}}
-                        style={galleryStylesPortrait.artwork}
-                        resizeMode={FastImage.resizeMode.contain}
-                      />
-                    ) : (
-                      <ActivityIndicator
-                        style={galleryStylesPortrait.activityIndicator}
-                      />
-                    )}
+                        <Animated.View style={{opacity: opacityAnimatedValue}}>
+                          <FastImage
+                            source={{uri: artImage, priority: FastImage.priority.normal}}
+                            style={galleryStylesPortrait.artwork}
+                            resizeMode={FastImage.resizeMode.contain}
+                          />
+                        </Animated.View>
+                        ) : (
+                          <ActivityIndicator
+                          style={galleryStylesPortrait.activityIndicator}
+                          />
+                          )}
                   </View>
                 </View>
               </View>

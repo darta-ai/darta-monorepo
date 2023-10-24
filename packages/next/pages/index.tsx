@@ -11,7 +11,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
-    minHeight: '200vh',
+    minHeight: '170vh',
     height: '100%',
     backgroundColor: Colors.PRIMARY_500,
     '@media (min-width:800px)': {

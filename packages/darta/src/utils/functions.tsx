@@ -16,7 +16,6 @@ export const getUserUid = async () => {
               await createUser({uid: user.user?.uid})
             }
         }
-        console.log({uid})
         return uid;
     } catch (error) {
         console.error('Failed to get user UID:', error);
@@ -71,7 +70,8 @@ export function customFormatTimeString(date: Date): string {
   console
 
   return `${hours}:${minutes} ${amPm}`;
-}
+} 
+
 
 export function simplifyAddress(address: string | undefined | null) {
   if (!address) {

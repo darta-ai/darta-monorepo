@@ -135,95 +135,188 @@ export function TombstonePortrait({
 
 
   const [isSetOneVisible, setIsSetOneVisible] = React.useState(true);
+  const [isSaved, setIsSaved] = React.useState(false);
+  const [isInquired, setIsInquired] = React.useState(false);
+  const [isLiked, setIsLiked] = React.useState(false);
   const opacitySetOne = React.useRef(new Animated.Value(1)).current; 
-  const opacitySetTwo = React.useRef(new Animated.Value(0)).current;
   const translateY = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
     opacitySetOne.addListener(() => {})
-    opacitySetTwo.addListener(() => {})
     translateY.addListener(() => {})
   }, [])
 
-
-  const toggleButtons = () => {
+  const toggleButtons = ({callback} : {callback?: () => void}) => {
+    // Animate Out
     Animated.parallel([
       Animated.timing(opacitySetOne, {
-        toValue: isSetOneVisible ? 0 : 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacitySetTwo, {
-        toValue: isSetOneVisible ? 1 : 0,
-        duration: 300,
+        toValue: 0,  // Fade out
+        duration: 200,
         useNativeDriver: true,
       }),
       Animated.timing(translateY, {
-        toValue: isSetOneVisible ? 100 : 0,
-        duration: 300,
+        toValue: 100,  // Move down
+        duration: 200,
         useNativeDriver: true,
       }),
-    ]).start(() => {
-      setIsSetOneVisible(!isSetOneVisible);
+    ]).start(async () => {
+      setIsSetOneVisible(!isSetOneVisible);  // Toggle the state
+      
+      // Run the callback after animating out
+      if (callback) {
+        await callback();
+      }
+      
+      // Animate In
+      Animated.parallel([
+        Animated.timing(opacitySetOne, {
+          toValue: 1,  // Fade in
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(translateY, {
+          toValue: 0,  // Move up
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
     });
-  };
-  const [artworkStatus, setArtworkStatus] = React.useState<USER_ARTWORK_EDGE_RELATIONSHIP | null>(null);
+};
+
+
+  
   const [buttonColor, setButtonColor] = React.useState<string>(Colors.PRIMARY_300);
-  const [buttonIcon, setButtonIcon] = React.useState<string>(icons.like);
 
   React.useEffect(() => {
     const artworkId = artwork?._id!;
-    if (state.userSavedArtwork?.[artworkId]){
-      setArtworkStatus(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE)
-      setButtonColor(Colors.PRIMARY_600)
-      setButtonIcon(icons.save)
-      toggleButtons()
-    } else if (state.userLikedArtwork?.[artworkId]){
-      setArtworkStatus(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE)
-      setButtonColor(Colors.PRIMARY_300)
-      setButtonIcon(icons.like)
-      toggleButtons()
-    }
-    else if (state.userInquiredArtwork?.[artworkId]){
-      setArtworkStatus(USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE)
+    if (state.userInquiredArtwork?.[artworkId]){
       setButtonColor(Colors.PRIMARY_800)
-      setButtonIcon(icons.inquire)
-      toggleButtons()
+      setIsInquired(true)
+    }
+    if (state.userSavedArtwork?.[artworkId]){
+      setIsSaved(true)
+      setButtonColor(Colors.PRIMARY_600)
+    }
+    if (state.userLikedArtwork?.[artworkId]){
+      setButtonColor(Colors.PRIMARY_300)
+      setIsLiked(true)
     }
     
   }, [state.userInquiredArtwork, state.userSavedArtwork, state.userLikedArtwork]);
 
-  const removeRating = async (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => {
-    try {
-      await deleteArtworkRelationshipAPI({artworkId: artwork._id!, action: rating})
-
-      switch(rating){
-        case USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE:
-          dispatch({
-            type: ETypes.removeUserInquiredArtwork,
-            artworkId: artwork._id!,
-          })
-          break;
-        case USER_ARTWORK_EDGE_RELATIONSHIP.SAVE:
-          dispatch({
-            type: ETypes.removeUserSavedArtwork,
-            artworkId: artwork._id!,
-          })
-          break;
-        case USER_ARTWORK_EDGE_RELATIONSHIP.LIKE:
-          dispatch({
-            type: ETypes.removeUserLikedArtwork,
-            artworkId: artwork._id!,
-          })
-          break;
-      }
-      toggleButtons()
-    } catch(error){
-      console.log(error)
-    } finally {
-      
-    }
+  const removeSavedRating = async () => {
+    dispatch({
+      type: ETypes.removeUserSavedArtwork,
+      artworkId: artwork._id!,
+    })
+    setIsSaved(false)
+    await deleteArtworkRelationshipAPI({artworkId: artwork._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
   }
+
+  const removeInquiredRating = async () => {
+    dispatch({
+      type: ETypes.removeUserInquiredArtwork,
+      artworkId: artwork._id!,
+    })
+    setIsInquired(false)
+    await deleteArtworkRelationshipAPI({artworkId: artwork._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
+  }
+
+  const removeLikeRating = async () => {
+    dispatch({
+      type: ETypes.removeUserLikedArtwork,
+      artworkId: artwork._id!,
+    })
+    setIsLiked(false)
+    await deleteArtworkRelationshipAPI({artworkId: artwork._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
+  }
+
+  const SaveButton = () => (
+      <View>
+        <Button
+          icon={icons.save}
+          dark
+          loading={saveLoading}
+          buttonColor={Colors.PRIMARY_600}
+          mode="contained"
+          onPress={() => toggleButtons({callback: () => saveArtwork({artworkId: artwork._id!})})}>
+          Save
+        </Button>
+    </View>
+  )
+
+  const InquireButton = () => (
+    <View>
+      <Button
+        icon={icons.inquire}
+        dark
+        buttonColor={Colors.PRIMARY_800}
+        mode="contained"
+        onPress={() => toggleButtons({callback: () => inquireAlert({artworkId: artwork._id!})})}>
+
+        Inquire
+      </Button>
+    </View>
+  )
+
+  const LikeButton = () => (
+    <View>
+      <Button
+        icon={icons.like}
+        dark
+        buttonColor={Colors.PRIMARY_300}
+        loading={likeLoading}
+        mode="contained"
+        onPress={() => toggleButtons({callback: () => likeArtwork({artworkId: artwork._id!})})}>
+
+        Like
+      </Button>
+    </View>
+  )
+
+  const RemoveInquire = () => (
+    <View>
+      <Button
+        icon={icons.removeRating}
+        dark
+        buttonColor={Colors.PRIMARY_800}
+        loading={likeLoading}
+        mode="contained"
+        onPress={() => toggleButtons({callback: () => removeInquiredRating()})}>
+        remove inquire
+      </Button>
+    </View>
+  )
+
+
+  const RemoveSave = () => (
+    <View>
+      <Button
+        icon={icons.removeRating}
+        dark
+        buttonColor={Colors.PRIMARY_600}
+        loading={likeLoading}
+        mode="contained"
+        onPress={() => toggleButtons({callback: () => removeSavedRating()})}>
+        remove save
+      </Button>
+    </View>
+  )
+
+  const RemoveLike = () => (
+    <View style={{width: '50%'}}>
+      <Button
+        icon={icons.removeRating}
+        dark
+        buttonColor={buttonColor}
+        loading={likeLoading}
+        mode="contained"
+        onPress={() => toggleButtons({callback: () => removeLikeRating()})}>
+        remove like
+      </Button>
+    </View>
+  )
+
 
   return (
     <View style={{backgroundColor: Colors.PRIMARY_50, height: hp('100%')}}>
@@ -287,60 +380,30 @@ export function TombstonePortrait({
             {displayPrice}
           </TextElement>
         </View>
-        <Animated.View style={{...SSTombstonePortrait.inquireButton, opacity: opacitySetOne, transform: [{ translateY: translateY }] }}>
-          {isSetOneVisible && (
+        <Animated.View 
+          style={{
+            ...SSTombstonePortrait.inquireButton,
+            opacity: opacitySetOne,
+            transform: [{ translateY: translateY }]
+          }}>
+          {!isLiked && !isSaved && !isInquired && (
             <>
-              <View>
-                <Button
-                  icon={icons.like}
-                  dark
-                  buttonColor={Colors.PRIMARY_300}
-                  loading={likeLoading}
-                  mode="contained"
-                  onPress={() => likeArtwork({artworkId: artwork._id!})}>
-                  Like
-                </Button>
-              </View>
-              <View>
-                <Button
-                  icon={icons.save}
-                  dark
-                  loading={saveLoading}
-                  buttonColor={Colors.PRIMARY_600}
-                  mode="contained"
-                  onPress={() => saveArtwork({artworkId: artwork._id!})}>
-                  Save
-                </Button>
-              </View>
-              {artwork?.canInquire?.value !== "No" && (
-              <View>
-                <Button
-                  icon={icons.inquire}
-                  dark
-                  buttonColor={Colors.PRIMARY_800}
-                  mode="contained"
-                  onPress={() => inquireAlert({artworkId: artwork._id!})}>
-                  Inquire
-                </Button>
-              </View>
-              )}
+              <LikeButton />
+              <SaveButton />
             </>
           )}
-        </Animated.View>
-        <Animated.View style={{...SSTombstonePortrait.inquireButton, opacity: opacitySetTwo, transform: [{ translateY: Animated.subtract(100, translateY) }]}}>
-        {!isSetOneVisible && (
-          <View style={{width: '50%'}}>
-            <Button
-              icon={buttonIcon}
-              dark
-              buttonColor={buttonColor}
-              loading={likeLoading}
-              mode="contained"
-              onPress={() => artworkStatus && removeRating(artworkStatus)}>
-              remove {artworkStatus?.toLowerCase()}
-            </Button>
-          </View>
-        )}
+          {isLiked && !isSaved && (
+            <RemoveLike />
+          )}
+          {isSaved && (
+            <RemoveSave />
+          )}
+          {!isInquired && !isLiked && artwork?.canInquire?.value !== "No" && (
+            <InquireButton />
+          )}
+          {isInquired && (
+            <RemoveInquire />
+          )}
         </Animated.View>
       </ScrollView>
     </View>

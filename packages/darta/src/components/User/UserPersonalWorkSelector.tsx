@@ -31,14 +31,6 @@ export function UserPersonalWorkSelector({
   headline: string;
   localButtonSizes: any;
 }) {
-  const {state, dispatch} = React.useContext(StoreContext);
-
-  const [showActivityIndicator, setShowActivityIndicator] =
-    useState<ShowActivityIndicator>({
-      [UserScreenSelectorEnum.savedArtwork]: false,
-      [UserScreenSelectorEnum.inquiredArtwork]: false,
-    });
-
   const navigateToSaved = async () => {
     return navigation.navigate(UserRoutesEnum.userSavedArtwork);
   };
@@ -78,9 +70,6 @@ export function UserPersonalWorkSelector({
         <Pressable onPress={async () => navigateToSaved()}>
           <GallerySelectorComponent
             headline="s a v e s"
-            showActivityIndicator={
-              showActivityIndicator[UserScreenSelectorEnum.savedArtwork]
-            }
             subHeadline="artwork you have saved"
             showBadge={false}
             notificationNumber={15}
@@ -91,9 +80,6 @@ export function UserPersonalWorkSelector({
           <GallerySelectorComponent
             headline="i n q u i r i e s"
             subHeadline="artwork you have inquired about"
-            showActivityIndicator={
-              showActivityIndicator[UserScreenSelectorEnum.inquiredArtwork]
-            }
             showBadge={false}
             notificationNumber={15}
             localButtonSizes={localButtonSizes}

@@ -17,22 +17,11 @@ import {
 } from '../../typing/routes';
 import {StoreContext} from '../../state/Store'
 import {globalTextStyles, galleryInteractionStyles} from '../../styles/styles';
-import { NeedAccountDialog } from '../Dialog/NeedAccountDialog';
-import auth from '@react-native-firebase/auth';
 
 type UserScreenNavigationProp = StackNavigationProp<
   UserRouteStackParamList,
   UserRoutesEnum.userSettings
 >;
-
-export type PatUserData = {
-  profilePicture: string;
-  userName: string;
-  legalFirstName: string;
-  legalLastName: string;
-  email: string;
-  uniqueId?: string;
-};
 
 export function UserProfile({
   localButtonSizes,
@@ -84,17 +73,9 @@ export function UserProfile({
 
     }, [, state?.user]);
 
-  const [dialogVisible, setDialogVisible] = React.useState<boolean>(false)
-
   const onPressFunction = async () => {
-    const user = auth().currentUser;
-    if (!user){
-      setDialogVisible(true)
-      return
-    }
     runOnJS(navigateToEditUserSettings)();
   };
-
 
   const SSUserProfile = StyleSheet.create({
     container: {
@@ -160,11 +141,6 @@ export function UserProfile({
           </TextElement>
         </View>
       </View>
-
-      <NeedAccountDialog 
-        dialogVisible={dialogVisible}
-        setDialogVisible={setDialogVisible}
-      />
     </View>
   );
 }

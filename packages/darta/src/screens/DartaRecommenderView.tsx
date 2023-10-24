@@ -5,6 +5,7 @@ import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-nativ
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Colors from '@darta-styles'
 import * as Haptics from 'expo-haptics';
+import { Snackbar } from 'react-native-paper';
 
 
 import {getButtonSizes} from '../utils/functions';
@@ -204,46 +205,82 @@ export function DartaRecommenderView({
     }
   }, [state.artworkRatingIndex])
 
+
+  const [visible, setVisible] = React.useState(false);
+
+  const onToggleSnackBar = () => setVisible(!visible);
+
+  const onDismissSnackBar = () => setVisible(false);
+
+  const opacity = new Animated.Value(1); 
+
+  const fadeOutAndIn = async (callback: () => Promise<void>) => {
+    Animated.timing(opacity, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+    }).start(async () => {
+        await callback();
+        Animated.timing(opacity, {
+            toValue: 1,
+            duration: 100,
+            useNativeDriver: true,
+        }).start();
+    });
+  };
+
   const toggleArtForward = async () => {
     const currentIndex = state.artworkRatingIndex ?? 0;
-    if (state.artworksToRate && state.artworksToRate[currentIndex + 1]) {
-      const artwork = state.artworksToRate[currentIndex + 1];
-      try{ 
-        await Image.prefetch(artwork.artworkImage?.value!);
-        dispatch({
-          type: ETypes.setRatingIndex,
-          artworkRatingIndex: currentIndex + 1,
-        });
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-      } catch(error){
-        dispatch({
-          type: ETypes.setRatingIndex,
-          artworkRatingIndex: currentIndex + 2,
-        });
-      }
 
-    } else if (state.artworksToRate) {
-      const numberOfArtworks = Object.values(state.artworksToRate).length
-      const artworksToRate = await listArtworksToRateAPI({startNumber: numberOfArtworks, endNumber: numberOfArtworks+ 10})
-      if(artworksToRate){
-        dispatch({
-          type: ETypes.setArtworksToRate,
-          artworksToRate
-        })
-        dispatch({
-          type: ETypes.setRatingIndex,
-          artworkRatingIndex: currentIndex + 1,
+    if (state.artworksToRate && state.artworksToRate[currentIndex + 1]) {
+        const artwork = state.artworksToRate[currentIndex + 1];
+
+        fadeOutAndIn(async () => {
+            try {
+                await Image.prefetch(artwork.artworkImage?.value!);
+                dispatch({
+                    type: ETypes.setRatingIndex,
+                    artworkRatingIndex: currentIndex + 1,
+                });
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            } catch (error) {
+                dispatch({
+                    type: ETypes.setRatingIndex,
+                    artworkRatingIndex: currentIndex + 2,
+                });
+            }
         });
-      }
+    } else if (state.artworksToRate) {
+        const numberOfArtworks = Object.values(state.artworksToRate).length;
+        const artworksToRate = await listArtworksToRateAPI({
+            startNumber: numberOfArtworks,
+            endNumber: numberOfArtworks + 10,
+        });
+
+        if (artworksToRate && Object.keys(artworksToRate).length > 0) {
+            dispatch({
+                type: ETypes.setArtworksToRate,
+                artworksToRate,
+            });
+            dispatch({
+                type: ETypes.setRatingIndex,
+                artworkRatingIndex: currentIndex + 1,
+            });
+        } else {
+            onToggleSnackBar();
+        }
     }
-  };
+};
+
+
   const toggleArtBackward = async () => {
     const currentIndex = state.artworkRatingIndex ?? 0;
     if (!currentIndex) {
       return 
     } else if (state.artworksToRate && state.artworksToRate[currentIndex - 1]) {
       const artwork = state.artworksToRate[currentIndex - 1];
-      try{ 
+      fadeOutAndIn(async () => {
+        try{ 
         await Image.prefetch(artwork.artworkImage?.value!);
         dispatch({
           type: ETypes.setRatingIndex,
@@ -255,13 +292,14 @@ export function DartaRecommenderView({
           artworkRatingIndex: currentIndex - 2,
         });
       }
+      });
     } else {
       dispatch({
         type: ETypes.setRatingIndex,
         artworkRatingIndex: currentIndex - 1,
       });
     }
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
   };
 
   const toggleArtTombstone = () => {
@@ -319,10 +357,6 @@ export function DartaRecommenderView({
 
   };
 
-
-  const viewContainer = state.isPortrait
-    ? galleryComponentStyles.viewContainerPortrait
-    : galleryComponentStyles.viewContainerLandscape;
 
   const SSDartaGalleryView = StyleSheet.create({
     container: {
@@ -420,6 +454,7 @@ export function DartaRecommenderView({
             artworkDimensions={artOnDisplay?.artworkDimensions}
             isPortrait={state.isPortrait}
             wallHeight={wallHeight}
+            opacityAnimatedValue={opacity}
             rateArtwork={rateArtwork}
             setCurrentZoomScale={setCurrentZoomScale}
             toggleArtForward={toggleArtForward}
@@ -438,7 +473,6 @@ export function DartaRecommenderView({
                 isPortrait={state.isPortrait}
                 openRatings={openRatings}
                 rateArtwork={rateArtwork}
-                toggleArtTombstone={toggleArtTombstone}
                 toggleButtonView={toggleButtonView}
               />
             </View>
@@ -458,6 +492,21 @@ export function DartaRecommenderView({
           </>
           )}
         </View>
+        <Snackbar
+        visible={visible}
+        onDismiss={onDismissSnackBar}
+        style={{backgroundColor: Colors.PRIMARY_600}}
+        action={{
+          label: 'Ok',
+          textColor: Colors.PRIMARY_950,
+          onPress: () => {
+            onDismissSnackBar()
+          },
+          
+        }}>
+        <TextElement style={{color: Colors.PRIMARY_50}}>No more artwork to rate right now.</TextElement>
+        <TextElement style={{color: Colors.PRIMARY_50}}>Please check back later!</TextElement>
+      </Snackbar>
     </GestureHandlerRootView>
   );
 }

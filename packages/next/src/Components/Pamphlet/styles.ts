@@ -29,13 +29,13 @@ export const splashStyles = {
     alignSelf: 'center',
     minWidth: '60%',
     height: '80vh',
-    '@media (min-width:1050px)': {
-      // alignItems: 'flex-start',
+    '@media (min-width:1280px)': {
+      alignItems: 'flex-start',
     },
   },
   typographyTitleContainer: {
-    minHeight: '20%',
-    '@media (min-width:1050px)': {
+    minHeight: '30%',
+    '@media (min-width:1280px)': {
       height: '30%',
     },
   },
@@ -46,8 +46,11 @@ export const splashStyles = {
     alignText: 'center',
     cursor: 'default',
     fontSize: '3rem',
-    '@media (min-width:1050px)': {
-      fontSize: '4.5rem',
+    '@media (min-width:1080px)': {
+      fontSize: '3.5rem',
+    },
+    '@media (min-width:1280px)': {
+      fontSize: '4rem',
     },
   },
   subheader: {
@@ -56,7 +59,10 @@ export const splashStyles = {
     fontFamily: 'Avenir Next',
     cursor: 'default',
     fontSize: '1.25rem',
-    '@media (min-width:1050px)': {
+    '@media (min-width:1080px)': {
+      fontSize: '2rem',
+    },
+    '@media (min-width:1280px)': {
       fontSize: '2.25rem',
     },
   },
@@ -65,7 +71,7 @@ export const splashStyles = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    '@media (min-width:1050px)': {
+    '@media (min-width:1280px)': {
       height: '40%',
     },
   },
@@ -75,7 +81,7 @@ export const splashStyles = {
     fontFamily: 'Avenir Next',
     cursor: 'default',
     fontSize: '1rem',
-    '@media (min-width:1050px)': {
+    '@media (min-width:1280px)': {
       fontSize: '1.25rem',
     },
   },
@@ -86,12 +92,14 @@ export const splashStyles = {
   },
   phonePreviewContainer: {
     height: '70vh',
-    width: '100%',
-    margin: '10%',
-    alignSelf: 'center',
-    '@media (min-width:1050px)': {
-      height: '80vh',
-      minWidth: '30%',
+    width: '95%',
+    margin: '5%',
+    '@media (min-width:1080px)': {
+      maxHeight: '75vh',
+    },
+    '@media (min-width:1280px)': {
+      maxHeight: '85vh',
+      minWidth: '20%',
     },
   }
 }

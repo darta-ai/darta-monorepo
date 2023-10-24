@@ -26,6 +26,7 @@
     "@mui/material": "5.14.14",
     "@mui/x-date-pickers": "^6.9.0",
     "@popperjs/core": "^2.11.8",
+    "@react-spring/web": "^9.7.3",
     "@types/autosuggest-highlight": "^3.2.0",
     "autosuggest-highlight": "^3.3.4",
     "axios": "^1.4.0",
@@ -45,7 +46,6 @@
     "react-hook-form": "^7.43.9",
     "react-joyride": "^2.5.4",
     "react-number-format": "^5.2.2",
-    "react-spring": "^9.7.3",
     "sharp": "^0.32.6",
     "xlsx": "^0.18.5",
     "yup": "^1.1.1"

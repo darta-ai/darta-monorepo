@@ -61,14 +61,12 @@ export function GallerySelectorComponent({
   subHeadline,
   localButtonSizes,
   showBadge,
-  showActivityIndicator,
   notificationNumber,
 }: {
   headline: string;
   subHeadline: string;
   showBadge: boolean;
   notificationNumber: number;
-  showActivityIndicator: boolean;
   localButtonSizes: {
     small: number;
     medium: number;
@@ -78,9 +76,6 @@ export function GallerySelectorComponent({
   return (
     <TouchableOpacity style={SSGallerySelectorComponent.componentContainer}>
       <View style={SSGallerySelectorComponent.badgeContainer}>
-        {showActivityIndicator ? (
-          <ActivityIndicator size="small" color={PRIMARY_DARK_GREY} />
-        ) : (
           <Badge
             visible={showBadge}
             size={localButtonSizes.medium}
@@ -94,7 +89,6 @@ export function GallerySelectorComponent({
               ) as any
             }
           />
-        )}
       </View>
       <View style={SSGallerySelectorComponent.prettyBlueLine} />
       <View style={SSGallerySelectorComponent.textContainer}>
