@@ -1,6 +1,3 @@
-export {ArtworksCarousel} from './ArtworkCarousel';
-
-
 // Don't know what these do...
 export {SavedArtOnDisplay} from './SavedArtOnDisplay'
 export {SavedArtworkDisplay} from './SavedArtworkDisplay'

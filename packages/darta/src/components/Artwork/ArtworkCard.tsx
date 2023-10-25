@@ -10,7 +10,6 @@ import {PRIMARY_600, PRIMARY_900, PRIMARY_200} from '@darta-styles';
 import {Artwork} from '@darta-types'
 import {TextElement} from '../Elements/_index';
 import {ETypes, StoreContext} from '../../state/Store';
-import { ExhibitionRootEnum } from '../../typing/routes';
 
 export function ArtworkCard({
   artwork,
