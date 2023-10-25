@@ -1,5 +1,4 @@
 import {Box, Button} from '@mui/material';
-import Image from 'next/image';
 import {useRouter} from 'next/router';
 import React from 'react';
 
@@ -31,15 +30,15 @@ export function HeaderSignedOut({authType}: {authType: AuthEnum}) {
       <div />
       <div />
       <Box data-testid="header-navigation-image-box">
-        <Image
-          src="/static/images/dartahouseblue.png"
-          data-testid="header-image"
-          alt="me"
-          width="80"
-          height="64"
-          onClick={() => router.push('/', undefined, {shallow: true})}
-        />
-      </Box>
+        <Box
+            component="img"
+            sx={headerStyles.dartaHeaderBox}
+            src="/static/images/dartahousewhite.png"
+            data-testid="header-image"
+            alt="logo"
+            onClick={() => router.push('/', undefined, {shallow: true})}
+          />
+        </Box>
     </Box>
   );
 }

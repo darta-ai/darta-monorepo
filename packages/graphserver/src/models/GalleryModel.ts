@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-unresolved
-import {IGalleryProfileData} from '@darta/types';
+import {IGalleryProfileData} from '@darta-types';
 
 import {Node} from './models';
 

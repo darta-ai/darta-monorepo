@@ -1,4 +1,4 @@
-import {Artwork} from '@darta/types';
+import {Artwork} from '@darta-types';
 
 export interface Node {
   _key?: string;

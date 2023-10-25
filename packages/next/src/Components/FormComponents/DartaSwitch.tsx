@@ -77,8 +77,7 @@ export function DartaSwitch({
           control={control}
           name={fieldName}
           {...register(`${fieldName}.${'isOngoing'}`)}
-          render={({field}: {field: any}) => {
-            return (
+          render={({field}: {field: any}) => (
               <FormControlLabel
                 labelPlacement="bottom"
                 label={
@@ -106,8 +105,7 @@ export function DartaSwitch({
                   color: PRIMARY_DARK_GREY,
                 }}
               />
-            );
-          }}
+            )}
         />
       </Box>
     </Box>

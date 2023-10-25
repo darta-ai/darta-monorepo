@@ -1,7 +1,6 @@
+import {PRIMARY_600} from '@darta-styles'
 import React from 'react';
 import Joyride, {ACTIONS, EVENTS, STATUS} from 'react-joyride';
-
-import {PRIMARY_BLUE} from '../../../styles/index';
 
 export function DartaJoyride({
   steps,
@@ -40,7 +39,7 @@ export function DartaJoyride({
       steps={steps}
       styles={{
         options: {
-          primaryColor: PRIMARY_BLUE,
+          primaryColor: PRIMARY_600,
           arrowColor: 'rgba(0, 0, 0, 0.8)',
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
           overlayColor: 'rgba(0, 0, 0, 0.4)',

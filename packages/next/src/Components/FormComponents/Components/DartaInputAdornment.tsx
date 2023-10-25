@@ -51,7 +51,7 @@ export function DartaInputAdornment({
       <Box>
         <InputAdornment
           data-testid={`${testIdValue}-input-adornment-string`}
-          sx={{overflowX: 'clip'}}
+          sx={formStyles.inputAdornmentStyle}
           position="end">
           {inputAdornmentString}
           {required && '*'}

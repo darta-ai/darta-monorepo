@@ -78,7 +78,6 @@ export function DartaLocationLookup({
           data={data}
           register={register}
           control={control}
-          allowPrivate={allowPrivate}
           isPrivate={isPrivate}
           testIdValue={testIdValue}
           setIsPrivate={setIsPrivate}

@@ -1,0 +1,145 @@
+import * as React from 'react';
+import { TouchableOpacity, View, StyleSheet} from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
+import FastImage from 'react-native-fast-image'
+import { TextElement } from '../Elements/TextElement';
+import {
+    heightPercentageToDP as hp,
+    widthPercentageToDP as wp,
+  } from 'react-native-responsive-screen';
+
+import Animated, {
+    interpolate,
+    interpolateColor,
+    useAnimatedStyle,
+  } from "react-native-reanimated";
+  
+  import { SBItem } from "./SBs/SBItem";
+  import * as Colors from '@darta-styles';
+
+  const image404 = require('../../assets/image404.png');
+  
+
+const carouselStyle = StyleSheet.create({
+    heroImage: {
+        width: '90%',
+        height: '90%',
+        resizeMode: 'contain',
+        alignSelf: 'center',
+    },
+})
+
+const WIDTH = wp('80%');
+
+interface ItemProps {
+  animationValue: Animated.SharedValue<number>
+  index: number
+  item: {
+    imageUrl: string
+    title: string
+  }
+}
+const CustomItem: React.FC<ItemProps> = ({ item, animationValue }: {item: any, animationValue: any}) => {
+
+  const image = item?.imageUrl ? {uri: item.imageUrl} : image404;
+  const maskStyle = useAnimatedStyle(() => {
+    const backgroundColor = interpolateColor(
+      animationValue.value,
+      [-1, 0, 1],
+      [Colors.PRIMARY_200, Colors.PRIMARY_100, Colors.PRIMARY_200],
+    );
+    
+
+    return {
+      backgroundColor,
+    };
+  }, [animationValue]);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <SBItem style={{ borderRadius: 0 }} />
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          },
+          maskStyle,
+        ]}
+      >
+        <FastImage 
+        source={{...image, priority: FastImage.priority.normal,
+        }} 
+        style={carouselStyle.heroImage} 
+        resizeMode={FastImage.resizeMode.contain}
+        />
+        <TextElement style={{fontFamily: "AvenirNext-Italic", color: Colors.PRIMARY_900, alignSelf: "center"}}>{item?.title}</TextElement>
+        </Animated.View>
+    </View>
+  );
+};
+export function ExhibitionCarousel({images} : {images: {imageUrl: string, title?: string}[]}) {
+  const animationStyle: any = React.useCallback(
+    (value: number) => {
+      "worklet";
+
+      const zIndex = interpolate(value, [-1, 0, 1], [10, 20, 30]);
+      const translateX = interpolate(
+        value,
+        [-2, 0, 1],
+        [-WIDTH, 0, WIDTH],
+      );
+
+      return {
+        transform: [{ translateX }],
+        zIndex,
+      };
+    },
+    [],
+  );
+
+  const carouselRef = React.useRef<any>(null);
+
+  const prevSlide = () => {
+    carouselRef.current?.prev();
+  };
+
+  const nextSlide = () => {
+    carouselRef.current?.next();
+  };
+
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <TouchableOpacity onPress={prevSlide}>
+        <TextElement>{"<"}</TextElement>
+      </TouchableOpacity>
+      <Carousel
+        ref={carouselRef}
+        loop={true}
+        autoPlay={false}
+        width={WIDTH}
+        data={images}
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+        scrollAnimationDuration={100}
+        renderItem={({ item, animationValue, index}) => {
+        return (
+            <CustomItem
+              key={item.title}
+              index={index}
+              item={item as any}
+              animationValue={animationValue}
+            />
+          );
+        }}
+        customAnimation={animationStyle}
+      />
+      <TouchableOpacity onPress={nextSlide}>
+        <TextElement>{">"}</TextElement>
+    </TouchableOpacity>
+    </View>
+  );
+}

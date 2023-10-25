@@ -8,6 +8,7 @@ import {
   response,
 } from 'inversify-express-utils';
 
+import { standardConsoleLog } from '../config/templates';
 import {verifyToken} from '../middleware/accessTokenVerify';
 import {IExhibitionService, IGalleryService} from '../services/interfaces';
 
@@ -34,6 +35,7 @@ export class ExhibitionController {
       });
       res.json(newCollection);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/create', request: null})
       res.status(500).send(error.message);
     }
   }
@@ -63,23 +65,46 @@ export class ExhibitionController {
       });
       res.json(results);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/readForGallery', request: req?.body})
       res.status(500).send(error.message);
     }
   }
 
-  // TO-DO!!!
-  @httpGet('/readForUser', verifyToken)
+  @httpGet('/readForUser')
   public async readCollectionForGallery(
     @request() req: Request,
     @response() res: Response,
   ): Promise<void> {
-    // const {user} = req as any;
+    if (!req.query.exhibitionId) {
+      res.status(400).send("exhibitionId query parameter is required");
+      return;
+  }
     try {
-      await this.galleryService.checkDuplicateGalleries({
-        userEmail: 'fake',
+      const exhibitionId = <string>req.query.exhibitionId;
+      const results = await this.exhibitionService.readGalleryExhibitionForUser({
+        exhibitionId,
       });
-      res.json(null);
+      res.json(results);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/readForUser', request: req?.query})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpGet('/readMostRecentGalleryExhibitionForUser')
+  public async readMostRecentExhibitionForUser(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      if (!req.query?.locationId) {
+        res.status(400).send("exhibitionId query parameter is required");
+        return;
+    }
+      const results = await this.exhibitionService.readMostRecentGalleryExhibitionForUser({locationId: req.query.locationId as string});
+      res.json(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/readMostRecentGalleryExhibitionForUser', request: req?.query})
       res.status(500).send(error.message);
     }
   }
@@ -90,8 +115,8 @@ export class ExhibitionController {
     @response() res: Response,
   ): Promise<void> {
     const {user} = req as any;
-    const {exhibition} = req.body;
     try {
+      const {exhibition} = req.body;
       const galleryId = await this.galleryService.getGalleryIdFromUID({
         uid: user.user_id,
       });
@@ -101,77 +126,7 @@ export class ExhibitionController {
       });
       res.json(results);
     } catch (error: any) {
-      res.status(500).send(error.message);
-    }
-  }
-
-  @httpPost('/deleteExhibitionOnly', verifyToken)
-  public async deleteExhibitionOnly(
-    @request() req: Request,
-    @response() res: Response,
-  ): Promise<void> {
-    const {user} = req as any;
-    const {exhibitionId} = req.body;
-    try {
-      const galleryId = await this.galleryService.getGalleryIdFromUID({
-        uid: user.user_id,
-      });
-      const results = await this.exhibitionService.deleteExhibition({
-        exhibitionId,
-        galleryId,
-      });
-      if (results) {
-        res.send(true);
-      } else {
-        throw new Error('unable to delete exhibition');
-      }
-    } catch (error: any) {
-      res.status(500).send(error.message);
-    }
-  }
-
-  @httpPost('/deleteExhibitionAndArtwork', verifyToken)
-  public async deleteExhibitionAndArtwork(
-    @request() req: Request,
-    @response() res: Response,
-  ): Promise<void> {
-    const {user} = req as any;
-    const {exhibitionId} = req.body;
-    try {
-      const galleryId = await this.galleryService.getGalleryIdFromUID({
-        uid: user.user_id,
-      });
-      const results = await this.exhibitionService.deleteExhibition({
-        exhibitionId,
-        galleryId,
-        deleteArtworks: true,
-      });
-      if (results) {
-        res.send(true);
-      } else {
-        throw new Error('unable to delete exhibition');
-      }
-    } catch (error: any) {
-      // console.log(error);
-      res.status(500).send(error.message);
-    }
-  }
-
-  @httpGet('/listForGallery', verifyToken)
-  public async listForGallery(
-    @request() req: Request,
-    @response() res: Response,
-  ): Promise<void> {
-    const {user} = req as any;
-    try {
-      const galleryId = await this.galleryService.getGalleryIdFromUID({
-        uid: user.user_id,
-      });
-      const results = await this.exhibitionService.listExhibitionForGallery({
-        galleryId,
-      });
-      res.json(results);
-    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/edit', request: req?.body})
       res.status(500).send(error.message);
     }
   }
@@ -184,6 +139,7 @@ export class ExhibitionController {
     try {
       const {user} = req as any;
       if (!user) {
+        throw new Error('no user found');
       }
       const {exhibitionId, artworkId, desiredIndex, currentIndex} = req.body;
 
@@ -210,6 +166,101 @@ export class ExhibitionController {
       });
       res.json(results);
     } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/reOrderExhibitionArtwork', request: req?.body})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpPost('/deleteExhibitionOnly', verifyToken)
+  public async deleteExhibitionOnly(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    const {user} = req as any;
+    const {exhibitionId} = req.body;
+    try {
+      const galleryId = await this.galleryService.getGalleryIdFromUID({
+        uid: user.user_id,
+      });
+      const results = await this.exhibitionService.deleteExhibition({
+        exhibitionId,
+        galleryId,
+      });
+      if (results) {
+        res.send(true);
+      } else {
+        res.status(500).send('unable to delete exhibition');
+      }
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/deleteExhibitionOnly', request: req?.body})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpPost('/deleteExhibitionAndArtwork', verifyToken)
+  public async deleteExhibitionAndArtwork(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    const {user} = req as any;
+    const {exhibitionId} = req.body;
+    try {
+      const galleryId = await this.galleryService.getGalleryIdFromUID({
+        uid: user.user_id,
+      });
+      const results = await this.exhibitionService.deleteExhibition({
+        exhibitionId,
+        galleryId,
+        deleteArtworks: true,
+      });
+      if (results) {
+        res.send(true);
+      } else {
+        throw new Error('unable to delete exhibition');
+      }
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/deleteExhibitionAndArtwork', request: req?.body})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpGet('/listForGallery', verifyToken)
+  public async listForGallery(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    const {user} = req as any;
+    try {
+      const galleryId = await this.galleryService.getGalleryIdFromUID({
+        uid: user.user_id,
+      });
+      const results = await this.exhibitionService.listExhibitionForGallery({
+        galleryId,
+      });
+      res.json(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/listForGallery', request: user?.user_id})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpGet('/listAllExhibitionsPreviewsForUser')
+  public async listAllExhibitionsPreviewsForUser(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    if (!req.query.limit) {
+      res.status(400).send("limit query parameter is required");
+      return;
+  }
+    try {
+      const limit = <number>parseInt(req.query.limit.toString(), 10);
+      const results = await this.exhibitionService.listExhibitionsPreviewsForUserByLimit({
+        limit
+      });
+      res.json(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/listForGallery', request: req?.query})
       res.status(500).send(error.message);
     }
   }

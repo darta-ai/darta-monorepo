@@ -1,17 +1,19 @@
 import {Database} from 'arangojs';
+// import fs from 'fs';
 import https from 'https';
 import {Container} from 'inversify';
 import {Client as MinioClient} from 'minio';
 
+// import path from 'path';
 import * as Controllers from '../controllers';
 import * as Services from '../services';
 import {config} from './config';
 
-const fs = require('fs');
-
 const agent = new https.Agent({
   rejectUnauthorized: false,
 });
+
+// const certPath = path.join(__dirname, '../assets/cluster-ca.crt');
 
 const container = new Container();
 
@@ -31,9 +33,12 @@ const TYPES = {
   NodeService: 'NodeService',
   INodeService: 'INodeService',
   IUserService: 'IUserService',
+  IRecommenderService: 'IRecommenderService',
   UserController: 'UserController',
   IExhibitionService: 'IExhibitionService',
   ExhibitionController: 'ExhibitionController',
+  LocationController: 'LocationController',
+  RecommenderController: 'RecommenderController',
 };
 
 const arangoContainer = container
@@ -59,14 +64,7 @@ const minioContainer = container
       useSSL: config.minio.useSSL === 'true',
       accessKey: config.minio.accessKey!,
       secretKey: config.minio.secretKey!,
-      transportAgent: new https.Agent({
-        timeout: 10000,
-        ca: fs.readFileSync('path/to/ca.cert'),
-        cert: fs.readFileSync('path/to/public.cert'),
-        key: fs.readFileSync('path/to/secret.key'),
-        keepAlive: false,
-      }),
-      region: 'us-east-1',
+      region: 'us-central-1',
     }),
   );
 
@@ -96,6 +94,10 @@ container
   .bind<Services.IExhibitionService>(TYPES.IExhibitionService)
   .to(Services.ExhibitionService);
 
+container
+  .bind<Services.IRecommenderService>(TYPES.IRecommenderService)
+  .to(Services.RecommenderService);
+
 // Bind controllers
 container
   .bind<Controllers.GalleryController>(TYPES.GalleryController)
@@ -115,5 +117,10 @@ container
 container
   .bind<Controllers.ExhibitionController>(TYPES.ExhibitionController)
   .to(Controllers.ExhibitionController);
+container
+  .bind<Controllers.LocationController>(TYPES.LocationController)
+  .to(Controllers.LocationController);
+container
+.bind<Controllers.RecommenderController>(TYPES.RecommenderController)
 
 export {arangoContainer, container, minioContainer, TYPES};

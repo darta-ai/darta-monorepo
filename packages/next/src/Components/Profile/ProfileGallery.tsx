@@ -1,14 +1,17 @@
-import {IGalleryProfileData} from '@darta/types';
-import {Box, Button, Divider, Typography} from '@mui/material';
+import * as Colors from '@darta-styles'
+import {IGalleryProfileData} from '@darta-types';
+import {Box, Button, Card, Divider, Typography} from '@mui/material';
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
 import {AuthContext} from '../../../pages/_app';
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
+import { cardStyles } from '../../../styles/CardStyles';
 import {phoneNumberConverter} from '../../common/utils/phoneNumberConverter';
 import {resendEmailVerification} from '../../ThirdPartyAPIs/firebaseApp';
 import {GalleryLocationComponent} from './Components/GalleryLocationText';
 import {profileStyles} from './Components/profileStyles';
+
 
 function GalleryStatus({
   galleryProfileData,
@@ -25,10 +28,30 @@ function GalleryStatus({
       // TO-DO: error handling
     }
   };
-  if (!user?.emailVerified) {
+  if (!user){
+    <Box data-testid="gallery-under-review">
+    <Typography variant="h4" sx={{color: Colors.PRIMARY_600, textAlign: 'center'}}>
+      Something went wrong 
+    </Typography>
+    <Box sx={profileStyles.profile.galleryBioStyles}>
+      <Box sx={{m: 3}}>
+        <Typography>
+          Please log out and log back in 
+        </Typography>
+      </Box>
+      <Box sx={{mx: 3, my: 3}}>
+        <Typography>
+          If you have any questions or concerns, please reach out to us at{' '}
+          <a style={{color: Colors.PRIMARY_600}} href="mailto:info@darta.art">info@darta.art</a>
+        </Typography>
+      </Box>
+    </Box>
+  </Box>
+  }
+  else if (!user?.emailVerified) {
     return (
       <Box data-testid="gallery-under-review">
-        <Typography variant="h3" sx={{color: 'red', textAlign: 'center'}}>
+        <Typography variant="h3" sx={{color: Colors.PRIMARY_700, textAlign: 'center'}}>
           Please verify your email
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
@@ -42,8 +65,8 @@ function GalleryStatus({
               variant="contained"
               disabled={isResent}
               sx={{
-                backgroundColor: PRIMARY_BLUE,
-                color: PRIMARY_MILK,
+                backgroundColor: Colors.PRIMARY_600,
+                color: Colors.PRIMARY_300,
                 alignSelf: 'center',
               }}
               onClick={() => {
@@ -66,7 +89,7 @@ function GalleryStatus({
           <Box sx={{mx: 3, my: 3}}>
             <Typography>
               With questions, please reach out to us at{' '}
-              <a href="mailto:info@darta.art">info@darta.art</a>
+              <a style={{color: Colors.PRIMARY_400}} href="mailto:info@darta.art">info@darta.art</a>
             </Typography>
           </Box>
         </Box>
@@ -74,7 +97,7 @@ function GalleryStatus({
     );
   } else if (!galleryProfileData?.isValidated) {
     return (
-      <Box data-testid="gallery-under-review">
+      <Box data-testid="gallery-under-review" style={{minHeight: '30vh'}}>
         <Typography variant="h4" sx={{color: 'red', textAlign: 'center'}}>
           Gallery Under Review
         </Typography>
@@ -94,7 +117,7 @@ function GalleryStatus({
           <Box sx={{mx: 3, my: 3}}>
             <Typography>
               If you have any questions or concerns, please reach out to us at{' '}
-              <a href="mailto:info@darta.art">info@darta.art</a>
+              <a style={{color: Colors.PRIMARY_400}} href="mailto:info@darta.art">info@darta.art</a>
             </Typography>
           </Box>
         </Box>
@@ -102,16 +125,16 @@ function GalleryStatus({
     );
   } else if (galleryProfileData?.galleryBio?.value) {
     return (
-      <Box>
+      <Box style={{minHeight: '30vh'}}>
         <Typography
           variant="h4"
           data-testid="gallery-name-display"
-          sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
+          sx={{color: Colors.PRIMARY_950, textAlign: 'left'}}>
           {galleryProfileData?.galleryName?.value}
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
-          <Box sx={{m: 2}}>
-            <Typography data-testid="gallery-bio-display">
+          <Box sx={{my: 2}}>
+            <Typography data-testid="gallery-bio-display" sx={{color: Colors.PRIMARY_900, textAlign: 'left'}}>
               {galleryProfileData?.galleryBio?.value}
             </Typography>
           </Box>
@@ -120,15 +143,15 @@ function GalleryStatus({
     );
   } else if (galleryProfileData?.galleryName?.value) {
     return (
-      <Box data-testid="gallery-start-editing">
+      <Box data-testid="gallery-start-editing" style={{minHeight: '30vh'}}>
         <Typography
           variant="h4"
-          sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
+          sx={{color: Colors.PRIMARY_600, textAlign: 'center'}}>
           {galleryProfileData?.galleryName?.value}
         </Typography>
         <Typography
           variant="h6"
-          sx={{color: PRIMARY_BLUE, textAlign: 'center'}}>
+          sx={{color: Colors.PRIMARY_600, textAlign: 'center'}}>
           Click EDIT to get started.
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
@@ -165,6 +188,7 @@ export function ProfileGallery({
       my={5}
       sx={profileStyles.container}
       data-testid="profile-gallery-container">
+    <Card sx={cardStyles.root}>
       <Box sx={profileStyles.profile.galleryInfoContainer}>
         <Box sx={profileStyles.profile.galleryHeaderContainer}>
           <Box
@@ -185,7 +209,7 @@ export function ProfileGallery({
                   <Image
                     src={png}
                     alt="info"
-                    style={profileStyles.profile.image}
+                    style={profileStyles.profile.defaultImage}
                     data-testid="profile-image-display"
                   />
                 </div>
@@ -199,12 +223,13 @@ export function ProfileGallery({
           </Box>
         </Box>
       </Box>
+      <Box sx={profileStyles.profile.galleryContactInfo}>
       {(galleryProfileData?.primaryContact?.value ||
         galleryProfileData?.galleryWebsite?.value ||
         galleryProfileData?.galleryInstagram?.value) && (
         <>
           <Box
-            sx={{width: '100%', mt: 5}}
+            sx={{ mt: 5}}
             data-testid="profile-contact-section">
             <Typography
               variant="h5"
@@ -261,17 +286,21 @@ export function ProfileGallery({
                   sx={{textAlign: 'center', my: '1vh'}}
                   data-testid="profile-contact-website">
                   {galleryProfileData?.galleryWebsite?.value ? (
-                    <a
+                    <Link
                       target="_blank"
                       href={galleryProfileData?.galleryWebsite?.value}
-                      rel="noreferrer">
+                      rel="noreferrer"
+                      style={{ textDecoration: `${Colors.PRIMARY_950} underline` }}
+                      >
+                      <Typography style={{color: Colors.PRIMARY_950}}>
                       {galleryProfileData?.galleryWebsite?.value
                         .replace('http://www.', '')
                         .replace('http:/www.', '')
                         .replace('https:/', '')
                         .replace('https://www.', '')
                         .replace('/', '')}
-                    </a>
+                        </Typography>
+                    </Link>
                   ) : (
                     'N/A'
                   )}
@@ -302,7 +331,7 @@ export function ProfileGallery({
       )}
       {galleryProfileData?.galleryLocation0?.locationString?.value && (
         <>
-          <Box sx={{width: '100%'}}>
+          <Box sx={{mt: 5}}>
             <Typography variant="h5" sx={{textAlign: 'left'}}>
               Locations
               <Divider />
@@ -311,7 +340,7 @@ export function ProfileGallery({
           <Box
             sx={{
               display: 'flex',
-              width: '100%',
+              width: '90%',
               flexDirection: 'column',
               gap: '1vh',
             }}>
@@ -348,6 +377,8 @@ export function ProfileGallery({
           </Box>
         </>
       )}
+      </Box>
+    </Card>
     </Box>
   );
 }

@@ -1,10 +1,8 @@
-/* eslint-disable react/jsx-props-no-spreading */
+import * as Colors from '@darta-styles'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {Box, Typography} from '@mui/material';
 import React from 'react';
 import Dropzone from 'react-dropzone';
-
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 
 const useStyles = {
   dropzone: {
@@ -14,14 +12,13 @@ const useStyles = {
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'pointer',
-    height: '80%',
-    padding: '2vh',
+    height: '100%',
     width: '100%',
     outline: 'none',
     transition: 'border .24s ease-in-out',
     '&:hover': {
-      borderColor: PRIMARY_BLUE,
-      backgroundColor: PRIMARY_MILK,
+      borderColor: Colors.PRIMARY_600,
+      backgroundColor: Colors.PRIMARY_50,
     },
   },
   icon: {
@@ -29,7 +26,7 @@ const useStyles = {
     marginBottom: '2vh',
   },
   text: {
-    marginBottom: '2vh',
+    // marginBottom: '2vh',
     fontSize: '1rem',
     textAlign: 'center',
     '@media (min-width: 800px)': {
@@ -64,7 +61,7 @@ export function DartaImageInput({
           <CloudUploadIcon sx={useStyles.icon} />
 
           <Typography variant="caption" sx={useStyles.fileAcceptanceText}>
-            Only accept files with extensions: jpg, jpeg,png, pdf
+            Accept files: jpg, jpeg, png, pdf
           </Typography>
         </Box>
       )}

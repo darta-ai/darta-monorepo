@@ -1,4 +1,4 @@
-import {IBusinessLocationData} from '@darta/types';
+import {IBusinessLocationData} from '@darta-types';
 import {Box, Divider, Grid, Typography} from '@mui/material';
 import React from 'react';
 

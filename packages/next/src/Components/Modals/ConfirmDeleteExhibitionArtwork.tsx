@@ -1,3 +1,4 @@
+import { PRIMARY_50, PRIMARY_200, PRIMARY_800 } from '@darta-styles';
 import {Box, LinearProgress, Typography} from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -13,20 +14,12 @@ export function ConfirmDeleteExhibitionArtwork({
   open,
   handleClose,
   handleDeleteArtworkFromDarta,
-  handleRemoveArtworkFromExhibition,
 }: {
   artworkId: string;
   exhibitionId: string;
   open: boolean;
   handleClose: () => void;
   handleDeleteArtworkFromDarta: ({
-    exhibitionId,
-    artworkId,
-  }: {
-    exhibitionId: string;
-    artworkId: string;
-  }) => Promise<boolean>;
-  handleRemoveArtworkFromExhibition: ({
     exhibitionId,
     artworkId,
   }: {
@@ -43,13 +36,6 @@ export function ConfirmDeleteExhibitionArtwork({
     handleClose();
   };
 
-  const handleRemove = async () => {
-    setSpinner(true);
-    await handleRemoveArtworkFromExhibition({exhibitionId, artworkId});
-    setSpinner(false);
-    handleClose();
-  };
-
   return (
     <Dialog
       open={open}
@@ -59,24 +45,12 @@ export function ConfirmDeleteExhibitionArtwork({
       data-testid="confirm-delete-artwork-modal"
       maxWidth="lg">
       <DialogTitle id="alert-dialog-title">
-        <Typography sx={{fontWeight: 'bold'}} variant="h5">
+        <Typography sx={{fontWeight: 'bold'}} variant="h6">
           Do you want to delete the artwork from darta?
         </Typography>
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description-1">
-          <Typography sx={{fontWeight: 'bold'}}>
-            Please indicate if you would like to delete the artwork OR remove it
-            from the exhibition.
-          </Typography>
-        </DialogContentText>
-        <DialogContentText id="alert-dialog-description-2">
-          <Typography sx={{fontWeight: 'bold'}}>
-            By keeping the artwork on darta will increase the views of the
-            artwork and your gallery.
-          </Typography>
-        </DialogContentText>
-        <DialogContentText id="alert-dialog-description-3">
           <Typography sx={{fontWeight: 'bold'}}>
             This action cannot be undone.
           </Typography>
@@ -85,28 +59,13 @@ export function ConfirmDeleteExhibitionArtwork({
       <DialogActions>
         {isSpinner ? (
           <Box sx={{width: '100%'}}>
-            <LinearProgress color="error" />
+            <LinearProgress color="primary" />
           </Box>
         ) : (
           <>
-            <Button variant="contained" color="secondary" onClick={handleClose}>
-              <Typography sx={{fontWeight: 'bold'}}>Do Not Delete</Typography>
-            </Button>
             <Button
               variant="contained"
-              color="error"
-              data-testid="confirm-delete-artwork-button"
-              onClick={() => {
-                handleRemove();
-              }}
-              autoFocus>
-              <Typography sx={{fontWeight: 'bold'}}>
-                Remove From Exhibition
-              </Typography>
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
+              style={{backgroundColor: PRIMARY_200}}
               data-testid="confirm-delete-artwork-button"
               onClick={() => {
                 handleDelete();
@@ -115,6 +74,9 @@ export function ConfirmDeleteExhibitionArtwork({
               <Typography sx={{fontWeight: 'bold'}}>
                 Delete Artwork From Darta
               </Typography>
+            </Button>
+            <Button variant="contained" style={{backgroundColor: PRIMARY_800}} onClick={handleClose}>
+              <Typography sx={{fontWeight: 'bold', color: PRIMARY_50}}>Do Not Delete</Typography>
             </Button>
           </>
         )}

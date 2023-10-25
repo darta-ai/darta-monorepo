@@ -1,3 +1,4 @@
+import { PRIMARY_400 } from '@darta-styles';
 import {Box, LinearProgress, Typography} from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -49,7 +50,7 @@ export function DartaConfirmExhibitionDelete({
       data-testid="confirm-delete-artwork-modal"
       maxWidth="lg">
       <DialogTitle id="alert-dialog-title">
-        <Typography sx={{fontWeight: 'bold'}} variant="h5">
+        <Typography sx={{fontWeight: 'bold'}} variant="h6">
           Do you want to delete both the artwork and the exhibition from darta?
         </Typography>
       </DialogTitle>
@@ -66,16 +67,14 @@ export function DartaConfirmExhibitionDelete({
       <DialogActions>
         {isSpinner ? (
           <Box sx={{width: '100%'}}>
-            <LinearProgress color="error" />
+            <LinearProgress color="primary" />
           </Box>
         ) : (
           <>
-            <Button variant="contained" color="secondary" onClick={handleClose}>
-              <Typography sx={{fontWeight: 'bold'}}>Do not delete</Typography>
-            </Button>
+
             <Button
               variant="contained"
-              color="error"
+              style={{color: PRIMARY_400}}
               data-testid="confirm-delete-artwork-button"
               onClick={() => deleteExhibition()}
               autoFocus>
@@ -85,13 +84,16 @@ export function DartaConfirmExhibitionDelete({
             </Button>
             <Button
               variant="contained"
-              color="error"
+              style={{backgroundColor: PRIMARY_400}}
               data-testid="confirm-delete-artwork-button"
               onClick={() => deleteArtworks()}
               autoFocus>
               <Typography sx={{fontWeight: 'bold'}}>
                 Delete Exhibition and Artwork
               </Typography>
+            </Button>
+            <Button variant="contained" color="secondary" onClick={handleClose}>
+              <Typography sx={{fontWeight: 'bold'}}>Do not delete</Typography>
             </Button>
           </>
         )}

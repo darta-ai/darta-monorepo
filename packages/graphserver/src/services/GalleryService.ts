@@ -1,29 +1,31 @@
 /* eslint-disable no-await-in-loop */
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   GalleryAddressFields,
   GalleryBase,
   IGalleryProfileData,
   Images,
-} from '@darta/types';
+} from '@darta-types';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 
 import {CollectionNames, EdgeNames} from '../config/collections';
 import {ImageController} from '../controllers/ImageController';
+import { filterOutPrivateRecordsMultiObject } from '../middleware';
 import {City, Gallery} from '../models/GalleryModel';
 import {Node} from '../models/models';
-import {IEdgeService, IGalleryService, INodeService} from './interfaces';
+import {IAdminService,IEdgeService, IGalleryService, INodeService} from './interfaces';
 
 const BUCKET_NAME = 'logo';
 
 @injectable()
 export class GalleryService implements IGalleryService {
   constructor(
+    @inject('ImageController') private readonly imageController: ImageController,
     @inject('Database') private readonly db: Database,
-    @inject('ImageController')
-    private readonly imageController: ImageController,
     @inject('IEdgeService') private readonly edgeService: IEdgeService,
     @inject('INodeService') private readonly nodeService: INodeService,
+    @inject('IAdminService') private readonly adminService: IAdminService,
   ) {}
 
   public async createGalleryProfile({
@@ -51,6 +53,17 @@ export class GalleryService implements IGalleryService {
         galleryId: metaData?._id,
         email: userEmail,
       });
+      try{
+        await this.adminService.sgSendEmail({
+          to: 'tj@darta.art',
+          from: '',
+          subject: 'New Gallery Signup',
+          text: `Gallery Name: ${galleryName.value} \n Gallery Email: ${userEmail}`,
+        })
+      } catch (error: any) {
+        // eslint-disable-next-line no-console
+        console.log({error})
+      }
       return {
         ...newGallery,
         _id: metaData?._id,
@@ -67,8 +80,8 @@ export class GalleryService implements IGalleryService {
       const galleryId = await this.getGalleryIdFromUID({uid});
       const gallery = await this.readGalleryProfileFromGalleryId({galleryId});
       return gallery;
-    } catch (error) {
-      throw new Error('error reading profile');
+    } catch (error: any) {
+      throw new Error(error.message);
     }
   }
 
@@ -90,8 +103,8 @@ export class GalleryService implements IGalleryService {
     try {
       const cursor = await this.db.query(galleryQuery, {galleryId});
       gallery = await cursor.next(); // Get the first result
-    } catch (error) {
-      throw new Error('error in read gallery profile');
+    } catch (error: any) {
+      throw new Error(error.message);
     }
 
     let galleryLogo;
@@ -108,17 +121,31 @@ export class GalleryService implements IGalleryService {
           bucketName: galleryLogo?.bucketName,
           fileName: galleryLogo?.fileName,
         });
-      } catch (error) {
-        throw new Error('error retrieving url');
+        await this.refreshGalleryProfileLogo({galleryId, url})
+      } catch (error: any) {
+        // eslint-disable-next-line no-console
+        console.log(error);
+        url = '';
       }
     }
-    return {
+    const results = {
       ...gallery,
       galleryLogo: {
-        ...gallery.galleryLogo,
+        ...galleryLogo,
         value: url,
       },
     };
+    // await this.reSaveGalleryImageByGalleryId({id: results.galleryId})
+    return results
+  }
+
+  public async readGalleryProfileFromGalleryIdForUser({galleryId} : {galleryId: string}): Promise<Gallery | null> {
+    const fullGalleryId = this.generateGalleryId({galleryId});
+    const gallery = await this.readGalleryProfileFromGalleryId({galleryId: fullGalleryId});
+    if (!gallery) {
+      return null;
+    }
+    return filterOutPrivateRecordsMultiObject(gallery) 
   }
 
   public async editGalleryProfile({
@@ -169,12 +196,12 @@ export class GalleryService implements IGalleryService {
         },
       });
     } catch (error) {
-      throw new Error('unable to upsert node for gallery');
+      throw new Error('unable to upsert node for gallery on edit');
     }
 
     if (gallery) {
       // Dynamically check for galleryLocationX properties
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 5; i+=1) {
         const key = `galleryLocation${i}`;
         if (gallery[key as keyof Gallery]) {
           const cityValue =
@@ -196,10 +223,10 @@ export class GalleryService implements IGalleryService {
 
             // Check if an edge between the gallery and this city already exists
             const checkEdgeQuery = `
-          FOR edge IN ${EdgeNames.GalleryToCity}
-          FILTER edge._from == @galleryId AND edge._to == @cityId
-          RETURN edge
-          `;
+            FOR edge IN ${EdgeNames.FROMGalleryToCity}
+            FILTER edge._from == @galleryId AND edge._to == @cityId
+            RETURN edge
+            `;
 
             const edgeCursor = await this.db.query(checkEdgeQuery, {
               galleryId: gallery._id,
@@ -210,7 +237,7 @@ export class GalleryService implements IGalleryService {
             // If there's no existing edge, create a new one
             if (!existingEdge) {
               const createEdgeQuery = `
-                    INSERT { _from: @galleryId, _to: @cityId } INTO ${EdgeNames.GalleryToCity}
+                    INSERT { _from: @galleryId, _to: @cityId } INTO ${EdgeNames.FROMGalleryToCity}
                 `;
               await this.db.query(createEdgeQuery, {
                 galleryId: gallery._id,
@@ -223,6 +250,30 @@ export class GalleryService implements IGalleryService {
     }
 
     return gallery;
+  }
+
+  public async refreshGalleryProfileLogo({
+    galleryId,
+    url,
+  }: {
+    galleryId: string;
+    url: string;
+  }): Promise<void> {
+    const galId = this.generateGalleryId({galleryId});
+
+    try {
+      await this.nodeService.upsertNodeById({
+        collectionName: CollectionNames.Galleries,
+        id: galId,
+        data: {
+          galleryLogo: {
+            value: url
+          },
+        },
+      });
+    } catch (error) {
+      throw new Error('unable refresh gallery profile logo');
+    }
   }
 
   public async deleteGalleryProfile(): Promise<void> {
@@ -245,7 +296,7 @@ export class GalleryService implements IGalleryService {
       const isValidated: boolean | null = await cursor.next(); // Get the first result
       if (isValidated) {
         return true;
-      } else {
+      } 
         // Define the query for checking the awaiting approval array
         const query2 = `
           FOR gallery IN ${CollectionNames.GalleryApprovals}
@@ -258,7 +309,7 @@ export class GalleryService implements IGalleryService {
         const isAwaiting: boolean | null = await cursor2.next(); // Get the first result
         if (isAwaiting) {
           return false;
-        } else {
+        } 
           // Save the domain to the awaiting approval array
           const awaitingApprovalField = isGmail
             ? 'awaitingApprovalGmail'
@@ -270,8 +321,8 @@ export class GalleryService implements IGalleryService {
           `;
           await this.db.query(query3, {domain});
           return false;
-        }
-      }
+        
+      
     } catch (error: any) {
       return false;
     }
@@ -327,6 +378,30 @@ export class GalleryService implements IGalleryService {
     }
   }
 
+
+  public async getGalleryFromDomain({userEmail}: {userEmail: string}): Promise<Gallery | null>{
+    const normalizedGalleryDomain = this.normalizeGalleryDomain({userEmail});
+
+    const checkGalleryDuplicates = `
+      WITH ${CollectionNames.Galleries}
+      FOR gallery in ${CollectionNames.Galleries}
+      FILTER @normalizedGalleryDomain == gallery.normalizedGalleryDomain
+      RETURN gallery
+    `;
+
+    try {
+      const cursor = await this.db.query(checkGalleryDuplicates, {
+        normalizedGalleryDomain,
+      });
+      const galleryExists: Gallery = await cursor.next();
+      return galleryExists;
+    } catch (error) {
+      throw new Error('ahhhhh');
+    }
+  }
+
+
+
   public async createGalleryAdminNode({
     galleryId,
     email,
@@ -334,7 +409,8 @@ export class GalleryService implements IGalleryService {
     galleryId: string;
     email: string;
   }): Promise<any> {
-    const galleryIdId = this.generateGalleryId({galleryId});
+    // TO-DO: check if gallery admin node already exists
+    const galleryIdId = this.generateGalleryUserId({galleryId});
 
     try {
       await this.nodeService.upsertNodeById({
@@ -349,6 +425,21 @@ export class GalleryService implements IGalleryService {
     }
   }
 
+  public async getGalleryByExhibitionId({exhibitionId}: {exhibitionId: string}): Promise<Gallery | null>{
+
+    try {
+      const results = await this.edgeService.getEdgeWithTo({
+        edgeName: EdgeNames.FROMGalleryTOExhibition,
+        to: exhibitionId,
+      });
+      return await this.readGalleryProfileFromGalleryId({galleryId: results._from})
+    } catch(error: any){
+      // console.log({error})
+    }
+
+    return null
+  }
+
   // eslint-disable-next-line class-methods-use-this
   public generateGalleryUserId({galleryId}: {galleryId: string}): string {
     return galleryId.includes(CollectionNames.GalleryUsers)
@@ -360,7 +451,7 @@ export class GalleryService implements IGalleryService {
   public generateGalleryId({galleryId}: {galleryId: string}): string {
     return galleryId.includes(CollectionNames.Galleries)
       ? galleryId
-      : `${CollectionNames.GalleryUsers}/${galleryId}`;
+      : `${CollectionNames.Galleries}/${galleryId}`;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -375,8 +466,8 @@ export class GalleryService implements IGalleryService {
     let normalized = galleryName.toLowerCase();
     normalized = normalized.trim();
     normalized = normalized.replace(/\s+/g, '-');
-    normalized = normalized.replace(/[^a-z0-9\-]/g, '');
-    normalized = normalized.replace(/\-+/g, '-');
+    normalized = normalized.replace(/[^a-z0-9-]/g, '');
+    normalized = normalized.replace(/-+/g, '-');
     return normalized;
   }
 
@@ -419,6 +510,7 @@ export class GalleryService implements IGalleryService {
     normalized = normalized.toLowerCase();
 
     // Remove non-printable characters
+    // eslint-disable-next-line no-control-regex
     normalized = normalized.replace(/[\x00-\x1F\x7F-\x9F]/g, '');
 
     return normalized;

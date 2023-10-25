@@ -49,6 +49,9 @@ images:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       PORT: ${PORT}
       VERSION: ${VERSION}
+      NODE_ENV: ${NODE_ENV}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      SENDGRID_INQUIRE_TEMPLATE_ID: ${SENDGRID_INQUIRE_TEMPLATE_ID}
 
 deployments:
   darta-api:
@@ -61,30 +64,30 @@ deployments:
         containers:
         - image: gcr.io/darta-dev/darta-api
         buildKit:
-          args: ["--platform=linux/amd64"]
+          args: ["--platform=linux/amd64", '--no-cache', '--compress']
         service:
           ports:
           - port: ${PORT} # using variable here
 
-  traefik:
-    namespace: traefik
-    helm:
-      chart:
-        name: traefik
-        version: 23.2.0
-        repo: "https://helm.traefik.io/traefik"
-      values:
-        service:
-          type: LoadBalancer
+  # traefik:
+  #   namespace: traefik-v2
+  #   helm:
+  #     chart:
+  #       name: traefik
+  #       version: 23.2.0
+  #       repo: "https://helm.traefik.io/traefik"
+  #     values:
+  #       service:
+  #         type: LoadBalancer
 
   ingress:
-    namespace: traefik
+    namespace: traefik-v2
     kubectl:
       manifests:
       - ../../charts/production/ingress-route.yaml
 
   https-redirect:
-    namespace: traefik
+    namespace: traefik-v2
     kubectl:
       manifests:
       - ../../charts/production/https-redirect.yaml

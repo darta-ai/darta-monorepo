@@ -1,9 +1,10 @@
 import {Request, Response} from 'express';
 import {inject} from 'inversify';
-import {controller, httpPost, request, response} from 'inversify-express-utils';
+import {controller, httpGet, httpPost, request, response} from 'inversify-express-utils';
 
+import { standardConsoleLog } from '../config/templates';
 import {verifyToken} from '../middleware/accessTokenVerify';
-import {Node} from '../models/models';
+import { Gallery } from '../models/GalleryModel';
 import {IGalleryService, IUserService} from '../services/interfaces';
 
 @controller('/users')
@@ -21,15 +22,13 @@ export class UserController {
     const {user} = req as any;
     const {galleryName, signUpWebsite, phoneNumber} = req.body;
     try {
-      const verifyGallery: Node =
-        await this.galleryService.checkDuplicateGalleries({
-          userEmail: user.email,
-        });
+      const verifyGallery: Gallery | null = await this.galleryService.getGalleryFromDomain({
+        userEmail: user.email,
+      });
       if (!verifyGallery) {
         const isValidated = await this.galleryService.verifyQualifyingGallery(
           user.email,
         );
-
         const {_id, ...gallery} =
           await this.galleryService.createGalleryProfile({
             galleryName,
@@ -47,15 +46,187 @@ export class UserController {
           validated: isValidated,
         });
         res.status(200).send(gallery);
+        return  
       }
 
-      await this.userService.editGalleryEdge({
-        galleryId: verifyGallery._id!,
-        uid: user.uid,
-        relationship: 'USER',
-      });
-      res.status(200).send(verifyGallery);
+      if (verifyGallery._id) {
+        await this.userService.editGalleryToUserEdge({
+          galleryId: verifyGallery._id,
+          uid: user.uid,
+          relationship: 'USER',
+        });
+        res.status(200).send(verifyGallery);
+      } else {
+        throw new Error('!! no gallery _id !!')
+      }
     } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req?.body, request: 'users/newGallery'})
+      res.status(500).send(error.message);
+    }
+  }
+  
+  // eslint-disable-next-line class-methods-use-this
+  @httpPost('/createNewDartaUser')
+  public async newDartaUser(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    const {uid} = req.body;
+    try {
+      await this.userService.createDartaUser({
+        uid,
+      });
+      
+      res.status(200).send(uid);
+    } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req?.body, request: 'users/createNewDartaUser'})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpPost('/createDartaUserFollowGallery')
+  public async dartaUserFollowGallery(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    if (!req.body.uid || !req.body.galleryId) {
+      res.status(400).send("uid or galleryId query parameter is required");
+      return;
+    }
+    try {
+      const {uid, galleryId} = req.body
+
+      await this.userService.createDartaUserGalleryRelationship({
+        uid,
+        galleryId
+      });
+
+      res.status(200).send("created user gallery connection");
+    } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req?.body, request: 'users/createDartaUserFollowGallery'})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpGet('/getDartaUser')
+  public async getDartaUser(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const {uid} = req.query;
+      if (!uid) {
+        throw new Error('Missing required fields');
+      }
+      const results = await this.userService.readDartaUser({
+        uid: uid as string,
+      });
+      
+      res.status(200).send(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req.query, request: 'users/getDartaUser'})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpPost('/editDartaUser')
+  public async editDartaUser(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const { profilePicture,
+        userName,
+        legalFirstName,
+        legalLastName,
+        email, 
+        uid
+      } = req.body;
+      if (!uid) {
+        throw new Error('Missing required fields');
+      }
+
+      const results = await this.userService.editDartaUser({
+        profilePicture: profilePicture as any,
+        userName: userName as string,
+        legalFirstName: legalFirstName as string,
+        legalLastName: legalLastName as string,
+        email: email as string, 
+        uid: uid as string
+      });
+      
+      res.status(200).send(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req?.body, request: 'users/editDartaUser'})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpPost('/deleteDartaUser')
+  public async deleteDartaUser(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const {
+        uid
+      } = req.body;
+      if (!uid) {
+        throw new Error('Missing required fields');
+      }
+      const results = await this.userService.deleteDartaUser({
+        uid: uid as string,
+      });
+      
+      res.status(200).send(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req.body, request: 'users/deleteDartaUser'})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpPost('/deleteDartaUserFollowGallery')
+  public async dartaUserUnFollowGallery(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    if (!req.body.uid || !req.body.galleryId) {
+      res.status(400).send("uid query parameter is required");
+      return;
+    }
+    try {
+      const {uid, galleryId} = req.body
+
+      await this.userService.deleteDartaUserGalleryRelationship({
+        uid,
+        galleryId
+      });
+
+      res.status(200).send("created user gallery connection");
+    } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req.body, request: 'deleteDartaUserFollowGallery/dartaUserUnFollowGallery'})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpGet('/listDartaUserFollowsGallery')
+  public async listDartaUserFollowsGallery(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    if (!req.query.uid) {
+      res.status(400).send("uid query parameter is required");
+      return;
+    }
+    try {
+
+      const results = await this.userService.listDartaUserFollowsGallery({
+        uid: req.query.uid as string
+      });
+      res.json(results);
+      
+    } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req.query, request: 'users/listDartaUserFollowsGallery'})
       res.status(500).send(error.message);
     }
   }

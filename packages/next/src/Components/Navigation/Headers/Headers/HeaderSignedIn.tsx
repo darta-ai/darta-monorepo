@@ -1,3 +1,4 @@
+import * as Colors from '@darta-styles';
 import {Box, Button, Typography} from '@mui/material';
 import {useRouter} from 'next/router';
 import React from 'react';
@@ -31,15 +32,6 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
         data-testid="header-navigation-signOut-button">
         Sign Out
       </Button>
-      {/* <Button
-        onClick={async () => {
-          
-        }}
-        sx={headerStyles.button}
-        variant="contained"
-        data-testid="header-navigation-dashboard-button">
-        Dashboard
-      </Button> */}
       <div />
       <div />
       <Box
@@ -54,7 +46,7 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
               data-testid="header-image"
             />
             <Box sx={{alignSelf: 'center'}}>
-              <Typography variant="h5">+</Typography>
+              <Typography variant="h5" style={{color: Colors.PRIMARY_50}}>+</Typography>
             </Box>
           </>
         ) : (
@@ -68,11 +60,12 @@ export function HeaderSignedIn({authType}: {authType: AuthEnum}) {
         <Box
           component="img"
           sx={headerStyles.dartaImageBox}
-          src="/static/images/dartahouseblue.png"
+          src="/static/images/dartahousewhite.png"
           data-testid="header-image"
           alt="logo"
         />
       </Box>
     </Box>
+
   );
 }

@@ -1,4 +1,108 @@
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../../styles';
+import * as Colors from '@darta-styles'
+
+import {PRIMARY_DARK_GREY} from '../../../styles';
+
+export const splashStyles = {
+  container: {
+    minWidth: '100vw',
+    backgroundColor: Colors.PRIMARY_500,
+    height: '150vh',
+    display: 'flex',
+    marginTop: '3%',
+    flexDirection: 'column',
+    gap: '0%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    '@media (min-width:800px)': {
+      padding: '5%',
+      height: '80vh',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+  },
+  textContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignContent: 'center',
+    alignItems: 'space-around',
+    alignSelf: 'center',
+    minWidth: '60%',
+    height: '80vh',
+    '@media (min-width:1280px)': {
+      alignItems: 'flex-start',
+    },
+  },
+  typographyTitleContainer: {
+    minHeight: '30%',
+    '@media (min-width:1280px)': {
+      height: '30%',
+    },
+  },
+  typographyTitle: {
+    // fontFamily: 'Avenir Next',
+    color: Colors.PRIMARY_100,
+    my: 2,
+    alignText: 'center',
+    cursor: 'default',
+    fontSize: '3rem',
+    '@media (min-width:1080px)': {
+      fontSize: '3.5rem',
+    },
+    '@media (min-width:1280px)': {
+      fontSize: '4rem',
+    },
+  },
+  subheader: {
+    color: Colors.PRIMARY_100,
+    width: '100%',
+    fontFamily: 'Avenir Next',
+    cursor: 'default',
+    fontSize: '1.25rem',
+    '@media (min-width:1080px)': {
+      fontSize: '2rem',
+    },
+    '@media (min-width:1280px)': {
+      fontSize: '2.25rem',
+    },
+  },
+  subheaderContainer: {
+    minHeight: '30%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    '@media (min-width:1280px)': {
+      height: '40%',
+    },
+  },
+  typography: {
+    color: Colors.PRIMARY_100,
+    width: '100%',
+    fontFamily: 'Avenir Next',
+    cursor: 'default',
+    fontSize: '1rem',
+    '@media (min-width:1280px)': {
+      fontSize: '1.25rem',
+    },
+  },
+  downloadFromAppStoreContainer: {
+    height: '30%',
+    width: '100%',
+    display: 'flex',
+  },
+  phonePreviewContainer: {
+    height: '70vh',
+    width: '95%',
+    margin: '5%',
+    '@media (min-width:1080px)': {
+      maxHeight: '75vh',
+    },
+    '@media (min-width:1280px)': {
+      maxHeight: '85vh',
+      minWidth: '20%',
+    },
+  }
+}
 
 export const styles = {
   container: {
@@ -69,7 +173,7 @@ export const styles = {
   },
   typographyTitle: {
     fontFamily: 'Nunito Sans',
-    color: PRIMARY_BLUE,
+    color: Colors.PRIMARY_600,
     my: 2,
     fontSize: '1.8rem',
     alignText: 'center',

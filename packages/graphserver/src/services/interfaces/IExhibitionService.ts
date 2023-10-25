@@ -1,4 +1,4 @@
-import {Artwork, Exhibition, IBusinessLocationData} from '@darta/types';
+import {Artwork, Exhibition, ExhibitionObject, ExhibitionPreview, IBusinessLocationData, IGalleryProfileData,MapPinCities} from '@darta-types';
 
 export interface IExhibitionService {
   createExhibition({
@@ -51,11 +51,14 @@ export interface IExhibitionService {
   }: {
     exhibitionId: string;
   }): Promise<Exhibition | void>;
-  readExhibitionForUser({
+  readGalleryExhibitionForUser({
     exhibitionId,
   }: {
     exhibitionId: string;
   }): Promise<Exhibition | void>;
+  readMostRecentGalleryExhibitionForUser(
+    {locationId} : {locationId: string}
+    ): Promise<{exhibition: Exhibition, gallery : IGalleryProfileData} | void> 
   editExhibition({
     exhibition,
     galleryId,
@@ -68,6 +71,20 @@ export interface IExhibitionService {
   }: {
     galleryId: string;
   }): Promise<Exhibition[] | void>;
+
+  listGalleryExhibitionsForUser({
+    galleryId,
+  }: {
+    galleryId: string;
+  }): Promise<ExhibitionObject | void>;
+
+  listGalleryExhibitionPreviewsForUser({
+    galleryId,
+  }: {
+    galleryId: string;
+  }): Promise<ExhibitionObject | null>;
+
+  listActiveExhibitionsByCity({cityName} : {cityName: MapPinCities}): Promise<any>
 
   deleteExhibition({
     exhibitionId,
@@ -106,4 +123,6 @@ export interface IExhibitionService {
   }: {
     exhibitionId: string;
   }): Promise<any>;
+
+  listExhibitionsPreviewsForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: ExhibitionPreview} | void>
 }

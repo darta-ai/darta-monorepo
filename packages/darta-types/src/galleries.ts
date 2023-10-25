@@ -81,6 +81,9 @@ interface GalleryFields extends GalleryBase {
   galleryPhone?: PrivateFields;
   galleryBusinessHours?: IBusinessHours;
   galleryInstagram?: PrivateFields;
+  galleryId?: string;
+  galleryExhibitions?: ExhibitionObject;
+  galleryInternalEmail?: PublicFields;
 }
 export interface IGalleryProfileData
   extends GalleryFields,
@@ -104,6 +107,37 @@ export interface DateFields {
 export interface IOpeningLocationData extends IBusinessLocationData {
   isPrivate: boolean;
 }
+
+export type ArtworkPreview = {
+  [key: string]: {
+    _id: string;
+    artworkImage: {value : string};
+    artworkTitle: {value : string};
+  }
+}
+
+export type ExhibitionPreview = {
+  artworkPreviews: ArtworkPreview;
+  exhibitionId: string;
+  galleryId: string;
+  openingDate: PublicFields;
+  closingDate: PublicFields;
+  exhibitionDuration: {value : 'Temporary' | 'Ongoing/Indefinite'};
+  galleryLogo: Images;
+  galleryName: PublicFields;
+  exhibitionArtist: PublicFields;
+  exhibitionTitle: PublicFields;
+  exhibitionLocation: {
+    exhibitionLocationString: PublicFields;
+    coordinates: CoordinateFields;
+  };
+  exhibitionPrimaryImage: {
+    value: string;
+  };
+  exhibitionDates: ExhibitionDates;
+  receptionDates: ReceptionDates;
+}
+
 export type Artwork = {
   artworkImage: Images;
   artworkId?: string;
@@ -111,6 +145,7 @@ export type Artwork = {
   artworkImagesArray?: PublicFields[] | any[];
   artworkTitle: PublicFields;
   artistName: PublicFields;
+  artworkCategory: PublicFields;
   artworkDescription?: PublicFields;
   artworkCurrency?: PublicFields;
   artworkPrice?: PrivateFields;
@@ -126,6 +161,9 @@ export type Artwork = {
   exhibitionId: string | null;
   galleryId?: string;
   _id?: string;
+  artworkStyleTags?: string[];
+  artworkVisualTags?: string[];
+
 };
 export type ExhibitionDates = {
   exhibitionStartDate: DateFields;
@@ -151,6 +189,8 @@ export type BusinessAddressType =
   | 'galleryLocation3'
   | 'galleryLocation4';
 export type Exhibition = {
+  _key?: string;
+  _id?: string;
   exhibitionTitle: PublicFields;
   exhibitionPressRelease: PublicFields;
   exhibitionPrimaryImage: Images;
@@ -160,6 +200,10 @@ export type Exhibition = {
   pressReleaseImages?: PublicFields[] | undefined[];
   exhibitionImages?: PublicFields[] | undefined[];
   exhibitionOrder?: string[];
+  exhibitionType?: {value: 'Group Show' | 'Solo Show'};
+  exhibitionArtist?: {
+    value: string;
+  };
   artworks?: {
     [key: string]: Artwork;
   };
@@ -170,6 +214,10 @@ export type Exhibition = {
   receptionDates: ReceptionDates;
   createdAt: string | null;
   updatedAt?: string | null;
+  exhibitionArtistStatement?: PublicFields;
+  artworkStyleTags?: string[];
+  artworkVisualTags?: string[];
+  artworkCategory: PublicFields;
 };
 export type ExhibitionObject = {
   [key: string]: Exhibition;
@@ -193,4 +241,31 @@ type GalleryDisplayValues = {
   value: string;
 };
 export type GalleryDropdownDisplay = GalleryDisplayValues[];
+
+export type ExhibitionMapPin = {
+  exhibitionId: string;
+  galleryId: string;
+  galleryName: PublicFields;
+  galleryLogo: Images;
+  exhibitionTitle: PublicFields;
+  exhibitionLocation: IOpeningLocationData;
+  exhibitionPrimaryImage: Images;
+  exhibitionDates: ExhibitionDates;
+  receptionDates: ReceptionDates;
+  exhibitionArtist?: PublicFields;
+  exhibitionType: {
+    value: 'Group Show' | 'Solo Show';
+  };
+  artworks?: {
+    [key: string]: Artwork;
+  };
+  _id?: string;
+}
+
+export type GalleryPreview = {
+  galleryLogo: Images;
+  galleryName: PublicFields;
+  _id: string;
+}
+
 export {};

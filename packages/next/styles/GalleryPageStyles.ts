@@ -1,4 +1,6 @@
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_GREY, PRIMARY_MILK} from '.';
+import {PRIMARY_50, PRIMARY_600, PRIMARY_700, PRIMARY_800, PRIMARY_900,PRIMARY_950} from '@darta-styles'
+
+import {PRIMARY_DARK_GREY} from '.';
 
 export const galleryStyles = {
   container: {
@@ -14,18 +16,17 @@ export const galleryStyles = {
   },
   pageNavigationContainer: {
     borderTopLeftRadius: '0px',
-    width: '100%',
+    width: '95%',
     minHeight: '90vh',
-    borderTop: `0px`,
+    borderTop: '0px',
     alignContent: 'center',
+    alignSelf: 'center',
     display: 'flex',
     flexDirection: 'column',
     gap: '2vw',
-    borderLeft: `0px`,
-    '@media (min-width: 800px)': {
-      borderTop: `1px solid ${PRIMARY_GREY}`,
-      borderLeft: `1px solid ${PRIMARY_GREY}`,
-      borderTopLeftRadius: '10px',
+    '@media (min-width: 1080px)': {
+      width: '80%',
+      borderTop: `1px solid ${PRIMARY_800}`,
     },
   },
   navigationHeader: {
@@ -36,7 +37,7 @@ export const galleryStyles = {
     alignContent: 'center',
     justifyContent: 'flex-start',
     gap: '2vh',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1080px)': {
       flexDirection: 'row',
       justifyContent: 'space-around',
     },
@@ -47,7 +48,7 @@ export const galleryStyles = {
     flexDirection: 'row',
     gap: '3vw',
     justifyContent: 'space-between',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1080px)': {
       width: '50%',
     },
   },
@@ -69,20 +70,20 @@ export const galleryStyles = {
   },
   typographyTitle: {
     fontFamily: 'Nunito Sans',
-    color: PRIMARY_BLUE,
+    color: PRIMARY_700,
     fontSize: '2rem',
     my: '3vh',
-    '@media (min-width:800px)': {
+    '@media (min-width: 1080px)': {
       fontSize: '2.5rem',
     },
     cursor: 'default',
   },
   artworkHeader: {
     fontFamily: 'Nunito Sans',
-    color: PRIMARY_BLUE,
+    color: PRIMARY_600,
     fontSize: '1.5rem',
     my: '3vh',
-    '@media (min-width:800px)': {
+    '@media (min-width: 1080px)': {
       fontSize: '2rem',
     },
     cursor: 'default',
@@ -91,13 +92,13 @@ export const galleryStyles = {
     fontFamily: 'Nunito Sans',
     color: PRIMARY_DARK_GREY,
     fontSize: '1rem',
-    '@media (minWidth: 800px)': {
+    '@media (minWidth: 1080px)': {
       fontSize: '1.3rem',
     },
     cursor: 'default',
   },
   button: {
-    color: PRIMARY_BLUE,
+    color: PRIMARY_900,
   },
   inputTextContainer: {
     display: 'flex',
@@ -106,10 +107,13 @@ export const galleryStyles = {
     alignItems: 'center',
   },
   createNewButton: {
-    backgroundColor: PRIMARY_BLUE,
-    color: PRIMARY_MILK,
-    // width: '50%',
+    backgroundColor: PRIMARY_950,
     alignSelf: 'center',
+    color: PRIMARY_50,
+    width: '35vw',
+    '@media (min-width: 800px)': {
+      width: '20vw',
+    },
   },
   formTextField: {
     width: '100%',
@@ -122,7 +126,7 @@ export const galleryStyles = {
     justifyContent: 'space-around',
     gap: '4vh',
     width: '100%',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1080px)': {
       fontSize: '1.3rem',
       flexDirection: 'row',
     },

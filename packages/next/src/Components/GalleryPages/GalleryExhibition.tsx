@@ -1,7 +1,8 @@
 import 'firebase/compat/auth';
 
-import {Exhibition, GalleryState} from '@darta/types';
-import {Box, Button, Typography} from '@mui/material';
+import * as Colors from '@darta-styles';
+import {Exhibition, GalleryState} from '@darta-types';
+import {Box, Button, CircularProgress,Typography} from '@mui/material';
 import Head from 'next/head';
 import React from 'react';
 
@@ -33,6 +34,10 @@ const exhibitionSteps = [
   {
     target: '.exhibition-edit-button',
     content: 'You can edit the details of the exhibition here.',
+  },
+  {
+    target: '.exhibition-publish-button',
+    content: 'When your exhibition is ready for users to view, click here. Users will not see an exhibition until you publish it.',
   },
   {
     target: '.create-new-artwork',
@@ -97,15 +102,37 @@ export function GalleryExhibition() {
 
   const [galleryLocations, setGalleryLocations] = React.useState<string[]>([]);
   const [galleryName, setGalleryName] = React.useState<string | null>();
+  const [latestExhibitionDate, setLatestExhibitionDate] = React.useState<string>(new Date().toISOString());
+  const [latestExhibitionId, setLatestExhibitionId] = React.useState<string>('');
   React.useEffect(() => {
     setGalleryLocations(getGalleryLocations(state));
 
     const galName = state?.galleryProfile?.galleryName?.value;
     setGalleryName(galName);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+    const latestExhibition = Object.values(state?.galleryExhibitions).sort((a, b) => {
+      const dateA = a?.exhibitionDates?.exhibitionEndDate?.value
+        ? new Date(a?.exhibitionDates?.exhibitionEndDate?.value)
+        : new Date(0);
+      const dateB = b?.exhibitionDates?.exhibitionEndDate?.value
+        ? new Date(b?.exhibitionDates?.exhibitionEndDate?.value)
+        : new Date(0);
+      return (dateB as any) - (dateA as any);
+    })[0];
+
+    if (latestExhibition?.exhibitionDates?.exhibitionEndDate?.value){
+      setLatestExhibitionDate(latestExhibition.exhibitionDates.exhibitionEndDate.value)
+    } 
+    if (latestExhibition?.exhibitionId){
+      setLatestExhibitionId(latestExhibition.exhibitionId)
+    }
+  // eslint-disable-next-line no-sparse-arrays
+  }, [, state.galleryExhibitions]);
+
+  const [isLoadingExhibition, setLoadingExhibition] = React.useState<boolean>(false)
 
   const addNewExhibition = async () => {
+    setLoadingExhibition(true)
     try {
       const results = await createExhibitionAPI();
       if (results?.exhibitionId) {
@@ -115,11 +142,13 @@ export function GalleryExhibition() {
           exhibitionId: results.exhibitionId,
         });
       } else {
+        setLoadingExhibition(false)
         throw new Error();
       }
     } catch (error) {
       // TO-DO: throw error for frontend
     }
+    setLoadingExhibition(false)
   };
 
   const [stepIndex, setStepIndex] = React.useState(0);
@@ -137,7 +166,7 @@ export function GalleryExhibition() {
         <title>Darta | Exhibition</title>
         <meta
           name="description"
-          content="Your profile page for your gallery on Darta."
+          content="Your exhibition page for your gallery on Darta."
         />
       </Head>
 
@@ -166,12 +195,19 @@ export function GalleryExhibition() {
               type="submit"
               onClick={() => addNewExhibition()}
               disabled={
-                !state.galleryProfile.isValidated || !user.emailVerified
+                !state.galleryProfile.isValidated || !user?.emailVerified
               }
               sx={galleryStyles.createNewButton}>
+              {isLoadingExhibition ? (
+                <CircularProgress sx={{color: Colors.PRIMARY_50}} size={24} />
+              ):
+              (
               <Typography sx={{fontWeight: 'bold'}}>
                 Create Exhibition
               </Typography>
+              )
+            }
+
             </Button>
           </Box>
         </Box>
@@ -179,12 +215,12 @@ export function GalleryExhibition() {
           {state.galleryExhibitions &&
             Object.values(state.galleryExhibitions)
               .sort((a, b) => {
-                const dateA = a?.createdAt
-                  ? new Date(a.createdAt)
-                  : new Date(0);
-                const dateB = b?.createdAt
-                  ? new Date(b.createdAt)
-                  : new Date(0);
+                const dateA = a?.exhibitionDates?.exhibitionEndDate?.value
+                  ? new Date(a?.exhibitionDates?.exhibitionEndDate?.value)
+                  : new Date(latestExhibitionDate);
+                const dateB = b?.exhibitionDates?.exhibitionEndDate?.value
+                  ? new Date(b?.exhibitionDates?.exhibitionEndDate?.value)
+                  : new Date(latestExhibitionDate);
                 return (dateB as any) - (dateA as any);
               })
               .map((exhibition: Exhibition) => (
@@ -194,6 +230,7 @@ export function GalleryExhibition() {
                     galleryLocations={galleryLocations}
                     exhibitionId={exhibition?.exhibitionId}
                     galleryName={galleryName as string}
+                    isLatestExhibition={exhibition?.exhibitionId === latestExhibitionId ?? false}
                   />
                 </Box>
               ))}
@@ -204,6 +241,7 @@ export function GalleryExhibition() {
                 galleryLocations={galleryLocations}
                 exhibitionId="00000-00000-0000"
                 galleryName={galleryName as string}
+                isLatestExhibition
               />
             </Box>
           )}

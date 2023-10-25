@@ -18,7 +18,6 @@ export class AdminController {
       await this.service.validateAndCreateCollectionsAndEdges();
       res.status(200);
     } catch (error: any) {
-      // console.log(error);
       res.status(500).send(error.message);
     }
   }
@@ -34,6 +33,20 @@ export class AdminController {
       res.status(200).send(results);
     } catch (error: any) {
       // console.log(error);
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpPost('/addMinioBucket', verifyAdmin)
+  public async addMinioBucket(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    const {bucketName} = req.body;
+    try {
+      const results = await this.service.addMinioBucker(bucketName);
+      res.status(200).send(results);
+    } catch (error: any) {
       res.status(500).send(error.message);
     }
   }

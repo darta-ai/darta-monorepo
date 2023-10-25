@@ -1,18 +1,20 @@
-import {Artwork, Dimensions, Images} from '@darta/types';
+import {Artwork, Dimensions, IGalleryProfileData, Images} from '@darta-types';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 import _ from 'lodash';
 
 import {CollectionNames, EdgeNames} from '../config/collections';
-import {newArtworkShell} from '../config/templates';
+import {newArtworkShell, standardConsoleLog} from '../config/templates';
 import {ImageController} from '../controllers/ImageController';
 import {ArtworkNode, Edge, Node} from '../models/models';
 import {
+  IAdminService,
   IArtworkService,
   IEdgeService,
   IGalleryService,
   INodeService,
-} from './interfaces';
+  IUserService} from './interfaces';
+import { DynamicTemplateData } from './interfaces/IAdminService';
 import {ArtworkAndGallery} from './interfaces/IArtworkService';
 
 const BUCKET_NAME = 'artwork';
@@ -26,6 +28,8 @@ export class ArtworkService implements IArtworkService {
     @inject('IEdgeService') private readonly edgeService: IEdgeService,
     @inject('INodeService') private readonly nodeService: INodeService,
     @inject('IGalleryService') private readonly galleryService: IGalleryService,
+    @inject('IUserService') private readonly userService: IUserService,
+    @inject('IAdminService') private readonly adminService: IAdminService,
   ) {}
 
   public async createArtwork({
@@ -62,11 +66,11 @@ export class ArtworkService implements IArtworkService {
 
     try {
       const createArtworkCursor = await this.db.query(artworkQuery, {
-        newArtwork: {...artwork, _key: artwork.artworkId},
+        newArtwork: {...artwork, _key: artwork.artworkId, galleryId},
       });
       newArtwork = await createArtworkCursor.next();
     } catch (error: any) {
-      throw new Error('error creating artwork');
+      throw new Error('error creating artwork at createArtwork');
     }
 
     // create the edge between the gallery and the artwork
@@ -79,10 +83,47 @@ export class ArtworkService implements IArtworkService {
         data: {value: 'created'},
       });
     } catch (error: any) {
-      throw new Error('error creating artwork edge');
+      throw new Error('error creating artwork edge at createArtwork');
     }
 
     return newArtwork;
+  }
+
+  // eslint-disable-next-line consistent-return
+  public async createUserArtworkRelationship({
+    uid,
+    action,
+    artworkId,
+  }: {
+    uid: string;
+    action: 'LIKE' | 'DISLIKE' | 'SAVE' | 'INQUIRE' | 'VIEWED';
+    artworkId: string;
+  }): Promise<void> {
+    try {
+      const userId = this.userService.generateDartaUserId({uid});
+      const artId = this.generateArtworkId({artworkId});
+      const edgeKey = `FROMDartaUserTOArtwork${action}`;
+      const data: any = {
+        value: action,
+        createdAt: new Date().toISOString(),
+      }
+      const userIsInquiring = action === 'INQUIRE';
+      if (userIsInquiring) {
+        data.status = 'inquired'
+      }
+      await this.edgeService.upsertEdge({
+        edgeName: EdgeNames[edgeKey as keyof typeof EdgeNames],
+        from: userId,
+        to: artId,
+        data,
+        });
+         
+        if (userIsInquiring){
+          await this.sendInquiryEmail({artworkId, userId})
+        }
+    } catch (error: any) {
+      return error.message;
+    }
   }
 
   public async readArtwork(artworkId: string): Promise<Artwork | null> {
@@ -96,23 +137,28 @@ export class ArtworkService implements IArtworkService {
     artworkId: string,
   ): Promise<ArtworkAndGallery> {
     // TO-DO: build out?
-    const artwork = await this.getArtworkById(artworkId);
+    try {
+      const artwork = await this.getArtworkById(artworkId);
 
-    // ############## get gallery ##############
-
-    let galleryEdge: Edge;
-    let gallery = null;
-
-    if (artwork?._id) {
-      galleryEdge = await this.edgeService.getEdgeWithTo({
-        edgeName: EdgeNames.FROMGalleryToArtwork,
-        to: artwork._id,
-      });
-      gallery = await this.galleryService.readGalleryProfileFromGalleryId({
-        galleryId: galleryEdge._from,
-      });
+      // ############## get gallery ##############
+  
+      let galleryEdge: Edge;
+      let gallery = null;
+  
+      if (artwork?._id) {
+        galleryEdge = await this.edgeService.getEdgeWithTo({
+          edgeName: EdgeNames.FROMGalleryToArtwork,
+          to: artwork._id,
+        });
+        gallery = await this.galleryService.readGalleryProfileFromGalleryId({
+          galleryId: galleryEdge._from,
+        });
+      }
+      return {artwork, gallery};
+    } catch (error){
+      throw new Error('error reading artwork and gallery at readArtworkAndGallery')
     }
-    return {artwork, gallery};
+
   }
 
   public async editArtwork({
@@ -132,13 +178,16 @@ export class ArtworkService implements IArtworkService {
       artworkDimensions,
       artistName,
       artworkCreatedYear,
+      artworkCategory,
+      artworkStyleTags,
+      artworkVisualTags,
       ...remainingArtworkProps
     } = artwork;
 
     const artworkKey = `${CollectionNames.Artwork}/${artworkId}`;
 
     // Save the Artwork Image
-    const {currentArtworkImage} = await this.getArtworkImage({key: artworkId});
+    const currentArtworkImage = await this.getArtworkImage({key: artworkId});
 
     // Don't overwrite an image
     let fileName: string = crypto.randomUUID();
@@ -158,8 +207,8 @@ export class ArtworkService implements IArtworkService {
             bucketName: BUCKET_NAME,
           });
         ({bucketName, value} = artworkImageResults);
-      } catch (error) {
-        throw new Error('error uploading image');
+      } catch (error: any) {
+        throw new Error(`error uploading image at editArtwork: ${error?.message}`);
       }
     }
 
@@ -187,8 +236,8 @@ export class ArtworkService implements IArtworkService {
         key: artworkId,
         data,
       });
-    } catch (error) {
-      throw new Error('error saving artwork');
+    } catch (error: any) {
+      throw new Error(`error saving artwork at editArtwork: ${error?.message}`);
     }
 
     // Artist Node
@@ -227,25 +276,64 @@ export class ArtworkService implements IArtworkService {
       });
     }
 
+    // artworkStyleTags
+    let styleTagPromises: any[] = [];
+    if (artworkStyleTags?.length) {
+      styleTagPromises = artworkStyleTags.map(tag =>
+        this.nodeService.upsertNodeByKey({
+          collectionName: CollectionNames.ArtworkStyleTags,
+          data: {value: tag},
+        }),
+      );
+    }
+
+    // artworkVisualTags
+    let visualTagPromises: any[] = [];
+    if (artworkVisualTags?.length) {
+      visualTagPromises = artworkVisualTags.map(tag =>
+        this.nodeService.upsertNodeByKey({
+          collectionName: CollectionNames.ArtworkVisualTags,
+          data: {value: tag},
+        }),
+      );
+    }
+
+    // artworkCategory
+    let categoryPromise;
+    if (artworkCategory?.value) {
+      categoryPromise = this.nodeService.upsertNodeByKey({
+        collectionName: CollectionNames.ArtworkCategories,
+        data: {value: artworkCategory.value},
+      });
+    }
+
+
+
     // Execute node promises in parallel
-    const [artistNode, mediumNode, priceNode, sizeNode, yearNode] =
+    const [artistNode, mediumNode, priceNode, sizeNode, yearNode, categoryNode] =
       await Promise.all([
         artistPromise,
         mediumPromise,
         pricePromise,
         sizePromise,
         yearPromise,
+        categoryPromise
       ]);
+
+    const styleTagNode = await Promise.all(styleTagPromises)
+
+    const visualTagNode = await Promise.all(visualTagPromises)
+  
 
     // Handle edge creations
 
-    const edgesToCreate = [];
+    const edgesToCreate = [];    
 
     if (artworkId && artistNode?._id) {
       edgesToCreate.push({
         edgeName: EdgeNames.FROMArtworkTOArtist,
         from: artworkKey,
-        newTo: artistNode._id,
+        to: artistNode._id,
         data: {
           value: 'ARTIST',
         },
@@ -256,7 +344,7 @@ export class ArtworkService implements IArtworkService {
       edgesToCreate.push({
         edgeName: EdgeNames.FROMArtworkToMedium,
         from: artworkKey,
-        newTo: mediumNode._id,
+        to: mediumNode._id,
         data: {
           value: 'USES',
         },
@@ -267,7 +355,7 @@ export class ArtworkService implements IArtworkService {
       edgesToCreate.push({
         edgeName: EdgeNames.FROMArtworkTOCostBucket,
         from: artworkKey,
-        newTo: priceNode._id,
+        to: priceNode._id,
         data: {
           value: 'COST',
         },
@@ -278,7 +366,7 @@ export class ArtworkService implements IArtworkService {
       edgesToCreate.push({
         edgeName: EdgeNames.FROMArtworkTOSizeBucket,
         from: artworkKey,
-        newTo: sizeNode._id,
+        to: sizeNode._id,
         data: {
           value: 'SIZE',
         },
@@ -289,23 +377,109 @@ export class ArtworkService implements IArtworkService {
       edgesToCreate.push({
         edgeName: EdgeNames.FROMArtworkTOCreateBucket,
         from: artworkKey,
-        newTo: yearNode._id,
+        to: yearNode._id,
         data: {
           value: 'YEAR CREATED',
         },
       });
     }
 
+    if (categoryPromise && categoryNode?._id) {
+      edgesToCreate.push({
+        edgeName: EdgeNames.FROMArtworkTOCategory,
+        from: artworkKey,
+        to: categoryNode._id,
+        data: {
+          value: 'CATEGORY',
+        },
+      });
+    }
+    
     const edgePromises = edgesToCreate.map(edge =>
-      this.edgeService.replaceMediumEdge(edge),
+      this.edgeService.upsertEdge(edge),
     );
-    await Promise.all(edgePromises);
+    try{
+      await Promise.all(edgePromises);
+    } catch (error: any) {
+      throw new Error (`error creating edges at editArtwork: ${error?.message}`)
+    }
+
+    const tagEdgesToCreate = [];
+
+    if (styleTagNode?.length) {
+      const styleTagEdgePromises = styleTagNode.map(tag => ({
+        from: artworkKey,
+        to: tag._id,
+        data: {
+          value: 'STYLE TAG',
+        },
+      }))
+      tagEdgesToCreate.push(...styleTagEdgePromises)
+    }
+
+
+    const visualEdgesToCreate = [];
+
+    if (visualTagNode?.length) {
+      const visualTagEdgePromises = visualTagNode.map(tag => ({
+        edgeName: EdgeNames.FROMArtworkTOVisualTag,
+        from: artworkKey,
+        to: tag._id,
+        data: {
+          value: 'VISUAL TAG',
+        },
+      }))
+      visualEdgesToCreate.push(...visualTagEdgePromises)
+    }
+
+    try{
+      await this.edgeService.validateAndCreateEdges({
+        edgeName: EdgeNames.FROMArtworkTOStyleTag,
+        from: artworkKey,
+        edgesToCreate: tagEdgesToCreate
+      })  
+      await this.edgeService.validateAndCreateEdges({
+        edgeName: EdgeNames.FROMArtworkTOVisualTag,
+        from: artworkKey,
+        edgesToCreate: visualEdgesToCreate
+      })
+    } catch (error: any) {
+      throw new Error (`error creating edges at editArtwork: ${error?.message}`)
+    }
 
     return {
       ...savedArtwork,
       artistName: {value: artistNode?.value ?? null},
       artworkMedium: {value: mediumNode?.value ?? null},
+      artworkPrice,
+      artworkCategory: {value: categoryNode?.value ?? null},
+      artworkCreatedYear,
+      artworkStyleTags, 
+      artworkVisualTags
     };
+  }
+
+  public async editArtworkInquiry({
+    edgeId, 
+    status
+  }: {
+    edgeId: string;
+    status: string;
+  }) : Promise<Edge | void>{
+    try{
+      const query = `
+      FOR doc IN ${EdgeNames.FROMDartaUserTOArtworkINQUIRE}
+      FILTER doc._id == @edgeId
+      UPDATE doc WITH { status: @status } IN ${EdgeNames.FROMDartaUserTOArtworkINQUIRE}
+      RETURN doc
+      `
+
+      const edgeCursor = await this.db.query(query, {edgeId, status});
+      const res = await edgeCursor.next()
+      return res
+    }catch(error:any){
+      throw new Error(`error editing artwork inquiry at editArtworkInqury: ${error?.message}`)
+    }
   }
 
   public async deleteArtwork({
@@ -334,7 +508,7 @@ export class ArtworkService implements IArtworkService {
           bucketName: artworkImage.bucketName,
         });
       } catch {
-        throw new Error('error deleting artwork image');
+        throw new Error('error deleting artwork image: deleteArtwork');
       }
     }
 
@@ -347,7 +521,7 @@ export class ArtworkService implements IArtworkService {
         to: key,
       });
     } catch (error) {
-      throw new Error('error deleting gallery edge');
+      throw new Error('error deleting gallery edge: deleteArtwork');
     }
 
     // Artist Edge
@@ -385,6 +559,35 @@ export class ArtworkService implements IArtworkService {
       from: key,
     });
 
+    // Artwork Style Tags
+
+    edgesToDelete.push({
+      edgeName: EdgeNames.FROMArtworkTOStyleTag,
+      from: key,
+    });
+
+    // Artwork Visual Tags
+
+    edgesToDelete.push({
+      edgeName: EdgeNames.FROMArtworkTOVisualTag,
+      from: key,
+    });
+
+    // Artwork Category
+
+    edgesToDelete.push({
+      edgeName: EdgeNames.FROMArtworkTOCategory,
+      from: key,
+    });
+
+    if (artwork.exhibitionId) {
+      edgesToDelete.push({
+        edgeName: EdgeNames.FROMCollectionTOArtwork,
+        from: artwork.exhibitionId.includes(CollectionNames.Exhibitions) ? 
+          artwork.exhibitionId : `${CollectionNames.Exhibitions}/${artwork.exhibitionId}`,
+      });
+    }
+
     const edgePromises = edgesToDelete.map(edge =>
       this.edgeService.deleteEdgeWithFrom(edge),
     );
@@ -407,6 +610,32 @@ export class ArtworkService implements IArtworkService {
     return true;
   }
 
+
+  // eslint-disable-next-line consistent-return
+  public async deleteUserArtworkRelationship({
+    uid,
+    action,
+    artworkId,
+  }: {
+    uid: string;
+    action: 'LIKE' | 'DISLIKE' | 'SAVE' | 'INQUIRE' | 'VIEWED';
+    artworkId: string;
+  }): Promise<void> {
+    try {
+      const userId = this.userService.generateDartaUserId({uid});
+      const artId = this.generateArtworkId({artworkId});
+      const edgeKey = `FROMDartaUserTOArtwork${action}`;
+      await this.edgeService.deleteEdge({
+        edgeName: EdgeNames[edgeKey as keyof typeof EdgeNames],
+        from: userId,
+        to: artId
+      });
+         
+    } catch (error: any) {
+      return error.message;
+    }
+  }
+
   public async listArtworksByGallery({
     galleryId,
   }: {
@@ -423,15 +652,89 @@ export class ArtworkService implements IArtworkService {
       const artworkIds = (await edgeCursor.all()).filter(el => el);
 
       const galleryOwnedArtworkPromises = artworkIds.map(
-        async (artworkId: string) => {
-          return await this.getArtworkById(artworkId);
-        },
+        async (artworkId: string) => this.getArtworkById(artworkId),
       );
 
       const galleryOwnedArtwork = await Promise.all(
         galleryOwnedArtworkPromises,
       );
       return galleryOwnedArtwork;
+    } catch (error) {
+      throw new Error('error getting artworks at listArtworksByGallery');
+    }
+  }
+
+  public async listArtworkInquiresByGallery({
+    galleryId,
+  }: {
+    galleryId: string;
+  }): Promise<any> {
+    const getArtworksQuery = `
+    WITH ${CollectionNames.Artwork}, ${CollectionNames.Galleries}, ${EdgeNames.FROMGalleryToArtwork}, ${CollectionNames.DartaUsers}, ${EdgeNames.FROMDartaUserTOArtworkINQUIRE}
+      FOR gallery IN ${CollectionNames.Galleries}
+      FILTER gallery._id == @galleryId 
+      FOR artwork IN 1..1 OUTBOUND gallery ${EdgeNames.FROMGalleryToArtwork}
+      FOR user, edge IN 1..1 INBOUND artwork ${EdgeNames.FROMDartaUserTOArtworkINQUIRE}
+      RETURN {
+        legalFirstName: user.legalFirstName,
+        legalLastName: user.legalLastName,
+        email: user.email,
+        artwork_id: artwork._id,
+        createdAt: edge.createdAt,
+        updatedAt: edge.updatedAt,
+        status: edge.status, 
+        edge_id: edge._id
+      }
+    `;
+
+    try {
+      const edgeCursor = await this.db.query(getArtworksQuery, {galleryId});
+      const dartaUsers = (await edgeCursor.all()).filter(el => el);
+      const dartaUsersObj = dartaUsers.reduce((acc: any, user: any) => {
+        acc[user.artworkId] = user;
+        return acc;
+      }
+      , {})
+      return dartaUsersObj;
+    } catch (error: any) {
+      throw new Error(`error getting artworks at listArtworksByGallery: ${error?.message}`);
+    }
+  }
+
+  public async listUserRelationshipArtworkByLimit({
+    uid,
+    limit,
+    action,
+  }: {
+    uid: string;
+    limit: number;
+    action: string
+  }): Promise<{[key: string] : Artwork}>{
+    try {
+      const userId = this.userService.generateDartaUserId({uid});
+      const edgeKey = `FROMDartaUserTOArtwork${action}`;
+      const edgeName = EdgeNames[edgeKey as keyof typeof EdgeNames];
+      const edgeCursor = await this.db.query(`
+      WITH ${CollectionNames.DartaUsers}, ${CollectionNames.Artwork}, ${EdgeNames.FROMArtworkTOArtist}, ${CollectionNames.ArtworkArtists}
+      FOR artwork, edge IN OUTBOUND @userId @edgeName
+          FOR artist IN OUTBOUND artwork ${EdgeNames.FROMArtworkTOArtist}
+          SORT edge.date DESC
+          LIMIT 0, @limit
+          RETURN {
+              artwork,
+              artistName: artist.value
+          }
+      `, {userId, edgeName, limit});
+      const artworks = await edgeCursor.all();
+      const mergedArray = artworks.map(item => ({
+        ...item.artwork,
+        artistName: {value: item.artistName}
+      }))
+      const artworkMap = mergedArray.reduce((acc: any, artwork: Artwork) => {
+        acc[artwork?._id as string] = artwork;
+        return acc;
+      }, {});
+      return artworkMap;
     } catch (error) {
       throw new Error('error getting artworks');
     }
@@ -443,51 +746,99 @@ export class ArtworkService implements IArtworkService {
       : `${CollectionNames.Artwork}/${artworkId}`;
 
     const artworkQuery = `
-      LET artwork = DOCUMENT(@artworkId)
-      RETURN artwork      
-      `;
+    WITH ${CollectionNames.Artwork}, ${CollectionNames.ArtworkArtists}, ${CollectionNames.ArtworkMediums}, ${CollectionNames.ArtworkCategories}, ${CollectionNames.ArtworkStyleTags}, ${CollectionNames.ArtworkVisualTags}
+    FOR artwork IN ${CollectionNames.Artwork}
+      FILTER artwork._id == @artworkId
+      LET artist = (
+          FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkTOArtist}
+          RETURN v
+      )[0]
+      LET medium = (
+          FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkToMedium}
+          RETURN v
+      )[0]
+      LET visualTags = (
+        FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkTOVisualTag}
+        RETURN v
+      )
+      LET styleTags = (
+        FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkTOStyleTag}
+        RETURN v
+      )
+      LET category = (
+        FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkTOCategory}
+        RETURN v
+      )[0]
+    RETURN {
+        art: artwork,
+        artist: artist.value,
+        medium: medium.value,
+        visualTags: visualTags,
+        styleTags: styleTags,
+        category: category.value
+    }`;
 
     let artwork: Artwork;
 
+    let result;
     try {
       const edgeCursor = await this.db.query(artworkQuery, {
         artworkId: fullArtworkId,
       });
-      artwork = await edgeCursor.next();
+      result = await edgeCursor.next();
+      const {art, artist, medium, visualTags, styleTags, category} = result
+      
+      let artworkVisualTags;
+      if (visualTags.length){
+        artworkVisualTags = visualTags.map((el: any) => el?.value)
+      }
+
+
+      let artworkStyleTags;
+      if (visualTags.length){
+        artworkStyleTags = styleTags.map((el: any) => el?.value)
+      }
+
+      artwork = {
+        ...art,
+        artistName: {value: artist},
+        artworkMedium: {value: medium},
+        artworkVisualTags,
+        artworkStyleTags,
+        artworkCategory: {value: category}
+      }
+
     } catch (error) {
       return null;
     }
 
-    // ################# Get Artist ###############
-    let artistNameNode: Node | null = null;
+    const {artworkImage} = artwork;
 
-    try {
-      artistNameNode = await this.getArtistFromArtworkId(fullArtworkId);
-    } catch (error) {
-      throw new Error('error getting artist');
+    let shouldRegenerate;
+    if (artworkImage?.value) {
+      shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: artworkImage.value})
     }
+    let artworkImageValue = artworkImage.value;
 
-    // ################# Get Medium ###############
-    let mediumNameNode: Node | null = null;
-
-    try {
-      const results = await this.getMediumFromArtworkId(fullArtworkId);
-      if (results) {
-        mediumNameNode = results;
+    if(shouldRegenerate && artworkImage?.bucketName && artworkImage?.fileName){
+      try {
+        artworkImageValue = await this.imageController.processGetFile({
+          fileName: artworkImage.fileName,
+          bucketName: artworkImage.bucketName,
+        });
+        if (artworkImageValue){
+          await this.refreshArtworkImage({artworkId, url: artworkImageValue})
+        }
+      } catch (error) {
+        throw new Error('error getting artwork image');
       }
-    } catch (error) {
-      throw new Error('error getting medium');
     }
-
-    // ################# Artwork Image ###############
 
     return {
       ...artwork,
-      artworkMedium: {
-        value: mediumNameNode?.value ?? '',
-      },
-      artistName: {
-        value: artistNameNode?.value ?? '',
+      artworkImage: {
+        ...artworkImage,
+        value: artworkImageValue,
       },
     };
   }
@@ -529,18 +880,68 @@ export class ArtworkService implements IArtworkService {
     }
   }
 
+  private async sendInquiryEmail({artworkId, userId}: {artworkId: string, userId: string}){
+
+    const artwork = await this.getArtworkById(artworkId)
+    const user = await this.userService.readDartaUser({uid: userId})
+    let gallery: IGalleryProfileData = {} as IGalleryProfileData
+    if (artwork?.galleryId){
+      const results = await this.galleryService.readGalleryProfileFromGalleryId({galleryId: artwork?.galleryId})
+      if (results){
+        gallery = results
+      }
+    } else{
+      const query = `
+      WITH ${CollectionNames.Artwork}, ${CollectionNames.Galleries}, ${EdgeNames.FROMGalleryToArtwork}
+      FOR artwork IN ${CollectionNames.Artwork}
+      FILTER artwork._id == @artworkId
+      FOR gallery IN 1..1 INBOUND artwork ${EdgeNames.FROMGalleryToArtwork}
+      RETURN gallery
+      `
+      const cursor = await this.db.query(query, {artworkId})
+      gallery = await cursor.next()
+    }
+
+    if (gallery?.galleryInternalEmail?.value 
+      && user?.email 
+      && gallery.galleryName.value 
+      && artwork?.artworkTitle?.value 
+      && artwork?.artistName?.value){
+      const dynamicTemplateData: DynamicTemplateData = {
+        artworkTitle: artwork?.artworkTitle?.value,
+        artistName: artwork?.artistName?.value,
+        userFirstName: user.legalFirstName ?? "",
+        userLastName: user.legalLastName ?? "",
+        userEmail: user.email,
+        galleryName: gallery.galleryName.value,
+      }
+    try{
+      await this.adminService.sgSendEmailInquireTemplate({
+        to: gallery?.galleryInternalEmail?.value, 
+        from: 'tj@darta.art',
+        dynamicTemplateData
+      })
+    }catch(error: any){
+      standardConsoleLog({request: 'ArtworkService', data: 'sendInquiryEmail', message: error?.message})
+    }
+  } else {
+    standardConsoleLog({request: 'ArtworkService', data: 'sendInquiryEmail', message: "did not have necessary data for email request"})
+  }
+}
+
   private async getArtworkImage({key}: {key: string}): Promise<any> {
+    const fullArtworkId = this.generateArtworkId({artworkId: key});
     const findGalleryKey = `
-      LET doc = DOCUMENT(CONCAT("Artwork/", @key))
+      LET doc = DOCUMENT(@key)
       RETURN {
         artworkImage: doc.artworkImage
       }
     `;
 
     try {
-      const cursor = await this.db.query(findGalleryKey, {key});
+      const cursor = await this.db.query(findGalleryKey, {key: fullArtworkId});
       const artworkImage: Images = await cursor.next();
-      return {artworkImage};
+      return artworkImage;
     } catch (error) {
       throw new Error('error getting artwork image');
     }
@@ -590,6 +991,31 @@ export class ArtworkService implements IArtworkService {
     }
   }
 
+  public async refreshArtworkImage({
+    artworkId,
+    url,
+  }: {
+    artworkId: string;
+    url: string;
+  }): Promise<void> {
+    const exhibitId = this.generateArtworkId({artworkId});
+
+    try {
+      await this.nodeService.upsertNodeById({
+        collectionName: CollectionNames.Artwork,
+        id: exhibitId,
+        data: {
+          artworkImage: {
+            value: url
+          },
+        },
+      });
+    } catch (error) {
+      throw new Error('unable to refresh gallery image');
+    }
+  }
+
+
   public async swapArtworkOrder({
     artworkId,
     order,
@@ -630,7 +1056,7 @@ export class ArtworkService implements IArtworkService {
       return defaultReturn;
     }
 
-    const priceNum = parseInt(price);
+    const priceNum = parseInt(price, 10);
 
     if (Number.isNaN(priceNum)) {
       return defaultReturn;
@@ -716,14 +1142,14 @@ export class ArtworkService implements IArtworkService {
 
     if (difference <= 5) {
       return 'within-the-last-5-years';
-    } else if (difference <= 10) {
+    } if (difference <= 10) {
       return '5-10-years-ago';
-    } else if (difference <= 19) {
+    } if (difference <= 19) {
       return '10-19-years-ago';
-    } else if (difference <= 50) {
+    } if (difference <= 50) {
       return '20-50-years-ago';
-    } else {
+    } 
       return '51+-years-ago';
-    }
+    
   }
 }

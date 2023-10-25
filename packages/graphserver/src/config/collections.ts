@@ -5,6 +5,9 @@ export const CollectionNames = {
   ArtworkCreatedBuckets: 'ArtworkCreatedBuckets',
   ArtworkPriceBuckets: 'ArtworkPriceBuckets',
   ArtworkMediums: 'ArtworkMediums',
+  ArtworkStyleTags: 'ArtworkStyleTags',
+  ArtworkVisualTags: 'ArtworkVisualTags',
+  ArtworkCategories: 'ArtworkCategories',
   Cities: 'Cities',
   Localities: 'Localities',
   Galleries: 'Galleries',
@@ -13,21 +16,42 @@ export const CollectionNames = {
 
   GalleryUsers: 'GalleryUsers',
   GalleryAdminNode: 'GalleryAdminNode',
+
+  DartaUsers: 'DartaUsers',
 };
 
 export const EdgeNames = {
-  GalleryToCity: 'GalleryToCity',
-  FROMGalleryToArtwork: 'GalleryShowsArtwork',
-  FROMArtworkToMedium: 'ArtworkUsesMedium',
-  FROMArtworkTOCostBucket: 'ArtworkCosts',
-  FROMArtworkTOSizeBucket: 'ArtworkSizes',
-  FROMArtworkTOArtist: 'ArtworkArtist',
+  FROMGalleryToCity: 'FROMGalleryToCity',
+  FROMGalleryToArtwork: 'FROMGalleryToArtwork',
+  FROMArtworkToMedium: 'FROMArtworkToMedium',
+  FROMArtworkTOCostBucket: 'FROMArtworkTOCostBucket',
+  FROMArtworkTOSizeBucket: 'FROMArtworkTOSizeBucket',
+  FROMArtworkTOArtist: 'FROMArtworkTOArtist',
   FROMArtworkTOCity: 'FROMArtworkTOCity',
   FROMArtworkTOLocality: 'FROMArtworkTOLocality',
-  FROMArtworkTOCreateBucket: 'ArtworkCreatedYear',
+  FROMArtworkTOCreateBucket: 'FROMArtworkTOCreateBucket',
   FROMGalleryTOExhibition: 'FROMGalleryTOExhibition',
   FROMUserTOGallery: 'FROMUserTOGallery',
-  FROMCollectionTOArtwork: 'FROMCollectionTOArtwork',
+  FROMCollectionTOArtwork: 'FROMExhibitionsTOArtwork',
+  FROMExhibitionTOCity: 'FROMExhibitionTOCity',
+  FROMArtworkTOCategory: 'FROMArtworkTOCategory',
+  FROMArtworkTOStyleTag: 'FROMArtworkTOStyleTag',
+  FROMArtworkTOVisualTag: 'FROMArtworkTOVisualTag',
+
+  FROMDartaUserTOArtworkLIKE: 'FROMDartaUserTOArtworkLIKE',
+  FROMDartaUserTOArtworkDISLIKE: 'FROMDartaUserTOArtworkDISLIKE',
+  FROMDartaUserTOArtworkINQUIRE: 'FROMDartaUserTOArtworkINQUIRE',
+  FROMDartaUserTOArtworkSAVE: 'FROMDartaUserTOArtworkSAVE',
+  FROMDartaUserTOArtworkVIEWED: 'FROMDartaUserTOArtworkVIEWED',
+  FROMDartaUserTOArtworkVIEW_TIME: 'FROMDartaUserTOArtworkVIEW_TIME',
+
+  FROMDartaUserTOGalleryVIEWED: 'FROMDartaUserTOGalleryVIEWED',
+  FROMDartaUserTOGalleryVIEW_TIME: 'FROMDartaUserTOGalleryVIEW_TIME',
+  FROMDartaUserTOGalleryFOLLOWS: 'FROMDartaUserTOGalleryFOLLOWS',
+
+  FROMDartaUserTOExhibitionVIEWED: 'FROMDartaUserTOExhibitionVIEWED',
+  FROMDartaUserTOExhibitionVIEW_TIME: 'FROMDartaUserTOExhibitionVIEW_TIME',
+
 };
 
 export const RequiredContent = {

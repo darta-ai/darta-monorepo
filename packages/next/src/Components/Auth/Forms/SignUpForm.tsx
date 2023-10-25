@@ -5,12 +5,14 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {
   Box,
   Button,
+  CircularProgress,
   FormControl,
   FormHelperText,
   IconButton,
   Input,
   InputAdornment,
   InputLabel,
+  Typography,
 } from '@mui/material';
 import {useRouter} from 'next/router';
 import React from 'react';
@@ -58,12 +60,14 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
   const router = useRouter();
   const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
   const [firebaseError, setFirebaseError] = React.useState<string>('');
+  const [executeSignUp, setExecuteSignUp] = React.useState<boolean>(false);
   const {
     register,
     handleSubmit,
     formState: {errors},
   } = useForm({resolver: yupResolver(schema)});
   const handleSignUp = async (data: any) => {
+    setExecuteSignUp(true);
     const submitMe = async () => {
       try {
         const {error, user, errorMessage} = await dartaSignUp(data);
@@ -78,7 +82,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
               email: data?.email,
             });
             router.push(`/${signUpType}/Profile`);
-          } catch (error) {
+          } catch (err: any) {
             setErrorAlertOpen(true);
           }
         } else {
@@ -91,6 +95,7 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
       }
     };
     submitMe();
+    setExecuteSignUp(false);
   };
 
   const [togglePasswordView, setTogglePasswordView] =
@@ -297,9 +302,13 @@ export function SignUpForm({signUpType}: {signUpType: AuthEnum}) {
           color="primary"
           type="submit"
           disabled={isGmail}
-          sx={{alignSelf: 'center', margin: '2vh'}}
+          sx={{alignSelf: 'center', margin: '2vh', width: '20vw'}}
           data-testid="signUpButton">
-          Sign Up
+          {executeSignUp ? (
+            <CircularProgress size={24} color="secondary" />
+          ) : (
+            <Typography sx={{fontWeight: 'bold'}}>Sign Up</Typography>
+          )}
         </Button>
         <AlreadySignedUp routeType={signUpType} />
       </Box>

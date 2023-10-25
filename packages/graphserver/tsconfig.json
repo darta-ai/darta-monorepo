@@ -2,17 +2,14 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".", 
+    "moduleResolution": "node",
     "outDir": "./dist",
     "rootDir": "./src",
     "composite": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
     "typeRoots": ["./node_modules/@types"],
     "declaration": true,
-    "strict": true,
     "incremental": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
   },
   "include": ["./src/**/*.ts"],
   "exclude": ["node_modules"]

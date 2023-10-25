@@ -5,12 +5,14 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {
   Box,
   Button,
+  CircularProgress,
   FormControl,
   FormHelperText,
   IconButton,
   Input,
   InputAdornment,
   InputLabel,
+  Typography,
 } from '@mui/material';
 import {useRouter} from 'next/router';
 import React, {useState} from 'react';
@@ -18,6 +20,7 @@ import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
 import {dartaSignIn} from '../../../API/FirebaseAccountManagement';
+import {DartaErrorAlert} from '../../Modals';
 import {ForgotPassword, NeedAnAccount} from '../../Navigation/Auth';
 import {authStyles} from '../styles';
 import {AuthEnum} from '../types';
@@ -34,13 +37,16 @@ const schema = yup
 
 export function SignInForm({signInType}: {signInType: AuthEnum}) {
   const router = useRouter();
+  const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
   const [firebaseError, setFirebaseError] = useState<string>('');
+  const [isSigningIn, setIsSingingIn] = React.useState<boolean>(false);
   const {
     register,
     handleSubmit,
     formState: {errors},
   } = useForm({resolver: yupResolver(schema)});
   const handleSignIn = async (data: any) => {
+    setIsSingingIn(true);
     try {
       const {
         error,
@@ -58,8 +64,9 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
         router.push(`/`);
       }
     } catch (error) {
-      // console.log(error);
+      setErrorAlertOpen(true);
     }
+    setIsSingingIn(false);
   };
 
   const [togglePasswordView, setTogglePasswordView] = useState<boolean>(false);
@@ -152,9 +159,13 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
           variant="contained"
           color="primary"
           type="submit"
-          sx={{alignSelf: 'center', margin: '2vh'}}
-          data-testid="signin-button">
-          Sign In
+          sx={{alignSelf: 'center', margin: '2vh', width: '20vw'}}
+          data-testid="signUpButton">
+          {isSigningIn ? (
+            <CircularProgress size={24} color="secondary" />
+          ) : (
+            <Typography sx={{fontWeight: 'bold'}}>Sign In</Typography>
+          )}
         </Button>
         <Box data-testid="signin-links-box">
           <ForgotPassword
@@ -167,6 +178,10 @@ export function SignInForm({signInType}: {signInType: AuthEnum}) {
           />
         </Box>
       </Box>
+      <DartaErrorAlert
+        errorAlertOpen={errorAlertOpen}
+        setErrorAlertOpen={setErrorAlertOpen}
+      />
     </Box>
   );
 }

@@ -1,25 +1,25 @@
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
+import * as Colors from '@darta-styles'
 
 export const createArtworkStyles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    width: '95%',
+    width: '100%',
     border: '1px solid #eaeaea',
     alignSelf: 'center',
     borderRadius: '0.5vw',
-    backgroundColor: PRIMARY_MILK,
+    backgroundColor: Colors.PRIMARY_50,
     gap: '2vh',
     alignContent: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    '@media (min-width: 800px)': {
+    '@media (min-width: 1280px)': {
       width: '95%',
       gap: '5vh',
     },
   },
   backButton: {
-    color: PRIMARY_BLUE,
+    color: Colors.PRIMARY_600,
     alignSelf: 'flex-start',
     m: 2,
   },
@@ -30,9 +30,59 @@ export const createArtworkStyles = {
     alignContent: 'center',
     alignItems: 'center',
     minWidth: '50%',
-    '@media (min-width: 700px)': {
+    '@media (min-width: 1280px)': {
       width: '100%',
       flexDirection: 'row',
+    },
+  },
+  imageAndKeyInformationContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '95%',
+    alignSelf: 'center',
+    backgroundColor: Colors.PRIMARY_50,
+    alignContent: 'flex-start',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: '2vh',
+    '@media (min-width: 1280px)': {
+      flexDirection: 'row',
+      width: '100%',
+    },
+  },
+  locationContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '80%',
+    alignSelf: 'center',
+    backgroundColor: Colors.PRIMARY_50,
+    alignContent: 'flex-start',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: '1vh',
+    '@media (min-width: 1280px)': {
+      width: '95%',
+    },
+  },
+  keyInformationContainer: {
+    width: '40vh',
+    alignItems: 'center',
+    display: 'flex',
+    margin: '1em',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignSelf: 'center',
+    gap: '2vh',
+    '@media (min-width: 900px)': {
+      alignSelf: 'flex-start',
+      gap: '1vh',
+      width: '50vh',
+    },
+    '@media (min-width: 1480px)': {
+      alignSelf: 'flex-start',
+      gap: '1vh',
+      width: '60vh',
     },
   },
   dimensionsAndPricingContainer: {
@@ -44,7 +94,7 @@ export const createArtworkStyles = {
     width: '90%',
     gap: '2rem',
     height: '100%',
-    '@media (min-width: 780px)': {
+    '@media (min-width: 1280px)': {
       maxWidth: '90%',
     },
   },
@@ -56,7 +106,7 @@ export const createArtworkStyles = {
     height: '100%',
     gap: '2rem',
     justifyContent: 'center',
-    '@media (min-width: 780px)': {
+    '@media (min-width: 1280px)': {
       maxWidth: '90%',
     },
   },
@@ -70,15 +120,41 @@ export const createArtworkStyles = {
   imageContainer: {
     alignSelf: 'center',
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     alignContent: 'center',
     maxWidth: '85vw',
     gap: '1vh',
     minHeight: '100%',
-    '@media (min-width: 780px)': {
-      minHeight: '35vh',
-      maxWidth: '35vw',
+    '@media (min-width: 1280px)': {
+      height: '40vh',
+      width: '100%',
+    },
+  },
+  imageButtonContainer: {
+    alignSelf: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+    maxWidth: '85vw',
+    gap: '1vh',
+    minHeight: '100%',
+    '@media (min-width: 1280px)': {
+      width: '100%',
+    },
+  },
+  imageEditContainer: {
+    height: 'auto',
+    width: '95%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    '@media (min-width: 1280px)': {
+      width: '30vw',
     },
   },
   imageContainerExhibitions: {
@@ -87,34 +163,37 @@ export const createArtworkStyles = {
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignContent: 'center',
-    maxWidth: '40vw',
+    maxWidth: '40%',
     minHeight: '100%',
-    '@media (min-width: 780px)': {
+    '@media (min-width: 1280px)': {
       minHeight: '30vh',
     },
   },
   defaultImageEdit: {
-    maxHeight: '40vh',
-    maxWidth: '40vw',
-    '@media (min-width: 780px)': {
-      maxHeight: '30vh',
+    maxHeight: '45vh',
+    maxWidth: '45vw',
+    '@media (min-width: 1280px)': {
+      maxHeight: '100%',
+      maxWidth: '100%',
     },
   },
   defaultImageContainer: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    height: '100%',
-    width: '100%',
-    marginTop: '1em',
+    margin: '1em',
   },
   defaultImage: {
     p: '1em',
-    // width: '100%',
-    maxHeight: '40vh',
-    maxWidth: '35vw',
+    width: '100%',
+    maxHeight: '38vh',
+    maxWidth: '38vw',
     alignSelf: 'center',
-    borderWidth: 30,
+    '@media (min-width: 1280px)': {
+      maxHeight: '40vh',
+      maxWidth: '50vw',
+    },
+    // backgroundColor: Colors.PRIMARY_100,
   },
   inputText: {
     display: 'flex',
@@ -139,10 +218,12 @@ export const createArtworkStyles = {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     height: '100%',
-    width: '95%',
-    gap: '5vh',
-    '@media (max-width: 780px)': {
+    minWidth: '95%',
+    mt: '1em',
+    '@media (max-width: 1280px)': {
+      gap: '3vh',
       flexDirection: 'column',
     },
   },

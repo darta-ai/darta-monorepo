@@ -2,14 +2,9 @@
   "settings": {
     "import/resolver": {
       "node": {
-        "extensions": [".js", ".jsx", "test.js", ".ts", ".tsx"]
+        "extensions": [".js", ".jsx", "test.js", ".ts", ".tsx"],
+        "allowModules": ["@darta-styles", "@darta-types"]
       }
-      // "alias": {
-      //   "map": [
-      //     ["@darta/types", "packages/darta-types/dist/*"]
-      //   ],
-      //   "extensions": [".ts", ".js", ".jsx", ".tsx"]
-      // }
     }
   },
   "root": true,
@@ -21,9 +16,8 @@
   "extends": [
     "plugin:react/recommended",
     "airbnb",
-    "@react-native-community",
+    // "@react-native",
     "prettier"
-    // "plugin:@next/next/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -53,7 +47,7 @@
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-shadow": 1,
     "no-shadow": "off",
-    "import/no-unresolved": [2, { "ignore": ["@darta/types"] }],
+    "import/no-unresolved": [2, { "ignore": ["@darta-types", "@darta-styles"] }],
     "import/extensions": [
       "error",
       "ignorePackages",
@@ -63,6 +57,7 @@
         "ts": "never",
         "tsx": "never"
       }
-    ]
+    ],
+    "import/no-extraneous-dependencies": "off"
   }
 }

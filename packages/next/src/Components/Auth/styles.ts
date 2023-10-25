@@ -1,16 +1,18 @@
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY, PRIMARY_MILK} from '../../../styles';
+import * as Colors from '@darta-styles'
+
+import {PRIMARY_DARK_GREY} from '../../../styles';
 
 export const authStyles = {
   signInContainer: {
     flex: 3,
     border: '1px solid',
-    borderColor: PRIMARY_BLUE,
+    borderColor: Colors.PRIMARY_400,
     borderTopRightRadius: '0px',
     borderTopLeftRadius: '0px',
     borderBottomLeftRadius: '30px',
     borderBottomRightRadius: '30px',
-    height: '50vh',
-    '@media (min-width:800px)': {
+    height: '80vh',
+    '@media (min-width:1080px)': {
       height: '100%',
       borderTopRightRadius: '30px',
       borderBottomRightRadius: '30px',
@@ -24,18 +26,15 @@ export const authStyles = {
     height: '100%',
     flexDirection: 'column',
     justifyContent: 'space-around',
-    gap: '3vh',
+    gap: '2vh',
     alignContent: 'center',
-    '@media (min-width:800px)': {
-      gap: '2vh',
-    },
   },
   typographyTitle: {
     alignText: 'center',
     alignSelf: 'center',
     color: PRIMARY_DARK_GREY,
     fontSize: '1.5rem',
-    '@media (min-width:800px)': {
+    '@media (min-width:1080px)': {
       fontSize: '1.5rem',
     },
   },
@@ -62,7 +61,7 @@ export const welcomeStyles = {
     height: '180vh',
     alignSelf: 'center',
     padding: '2vh',
-    '@media (min-width:800px)': {
+    '@media (min-width:1080px)': {
       padding: '10vh',
       flexDirection: 'row',
       height: '100vh',
@@ -72,10 +71,12 @@ export const welcomeStyles = {
   introContainer: {
     flex: 4,
     height: '30vh',
-    backgroundColor: PRIMARY_BLUE,
+    display: "none",
+    backgroundColor: Colors.PRIMARY_500,
     borderTopLeftRadius: '30px',
     borderTopRightRadius: '30px',
-    '@media (min-width:800px)': {
+    '@media (min-width:1080px)': {
+      display: "inline-block",
       borderTopLeftRadius: '30px',
       borderBottomLeftRadius: '30px',
       borderTopRightRadius: '0px',
@@ -105,10 +106,10 @@ export const welcomeStyles = {
   header: {
     fontFamily: 'Nunito Sans',
     alignText: 'center',
-    color: PRIMARY_MILK,
+    color: Colors.PRIMARY_50,
     fontSize: '1.5rem',
     alignSelf: 'center',
-    '@media (min-width:800px)': {
+    '@media (min-width:1080px)': {
       fontSize: '1.8rem',
     },
   },
@@ -119,30 +120,30 @@ export const welcomeStyles = {
     height: '10%',
   },
   typographyTitle: {
-    color: PRIMARY_MILK,
+    color: Colors.PRIMARY_50,
     fontSize: '1.1rem',
     alignSelf: 'center',
-    '@media (min-width:800px)': {
+    '@media (min-width:1080px)': {
       fontSize: '1.4rem',
     },
   },
   typography: {
     color: PRIMARY_DARK_GREY,
     fontSize: '1rem',
-    '@media (min-width:800px)': {
+    '@media (min-width:1080px)': {
       fontSize: '1.2rem',
     },
   },
   actionArrow: {
-    color: PRIMARY_MILK,
+    color: Colors.PRIMARY_50,
     height: '100%',
   },
   footerText: {
-    color: PRIMARY_MILK,
+    color: Colors.PRIMARY_50,
     fontSize: '1rem',
     textAlign: 'center',
     my: 2,
-    '@media (min-width:800px)': {
+    '@media (min-width:1080px)': {
       fontSize: '1.2rem',
     },
   },
