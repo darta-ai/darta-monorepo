@@ -1,4 +1,4 @@
-import {PRIMARY_800, PRIMARY_900, PRIMARY_50} from '@darta-styles';
+import {PRIMARY_800} from '@darta-styles';
 import React, {useContext} from 'react';
 
 import {StoreContext} from '../../state/Store';

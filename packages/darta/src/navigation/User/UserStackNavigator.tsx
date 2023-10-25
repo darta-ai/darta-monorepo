@@ -1,4 +1,4 @@
-import {MILK, PRIMARY_950} from '@darta-styles';
+import {PRIMARY_950} from '@darta-styles';
 import React, {useContext} from 'react';
 
 import {ArtworkScreen} from '../../screens/Artwork/ArtworkScreen';

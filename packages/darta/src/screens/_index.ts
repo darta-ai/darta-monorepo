@@ -1,4 +1,3 @@
-export {RecommenderHomeScreen} from './RecommenderHomeScreen';
 export {ExhibitionArtworkScreen,
     ExhibitionDetailsScreen,
     ExhibitionGalleryScreen,
