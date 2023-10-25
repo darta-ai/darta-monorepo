@@ -3,7 +3,7 @@
     "name": "darta",
     "slug": "darta",
     "scheme": "darta",
-    "version": "1.0.3",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./src/assets/darta-icon.png",
     "userInterfaceStyle": "dark",
@@ -50,22 +50,27 @@
       "expo-localization",
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
+      "@react-native-firebase/perf",
       "expo-screen-orientation",
-      "expo-location",
       "./plugins/react-native-maps-plugin",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Darta uses your location for map precision, showing your position relative to galleries. E.g., finding the nearest art exhibit."
+        }
+      ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos so you can create a profile."
-    
+          "photosPermission": "Darta needs photo access to customize your profile. E.g.,: Updating your profile picture to your latest artwork."
         }
       ],
       [
         "expo-calendar",
         {
-          "calendarPermission": "The app needs to access your calendar."
+          "calendarPermission": "Darta integrates with your calendar for event scheduling. E.g., setting reminders for gallery openings or visits."
         }
-      ],
+      ],      
       [
         "expo-build-properties",
         {

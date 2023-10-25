@@ -326,3 +326,9 @@ export const galleryDummyData: GalleryLandingPage = {
     body: 'A Sudden Shift',
   },
 };
+
+
+export const traceNames = {
+  SPLASH_SCREEN_LOAD: 'SplashScreenLoad',
+  FETCH_NEW_GALLERY: 'FetchNewGallery',
+}

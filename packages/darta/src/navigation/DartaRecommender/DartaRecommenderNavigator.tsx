@@ -36,7 +36,7 @@ export function DartaRecommenderNavigator({route} : {route: any}) {
               <IconButton
                 icon={icons.screenRotation}    
                 iconColor={Colors.PRIMARY_950}
-                size={15}
+                size={16}
                 containerColor={Colors.PRIMARY_900}
                 style={viewOptionsStyles.viewOptionsButtonStyle}
                 accessibilityLabel="Flip Screen Orientation"
