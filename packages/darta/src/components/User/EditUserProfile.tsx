@@ -180,7 +180,16 @@ export function EditUserProfile({navigation} : {navigation: any}) {
   const [tempValue, setTempValue] = useState<string>('');
   const [tempBuffer, setTempBuffer] = useState<any>(null);
 
+  const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
   const pickImage = async () => {
+    if (status?.granted === false && status?.canAskAgain !== false) {
+      const { status: newStatus } = await requestPermission();
+      
+      if (newStatus === ImagePicker.PermissionStatus.DENIED) {
+        alert('Permission to access media library is required to select images.');
+        return;
+      }
+    } 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,

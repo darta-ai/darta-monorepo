@@ -29,7 +29,6 @@ import {
   RecommenderRoutesEnum,
 } from '../typing/routes';
 import {ETypes, StoreContext} from '../state/Store';
-import {galleryComponentStyles} from '../styles/styles';
 import { createArtworkRelationshipAPI, listArtworksToRateAPI } from '../utils/apiCalls';
 import { IconButton } from 'react-native-paper';
 import { TextElement } from '../components/Elements/TextElement';
@@ -50,12 +49,6 @@ export function DartaRecommenderView({
     }
   }, [])
 
-
-  React.useEffect(() => {
-    if (state.artworksToRate && state.artworkRatingIndex){
-      setArtOnDisplay(state.artworksToRate[state.artworkRatingIndex])
-    }
-  }, [state.artworkRatingIndex])
 
   const [backgroundImage] = React.useState<ImageSourcePropType>({
     uri: galleryWallRaw,
@@ -217,13 +210,13 @@ export function DartaRecommenderView({
   const fadeOutAndIn = async (callback: () => Promise<void>) => {
     Animated.timing(opacity, {
         toValue: 0,
-        duration: 100,
+        duration: 250,
         useNativeDriver: true,
     }).start(async () => {
         await callback();
         Animated.timing(opacity, {
             toValue: 1,
-            duration: 100,
+            duration: 500,
             useNativeDriver: true,
         }).start();
     });
@@ -234,6 +227,7 @@ export function DartaRecommenderView({
 
     if (state.artworksToRate && state.artworksToRate[currentIndex + 1]) {
         const artwork = state.artworksToRate[currentIndex + 1];
+        const nextArtwork = state.artworksToRate[currentIndex + 2];
 
         fadeOutAndIn(async () => {
             try {
@@ -242,12 +236,14 @@ export function DartaRecommenderView({
                     type: ETypes.setRatingIndex,
                     artworkRatingIndex: currentIndex + 1,
                 });
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+                setArtOnDisplay(artwork)
             } catch (error) {
                 dispatch({
                     type: ETypes.setRatingIndex,
                     artworkRatingIndex: currentIndex + 2,
                 });
+                setArtOnDisplay(nextArtwork)
             }
         });
     } else if (state.artworksToRate) {
@@ -257,6 +253,7 @@ export function DartaRecommenderView({
             endNumber: numberOfArtworks + 10,
         });
 
+        const artwork = artworksToRate[currentIndex + 1];
         if (artworksToRate && Object.keys(artworksToRate).length > 0) {
             dispatch({
                 type: ETypes.setArtworksToRate,
@@ -266,6 +263,7 @@ export function DartaRecommenderView({
                 type: ETypes.setRatingIndex,
                 artworkRatingIndex: currentIndex + 1,
             });
+            setArtOnDisplay(artwork)
         } else {
             onToggleSnackBar();
         }
@@ -286,11 +284,17 @@ export function DartaRecommenderView({
           type: ETypes.setRatingIndex,
           artworkRatingIndex: currentIndex - 1,
         });
+        setArtOnDisplay(artwork)
       } catch(error){
         dispatch({
           type: ETypes.setRatingIndex,
           artworkRatingIndex: currentIndex - 2,
         });
+        if (state.artworksToRate && state.artworksToRate[currentIndex - 2]){
+          setArtOnDisplay(state.artworksToRate[currentIndex - 2])
+        } else {
+          onToggleSnackBar()
+        }
       }
       });
     } else {
@@ -299,7 +303,7 @@ export function DartaRecommenderView({
         artworkRatingIndex: currentIndex - 1,
       });
     }
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
   };
 
   const toggleArtTombstone = () => {

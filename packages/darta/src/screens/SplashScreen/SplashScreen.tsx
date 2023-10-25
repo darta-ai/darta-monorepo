@@ -1,5 +1,4 @@
 import * as Colors from "@darta-styles";
-import { Asset } from "expo-asset";
 import * as SplashScreen from "expo-splash-screen";
 import React from "react";
 import { Image } from "react-native";
@@ -58,20 +57,22 @@ function AnimatedSplashScreen({ children }) {
         //galleryFollows
         listGalleryRelationshipsAPI(),
         //exhibitionPreviews
-        listAllExhibitionsPreviewsForUser({ limit: 10 }),
+        listAllExhibitionsPreviewsForUser({ limit: 2 }),
         // exhibitionMapPins
         listExhibitionPinsByCity({ cityName: MapPinCities.newYork }),
         // likedArtwork
-        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 100 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 10 }),
         // savedArtwork
-        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 100 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 10 }),
         // inquiredArtwork
-        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 100 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10 }),
         // artworksToRate
-        listArtworksToRateAPI({startNumber: 0, endNumber: 10})
+        listArtworksToRateAPI({startNumber: 0, endNumber: 5})
       ]);
 
   
+
+      // User Profile
       if (user) {
         dispatch({
           type: ETypes.setUser,
@@ -79,13 +80,34 @@ function AnimatedSplashScreen({ children }) {
         });
       }
 
+      // Artworks To Rate Screen
       if(artworksToRate){
         dispatch({
           type: ETypes.setArtworksToRate,
           artworksToRate
         })
       }
+
+      await Image.prefetch(DEFAULT_Gallery_Image)
+
+
+      // Exhibition Preview Screen 
+      dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
+
+
+
+      // Map Screen 
+      if (exhibitionMapPins) {
+        dispatch({
+          type: ETypes.saveExhibitionMapPins,
+          mapPins: exhibitionMapPins,
+          mapPinCity: MapPinCities.newYork
+        });
+      }
+
   
+
+      // Gallery Follows Screen
       if (galleryFollows?.length) {
         const galleryPreviews: {[key: string] : GalleryPreview} = galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: el }), {})
         dispatch({
@@ -97,14 +119,7 @@ function AnimatedSplashScreen({ children }) {
           galleryFollowIds: galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: true }), {})
         });
       }
-  
-      if (exhibitionMapPins) {
-        dispatch({
-          type: ETypes.saveExhibitionMapPins,
-          mapPins: exhibitionMapPins,
-          mapPinCity: MapPinCities.newYork
-        });
-      }
+
   
       const processArtworkData = (data: any, dispatchType: ETypes) => {
         if (data && Object.values(data).length > 0) {
@@ -155,13 +170,10 @@ function AnimatedSplashScreen({ children }) {
         if (exhibitionValue?.galleryLogo?.value) addImageUrlToPrefetch(exhibitionValue?.galleryLogo?.value);
       }
       
-  
       Promise.all(prefetchImageUrls);
-      await Image.prefetch(DEFAULT_Gallery_Image)
-  
-      dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
   
       await SplashScreen.hideAsync();
+
     } catch (e) {
       console.log(e);
     } finally {

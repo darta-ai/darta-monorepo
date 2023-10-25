@@ -44,7 +44,7 @@ const onboardStyles = StyleSheet.create({
     },
     buttonStyles: {
         width: wp('20%'),
-        height: hp('5%'),
+        height: hp('6%'),
         backgroundColor: Colors.PRIMARY_950,
         alignSelf: "center",
         justifyContent: "center",
