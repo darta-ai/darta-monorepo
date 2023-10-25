@@ -4,7 +4,6 @@ import Carousel from 'react-native-reanimated-carousel';
 import FastImage from 'react-native-fast-image'
 import { TextElement } from '../Elements/TextElement';
 import {
-    heightPercentageToDP as hp,
     widthPercentageToDP as wp,
   } from 'react-native-responsive-screen';
 
@@ -14,7 +13,7 @@ import Animated, {
     useAnimatedStyle,
   } from "react-native-reanimated";
   
-  import { SBItem } from "./SBs/SBItem";
+  import { SBItem } from "./ExhibitionCarousel/SBItem";
   import * as Colors from '@darta-styles';
 
   const image404 = require('../../assets/image404.png');
