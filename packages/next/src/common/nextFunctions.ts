@@ -1,4 +1,4 @@
-import {Artwork, Dimensions} from '@darta/types';
+import {Artwork, Dimensions} from '@darta-types';
 
 function fractionToDecimal(str: string) {
   if (!str) return null;
@@ -7,7 +7,7 @@ function fractionToDecimal(str: string) {
 
   let i = 0;
   while (parts[i] === '') {
-    i++;
+    i+=1;
   }
   const wholeNumber = parts[i];
   const fraction = parts[i + 1];
@@ -16,9 +16,9 @@ function fractionToDecimal(str: string) {
     const [numerator, denominator] = fraction.split('/');
     const decimal = parseInt(numerator, 10) / parseInt(denominator, 10);
     return (parseFloat(wholeNumber) + decimal).toString();
-  } else {
+  } 
     return wholeNumber;
-  }
+  
 }
 
 type AddressComponents = {
@@ -27,17 +27,13 @@ type AddressComponents = {
   types: string[];
 };
 
-const findLocality = (addressComponents: AddressComponents[]) => {
-  return addressComponents
+const findLocality = (addressComponents: AddressComponents[]) => addressComponents
     .filter(component => component.types.includes('locality'))
     .map(component => component.long_name)[0];
-};
 
-const findSubLocality = (addressComponents: AddressComponents[]) => {
-  return addressComponents
+const findSubLocality = (addressComponents: AddressComponents[]) => addressComponents
     .filter(component => component.types.includes('sublocality'))
     .map(component => component.long_name)[0];
-};
 
 export const createDimensionsString = ({
   depthIn,
@@ -56,9 +52,9 @@ export const createDimensionsString = ({
 }) => {
   if (Number(depthIn) && Number(depthCm)) {
     return `${heightIn} x ${widthIn} x ${depthIn}in; ${heightCm} x ${widthCm} x ${depthCm}cm`;
-  } else {
+  } 
     return `${heightIn} x ${widthIn}in; ${heightCm} x ${widthCm}cm`;
-  }
+  
 };
 
 const parseBusinessHours = (
@@ -175,7 +171,7 @@ const parseDimensions = (dimensions: string): Dimensions => {
       widthCm: {value: widthCm},
       depthCm: {value: depthCm ?? 0},
     };
-  } else if (slicedInches) {
+  } if (slicedInches) {
     return {
       heightIn: {value: heightIn},
       widthIn: {value: widthIn},
@@ -186,7 +182,7 @@ const parseDimensions = (dimensions: string): Dimensions => {
       widthCm: {value: ''},
       depthCm: {value: ''},
     };
-  } else if (slicedCm) {
+  } if (slicedCm) {
     return {
       heightIn: {value: ''},
       widthIn: {value: ''},
@@ -196,7 +192,7 @@ const parseDimensions = (dimensions: string): Dimensions => {
       widthCm: {value: widthCm},
       depthCm: {value: depthCm ?? 0},
     };
-  } else {
+  } 
     return {
       heightIn: {value: ''},
       widthIn: {value: ''},
@@ -205,7 +201,7 @@ const parseDimensions = (dimensions: string): Dimensions => {
       heightCm: {value: ''},
       widthCm: {value: ''},
     };
-  }
+  
 };
 
 export const parseExcelArtworkData = (
@@ -231,6 +227,7 @@ export const parseExcelArtworkData = (
       artworkCreatedYear: {value: item?.Year},
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      artworkCategory: {value: null},
     };
   });
   return artworkObject;

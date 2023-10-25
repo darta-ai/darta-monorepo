@@ -1,4 +1,4 @@
-import {Artwork} from '@darta/types';
+import {Artwork} from '@darta-types';
 import axios from 'axios';
 
 import {auth} from '../../ThirdPartyAPIs/firebaseApp';
@@ -188,6 +188,33 @@ export async function listArtworksByGalleryAPI(): Promise<any> {
     );
     return mappedGalleryArtworks;
   } catch (error) {
+    
     // throw new Error('Unable edit artwork')
   }
+  return null
 }
+
+export async function listArtworkInquiresAPI(): Promise<any> {
+  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  try {
+    const response = await axios.get(`${URL}/listArtworkInquires`, {
+      headers: {authorization: `Bearer ${idToken}`},
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(`Unable to list artwork inquires: ${error?.message}`)
+  }
+}
+
+export async function editArtworkInquiryAPI({edge_id, status}: {edge_id: string, status: string}): Promise<any> {
+  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  try {
+    const response = await axios.post(`${URL}/editArtworkInquiry`, {edge_id, status}, {
+      headers: {authorization: `Bearer ${idToken}`},
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(`Unable to list artwork inquires: ${error?.message}`)
+  }
+}
+

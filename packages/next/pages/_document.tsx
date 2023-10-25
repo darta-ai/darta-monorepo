@@ -9,6 +9,7 @@ import Document, {
   Main,
   NextScript,
 } from 'next/document';
+import Script from "next/script";
 import React from 'react';
 
 import createEmotionCache from '../src/createEmotionCache';
@@ -16,6 +17,7 @@ import theme from '../src/theme';
 import {MyAppProps} from './_app';
 
 interface MyDocumentProps extends DocumentProps {
+  // eslint-disable-next-line no-undef
   emotionStyleTags: JSX.Element[];
 }
 
@@ -24,6 +26,21 @@ export default function MyDocument({emotionStyleTags}: MyDocumentProps) {
     <Html lang="en">
       <Head>
         {/* PWA primary color */}
+        <Script
+        strategy="lazyOnload"
+        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
+        />
+        <meta name="apple-itunes-app" content="app-id=6469072913" />
+        <Script strategy="lazyOnload">
+          {`
+                      window.dataLayer = window.dataLayer || [];
+                      function gtag(){dataLayer.push(arguments);}
+                      gtag('js', new Date());
+                      gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}', {
+                      page_path: window.location.pathname,
+                      });
+                  `}
+        </Script>
         <meta name="theme-color" content={theme.palette.primary.main} />
         <link rel="shortcut icon" href="/dartahouse.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

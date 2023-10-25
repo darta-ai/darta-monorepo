@@ -1,4 +1,5 @@
-import {Artwork, Dimensions, IGalleryProfileData} from '@darta/types';
+import {Artwork, Dimensions, IGalleryProfileData} from '@darta-types';
+import { Edge } from 'arangojs/documents';
 
 import {ArtworkNode} from '../../models/models';
 
@@ -17,10 +18,29 @@ export interface IArtworkService {
     exhibitionOrder?: number | null;
     exhibitionId?: string | null;
   }): Promise<Artwork>;
+  createUserArtworkRelationship({
+    uid,
+    action,
+    artworkId,
+  }: {
+    uid: string;
+    action: string;
+    artworkId: string;
+  }): Promise<void>;
   readArtwork(artworkId: string): Promise<Artwork | null>;
   readArtworkAndGallery(artworkId: string): Promise<ArtworkAndGallery | null>;
   editArtwork({artwork}: {artwork: Artwork}): Promise<ArtworkNode | null>;
+  editArtworkInquiry({edgeId, status}: {edgeId: string, status: string;}) : Promise<Edge | void>
   deleteArtwork({artworkId}: {artworkId: string}): Promise<boolean>;
+  deleteUserArtworkRelationship({
+    uid,
+    action,
+    artworkId,
+  }: {
+    uid: string;
+    action: string;
+    artworkId: string;
+  }): Promise<void>;
   confirmGalleryArtworkEdge({
     artworkId,
     galleryId,
@@ -33,6 +53,22 @@ export interface IArtworkService {
   }: {
     galleryId: string;
   }): Promise<(Artwork | null)[] | null>;
+
+  listArtworkInquiresByGallery({
+    galleryId,
+  }: {
+    galleryId: string;
+  }): Promise<(Artwork | null)[] | null> 
+
+  listUserRelationshipArtworkByLimit({
+    uid,
+    limit,
+    action,
+  }: {
+    uid: string;
+    limit: number;
+    action: string
+  }): Promise<{[key: string] : Artwork}>
 
   swapArtworkOrder({
     artworkId,

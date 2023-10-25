@@ -1,0 +1,53 @@
+{
+  "cli": {
+    "version": ">= 2.6.0"
+  },
+  "build": {
+    "development-simulator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "http://localhost:1160/",
+        "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyDToUzSItfm8m8MSAAGmQq8Xt8zNub_phA",
+        "ENVIRONMENT": "dev"
+      }
+    },
+    "development": {
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "buildConfiguration": "Debug"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "http://localhost:1160/",
+        "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyDToUzSItfm8m8MSAAGmQq8Xt8zNub_phA",
+        "ENVIRONMENT": "dev"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "developmentClient": true,
+      "ios": { "simulator": true },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.darta.art/",
+        "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyDToUzSItfm8m8MSAAGmQq8Xt8zNub_phA",
+        "ENVIRONMENT": "prod"
+      }
+    },
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.darta.art/",
+        "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyDToUzSItfm8m8MSAAGmQq8Xt8zNub_phA",
+        "ENVIRONMENT": "prod"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

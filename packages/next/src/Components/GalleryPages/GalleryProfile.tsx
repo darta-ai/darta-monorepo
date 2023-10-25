@@ -1,6 +1,6 @@
 import 'firebase/compat/auth';
 
-import {IGalleryProfileData} from '@darta/types';
+import {IGalleryProfileData} from '@darta-types';
 import {Box, Button, Typography} from '@mui/material';
 import Head from 'next/head';
 import React from 'react';
@@ -57,7 +57,6 @@ export function GalleryProfile() {
     if (!state?.galleryProfile?.galleryName?.value && isEditingProfile) {
       setRun(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditingProfile]);
   return (
     <>
@@ -101,8 +100,8 @@ export function GalleryProfile() {
             </Button>
           </Box>
         </Box>
-
         <Box sx={galleryStyles.pageNavigationContainer}>
+
           {isEditingProfile ? (
             <EditProfileGallery
               isEditingProfile={isEditingProfile}
@@ -116,13 +115,14 @@ export function GalleryProfile() {
               }
             />
           ) : (
-            <ProfileGallery
-              galleryProfileData={
-                {
-                  ...state.galleryProfile,
-                } as IGalleryProfileData
-              }
-            />
+              <ProfileGallery
+                galleryProfileData={
+                  {
+                    ...state.galleryProfile,
+                  } as IGalleryProfileData
+                }
+              />
+            
           )}
         </Box>
       </Box>

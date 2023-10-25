@@ -4,7 +4,8 @@
         "no-useless-constructor": "off",
         "no-empty-function": "warn",
         "max-len": ["warn", { "code": 150 }],
-        "no-return-await": "warn"
+        "no-return-await": "warn",
+        "no-underscore-dangle": "off"
     }
   }
   

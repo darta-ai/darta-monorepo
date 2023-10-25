@@ -1,8 +1,9 @@
+import * as Colors from '@darta-styles'
 import {
   BusinessAddressType,
   IBusinessLocationData,
   IGalleryProfileData,
-} from '@darta/types';
+} from '@darta-types';
 import {Box, Button, Divider} from '@mui/material';
 import {debounce} from '@mui/material/utils';
 import React from 'react';
@@ -205,7 +206,6 @@ export function DartaLocationAndTimes({
     return () => {
       businessActive.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placeId, fetchBusinessDetails]);
 
   React.useEffect(() => {
@@ -232,7 +232,6 @@ export function DartaLocationAndTimes({
       }
       setValue(`${locationNumber}.googleMapsPlaceId.value`, placeId);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placeDetails]);
 
   const innerWidthRef = React.useRef(800);
@@ -259,7 +258,7 @@ export function DartaLocationAndTimes({
         {locationNumber !== 'galleryLocation0' && (
           <Button
             variant="contained"
-            color="error"
+            sx={{backgroundColor: Colors.PRIMARY_100, color: Colors.PRIMARY_900}}
             data-testid={`${locationNumber}-remove-location-button`}
             onClick={() => removeLocation(locationNumber)}>
             Remove Location
@@ -276,7 +275,7 @@ export function DartaLocationAndTimes({
           register={register}
           control={control}
           toolTips={toolTips}
-          allowPrivate={true}
+          allowPrivate
           errors={errors}
           helperTextString={
             errors.galleryLocation0?.locationString?.value?.message as string
@@ -304,7 +303,7 @@ export function DartaLocationAndTimes({
           required={false}
           inputAdornmentString="Hours"
           toolTips={toolTips}
-          allowPrivate={true}
+          allowPrivate
           control={control}
         />
       </Box>

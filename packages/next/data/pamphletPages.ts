@@ -119,3 +119,19 @@ export const benefitsData = {
     'With a Darta QR code, your openings will be available in digital format for your visitors',
   Field1: 'Let machine learning guide clients to you',
 };
+
+
+export type HeaderType = {
+  headline: string,
+  explainer1: string,
+  explainer2?: string,
+  explainer3?: string,
+}
+
+
+export const headerTop = {
+  headline: "Taste Is Subjective",
+  explainer1: "Darta is a digital art advisor that uses machine learning to help you discover new art.",
+  explainer2: "Darta learns your taste in art and recommends new artists and galleries to you.",
+  explainer3: "Darta is free to use for collectors.",
+}

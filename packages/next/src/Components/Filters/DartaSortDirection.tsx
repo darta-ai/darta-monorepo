@@ -63,8 +63,7 @@ export function DartaSortDirection({
           aria-labelledby="demo-row-radio-buttons-group-label"
           name="row-radio-buttons-group"
           defaultValue={defaultValue}>
-          {options.map(option => {
-            return (
+          {options.map(option => (
               <FormControlLabel
                 key={option}
                 value={option}
@@ -76,8 +75,7 @@ export function DartaSortDirection({
                   <Typography key={`${option}-label`}>{option}</Typography>
                 }
               />
-            );
-          })}
+            ))}
         </RadioGroup>
       </Box>
     </Box>

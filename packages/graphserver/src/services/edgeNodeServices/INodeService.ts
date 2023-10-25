@@ -19,12 +19,19 @@ export interface INodeService {
     data: any;
     id?: string;
   }): Promise<Node>;
-  getNode({
+  getNodeByKey({
     collectionName,
     key,
   }: {
     collectionName: string;
     key: string;
+  }): Promise<any>;
+  getNodeById({
+    collectionName,
+    id,
+  }: {
+    collectionName: string;
+    id: string;
   }): Promise<any>;
   deleteNode({
     collectionName,

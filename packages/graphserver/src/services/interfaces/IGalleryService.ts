@@ -1,4 +1,4 @@
-import {IGalleryProfileData} from '@darta/types';
+import {IGalleryProfileData} from '@darta-types';
 
 import {Gallery} from '../../models/GalleryModel';
 import {Node} from '../../models/models';
@@ -17,6 +17,11 @@ export interface IGalleryService {
   }: {
     galleryId: string;
   }): Promise<Gallery | null>;
+  readGalleryProfileFromGalleryIdForUser({
+    galleryId,
+  }: {
+    galleryId: string;
+  }): Promise<Gallery | null>;
   editGalleryProfile({
     user,
     data,
@@ -26,8 +31,10 @@ export interface IGalleryService {
   }): Promise<Gallery | null>;
   deleteGalleryProfile(): Promise<void>;
   verifyQualifyingGallery(domain: string): Promise<boolean>;
+  getGalleryFromDomain({userEmail}: {userEmail: string}): Promise<Gallery | null>;
   getGalleryIdFromUID({uid}: {uid: string}): Promise<string>;
   getGalleryLogo({id}: {id: string}): Promise<any>;
   generateGalleryUserId({galleryId}: {galleryId: string}): string;
   generateGalleryId({galleryId}: {galleryId: string}): string;
+  getGalleryByExhibitionId({exhibitionId}: {exhibitionId: string}): Promise<Gallery | null>;
 }

@@ -1,3 +1,4 @@
+import * as Colors from '@darta-styles';
 import {Typography} from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -32,7 +33,7 @@ export function DartaDialogue({
       <DialogTitle id="alert-dialog-title">
         <Typography
           sx={{fontWeight: 'bold'}}
-          variant="h4">{`Are you sure you want to delete this ${deleteType} from darta?`}</Typography>
+          variant="h6">{`Are you sure you want to delete ${deleteType}?`}</Typography>
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
@@ -43,12 +44,9 @@ export function DartaDialogue({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="secondary" onClick={handleClose}>
-          <Typography sx={{fontWeight: 'bold'}}>Do not delete</Typography>
-        </Button>
         <Button
           variant="contained"
-          color="error"
+          style={{backgroundColor: Colors.PRIMARY_400}}
           data-testid="confirm-delete-artwork-button"
           onClick={() => {
             handleDelete(id);
@@ -56,6 +54,9 @@ export function DartaDialogue({
           }}
           autoFocus>
           <Typography sx={{fontWeight: 'bold'}}>Delete</Typography>
+        </Button>
+        <Button variant="contained" style={{backgroundColor: Colors.PRIMARY_800}} onClick={handleClose}>
+          <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_50}}>Do not delete</Typography>
         </Button>
       </DialogActions>
     </Dialog>

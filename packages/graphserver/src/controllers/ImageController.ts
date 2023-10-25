@@ -40,9 +40,9 @@ export class ImageController {
         bucketName,
         value: url,
       };
-    } else {
+    } 
       throw new Error('Did not receive a fileBuffer or fileName');
-    }
+    
   }
 
   @httpPost('/uploadImage', upload.single('galleryLogo'))
@@ -81,13 +81,12 @@ export class ImageController {
     bucketName: string;
   }) {
     try {
-      const metadata = await this.imageService.fetchImage({
+      const url = await this.imageService.getPresignedUrl({
         fileName,
         bucketName,
       });
-      return metadata;
+      return url;
     } catch (error: any) {
-      // console.log(error);
       throw new Error(`received an error from minio ${error?.message}`);
     }
   }
@@ -134,8 +133,15 @@ export class ImageController {
       });
       return metadata;
     } catch (error: any) {
-      // console.log(error);
       throw new Error(`received an error from minio ${error?.message}`);
     }
+  }
+
+  public async shouldRegenerateUrl({
+    url
+  }: {
+    url: string;
+  }) {
+    return this.imageService.shouldRegenerateUrl({url});
   }
 }

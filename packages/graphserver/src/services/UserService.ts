@@ -1,7 +1,9 @@
+import { GalleryPreview, Images, MobileUser } from '@darta-types';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 
 import {CollectionNames, EdgeNames} from '../config/collections';
+import { ImageController } from '../controllers';
 import {Node} from '../models/models';
 import {
   IEdgeService,
@@ -10,6 +12,8 @@ import {
   IUserService,
 } from './interfaces';
 
+const BUCKET_NAME = 'darta-profile-pictures';
+
 @injectable()
 export class UserService implements IUserService {
   constructor(
@@ -17,6 +21,8 @@ export class UserService implements IUserService {
     @inject('IEdgeService') private readonly edgeService: IEdgeService,
     @inject('INodeService') private readonly nodeService: INodeService,
     @inject('IGalleryService') private readonly galleryService: IGalleryService,
+    @inject('ImageController')
+    private readonly imageController: ImageController,
   ) {}
 
   public async createGalleryUserAndEdge({
@@ -44,8 +50,8 @@ export class UserService implements IUserService {
         gallery,
         validated,
       });
-    } catch (error) {
-      throw new Error('Unable to create gallery user');
+    } catch (error: any) {
+      throw new Error(`Unable to create gallery user ${error?.message}`);
     }
 
     try {
@@ -54,8 +60,8 @@ export class UserService implements IUserService {
         uid,
         relationship,
       });
-    } catch (error) {
-      throw new Error('Unable to create gallery edge');
+    } catch (error: any) {
+      throw new Error(`Unable to create gallery edge ${error?.message}`);
     }
   }
 
@@ -83,30 +89,50 @@ export class UserService implements IUserService {
         },
       });
       return true;
-    } catch (error) {
-      throw new Error('Unable to create gallery user');
+    } catch (error: any) {
+      throw new Error(`Unable to create gallery user ${error?.message}`);
     }
   }
 
-  public async readGalleryUser({uid}: {uid: string}): Promise<Node | null> {
+
+  public async createDartaUserGalleryRelationship({uid, galleryId} : {uid: string, galleryId: string}): Promise<void> {
+    const galleryUserId = this.galleryService.generateGalleryId({galleryId});
+    const userId = this.generateDartaUserId({uid});
     try {
-      const results = await this.nodeService.getNode({
-        collectionName: CollectionNames.GalleryUsers,
-        key: `${CollectionNames.GalleryUsers}/${uid}`,
+      await this.edgeService.upsertEdge({
+        edgeName: EdgeNames.FROMDartaUserTOGalleryFOLLOWS,
+        from: userId,
+        to: galleryUserId,
+        data: {
+
+          createdAt: new Date().toISOString(),
+        }
       });
-      if (results) {
-        return results;
-      }
-    } catch (error) {
-      throw new Error('Unable to read gallery user');
+    } catch (error:any) {
+      throw new Error(`unable to create darta user gallery connection ${error?.message}`);
     }
-    return null;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  public async deleteGalleryUser(): Promise<boolean> {
-    return false;
+
+  public async createDartaUser({
+    uid,
+  }: {
+    uid: string;
+  }): Promise<boolean> {
+    try {
+      await this.nodeService.upsertNodeByKey({
+        collectionName: CollectionNames.DartaUsers,
+        key: uid,
+        data: {
+          value: uid
+        },
+      });
+      return true;
+    } catch (error: any) {
+      throw new Error(`Unable to create darta user ${error?.message}`);
+    }
   }
+
 
   public async createGalleryEdge({
     galleryId,
@@ -134,10 +160,27 @@ export class UserService implements IUserService {
         },
       });
       return true;
-    } catch (error) {
-      throw new Error('Unable to create gallery edge');
+    } catch (error: any) {
+      throw new Error(`Unable to create gallery edge ${error?.message}`);
     }
   }
+
+  public async readGalleryUser({uid}: {uid: string}): Promise<Node | null> {
+
+    try {
+      const results = await this.nodeService.getNodeByKey({
+        collectionName: CollectionNames.GalleryUsers,
+        key: `${CollectionNames.GalleryUsers}/${uid}`,
+      });
+      if (results) {
+        return results;
+      }
+    } catch (error: any) {
+      throw new Error(`Unable to read gallery user ${error?.message}`);
+    }
+    return null;
+  }
+
 
   public async readGalleryEdgeRelationship({
     uid,
@@ -150,12 +193,28 @@ export class UserService implements IUserService {
         from: `${CollectionNames.GalleryUsers}/${uid}`,
       });
       return results;
-    } catch (error) {
-      throw new Error('Unable to read gallery edge relationship');
+    } catch (error:any) {
+      throw new Error(`Unable to read gallery edge ${error?.message}`);
     }
   }
 
-  public async editGalleryEdge({
+  public async readDartaUser({uid}: {uid: string}): Promise<MobileUser | null>{
+    const id = this.generateDartaUserId({uid});
+    try {
+      const results = await this.nodeService.getNodeById({
+        collectionName: CollectionNames.DartaUsers,
+        id,
+      });
+      if (results) {
+        return results;
+      }
+    } catch (error: any) {
+      throw new Error(`Unable to read darta user ${error?.message}`);
+    }
+    return null;
+  }
+
+  public async editGalleryToUserEdge({
     galleryId,
     uid,
     relationship,
@@ -165,7 +224,7 @@ export class UserService implements IUserService {
     relationship: string;
   }): Promise<any> {
     const fullGalleryId = this.galleryService.generateGalleryId({galleryId});
-    const fullUserId = this.generateUserId({uid});
+    const fullUserId = this.generateGalleryUserId({uid});
 
     try {
       const results = await this.edgeService.upsertEdge({
@@ -177,15 +236,198 @@ export class UserService implements IUserService {
         },
       });
       return results;
-    } catch (error) {
-      throw new Error('Unable to edit gallery edge');
+    } catch (error: any) {
+      throw new Error(`Unable to edit gallery edge ${error?.message}`);
     }
   }
 
+
+  public async editDartaUser({
+    profilePicture,
+    userName,
+    legalFirstName,
+    legalLastName,
+    email,
+    uid,
+  }: {
+    profilePicture?: Images
+    userName?: string;
+    legalFirstName?: string;
+    legalLastName?: string;
+    email?: string;
+    uid: string;
+  }): Promise<any> {
+    if (!uid) return false;
+    // const fullUserId = this.generateDartaUserId({uid});
+    // console.log({fullUserId})
+    
+    // ##### profile picture #####
+
+    // const profilePic = await this.getUserProfilePicture({uid});
+
+    // Don't overwrite an image
+
+    let profilePic: Images = {}
+
+    try{
+      profilePic = await this.getUserProfilePicture({uid});
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log({error})
+    }
+    
+    let fileName: string = crypto.randomUUID();
+    if (profilePicture?.fileName) {
+      fileName = profilePicture.fileName;
+    }
+
+    let bucketName = profilePic?.bucketName ?? BUCKET_NAME;
+    let value = profilePic?.value ?? null;
+
+    if (profilePicture?.fileData && typeof profilePicture?.fileData === 'string') {
+      try {
+        const artworkImageResults =
+          await this.imageController.processUploadImage({
+            fileBuffer: profilePicture?.fileData,
+            fileName,
+            bucketName,
+          });
+        ({bucketName, value} = artworkImageResults);
+      } catch (error) {
+        throw new Error('error uploading image');
+      }
+    }
+
+    const results = await this.nodeService.upsertNodeByKey({
+      collectionName: CollectionNames.DartaUsers,
+      key: uid,
+      data: {
+        userName,
+        uid,
+        email,
+        legalFirstName,
+        legalLastName,
+        profilePicture: {
+          fileName,
+          bucketName,
+          value,
+        }
+      },
+    });
+    return results
+  }
+
   // eslint-disable-next-line class-methods-use-this
-  private generateUserId({uid}: {uid: string}): string {
+  public async checkIfGalleryUserExists({uid}: {uid: string}): Promise<boolean>{
+    throw new Error(`Method not implemented ${uid}`);
+  }
+
+    // eslint-disable-next-line class-methods-use-this
+    public async deleteGalleryUser(): Promise<boolean> {
+      return false;
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    public async deleteDartaUser({uid} : {uid: string}): Promise<boolean> {
+      try {
+        const id = this.generateDartaUserId({uid});
+        await this.nodeService.deleteNode({
+          collectionName: CollectionNames.DartaUsers,
+          id,
+        });
+
+        const deletePromises = Object.values(EdgeNames).map((edgeName) => this.edgeService.deleteEdgeWithFrom({
+            edgeName,
+            from: id,
+          })
+          .catch((error) => 
+            // Handle or log individual error
+                         ({ error: true, edgeName, errorMessage: error?.message })
+          ));
+        
+        const results = await Promise.all(deletePromises);
+        
+        // Check for any errors in the results
+        const errors = results.filter(result => result?.error);
+        
+        if (errors.length) {
+          // Handle the collated errors in some way
+        }
+        
+        return true;
+      } catch (error) {
+        throw new Error('Unable to delete darta user');
+      }
+    }
+
+  public async deleteDartaUserGalleryRelationship({uid, galleryId} : {uid: string, galleryId: string}): Promise<void> {
+    const galleryUserId = this.galleryService.generateGalleryId({galleryId});
+    const userId = this.generateDartaUserId({uid});
+      try {
+        await this.edgeService.deleteEdge({
+          edgeName: EdgeNames.FROMDartaUserTOGalleryFOLLOWS,
+          from: userId,
+          to: galleryUserId
+        });
+      } catch (error) {
+        throw new Error('unable to create darta user gallery connection');
+      }
+    }
+  
+    public async listDartaUserFollowsGallery({uid} : {uid: string}): Promise<GalleryPreview[]>{
+    
+      try{
+        const userId = this.generateDartaUserId({uid});
+        const query = `
+          WITH ${CollectionNames.Galleries}, ${CollectionNames.DartaUsers}, ${EdgeNames.FROMDartaUserTOGalleryFOLLOWS}
+          FOR v, e IN 1..1 OUTBOUND @userId ${EdgeNames.FROMDartaUserTOGalleryFOLLOWS}
+          RETURN {
+            galleryName: v.galleryName,
+            _id: v._id,
+            galleryLogo: v.galleryLogo,
+          }
+        `;
+        const cursor = await this.db.query(query, {
+          userId,
+        });
+        const galleries: GalleryPreview[] = await cursor.all();
+      
+        return galleries
+      } catch (error: any){
+        throw new Error(error)
+      }
+  
+    }
+  
+
+      // eslint-disable-next-line class-methods-use-this
+  public generateGalleryUserId({uid}: {uid: string}): string {
     return uid.includes(CollectionNames.GalleryUsers)
       ? uid
       : `${CollectionNames.GalleryUsers}/${uid}`;
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  public generateDartaUserId({uid}: {uid: string}): string {
+    return uid.includes(CollectionNames.DartaUsers)
+      ? uid
+      : `${CollectionNames.DartaUsers}/${uid}`;
+  }
+
+  private async getUserProfilePicture({uid}: {uid: string}): Promise<any> {
+    const key = this.generateDartaUserId({uid});
+    const findGalleryKey = `
+      LET doc = DOCUMENT(@key)
+      RETURN doc.profilePicture
+    `;
+
+    try {
+      const cursor = await this.db.query(findGalleryKey, {key});
+      const exhibitionPrimaryImage: Images = await cursor.next();
+      return exhibitionPrimaryImage;
+    } catch (error: any) {
+      throw new Error(error?.message);
+    }
+  }
+
 }

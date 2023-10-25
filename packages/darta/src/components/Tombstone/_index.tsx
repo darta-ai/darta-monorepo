@@ -1,0 +1,1 @@
+export {TombstonePortrait} from './TombstonePortrait';

@@ -1,4 +1,4 @@
-import {GalleryBase, IGalleryProfileData} from '@darta/types';
+import {GalleryBase, IGalleryProfileData} from '@darta-types';
 import axios from 'axios';
 
 import {auth} from '../../ThirdPartyAPIs/firebaseApp';
@@ -40,7 +40,8 @@ export async function readGalleryProfileAPI(): Promise<any> {
     }
     return response.data;
   } catch (error) {
-    throw new Error('Unable to retrieve profile');
+    return {};
+    // throw new Error('Unable to retrieve profile');
   }
 }
 
@@ -56,6 +57,6 @@ export async function updateGalleryProfileAPI(
     );
     return response;
   } catch (error) {
-    throw new Error('Unable to update profile');
+    return {};
   }
 }

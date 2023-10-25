@@ -1,21 +1,20 @@
+import * as Colors from '@darta-styles'
 import {Box, Typography} from '@mui/material';
 import Link from 'next/link';
 import React from 'react';
-
-import {PRIMARY_BLUE, PRIMARY_LIGHTBLUE, PRIMARY_MILK} from '../../../styles';
 
 const styles = {
   footerBox: {
     width: '100%',
     height: '5vh',
     zIndex: 1,
-    backgroundColor: PRIMARY_BLUE,
+    backgroundColor: Colors.PRIMARY_900,
     '@media (min-width:800px)': {
       width: '100%',
     },
   },
   divider: {
-    color: PRIMARY_MILK,
+    color: Colors.PRIMARY_50,
   },
   textContainer: {
     display: 'flex',
@@ -31,13 +30,13 @@ const styles = {
   },
   typography: {
     fontFamily: 'Nunito Sans',
-    color: PRIMARY_MILK,
+    color: Colors.PRIMARY_50,
     fontSize: '0.75rem',
     '@media (min-width:800px)': {
       fontSize: '0.9rem',
     },
     '&:hover': {
-      color: PRIMARY_LIGHTBLUE,
+      color: Colors.PRIMARY_200,
       opacity: [0.9, 0.9, 0.9],
     },
   },
@@ -47,7 +46,7 @@ export function Footer() {
   return (
     <Box sx={styles.footerBox} data-testid="footer-box">
       <Box sx={styles.textContainer} data-testid="text-container">
-        <Link href="/Darta/About">
+        <Link href="/Darta/About" style={{ textDecoration: 'none' }}>
           <Typography
             component="div"
             sx={styles.typography}
@@ -58,7 +57,7 @@ export function Footer() {
         <div style={styles.divider} data-testid="first-divider">
           |
         </div>
-        <Link href="/Darta/Contact">
+        <Link href="/Darta/Contact" style={{ textDecoration: 'none' }}>
           <Typography
             component="div"
             sx={styles.typography}

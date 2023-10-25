@@ -1,4 +1,4 @@
-import {GalleryBase} from '@darta/types';
+import {GalleryBase} from '@darta-types';
 import axios from 'axios';
 
 import {auth} from '../../ThirdPartyAPIs/firebaseApp';

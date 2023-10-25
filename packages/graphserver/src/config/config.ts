@@ -1,4 +1,6 @@
+import sgMail from '@sendgrid/mail';
 import * as dotenv from 'dotenv';
+
 
 dotenv.config();
 
@@ -18,4 +20,8 @@ export const config = {
   },
 };
 
-export const {ADMIN_PASSWORD} = process.env;
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!)
+
+export const {ADMIN_PASSWORD, ENV, SENDGRID_INQUIRE_TEMPLATE_ID} = process.env;
+
+export {sgMail}

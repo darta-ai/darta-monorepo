@@ -100,7 +100,7 @@ export class NodeService implements INodeService {
     return results;
   }
 
-  async getNode({
+  async getNodeByKey({
     collectionName,
     key,
   }: {
@@ -123,6 +123,31 @@ export class NodeService implements INodeService {
       throw new Error('unable to get node');
     }
   }
+
+  async getNodeById({
+    collectionName,
+    id,
+  }: {
+    collectionName: string;
+    id: string;
+  }): Promise<any> {
+    const query = `
+        FOR doc IN @@collectionName
+        FILTER doc._id == @id
+        RETURN doc
+        `;
+
+    const cursor = await this.db.query(query, {
+      '@collectionName': collectionName,
+      id,
+    });
+    try {
+      return await cursor.next();
+    } catch {
+      throw new Error('unable to get node');
+    }
+  }
+
 
   async deleteNode({
     collectionName,

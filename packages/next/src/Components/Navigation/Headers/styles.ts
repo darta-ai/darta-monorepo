@@ -1,8 +1,9 @@
+import * as Colors from '@darta-styles'
+
 import {
-  PRIMARY_BLUE,
   PRIMARY_LIGHTBLUE,
-  PRIMARY_MILK,
 } from '../../../../styles';
+
 
 export const headerStyles = {
   headerBox: {
@@ -12,7 +13,7 @@ export const headerStyles = {
     justifyContent: 'space-around',
     alignItems: 'center',
     gap: '1%',
-    backgroundColor: PRIMARY_BLUE,
+    backgroundColor: Colors.PRIMARY_900,
   },
   '@keyframes fadeInAnimation': {
     '0%': {
@@ -22,6 +23,30 @@ export const headerStyles = {
       opacity: 1,
     },
   },
+  headerNavigation: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    gap: '1%',
+    width: '100%',
+    height: '100%',
+    animation: 'fadeInAnimation ease 1s',
+    backgroundColor: Colors.PRIMARY_100,
+    animationIterationCount: 1,
+    animationFillMode: 'forwards',
+    animationDuration: '0.5s',
+    '@media (min-width:750px)': {
+      width: '100%',
+    },
+  },
+  subNavigatorText:{
+    visibility: 'visible',
+    '@media (min-width: 750px)': {
+      visibility: 'hidden',
+      display: 'none',
+    },
+  },
   headerLogo: {
     width: '100px',
     height: '100px',
@@ -29,8 +54,7 @@ export const headerStyles = {
     padding: 0,
   },
   typography: {
-    fontFamily: 'Nunito Sans',
-    color: PRIMARY_MILK,
+    color: Colors.PRIMARY_50,
     fontSize: '1.2rem',
     '@media (min-width:800px)': {
       fontSize: '1.2rem',
@@ -42,8 +66,8 @@ export const headerStyles = {
     cursor: 'default',
   },
   button: {
-    backgroundColor: PRIMARY_MILK,
-    color: PRIMARY_BLUE,
+    backgroundColor: Colors.PRIMARY_50,
+    color: Colors.PRIMARY_900,
     fontSize: '0.8rem',
     '@media (min-width:750px)': {
       fontSize: '1rem',
@@ -66,4 +90,7 @@ export const headerStyles = {
   dartaImageBox: {
     height: '5vh',
   },
+  dartaHeaderBox: {
+    height: '8vh'
+  }
 };

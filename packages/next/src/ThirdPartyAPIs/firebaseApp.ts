@@ -128,9 +128,9 @@ export async function resendEmailVerification() {
     if (auth.currentUser) {
       await sendEmailVerification(auth.currentUser);
       return {success: true};
-    } else {
+    } 
       throw new Error();
-    }
+    
   } catch (error) {
     return {success: false};
   }

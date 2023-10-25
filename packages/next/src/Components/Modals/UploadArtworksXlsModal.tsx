@@ -1,4 +1,5 @@
-import {Artwork} from '@darta/types';
+import * as Colors from '@darta-styles';
+import {Artwork} from '@darta-types';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import {
@@ -17,7 +18,6 @@ import React from 'react';
 import * as XLSX from 'xlsx';
 
 import {AuthContext} from '../../../pages/_app';
-import {PRIMARY_MILK} from '../../../styles';
 import {parseExcelArtworkData} from '../../common/nextFunctions';
 import {useAppState} from '../State/AppContext';
 
@@ -60,7 +60,7 @@ const instructionsCarouselStyles = {
     display: 'flex',
     my: 2,
     alignItems: 'flex-start',
-    backgroundColor: PRIMARY_MILK,
+    backgroundColor: Colors.PRIMARY_100,
   },
   img: {
     overflow: 'hidden',
@@ -168,7 +168,7 @@ const uploadArtworkImages = {
     gap: 2,
   },
   paper: {
-    backgroundColor: PRIMARY_MILK,
+    backgroundColor: Colors.PRIMARY_100,
     border: '2px solid #000',
     boxShadow: 5,
     padding: 3,
@@ -243,8 +243,17 @@ export function UploadArtworksXlsModal({
         className="upload-new-artwork"
         variant="contained"
         color="primary"
-        disabled={!state.galleryProfile.isValidated || !user.emailVerified}
-        onClick={handleOpen}>
+        disabled={!state.galleryProfile.isValidated || !user?.emailVerified}
+        onClick={handleOpen}
+        sx={{
+          color: Colors.PRIMARY_800,
+          alignSelf: 'center',
+          width: '30vw',
+          '@media (min-width: 1080px)': {
+            width: '20vw',
+          },
+        }}
+        >
         <Typography sx={{fontWeight: 'bold', fontSize: '0.8rem'}}>
           Upload Artwork From .xls File
         </Typography>
@@ -276,7 +285,6 @@ export function UploadArtworksXlsModal({
                 <>
                   <input
                     accept=".xlsx,.xls"
-                    // eslint-disable-next-line react-native/no-inline-styles
                     style={{display: 'none'}}
                     id="contained-button-file"
                     type="file"
@@ -297,7 +305,7 @@ export function UploadArtworksXlsModal({
                             alignSelf: 'center',
                             width: '50vw',
                             '@media (min-width: 800px)': {
-                              width: '10vw',
+                              width: '20vw',
                             },
                           }}
                           component="span">

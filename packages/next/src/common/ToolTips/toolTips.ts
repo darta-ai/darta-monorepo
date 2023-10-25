@@ -13,6 +13,9 @@ export const createArtworkToolTips = {
   artworkCreatedYear: 'The year the artwork was created.',
   artworkCurrency:
     'The currency you are selling the artwork in. Defaults to USD.',
+  artworkCategory: 'The category of the artwork. Required.',
+  artworkStyleTags: 'Optional field. Add tags for the styles or movements that best reflect the artwork to increase discoverability.',
+  artworkVisualTags: 'Optional field. Add tags for the visual qualities that best reflect the artwork to increase discoverability.',
 };
 
 export const createArtworkDimensionsToolTip = {
@@ -32,6 +35,12 @@ export const createArtworkDimensionsToolTip = {
 
 export const exhibitionPressReleaseToolTip = {
   exhibitionTitle: 'The title of the exhibition. Required.',
+  exhibitionArtist: 'The artists in the exhibition. Required.',
+  exhibitionType: 'The type of exhibition. Required.',
+  exhibitionArtistStatement: 'An artist statement is optional.',
+  artworkCategory: ' Optional.The category of the artwork. Helpful for discoverability of the exhibition.',
+  artworkStyleTags: 'Optional. The style or movement tags you would like to include for the artwork. Helpful for discoverability of the exhibition.',
+  artworkVisualTags: 'Optional. The visual tags you would like to include for the artwork. Helpful for discoverability of the exhibition.',
   exhibitionPressRelease:
     'An exhibition description or press release text helps improve user experience. Required.',
   'exhibitionLocation.locationString':

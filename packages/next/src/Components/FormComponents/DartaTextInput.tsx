@@ -20,9 +20,9 @@ export function DartaTextInput({
   required,
   inputAdornmentString,
   toolTips,
-  multiline,
   allowPrivate,
   inputAdornmentValue,
+  rows,
 }: {
   fieldName: string;
   data: PrivateFields | any;
@@ -31,14 +31,30 @@ export function DartaTextInput({
   errors: any;
   toolTips: ToolTip | any;
   required: boolean;
-  multiline: number;
   helperTextString: string | undefined;
   inputAdornmentString: string;
   allowPrivate: boolean;
   inputAdornmentValue: string | null;
+  rows?: number | null;
 }) {
   const [isPrivate, setIsPrivate] = React.useState<boolean>(data?.isPrivate!);
   const testIdValue = fieldName.replace('.', '-');
+  const [lines, numberOfLines] = React.useState<number>(1);
+  const [inputValue, setInputValue] = React.useState(data?.value || '');
+
+  const handleInputChange = (event: any, value: string) => {
+    event.preventDefault();
+    setInputValue(value);
+  };
+
+  
+  React.useEffect(() => {
+    const windowWidth = window.innerWidth;
+    const divisor = windowWidth > 1280 ? 80 : 120;
+    const newLines = Math.ceil(inputValue.length / divisor);
+    numberOfLines(newLines);
+  }, [inputValue])
+
   return (
     <Box
       sx={
@@ -59,19 +75,18 @@ export function DartaTextInput({
           data={data}
           register={register}
           control={control}
-          allowPrivate={allowPrivate}
           isPrivate={isPrivate}
           testIdValue={testIdValue}
           setIsPrivate={setIsPrivate}
           switchStringValue="isPrivate"
         />
       )}
-      <Box sx={formStyles.formTextField}>
         <TextField
           id="value"
           variant="standard"
           error={!!errors[fieldName]}
           {...register(`${fieldName}.${'value'}`)}
+          onChange={(event) => handleInputChange(event, event.target.value)}
           helperText={
             errors[fieldName]?.value && (
               <Typography
@@ -85,7 +100,7 @@ export function DartaTextInput({
           required={required}
           multiline
           data-testid={`${testIdValue}-input-field`}
-          rows={multiline}
+          rows={rows ?? lines}
           InputProps={{
             startAdornment: (
               <InputAdornment
@@ -96,7 +111,11 @@ export function DartaTextInput({
             ),
           }}
         />
-      </Box>
     </Box>
   );
 }
+
+DartaTextInput.defaultProps = {
+  rows: null,
+};
+

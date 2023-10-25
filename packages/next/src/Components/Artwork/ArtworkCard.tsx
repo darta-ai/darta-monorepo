@@ -1,4 +1,5 @@
-import {Artwork} from '@darta/types';
+import * as Colors from '@darta-styles';
+import {Artwork,InquiryArtworkData} from '@darta-types';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Box,
@@ -14,7 +15,7 @@ import React from 'react';
 
 import {cardStyles} from '../../../styles/CardStyles';
 import {currencyConverter} from '../../common/templates';
-import {InquiryArtworkData} from '../../dummyData';
+import { DartaDialogue } from '../Modals';
 import {useAppState} from '../State/AppContext';
 import {InquiryTable} from '../Tables/InquiryTable';
 import {CreateArtwork} from './CreateArtwork';
@@ -74,11 +75,24 @@ export function ArtworkCard({
     setExpanded(!expanded);
   };
 
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+
   const handleSave = async (savedArtwork: Artwork) => {
     setSaveSpinner(true);
     try {
       await saveArtwork({updatedArtwork: savedArtwork});
-    } catch (error) {}
+    } catch (error) {
+      return
+    }
     setSaveSpinner(false);
     setEditArtwork(!editArtwork);
   };
@@ -88,9 +102,12 @@ export function ArtworkCard({
 
     try {
       await deleteArtwork({artworkId});
-    } catch (error) {}
-    setDeleteSpinner(false);
-    return setEditArtwork(false);
+    } catch (error) {
+      return
+    } finally {
+      setDeleteSpinner(false);
+      setEditArtwork(false);
+    }
   };
 
   const displayRed =
@@ -109,12 +126,8 @@ export function ArtworkCard({
       className="artwork-card">
       {displayRed ? (
         <Box
-          sx={{
-            ...cardStyles.cardContainer,
-            borderColor: 'orange',
-            borderWidth: '0.2vh',
-            justifyContent: 'center',
-          }}>
+          sx={{...cardStyles.cardContainer, mx: 'auto', width: '100%', p: 1}}
+        >
           <Typography
             data-testid="artwork-card-additional-information-warning"
             sx={{textAlign: 'center', color: 'red', fontWeight: 'bold'}}>
@@ -123,27 +136,17 @@ export function ArtworkCard({
         </Box>
       ) : (
         <Box sx={cardStyles.cardContainer}>
-          <Box sx={{width: '30vw', m: 1}}>
             <Box
               onClick={handleExpandClick}
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                maxHeight: '15vh',
-                minWidth: '25vw',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignContent: 'center',
-              }}
+              sx={cardStyles.informationContainer}
               data-testid="artwork-card-image">
               <Box
                 component="img"
                 src={artwork?.artworkImage?.value as string}
                 alt={artwork?.artworkTitle?.value as string}
-                style={cardStyles.mediaExhibition}
+                style={cardStyles.artworkMedia}
               />
             </Box>
-          </Box>
 
           <Box sx={cardStyles.informationContainer}>
             <CardContent>
@@ -207,14 +210,21 @@ export function ArtworkCard({
         </Box>
       )}
       <Box>
-        <Button
+      <Button
           variant="contained"
-          color={displayRed ? 'warning' : 'secondary'}
-          onClick={() => setEditArtwork(!editArtwork)}
-          sx={{alignSelf: 'center', m: '1vh'}}
+          onClick={() => handleClickOpen()}
+          sx={{alignSelf: 'center', m: '1vh', backgroundColor: Colors.PRIMARY_100}}
           className="artwork-card-edit"
           data-testid="artwork-card-edit-button">
-          <Typography sx={{fontWeight: 'bold'}}>Edit</Typography>
+          <Typography sx={{fontWeight: 'bold'}}>Delete</Typography>
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => setEditArtwork(!editArtwork)}
+          sx={{alignSelf: 'center', m: '1vh', backgroundColor: Colors.PRIMARY_800}}
+          className="artwork-card-edit"
+          data-testid="artwork-card-edit-button">
+          <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_50}}>Edit</Typography>
         </Button>
       </Box>
       {artwork?.canInquire?.value === 'Yes' &&
@@ -285,6 +295,14 @@ export function ArtworkCard({
           <Box />
         )}
       </Collapse>
+        <DartaDialogue
+          identifier={artwork?.artworkTitle?.value || 'this artwork'}
+          deleteType="this artwork"
+          id={artwork?.artworkId as string}
+          open={open}
+          handleClose={handleClose}
+          handleDelete={handleDelete}
+        />
     </Card>
   );
 }

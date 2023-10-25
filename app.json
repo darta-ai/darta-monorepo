@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "darta-monorepo",
+    "slug": "darta-monorepo",
+    "version": "1.0.0",
+    "sdkVersion": "49.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "android": {
+      "package": "com.tjwetmore.dartamonorepo"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ecf0bc96-428f-4776-9cfb-a92a47e0d6ce"
+      }
+    }
+  }
+}

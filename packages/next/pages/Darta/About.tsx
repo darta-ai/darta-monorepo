@@ -1,3 +1,4 @@
+import * as Colors from '@darta-styles';
 import {
   Box,
   Card,
@@ -13,7 +14,7 @@ import React from 'react';
 
 import {aboutData} from '../../data/pamphletPages';
 import {BaseHeader} from '../../src/Components/Navigation/Headers/BaseHeader';
-import {PRIMARY_BLUE, PRIMARY_DARK_GREY} from '../../styles';
+import {PRIMARY_DARK_GREY} from '../../styles';
 
 const aboutStyles = {
   container: {
@@ -57,7 +58,7 @@ const aboutStyles = {
   },
   typographyTitle: {
     fontFamily: 'Nunito Sans',
-    color: PRIMARY_BLUE,
+    color: Colors.PRIMARY_800,
     fontSize: '2rem',
     my: '3vh',
     '@media (min-width:800px)': {
@@ -249,7 +250,7 @@ export default function About() {
                 </Typography>
                 {/* <Typography variant="body1" data-testid="founder-1-bio">{data.Person1Bio}</Typography> */}
                 <Typography variant="body1" data-testid="founder-1-email">
-                  <a
+                  <a style={{color: Colors.PRIMARY_400}}
                     href={`mailto: ${aboutData.Person1Email}`}
                     data-testid="founder-1-email-link">
                     {aboutData.Person1Email}
@@ -283,7 +284,7 @@ export default function About() {
                 </Typography>
                 {/* <Typography variant="body1" data-testid="founder-2-bio">{data.Person2Bio}</Typography> */}
                 <Typography variant="body1" data-testid="founder-2-email">
-                  <a
+                  <a style={{color: Colors.PRIMARY_400}}
                     href={`mailto: ${aboutData.Person2Email}`}
                     data-testid="founder-2-email-link">
                     {aboutData.Person2Email}

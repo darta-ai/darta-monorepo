@@ -1,26 +1,37 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./",
     "allowSyntheticDefaultImports": true,
     "target": "es6",
-    // "preserveSymlinks": true,
     "allowJs": true,
+    "outDir": "./dist",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@/darta-types": ["./packages/darta-types/src/*"]
-  },
+      "@/darta-types": [
+        "./packages/darta-types/src/*"
+      ],
+      "@/darta-styles": [
+        "./packages/darta-styles/src/*"
+      ]
+    },
     "noEmit": false,
     "esModuleInterop": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "jsx": "react-jsx" // TODO we want "preserve" generally?
+    "jsx": "react-jsx"
   },
-  "references": [
-    { "path": "./packages/graph" }
-],
-  "exclude": ["node_modules", "scratch*"],
+  "lib": [
+    "ES2022"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
   "composite": true,
+  "include": [
+    "./packages/darta-types/src/*",
+    "./packages/darta-styles/src/*"
+  ]
 }

@@ -13,7 +13,8 @@ ARG NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY \
     NEXT_PUBLIC_PORT \
     NEXT_PUBLIC_API_URL \
     NEXT_PUBLIC_ADMIN_UID \
-    NEXT_PUBLIC_ADMIN_EMAIL
+    NEXT_PUBLIC_ADMIN_EMAIL \
+    VERSION
 
 ENV NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY=$NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY \
     NEXT_PUBLIC_REACT_APP_FIREBASE_AUTH_DOMAIN=$NEXT_PUBLIC_REACT_APP_FIREBASE_AUTH_DOMAIN \
@@ -26,7 +27,8 @@ ENV NEXT_PUBLIC_REACT_APP_FIREBASE_API_KEY=$NEXT_PUBLIC_REACT_APP_FIREBASE_API_K
     NEXT_PUBLIC_PORT=$NEXT_PUBLIC_PORT \
     NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
     NEXT_PUBLIC_ADMIN_UID=$NEXT_PUBLIC_ADMIN_UID \
-    NEXT_PUBLIC_ADMIN_EMAIL=$NEXT_PUBLIC_ADMIN_EMAIL
+    NEXT_PUBLIC_ADMIN_EMAIL=$NEXT_PUBLIC_ADMIN_EMAIL \
+    VERSION=$VERSION
 
 FROM base as deps 
 WORKDIR /app
@@ -37,6 +39,7 @@ COPY ./tsconfig.json .
 COPY ./pnpm-lock.yaml .
 COPY ./packages/next ./packages/next
 COPY ./packages/darta-types ./packages/darta-types
+COPY ./packages/darta-styles ./packages/darta-styles
 COPY ./.eslintrc.json ./.eslintrc.json
 COPY ./packages/next/package.json ./packages/next/package.json
 COPY ./packages/components/src ./packages/components/src

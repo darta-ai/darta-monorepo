@@ -1,4 +1,4 @@
-import {Artwork, CurrencyConverterType, Exhibition} from '@darta/types';
+import {Artwork, CurrencyConverterType, Exhibition} from '@darta-types';
 
 export const newArtworkShell: Artwork = {
   artworkId: crypto.randomUUID(),
@@ -62,6 +62,7 @@ export const newArtworkShell: Artwork = {
   createdAt: '',
   updatedAt: '',
   exhibitionOrder: 0,
+  artworkCategory: {value : ''},
 };
 
 export const newExhibitionShell: Exhibition = {
@@ -91,6 +92,7 @@ export const newExhibitionShell: Exhibition = {
   },
   createdAt: null,
   updatedAt: null,
+  artworkCategory: {value : ''},
 };
 
 export const currencyConverter: CurrencyConverterType = {
@@ -98,3 +100,8 @@ export const currencyConverter: CurrencyConverterType = {
   EUR: '€',
   GBP: '£',
 };
+
+export function standardConsoleLog({message, data, request}: {message: string, data: any, request: any}): void {
+  // eslint-disable-next-line no-console
+  console.log(new Date().toLocaleDateString(),{message, data, request});
+}

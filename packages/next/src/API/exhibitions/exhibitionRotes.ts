@@ -1,4 +1,4 @@
-import {Exhibition} from '@darta/types';
+import {Exhibition} from '@darta-types';
 import axios from 'axios';
 
 import {auth} from '../../ThirdPartyAPIs/firebaseApp';
@@ -33,7 +33,7 @@ export async function readExhibitionForGallery({
     );
     return response.data;
   } catch (error) {
-    throw new Error('Unable list exhibitions');
+    return {}
   }
 }
 
@@ -112,7 +112,8 @@ export async function listExhibitionsByGalleryAPI(): Promise<any> {
     }
     return {};
   } catch (error) {
-    throw new Error('Unable list exhibitions');
+
+    return{}
   }
 }
 export async function reOrderExhibitionArtworkAPI({

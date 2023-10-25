@@ -90,7 +90,7 @@ export class ImageService implements IImageService {
         bucketName,
         fileName,
         imageBuffer,
-        400,
+        600,
         metadata,
         (err, etag) => {
           if (err) {
@@ -100,6 +100,24 @@ export class ImageService implements IImageService {
           }
         },
       );
+    });
+  }
+
+  getPresignedUrl({
+    bucketName,
+    fileName,
+  }: {
+    bucketName: string;
+    fileName: string;
+  }): Promise<any>{
+    return new Promise((resolve, reject) => {
+      this.minio.presignedGetObject(bucketName, fileName,  (err, url) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(url);
+        }
+      });
     });
   }
 
@@ -121,7 +139,7 @@ export class ImageService implements IImageService {
     bucketName: string;
   }): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.minio.presignedGetObject(bucketName, fileName, (err, url) => {
+      this.minio.presignedGetObject(bucketName, fileName,  (err, url) => {
         if (err) {
           reject(err);
         } else {
@@ -130,4 +148,42 @@ export class ImageService implements IImageService {
       });
     });
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  public shouldRegenerateUrl({url}: {url: string}): boolean {
+    const urlObj = new URL(url);
+  
+    // Extract necessary parameters
+    const amzDate = urlObj.searchParams.get("X-Amz-Date");
+    const expiresStr = urlObj.searchParams.get("X-Amz-Expires");
+  
+    if (amzDate && expiresStr) {
+      const amzExpires = parseInt(expiresStr, 10);
+  
+      // Parse the date
+      const creationDate = new Date(
+        Date.UTC(
+          parseInt(amzDate.substring(0, 4), 10),
+          parseInt(amzDate.substring(4, 6), 10) - 1,
+          parseInt(amzDate.substring(6, 8), 10),
+          parseInt(amzDate.substring(9, 11), 10),
+          parseInt(amzDate.substring(11, 13), 10),
+          parseInt(amzDate.substring(13, 15), 10)
+        )
+      );
+  
+      // Calculate expiration date
+      const expirationDate = new Date(creationDate.getTime() + amzExpires * 1000);
+  
+      // Calculate the difference between now and expiration date in days
+      const now = new Date();
+      const timeDiff = Number(expirationDate) - Number(now);
+      const dayDiff = timeDiff / (1000 * 60 * 60 * 24);
+      // Return true if the difference is less than or equal to 1 day
+      return dayDiff <= 1;
+    }
+  
+    return true;
+  }
+  
 }

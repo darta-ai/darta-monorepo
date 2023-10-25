@@ -203,7 +203,6 @@ export function DartaGallerySearch({
     return () => {
       businessActive.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placeId, fetchBusinessDetails]);
 
   const innerWidthRef = React.useRef(800);

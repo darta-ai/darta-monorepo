@@ -60,7 +60,7 @@ export function DartaPhoneNumber({
   const testIdValue = fieldName.replace('.', '-');
 
   return (
-    <Box sx={formStyles.inputTextContainer}>
+    <Box sx={formStyles.inputTextContainerTwoColumns}>
       <DartaInputAdornment
         fieldName={fieldName}
         required={required}
@@ -74,14 +74,12 @@ export function DartaPhoneNumber({
           data={data}
           register={register}
           control={control}
-          allowPrivate={allowPrivate}
           isPrivate={isPrivate}
           testIdValue={testIdValue}
           setIsPrivate={setIsPrivate}
           switchStringValue="isPrivate"
         />
       )}
-      <Box sx={formStyles.formTextField}>
         <Controller
           control={control}
           name={fieldName}
@@ -117,6 +115,5 @@ export function DartaPhoneNumber({
           )}
         />
       </Box>
-    </Box>
   );
 }

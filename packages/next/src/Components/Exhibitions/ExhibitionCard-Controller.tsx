@@ -1,5 +1,7 @@
-/* eslint-disable react-native/no-inline-styles */
-import {Artwork, Exhibition} from '@darta/types';
+import * as Colors from '@darta-styles'
+import {Artwork, Exhibition} from '@darta-types';
+import Block from '@mui/icons-material/Block';
+import SendIcon from '@mui/icons-material/Send';
 import {
   Box,
   Button,
@@ -14,10 +16,9 @@ import dayjs from 'dayjs';
 import _ from 'lodash';
 import React from 'react';
 
-import {PRIMARY_BLUE, PRIMARY_MILK} from '../../../styles';
 import {cardStyles} from '../../../styles/CardStyles';
 import {
-  createAndEditArtworkForExhibition,
+  // createAndEditArtworkForExhibition,
   createArtworkForExhibitionAPI,
   deleteExhibitionArtwork,
   editArtworkForExhibitionAPI,
@@ -43,13 +44,14 @@ export function ExhibitionCard({
   galleryLocations,
   exhibitionId,
   galleryName,
+  isLatestExhibition
 }: {
   exhibition: Exhibition;
   galleryLocations: string[];
   exhibitionId: string;
   galleryName: string;
+  isLatestExhibition: boolean;
 }) {
-  const [expanded, setExpanded] = React.useState(false);
   const [editExhibition, setEditExhibition] = React.useState<boolean>(false);
   const [isEditingExhibition, setIsEditingExhibition] =
     React.useState<boolean>(false);
@@ -59,19 +61,17 @@ export function ExhibitionCard({
   const [artworkLoading, setArtworkLoading] = React.useState<boolean>(false);
   const [isSwappingLoading, setIsSwappingLoading] =
     React.useState<boolean>(false);
+  
+  const [showArtworks, setShowArtwork] = React.useState<boolean>(isLatestExhibition);
+
 
   React.useEffect(() => {
     if (exhibition?.artworks) {
       setArtworks(exhibition.artworks!);
-    }
+    } 
   }, []);
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
-
-  const saveExhibition = async (updatedExhibition: Exhibition) => {
-    setIsEditingExhibition(true);
+  const setExhibitionStateAndDB = async (updatedExhibition: Exhibition) => {
     const exhibitionClone = _.cloneDeep(updatedExhibition);
     const exhibitionLocation =
       exhibitionClone?.exhibitionLocation?.locationString?.value;
@@ -104,16 +104,21 @@ export function ExhibitionCard({
         type: GalleryReducerActions.SAVE_NEW_ARTWORK,
         payload: results.artworks as any,
       });
-      setEditExhibition(!editExhibition);
     } catch (error) {
-      setErrorAlertOpen(true);
-    }
+      setErrorAlertOpen(true)
+    } 
+  }
+
+  const saveExhibition = async (updatedExhibition: Exhibition) => {
+    setIsEditingExhibition(true);
+    await setExhibitionStateAndDB(updatedExhibition)
+    setEditExhibition(!editExhibition);
     setIsEditingExhibition(false);
   };
 
   const addNewArtwork = async () => {
     setArtworkLoading(true);
-    const exhibitionOrder = Object?.keys(artworks).length;
+    const exhibitionOrder = Object?.keys(artworks)?.length;
 
     try {
       const {artwork} = await createArtworkForExhibitionAPI({
@@ -226,57 +231,55 @@ export function ExhibitionCard({
     return Promise.resolve(false);
   };
 
-  const handleBatchUpload = async (uploadArtworks: {
-    [key: string]: Artwork;
-  }): Promise<boolean> => {
-    const newExhibition: Exhibition = _.cloneDeep(
-      state?.galleryExhibitions[exhibitionId],
-    );
+  // const handleBatchUpload = async (uploadArtworks: {
+  //   [key: string]: Artwork;
+  // }): Promise<boolean> => {
+  //   const newExhibition: Exhibition = _.cloneDeep(
+  //     state?.galleryExhibitions[exhibitionId],
+  //   );
 
-    if (!newExhibition || !newExhibition?.artworks) {
-      Promise.resolve(false);
-    }
+  //   if (!newExhibition || !newExhibition?.artworks) {
+  //     Promise.resolve(false);
+  //   }
 
-    let counter = Object.values(newExhibition.artworks!).length;
+  //   let counter = Object.values(newExhibition.artworks!).length;
 
-    for (const artworkId in uploadArtworks) {
-      if (uploadArtworks[artworkId]) {
-        // eslint-disable-next-line no-param-reassign
-        uploadArtworks[artworkId].exhibitionOrder = counter++;
-        // eslint-disable-next-line no-param-reassign
-        uploadArtworks[artworkId].exhibitionId = exhibitionId;
-      }
-    }
+  //   for (const artworkId in uploadArtworks) {
+  //     if (uploadArtworks[artworkId]) {
+  //       // eslint-disable-next-line no-param-reassign, no-multi-assign
+  //       uploadArtworks[artworkId].exhibitionOrder = counter += 1;
+  //       // eslint-disable-next-line no-param-reassign
+  //       uploadArtworks[artworkId].exhibitionId = exhibitionId;
+  //     }
+  //   }
 
-    const artworkPromises = Object.values(uploadArtworks).map(
-      (artwork: Artwork) => {
-        return createAndEditArtworkForExhibition({exhibitionId, artwork});
-      },
-    );
-    try {
-      const results = await Promise.all(artworkPromises);
+  //   const artworkPromises = Object.values(uploadArtworks).map(
+  //     (artwork: Artwork) => createAndEditArtworkForExhibition({exhibitionId, artwork}),
+  //   );
+  //   try {
+  //     const results = await Promise.all(artworkPromises);
 
-      const resultsObj = results.reduce(
-        (acc, artwork) => ({...acc, [artwork?.artworkId as string]: artwork}),
-        {},
-      );
+  //     const resultsObj = results.reduce(
+  //       (acc, artwork) => ({...acc, [artwork?.artworkId as string]: artwork}),
+  //       {},
+  //     );
 
-      dispatch({
-        type: GalleryReducerActions.SAVE_EXHIBITION_ARTWORK,
-        exhibitionId,
-        artwork: resultsObj,
-      });
+  //     dispatch({
+  //       type: GalleryReducerActions.SAVE_EXHIBITION_ARTWORK,
+  //       exhibitionId,
+  //       artwork: resultsObj,
+  //     });
 
-      dispatch({
-        type: GalleryReducerActions.SET_BATCH_ARTWORK,
-        payload: resultsObj,
-      });
-      return Promise.resolve(true);
-    } catch (error) {
-      setErrorAlertOpen(true);
-      return Promise.resolve(false);
-    }
-  };
+  //     dispatch({
+  //       type: GalleryReducerActions.SET_BATCH_ARTWORK,
+  //       payload: resultsObj,
+  //     });
+  //     return Promise.resolve(true);
+  //   } catch (error) {
+  //     setErrorAlertOpen(true);
+  //     return Promise.resolve(false);
+  //   }
+  // };
 
   const deleteExhibition = async ({
     exhibitionId,
@@ -393,27 +396,13 @@ export function ExhibitionCard({
         </Box>
       ) : (
         <Box sx={cardStyles.cardContainer}>
-          <Box sx={{width: '35vw', m: 1}}>
+          <Box sx={cardStyles.informationContainer}>
             <Box
-              onClick={handleExpandClick}
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                maxHeight: '15vh',
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignContent: 'center',
-              }}
-              data-testid="exhibition-card-image">
-              <Box>
-                <Box
-                  component="img"
-                  src={exhibition?.exhibitionPrimaryImage?.value as string}
-                  alt={exhibition?.exhibitionTitle?.value as string}
-                  style={cardStyles.mediaExhibition}
-                />
-              </Box>
-            </Box>
+              component="img"
+              src={exhibition?.exhibitionPrimaryImage?.value as string}
+              alt={exhibition?.exhibitionTitle?.value as string}
+              style={cardStyles.mediaExhibition}
+            />
           </Box>
           <Box sx={cardStyles.informationContainer}>
             <CardContent>
@@ -424,8 +413,21 @@ export function ExhibitionCard({
                 data-testid="artwork-card-exhibition-title">
                 {exhibition?.exhibitionTitle?.value}
               </Typography>
-              {exhibition?.exhibitionDates?.exhibitionStartDate?.value &&
-                exhibition?.exhibitionDates?.exhibitionEndDate?.value && (
+              {exhibition.exhibitionArtist?.value && (
+                <Typography variant="h6" color="textSecondary">
+                  {exhibition.exhibitionArtist?.value}
+                </Typography>
+              )}
+              <Typography
+                paragraph
+                data-testid="artwork-card-exhibition-location-string"
+                color="textSecondary">
+                {exhibition?.exhibitionLocation?.locationString?.value}
+              </Typography>
+              {exhibition.exhibitionDates.exhibitionDuration && 
+                exhibition.exhibitionDates.exhibitionDuration.value !== "Ongoing/Indefinite" &&
+               exhibition?.exhibitionDates?.exhibitionStartDate?.value &&
+                exhibition?.exhibitionDates?.exhibitionEndDate?.value ? (
                   <Typography
                     data-testid="artwork-card-exhibition-dates"
                     variant="h6"
@@ -438,20 +440,24 @@ export function ExhibitionCard({
                       exhibition?.exhibitionDates?.exhibitionEndDate?.value,
                     ).format('MM/DD/YYYY')}
                   </Typography>
-                )}
-              <Typography
-                paragraph
-                data-testid="artwork-card-exhibition-location-string"
-                color="textSecondary">
-                {exhibition?.exhibitionLocation?.locationString?.value}
-              </Typography>
+                ): (
+                  <Typography
+                    data-testid="artwork-card-exhibition-dates"
+                    variant="h6"
+                    color="textSecondary">
+                    {exhibition?.exhibitionDates?.exhibitionDuration?.value}
+                  </Typography>
+                )
+                }
             </CardContent>
           </Box>
           <Box sx={cardStyles.informationContainer}>
             {exhibition?.exhibitionPressRelease?.value && (
               <Box
                 style={{
-                  marginRight: '1vw',
+                  width: '95%',
+                  padding: '1vh',
+                  height: '100%',
                 }}>
                 <Typography color="textSecondary" sx={{textAlign: 'center'}}>
                   Press Release
@@ -460,7 +466,7 @@ export function ExhibitionCard({
                   hiddenLabel
                   fullWidth
                   multiline
-                  rows={6}
+                  rows={12}
                   sx={{
                     '& .MuiInputBase-input.Mui-disabled': {
                       WebkitTextFillColor: '#000000',
@@ -468,7 +474,7 @@ export function ExhibitionCard({
                       fontFamily: 'Nunito Sans',
                     },
                   }}
-                  disabled={true}
+                  disabled
                   inputProps={ariaLabel}
                   value={exhibition?.exhibitionPressRelease?.value}
                 />
@@ -477,23 +483,65 @@ export function ExhibitionCard({
           </Box>
         </Box>
       )}
-      <Box>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
+            gap: '5%',
+            alignItems: 'center',
+            width: '100%',
+            '@media (max-width: 1080px)': {
+              flexDirection: 'column',
+            },
           }}>
+            {exhibition.published ? (
+              <Button
+              variant="contained"
+              className="exhibition-publish-button"
+              style={{backgroundColor: Colors.PRIMARY_200}}
+              onClick={() => setExhibitionStateAndDB({...exhibition, published: false})}
+              startIcon={<Block style={{color: Colors.PRIMARY_600}} />}
+              sx={{alignSelf: 'center', m: '1vh'}}>
+              <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_600}}>
+                Remove Published
+              </Typography>
+            </Button>
+            ) : (
+              <Button
+              variant="contained"
+              className="exhibition-publish-button"
+              style={{backgroundColor: Colors.PRIMARY_900}}
+              onClick={() => setExhibitionStateAndDB({...exhibition, published: true})}
+              endIcon={<SendIcon style={{color: Colors.PRIMARY_50}} />}
+              sx={{alignSelf: 'center', m: '1vh'}}>
+              <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_50}}>
+                Publish Exhibition
+              </Typography>
+            </Button>
+            )}
           <Button
             variant="contained"
             className="exhibition-edit-button"
-            color={displayRed ? 'warning' : 'secondary'}
+            style={{backgroundColor: Colors.PRIMARY_700}}
             onClick={() => setEditExhibition(!editExhibition)}
             sx={{alignSelf: 'center', m: '1vh'}}>
-            <Typography sx={{fontWeight: 'bold', color: PRIMARY_MILK}}>
+            <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_50}}>
               Edit Exhibition
             </Typography>
           </Button>
+          <Box>
+          <Button
+            variant="contained"
+            className="exhibition-edit-button"
+            style={{backgroundColor: Colors.PRIMARY_900}}
+            onClick={() => setShowArtwork(!showArtworks)}
+            sx={{alignSelf: 'center', m: '1vh'}}>
+            <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_50}}>
+              {showArtworks ? 'Hide Artworks' : 'Show Artworks'}
+            </Typography>
+          </Button>
+        </Box>
         </Box>
         <Collapse in={editExhibition}>
           {editExhibition && galleryName && (
@@ -521,25 +569,28 @@ export function ExhibitionCard({
                 exhibition.
               </Typography>
               <Typography variant="h6">
-                Click <a href="/Galleries/Profile">here</a> to go to your
+                Click <a style={{color: Colors.PRIMARY_600}} href="/Galleries/Profile">here</a> to go to your
                 profile page.
               </Typography>
             </Box>
           )}
         </Collapse>
+        <Collapse in={showArtworks}>
         <Box>
-          <Divider variant="middle" sx={{m: 2, color: PRIMARY_BLUE}} flexItem>
-            <Typography sx={{fontWeight: 'bold', color: PRIMARY_BLUE}}>
-              Artworks
+          <Divider variant="middle" sx={{m: 2, color: Colors.PRIMARY_600}} flexItem>
+            <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_600}}>
+              Artwork
             </Typography>
           </Divider>
+        </Box>
+        <Box>
           <ArtworkHeader
             artworkLoading={artworkLoading}
             addNewArtwork={addNewArtwork}
-            handleBatchUpload={handleBatchUpload}
+            // handleBatchUpload={handleBatchUpload}
           />
         </Box>
-        {exhibition?.artworks && (
+        {showArtworks && exhibition?.artworks && (
           <ExhibitionArtworkList
             artworks={exhibition?.artworks}
             isSwappingLoading={isSwappingLoading}
@@ -552,8 +603,9 @@ export function ExhibitionCard({
             }
             handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
           />
-        )}
-      </Box>
+          )}
+
+      </Collapse>
       <DartaErrorAlert
         errorAlertOpen={errorAlertOpen}
         setErrorAlertOpen={setErrorAlertOpen}

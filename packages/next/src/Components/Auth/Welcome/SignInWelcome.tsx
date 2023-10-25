@@ -1,3 +1,4 @@
+import * as Colors from '@darta-styles';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import {Box, Typography} from '@mui/material';
 import React from 'react';
@@ -115,7 +116,7 @@ export function SignInWelcome({
             data-testid="footer-container">
             <Typography sx={welcomeStyles.footerText} data-testid="footer-text">
               {welcomeBackData.Footer}{' '}
-              <a
+              <a style={{color: Colors.PRIMARY_400}}
                 href={`mailto: ${welcomeBackData.HelpEmail}+${signInType}@darta.art`}
                 data-testid="help-email-link">
                 {welcomeBackData.HelpEmail}

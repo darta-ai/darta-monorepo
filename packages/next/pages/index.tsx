@@ -1,15 +1,24 @@
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
+import * as Colors from '@darta-styles'
+import { Box } from '@mui/material';
 import Head from 'next/head';
 import React from 'react';
 
-import {pamphletData} from '../data/pamphletPages';
-import {AuthEnum} from '../src/Components/Auth/types';
 import {BaseHeader} from '../src/Components/Navigation/Headers/BaseHeader';
-import {PamphletLeft} from '../src/Components/Pamphlet/pamphletLeft';
-import {PamphletRight} from '../src/Components/Pamphlet/pamphletRight';
+import { MainLanding } from '../src/Components/Pamphlet/MainLanding';
 
-// import {Hello} from '@/components';
+const styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    minHeight: '170vh',
+    height: '100%',
+    backgroundColor: Colors.PRIMARY_500,
+    '@media (min-width:800px)': {
+      minHeight: '90vh',
+    },
+  }
+}
 
 export default function Home() {
   return (
@@ -22,49 +31,9 @@ export default function Home() {
         />
       </Head>
       <BaseHeader />
-      <Container maxWidth="xl" sx={{mt: '20vh'}}>
-        {pamphletData && (
-          <Box
-            sx={{
-              my: 10,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            {/* <Hello /> */}
-            {pamphletData &&
-              pamphletData.map((data: any, index: number) => {
-                const isEven = index % 2 === 0;
-                if (isEven) {
-                  return (
-                    <PamphletRight
-                      key={data?.headline}
-                      headline={data?.headline}
-                      line1={data?.line1}
-                      line2={data?.line2}
-                      line3={data?.line3}
-                      index={index}
-                      authType={AuthEnum.home}
-                    />
-                  );
-                } else {
-                  return (
-                    <PamphletLeft
-                      key={data?.headline}
-                      headline={data?.headline}
-                      line1={data?.line1}
-                      line2={data?.line2}
-                      line3={data?.line3}
-                      index={index}
-                      authType={AuthEnum.home}
-                    />
-                  );
-                }
-              })}
-          </Box>
-        )}
-      </Container>
-    </>
+      <Box sx={styles.container}>
+        <MainLanding />
+      </Box>
+      </>
   );
 }
