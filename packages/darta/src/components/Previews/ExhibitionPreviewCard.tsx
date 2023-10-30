@@ -17,6 +17,7 @@ import { ExhibitionPreview } from '@darta-types';
 import { PRIMARY_700, PRIMARY_900, PRIMARY_100, PRIMARY_950, PRIMARY_50, PRIMARY_400 } from '@darta-styles';
 import { customLocalDateString, simplifyAddress } from '../../utils/functions';
 import { GalleryIcon } from '../Elements/_index';
+import { Divider } from 'react-native-paper';
 import { ExhibitionCarousel } from '../../components/Exhibitions/ExhibitionCarousel';
 
 const exhibitionPreviewStyle = StyleSheet.create({
@@ -43,8 +44,6 @@ const exhibitionPreviewStyle = StyleSheet.create({
     alignItems: 'center',           
     height: "10%",
     width: '90%',
-    borderBottomColor: PRIMARY_700,
-    borderBottomWidth: 1,
   },
   galleryNameComponent: {
     fontSize: 18,
@@ -104,9 +103,11 @@ const exhibitionPreviewStyle = StyleSheet.create({
 export function ExhibitionPreviewCard({
     exhibitionPreview,
     onPressExhibition,
+    onPressGallery,
 }: {
     exhibitionPreview: ExhibitionPreview
     onPressExhibition: ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => void,
+    onPressGallery: ({galleryId} : {galleryId: string}) => void,
 }) {
 
   const [images, setImages] = React.useState<{imageUrl: string, title?: string}[]>([])
@@ -125,48 +126,48 @@ export function ExhibitionPreviewCard({
     <>
       <View
         style={exhibitionPreviewStyle.container}>
-          <View style={exhibitionPreviewStyle.galleryIconContainer}>
+          <TouchableOpacity style={exhibitionPreviewStyle.galleryIconContainer} onPress={() => onPressGallery({galleryId: exhibitionPreview.galleryId})}>
               <GalleryIcon galleryLogo={exhibitionPreview?.galleryLogo?.value!}/>
               <TextElement style={exhibitionPreviewStyle.galleryNameComponent}>{exhibitionPreview?.galleryName.value}</TextElement>
-          </View>
+          </TouchableOpacity>
           <View style={exhibitionPreviewStyle.imagePreviewContainer}>
+            <ExhibitionCarousel images={images} />
+          </View>
+          
+          <View style={exhibitionPreviewStyle.textContainer}>
             <TouchableOpacity onPress={() => onPressExhibition({exhibitionId: exhibitionPreview?.exhibitionId, galleryId: exhibitionPreview?.galleryId})}>
-              < ExhibitionCarousel images={images} />
+              <View>
+                <TextElement
+                  style={{...globalTextStyles.baseText, fontWeight: 'bold', color: PRIMARY_900, fontSize: 20}}>
+                  {' '}
+                  {exhibitionPreview.exhibitionTitle.value} 
+                </TextElement>
+                <TextElement
+                  style={{...globalTextStyles.baseText, fontStyle: 'italic', color: PRIMARY_900, fontSize: 16}}>
+                  {' '}
+                  {exhibitionPreview?.exhibitionArtist?.value ? exhibitionPreview?.exhibitionArtist?.value : "Group Show"}
+                </TextElement>
+              </View>
+              <View>
+              {exhibitionPreview?.closingDate?.value &&  
+              exhibitionPreview?.openingDate?.value && 
+              (
+                <TextElement
+                  style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
+                  {' '}
+                  {exhibitionPreview.openingDate?.value ? customLocalDateString(new Date(exhibitionPreview.openingDate?.value)) : "Opening unavailable"}
+                  {" - "}
+                  {exhibitionPreview.closingDate?.value ? customLocalDateString(new Date(exhibitionPreview.closingDate?.value)) : "Closing unavailable"}
+                </TextElement>
+              )}
+              <TextElement
+                style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
+                {' '}
+                {simplifyAddress(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString.value)}
+              </TextElement>
+              </View>
             </TouchableOpacity>
           </View>
-
-        <View style={exhibitionPreviewStyle.textContainer}>
-          <View>
-            <TextElement
-              style={{...globalTextStyles.baseText, fontWeight: 'bold', color: PRIMARY_900, fontSize: 20}}>
-              {' '}
-              {exhibitionPreview.exhibitionTitle.value} 
-            </TextElement>
-            <TextElement
-              style={{...globalTextStyles.baseText, fontStyle: 'italic', color: PRIMARY_900, fontSize: 16}}>
-              {' '}
-              {exhibitionPreview?.exhibitionArtist?.value ? exhibitionPreview?.exhibitionArtist?.value : "Group Show"}
-            </TextElement>
-          </View>
-          <View>
-          {exhibitionPreview?.closingDate?.value &&  
-          exhibitionPreview?.openingDate?.value && 
-          (
-            <TextElement
-              style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
-              {' '}
-              {exhibitionPreview.openingDate?.value ? customLocalDateString(new Date(exhibitionPreview.openingDate?.value)) : "Opening unavailable"}
-              {" - "}
-              {exhibitionPreview.closingDate?.value ? customLocalDateString(new Date(exhibitionPreview.closingDate?.value)) : "Closing unavailable"}
-            </TextElement>
-          )}
-          <TextElement
-            style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
-            {' '}
-            {simplifyAddress(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString.value)}
-          </TextElement>
-          </View>
-        </View>
           {/* <TouchableOpacity style={exhibitionPreviewStyle.seeMoreContainer} >
               <TextElement style={{color: PRIMARY_50}}>See More</TextElement>
           </TouchableOpacity> */}

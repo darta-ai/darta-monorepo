@@ -194,7 +194,6 @@ export function ExhibitionGalleryScreen({
   const [errorText, setErrorText] = React.useState<string>("");
   const [isGalleryLoaded, setIsGalleryLoaded] = React.useState<boolean>(false);
   const [gallery, setGallery] = React.useState<IGalleryProfileData>({} as IGalleryProfileData)
-  const [dialogVisible, setDialogVisible] = React.useState<boolean>(false)
 
   const [mapRegion, setMapRegion] = React.useState<any>({
     latitudeDelta: 0.02,
@@ -335,9 +334,6 @@ export function ExhibitionGalleryScreen({
   }, []);
 
   const followGallery = async () => {
-    if (auth().currentUser === null) {
-      return setDialogVisible(true)
-    }
     try{
       await createGalleryRelationshipAPI({galleryId})
       dispatch({
@@ -727,10 +723,6 @@ export function ExhibitionGalleryScreen({
       </View>
     </ScrollView>
     )}
-    <NeedAccountDialog 
-        dialogVisible={dialogVisible}
-        setDialogVisible={setDialogVisible}
-      />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet, Image, ScrollView, RefreshControl} from 'react-native';
+import {StyleSheet, Image, ScrollView, RefreshControl} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { ActivityIndicator } from 'react-native-paper';
 import { ArtworkList } from '../../components/Artwork/ArtworkList';
@@ -124,11 +124,14 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
     if (route?.params?.exhibitionId && state.exhibitionData && state.exhibitionData[route?.params?.exhibitionId] && state.exhibitionData[route?.params?.exhibitionId].artworks){
       setExhibitionId(route.params.exhibitionId);
       setArtworksFromExhibitionId({exhibitionId: route.params.exhibitionId})
+    } else if (state.qrCodeExhibitionId) {
+      setExhibitionId(state.qrCodeExhibitionId);
+      setArtworksFromExhibitionId({exhibitionId: state.qrCodeExhibitionId})
     } else {
       setErrorText('something went wrong, please refresh and try again')
     }
 
-  }, [state.exhibitionData, state.currentExhibitionHeader])
+  }, [state.exhibitionData, state.currentExhibitionHeader, state.qrCodeExhibitionId])
 
   const [refreshing, setRefreshing] = React.useState(false);
 

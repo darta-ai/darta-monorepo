@@ -5,7 +5,7 @@ export const pamphletData = [
     line2:
       'Darta - the digital art advisor - changes that through machine learning.',
     line1: 'But the art world can be hard to approach.',
-    headline: 'Your home deserves great art',
+    headline: 'Your walls deserves great art',
   },
   {
     line2:

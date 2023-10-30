@@ -134,7 +134,11 @@ export interface IState {
   fullyLoadedExhibitions?: {[key: string] : boolean}
 
   artworksToRate?: {[key: string] : Artwork}
-  artworkRatingIndex?: number
+  artworkRatingIndex?: number,
+  exhibitionShareDetails?: {
+    shareURL: string,
+    shareURLMessage: string,
+  },
 }
 
 export enum ETypes {
@@ -203,7 +207,9 @@ export enum ETypes {
   setFullyLoadedExhibitions = 'SET_FULLY_LOADED_EXHIBITIONS',
 
   setArtworksToRate = 'SET_ARTWORKS_TO_RATE',
-  setRatingIndex = 'SET_RATING_INDEX'
+  setRatingIndex = 'SET_RATING_INDEX',
+
+  setExhibitionShareURL = 'SET_EXHIBITION_SHARE_URL',
 }
 
 // Define the action type
@@ -269,6 +275,10 @@ interface IAction {
 
   artworksToRate?: {[key: string] : Artwork};
   artworkRatingIndex?: number;
+  exhibitionShareDetails?: {
+    shareURL: string,
+    shareURLMessage: string,
+  }
 }
 
 // Define the initial state
@@ -287,6 +297,7 @@ const initialState: IState = {
   mapPins: {} as any,
   userDislikedArtwork: {},
   artworkRatingIndex: 0,
+  user: {}
 };
 
 // Define the reducer function
@@ -413,7 +424,7 @@ const reducer = (state: IState, action: IAction): IState => {
           }
         }
       case ETypes.setCurrentHeader:
-        if (!action.currentExhibitionHeader) {
+        if (action.currentExhibitionHeader === undefined) {
           return state;
         }
         return {
@@ -445,7 +456,7 @@ const reducer = (state: IState, action: IAction): IState => {
           currentArtworkTombstoneHeader: action.currentArtworkHeader,
         };
       case ETypes.setGalleryHeader:
-          if (!action.galleryHeader) {
+          if (action.galleryHeader !== undefined) {
             return state;
           }
           return {
@@ -702,6 +713,14 @@ const reducer = (state: IState, action: IAction): IState => {
               ...state,
               artworkRatingIndex: action.artworkRatingIndex,
             };
+      case ETypes.setExhibitionShareURL:
+        if (!action?.exhibitionShareDetails){
+          return state;
+        }
+        return {
+          ...state,
+          exhibitionShareDetails: action.exhibitionShareDetails,
+        };
     default:
       return state;
   }

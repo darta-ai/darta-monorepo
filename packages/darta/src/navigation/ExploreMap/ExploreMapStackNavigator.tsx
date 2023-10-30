@@ -5,7 +5,7 @@ import {StoreContext} from '../../state/Store';
 import {headerOptions} from '../../styles/styles';
 import { ExploreMapRootEnum} from '../../typing/routes';
 import { ExploreMapHomeScreen } from '../../screens/ExploreMap/ExploreMapHomeScreen';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { ExhibitionTopTabNavigator } from '../Exhibition/ExhibitionTopTabNavigator';
 import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
 
@@ -15,7 +15,10 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
   const {state} = useContext(StoreContext);
 
   return (
-    <ExploreMapStack.Navigator screenOptions={{headerTintColor: PRIMARY_800}}>
+    <ExploreMapStack.Navigator screenOptions={{
+      headerTintColor: PRIMARY_800,
+      cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS
+      }}>
         <ExploreMapStack.Screen
           name={ExploreMapRootEnum.exploreMapHome}
           component={ExploreMapHomeScreen}

@@ -83,7 +83,6 @@ export function EditProfileGallery({
   setGalleryProfileData: (T: IGalleryProfileData) => void;
   galleryProfileData: IGalleryProfileData;
 }) {
-  const [currentBioLength, setCurrentBioLength] = React.useState<number>(0)
   const galleryDataSchema = yup
   .object({
     galleryName: yup.object().shape({
@@ -92,7 +91,7 @@ export function EditProfileGallery({
     galleryBio: yup.object().shape({
       value: yup
         .string()
-        .max(750, `Please limit your bio to 750 characters - currently ${currentBioLength} characters`)
+        .max(750, `Please limit your bio to 750 characters`)
         .required(
           'Please include a short bio - up to 750 characters - about your gallery.',
         ),
@@ -176,11 +175,6 @@ export function EditProfileGallery({
     setIsEditingProfile(!isEditingProfile);
   };
 
-  React.useEffect(()=>{
-    if(getValues('galleryBio')){
-      setCurrentBioLength(getValues('galleryBio')?.value?.length ?? 0)
-    }
-  }, [getValues('galleryBio')])
 
   const [tempImage, setTempImage] = React.useState<string | null>(null);
 

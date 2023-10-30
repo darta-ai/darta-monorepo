@@ -92,10 +92,11 @@ export const profileStyles = {
     },
     galleryContactContainer: {
       display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-evenly',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
       gap: '10%',
-      width: '90%',
+      width: '100%',
       '@media (max-width: 1080px)': {
         flexDirection: 'column',
       },

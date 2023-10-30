@@ -6,7 +6,7 @@ import React from 'react'
 import { IntroComponent } from './IntroComponent'
 
 const data1 = {
-    headline: 'Your Home Deserves Great Art',
+    headline: 'Your Walls Deserve Great Art',
     explainer1: 'Leverage machine learning in partnership with leading galleries to grow your art collection',
     explainer2: 'Download darta and start training your digital art advisor today',
   };

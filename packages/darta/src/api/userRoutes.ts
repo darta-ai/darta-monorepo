@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Exhibition, GalleryPreview, Images, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}users`;
+import auth from '@react-native-firebase/auth';
 
 export async function createUser({
     uid,
@@ -9,7 +10,8 @@ export async function createUser({
     uid: string;
 }): Promise<any> {
   try {
-    const {data} = await axios.post(`${URL}/createNewDartaUser`, {uid});
+    const idToken = await auth().currentUser?.getIdToken();
+    const {data} = await axios.post(`${URL}/createNewDartaUser`, {uid}, {headers: {authorization: `Bearer ${idToken}`}});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'createUser'})
@@ -26,7 +28,8 @@ export async function createUserArtworkEdge({
   action: USER_ARTWORK_EDGE_RELATIONSHIP
 }): Promise<any> {
   try {
-    const {data} = await axios.post(`${URL}/createUserArtworkEdge`, {uid, action});
+    const idToken = await auth().currentUser?.getIdToken();
+    const {data} = await axios.post(`${URL}/createUserArtworkEdge`, {uid, action}, {headers: {authorization: `Bearer ${idToken}`}});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'createUserArtworkEdge'})
@@ -43,10 +46,11 @@ export async function createDartaUserFollowGallery({
   uid: string;
 }): Promise<Exhibition | void> {
   try {
+    const idToken = await auth().currentUser?.getIdToken();
     const {data} = await axios.post(`${URL}/createDartaUserFollowGallery`, {
       uid,
       galleryId,
-  });
+  }, {headers: {authorization: `Bearer ${idToken}`}});
     return data;
   } catch (error:any) {
     throw new Error(error)
@@ -55,7 +59,8 @@ export async function createDartaUserFollowGallery({
 
 export async function getDartaUser({uid} : {uid: string}): Promise<any> {
 try {
-  const {data} = await axios.get(`${URL}/getDartaUser`, {params: {uid}});
+  const idToken = await auth().currentUser?.getIdToken();
+  const {data} = await axios.get(`${URL}/getDartaUser`, {params: {uid}, headers: {authorization: `Bearer ${idToken}`}});
   return data;
 } catch (error:any) {
   console.log({error})

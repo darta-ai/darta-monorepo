@@ -5,6 +5,8 @@ import {auth} from '../../ThirdPartyAPIs/firebaseApp';
 
 const URL = `${process.env.NEXT_PUBLIC_API_URL}exhibition`;
 
+
+
 export async function createExhibitionAPI(): Promise<any> {
   const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
   try {
@@ -84,6 +86,26 @@ export async function deleteExhibitionAndArtworkAPI({
     const response = await axios.post(
       `${URL}/deleteExhibitionAndArtwork`,
       {exhibitionId},
+      {headers: {authorization: `Bearer ${idToken}`}},
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error('Unable to edit exhibition');
+  }
+}
+
+export async function publishExhibitionAPI({
+  exhibitionId,
+  isPublished,
+}: {
+  exhibitionId: string;
+  isPublished: boolean
+}): Promise<any> {
+  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  try {
+    const response = await axios.post(
+      `${URL}/galleryPublishExhibition`,
+      {exhibitionId, isPublished},
       {headers: {authorization: `Bearer ${idToken}`}},
     );
     return response.data;

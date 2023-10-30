@@ -91,6 +91,12 @@ export function ExhibitionsHomeScreen({
 
 
   const loadExhibition = async ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => {
+    if (state.exhibitionData && !state.exhibitionData[exhibitionId]) {
+      dispatch({
+        type: ETypes.setCurrentHeader,
+        currentExhibitionHeader: ""
+      })
+    }
     try{
         if (!exhibitionId || !galleryId) return
         navigation.navigate(ExhibitionRootEnum.TopTab, {exhibitionId, galleryId, internalAppRoute: true});
@@ -99,15 +105,31 @@ export function ExhibitionsHomeScreen({
     }
   }   
 
+  const loadGallery = async ({galleryId} : {galleryId: string}) => {
+    if (state.galleryData && !state.galleryData[galleryId]) {
+      dispatch({
+        type: ETypes.setGalleryHeader,
+        galleryHeader: ""
+      })
+    }
+    try{
+        if (!galleryId) return
+        navigation.navigate(ExhibitionRootEnum.showGallery, {galleryId});
+    } catch(error: any) {
+      console.log(error)
+    }
+  }
+
   return (
     <>
       <FlatList 
         data={exhibitionPreviews}
         keyExtractor={(item) => item.exhibitionId}
         renderItem={({item}) => (
-            <ExhibitionPreviewCard 
+          <ExhibitionPreviewCard 
               exhibitionPreview={item}
               onPressExhibition={loadExhibition}
+              onPressGallery={loadGallery}
             />
           )}
         refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}

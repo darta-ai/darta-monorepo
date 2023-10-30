@@ -42,13 +42,10 @@ export const SignUp = ({
     try {      
       setLoading(true)
       const res = await editDartaUserAccountAPI({data : { email, legalFirstName: firstName, legalLastName: lastName }});
-      console.log({res})
       if (res){
         dispatch({
           type: ETypes.setUser,
-          userData: {
-            ...res
-          }
+          userData: res
         })            
       }
       setDialogVisible(false)
@@ -63,10 +60,9 @@ export const SignUp = ({
     }
   }
 
-
   return (
   <View>
-    <Dialog.Title style={{color: Colors.PRIMARY_50}}>You'll need an account first</Dialog.Title>
+    <Dialog.Title style={{color: Colors.PRIMARY_50}}>We need some info on you</Dialog.Title>
     <Dialog.Content style={{
         display: 'flex', 
         flexDirection: 'column', 

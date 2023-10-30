@@ -3,10 +3,11 @@ import { Marker, Callout } from 'react-native-maps';
 import { Image, View, StyleSheet } from 'react-native';
 import {
     widthPercentageToDP as wp,
+    heightPercentageToDP as hp,
   } from 'react-native-responsive-screen';
 
 import FastImage from 'react-native-fast-image'
-import { TextElement } from '../Elements/TextElement';
+import { TextElement, TextElementOneLine } from '../Elements/TextElement';
 import { globalTextStyles } from '../../styles/styles';
 
 import { simplifyAddress } from '../../utils/functions';
@@ -58,7 +59,14 @@ const CustomMarker = ({
   const [openingEnd, setOpeningEnd] = React.useState<string>()
   const [hasCurrentShow, setHasCurrentOpening] = React.useState<boolean>(false)
 
+
+  const [line1, setLine1] = React.useState<string>("")
+  const [line2, setLine2] = React.useState<string>("")
+  const [line3, setLine3] = React.useState<string>("")
+
+
   React.useEffect(() => {
+    let hasOpening = false;
     if (mapPin.exhibitionDates?.exhibitionStartDate.value && mapPin.exhibitionDates?.exhibitionEndDate.value) {
       setStartDate(customDateString(new Date(mapPin.exhibitionDates.exhibitionStartDate.value)))
       setEndDate(customDateString(new Date(mapPin.exhibitionDates.exhibitionEndDate.value)))
@@ -74,9 +82,21 @@ const CustomMarker = ({
     }
     if (mapPin.exhibitionDates.exhibitionDuration && mapPin.exhibitionDates.exhibitionDuration.value === "Ongoing/Indefinite"){
       setHasCurrentOpening(true)
+      hasOpening = true
     } else if (mapPin.exhibitionDates?.exhibitionEndDate?.value){
       setHasCurrentOpening(mapPin.exhibitionDates.exhibitionEndDate.value >= new Date().toISOString())
     } 
+    const hasCurrentOpening = mapPin.exhibitionDates.exhibitionEndDate.value && mapPin.exhibitionDates.exhibitionEndDate.value >= new Date().toISOString()
+    const hasOngoingOpening = mapPin.exhibitionDates?.exhibitionDuration?.value === "Ongoing/Indefinite";
+
+    if (hasCurrentOpening || hasOngoingOpening){
+      setLine1(mapPin.exhibitionArtist?.value || "")
+      setLine2(mapPin.exhibitionTitle?.value || "")
+      setLine3(simplifyAddress(mapPin.exhibitionLocation?.locationString?.value) ?? "")
+    } else {
+      setLine1(mapPin.galleryName.value || "")
+      setLine2(simplifyAddress(mapPin.exhibitionLocation?.locationString?.value) ?? "")
+    }
 
     }, [])
 
@@ -88,27 +108,24 @@ const CustomMarker = ({
       navigateToGalleryScreen()
     )
   }
-    
-  const exhibitionPreview = StyleSheet.create({
+  const customMarker = StyleSheet.create({
     container: {
       display: 'flex',
       flexDirection: 'column',
-      height: hasCurrentShow ? 225 : 100,
+      height: hasCurrentShow ? hp('30%') : hp('5%'),
       width: 300,
       justifyContent: 'space-around',
       alignItems: 'center',
-      borderColor: Colors.PRIMARY_700,
     },
     galleryContainer:{
-        height: 50,
-        width: '95%',
+        width: '100%',
         display:'flex',
+        height: hasCurrentShow ? hp('5%') : '100%',
         flexDirection: "row",
         gap: 10,
-        margin: 10,
         alignItems: 'center',
         justifyContent: 'flex-start',
-
+        margin: hp('1%'),
     },
     galleryNameContainer: {
       display: 'flex',
@@ -116,38 +133,37 @@ const CustomMarker = ({
       justifyContent: 'flex-start',
       alignItems: 'flex-start',
     },
-    exhibitionContainer:{
-        height: 150,
-        width: '95%',
-        display:'flex',
-        flexDirection: "row",
-        gap: 5,
-        justifyContent: 'center',
-        alignItems: 'center',
+    exhibitionContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: hp('25%'),
+      width: '100%',
+      margin: hp('1%'),
+      gap: wp('1%'),
+      justifyContent: 'space-around',
+      alignItems: 'center',
+      
     },
     heroImageContainer: {
-      height: '100%',
-      width: '35%',
-      marginLeft: wp('1%'),
+      height: hp('15%'),
+      width: '100%',
+      display:'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     heroImage: {
       width: '100%',
       height: '100%',
       resizeMode: 'contain',
-    }, 
+    },
     textContainer:{
-      width: '60%',
-      height: '100%',
+      width: '100%',
+      height: hp('5%'),
       display: "flex",
       flexDirection: "column",
       alignContent: "center",
       justifyContent: "space-around",
 
-    },
-    learnMoreContainer: {
-      width: '100%', 
-      height: 20, 
-      alignItems: "center"
     }
   })
 
@@ -160,64 +176,45 @@ const CustomMarker = ({
       pinColor={hasUpcomingOpening ? Colors.ADOBE_500 : Colors.PRIMARY_800}
     >
       {showCallout && (
-        <Callout style={exhibitionPreview.container} 
+        <Callout style={customMarker.container} 
         onTouchStart={() => setShowCallout(false)} 
         onPress={() => {chooseRouteAndNavigate()}}>
-            <View style={exhibitionPreview.galleryContainer} >
+            <View style={customMarker.galleryContainer} >
                 <FastImage
                     source={{uri: mapPin.galleryLogo.value || ""}}
-                    style={{width: 30, height: 30}}
+                    style={{width: hp('5%'), maxHeight: hp('5%'), height: '100%'}}
                     resizeMode={FastImage.resizeMode.contain}
                 />
-                <View style={exhibitionPreview.galleryNameContainer}>
-                  <TextElement style={{...globalTextStyles.centeredText, fontWeight: 'bold', color: Colors.PRIMARY_900, fontSize: 15}}>{mapPin.galleryName.value}</TextElement>
-                  <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900, fontSize: 14}}>{simplifyAddress(mapPin.exhibitionLocation.locationString?.value)}</TextElement>
+                <View style={customMarker.galleryNameContainer}>
+                  <TextElement style={{...globalTextStyles.centeredText, fontWeight: 'bold', color: Colors.PRIMARY_900, fontSize: 15}}>{line1}</TextElement>
+                  <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900, fontSize: 14}}>{line2}</TextElement>
                 </View>
             </View> 
             {hasCurrentShow && (
-            <View style={exhibitionPreview.exhibitionContainer}>
-                <View style={exhibitionPreview.heroImageContainer} >
-                    <FastImage 
-                        source={{uri: mapPin?.exhibitionPrimaryImage.value || ""}} 
-                        style={exhibitionPreview.heroImage} 
-                        resizeMode={FastImage.resizeMode.contain}
-                    />
+            <View style={customMarker.exhibitionContainer}>
+                <View style={customMarker.heroImageContainer} >
+                  <FastImage 
+                  source={{uri: mapPin.exhibitionPrimaryImage.value || ""}} 
+                  style={customMarker.heroImage} 
+                  />
                 </View>
-                <View style={exhibitionPreview.textContainer}>
-                    <View>
-                    <TextElement
-                        style={{color: Colors.PRIMARY_900, fontSize: 14}}>
-                            {mapPin.exhibitionArtist?.value || "Group Show"}
-                    </TextElement>
-                    <TextElement
-                        style={{fontStyle: 'italic', color: Colors.PRIMARY_900, fontSize: 12}}>
-                        {mapPin.exhibitionTitle.value}
-                    </TextElement>
-                    </View>
-                    <TextElement
-                        style={{...globalTextStyles.baseText, color: Colors.PRIMARY_900, fontSize: 12}}>
-                        {startDate} {' - '} {endDate}
-                    </TextElement>
-                </View>
-            </View> 
-            )}
-            {hasUpcomingOpening && (
-            <View style={{width: '100%', height: '15%', alignItems: "center"}}>
-                <View>
-                    <TextElement
-                        style={{...globalTextStyles.baseText, fontWeight: "bold", color: Colors.PRIMARY_900, fontSize: 12}}>
-                        {"Opening: "}{openingEnd}
-                    </TextElement>
-                </View>
-            </View>
-            )}
-            <View style={exhibitionPreview.learnMoreContainer}>
-              <TextElement
-                  style={{...globalTextStyles.baseText, fontWeight: "bold", color: Colors.PRIMARY_900, fontSize: 12}}>
-                  Tap to view
+              <View style={customMarker.textContainer}>
+                <TextElement
+                  style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900, fontSize: 12}}>
+                  {' '}
+                  {startDate} {' - '} {endDate}
+                </TextElement>
+                <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900, fontSize: 12}}>{line3}</TextElement>
+              </View>
+                <TextElement
+                style={{...globalTextStyles.centeredText, textDecorationLine: 'underline', fontSize: 12}}>
+                {' '}
+                tap to view
               </TextElement>
             </View>
+            )}
         </Callout>
+       
       )}
     </Marker>
   );
