@@ -156,6 +156,9 @@ importers:
       expo-status-bar:
         specifier: ~1.6.0
         version: 1.6.0
+      expo-store-review:
+        specifier: ~6.4.0
+        version: 6.4.0(expo@49.0.11)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -9365,6 +9368,14 @@ packages:
 
   /expo-status-bar@1.6.0:
     resolution: {integrity: sha512-e//Oi2WPdomMlMDD3skE4+1ZarKCJ/suvcB4Jo/nO427niKug5oppcPNYO+csR6y3ZglGuypS+3pp/hJ+Xp6fQ==}
+    dev: false
+
+  /expo-store-review@6.4.0(expo@49.0.11):
+    resolution: {integrity: sha512-aD06KSOO9syeecaP9NfJO++FzmfQjg49HY7qeUQ9r826YqswW/FPAcnXY0RJLhfJTqeAPRSl/xzPLZA5vwdqLQ==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 49.0.11(@babel/core@7.22.20)
     dev: false
 
   /expo-updates-interface@0.10.1(expo@49.0.11):
