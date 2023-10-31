@@ -11,7 +11,7 @@ export async function createGalleryUser({
   primaryOwnerPhone,
   primaryOwnerEmail,
 }: any): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/newGallery`,
