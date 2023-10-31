@@ -5,8 +5,10 @@ import {auth} from '../../ThirdPartyAPIs/firebaseApp';
 
 const URL = `${process.env.NEXT_PUBLIC_API_URL}exhibition`;
 
+
+
 export async function createExhibitionAPI(): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/create`,
@@ -24,7 +26,7 @@ export async function readExhibitionForGallery({
 }: {
   exhibitionId: string;
 }): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/readExhibitionForGallery`,
@@ -42,7 +44,7 @@ export async function editExhibitionAPI({
 }: {
   exhibition: Exhibition;
 }): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/edit`,
@@ -60,7 +62,7 @@ export async function deleteExhibitionOnlyAPI({
 }: {
   exhibitionId: string;
 }): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
 
   try {
     const response = await axios.post(
@@ -79,7 +81,7 @@ export async function deleteExhibitionAndArtworkAPI({
 }: {
   exhibitionId: string;
 }): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/deleteExhibitionAndArtwork`,
@@ -92,9 +94,29 @@ export async function deleteExhibitionAndArtworkAPI({
   }
 }
 
-export async function listExhibitionsByGalleryAPI(): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+export async function publishExhibitionAPI({
+  exhibitionId,
+  isPublished,
+}: {
+  exhibitionId: string;
+  isPublished: boolean
+}): Promise<any> {
+  const idToken = await auth.currentUser?.getIdToken();
   try {
+    const response = await axios.post(
+      `${URL}/galleryPublishExhibition`,
+      {exhibitionId, isPublished},
+      {headers: {authorization: `Bearer ${idToken}`}},
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error('Unable to edit exhibition');
+  }
+}
+
+export async function listExhibitionsByGalleryAPI(): Promise<any> {
+  try {
+    const idToken = await auth.currentUser?.getIdToken();
     const response = await axios.get(`${URL}/listForGallery`, {
       headers: {authorization: `Bearer ${idToken}`},
     });
@@ -112,7 +134,6 @@ export async function listExhibitionsByGalleryAPI(): Promise<any> {
     }
     return {};
   } catch (error) {
-
     return{}
   }
 }
@@ -127,7 +148,7 @@ export async function reOrderExhibitionArtworkAPI({
   desiredIndex: number;
   currentIndex: number;
 }): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/reOrderExhibitionArtwork`,

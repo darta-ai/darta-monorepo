@@ -1,11 +1,13 @@
 import axios from 'axios';
 import { USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
+import auth from '@react-native-firebase/auth';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}artwork`;
 
 export async function readArtworkForUser({artworkId} : {artworkId: string}){
   try {
-    const {data} = await axios.get(`${URL}/readArtworkForUser`, {params : {artworkId}});
+    const idToken = await auth().currentUser?.getIdToken();
+    const {data} = await axios.get(`${URL}/readArtworkForUser`, {params : {artworkId}, headers: {authorization: `Bearer ${idToken}`}});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'readArtworkForUser'})
@@ -23,7 +25,8 @@ export async function createUserArtworkRelationship({
   artworkId: string;
 }): Promise<any> {
   try {
-    const {data} = await axios.post(`${URL}/createUserArtworkRelationship`, {uid, action, artworkId});
+    const idToken = await auth().currentUser?.getIdToken();
+    const {data} = await axios.post(`${URL}/createUserArtworkRelationship`, {uid, action, artworkId}, {headers: {authorization: `Bearer ${idToken}`}});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'createUserArtworkRelationship'})
@@ -42,7 +45,8 @@ export async function deleteUserArtworkRelationship({
   artworkId: string;
 }): Promise<any> {
   try {
-    const {data} = await axios.post(`${URL}/deleteUserArtworkRelationship`, {uid, action, artworkId});
+    const idToken = await auth().currentUser?.getIdToken();
+    const {data} = await axios.post(`${URL}/deleteUserArtworkRelationship`, {uid, action, artworkId}, {headers: {authorization: `Bearer ${idToken}`}});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'deleteUserArtworkRelationship'})
@@ -60,7 +64,8 @@ export async function listUserArtworkAPIRelationships({
   limit: number;
 }): Promise<any> {
   try {
-    const {data} = await axios.get(`${URL}/listUserArtworkRelationships`, {params : {uid, action, limit}});
+    const idToken = await auth().currentUser?.getIdToken();
+    const {data} = await axios.get(`${URL}/listUserArtworkRelationships`, {params : {uid, action, limit}, headers: {authorization: `Bearer ${idToken}`}});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'listUserArtworkRelationships'})

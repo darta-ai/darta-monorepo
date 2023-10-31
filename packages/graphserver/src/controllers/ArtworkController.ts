@@ -38,7 +38,9 @@ export class ArtworkController {
       res.json(newArtwork);
     } catch (error: any) {
       standardConsoleLog({message: error?.message, data: 'artwork/create', request: user?.user_id})
-      res.status(500).send(error.message);
+      if (!res.headersSent) {
+        res.status(500).send('unable to create artwork');
+      }
     }
   }
 

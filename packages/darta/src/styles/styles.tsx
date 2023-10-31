@@ -50,6 +50,7 @@ export const headerOptions = {
     fontSize: 14,
     color: Colors.PRIMARY_900
   },
+  headerBackTitle: "back",
   headerStyle: {
     backgroundColor: Colors.PRIMARY_200,
   },
@@ -65,7 +66,7 @@ export const modalHeaderOptions = {
   headerBackTitleStyle: {
     fontFamily: 'Avenir Next',
     fontSize: 15,
-    color: Colors.PRIMARY_900
+    color: Colors.PRIMARY_900,
   },
   headerStyle: {
     backgroundColor: Colors.PRIMARY_200,

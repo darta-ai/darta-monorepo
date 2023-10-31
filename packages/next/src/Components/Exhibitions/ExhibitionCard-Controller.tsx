@@ -7,6 +7,7 @@ import {
   Button,
   Card,
   CardContent,
+  CircularProgress,
   Collapse,
   Divider,
   TextField,
@@ -29,6 +30,7 @@ import {
   deleteExhibitionAndArtworkAPI,
   deleteExhibitionOnlyAPI,
   editExhibitionAPI,
+  publishExhibitionAPI,
   reOrderExhibitionArtworkAPI,
 } from '../../API/exhibitions/exhibitionRotes';
 import {ArtworkHeader} from '../Artwork';
@@ -70,6 +72,28 @@ export function ExhibitionCard({
       setArtworks(exhibition.artworks!);
     } 
   }, []);
+
+  const [publishSpinner, setPublishSpinner] = React.useState<boolean>(false);
+
+  const publishExhibition = async (updatedExhibition: Exhibition, isPublished: boolean) => {
+    setPublishSpinner(true);
+    try {
+      const results = await publishExhibitionAPI({exhibitionId: updatedExhibition.exhibitionId!, isPublished});
+      dispatch({
+        type: GalleryReducerActions.SAVE_EXHIBITION,
+        payload: {...results},
+        exhibitionId: results.exhibitionId,
+      });
+      dispatch({
+        type: GalleryReducerActions.SAVE_NEW_ARTWORK,
+        payload: results.artworks as any,
+      });
+    } catch (error) {
+      setErrorAlertOpen(true)
+    } finally {
+      setPublishSpinner(false);
+    }
+  }
 
   const setExhibitionStateAndDB = async (updatedExhibition: Exhibition) => {
     const exhibitionClone = _.cloneDeep(updatedExhibition);
@@ -499,25 +523,35 @@ export function ExhibitionCard({
               <Button
               variant="contained"
               className="exhibition-publish-button"
+              disabled={publishSpinner}
               style={{backgroundColor: Colors.PRIMARY_200}}
-              onClick={() => setExhibitionStateAndDB({...exhibition, published: false})}
+              onClick={() => publishExhibition({...exhibition}, false)}
               startIcon={<Block style={{color: Colors.PRIMARY_600}} />}
               sx={{alignSelf: 'center', m: '1vh'}}>
+            {publishSpinner ? (
+              <CircularProgress size={24} />
+            ) : (
               <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_600}}>
                 Remove Published
               </Typography>
+            )}
             </Button>
             ) : (
               <Button
               variant="contained"
               className="exhibition-publish-button"
+              disabled={publishSpinner}
               style={{backgroundColor: Colors.PRIMARY_900}}
-              onClick={() => setExhibitionStateAndDB({...exhibition, published: true})}
+              onClick={() => publishExhibition({...exhibition}, true)}
               endIcon={<SendIcon style={{color: Colors.PRIMARY_50}} />}
               sx={{alignSelf: 'center', m: '1vh'}}>
-              <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_50}}>
-                Publish Exhibition
-              </Typography>
+                {publishSpinner ? (
+                  <CircularProgress size={24} />
+                ) : (
+                  <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_50}}>
+                    Publish Exhibition
+                  </Typography>
+                )}
             </Button>
             )}
           <Button
@@ -538,7 +572,7 @@ export function ExhibitionCard({
             onClick={() => setShowArtwork(!showArtworks)}
             sx={{alignSelf: 'center', m: '1vh'}}>
             <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_50}}>
-              {showArtworks ? 'Hide Artworks' : 'Show Artworks'}
+              {showArtworks ? 'Hide Artwork' : 'Show Artwork'}
             </Typography>
           </Button>
         </Box>

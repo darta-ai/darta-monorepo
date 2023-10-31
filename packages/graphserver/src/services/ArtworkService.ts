@@ -925,7 +925,19 @@ export class ArtworkService implements IArtworkService {
       standardConsoleLog({request: 'ArtworkService', data: 'sendInquiryEmail', message: error?.message})
     }
   } else {
-    standardConsoleLog({request: 'ArtworkService', data: 'sendInquiryEmail', message: "did not have necessary data for email request"})
+    const missingData = {
+      galleryEmail: gallery?.galleryInternalEmail?.value,
+      user: user?.email,
+      galleryName: gallery.galleryName.value,
+      artworkTitle: artwork?.artworkTitle?.value,
+      artistName: artwork?.artistName?.value
+    }
+
+    standardConsoleLog({
+      request: 'ArtworkService', 
+      data: 'sendInquiryEmail', 
+      message: `did not have necessary data for email request ${JSON.stringify({missingData})}`
+  })
   }
 }
 

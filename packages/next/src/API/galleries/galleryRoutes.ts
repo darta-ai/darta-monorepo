@@ -11,7 +11,7 @@ export async function createGalleryProfileAPI({
   primaryOwnerPhone,
   primaryOwnerEmail,
 }: any): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/createProfile`,
@@ -30,7 +30,7 @@ export async function createGalleryProfileAPI({
 }
 
 export async function readGalleryProfileAPI(): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.get(`${URL}/galleryProfile`, {
       headers: {authorization: `Bearer ${idToken}`},
@@ -48,7 +48,7 @@ export async function readGalleryProfileAPI(): Promise<any> {
 export async function updateGalleryProfileAPI(
   data: IGalleryProfileData,
 ): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/editProfile`,

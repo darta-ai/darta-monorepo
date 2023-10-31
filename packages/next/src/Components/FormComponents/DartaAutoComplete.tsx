@@ -87,14 +87,12 @@ export function DartaAutoComplete({
           control={control}
           name={`${fieldName}.${'value'}`}
           {...register(`${fieldName}.${'value'}`)}
-          render={({field}) => {
-            if (true) {
-              return (
+          render={({field}) => (
                 <Autocomplete
                   freeSolo
                   autoSelect
                   id="autocomplete"
-                  inputValue={field?.value}
+                  inputValue={field?.value ?? ""}
                   options={inputOptions}
                   onInputChange={(_event, newValue) => {
                     field.onChange(newValue);
@@ -112,14 +110,7 @@ export function DartaAutoComplete({
                     </Box>
                   )}
                 />
-                )
-            } 
-              return (
-                <Box/>
-              )
-            
-            
-            }}/>
+                )}/>
         {errors[fieldName]?.value && (
           <Typography
             data-testid={`${testIdValue}-text-error-field`}

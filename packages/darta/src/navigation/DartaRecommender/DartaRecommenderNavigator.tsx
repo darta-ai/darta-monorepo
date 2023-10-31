@@ -12,6 +12,8 @@ import { DartaRecommenderTopTab } from './DartaRecommenderTopTab';
 import {Button, IconButton} from 'react-native-paper';
 import {icons} from '../../utils/constants';
 import { TextElement } from '../../components/Elements/TextElement';
+import { useNavigation } from '@react-navigation/native';
+import { useDeepLinking } from '../../components/LinkingAndNavigation/deepLinking';
 
 export const RecommenderStack = createStackNavigator();
 
@@ -22,6 +24,8 @@ export function DartaRecommenderNavigator({route} : {route: any}) {
       type: ETypes.setPortrait,
     });
   };
+  const navigation = useNavigation();
+  useDeepLinking(navigation);
   return (
     <RecommenderStack.Navigator screenOptions={{headerTintColor: Colors.PRIMARY_950}}>
         <RecommenderStack.Screen

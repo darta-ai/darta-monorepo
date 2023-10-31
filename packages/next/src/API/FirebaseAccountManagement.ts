@@ -19,6 +19,7 @@ export const dartaSignIn = async (user: any, signUpType: string) => {
     user.password,
     signUpType,
   );
+  await firebaseCheck.user?.getIdToken(/* forceRefresh */ true)
   return firebaseCheck;
 };
 

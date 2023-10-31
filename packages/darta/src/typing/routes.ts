@@ -60,6 +60,7 @@ export enum ExhibitionRootEnum {
   artworkList = 'artwork',
   individualArtwork = 'individualArtwork',
   exhibitionGallery = 'gallery',
+  showGallery = 'showGallery',
   TopTab = 'EXHIBITION_TOP_TAB',
   qrRouter = 'QR_ROUTER',
 }
@@ -80,6 +81,9 @@ export type ExhibitionNavigatorParamList = {
   [ExhibitionRootEnum.qrRouter]: {
     galleryId: string,
   };
+  [ExhibitionRootEnum.showGallery]: {
+    galleryId?: string,
+  }
 }
 
 

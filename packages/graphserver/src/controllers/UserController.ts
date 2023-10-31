@@ -61,7 +61,9 @@ export class UserController {
       }
     } catch (error: any) {
       standardConsoleLog({message: error.message, data: req?.body, request: 'users/newGallery'})
-      res.status(500).send(error.message);
+      if (!res.headersSent) {
+        res.status(500).send('unable to create gallery');
+      }
     }
   }
   
@@ -80,7 +82,9 @@ export class UserController {
       res.status(200).send(uid);
     } catch (error: any) {
       standardConsoleLog({message: error.message, data: req?.body, request: 'users/createNewDartaUser'})
-      res.status(500).send(error.message);
+      if (!res.headersSent){
+        res.status(500).send('unable to create user');
+      }
     }
   }
 
@@ -104,7 +108,9 @@ export class UserController {
       res.status(200).send("created user gallery connection");
     } catch (error: any) {
       standardConsoleLog({message: error.message, data: req?.body, request: 'users/createDartaUserFollowGallery'})
-      res.status(500).send(error.message);
+      if (!res.headersSent){
+        res.status(500).send('unable to create user gallery connection');
+      }
     }
   }
 
@@ -125,7 +131,9 @@ export class UserController {
       res.status(200).send(results);
     } catch (error: any) {
       standardConsoleLog({message: error.message, data: req.query, request: 'users/getDartaUser'})
-      res.status(500).send(error.message);
+      if (!res.headersSent){
+        res.status(500).send('unable to get user');
+      }
     }
   }
 
@@ -158,7 +166,9 @@ export class UserController {
       res.status(200).send(results);
     } catch (error: any) {
       standardConsoleLog({message: error.message, data: req?.body, request: 'users/editDartaUser'})
-      res.status(500).send(error.message);
+      if (!res.headersSent){
+        res.status(500).send('unable to edit user');
+      }
     }
   }
 
@@ -181,7 +191,9 @@ export class UserController {
       res.status(200).send(results);
     } catch (error: any) {
       standardConsoleLog({message: error.message, data: req.body, request: 'users/deleteDartaUser'})
-      res.status(500).send(error.message);
+      if (!res.headersSent){
+        res.status(500).send('unable to delete user');
+      }
     }
   }
 
@@ -205,7 +217,9 @@ export class UserController {
       res.status(200).send("created user gallery connection");
     } catch (error: any) {
       standardConsoleLog({message: error.message, data: req.body, request: 'deleteDartaUserFollowGallery/dartaUserUnFollowGallery'})
-      res.status(500).send(error.message);
+      if (!res.headersSent){
+        res.status(500).send('unable to create user gallery connection');
+      }
     }
   }
 
@@ -227,7 +241,9 @@ export class UserController {
       
     } catch (error: any) {
       standardConsoleLog({message: error.message, data: req.query, request: 'users/listDartaUserFollowsGallery'})
-      res.status(500).send(error.message);
+      if (!res.headersSent){
+        res.status(500).send('unable to get user gallery connections');
+      }
     }
   }
 }

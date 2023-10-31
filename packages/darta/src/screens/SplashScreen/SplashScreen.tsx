@@ -16,6 +16,7 @@ import { getDartaUser } from "../../api/userRoutes";
 import { getUserUid } from "../../utils/functions";
 import { listArtworksToRateAPI, listGalleryRelationshipsAPI, listUserArtworkAPI } from "../../utils/apiCalls";
 import { DEFAULT_Gallery_Image } from "../../utils/constants";
+import FastImage from "react-native-fast-image";
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -88,9 +89,6 @@ function AnimatedSplashScreen({ children }) {
         })
       }
 
-      await Image.prefetch(DEFAULT_Gallery_Image)
-
-
       // Exhibition Preview Screen 
       dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
 
@@ -144,34 +142,32 @@ function AnimatedSplashScreen({ children }) {
           artworkDataMulti: combinedArtwork
         });
       }
-  
-      const prefetchImageUrls: Promise<boolean>[] = [];
-  
-      const addImageUrlToPrefetch = (url: string) => {
-        if (url) {
-          prefetchImageUrls.push(Image.prefetch(url));
-        }
+      type ImageUrlObject = { uri: string };
+
+      const imageUrlsToPrefetch: ImageUrlObject[] = [];
+
+      const addImageUrlToPrefetch = (url: string | null | undefined) => {
+        if (!url) return;
+        imageUrlsToPrefetch.push({ uri: url });
       };
-  
+      
       for (let artworkValue of Object.values(combinedArtwork)) {
-        if (artworkValue?.artworkImage?.value){
-          addImageUrlToPrefetch(artworkValue?.artworkImage?.value);
-        }
+        addImageUrlToPrefetch(artworkValue?.artworkImage?.value);
       }
-  
+      
       for (let exhibitionValue of Object.values(exhibitionPreviews)) {
         if (exhibitionValue?.artworkPreviews) {
           for (let art of Object.values(exhibitionValue?.artworkPreviews)) {
             addImageUrlToPrefetch(art?.artworkImage?.value);
           }
         }
-        
+      
         addImageUrlToPrefetch(exhibitionValue?.exhibitionPrimaryImage?.value);
         if (exhibitionValue?.galleryLogo?.value) addImageUrlToPrefetch(exhibitionValue?.galleryLogo?.value);
       }
       
-      Promise.all(prefetchImageUrls);
-  
+      FastImage.preload(imageUrlsToPrefetch);
+      
       await SplashScreen.hideAsync();
 
     } catch (e) {

@@ -40,6 +40,7 @@ export class RecommenderService implements IRecommenderService {
     WITH ${CollectionNames.Artwork}, ${CollectionNames.ArtworkArtists}, ${CollectionNames.Galleries}, ${CollectionNames.ArtworkMediums}
     LET allArtwork = (
       FOR art IN ${CollectionNames.Artwork}
+      FILTER art.published == true
       RETURN art._key
     )
 

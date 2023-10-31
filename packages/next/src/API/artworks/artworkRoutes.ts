@@ -6,7 +6,7 @@ import {auth} from '../../ThirdPartyAPIs/firebaseApp';
 const URL = `${process.env.NEXT_PUBLIC_API_URL}artwork`;
 
 export async function createArtworkAPI(): Promise<Artwork> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.get(`${URL}/create`, {
       headers: {authorization: `Bearer ${idToken}`},
@@ -22,7 +22,7 @@ export async function editArtworkAPI({
 }: {
   artwork: Artwork;
 }): Promise<Artwork> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/edit`,
@@ -36,7 +36,7 @@ export async function editArtworkAPI({
 }
 
 export async function deleteArtworkAPI(artworkId: string): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/delete`,
@@ -60,7 +60,7 @@ export async function createArtworkForExhibitionAPI({
   exhibitionId: string;
   exhibitionOrder: number;
 }): Promise<artworkForExhibition> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const {data} = await axios.post(
       `${URL}/createArtworkForExhibition`,
@@ -78,7 +78,7 @@ export async function editArtworkForExhibitionAPI({
 }: {
   artwork: Artwork;
 }): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/editArtworkForExhibition`,
@@ -98,7 +98,7 @@ export async function swapArtworkOrderAPI({
   artworkId: string;
   order: string;
 }): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/swapArtworkOrder`,
@@ -118,7 +118,7 @@ export async function createAndEditArtworkForExhibition({
   exhibitionId: string;
   artwork: Artwork;
 }): Promise<Artwork | null> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/createAndEditArtworkForExhibition`,
@@ -138,7 +138,7 @@ export async function removeArtworkFromExhibition({
   exhibitionId: string;
   artworkId: string;
 }): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/removeArtworkFromExhibition`,
@@ -158,7 +158,7 @@ export async function deleteExhibitionArtwork({
   exhibitionId: string;
   artworkId: string;
 }): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(
       `${URL}/deleteExhibitionArtwork`,
@@ -172,7 +172,7 @@ export async function deleteExhibitionArtwork({
 }
 
 export async function listArtworksByGalleryAPI(): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.get(`${URL}/listGalleryArtworks`, {
       headers: {authorization: `Bearer ${idToken}`},
@@ -195,7 +195,7 @@ export async function listArtworksByGalleryAPI(): Promise<any> {
 }
 
 export async function listArtworkInquiresAPI(): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.get(`${URL}/listArtworkInquires`, {
       headers: {authorization: `Bearer ${idToken}`},
@@ -207,7 +207,7 @@ export async function listArtworkInquiresAPI(): Promise<any> {
 }
 
 export async function editArtworkInquiryAPI({edge_id, status}: {edge_id: string, status: string}): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
+  const idToken = await auth.currentUser?.getIdToken();
   try {
     const response = await axios.post(`${URL}/editArtworkInquiry`, {edge_id, status}, {
       headers: {authorization: `Bearer ${idToken}`},

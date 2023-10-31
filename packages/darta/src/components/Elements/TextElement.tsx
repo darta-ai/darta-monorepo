@@ -24,3 +24,15 @@ export function TextElement(props: any) {
     </Text>
   );
 }
+
+export function TextElementOneLine(props: any) {
+  return (
+    <Text style={{...globalTextStyles.baseText, ...styles.truncatedText, color: PRIMARY_950}} {...props}
+    numberOfLines={1}
+    ellipsizeMode='tail'>
+      {props.children}
+    </Text>
+  );
+}
+
+

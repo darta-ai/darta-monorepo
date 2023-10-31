@@ -41,8 +41,8 @@ export function SignedInNavigator({
       </Box>
       <Box sx={{width: '100%', borderLeft: '1px solid black'}}>
         <Button 
-         data-testid="gallery-navigation-profile-button"
-         className="gallery-navigation-profile"
+         data-testid="gallery-navigation-exhibition-button"
+         className="gallery-navigation-exhibitions"
         //  variant="outlined"
          sx={sideNavigationStyles.listItemButton}
          onClick={() => setCurrentDisplay(EGalleryDisplay.Exhibitions)}
@@ -53,8 +53,8 @@ export function SignedInNavigator({
       </Box>
       <Box sx={{width: '100%', borderLeft: '1px solid black'}}>
         <Button 
-         data-testid="gallery-navigation-profile-button"
-         className="gallery-navigation-profile"
+         data-testid="gallery-navigation-artwork-button"
+         className="gallery-navigation-artwork"
          sx={sideNavigationStyles.listItemButton}
          onClick={() => setCurrentDisplay(EGalleryDisplay.Artwork)}
          startIcon={<ImageIcon />}

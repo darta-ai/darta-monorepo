@@ -18,7 +18,9 @@ export class AdminController {
       await this.service.validateAndCreateCollectionsAndEdges();
       res.status(200);
     } catch (error: any) {
-      res.status(500).send(error.message);
+      if (!res.headersSent) {  
+        res.status(500).send('unable to validate collections'); 
+      }
     }
   }
 
@@ -32,7 +34,6 @@ export class AdminController {
       const results = await this.service.addApprovedGallerySDL(approvedURL);
       res.status(200).send(results);
     } catch (error: any) {
-      // console.log(error);
       res.status(500).send(error.message);
     }
   }
