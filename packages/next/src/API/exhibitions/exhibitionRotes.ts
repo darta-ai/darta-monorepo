@@ -115,8 +115,8 @@ export async function publishExhibitionAPI({
 }
 
 export async function listExhibitionsByGalleryAPI(): Promise<any> {
-  const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
   try {
+    const idToken = await auth.currentUser?.getIdToken(/* forceRefresh */ true);
     const response = await axios.get(`${URL}/listForGallery`, {
       headers: {authorization: `Bearer ${idToken}`},
     });
@@ -134,7 +134,6 @@ export async function listExhibitionsByGalleryAPI(): Promise<any> {
     }
     return {};
   } catch (error) {
-
     return{}
   }
 }

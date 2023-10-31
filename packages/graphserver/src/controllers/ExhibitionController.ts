@@ -253,6 +253,7 @@ export class ExhibitionController {
     }
   }
 
+  @httpGet('/listForGallery', verifyToken)
   public async listForGallery(
     @request() req: Request,
     @response() res: Response,
