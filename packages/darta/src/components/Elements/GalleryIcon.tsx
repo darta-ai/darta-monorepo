@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { View, Image, StyleSheet } from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 export function GalleryIcon({galleryLogo}: {galleryLogo: string}) {
 const galleryIconStyles = StyleSheet.create({
@@ -18,7 +19,8 @@ const galleryIconStyles = StyleSheet.create({
 })
   return (
     <View style={galleryIconStyles.container}>
-        <Image source={{uri: galleryLogo}} style={galleryIconStyles.image}/>
+        <FastImage source={{uri: galleryLogo}} style={galleryIconStyles.image} resizeMode={FastImage.resizeMode.contain}
+/>
     </View>
   );
 }

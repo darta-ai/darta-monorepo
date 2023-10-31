@@ -18,6 +18,7 @@ import * as Colors from '@darta-styles'
 import { globalTextStyles } from '../../styles/styles';
 import { ETypes, StoreContext } from '../../state/Store';
 import { UserRoutesEnum } from '../../typing/routes';
+import FastImage from 'react-native-fast-image';
 
 
 
@@ -33,7 +34,7 @@ export function GalleryPreviewMini({
   navigation: any
 }) {
 
-  const {state, dispatch} = React.useContext(StoreContext)
+  const {dispatch} = React.useContext(StoreContext)
 
   const showGallery = () => {
     dispatch({
@@ -79,6 +80,13 @@ export function GalleryPreviewMini({
       borderTopLeftRadius: hp('0.5%'),
       borderBottomLeftRadius: hp('10%'),
       height: '100%',
+    },
+    textContainer: {
+      flex: 1,
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
+      paddingLeft: wp('2%'),
+      width: wp('60%'),
     }
   }) 
   
@@ -88,13 +96,14 @@ export function GalleryPreviewMini({
     >
       <View style={galleryPreviewMiniStyles.container}>
         <View style={galleryPreviewMiniStyles.imageContainer}> 
-          <Image
+          <FastImage
             source={{uri: galleryLogo?.value ?? ""}}
             style={galleryPreviewMiniStyles.image}
+            resizeMode={FastImage.resizeMode.contain}
           />
         </View>
         <View style={galleryPreviewMiniStyles.prettyBlueLine}></View>
-        <View>
+        <View style={galleryPreviewMiniStyles.textContainer}>
           <TextElement style={[globalTextStyles.titleText, {color: Colors.PRIMARY_DARK_GREY}]}>{galleryName.value}</TextElement>
         </View>
       </View>

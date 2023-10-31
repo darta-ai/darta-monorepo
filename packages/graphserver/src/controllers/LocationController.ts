@@ -9,7 +9,6 @@ import {
 } from 'inversify-express-utils';
 
 import {IExhibitionService, IGalleryService} from '../services/interfaces';
-import {MapPinCities} from '@darta-types'
 
 @controller('/location')
 export class LocationController {

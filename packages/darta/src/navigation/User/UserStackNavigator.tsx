@@ -10,7 +10,7 @@ import {StoreContext} from '../../state/Store';
 import {headerOptions} from '../../styles/styles';
 import {UserRoutesEnum} from '../../typing/routes';
 
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { GalleryAndArtworkTopTabNavigator } from './GalleryAndArtworkTopTabNavigator';
 import { PastExhibitionTopTabNavigator } from '../Exhibition/PastExhibitionTopTabNavigator';
 import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
@@ -21,7 +21,10 @@ export const UserStack = createStackNavigator();
 export function UserStackNavigator({route} : {route: any}) {
   const {state} = useContext(StoreContext);
   return (
-    <UserStack.Navigator screenOptions={{headerTintColor: PRIMARY_950}}>
+    <UserStack.Navigator screenOptions={{
+      headerTintColor: PRIMARY_950,
+      cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS
+      }}>
       <UserStack.Group>
         <UserStack.Screen
           name={UserRoutesEnum.home}

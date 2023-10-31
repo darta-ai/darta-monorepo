@@ -60,6 +60,7 @@ export function CombinedInteractionButtons({
     const userLiked = likedArtworks?.[artworkOnDisplayId!] || false
     const userSaved = savedArtworks?.[artworkOnDisplayId!] || false
     const userDisliked = dislikedArtworks?.[artworkOnDisplayId!] || false
+    const userRated = userLiked || userSaved || userDisliked
 
     if (userLiked && rating === USER_ARTWORK_EDGE_RELATIONSHIP.LIKE){
       await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
@@ -82,10 +83,30 @@ export function CombinedInteractionButtons({
       })
       await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE})
       return USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED
+    } else if (userRated){
+      if (userLiked){
+        await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
+        dispatch({
+          type: ETypes.removeUserLikedArtwork,
+          artworkId: artOnDisplay._id,
+        })
+      } else if (userSaved){
+        await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
+        dispatch({
+          type: ETypes.removeUserSavedArtwork,
+          artworkId: artOnDisplay._id,
+        })
+      } else if (userDisliked){
+        await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE})
+        dispatch({
+          type: ETypes.removeUserDislikedArtwork,
+          artworkId: artOnDisplay._id,
+        })
+      }
+      return rating
     } else {
       return rating
     }
-
   }
 
   const modifyDisplayRating = () => {
@@ -223,7 +244,7 @@ export function CombinedInteractionButtons({
           <View>
             <IconButton
               accessibilityLabel="Dislike Artwork"
-              animated
+              animated={true}
               mode={
                 currentArtRating[RatingEnum.dislike] ? 'contained' : 'outlined'
               }

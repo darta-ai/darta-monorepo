@@ -1,5 +1,6 @@
 import {Exhibition, MapPinCities} from '@darta-types';
 import axios from 'axios';
+import auth from '@react-native-firebase/auth';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}location`;
 
@@ -10,10 +11,11 @@ export async function listExhibitionPinsByCity({
   cityName: MapPinCities;
 }): Promise<Exhibition | any> {
   try {
+    const idToken = await auth().currentUser?.getIdToken();
     const {data} = await axios.get(`${URL}/exhibitionPinsByCity`, {
       params: {
         cityName
-  }});
+  }, headers: {authorization: `Bearer ${idToken}`}});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'listExhibitionPinsByCity'})

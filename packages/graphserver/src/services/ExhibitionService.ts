@@ -408,6 +408,63 @@ export class ExhibitionService implements IExhibitionService {
     return returnExhibition;
   }
 
+
+  // eslint-disable-next-line consistent-return
+  public async publishExhibition({
+    exhibitionId, 
+    galleryId, 
+    isPublished} : {
+      exhibitionId: string, 
+      galleryId: string, 
+      isPublished: boolean}): Promise<Exhibition | void>{
+    try{
+
+      const exId = this.generateExhibitionId({exhibitionId})
+      const verifyGalleryOwnsExhibition = await this.verifyGalleryOwnsExhibition({exhibitionId, galleryId})
+      if (!verifyGalleryOwnsExhibition){
+        throw new Error('unable to verify gallery owns exhibition')
+      }
+      const exhibition = await this.getExhibitionById({exhibitionId: exId})
+      if (!exhibition){
+        throw new Error('unable to find exhibition')
+      }
+
+      const {artworks, ...remainingExhibitionProps} = exhibition;
+
+      // #########################################################################
+      //                              adjust the artwork 
+    
+      let artworkResults = artworks
+      if (artworks){
+        const promises: Promise<any>[] = []
+
+        Object.values(artworks).forEach((artwork: Artwork) => {
+          promises.push(this.artworkService.editArtwork({artwork: {...artwork, published: isPublished}}))
+        })
+        const res = await Promise.all(promises)
+        artworkResults = res.reduce((acc, obj) => ({...acc, [obj._id]: obj}), {})
+      }
+
+      const savedExhibition = await this.nodeService.upsertNodeByKey({
+        collectionName: CollectionNames.Exhibitions,
+        key: exhibitionId,
+        data: {...remainingExhibitionProps, published: isPublished}
+      });
+
+
+      if (exhibition){
+        return {
+          ...savedExhibition,
+          artworks: {
+            ...artworkResults
+          }
+        }
+      }
+    } catch (error: any){
+      throw new Error(`error publishing exhibition: ${error.message}`)
+    }
+  }
+
   public async refreshExhibitionHeroImage({
     exhibitionId,
     url,
@@ -712,6 +769,7 @@ export class ExhibitionService implements IExhibitionService {
       FOR exhibition, exhibitionCityRelation IN 1..1 INBOUND city ${EdgeNames.FROMExhibitionTOCity}
         FILTER IS_SAME_COLLECTION(${CollectionNames.Exhibitions}, exhibition)
         AND exhibition.exhibitionDates.exhibitionEndDate > @currentDate
+        AND exhibition.published == true
 
         FOR gallery, exhibitionGalleryRelation IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
         RETURN {

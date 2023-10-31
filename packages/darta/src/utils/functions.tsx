@@ -23,17 +23,6 @@ export const getUserUid = async () => {
     }
 }
 
-export const imagePrefetch = async (imageUrls: string[]) => {
-  const imagePrefetchResults: boolean[] = await Promise.all(
-    imageUrls.map(
-      async (imageUrl: string): Promise<boolean> =>
-        Image.prefetch(imageUrl).catch((e: Error) => {
-          throw new Error(`No image exists for id ${imageUrl}, ${e}`);
-        }),
-    ),
-  );
-  return imagePrefetchResults;
-};
 
 export function customLocalDateString(date: Date) {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

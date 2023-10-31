@@ -2,7 +2,6 @@
 import 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { ExploreMapStackNavigator } from './src/navigation/ExploreMap/ExploreMapStackNavigator';
@@ -17,9 +16,6 @@ import {
 import {ExhibitionStackNavigator} from './src/navigation/Exhibition/ExhibitionStackNavigator';
 import {UserStackNavigator} from './src/navigation/User/UserStackNavigator';
 import {ETypes, StoreContext, StoreProvider} from './src/state/Store';
-import {footerColors, footerOptions} from './src/styles/styles';
-import * as Linking from "expo-linking";
-import {RootStackEnum, ExhibitionRootEnum } from './src/typing/routes'
 
 import * as SplashScreen from 'expo-splash-screen';
 import {AnimatedAppLoader} from './src/screens/SplashScreen/SplashScreen';
@@ -31,26 +27,13 @@ import * as SecureStore from 'expo-secure-store';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { DartaRecommenderNavigator } from './src/navigation/DartaRecommender/DartaRecommenderNavigator';
+import { useDeepLinking } from './src/components/LinkingAndNavigation/deepLinking';
 
 // exp://192.168.1.35:8081/--/feed/topTab/exhibition/6e02911e-b578-4962-b248-6285d412c3e3/gallery/Galleries/8501288
 
 // npx uri-scheme open exp://192.168.1.35:8081/--/feed/exhibition/:6e02911e-b578-4962-b248-6285d412c3e3/gallery/:Galleries/8501288 --ios   
 export const RecommenderStack = createStackNavigator();
 export const RootStack = createMaterialBottomTabNavigator();
-const prefix = Linking.createURL("/");
-const linking: any = {
-  prefixes: [prefix],
-  config: {
-    screens: {
-      [RootStackEnum.feed]: {
-        path: 'feed',
-        screens: {
-          [ExhibitionRootEnum.TopTab]: 'qrRouter/:locationId'
-          },
-        },
-    }
-  }
-}
 
 
 const theme = {
@@ -67,13 +50,7 @@ const theme = {
 };
 
 function App() {
-  const {state, dispatch} = React.useContext( StoreContext );
-
-  Linking.addEventListener('url', (event) => {
-      // console.log("Received deep link:", event.url);
-      // Handle the deep link as needed
-  });
-
+  const {dispatch} = React.useContext( StoreContext );
   React.useEffect(() => {
     auth().onAuthStateChanged((userState: FirebaseAuthTypes.User | null) => {
       if (userState?.uid && userState.email) {
@@ -95,12 +72,11 @@ function App() {
       }
       })
   }, []);
+
   return (
     <PaperProvider theme={theme}>
       <StoreProvider>
-        <NavigationContainer
-          linking={linking}
-        >
+        <NavigationContainer>
           <AnimatedAppLoader>
               <RootStack.Navigator 
               initialRouteName="explore"

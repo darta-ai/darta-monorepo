@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet, Image, ScrollView, RefreshControl} from 'react-native';
+import {StyleSheet, Image, ScrollView, RefreshControl} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { ActivityIndicator } from 'react-native-paper';
 import { ArtworkList } from '../../components/Artwork/ArtworkList';
@@ -15,6 +15,7 @@ import { readExhibition } from '../../api/exhibitionRoutes';
 import {Artwork} from '@darta-types'
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
+import FastImage from 'react-native-fast-image';
 
 
 const artworkDetailsStyles = StyleSheet.create({
@@ -68,6 +69,9 @@ export function ExhibitionArtworkScreen({
         artwork = state.exhibitionData[exhibitionId].artworks ?? {}
       } 
       if (artwork){
+        type ImageUrlObject = { uri: string };
+
+        const imageUrlsToPrefetch: ImageUrlObject[] = [];
         const odds: Artwork[] = [];
         const evens: Artwork[]  = [];
         Object.values(artwork).sort((a: Artwork, b: Artwork) => a?.exhibitionOrder! - b?.exhibitionOrder!)
@@ -77,7 +81,11 @@ export function ExhibitionArtworkScreen({
           } else{
             odds.push(artwork)
           }
+          if (artwork.artworkImage.value){
+            imageUrlsToPrefetch.push({uri: artwork.artworkImage.value})
+          }
         })
+        FastImage.preload(imageUrlsToPrefetch)
         setOddsArtwork(odds)
         setEvensArtwork(evens)
         setIsArtworkLoaded(true)
@@ -124,11 +132,14 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
     if (route?.params?.exhibitionId && state.exhibitionData && state.exhibitionData[route?.params?.exhibitionId] && state.exhibitionData[route?.params?.exhibitionId].artworks){
       setExhibitionId(route.params.exhibitionId);
       setArtworksFromExhibitionId({exhibitionId: route.params.exhibitionId})
+    } else if (state.qrCodeExhibitionId) {
+      setExhibitionId(state.qrCodeExhibitionId);
+      setArtworksFromExhibitionId({exhibitionId: state.qrCodeExhibitionId})
     } else {
       setErrorText('something went wrong, please refresh and try again')
     }
 
-  }, [state.exhibitionData, state.currentExhibitionHeader])
+  }, [state.exhibitionData, state.currentExhibitionHeader, state.qrCodeExhibitionId])
 
   const [refreshing, setRefreshing] = React.useState(false);
 

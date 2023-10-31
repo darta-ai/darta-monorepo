@@ -197,6 +197,35 @@ export class ExhibitionController {
     }
   }
 
+
+  @httpPost('/galleryPublishExhibition', verifyToken)
+  public async galleryPublishExhibition(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    const {user} = req as any;
+    const {exhibitionId, isPublished} = req.body;
+    try {
+      const galleryId = await this.galleryService.getGalleryIdFromUID({
+        uid: user.user_id,
+      });
+      const results = await this.exhibitionService.publishExhibition({
+        exhibitionId,
+        galleryId,
+        isPublished
+      });
+      if (results) {
+        res.send(results);
+      } else {
+        throw new Error('unable to delete exhibition');
+      }
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/deleteExhibitionAndArtwork', request: req?.body})
+      res.status(500).send(error.message);
+    }
+  }
+
+
   @httpPost('/deleteExhibitionAndArtwork', verifyToken)
   public async deleteExhibitionAndArtwork(
     @request() req: Request,
@@ -229,7 +258,7 @@ export class ExhibitionController {
     @request() req: Request,
     @response() res: Response,
   ): Promise<void> {
-    const {user} = req as any;
+    const { user } = req as any;
     try {
       const galleryId = await this.galleryService.getGalleryIdFromUID({
         uid: user.user_id,
@@ -239,10 +268,16 @@ export class ExhibitionController {
       });
       res.json(results);
     } catch (error: any) {
-      standardConsoleLog({message: error?.message, data: 'exhibition/listForGallery', request: user?.user_id})
-      res.status(500).send(error.message);
+      standardConsoleLog({
+        message: error?.message,
+        data: 'exhibition/listForGallery',
+        request: user?.user_id,
+      });
+      if (!res.headersSent) {
+        res.status(500).send(error.message);
+      }
     }
-  }
+  }  
 
   @httpGet('/listAllExhibitionsPreviewsForUser')
   public async listAllExhibitionsPreviewsForUser(

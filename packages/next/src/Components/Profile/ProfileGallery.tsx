@@ -134,7 +134,7 @@ function GalleryStatus({
         </Typography>
         <Box sx={profileStyles.profile.galleryBioStyles}>
           <Box sx={{my: 2}}>
-            <Typography data-testid="gallery-bio-display" sx={{color: Colors.PRIMARY_900, textAlign: 'left'}}>
+            <Typography data-testid="gallery-bio-display" sx={{color: Colors.PRIMARY_900, textAlign: 'left', whiteSpace: "pre-line"}}>
               {galleryProfileData?.galleryBio?.value}
             </Typography>
           </Box>

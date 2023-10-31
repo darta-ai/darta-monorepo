@@ -9,6 +9,7 @@ import auth from '@react-native-firebase/auth';
 import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
 import { GalleryNavigatorEnum, GalleryRootStackParamList } from '../../typing/routes';
 import { RouteProp } from '@react-navigation/native';
+import { getDartaUser } from '../../api/userRoutes';
 
 
 type ProfileScreenNavigationProp = RouteProp<
@@ -26,46 +27,6 @@ export function ArtworkScreen({route}: {route: any}) {
   const [dialogVisible, setDialogVisible] = React.useState(false)
 
   const {state, dispatch} = useContext(StoreContext);
-
-  // const [galleryName, setGalleryName] = React.useState<string>();
-
-
-  const fetchFullGallery = async ({galleryId}: {galleryId: string}): Promise<IGalleryProfileData | null> => {
-    try {
-      const [gallery, exhibitionPreviews] = await Promise.all([
-        readGallery({ galleryId }),
-        listGalleryExhibitionPreviewForUser({ galleryId })
-      ]);
-
-      const galleryData = {...gallery, galleryExhibitions: exhibitionPreviews}
-
-      dispatch({
-        type: ETypes.saveGallery,
-        galleryData: galleryData
-      })
-      // Now use gallery and exhibitionPreviews as needed
-      return galleryData;
-    } catch (error) {
-      // Handle any errors that might occur during any of the above promises
-      console.error("There was an error:", error);
-    }
-    return null
-  }
-
-  // React.useEffect(() => {
-
-  //   const fetchGallery = async () => {
-  //     const galleryId = artOnDisplay?.galleryId;
-  //     if (galleryId && !state?.galleryData?.[galleryId]){
-  //       const galleryData = await fetchFullGallery({galleryId})
-  //       if(galleryData){
-  //         setGalleryName(galleryData.galleryName.value ?? "the gallery");
-  //       }
-  //     }
-  //   }
-  //   fetchGallery()
-
-  // }, [, state?.galleryData]);
   
   const [saveLoading, setSaveLoading] = React.useState(false);  
   const [likeLoading, setLikeLoading] = React.useState(false);
@@ -128,16 +89,18 @@ export function ArtworkScreen({route}: {route: any}) {
     } 
   }
 
-  const inquireAlert = ({artworkId} : {artworkId: string}) =>
+  const inquireAlert = async ({artworkId} : {artworkId: string}) =>
   {
     if (auth().currentUser === null) {
       // TO-DO WAIT FOR FIREBASE FIX
       // return setDialogVisible(true)
       // console.log(auth)
     }
-    const email = auth().currentUser?.email ?? state.user?.email;
-    const firstName = state.user?.legalFirstName;
-    const lastName = state.user?.legalLastName;
+    Vibration.vibrate(100)
+    const user = await getDartaUser({uid: auth().currentUser?.uid ?? ''})
+    const email = auth().currentUser?.email ?? user?.email;
+    const firstName = user?.legalFirstName;
+    const lastName = user?.legalLastName;
     const galleryName = state.galleryData?.[artOnDisplay?.galleryId]?.galleryName?.value ?? "the gallery";
     if (email && firstName && lastName){
       Alert.alert(`Share your name and email with ${galleryName}?`, `We will email ${galleryName} and let them know you're interested`, [
@@ -157,7 +120,7 @@ export function ArtworkScreen({route}: {route: any}) {
   };
 
   const inquireSuccessAlert = () => {
-    Alert.alert(`We've let the gallery know.`, `If they are interested in proceeding, they will reach out to you directly`, [
+    Alert.alert(`We've let the gallery know`, `If they are interested in proceeding, they will reach out to you on the email you provided`, [
       {
         text: `Ok`,
         onPress: () => {},

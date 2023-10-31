@@ -79,18 +79,6 @@ export function ExploreMapHomeScreen({
       setRefreshing(false);
   }, 500)  }, []);
 
-
-    type LocationType = {
-      latitude: number,
-      longitude: number,
-      latitudeDelta: number,
-      longitudeDelta: number,
-    }
-
-    // 40.7158° N, 73.9970° W
-
-
-
   React.useEffect(() => {
     (async () => {
       

@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet, ScrollView, Platform, Linking, RefreshControl} from 'react-native';
+import {View, StyleSheet, ScrollView, Platform, Linking, RefreshControl, PixelRatio} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { Button, Divider, Text} from 'react-native-paper';
 import FastImage from 'react-native-fast-image'
@@ -24,9 +24,6 @@ import { ExhibitionStackParamList } from '../../navigation/Exhibition/Exhibition
 import { readExhibition } from '../../api/exhibitionRoutes';
 import { mapStylesJson } from '../../utils/mapStylesJson';
 import { readGallery } from '../../api/galleryRoutes';
-import {icons} from '../../utils/constants';
-
-
 
 const exhibitionDetailsStyles = StyleSheet.create({
     exhibitionTitleContainer: {
@@ -68,7 +65,7 @@ const exhibitionDetailsStyles = StyleSheet.create({
         backgroundColor: 'transparent'
     },
     textContainer: {
-        height: hp('90%'),
+        height: hp('80%'),
         width: wp('100%'),
         display: 'flex',
         gap: wp('10%'),
@@ -76,6 +73,13 @@ const exhibitionDetailsStyles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
     },
+    shareContainer: {
+        alignSelf: 'center',
+        justifyContent: 'center',
+        width: wp('100%'),
+        height: hp('12%'),
+        marginTop: hp('2%'),
+      },
     openingContainer: {
         height: hp('10%'),
         width: wp('95%'),
@@ -124,12 +128,10 @@ export function ExhibitionDetailsScreen({
 
   const {state, dispatch} = useContext(StoreContext);
   const [exhibitionId, setExhibitionId] = React.useState<string>("")
-  const [galleryId, setGalleryId] = React.useState<string>("")
   const [errorText, setErrorText] = React.useState<string>("");
   const [isGalleryLoaded, setIsGalleryLoaded] = React.useState<boolean>(false);
 
   const [currentExhibition, setCurrentExhibition] = React.useState<Exhibition | null>(null);
-  const [currentGallery, setCurrentGallery] = React.useState<IGalleryProfileData | null>(null);
 
   const [exhibitionStartDate, setExhibitionStartDate] = React.useState<string>(new Date().toLocaleDateString());
   const [exhibitionEndDate, setExhibitionEndDate] = React.useState<string>(new Date().toLocaleDateString());
@@ -155,9 +157,13 @@ export function ExhibitionDetailsScreen({
   const [hasCoordinates, setHasCoordinates] = React.useState<boolean>(false);
 
   const [galleryName, setGalleryName] = React.useState<string>("")
+  const [galleryId, setGalleryId] = React.useState<string>("")
 
 
   const setExhibitionData = ({currentExhibition, currentGallery} : {currentExhibition: Exhibition, currentGallery: IGalleryProfileData}) => {
+    if (currentExhibition._id){
+        setExhibitionId(currentExhibition._id)
+    }
     if (currentExhibition?.exhibitionDates 
         && currentExhibition.exhibitionDates?.exhibitionStartDate 
         && currentExhibition.exhibitionDates?.exhibitionEndDate
@@ -212,6 +218,21 @@ export function ExhibitionDetailsScreen({
     if (currentGallery?.galleryName && currentGallery.galleryName.value){
         setGalleryName(currentGallery.galleryName.value);
     }
+    if (currentGallery?._id && currentGallery._id){
+        setGalleryId(currentGallery._id);
+    }
+    const startDate = currentExhibition.exhibitionDates.exhibitionStartDate.value && customLocalDateString(new Date(currentExhibition.exhibitionDates.exhibitionStartDate.value))
+    const endDate = currentExhibition?.exhibitionDates.exhibitionEndDate.value && customLocalDateString(new Date(currentExhibition?.exhibitionDates.exhibitionEndDate.value))
+
+    const shareString1 = `Check out this show: ${currentExhibition.exhibitionTitle.value} at ${currentGallery.galleryName.value}. `
+    const shareString2 = `It's on display ${startDate} - ${endDate} at ${simplifyAddress(currentExhibition?.exhibitionLocation?.locationString?.value)}`
+    const shareURLMessage = startDate && endDate ? shareString1 + shareString2 : shareString1
+
+    const shareURL = `https://darta.art/exhibition?exhibitionId=${currentExhibition._id}&galleryId=${currentGallery._id}`
+    dispatch({
+        type: ETypes.setExhibitionShareURL,
+        exhibitionShareDetails: {shareURL, shareURLMessage},
+    })
   }
 
 
@@ -220,6 +241,7 @@ export function ExhibitionDetailsScreen({
     try {
         const {locationId} = route.params
         const {exhibition, gallery} = await readMostRecentGalleryExhibitionForUser({locationId})
+        // const {artworks} = exhibition
         const supplementalExhibitions = await listGalleryExhibitionPreviewForUser({galleryId: gallery._id})
         const galleryData = {...gallery, galleryExhibitions: supplementalExhibitions}
         dispatch({
@@ -236,14 +258,13 @@ export function ExhibitionDetailsScreen({
         })
         dispatch({
             type: ETypes.setQRCodeExhibitionId,
-            qRCodeExhibitionId: exhibition.exhibitionId,
+            qRCodeExhibitionId: exhibition?._id,
         })
         dispatch({
             type: ETypes.setQRCodeGalleryId,
             qrCodeGalleryId: gallery._id,
         })
         setCurrentExhibition(exhibition);
-        setCurrentGallery(galleryData);
         setExhibitionData({currentExhibition: exhibition, currentGallery: galleryData})
         setIsGalleryLoaded(true);
     } catch (error: any){
@@ -253,30 +274,29 @@ export function ExhibitionDetailsScreen({
 
 
 
-async function fetchExhibitionById(): Promise<{exhibition: Exhibition, galleryData: IGalleryProfileData} | void> {
-    if (!route?.params?.galleryId || !route.params.exhibitionId) return
-    try {
-        const {galleryId, exhibitionId} = route.params
-        const [gallery, supplementalExhibitions, exhibition] = await Promise.all([
-            readGallery({ galleryId }),
-            listGalleryExhibitionPreviewForUser({ galleryId }),
-            readExhibition({ exhibitionId })
-        ])
+    async function fetchExhibitionById(): Promise<{exhibition: Exhibition, galleryData: IGalleryProfileData} | void> {
+        if (!route?.params?.galleryId || !route.params.exhibitionId) return
+        try {
+            const {galleryId, exhibitionId} = route.params
+            const [gallery, supplementalExhibitions, exhibition] = await Promise.all([
+                readGallery({ galleryId }),
+                listGalleryExhibitionPreviewForUser({ galleryId }),
+                readExhibition({ exhibitionId })
+            ])
 
-        const galleryData = { ...gallery, galleryExhibitions: supplementalExhibitions };
+            const galleryData = { ...gallery, galleryExhibitions: supplementalExhibitions };
 
-        setCurrentExhibition(exhibition);
-        setCurrentGallery(galleryData);
-        setExhibitionData({currentExhibition: exhibition, currentGallery: galleryData})
-        setIsGalleryLoaded(true);
+            setCurrentExhibition(exhibition);
+            setExhibitionData({currentExhibition: exhibition, currentGallery: galleryData})
+            setIsGalleryLoaded(true);
 
 
-        return {exhibition, galleryData}
+            return {exhibition, galleryData}
 
-    } catch (error: any){
-        // TO-DO: error handling
+        } catch (error: any){
+            // TO-DO: error handling
+        }
     }
-}
 
     const setExhibitionDataInState = async () => {
         const data = await fetchExhibitionById()
@@ -295,12 +315,12 @@ async function fetchExhibitionById(): Promise<{exhibition: Exhibition, galleryDa
                 type: ETypes.saveExhibition,
                 exhibitionData: exhibition,
             })
-    })
+        })
     }
 
   React.useEffect(() => {
 
-    function handleExhibitionData(): boolean {
+    function handleExhibitionData() {
         let galleryId = ""
         let exhibitionId = ""
         if (route?.params?.exhibitionId){
@@ -320,34 +340,30 @@ async function fetchExhibitionById(): Promise<{exhibition: Exhibition, galleryDa
             && state.fullyLoadedGalleries[galleryId]){
                 const exhibition = state.exhibitionData[exhibitionId]
                 const gallery = state.galleryData[galleryId]
-                dispatch({
-                    type: ETypes.setCurrentHeader,
-                    currentExhibitionHeader: exhibition.exhibitionTitle.value!,
-                  })
                 setCurrentExhibition(exhibition);
-                setCurrentGallery(gallery);
                 setExhibitionData({currentExhibition: exhibition, currentGallery: gallery})
                 setIsGalleryLoaded(true);
-                return false
             }   
             else if (route?.params?.galleryId && state?.exhibitionData && state.exhibitionData[exhibitionId] 
                 && state.galleryData 
                 && state.galleryData[route?.params?.galleryId]
                 ) {
-                setCurrentExhibition(state.exhibitionData[exhibitionId]);
-                setCurrentGallery(state.galleryData[route?.params?.galleryId]);
-                setExhibitionData({currentExhibition: state.exhibitionData[exhibitionId], currentGallery: state.galleryData[route?.params?.galleryId]})
-                setIsGalleryLoaded(true);
-                return false
+                    const exhibition = state.exhibitionData[exhibitionId]
+                    setCurrentExhibition(exhibition);
+                    setExhibitionData({currentExhibition: state.exhibitionData[exhibitionId], currentGallery: state.galleryData[route?.params?.galleryId]})
+                    setIsGalleryLoaded(true);
             } else if(!route?.params?.internalAppRoute && route?.params?.locationId){ 
                 fetchMostRecentExhibitionData()
-                return false;
             } else if (exhibitionId && galleryId){
                 setExhibitionDataInState()
-                return false;
             } else {
                 setErrorText('something went wrong, please refresh and try again')
-                return false
+            }
+            if (currentExhibition?.exhibitionTitle?.value){
+                dispatch({
+                    type: ETypes.setCurrentHeader,
+                    currentExhibitionHeader: currentExhibition.exhibitionTitle.value!
+                })
             }
         }
         handleExhibitionData()
@@ -355,12 +371,25 @@ async function fetchExhibitionById(): Promise<{exhibition: Exhibition, galleryDa
     }, []);
 
 
+    React.useEffect(() => {
+        if (currentExhibition){
+            dispatch({
+                type: ETypes.setCurrentHeader,
+                currentExhibitionHeader: currentExhibition.exhibitionTitle.value!
+            })
+        }
+    }, [currentExhibition])
+
+
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try{
-        const newExhibition = await readExhibition({exhibitionId: exhibitionId});
+        if (!exhibitionId) {
+            return setRefreshing(false);
+        }
+        const newExhibition = await readExhibition({exhibitionId});
         dispatch({
             type: ETypes.saveExhibition,
             exhibitionData: newExhibition,
@@ -368,6 +397,10 @@ async function fetchExhibitionById(): Promise<{exhibition: Exhibition, galleryDa
         dispatch({
             type: ETypes.setFullyLoadedExhibitions,
             fullyLoadedExhibitions: {[newExhibition.exhibitionId] : true},
+        })
+        dispatch({
+            type: ETypes.setCurrentHeader,
+            currentExhibitionHeader: newExhibition.exhibitionTitle.value!
         })
         navigation.navigate(ExhibitionRootEnum.TopTab, {galleryId: newExhibition.galleryId, exhibitionId: newExhibition.exhibitionId});
     } catch {
@@ -429,6 +462,20 @@ async function fetchExhibitionById(): Promise<{exhibition: Exhibition, galleryDa
         .catch((err) => console.error('Error opening maps app:', err));
       };  
 
+
+  const viewRef = React.useRef(null); 
+
+  const [hasInstagramInstalled, setHasInstagramInstalled] = React.useState(false); 
+
+  React.useEffect(() => {
+    if (Platform.OS === "ios") {
+    Linking.canOpenURL("instagram://").then((val) =>
+      setHasInstagramInstalled(val),
+    );
+    } else {}
+  }, []);
+
+
   return (
     <>
         {!isGalleryLoaded ? ( 
@@ -439,18 +486,20 @@ async function fetchExhibitionById(): Promise<{exhibition: Exhibition, galleryDa
         : (
         <ScrollView refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>
         <View style={exhibitionDetailsStyles.container}>
-            <View style={exhibitionDetailsStyles.exhibitionTitleContainer}>
-                <TextElement style={{...globalTextStyles.boldTitleText, fontSize: 22}}>
-                    {currentExhibition?.exhibitionTitle?.value}
-                </TextElement>
+            <View>
+                <View style={exhibitionDetailsStyles.exhibitionTitleContainer}>
+                    <TextElement style={{...globalTextStyles.boldTitleText, fontSize: 22}}>
+                        {currentExhibition?.exhibitionTitle?.value}
+                    </TextElement>
+                </View>
+                <View style={exhibitionDetailsStyles.heroImageContainer}>
+                    <FastImage 
+                    source={{uri: currentExhibition?.exhibitionPrimaryImage?.value!}}
+                    style={exhibitionDetailsStyles.heroImage}
+                    resizeMode={FastImage.resizeMode.contain}
+                    />
+                </View>
             </View>
-        <View style={exhibitionDetailsStyles.heroImageContainer}>
-            <FastImage 
-            source={{uri: currentExhibition?.exhibitionPrimaryImage?.value!}}
-            style={exhibitionDetailsStyles.heroImage}
-            resizeMode={FastImage.resizeMode.contain}
-            />
-        </View>
         <View style={{...exhibitionDetailsStyles.textContainer, height: hasReception && isReceptionInPast ? hp('100%') : hp('80%')}}>
             <View>
                 <TextElement style={exhibitionDetailsStyles.descriptionText}>Artist</TextElement>
@@ -480,14 +529,14 @@ async function fetchExhibitionById(): Promise<{exhibition: Exhibition, galleryDa
                 Location
             </TextElement>
             <Divider style={exhibitionDetailsStyles.divider}/>
-                <TextElement style={{...globalTextStyles.centeredText, fontSize: 18, marginTop: hp('1%')}}>{simplifyAddress(currentExhibition?.exhibitionLocation?.locationString?.value)}</TextElement>
+                <TextElement ></TextElement>
                 <Button
                 icon={"map"}
                 labelStyle={{color: Colors.PRIMARY_950}}
                 mode="text"
                 onPress={() => openInMaps(currentExhibition?.exhibitionLocation?.locationString?.value!)}
                 >                
-                <TextElement style={{...globalTextStyles.centeredText, textDecorationLine: 'underline', marginTop: hp('1%')}}>Open in Maps</TextElement>
+                <TextElement style={{...globalTextStyles.centeredText, fontSize: 18, marginTop: hp('1%'), textDecorationLine: 'underline'}}>{simplifyAddress(currentExhibition?.exhibitionLocation?.locationString?.value)}</TextElement>
                 </Button>
             </View>
             <View style={exhibitionDetailsStyles.mapContainer}>
@@ -548,7 +597,6 @@ async function fetchExhibitionById(): Promise<{exhibition: Exhibition, galleryDa
             <TextElement sx={{color: Colors.PRIMARY_900}}>error occurred adding event</TextElement>
             )}
         </View>
-            
         </View>
             {currentExhibition?.exhibitionPressRelease?.value && (
                 <View style={exhibitionDetailsStyles.pressReleaseContainer}>
