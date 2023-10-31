@@ -161,6 +161,9 @@ export function ExhibitionDetailsScreen({
 
 
   const setExhibitionData = ({currentExhibition, currentGallery} : {currentExhibition: Exhibition, currentGallery: IGalleryProfileData}) => {
+    if (currentExhibition._id){
+        setExhibitionId(currentExhibition._id)
+    }
     if (currentExhibition?.exhibitionDates 
         && currentExhibition.exhibitionDates?.exhibitionStartDate 
         && currentExhibition.exhibitionDates?.exhibitionEndDate
@@ -225,7 +228,7 @@ export function ExhibitionDetailsScreen({
     const shareString2 = `It's on display ${startDate} - ${endDate} at ${simplifyAddress(currentExhibition?.exhibitionLocation?.locationString?.value)}`
     const shareURLMessage = startDate && endDate ? shareString1 + shareString2 : shareString1
 
-    const shareURL = `https://darta.art/exhibition?exhibitionId=${currentExhibition._id}&galleryId=${currentGallery._id}}`
+    const shareURL = `https://darta.art/exhibition?exhibitionId=${currentExhibition._id}&galleryId=${currentGallery._id}`
     dispatch({
         type: ETypes.setExhibitionShareURL,
         exhibitionShareDetails: {shareURL, shareURLMessage},
@@ -317,7 +320,7 @@ export function ExhibitionDetailsScreen({
 
   React.useEffect(() => {
 
-    function handleExhibitionData(): boolean {
+    function handleExhibitionData() {
         let galleryId = ""
         let exhibitionId = ""
         if (route?.params?.exhibitionId){
@@ -326,7 +329,6 @@ export function ExhibitionDetailsScreen({
         if (route?.params?.galleryId){
             galleryId = route.params.galleryId
         }
-        console.log({galleryId, exhibitionId})
         // If already loaded
         if (exhibitionId && 
             galleryId && 
@@ -338,32 +340,30 @@ export function ExhibitionDetailsScreen({
             && state.fullyLoadedGalleries[galleryId]){
                 const exhibition = state.exhibitionData[exhibitionId]
                 const gallery = state.galleryData[galleryId]
-                dispatch({
-                    type: ETypes.setCurrentHeader,
-                    currentExhibitionHeader: exhibition.exhibitionTitle.value!,
-                  })
                 setCurrentExhibition(exhibition);
                 setExhibitionData({currentExhibition: exhibition, currentGallery: gallery})
                 setIsGalleryLoaded(true);
-                return false
             }   
             else if (route?.params?.galleryId && state?.exhibitionData && state.exhibitionData[exhibitionId] 
                 && state.galleryData 
                 && state.galleryData[route?.params?.galleryId]
                 ) {
-                setCurrentExhibition(state.exhibitionData[exhibitionId]);
-                setExhibitionData({currentExhibition: state.exhibitionData[exhibitionId], currentGallery: state.galleryData[route?.params?.galleryId]})
-                setIsGalleryLoaded(true);
-                return false
+                    const exhibition = state.exhibitionData[exhibitionId]
+                    setCurrentExhibition(exhibition);
+                    setExhibitionData({currentExhibition: state.exhibitionData[exhibitionId], currentGallery: state.galleryData[route?.params?.galleryId]})
+                    setIsGalleryLoaded(true);
             } else if(!route?.params?.internalAppRoute && route?.params?.locationId){ 
                 fetchMostRecentExhibitionData()
-                return false;
             } else if (exhibitionId && galleryId){
                 setExhibitionDataInState()
-                return false;
             } else {
                 setErrorText('something went wrong, please refresh and try again')
-                return false
+            }
+            if (currentExhibition?.exhibitionTitle?.value){
+                dispatch({
+                    type: ETypes.setCurrentHeader,
+                    currentExhibitionHeader: currentExhibition.exhibitionTitle.value!
+                })
             }
         }
         handleExhibitionData()
@@ -371,12 +371,25 @@ export function ExhibitionDetailsScreen({
     }, []);
 
 
+    React.useEffect(() => {
+        if (currentExhibition){
+            dispatch({
+                type: ETypes.setCurrentHeader,
+                currentExhibitionHeader: currentExhibition.exhibitionTitle.value!
+            })
+        }
+    }, [currentExhibition])
+
+
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try{
-        const newExhibition = await readExhibition({exhibitionId: exhibitionId});
+        if (!exhibitionId) {
+            return setRefreshing(false);
+        }
+        const newExhibition = await readExhibition({exhibitionId});
         dispatch({
             type: ETypes.saveExhibition,
             exhibitionData: newExhibition,
@@ -384,6 +397,10 @@ export function ExhibitionDetailsScreen({
         dispatch({
             type: ETypes.setFullyLoadedExhibitions,
             fullyLoadedExhibitions: {[newExhibition.exhibitionId] : true},
+        })
+        dispatch({
+            type: ETypes.setCurrentHeader,
+            currentExhibitionHeader: newExhibition.exhibitionTitle.value!
         })
         navigation.navigate(ExhibitionRootEnum.TopTab, {galleryId: newExhibition.galleryId, exhibitionId: newExhibition.exhibitionId});
     } catch {

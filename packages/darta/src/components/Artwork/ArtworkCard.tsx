@@ -10,6 +10,7 @@ import {PRIMARY_600, PRIMARY_900, PRIMARY_200} from '@darta-styles';
 import {Artwork} from '@darta-types'
 import {TextElement} from '../Elements/_index';
 import {ETypes, StoreContext} from '../../state/Store';
+import FastImage from 'react-native-fast-image';
 
 export function ArtworkCard({
   artwork,
@@ -124,11 +125,13 @@ export function ArtworkCard({
     >
       <View style={SSArtworkSelectorCard.container}>
         <View style={SSArtworkSelectorCard.imageContainer}>
-          <Image
+          <FastImage
             source={{
               uri: artwork.artworkImage?.value ?? "",
             }}
-            style={{height: artHeight, width: artWidth, resizeMode: 'contain'}}
+            style={{height: artHeight, width: artWidth}}
+            resizeMode={FastImage.resizeMode.contain}
+
           />
         </View>
         <View style={SSArtworkSelectorCard.textContainer}>

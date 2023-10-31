@@ -18,6 +18,7 @@ import * as Colors from '@darta-styles'
 import { globalTextStyles } from '../../styles/styles';
 import { ETypes, StoreContext } from '../../state/Store';
 import { UserRoutesEnum } from '../../typing/routes';
+import FastImage from 'react-native-fast-image';
 
 
 
@@ -95,9 +96,10 @@ export function GalleryPreviewMini({
     >
       <View style={galleryPreviewMiniStyles.container}>
         <View style={galleryPreviewMiniStyles.imageContainer}> 
-          <Image
+          <FastImage
             source={{uri: galleryLogo?.value ?? ""}}
             style={galleryPreviewMiniStyles.image}
+            resizeMode={FastImage.resizeMode.contain}
           />
         </View>
         <View style={galleryPreviewMiniStyles.prettyBlueLine}></View>

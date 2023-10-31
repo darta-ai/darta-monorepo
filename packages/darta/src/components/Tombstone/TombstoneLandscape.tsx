@@ -11,6 +11,7 @@ import {Artwork} from '@darta-types';
 import {TextElement} from '../Elements/_index';
 import {icons} from '../../utils/constants';
 import {globalTextStyles} from '../../styles/styles';
+import FastImage from 'react-native-fast-image';
 
 
 export function TombstoneLandscape({
@@ -65,13 +66,15 @@ export function TombstoneLandscape({
                 width: wp('100%'),
                 height: maxDimension,
               }}>
-              <Image
+              <FastImage
                 source={{uri: artOnDisplay?.artworkImage?.value!}}
                 style={{
                   height: artHeight,
                   width: artWidth,
                   alignSelf: 'center',
                 }}
+                resizeMode={FastImage.resizeMode.contain}
+
               />
             </View>
           </ScrollView>

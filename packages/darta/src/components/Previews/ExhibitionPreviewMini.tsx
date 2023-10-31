@@ -17,6 +17,7 @@ import {globalTextStyles} from '../../styles/styles';
 import {ExhibitionDates} from '@darta-types';
 import { PRIMARY_700, PRIMARY_900, PRIMARY_100, PRIMARY_50 } from '@darta-styles';
 import { customLocalDateString } from '../../utils/functions';
+import FastImage from 'react-native-fast-image';
 
 
 export function ExhibitionPreviewMini({
@@ -64,7 +65,6 @@ export function ExhibitionPreviewMini({
     heroImage: {
       width: '100%',
       height: '100%',
-      resizeMode: 'contain',
     },
     textContainer:{
       display: 'flex',
@@ -107,9 +107,10 @@ export function ExhibitionPreviewMini({
       <View
         style={exhibitionPreview.container}>
           <View style={exhibitionPreview.heroImageContainer} >
-            <Image 
+            <FastImage 
                 source={{uri: exhibitionHeroImage}} 
                 style={exhibitionPreview.heroImage} 
+                resizeMode={FastImage.resizeMode.contain}
             />
           </View>
 

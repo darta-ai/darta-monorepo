@@ -18,7 +18,7 @@ export async function readGallery({
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'readGallery'})
-    return {};
+    throw new Error(error.message);
   }
 }
 

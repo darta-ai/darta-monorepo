@@ -136,9 +136,9 @@ const CustomMarker = ({
     exhibitionContainer: {
       display: 'flex',
       flexDirection: 'column',
-      height: hp('25%'),
+      height: hp('22%'),
       width: '100%',
-      margin: hp('1%'),
+      marginTop: hp('3%'),
       gap: wp('1%'),
       justifyContent: 'space-around',
       alignItems: 'center',
@@ -207,7 +207,7 @@ const CustomMarker = ({
                 <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900, fontSize: 12}}>{line3}</TextElement>
               </View>
                 <TextElement
-                style={{...globalTextStyles.centeredText, textDecorationLine: 'underline', fontSize: 12}}>
+                style={{...globalTextStyles.centeredText, fontSize: 10}}>
                 {' '}
                 tap to view
               </TextElement>

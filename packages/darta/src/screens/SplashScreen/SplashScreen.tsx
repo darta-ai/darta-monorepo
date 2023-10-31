@@ -89,9 +89,6 @@ function AnimatedSplashScreen({ children }) {
         })
       }
 
-      await Image.prefetch(DEFAULT_Gallery_Image)
-
-
       // Exhibition Preview Screen 
       dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
 

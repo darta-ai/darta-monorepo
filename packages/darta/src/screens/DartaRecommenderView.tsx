@@ -19,6 +19,7 @@ import {
 } from '../components/Darta/_index';
 import { ArtOnWall } from '../components/Artwork/ArtOnWall';
 import {
+  DEFAULT_GALLERY_IMAGE,
   DEFAULT_Gallery_Image,
   duration,
   galleryDimensionsLandscape,
@@ -33,7 +34,7 @@ import { createArtworkRelationshipAPI, listArtworksToRateAPI } from '../utils/ap
 import { IconButton } from 'react-native-paper';
 import { TextElement } from '../components/Elements/TextElement';
 
-const galleryWallRaw = DEFAULT_Gallery_Image;
+const galleryWallRaw = DEFAULT_GALLERY_IMAGE;
 
 export function DartaRecommenderView({
   navigation,
@@ -50,9 +51,7 @@ export function DartaRecommenderView({
   }, [])
 
 
-  const [backgroundImage] = React.useState<ImageSourcePropType>({
-    uri: galleryWallRaw,
-  });
+  const [backgroundImage] = React.useState<ImageSourcePropType>(galleryWallRaw);
   const [currentZoomScale, setCurrentZoomScale] = React.useState<number>(1);
 
   const localButtonSizes = getButtonSizes(hp('100%'));
@@ -243,6 +242,7 @@ export function DartaRecommenderView({
                     type: ETypes.setRatingIndex,
                     artworkRatingIndex: currentIndex + 2,
                 });
+                Haptics.NotificationFeedbackType.Error
                 setArtOnDisplay(nextArtwork)
             }
         });
