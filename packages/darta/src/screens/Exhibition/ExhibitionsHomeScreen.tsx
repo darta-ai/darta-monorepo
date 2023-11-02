@@ -12,7 +12,8 @@ import { listAllExhibitionsPreviewsForUser } from "../../api/exhibitionRoutes";
 import { ExhibitionPreview } from '@darta-types'
 import { ExhibitionPreviewCard } from '../../components/Previews/ExhibitionPreviewCard';
 import * as Colors from '@darta-styles';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as StoreReview from 'expo-store-review';
 
 type ExhibitionHomeScreenNavigationProp = StackNavigationProp<
 ExhibitionNavigatorParamList,
@@ -33,7 +34,42 @@ export function ExhibitionsHomeScreen({
       return a.closingDate >= b.closingDate ? 1 : -1
     })
   }
+  
 
+  const requestReview = async () => {
+    try {
+      // Check if the device is able to review
+      const isAvailable = await StoreReview.isAvailableAsync();
+      if (!isAvailable) {
+        return;
+      }
+  
+      // Get the number of app opens from AsyncStorage
+      const appOpens = await AsyncStorage.getItem('appOpens');
+      const opens = appOpens ? parseInt(appOpens) : 0;
+  
+      // Define the number of opens required before showing the review prompt
+      const opensRequired = 5;
+  
+      if (opens >= opensRequired) {
+        // Show the review prompt
+        StoreReview.requestReview();
+        // Reset the app opens counter
+        await AsyncStorage.setItem('appOpens', '0');
+      } else {
+        // Increase the app opens counter
+        await AsyncStorage.setItem('appOpens', (opens + 1).toString());
+      }
+    } catch (error) {
+      console.error('Error requesting store review:', error);
+    }
+  };
+
+  React.useEffect(() => {
+    requestReview();
+  }, []);
+
+  
   React.useEffect(()=> {
     if (state.exhibitionPreviews) {
       const exhibitionPreviewsOpen: ExhibitionPreview[] = []
@@ -97,6 +133,7 @@ export function ExhibitionsHomeScreen({
         currentExhibitionHeader: ""
       })
     }
+    
     try{
         if (!exhibitionId || !galleryId) return
         navigation.navigate(ExhibitionRootEnum.TopTab, {exhibitionId, galleryId, internalAppRoute: true});

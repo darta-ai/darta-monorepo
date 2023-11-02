@@ -92,8 +92,8 @@ export function TombstonePortrait({
     imageContainer: {
       alignSelf: 'center',
       justifyContent: 'center',
-      width: wp('90%'),
-      height: hp('35%'),
+      width: wp('99%'),
+      height: hp('40%'),
     },
     image: {
       height: '100%',

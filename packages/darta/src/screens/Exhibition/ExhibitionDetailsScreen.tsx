@@ -154,11 +154,8 @@ export function ExhibitionDetailsScreen({
     latitude: 0, 
     longitude: 0,
   })
-  const [hasCoordinates, setHasCoordinates] = React.useState<boolean>(false);
 
   const [galleryName, setGalleryName] = React.useState<string>("")
-  const [galleryId, setGalleryId] = React.useState<string>("")
-
 
   const setExhibitionData = ({currentExhibition, currentGallery} : {currentExhibition: Exhibition, currentGallery: IGalleryProfileData}) => {
     if (currentExhibition._id){
@@ -208,7 +205,6 @@ export function ExhibitionDetailsScreen({
 
 
     if (currentExhibition?.exhibitionLocation?.coordinates) {
-        setHasCoordinates(true);
         setMapRegion({
             ...mapRegion, 
             latitude: currentExhibition.exhibitionLocation.coordinates.latitude.value! as unknown as number,
@@ -217,9 +213,6 @@ export function ExhibitionDetailsScreen({
     }
     if (currentGallery?.galleryName && currentGallery.galleryName.value){
         setGalleryName(currentGallery.galleryName.value);
-    }
-    if (currentGallery?._id && currentGallery._id){
-        setGalleryId(currentGallery._id);
     }
     const startDate = currentExhibition.exhibitionDates.exhibitionStartDate.value && customLocalDateString(new Date(currentExhibition.exhibitionDates.exhibitionStartDate.value))
     const endDate = currentExhibition?.exhibitionDates.exhibitionEndDate.value && customLocalDateString(new Date(currentExhibition?.exhibitionDates.exhibitionEndDate.value))
@@ -234,44 +227,6 @@ export function ExhibitionDetailsScreen({
         exhibitionShareDetails: {shareURL, shareURLMessage},
     })
   }
-
-
-  async function fetchMostRecentExhibitionData() {
-    if (!route?.params?.locationId) return
-    try {
-        const {locationId} = route.params
-        const {exhibition, gallery} = await readMostRecentGalleryExhibitionForUser({locationId})
-        // const {artworks} = exhibition
-        const supplementalExhibitions = await listGalleryExhibitionPreviewForUser({galleryId: gallery._id})
-        const galleryData = {...gallery, galleryExhibitions: supplementalExhibitions}
-        dispatch({
-            type: ETypes.saveGallery,
-            galleryData: galleryData,
-        })
-        dispatch({
-            type: ETypes.setCurrentHeader,
-            currentExhibitionHeader: exhibition.exhibitionTitle.value!,
-          })
-        dispatch({
-            type: ETypes.saveExhibition,
-            exhibitionData: exhibition,
-        })
-        dispatch({
-            type: ETypes.setQRCodeExhibitionId,
-            qRCodeExhibitionId: exhibition?._id,
-        })
-        dispatch({
-            type: ETypes.setQRCodeGalleryId,
-            qrCodeGalleryId: gallery._id,
-        })
-        setCurrentExhibition(exhibition);
-        setExhibitionData({currentExhibition: exhibition, currentGallery: galleryData})
-        setIsGalleryLoaded(true);
-    } catch (error: any){
-        console.log(error)
-    }
-}
-
 
 
     async function fetchExhibitionById(): Promise<{exhibition: Exhibition, galleryData: IGalleryProfileData} | void> {
@@ -334,10 +289,8 @@ export function ExhibitionDetailsScreen({
             galleryId && 
             state?.exhibitionData &&
             state?.galleryData &&
-            state.fullyLoadedExhibitions && 
-            state.fullyLoadedExhibitions[exhibitionId] && 
-            state.fullyLoadedGalleries 
-            && state.fullyLoadedGalleries[galleryId]){
+            state.exhibitionData[exhibitionId] &&
+            state.galleryData[galleryId]){
                 const exhibition = state.exhibitionData[exhibitionId]
                 const gallery = state.galleryData[galleryId]
                 setCurrentExhibition(exhibition);
@@ -352,8 +305,6 @@ export function ExhibitionDetailsScreen({
                     setCurrentExhibition(exhibition);
                     setExhibitionData({currentExhibition: state.exhibitionData[exhibitionId], currentGallery: state.galleryData[route?.params?.galleryId]})
                     setIsGalleryLoaded(true);
-            } else if(!route?.params?.internalAppRoute && route?.params?.locationId){ 
-                fetchMostRecentExhibitionData()
             } else if (exhibitionId && galleryId){
                 setExhibitionDataInState()
             } else {
@@ -462,18 +413,7 @@ export function ExhibitionDetailsScreen({
         .catch((err) => console.error('Error opening maps app:', err));
       };  
 
-
-  const viewRef = React.useRef(null); 
-
-  const [hasInstagramInstalled, setHasInstagramInstalled] = React.useState(false); 
-
-  React.useEffect(() => {
-    if (Platform.OS === "ios") {
-    Linking.canOpenURL("instagram://").then((val) =>
-      setHasInstagramInstalled(val),
-    );
-    } else {}
-  }, []);
+    
 
 
   return (
@@ -481,6 +421,7 @@ export function ExhibitionDetailsScreen({
         {!isGalleryLoaded ? ( 
         <View style={exhibitionDetailsStyles.spinnerContainer}>
             <ActivityIndicator animating={true} size={35} color={Colors.PRIMARY_800} />
+            {errorText && (<TextElement>{errorText}</TextElement>)}
         </View>
         )
         : (

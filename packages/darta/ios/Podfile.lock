@@ -96,6 +96,8 @@ PODS:
     - React-Core
   - ExpoSecureStore (12.3.1):
     - ExpoModulesCore
+  - ExpoStoreReview (6.4.0):
+    - ExpoModulesCore
   - EXSplashScreen (0.20.5):
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
@@ -756,6 +758,7 @@ DEPENDENCIES:
   - ExpoModulesCore (from `../../../node_modules/expo-modules-core`)
   - ExpoScreenOrientation (from `../../../node_modules/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../../../node_modules/expo-secure-store/ios`)
+  - ExpoStoreReview (from `../../../node_modules/expo-store-review/ios`)
   - EXSplashScreen (from `../../../node_modules/expo-splash-screen/ios`)
   - EXUpdatesInterface (from `../../../node_modules/expo-updates-interface/ios`)
   - FBLazyVector (from `../../../node_modules/react-native/Libraries/FBLazyVector`)
@@ -890,6 +893,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/expo-screen-orientation/ios"
   ExpoSecureStore:
     :path: "../../../node_modules/expo-secure-store/ios"
+  ExpoStoreReview:
+    :path: "../../../node_modules/expo-store-review/ios"
   EXSplashScreen:
     :path: "../../../node_modules/expo-splash-screen/ios"
   EXUpdatesInterface:
@@ -1034,6 +1039,7 @@ SPEC CHECKSUMS:
   ExpoModulesCore: 81037d28453615c4206a6a2ca7556a0f364a0a0a
   ExpoScreenOrientation: 3e3b9a3a8ec8498d51992a0a819deda9d82cbaac
   ExpoSecureStore: 57db3b6da8b59046e2057e95bf7738a8027b47c3
+  ExpoStoreReview: f154c9fdf3dbd877ca0115757f0b2b6f43dd9db4
   EXSplashScreen: 2c80621e4bc952f5bea328304c2436f5fe21c2a0
   EXUpdatesInterface: 82ed48d417cdcd376c12ca1c2ce390d35500bed6
   FBLazyVector: 748c0ef74f2bf4b36cfcccf37916806940a64c32
