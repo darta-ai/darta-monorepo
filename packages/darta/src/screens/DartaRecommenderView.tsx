@@ -33,6 +33,7 @@ import {ETypes, StoreContext} from '../state/Store';
 import { createArtworkRelationshipAPI, listArtworksToRateAPI } from '../utils/apiCalls';
 import { IconButton } from 'react-native-paper';
 import { TextElement } from '../components/Elements/TextElement';
+import FastImage from 'react-native-fast-image';
 
 const galleryWallRaw = DEFAULT_GALLERY_IMAGE;
 
@@ -215,7 +216,7 @@ export function DartaRecommenderView({
         await callback();
         Animated.timing(opacity, {
             toValue: 1,
-            duration: 500,
+            duration: 250,
             useNativeDriver: true,
         }).start();
     });
@@ -230,7 +231,7 @@ export function DartaRecommenderView({
 
         fadeOutAndIn(async () => {
             try {
-                await Image.prefetch(artwork.artworkImage?.value!);
+                // FastImage.preload([{uri : artwork.artworkImage?.value!}])
                 dispatch({
                     type: ETypes.setRatingIndex,
                     artworkRatingIndex: currentIndex + 1,
@@ -279,7 +280,7 @@ export function DartaRecommenderView({
       const artwork = state.artworksToRate[currentIndex - 1];
       fadeOutAndIn(async () => {
         try{ 
-        await Image.prefetch(artwork.artworkImage?.value!);
+        // FastImage.preload([{uri : artwork.artworkImage?.value!}])
         dispatch({
           type: ETypes.setRatingIndex,
           artworkRatingIndex: currentIndex - 1,

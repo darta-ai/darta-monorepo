@@ -3,7 +3,7 @@
     "name": "darta",
     "slug": "darta",
     "scheme": "darta",
-    "version": "1.0.9",
+    "version": "1.0.11",
     "orientation": "portrait",
     "icon": "./src/assets/darta-icon.png",
     "userInterfaceStyle": "dark",
@@ -27,7 +27,7 @@
       },
       "associatedDomains": [
         "applinks:darta.art",
-        "applinks:25f9-2603-7000-4001-17cf-d9c9-6cf1-c9ef-130c.ngrok-free.app"
+        "applinks:c6de-2603-7000-4001-17cf-7506-479b-a1e9-487a.ngrok-free.app"
       ]
     },
     "android": {

@@ -1,7 +1,6 @@
 import React, {useCallback, useContext, useRef, useState} from 'react';
 import {
   ActivityIndicator,
-  Image,
   ImageBackground,
   ImageSourcePropType,
   ScrollView,
@@ -18,7 +17,6 @@ import {
 } from 'react-native-responsive-screen';
 
 import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types'
-import {galleryStyles} from '../../styles/styles';
 import {ETypes, StoreContext} from '../../state/Store';
 import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
 import { Onboard } from '../Darta/Onboard';
@@ -311,6 +309,20 @@ export function ArtOnWall({
       height: artImageSize?.height,
       width: artImageSize?.width,
     },
+    frameStyle: {
+      backgroundColor: 'transparent',
+      width: '100%',
+      height: '100%',
+      // backgroundColor: Colors.PRIMARY_100,
+      paddingBottom: 0.3,
+      paddingLeft: 0.3,
+      position: 'absolute', // This ensures the artContainer is positioned relative to its first positioned (not static) ancestor element
+      shadowColor: "#000", // Shadow color should generally be black for realistic shadows
+      shadowOffset: { width: 0, height: 3 }, // Adjust the height for the depth of the shadow
+      shadowOpacity: 0.25, // A subtle shadow usually looks more natural
+      shadowRadius: 5, // A larger shadow
+      // backgroundColor: 'none',
+    },
     artwork: {
       height: artImageSize?.height,
       width: artImageSize?.width,
@@ -321,6 +333,18 @@ export function ArtOnWall({
       justifyContent: 'center',
     },
   });
+
+  const shadowStyle = {
+    width: 100,
+    height: 100,
+    color: "#000",
+    border: 2,
+    radius: 3,
+    opacity: 0.2,
+    x: 0,
+    y: 3,
+    style: { marginVertical: 5 },
+  }
 
   return (
     <GestureDetector gesture={composed}>
@@ -351,15 +375,20 @@ export function ArtOnWall({
             <View >
               <View style={galleryStylesPortrait.screenContainer}>
                 <View style={galleryStylesPortrait.artContainer}>
-                  <View style={galleryStyles.frameStyle}>
+                
+                  <View style={galleryStylesPortrait.frameStyle}>
                     {artImage ? (
-                        <Animated.View style={{opacity: opacityAnimatedValue}}>
-                          <FastImage
-                            source={{uri: artImage, priority: FastImage.priority.normal}}
-                            style={galleryStylesPortrait.artwork}
-                            resizeMode={FastImage.resizeMode.contain}
-                          />
-                        </Animated.View>
+                      <>
+                    {/* <Shadow> */}
+                      <Animated.View style={{opacity: opacityAnimatedValue}}>
+                        <FastImage
+                          source={{uri: artImage, priority: FastImage.priority.normal}}
+                          style={galleryStylesPortrait.artwork}
+                          resizeMode={FastImage.resizeMode.contain}
+                        />
+                      </Animated.View>
+                    {/* </Shadow> */}
+                    </>
                         ) : (
                           <ActivityIndicator
                           style={galleryStylesPortrait.activityIndicator}

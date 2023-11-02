@@ -28,18 +28,6 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
   const navigation = useNavigation();
   useDeepLinking(navigation);
 
-  const viewRef = React.useRef(null); 
-
-  const [hasInstagramInstalled, setHasInstagramInstalled] = React.useState(false); 
-
-  React.useEffect(() => {
-    if (Platform.OS === "ios") {
-    Linking.canOpenURL("instagram://").then((val) =>
-      setHasInstagramInstalled(val),
-    );
-    } else {}
-  }, []);
-
   const shareExhibition = async () => {
     if (!state.exhibitionShareDetails) return;
     try {
@@ -95,6 +83,12 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
             name={ExhibitionRootEnum.qrRouter}
             component={ExhibitionTopTabNavigator}
             options={{...headerOptions, headerTitle: state.currentExhibitionHeader ?? "", 
+            headerRight: () => (
+              <IconButton 
+                icon={"export-variant"}
+                onPress={() => shareExhibition()}
+              />
+            ),
             headerLeft: () => ( 
               <View>
                 <HeaderBackButton 

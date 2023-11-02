@@ -13,4 +13,30 @@ module.exports = {
     host: '0.0.0.0',
     port: 1169,
   },
+  async redirects() {
+    return [
+      {
+        source: '/exhibition',
+        has: [
+          {
+            type: 'query',
+            key: 'exhibitionId',
+          },
+        ],
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/location',
+        has: [
+          {
+            type: 'query',
+            key: 'locationId',
+          },
+        ],
+        destination: '/',
+        permanent: true,
+      },
+    ]
+  },  
 };

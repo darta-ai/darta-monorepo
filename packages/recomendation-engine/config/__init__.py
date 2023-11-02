@@ -1,0 +1,1 @@
+from .config import connect_to_arangodb
