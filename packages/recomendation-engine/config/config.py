@@ -1,21 +1,28 @@
 from arango import ArangoClient
 import os
+from dotenv import load_dotenv
+import requests
+requests.packages.urllib3.disable_warnings()
+
+load_dotenv()
 
 def connect_to_arangodb():
-    arango_url = os.environ.get('ARANGO_URL', 'http://localhost:8529')
-    username = os.environ.get('ARANGO_USERNAME', 'root')
-    password = os.environ.get('ARANGO_PASSWORD', '')
-    dbname = os.environ.get('ARANGO_DBNAME', '_system')
+    arango_url = os.environ.get('ARANGO_URL')
+    username = os.environ.get('ARANGO_USER')
+    password = os.environ.get('ARANGO_PASSWORD')
+    dbname = os.environ.get('ARANGO_DATABASE')
 
-    print(arango_url)
+    print(arango_url, username, password, dbname)
 
     client = ArangoClient(hosts=arango_url)
     db = client.db(dbname, username=username, password=password)
+    print('got here')
     return db
 
 def test_connection():
     db = connect_to_arangodb()
-    test_collection_name = 'your_test_collection'
+    test_collection_name = 'Artwork'
+    print('testing connections')
     
     # Ensure the collection exists
     if not db.has_collection(test_collection_name):

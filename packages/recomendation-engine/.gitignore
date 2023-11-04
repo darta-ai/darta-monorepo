@@ -1,2 +1,5 @@
 venv/
 vars/
+
+.env
+.env.production
