@@ -8,12 +8,11 @@ import {
   response,
 } from 'inversify-express-utils';
 
-import {IExhibitionService, IGalleryService} from '../services/interfaces';
+import {IExhibitionService} from '../services/interfaces';
 
 @controller('/location')
 export class LocationController {
   constructor(
-    @inject('IGalleryService') private galleryService: IGalleryService,
     @inject('IExhibitionService') private exhibitionService: IExhibitionService,
   ) {}
 

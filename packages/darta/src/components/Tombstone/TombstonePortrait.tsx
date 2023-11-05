@@ -93,7 +93,7 @@ export function TombstonePortrait({
       alignSelf: 'center',
       justifyContent: 'center',
       width: wp('99%'),
-      height: hp('40%'),
+      height: hp('38%'),
     },
     image: {
       height: '100%',
@@ -240,7 +240,9 @@ export function TombstonePortrait({
           buttonColor={Colors.PRIMARY_600}
           mode="contained"
           onPress={() => toggleButtons({callback: () => saveArtwork({artworkId: artwork._id!})})}>
-          Save
+          <TextElement style={{color: Colors.PRIMARY_50}}>
+            Save
+          </TextElement>
         </Button>
     </View>
   )
@@ -253,8 +255,9 @@ export function TombstonePortrait({
         buttonColor={Colors.PRIMARY_800}
         mode="contained"
         onPress={() => toggleButtons({callback: () => inquireAlert({artworkId: artwork._id!})})}>
-
-        Inquire
+          <TextElement style={{color: Colors.PRIMARY_50}}>
+            Inquire
+          </TextElement>
       </Button>
     </View>
   )
@@ -268,8 +271,9 @@ export function TombstonePortrait({
         loading={likeLoading}
         mode="contained"
         onPress={() => toggleButtons({callback: () => likeArtwork({artworkId: artwork._id!})})}>
-
-        Like
+          <TextElement style={{color: Colors.PRIMARY_50}}>
+            Like
+          </TextElement>
       </Button>
     </View>
   )
@@ -283,7 +287,9 @@ export function TombstonePortrait({
         loading={likeLoading}
         mode="contained"
         onPress={() => toggleButtons({callback: () => removeInquiredRating()})}>
-        remove inquire
+          <TextElement style={{color: Colors.PRIMARY_50}}>
+            remove inquire
+        </TextElement>
       </Button>
     </View>
   )
@@ -298,7 +304,9 @@ export function TombstonePortrait({
         loading={likeLoading}
         mode="contained"
         onPress={() => toggleButtons({callback: () => removeSavedRating()})}>
-        remove save
+          <TextElement style={{color: Colors.PRIMARY_50}}>
+            remove save
+          </TextElement>
       </Button>
     </View>
   )
@@ -312,7 +320,9 @@ export function TombstonePortrait({
         loading={likeLoading}
         mode="contained"
         onPress={() => toggleButtons({callback: () => removeLikeRating()})}>
-        remove like
+          <TextElement style={{color: Colors.PRIMARY_50}}>
+            remove like
+          </TextElement>
       </Button>
     </View>
   )

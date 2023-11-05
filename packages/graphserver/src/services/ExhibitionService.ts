@@ -765,29 +765,34 @@ export class ExhibitionService implements IExhibitionService {
     const findCollections = `
     WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}, ${CollectionNames.Cities}
     FOR city IN ${CollectionNames.Cities}
-      FILTER city.value == @cityName
-      FOR exhibition, exhibitionCityRelation IN 1..1 INBOUND city ${EdgeNames.FROMExhibitionTOCity}
-        FILTER IS_SAME_COLLECTION(${CollectionNames.Exhibitions}, exhibition)
-        AND exhibition.exhibitionDates.exhibitionEndDate > @currentDate
-        AND exhibition.published == true
-
-        FOR gallery, exhibitionGalleryRelation IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
-        RETURN {
-              exhibitionId: exhibition.exhibitionId,
-              galleryId: gallery._id,
-              galleryName: gallery.galleryName,
-              galleryLogo: gallery.galleryLogo,
-              exhibitionTitle: exhibition.exhibitionTitle,
-              exhibitionLocation: exhibition.exhibitionLocation,
-              exhibitionPrimaryImage: exhibition.exhibitionPrimaryImage,
-              exhibitionArtist: exhibition.exhibitionArtist,
-              exhibitionId: exhibition.exhibitionId,
-              exhibitionDates: exhibition.exhibitionDates,
-              receptionDates: exhibition.receptionDates,
-              _id: exhibition._id
-          }
+        FILTER city.value == @cityName
+        FOR exhibition IN 1..1 INBOUND city ${EdgeNames.FROMExhibitionTOCity}
+            FILTER exhibition.published == true AND exhibition.exhibitionDates.exhibitionStartDate.value <= @currentDate
+            LET gallery = FIRST(
+                FOR gallery IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
+                    RETURN gallery
+            )
+            SORT gallery._key, exhibition.exhibitionDates.exhibitionStartDate DESC
+            COLLECT galleryId = gallery._id INTO groupByGallery = {exhibition, gallery}
+            LET mostRecentExhibition = FIRST(groupByGallery)
+            RETURN {
+                // Gallery information
+                galleryId: galleryId,
+                galleryName: mostRecentExhibition.gallery.galleryName,
+                galleryLogo: mostRecentExhibition.gallery.galleryLogo,
+                // Most recent exhibition information
+                exhibitionId: mostRecentExhibition.exhibition._key, // or .exhibitionId depending on your schema
+                exhibitionTitle: mostRecentExhibition.exhibition.exhibitionTitle,
+                exhibitionLocation: mostRecentExhibition.exhibition.exhibitionLocation,
+                exhibitionPrimaryImage: mostRecentExhibition.exhibition.exhibitionPrimaryImage,
+                exhibitionArtist: mostRecentExhibition.exhibition.exhibitionArtist,
+                exhibitionDates: mostRecentExhibition.exhibition.exhibitionDates,
+                receptionDates: mostRecentExhibition.exhibition.receptionDates,
+                _id: mostRecentExhibition.exhibition._id,
+                currentDate: @currentDate, 
+                start: mostRecentExhibition.exhibition.exhibitionDates.exhibitionEndDate.value
+            }
     `;
-
     try{
       const edgeCursor = await this.db.query(findCollections, { cityName, currentDate: new Date().toISOString() });
       const exhibitionsAndPreviews: ExhibitionMapPin[] = await edgeCursor.all()
@@ -798,9 +803,8 @@ export class ExhibitionService implements IExhibitionService {
 
       return {...exhibitionMapPin}
     } catch(error: any){
-      // console.log(error)
+      throw new Error(error.message)
     }
-    return null
   }
 
   private async getExhibitionImage({key}: {key: string}): Promise<any> {

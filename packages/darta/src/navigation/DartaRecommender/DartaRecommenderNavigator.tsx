@@ -55,7 +55,7 @@ export function DartaRecommenderNavigator({route} : {route: any}) {
         <RecommenderStack.Screen
           name={RecommenderRoutesEnum.TopTabExhibition}
           component={DartaRecommenderTopTab}
-          options={{...modalHeaderOptions, presentation: 'modal', headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
+          options={{...modalHeaderOptions, presentation: 'modal',headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
         />
     </RecommenderStack.Navigator>
   );

@@ -49,6 +49,7 @@ export const icons: Icons = {
   saveSettings: 'content-save',
   brokenHeart: 'heart-broken',
   removeRating: 'close-circle-outline',
+  information: 'information-outline',
 
   // other
   instagram: 'instagram',

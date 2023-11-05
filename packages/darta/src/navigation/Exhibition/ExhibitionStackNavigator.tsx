@@ -33,7 +33,7 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
     try {
       await Share.open({
         url: state.exhibitionShareDetails.shareURL ?? "",
-        message: state.exhibitionShareDetails.shareURLMessage ?? "",
+        // message: state.exhibitionShareDetails.shareURLMessage ?? "",
       });
     } catch (error) {
 

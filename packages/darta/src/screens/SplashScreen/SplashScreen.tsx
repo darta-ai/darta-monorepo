@@ -68,7 +68,7 @@ function AnimatedSplashScreen({ children }) {
         // inquiredArtwork
         listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10 }),
         // artworksToRate
-        listArtworksToRateAPI({startNumber: 0, endNumber: 5})
+        listArtworksToRateAPI({startNumber: 0, endNumber: 10})
       ]);
 
   
