@@ -35,4 +35,12 @@ export function TextElementOneLine(props: any) {
   );
 }
 
+export function TextElementMultiLine(props: any) {
+  return (
+    <Text style={{...globalTextStyles.baseText, ...styles.truncatedText, color: PRIMARY_950}} {...props}
+    ellipsizeMode='tail'>
+      {props.children}
+    </Text>
+  );
+}
 

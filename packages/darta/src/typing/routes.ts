@@ -105,6 +105,7 @@ export enum ExploreMapRootEnum {
   exploreMapDetails = 'EXPLORE_MAP_DETAILS',
   TopTabExhibition = 'EXPLORE_MAP_TOP_TAB_EXHIBITION',
   exploreMapGallery = 'EXPLORE_MAP_GALLERY',
+  explorePastNavigator = 'EXPLORE_PAST_NAVIGATOR', 
 }
 
 export type ExploreMapParamList = {

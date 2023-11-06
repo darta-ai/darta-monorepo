@@ -24,6 +24,7 @@ import { ExhibitionStackParamList } from '../../navigation/Exhibition/Exhibition
 import { readExhibition } from '../../api/exhibitionRoutes';
 import { mapStylesJson } from '../../utils/mapStylesJson';
 import { readGallery } from '../../api/galleryRoutes';
+import { TextElementMultiLine } from '../../components/Elements/TextElement';
 
 const exhibitionDetailsStyles = StyleSheet.create({
     exhibitionTitleContainer: {
@@ -156,10 +157,24 @@ export function ExhibitionDetailsScreen({
   })
 
   const [galleryName, setGalleryName] = React.useState<string>("")
+  const [isGroupShow, setIsGroupShow] = React.useState<boolean>(false)
+  const [artistName, setArtistName] = React.useState<string>("")
 
   const setExhibitionData = ({currentExhibition, currentGallery} : {currentExhibition: Exhibition, currentGallery: IGalleryProfileData}) => {
     if (currentExhibition._id){
         setExhibitionId(currentExhibition._id)
+    }
+    if (currentExhibition?.exhibitionType?.value === "Group Show"){
+        setIsGroupShow(true)
+        if (currentExhibition?.artworks){
+            const {artworks} = currentExhibition
+            const artists = Object.values(artworks).map((artwork) => artwork.artistName?.value?.trim())
+            const uniqueArray = [...new Set(artists)];
+            const uniqueString = uniqueArray.join(', ');
+            setArtistName(uniqueString)
+        }
+    } else {
+        setArtistName(currentExhibition?.exhibitionArtist?.value ?? "")
     }
     if (currentExhibition?.exhibitionDates 
         && currentExhibition.exhibitionDates?.exhibitionStartDate 
@@ -414,8 +429,6 @@ export function ExhibitionDetailsScreen({
       };  
 
     
-
-
   return (
     <>
         {!isGalleryLoaded ? ( 
@@ -443,11 +456,18 @@ export function ExhibitionDetailsScreen({
             </View>
         <View style={{...exhibitionDetailsStyles.textContainer, height: hasReception && isReceptionInPast ? hp('100%') : hp('80%')}}>
             <View>
-                <TextElement style={exhibitionDetailsStyles.descriptionText}>Artist</TextElement>
+                <TextElement style={exhibitionDetailsStyles.descriptionText}>{isGroupShow ? "Artists" : "Artist"}</TextElement>
                 <Divider style={exhibitionDetailsStyles.divider}/>
-                <TextElement style={{...globalTextStyles.italicTitleText, fontSize: 20, marginTop: hp('1%')}}>
-                    {currentExhibition?.exhibitionArtist?.value ?? "Group Show"}
-                </TextElement>
+                {isGroupShow ? (
+                <TextElementMultiLine style={{...globalTextStyles.italicTitleText, fontSize: 15, marginTop: hp('1%')}}>
+                    {artistName ?? "Group Show"}
+                    </TextElementMultiLine>
+                ) : (
+                    <TextElement style={{...globalTextStyles.italicTitleText, fontSize: 20, marginTop: hp('1%')}}>
+                    {artistName ?? "Artist"}
+                    </TextElement>
+                )}
+                
             </View>
             <View>
             {isTemporaryExhibition ? (

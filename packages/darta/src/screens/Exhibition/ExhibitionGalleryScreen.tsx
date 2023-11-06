@@ -210,6 +210,8 @@ export function ExhibitionGalleryScreen({
   const [hoursOfOperationArray, setHoursOfOperationArray] = React.useState<{day: string, open: string, close: string}[]>([]);
   
   const [previousExhibitions, setPreviousExhibitions] = React.useState<Exhibition[]>([])
+  const [upcomingExhibitions, setUpComingExhibitions] = React.useState<Exhibition[]>([])
+
 
   const setGalleryData = ({inputGallery}: {inputGallery: IGalleryProfileData}) => {
     if (inputGallery?.galleryLocation0?.coordinates) {
@@ -256,10 +258,20 @@ export function ExhibitionGalleryScreen({
 
   if (inputGallery?.galleryExhibitions){
     const strippedExhibitionId = route?.params?.exhibitionId?.replace("Exhibitions/", "")
-    const previous = Object.values(inputGallery.galleryExhibitions).filter((exhibition: Exhibition) => exhibition.exhibitionId !== strippedExhibitionId)
-    previous.sort((a: Exhibition, b: Exhibition) => { 
+    const exhibitions = Object.values(inputGallery.galleryExhibitions).filter((exhibition: Exhibition) => exhibition.exhibitionId !== strippedExhibitionId)
+    exhibitions.sort((a: Exhibition, b: Exhibition) => { 
       return new Date(b.exhibitionDates.exhibitionStartDate.value as any).getTime() - new Date(a.exhibitionDates.exhibitionStartDate.value as any).getTime()
     })
+
+    const upcoming = exhibitions.filter((exhibition: Exhibition) => {
+      return new Date(exhibition.exhibitionDates.exhibitionStartDate.value as any) >= new Date()
+    })
+
+    const previous = exhibitions.filter((exhibition: Exhibition) => {
+      return new Date(exhibition.exhibitionDates.exhibitionStartDate.value as any) < new Date()
+    })
+
+    setUpComingExhibitions(upcoming)
     setPreviousExhibitions(previous)
   }
     setIsGalleryLoaded(true)
@@ -694,7 +706,33 @@ export function ExhibitionGalleryScreen({
         </View>
           )}
         </View>
-        {route?.params?.showPastExhibitions && (
+        {upcomingExhibitions.length > 0 && (
+          <>
+        <View>
+          <TextElement style={galleryDetailsStyles.descriptionText}>Upcoming Shows</TextElement>
+          <Divider style={galleryDetailsStyles.divider}/>
+        </View>
+        <View style={galleryDetailsStyles.previousShowContainer}>
+          {upcomingExhibitions && upcomingExhibitions.map((previousExhibition : Exhibition, index : number) => {
+              return (
+                <View key={`${index}-${previousExhibition.exhibitionId}`}>
+                  <ExhibitionPreviewMini 
+                    exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
+                    exhibitionId={previousExhibition._id!}
+                    exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
+                    exhibitionGallery={gallery.galleryName?.value as string}
+                    exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
+                    exhibitionDates={previousExhibition.exhibitionDates}
+                    galleryLogoLink={gallery.galleryLogo?.value as string}
+                    onPress={handleExhibitionPress}
+                  />
+                </View>
+              )
+            })}
+          </View>
+          </>
+            )}
+        {route?.params?.showPastExhibitions && previousExhibitions.length > 0 && (
           <>
         <View>
           <TextElement style={galleryDetailsStyles.descriptionText}>Past Shows</TextElement>

@@ -17,6 +17,8 @@ import { ExhibitionMapPin } from '@darta-types';
 import { customDateString, customLocalDateString } from '../../utils/functions';
 import { ETypes, StoreContext } from '../../state/Store';
 import { ExploreMapRootEnum } from '../../typing/routes';
+import {IconButton} from 'react-native-paper';
+import { icons } from '../../utils/constants';
 
 
 const CustomMarker = ({ 
@@ -88,9 +90,10 @@ const CustomMarker = ({
     } 
     const hasCurrentOpening = mapPin.exhibitionDates.exhibitionEndDate.value && mapPin.exhibitionDates.exhibitionEndDate.value >= new Date().toISOString()
     const hasOngoingOpening = mapPin.exhibitionDates?.exhibitionDuration?.value === "Ongoing/Indefinite";
+    const hasGroupShow = mapPin.exhibitionType?.value === "Group Show"
 
     if (hasCurrentOpening || hasOngoingOpening){
-      setLine1(mapPin.exhibitionArtist?.value || "")
+      setLine1(mapPin.exhibitionArtist?.value || "Group Show")
       setLine2(mapPin.exhibitionTitle?.value || "")
       setLine3(simplifyAddress(mapPin.exhibitionLocation?.locationString?.value) ?? "")
     } else {
@@ -124,7 +127,7 @@ const CustomMarker = ({
         flexDirection: "row",
         gap: 10,
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'space-around',
         margin: hp('1%'),
     },
     galleryNameContainer: {
@@ -154,7 +157,6 @@ const CustomMarker = ({
     heroImage: {
       width: '100%',
       height: '100%',
-      resizeMode: 'contain',
     },
     textContainer:{
       width: '100%',
@@ -189,6 +191,12 @@ const CustomMarker = ({
                   <TextElement style={{...globalTextStyles.centeredText, fontWeight: 'bold', color: Colors.PRIMARY_900, fontSize: 15}}>{line1}</TextElement>
                   <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900, fontSize: 14}}>{line2}</TextElement>
                 </View>
+                <View>
+                  <IconButton 
+                    icon={icons.information}
+                    size={20}
+                  />
+                </View>
             </View> 
             {hasCurrentShow && (
             <View style={customMarker.exhibitionContainer}>
@@ -196,6 +204,7 @@ const CustomMarker = ({
                   <FastImage 
                   source={{uri: mapPin.exhibitionPrimaryImage.value || ""}} 
                   style={customMarker.heroImage} 
+                  resizeMode={FastImage.resizeMode.contain}
                   />
                 </View>
               <View style={customMarker.textContainer}>
@@ -206,11 +215,6 @@ const CustomMarker = ({
                 </TextElement>
                 <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900, fontSize: 12}}>{line3}</TextElement>
               </View>
-                <TextElement
-                style={{...globalTextStyles.centeredText, fontSize: 10}}>
-                {' '}
-                tap to view
-              </TextElement>
             </View>
             )}
         </Callout>
