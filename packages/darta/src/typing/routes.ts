@@ -67,7 +67,7 @@ export enum ExhibitionRootEnum {
 
 
 export enum ExhibitionPreviewEnum {
-  discover = 'discover',
+  onView = 'on view',
   forthcoming = 'forthcoming',
   following = 'following',
 }
@@ -129,6 +129,7 @@ export enum RecommenderRoutesEnum {
   recommenderHome = 'RECOMMENDER_HOME',
   recommenderDetails = 'RECOMMENDER_DETAILS',
   recommenderGallery = 'RECOMMENDER_GALLERY',
+  recommenderExhibition= 'RECOMMENDER_EXHIBITION',
   TopTabExhibition = 'RECOMMENDER_TOP_TAB_EXHIBITION',
 }
 

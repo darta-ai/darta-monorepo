@@ -1,18 +1,24 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext} from 'react';
-import { RefreshControl, FlatList} from 'react-native';
+import { RefreshControl, FlatList, ScrollView, Image} from 'react-native';
 import {
   ExhibitionNavigatorParamList,
   ExhibitionPreviewEnum,
   ExhibitionRootEnum
 } from '../../typing/routes';
 import {ETypes, StoreContext} from '../../state/Store';
-import { listAllExhibitionsPreviewsForUser } from "../../api/exhibitionRoutes";
+import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
+
+import {
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 
 import { ExhibitionPreview } from '@darta-types'
 import { ExhibitionPreviewCard } from '../../components/Previews/ExhibitionPreviewCard';
 import * as Colors from '@darta-styles';
+import { TextElement } from '../../components/Elements/TextElement';
+import { dartaLogo } from '../../components/User/UserInquiredArtwork';
 
 
 type ExhibitionHomeScreenNavigationProp = StackNavigationProp<
@@ -30,9 +36,7 @@ export function ExhibitionPreviewScreen({
   const {state, dispatch} = useContext(StoreContext);
   const [exhibitionPreviews, setExhibitionPreviews] = React.useState<ExhibitionPreview[]>([])
   const [numberOfPreviews, setNumberOfPreviews] = React.useState<number>(0)
-  const [renders, setReRenders] = React.useState<number>(0)
-
-
+  const [errorText, setErrorText] = React.useState<string>("")
   
   const sortPreviews = (exhibitionPreviews: ExhibitionPreview[]) => {
     return exhibitionPreviews.sort((a, b) => {
@@ -45,23 +49,23 @@ export function ExhibitionPreviewScreen({
     const screenName = route.name
     switch(screenName) {
       case ExhibitionPreviewEnum.following:
+        setErrorText('No exhibitions to show. Follow more galleries to see their exhibitions here.')
         return state.userFollowsExhibitionPreviews
-      case ExhibitionPreviewEnum.discover:
+      case ExhibitionPreviewEnum.onView:
+        setErrorText('No exhibitions to show. When more exhibitions are on display you will see them here.')
         return state.currentExhibitionPreviews
       case ExhibitionPreviewEnum.forthcoming:
+        setErrorText('No exhibitions to show. When future exhibitions are available you will see them here.')
         return state.forthcomingExhibitionPreviews
       default:
         return state.exhibitionPreviews
     }
-
   }
 
 
   
   React.useEffect(()=> {
     const previews = determineExhibitionPreviews()
-    setReRenders(renders + 1)
-    console.log(renders)
     if (previews) {
       const exhibitionPreviewsOpen: ExhibitionPreview[] = []
       const exhibitionPreviewsClosed: ExhibitionPreview[] = []
@@ -89,26 +93,55 @@ export function ExhibitionPreviewScreen({
   const [refreshing, setRefreshing] = React.useState(false);
   const [bottomLoad, setBottomLoad] = React.useState(false);
 
+
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try{
-      const exhibitionPreviews = await listAllExhibitionsPreviewsForUser({limit: 10})
-      dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
-
+    const screenName = route.name
+    switch(screenName) {
+      case ExhibitionPreviewEnum.following:
+        const userFollowingExhibitionPreviews = await listExhibitionPreviewUserFollowing({ limit: 10 })
+        dispatch({type: ETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
+      case ExhibitionPreviewEnum.onView:
+        const exhibitionPreviewsForthcoming = await listExhibitionPreviewsForthcoming({ limit: 10 })
+        dispatch({type: ETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
+      case ExhibitionPreviewEnum.forthcoming:
+        const exhibitionPreviewsCurrent = await listExhibitionPreviewsCurrent({ limit: 10 })
+        dispatch({type: ETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
+      default:
+        setTimeout(() => {
+          setRefreshing(false);
+        }, 500)
+      }
     } catch {
         setRefreshing(false);
-    }
-    setTimeout(() => {
+    } finally { 
       setRefreshing(false);
-    }, 500)
+    }
+
   }, []);
 
   const onBottomLoad = React.useCallback(async () => {
     setBottomLoad(true);
     try{
+      const screenName = route.name
       const newLimit = numberOfPreviews + 10
-      const exhibitionPreviews = await listAllExhibitionsPreviewsForUser({limit: newLimit})
-      dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
+      console.log(numberOfPreviews)
+      switch(screenName) {
+        case ExhibitionPreviewEnum.following:
+          const userFollowingExhibitionPreviews = await listExhibitionPreviewUserFollowing({ limit: newLimit })
+          dispatch({type: ETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
+        case ExhibitionPreviewEnum.onView:
+          const exhibitionPreviewsForthcoming = await listExhibitionPreviewsForthcoming({ limit: newLimit })
+          dispatch({type: ETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
+        case ExhibitionPreviewEnum.forthcoming:
+          const exhibitionPreviewsCurrent = await listExhibitionPreviewsCurrent({ limit: newLimit })
+          dispatch({type: ETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
+        default:
+          setTimeout(() => {
+            setRefreshing(false);
+          }, 500)
+        }
     } catch {
       setBottomLoad(false);
     } finally {
@@ -150,22 +183,46 @@ export function ExhibitionPreviewScreen({
 
   return (
     <>
+      {exhibitionPreviews.length === 0 ?  (
+        <ScrollView 
+        style={{
+          height: hp('40%'),
+          width: '100%',
+          backgroundColor: Colors.PRIMARY_600,
+        }}
+        contentContainerStyle={{ 
+          flexGrow: 1, 
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center', 
+          alignItems: 'center' }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>  
+          <Image 
+            source={require('../../assets/dartahousewhite.png')}
+            style={dartaLogo.image}
+          />
+          <TextElement style={{margin: 5, color: Colors.PRIMARY_50}}>{errorText}</TextElement>
+        </ScrollView>      ) 
+      : 
+    (
       <FlatList 
-        data={exhibitionPreviews}
-        keyExtractor={(item) => item.exhibitionId}
-        renderItem={({item}) => (
-          <ExhibitionPreviewCard 
-              exhibitionPreview={item}
-              onPressExhibition={loadExhibition}
-              onPressGallery={loadGallery}
-            />
-          )}
-        refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}
-        onEndReachedThreshold={0.1}
-        onEndReached={onBottomLoad}
-        refreshing={bottomLoad}
-        style={{backgroundColor: Colors.PRIMARY_100}}
-        />
-    </>
+      data={exhibitionPreviews}
+      keyExtractor={(item) => item.exhibitionId}
+      renderItem={({item}) => (
+        <ExhibitionPreviewCard 
+            exhibitionPreview={item}
+            onPressExhibition={loadExhibition}
+            onPressGallery={loadGallery}
+          />
+        )}
+      refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}
+      onEndReachedThreshold={0.1}
+      onEndReached={onBottomLoad}
+      refreshing={bottomLoad}
+      style={{backgroundColor: Colors.PRIMARY_100}}
+      />
+    )}
+  </>
   );
 }

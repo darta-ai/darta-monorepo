@@ -131,6 +131,8 @@ export class GalleryService implements IGalleryService {
         console.log(error);
         url = '';
       }
+    } else {
+      url = galleryLogo?.value;
     }
     const results = {
       ...gallery,

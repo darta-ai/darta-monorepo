@@ -73,7 +73,7 @@ function AnimatedSplashScreen({ children }) {
         // inquiredArtwork
         listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10 }),
         // artworksToRate
-        listArtworksToRateAPI({startNumber: 0, endNumber: 10})
+        listArtworksToRateAPI({startNumber: 0, endNumber: 20})
       ]);
 
       // User Profile

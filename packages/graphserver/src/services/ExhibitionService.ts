@@ -769,7 +769,9 @@ export class ExhibitionService implements IExhibitionService {
     LET exhibitions = (
       FOR exhibition IN ${CollectionNames.Exhibitions}
       SORT exhibition.exhibitionDates.exhibitionStartDate.value DESC
-      FILTER exhibition.published == true AND exhibition.exhibitionDates.exhibitionStartDate.value <= DATE_ISO8601(DATE_NOW())
+      FILTER exhibition.published == true 
+      AND exhibition.exhibitionDates.exhibitionStartDate.value <= DATE_ISO8601(DATE_NOW()) 
+      AND exhibition.exhibitionDates.exhibitionEndDate.value >= DATE_ISO8601(DATE_NOW())
       LIMIT 0, @limit
       RETURN exhibition
     )

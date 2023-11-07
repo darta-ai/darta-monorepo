@@ -7,9 +7,8 @@ import {RecommenderRoutesEnum} from '../../typing/routes';
 import {View} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { DartaRecommenderView } from '../../screens/DartaRecommenderView';
-import { ArtworkScreen } from '../../screens/Artwork/ArtworkScreen';
 import { DartaRecommenderTopTab } from './DartaRecommenderTopTab';
-import {Button, IconButton} from 'react-native-paper';
+import { IconButton} from 'react-native-paper';
 import {icons} from '../../utils/constants';
 import { TextElement } from '../../components/Elements/TextElement';
 import { useNavigation } from '@react-navigation/native';
@@ -55,7 +54,7 @@ export function DartaRecommenderNavigator({route} : {route: any}) {
         <RecommenderStack.Screen
           name={RecommenderRoutesEnum.TopTabExhibition}
           component={DartaRecommenderTopTab}
-          options={{...modalHeaderOptions, presentation: 'modal',headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
+          options={{...modalHeaderOptions, presentation: 'modal', headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
         />
     </RecommenderStack.Navigator>
   );

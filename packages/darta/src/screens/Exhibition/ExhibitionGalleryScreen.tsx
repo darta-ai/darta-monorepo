@@ -331,7 +331,6 @@ export function ExhibitionGalleryScreen({
     setRefreshing(true);
     try{
         const newGallery = await readGallery({galleryId});
-        console.log({newGallery})
         setGalleryData({inputGallery: newGallery})
         dispatch({
             type: ETypes.saveGallery,

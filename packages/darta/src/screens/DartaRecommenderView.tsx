@@ -313,7 +313,7 @@ export function DartaRecommenderView({
       currentArtworkHeader: artOnDisplay?.artworkTitle?.value!,
     });
     if (artOnDisplay){
-      navigation.navigate(RecommenderRoutesEnum.TopTabExhibition, {artOnDisplay, galleryId: artOnDisplay?.galleryId});
+      navigation.navigate(RecommenderRoutesEnum.TopTabExhibition, {artOnDisplay, galleryId: artOnDisplay?.galleryId, exhibitionId: artOnDisplay?.exhibitionId});
     }
   };
 

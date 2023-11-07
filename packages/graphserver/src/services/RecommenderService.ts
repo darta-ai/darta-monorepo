@@ -98,7 +98,7 @@ export class RecommenderService implements IRecommenderService {
           medium: medium.value,
           artistName: artist.value,
           galleryId: gallery._id,
-          exhibition: exhibition._id
+          exhibitionId: exhibition._id
         }
     `
 
@@ -147,7 +147,7 @@ export class RecommenderService implements IRecommenderService {
         artistName: {value: item.artistName},
         galleryId: item.galleryId,
         artworkMedium: {value: item.medium},
-        exhibition: item.exhibition
+        exhibitionId: item.exhibitionId
       });
     });
     return groupedArtworks;
