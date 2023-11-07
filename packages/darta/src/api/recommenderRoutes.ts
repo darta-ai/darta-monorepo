@@ -21,7 +21,6 @@ export async function listArtworksToRate({
         startNumber,
         endNumber,
   }, headers: {authorization: `Bearer ${idToken}`}});
-  console.log(data)
     return data;
   } catch (error:any) {
     console.log(error.message)

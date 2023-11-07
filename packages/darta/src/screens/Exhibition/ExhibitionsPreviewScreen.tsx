@@ -3,6 +3,7 @@ import React, {useContext} from 'react';
 import { RefreshControl, FlatList} from 'react-native';
 import {
   ExhibitionNavigatorParamList,
+  ExhibitionPreviewEnum,
   ExhibitionRootEnum
 } from '../../typing/routes';
 import {ETypes, StoreContext} from '../../state/Store';
@@ -12,71 +13,60 @@ import { listAllExhibitionsPreviewsForUser } from "../../api/exhibitionRoutes";
 import { ExhibitionPreview } from '@darta-types'
 import { ExhibitionPreviewCard } from '../../components/Previews/ExhibitionPreviewCard';
 import * as Colors from '@darta-styles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as StoreReview from 'expo-store-review';
+
 
 type ExhibitionHomeScreenNavigationProp = StackNavigationProp<
 ExhibitionNavigatorParamList,
 ExhibitionRootEnum.exhibitionHome
 >;
 
-// To be deprecated
-export function ExhibitionsHomeScreen({
+export function ExhibitionPreviewScreen({
   navigation,
+  route,
 }: {
   navigation: ExhibitionHomeScreenNavigationProp;
+  route: any;
 }) {
   const {state, dispatch} = useContext(StoreContext);
   const [exhibitionPreviews, setExhibitionPreviews] = React.useState<ExhibitionPreview[]>([])
   const [numberOfPreviews, setNumberOfPreviews] = React.useState<number>(0)
+  const [renders, setReRenders] = React.useState<number>(0)
+
+
   
   const sortPreviews = (exhibitionPreviews: ExhibitionPreview[]) => {
     return exhibitionPreviews.sort((a, b) => {
       return a.closingDate >= b.closingDate ? 1 : -1
     })
   }
-  
 
-  const requestReview = async () => {
-    try {
-      // Check if the device is able to review
-      const isAvailable = await StoreReview.isAvailableAsync();
-      if (!isAvailable) {
-        return;
-      }
-  
-      // Get the number of app opens from AsyncStorage
-      const appOpens = await AsyncStorage.getItem('appOpens');
-      const opens = appOpens ? parseInt(appOpens) : 0;
-  
-      // Define the number of opens required before showing the review prompt
-      const opensRequired = 5;
-  
-      if (opens >= opensRequired) {
-        // Show the review prompt
-        StoreReview.requestReview();
-        // Reset the app opens counter
-        await AsyncStorage.setItem('appOpens', '0');
-      } else {
-        // Increase the app opens counter
-        await AsyncStorage.setItem('appOpens', (opens + 1).toString());
-      }
-    } catch (error) {
-      console.error('Error requesting store review:', error);
+  const determineExhibitionPreviews = () => {
+
+    const screenName = route.name
+    switch(screenName) {
+      case ExhibitionPreviewEnum.following:
+        return state.userFollowsExhibitionPreviews
+      case ExhibitionPreviewEnum.discover:
+        return state.currentExhibitionPreviews
+      case ExhibitionPreviewEnum.forthcoming:
+        return state.forthcomingExhibitionPreviews
+      default:
+        return state.exhibitionPreviews
     }
-  };
 
-  React.useEffect(() => {
-    requestReview();
-  }, []);
+  }
+
 
   
   React.useEffect(()=> {
-    if (state.exhibitionPreviews) {
+    const previews = determineExhibitionPreviews()
+    setReRenders(renders + 1)
+    console.log(renders)
+    if (previews) {
       const exhibitionPreviewsOpen: ExhibitionPreview[] = []
       const exhibitionPreviewsClosed: ExhibitionPreview[] = []
 
-      for (const preview of Object.values(state.exhibitionPreviews)) {
+      for (const preview of Object.values(previews)) {
         if (preview.exhibitionDuration.value && preview.exhibitionDuration.value === "Ongoing/Indefinite"){
           break
         }
@@ -92,9 +82,9 @@ export function ExhibitionsHomeScreen({
       
       setExhibitionPreviews([...exhibitionPreviewsOpen, ...exhibitionPreviewsClosed])
     
-      setNumberOfPreviews(Object.values(state?.exhibitionPreviews).length)
+      setNumberOfPreviews(Object.values(exhibitionPreviews).length)
     }
-  }, [state.exhibitionPreviews])
+  }, [state.userFollowsExhibitionPreviews, state.exhibitionPreviews, state.forthcomingExhibitionPreviews])
 
   const [refreshing, setRefreshing] = React.useState(false);
   const [bottomLoad, setBottomLoad] = React.useState(false);

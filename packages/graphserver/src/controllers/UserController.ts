@@ -46,10 +46,10 @@ export class UserController {
           validated: isValidated,
         });
         res.status(200).send(gallery);
-        return  
+          
       }
 
-      if (verifyGallery._id) {
+      else if (verifyGallery._id) {
         await this.userService.editGalleryToUserEdge({
           galleryId: verifyGallery._id,
           uid: user.uid,

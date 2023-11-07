@@ -65,6 +65,14 @@ export enum ExhibitionRootEnum {
   qrRouter = 'QR_ROUTER',
 }
 
+
+export enum ExhibitionPreviewEnum {
+  discover = 'discover',
+  forthcoming = 'forthcoming',
+  following = 'following',
+}
+
+
 export type ExhibitionNavigatorParamList = {
   [ExhibitionRootEnum.exhibitionHome]: undefined;
   [ExhibitionRootEnum.exhibitionDetails]: {exhibition: Exhibition};

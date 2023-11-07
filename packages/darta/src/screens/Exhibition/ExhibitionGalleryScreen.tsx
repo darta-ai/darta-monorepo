@@ -327,10 +327,11 @@ export function ExhibitionGalleryScreen({
 
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const onRefresh = React.useCallback(async () => {
+  const onRefresh = React.useCallback(async ({galleryId} : {galleryId: string}) => {
     setRefreshing(true);
     try{
         const newGallery = await readGallery({galleryId});
+        console.log({newGallery})
         setGalleryData({inputGallery: newGallery})
         dispatch({
             type: ETypes.saveGallery,
@@ -541,7 +542,7 @@ export function ExhibitionGalleryScreen({
     )
     : (
     <ScrollView refreshControl={
-      <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>      
+      <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={() => onRefresh({galleryId: gallery?._id!})} />}>      
       <View style={galleryDetailsStyles.container}>
         <View style={galleryDetailsStyles.galleryTitleContainer}>
             <TextElement style={{...globalTextStyles.boldTitleText, fontSize: 20, color: Colors.PRIMARY_950}}>
@@ -709,7 +710,7 @@ export function ExhibitionGalleryScreen({
         {upcomingExhibitions.length > 0 && (
           <>
         <View>
-          <TextElement style={galleryDetailsStyles.descriptionText}>Upcoming Shows</TextElement>
+          <TextElement style={galleryDetailsStyles.descriptionText}>Forthcoming Shows</TextElement>
           <Divider style={galleryDetailsStyles.divider}/>
         </View>
         <View style={galleryDetailsStyles.previousShowContainer}>

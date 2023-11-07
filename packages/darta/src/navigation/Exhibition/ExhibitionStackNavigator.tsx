@@ -18,6 +18,7 @@ import { IconButton } from 'react-native-paper';
 import { Linking, Platform } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 import Share from 'react-native-share'
+import { ExhibitionHomeTopTabNavigator } from './ExhibitionHomeTopTabNavigator';
 
 export const ExhibitionStack = createStackNavigator();
 
@@ -49,7 +50,7 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
       >
         <ExhibitionStack.Screen
           name={ExhibitionRootEnum.exhibitionHome}
-          component={ExhibitionsHomeScreen}
+          component={ExhibitionHomeTopTabNavigator}
           options={{...headerOptions, headerTitle: 'exhibitions'}}
         />
         <ExhibitionStack.Screen

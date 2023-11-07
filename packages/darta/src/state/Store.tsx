@@ -95,6 +95,17 @@ export interface IState {
   exhibitionPreviews?: {
     [key: string]: ExhibitionPreview
   }
+  userFollowsExhibitionPreviews?: {
+    [key: string]: ExhibitionPreview
+  },
+  forthcomingExhibitionPreviews?: {
+    [key: string]: ExhibitionPreview
+  },
+  currentExhibitionPreviews?: {
+    [key: string]: ExhibitionPreview
+  },
+
+
   galleryData?:{
     [key: string]: IGalleryProfileData
   },
@@ -159,6 +170,9 @@ export enum ETypes {
   saveExhibition = 'SAVE_EXHIBITION',
   saveExhibitionMulti = 'SAVE_EXHIBITION_MULTI',
   saveExhibitionPreviews = 'SAVE_EXHIBITION_PREVIEWS',
+  saveUserFollowsExhibitionPreviews = 'SAVE_USER_FOLLOWS_EXHIBITION_PREVIEWS',
+  saveForthcomingExhibitionPreviews = 'SAVE_FORTHCOMING_EXHIBITION_PREVIEWS',
+  saveCurrentExhibitionPreviews = 'SAVE_CURRENT_EXHIBITION_PREVIEWS',
 
   saveGallery = 'SAVE_GALLERY',
   saveGalleries= 'SAVE_GALLERIES',
@@ -304,30 +318,8 @@ const initialState: IState = {
 const reducer = (state: IState, action: IAction): IState => {
   const {
     type,
-    rating = 'default',
-    currentIndex = 0,
-    loadedDGallery = [],
-    artworkOnDisplayId = 'string',
     galleryTitle = 'darta',
-    tombstoneTitle = 't o m b s t o n e',
-    userSettings = {
-      profilePicture: 'https://i.imgur.com/5ABY3J8.jpg',
-      userName: 'error fetching data',
-      legalName: 'legal Name',
-      email: 'email',
-      phone: 'phone',
-    },
-    artOnDisplay = {},
-    saveWork = false,
   } = action;
-
-  let tempGallery: any;
-  let tempState: any;
-  let galleryIds;
-  let fullGallery: any;
-  let currentRating: IUserArtworkRatings[0];
-  const {galleryOnDisplayId} = state;
-  const artworkId = state.artworkOnDisplayId;
 
   switch (type) {
     case ETypes.setUserSettings:
@@ -377,7 +369,39 @@ const reducer = (state: IState, action: IAction): IState => {
           ...action.exhibitionPreviews
         }
       }
-
+    case ETypes.saveUserFollowsExhibitionPreviews:
+        if(!action.exhibitionPreviews){
+          return state
+        }
+        return {
+          ...state,
+          userFollowsExhibitionPreviews: {
+            ...state.userFollowsExhibitionPreviews,
+            ...action.exhibitionPreviews
+          }
+        }
+      case ETypes.saveForthcomingExhibitionPreviews:
+        if(!action.exhibitionPreviews){
+          return state
+        }
+        return {
+          ...state,
+          forthcomingExhibitionPreviews: {
+            ...state.forthcomingExhibitionPreviews,
+            ...action.exhibitionPreviews
+          }
+        }
+      case ETypes.saveCurrentExhibitionPreviews:
+          if(!action.exhibitionPreviews){
+            return state
+          }
+          return {
+            ...state,
+            currentExhibitionPreviews: {
+              ...state.currentExhibitionPreviews,
+              ...action.exhibitionPreviews
+            }
+          }
     case ETypes.saveGallery:
       if(!action.galleryData || !action.galleryData._id){
         return state

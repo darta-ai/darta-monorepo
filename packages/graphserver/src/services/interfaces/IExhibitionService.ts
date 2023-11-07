@@ -127,5 +127,9 @@ export interface IExhibitionService {
     exhibitionId: string;
   }): Promise<any>;
 
+  // To Deprecate
   listExhibitionsPreviewsForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: ExhibitionPreview} | void>
+  listExhibitionsPreviewsCurrentForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: ExhibitionPreview} | void>
+  listExhibitionsPreviewsForthcomingForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: ExhibitionPreview} | void>
+  listExhibitionsPreviewsUserFollowingForUserByLimit({limit, uid}: {limit: number, uid: string}): Promise<{[key: string]: ExhibitionPreview} | void>
 }

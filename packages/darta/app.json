@@ -86,7 +86,6 @@
     "expo-calendar",
     "expo-location",
     "./plugins/react-native-maps-plugin",
-    
     [
       "expo-build-properties",
       {

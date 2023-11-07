@@ -22,9 +22,12 @@ import { ETypes, StoreContext } from '../state/Store';
 import { listGalleryRelationshipsAPI, listUserArtworkAPI } from '../utils/apiCalls';
 import { GalleryPreview, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
 
-const HEADER_MAX_HEIGHT = hp('20%');
+const HEADER_MAX_HEIGHT = hp('17.5%');
 const HEADER_MIN_HEIGHT = hp('10%');
+const HEADER_MAX_WIDTH = wp('30%');
+const HEADER_MIN_WIDTH = wp('15%');
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+const HEADER_SCROLL_WIDTH_DISTANCE = HEADER_MAX_WIDTH - HEADER_MIN_WIDTH;
 
 export const userHomeStyles = StyleSheet.create({
   userHomeContainer: {
@@ -33,14 +36,13 @@ export const userHomeStyles = StyleSheet.create({
     flexDirection: 'column',
     alignContent: 'center',
     justifyContent: 'flex-start',
-    paddingTop: hp('3%'),
   },
   header: {
     backgroundColor: Colors.PRIMARY_100,
     overflow: 'hidden',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    paddingHorizontal: wp('5%'),
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: wp('2%'),
   },
 });
 
@@ -61,8 +63,9 @@ export function UserHome({navigation}: {navigation: any}) {
   });
 
   const imageWidthInterpolate = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [hp('17.5%'), hp('5%')],
+    inputRange: [0, HEADER_SCROLL_WIDTH_DISTANCE],
+    // outputRange: [hp('17.5%'), hp('5%')],
+    outputRange: [HEADER_MAX_WIDTH, HEADER_MIN_WIDTH],
     extrapolate: 'clamp',
   });
 
@@ -120,7 +123,7 @@ export function UserHome({navigation}: {navigation: any}) {
     }
         setTimeout(() => {
             setRefreshing(false);
-        }, 500)  }, []);
+        }, 100)  }, []);
   return (
     <View style={userHomeStyles.userHomeContainer}>
       <Animated.View
@@ -128,6 +131,7 @@ export function UserHome({navigation}: {navigation: any}) {
         <UserProfile
           navigation={navigation}
           imageWidthInterpolate={imageWidthInterpolate}
+          imageHeightInterpolate={imageWidthInterpolate}
           localButtonSizes={localButtonSizes}
         />
       </Animated.View>
