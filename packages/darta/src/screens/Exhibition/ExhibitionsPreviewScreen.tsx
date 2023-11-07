@@ -85,8 +85,7 @@ export function ExhibitionPreviewScreen({
       sortPreviews(exhibitionPreviewsClosed)
       
       setExhibitionPreviews([...exhibitionPreviewsOpen, ...exhibitionPreviewsClosed])
-    
-      setNumberOfPreviews(Object.values(exhibitionPreviews).length)
+      setNumberOfPreviews(Object.values(exhibitionPreviews).length)  
     }
   }, [state.userFollowsExhibitionPreviews, state.exhibitionPreviews, state.forthcomingExhibitionPreviews])
 
@@ -125,17 +124,26 @@ export function ExhibitionPreviewScreen({
     setBottomLoad(true);
     try{
       const screenName = route.name
+      let numberOfPreviews = 0
       const newLimit = numberOfPreviews + 10
-      console.log(numberOfPreviews)
       switch(screenName) {
         case ExhibitionPreviewEnum.following:
-          const userFollowingExhibitionPreviews = await listExhibitionPreviewUserFollowing({ limit: newLimit })
+          if(state.userFollowsExhibitionPreviews){
+            numberOfPreviews = Object.values(state.userFollowsExhibitionPreviews).length
+          }
+          const userFollowingExhibitionPreviews = await listExhibitionPreviewUserFollowing({ limit: numberOfPreviews + 10 })
           dispatch({type: ETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
         case ExhibitionPreviewEnum.onView:
-          const exhibitionPreviewsForthcoming = await listExhibitionPreviewsForthcoming({ limit: newLimit })
+          if(state.currentExhibitionPreviews){
+            numberOfPreviews = Object.values(state.currentExhibitionPreviews).length
+          }
+          const exhibitionPreviewsForthcoming = await listExhibitionPreviewsForthcoming({ limit: numberOfPreviews + 10 })
           dispatch({type: ETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
         case ExhibitionPreviewEnum.forthcoming:
-          const exhibitionPreviewsCurrent = await listExhibitionPreviewsCurrent({ limit: newLimit })
+          if(state.forthcomingExhibitionPreviews){
+            numberOfPreviews = Object.values(state.forthcomingExhibitionPreviews).length
+          }
+          const exhibitionPreviewsCurrent = await listExhibitionPreviewsCurrent({ limit: numberOfPreviews + 10 })
           dispatch({type: ETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
         default:
           setTimeout(() => {

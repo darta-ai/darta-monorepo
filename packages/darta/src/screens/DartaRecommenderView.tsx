@@ -182,6 +182,8 @@ export function DartaRecommenderView({
     if(artwork.artworkDimensions.heightIn){
       height = Number(artwork.artworkDimensions.heightIn.value)
     }
+
+
     
     const tooTall = artworkHeight && height > 66;
 

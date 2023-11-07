@@ -47,9 +47,7 @@ export class UserController {
         });
         res.status(200).send(gallery);
           
-      }
-
-      else if (verifyGallery._id) {
+      } else if (verifyGallery._id) {
         await this.userService.editGalleryToUserEdge({
           galleryId: verifyGallery._id,
           uid: user.uid,
