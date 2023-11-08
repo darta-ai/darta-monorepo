@@ -142,13 +142,15 @@ export class RecommenderService implements IRecommenderService {
       if (!groupedArtworks[exhibitionId]) {
         groupedArtworks[exhibitionId] = [];
       }
-      groupedArtworks[exhibitionId].push({
-        ...item.artwork,
-        artistName: {value: item.artistName},
-        galleryId: item.galleryId,
-        artworkMedium: {value: item.medium},
-        exhibitionId: item.exhibitionId
-      });
+      if (item.artwork?.published){
+        groupedArtworks[exhibitionId].push({
+          ...item.artwork,
+          artistName: {value: item.artistName},
+          galleryId: item.galleryId,
+          artworkMedium: {value: item.medium},
+          exhibitionId: item.exhibitionId
+        });
+    }
     });
     return groupedArtworks;
   }
