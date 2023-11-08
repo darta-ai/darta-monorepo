@@ -41,7 +41,9 @@ export async function readMostRecentGalleryExhibitionForUser({locationId} : {loc
 }
 
 // listAllExhibitionsForUser
-
+/**
+ * @deprecated This function will be removed when all apps are updated
+ */
 export async function listAllExhibitionsPreviewsForUser({
   limit,
 }: {
@@ -52,6 +54,63 @@ export async function listAllExhibitionsPreviewsForUser({
     const {data} = await axios.get(`${URL}/listAllExhibitionsPreviewsForUser`, {
       params: {
         limit
+    }, headers: {authorization: `Bearer ${idToken}`}
+  });
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'listAllExhibitionsPreviewsForUser'})
+    return {};
+  }
+}
+export async function listExhibitionPreviewsCurrent({
+  limit,
+}: {
+  limit: number;
+}): Promise<{[key: string] : ExhibitionPreview}> {
+  try {
+    const idToken = await auth().currentUser?.getIdToken();
+    const {data} = await axios.get(`${URL}/listExhibitionsPreviewsCurrentForUserByLimit`, {
+      params: {
+        limit
+    }, headers: {authorization: `Bearer ${idToken}`}
+  });
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'listAllExhibitionsPreviewsForUser'})
+    return {};
+  }
+} 
+  export async function listExhibitionPreviewsForthcoming({
+    limit,
+  }: {
+    limit: number;
+  }): Promise<{[key: string] : ExhibitionPreview}> {
+    try {
+      const idToken = await auth().currentUser?.getIdToken();
+      const {data} = await axios.get(`${URL}/listExhibitionsPreviewsForthcomingForUserByLimit`, {
+        params: {
+          limit
+      }, headers: {authorization: `Bearer ${idToken}`}
+    });
+      return data;
+    } catch (error:any) {
+      console.log({error: error, message: error.message, where: 'listAllExhibitionsPreviewsForUser'})
+      return {};
+    }
+}
+
+export async function listExhibitionPreviewUserFollowing({
+  limit,
+}: {
+  limit: number;
+}): Promise<{[key: string] : ExhibitionPreview}> {
+  try {
+    const idToken = await auth().currentUser?.getIdToken();
+    if(auth().currentUser === null) throw new Error('User is not logged in')
+    const uid = auth().currentUser?.uid
+    const {data} = await axios.get(`${URL}/listExhibitionsPreviewsUserFollowingForUserByLimit`, {
+      params: {
+        limit, uid
     }, headers: {authorization: `Bearer ${idToken}`}
   });
     return data;

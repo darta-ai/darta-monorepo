@@ -27,6 +27,23 @@ export class AdminService implements IAdminService {
     });
   }
 
+  // METHOD NOT IMPLEMENTED
+  // eslint-disable-next-line class-methods-use-this
+  public async approveGalleryById(galleryId: string): Promise<string> {
+    
+    return galleryId
+  }
+
+  public async addMinioBucker(bucketName: string): Promise<string> {
+    try {
+      await this.minio.makeBucket(bucketName);
+      return `added ${bucketName}`;
+    } catch (error: any) {
+      throw new Error(`failed to add ${bucketName}: ${error.message}`);
+    }
+  }
+
+
   public async addApprovedGallerySDL(sdl: string): Promise<string> {
     const query = `
         FOR doc IN ${CollectionNames.GalleryApprovals}
@@ -46,14 +63,6 @@ export class AdminService implements IAdminService {
     
   }
 
-  public async addMinioBucker(bucketName: string): Promise<string> {
-    try {
-      await this.minio.makeBucket(bucketName);
-      return `added ${bucketName}`;
-    } catch (error: any) {
-      throw new Error(`failed to add ${bucketName}: ${error.message}`);
-    }
-  }
 
 
   // eslint-disable-next-line class-methods-use-this

@@ -26,15 +26,17 @@ type UserScreenNavigationProp = StackNavigationProp<
 export function UserProfile({
   localButtonSizes,
   imageWidthInterpolate,
+  imageHeightInterpolate,
   navigation,
 }: {
   localButtonSizes: any;
   imageWidthInterpolate: any;
+  imageHeightInterpolate: any;
   navigation: UserScreenNavigationProp;
 }) {
   const userProfileStyles = StyleSheet.create({
     image: {
-      height: imageWidthInterpolate,
+      height: imageHeightInterpolate,
       width: imageWidthInterpolate,
       borderRadius: 20,
       alignSelf: 'flex-start',

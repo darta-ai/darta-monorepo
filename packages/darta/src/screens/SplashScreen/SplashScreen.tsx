@@ -8,14 +8,13 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { listAllExhibitionsPreviewsForUser } from "../../api/exhibitionRoutes";
+import { listAllExhibitionsPreviewsForUser, listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
 import { ETypes, StoreContext } from "../../state/Store";
 import { Artwork, GalleryPreview, MapPinCities, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types";
 import { listExhibitionPinsByCity } from "../../api/locationRoutes";
 import { getDartaUser } from "../../api/userRoutes";
 import { getUserUid } from "../../utils/functions";
 import { listArtworksToRateAPI, listGalleryRelationshipsAPI, listUserArtworkAPI } from "../../utils/apiCalls";
-import { DEFAULT_Gallery_Image } from "../../utils/constants";
 import FastImage from "react-native-fast-image";
 
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -46,7 +45,9 @@ function AnimatedSplashScreen({ children }) {
       const [
         user,
         galleryFollows,
-        exhibitionPreviews,
+        exhibitionPreviewsCurrent,
+        exhibitionPreviewsForthcoming,
+        userFollowingExhibitionPreviews, 
         exhibitionMapPins,
         likedArtwork,
         savedArtwork,
@@ -57,8 +58,12 @@ function AnimatedSplashScreen({ children }) {
         uid ? getDartaUser({uid}) : null,
         //galleryFollows
         listGalleryRelationshipsAPI(),
-        //exhibitionPreviews
-        listAllExhibitionsPreviewsForUser({ limit: 2 }),
+        //exhibitionPreviewsCurrent
+        listExhibitionPreviewsCurrent({ limit: 10 }),
+        //exhibitionPreviewsUpcoming 
+        listExhibitionPreviewsForthcoming({ limit: 10 }),
+        //exhibitionPreviewsUserFollowing
+        listExhibitionPreviewUserFollowing({ limit: 10 }),
         // exhibitionMapPins
         listExhibitionPinsByCity({ cityName: MapPinCities.newYork }),
         // likedArtwork
@@ -68,10 +73,8 @@ function AnimatedSplashScreen({ children }) {
         // inquiredArtwork
         listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10 }),
         // artworksToRate
-        listArtworksToRateAPI({startNumber: 0, endNumber: 10})
+        listArtworksToRateAPI({startNumber: 0, endNumber: 20})
       ]);
-
-  
 
       // User Profile
       if (user) {
@@ -90,7 +93,9 @@ function AnimatedSplashScreen({ children }) {
       }
 
       // Exhibition Preview Screen 
-      dispatch({type: ETypes.saveExhibitionPreviews, exhibitionPreviews})
+      dispatch({type: ETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
+      dispatch({type: ETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
+      dispatch({type: ETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
 
 
 
@@ -155,7 +160,7 @@ function AnimatedSplashScreen({ children }) {
         addImageUrlToPrefetch(artworkValue?.artworkImage?.value);
       }
       
-      for (let exhibitionValue of Object.values(exhibitionPreviews)) {
+      for (let exhibitionValue of Object.values({...exhibitionPreviewsCurrent, ...exhibitionPreviewsForthcoming, ...exhibitionPreviewsCurrent})) {
         if (exhibitionValue?.artworkPreviews) {
           for (let art of Object.values(exhibitionValue?.artworkPreviews)) {
             addImageUrlToPrefetch(art?.artworkImage?.value);

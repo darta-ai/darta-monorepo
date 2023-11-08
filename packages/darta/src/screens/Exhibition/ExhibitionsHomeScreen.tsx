@@ -20,6 +20,7 @@ ExhibitionNavigatorParamList,
 ExhibitionRootEnum.exhibitionHome
 >;
 
+// To be deprecated
 export function ExhibitionsHomeScreen({
   navigation,
 }: {

@@ -2,7 +2,7 @@ import * as Colors from '@darta-styles';
 
 export const tabBarScreenOptions = {
     tabBarPressColor: Colors.PRIMARY_950,
-    tabBarLabelStyle: {fontFamily: 'AvenirNext-Italic', fontSize: 14},
+    tabBarLabelStyle: {fontFamily: 'AvenirNext-Italic', fontSize: 12},
     tabBarIndicatorStyle: {backgroundColor: Colors.PRIMARY_400},
     tabBarActiveTintColor: Colors.PRIMARY_950,
     tabBarInactiveTintColor: Colors.PRIMARY_500,

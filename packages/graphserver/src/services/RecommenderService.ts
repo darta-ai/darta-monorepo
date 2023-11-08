@@ -46,7 +46,7 @@ export class RecommenderService implements IRecommenderService {
     LET allArtwork = (
       FOR art IN ${CollectionNames.Artwork}
       SORT RAND()
-      FILTER art.published == true
+      FILTER art.published == true AND art.artworkDimensions.depthIn.value == '' OR art.artworkDimensions.depthIn.value == null
       RETURN art._key
     )
 
@@ -98,14 +98,13 @@ export class RecommenderService implements IRecommenderService {
           medium: medium.value,
           artistName: artist.value,
           galleryId: gallery._id,
-          exhibition: exhibition._id
+          exhibitionId: exhibition._id
         }
     `
 
     try {
       const cursor = await this.db.query(ArtworkQuery, {userId, limit: endNumber, count});
       const artworks: any = await cursor.all();
-
        // Shuffle and organize artworks here
        const groupedArtworks = this.groupArtworksByExhibition(artworks);
        Object.keys(groupedArtworks).forEach(exhibitionId => {
@@ -122,21 +121,6 @@ export class RecommenderService implements IRecommenderService {
        });
 
       return results;
-      // const processedData = artworks.map((item: any) => ({
-      //     ...item.artwork,
-      //     artistName: {value: item.artistName},
-      //     galleryId: item.galleryId,
-      //     artworkMedium: {value: item.medium},
-      //     exhibition: item.exhibition
-      //   }));
-      // let counter = startNumber;
-      
-      // const results: {[key: string]: Artwork} = {};
-      // for (const artwork of processedData) {
-      //   results[counter.toString()] = filterOutPrivateRecordsSingleObject(artwork);
-      //   counter+=1;
-      // }
-      // return results;
     } catch (error: any) {
       throw new Error(error.message);
     }
@@ -163,7 +147,7 @@ export class RecommenderService implements IRecommenderService {
         artistName: {value: item.artistName},
         galleryId: item.galleryId,
         artworkMedium: {value: item.medium},
-        exhibition: item.exhibition
+        exhibitionId: item.exhibitionId
       });
     });
     return groupedArtworks;

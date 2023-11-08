@@ -693,6 +693,21 @@ export function CreateExhibition({
           inputAdornmentValue={null}
         />
       </Box>
+      <Box key="videoLink" sx={createArtworkStyles.multiLineContainer}>
+        <DartaTextInput
+          fieldName="videoLink"
+          data={newExhibition.exhibitionArtistStatement?.value}
+          register={register}
+          errors={errors}
+          required={false}
+          control={control}
+          helperTextString={errors.exhibitionArtistStatement?.value?.message}
+          inputAdornmentString="Video Link"
+          toolTips={exhibitionPressReleaseToolTip}
+          allowPrivate={false}
+          inputAdornmentValue={null}
+        />
+      </Box>
     </Box>
         <Box sx={createArtworkStyles.inputTextContainer}>
           <Box sx={createArtworkStyles.saveButtonContainer}>

@@ -58,7 +58,7 @@ export class GalleryService implements IGalleryService {
           to: 'tj@darta.art',
           from: '',
           subject: 'New Gallery Signup',
-          text: `Gallery Name: ${galleryName.value} \n Gallery Email: ${userEmail}`,
+          text: `Gallery Name: ${galleryName.value} \n Gallery Email: ${userEmail}. GalleryId: ${metaData?._id}`,
         })
       } catch (error: any) {
         // eslint-disable-next-line no-console
@@ -115,7 +115,11 @@ export class GalleryService implements IGalleryService {
     }
 
     let url;
-    if (galleryLogo?.bucketName && galleryLogo?.fileName) {
+    let shouldRegenerate;
+    if (galleryLogo?.value) {
+      shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: galleryLogo.value})
+    }
+    if (shouldRegenerate && galleryLogo?.bucketName && galleryLogo?.fileName) {
       try {
         url = await this.imageController.processGetFile({
           bucketName: galleryLogo?.bucketName,
@@ -127,6 +131,8 @@ export class GalleryService implements IGalleryService {
         console.log(error);
         url = '';
       }
+    } else {
+      url = galleryLogo?.value;
     }
     const results = {
       ...gallery,

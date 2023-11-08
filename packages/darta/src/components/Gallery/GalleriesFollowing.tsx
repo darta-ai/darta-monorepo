@@ -46,12 +46,12 @@ export function GalleriesFollowing({
       }
       result.sort((a, b) => {
         // Assuming galleryName is a string
-        if (a.galleryName < b.galleryName) return -1;
-        if (a.galleryName > b.galleryName) return 1;
-        return 0;
+        if (!a.galleryName.value || !b.galleryName.value) return 0;
+        if (a.galleryName.value < b.galleryName.value) return -1;
+        if (a.galleryName.value > b.galleryName.value) return 1;
+        return 0
       });
       setGalleriesFollowing(result)
-      
     }
   },[state.userGalleryFollowed,state.galleryPreviews])
 

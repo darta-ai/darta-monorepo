@@ -65,6 +65,14 @@ export enum ExhibitionRootEnum {
   qrRouter = 'QR_ROUTER',
 }
 
+
+export enum ExhibitionPreviewEnum {
+  onView = 'on view',
+  forthcoming = 'forthcoming',
+  following = 'following',
+}
+
+
 export type ExhibitionNavigatorParamList = {
   [ExhibitionRootEnum.exhibitionHome]: undefined;
   [ExhibitionRootEnum.exhibitionDetails]: {exhibition: Exhibition};
@@ -121,6 +129,7 @@ export enum RecommenderRoutesEnum {
   recommenderHome = 'RECOMMENDER_HOME',
   recommenderDetails = 'RECOMMENDER_DETAILS',
   recommenderGallery = 'RECOMMENDER_GALLERY',
+  recommenderExhibition= 'RECOMMENDER_EXHIBITION',
   TopTabExhibition = 'RECOMMENDER_TOP_TAB_EXHIBITION',
 }
 

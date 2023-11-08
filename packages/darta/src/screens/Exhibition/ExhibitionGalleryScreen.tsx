@@ -13,7 +13,6 @@ import {
   PreviousExhibitionRootEnum
 } from '../../typing/routes';
 import { ActivityIndicator } from 'react-native-paper';
-import auth from '@react-native-firebase/auth';
 
 import { Text, Button} from 'react-native-paper'
 import {ETypes, StoreContext} from '../../state/Store';
@@ -26,7 +25,6 @@ import { ExhibitionStackParamList } from '../../navigation/Exhibition/Exhibition
 import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
 import {readExhibition} from '../../api/exhibitionRoutes';
 import { mapStylesJson } from '../../utils/mapStylesJson';
-import { NeedAccountDialog } from '../../components/Dialog/NeedAccountDialog';
 
 const galleryDetailsStyles = StyleSheet.create({
   container: {
@@ -327,7 +325,7 @@ export function ExhibitionGalleryScreen({
 
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const onRefresh = React.useCallback(async () => {
+  const onRefresh = React.useCallback(async ({galleryId} : {galleryId: string}) => {
     setRefreshing(true);
     try{
         const newGallery = await readGallery({galleryId});
@@ -541,7 +539,7 @@ export function ExhibitionGalleryScreen({
     )
     : (
     <ScrollView refreshControl={
-      <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>      
+      <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={() => onRefresh({galleryId: gallery?._id!})} />}>      
       <View style={galleryDetailsStyles.container}>
         <View style={galleryDetailsStyles.galleryTitleContainer}>
             <TextElement style={{...globalTextStyles.boldTitleText, fontSize: 20, color: Colors.PRIMARY_950}}>
@@ -599,7 +597,7 @@ export function ExhibitionGalleryScreen({
           {gallery?.galleryInstagram?.value &&(
             <Button
             icon={icons.instagram}
-            labelStyle={galleryDetailsStyles.fontStyleButtons}
+            labelStyle={{...galleryDetailsStyles.fontStyleButtons, width: gallery?.galleryPhone?.value ? wp('25%') : wp('40%')}}
             style={{backgroundColor: Colors.PRIMARY_100}}
             mode="contained"
             onPress={() => sendToInstagram()}
@@ -610,7 +608,7 @@ export function ExhibitionGalleryScreen({
           {gallery?.galleryPhone?.value && (
             <Button
             icon={icons.phone}
-            labelStyle={galleryDetailsStyles.fontStyleButtons}
+            labelStyle={{...galleryDetailsStyles.fontStyleButtons, width: gallery?.galleryInstagram?.value ? wp('25%') : wp('40%')}}
             style={{backgroundColor: Colors.PRIMARY_100}}
             mode="contained"
             onPress={() => dialNumber()}
@@ -623,7 +621,7 @@ export function ExhibitionGalleryScreen({
             {gallery?.primaryContact?.value && (            
               <Button
                 icon={icons.email}
-                labelStyle={galleryDetailsStyles.fontStyleButtons}
+                labelStyle={{...galleryDetailsStyles.fontStyleButtons, width: gallery?.galleryWebsite?.value ? wp('25%') : wp('40%')}}
                 style={{backgroundColor: Colors.PRIMARY_100}}
                 mode="contained"
                 onPress={() => sendEmail()}
@@ -634,7 +632,7 @@ export function ExhibitionGalleryScreen({
             {gallery?.galleryWebsite?.value && (
             <Button
               icon={icons.website}
-              labelStyle={galleryDetailsStyles.fontStyleButtons}
+              labelStyle={{...galleryDetailsStyles.fontStyleButtons, width: gallery?.primaryContact?.value ? wp('25%') : wp('40%')}}
               style={{backgroundColor: Colors.PRIMARY_100}}
               mode="contained"
                 onPress={() => visitWebsite(gallery.galleryWebsite?.value!)}
@@ -709,7 +707,7 @@ export function ExhibitionGalleryScreen({
         {upcomingExhibitions.length > 0 && (
           <>
         <View>
-          <TextElement style={galleryDetailsStyles.descriptionText}>Upcoming Shows</TextElement>
+          <TextElement style={galleryDetailsStyles.descriptionText}>Forthcoming Shows</TextElement>
           <Divider style={galleryDetailsStyles.divider}/>
         </View>
         <View style={galleryDetailsStyles.previousShowContainer}>

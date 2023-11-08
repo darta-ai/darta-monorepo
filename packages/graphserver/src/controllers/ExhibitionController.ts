@@ -299,4 +299,69 @@ export class ExhibitionController {
       res.status(500).send(error.message);
     }
   }
+
+  @httpGet('/listExhibitionsPreviewsCurrentForUserByLimit')
+  public async listExhibitionsPreviewsCurrentForUserByLimit(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    if (!req.query.limit) {
+      res.status(400).send("limit query parameter is required");
+      return;
+  }
+    try {
+      const limit = <number>parseInt(req.query.limit.toString(), 10);
+      const results = await this.exhibitionService.listExhibitionsPreviewsCurrentForUserByLimit({
+        limit
+      });
+      res.json(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/listExhibitionsPreviewsCurrentForUserByLimit', request: req?.query})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpGet('/listExhibitionsPreviewsForthcomingForUserByLimit')
+  public async listExhibitionsPreviewsForthcomingForUserByLimit(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    if (!req.query.limit) {
+      res.status(400).send("limit query parameter is required");
+      return;
+  }
+    try {
+      const limit = <number>parseInt(req.query.limit.toString(), 10);
+      const results = await this.exhibitionService.listExhibitionsPreviewsForthcomingForUserByLimit({
+        limit
+      });
+      res.json(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/listExhibitionsPreviewsForthcomingForUserByLimit', request: req?.query})
+      res.status(500).send(error.message);
+    }
+  }
+
+
+  @httpGet('/listExhibitionsPreviewsUserFollowingForUserByLimit')
+  public async listExhibitionsPreviewsUserFollowingForUserByLimit(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    if (!req.query.limit || !req.query.uid) {
+      res.status(400).send("limit and uid query parameter is required");
+      return;
+  }
+    try {
+      const limit = <number>parseInt(req.query.limit.toString(), 10);
+      const results = await this.exhibitionService.listExhibitionsPreviewsUserFollowingForUserByLimit({
+        limit, 
+        uid: req.query.uid as string
+      });
+      res.json(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/listExhibitionsPreviewsUserFollowingForUserByLimit', request: req?.query})
+      res.status(500).send(error.message);
+    }
+  }
 }

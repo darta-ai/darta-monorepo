@@ -18,6 +18,8 @@ import { PRIMARY_900, PRIMARY_100, PRIMARY_950, PRIMARY_400 } from '@darta-style
 import { customLocalDateString, simplifyAddress } from '../../utils/functions';
 import { GalleryIcon } from '../Elements/_index';
 import { ExhibitionCarousel } from '../../components/Exhibitions/ExhibitionCarousel';
+import { IconButton } from 'react-native-paper';
+import { icons } from '../../utils/constants';
 
 const exhibitionPreviewStyle = StyleSheet.create({
   container: {
@@ -59,6 +61,14 @@ const exhibitionPreviewStyle = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  touchableContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',           
+    height: "20%",
+    width: '100%',
+  },
   textContainer:{
     display: 'flex',
     flexDirection: 'column',
@@ -67,9 +77,17 @@ const exhibitionPreviewStyle = StyleSheet.create({
     textAlign: 'left',
     alignContent: 'flex-start',
     height: hp("12.5%"),
-    width: '100%',
+    width: '85%',
     marginLeft: 5,
     gap: 5,
+  },
+  infoButtonContainer:{
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',           
+    height: "100%",
+    width: '10%',
   },
   heroImageContainer: {
     height: '70%',
@@ -85,7 +103,6 @@ const exhibitionPreviewStyle = StyleSheet.create({
     height: '100%',
     resizeMode: 'contain',
   },
-
   seeMoreContainer: {
     display: 'flex',
     flexDirection: 'row',
@@ -94,9 +111,7 @@ const exhibitionPreviewStyle = StyleSheet.create({
     height: "5%",
     width: '100%',
     backgroundColor: PRIMARY_950,
-    
   },
-
 })
 
 export function ExhibitionPreviewCard({
@@ -132,41 +147,46 @@ export function ExhibitionPreviewCard({
           <View style={exhibitionPreviewStyle.imagePreviewContainer}>
             <ExhibitionCarousel images={images} />
           </View>
-          
-          <View style={exhibitionPreviewStyle.textContainer}>
-            <TouchableOpacity onPress={() => onPressExhibition({exhibitionId: exhibitionPreview?.exhibitionId, galleryId: exhibitionPreview?.galleryId})}>
-              <View>
-                <TextElement
-                  style={{...globalTextStyles.baseText, fontWeight: 'bold', color: PRIMARY_900, fontSize: 20}}>
-                  {' '}
-                  {exhibitionPreview.exhibitionTitle.value} 
-                </TextElement>
-                <TextElement
-                  style={{...globalTextStyles.baseText, fontStyle: 'italic', color: PRIMARY_900, fontSize: 16}}>
-                  {' '}
-                  {exhibitionPreview?.exhibitionArtist?.value ? exhibitionPreview?.exhibitionArtist?.value : "Group Show"}
-                </TextElement>
+            <TouchableOpacity style={exhibitionPreviewStyle.touchableContainer} onPress={() => onPressExhibition({exhibitionId: exhibitionPreview?.exhibitionId, galleryId: exhibitionPreview?.galleryId})}>
+              <View style={exhibitionPreviewStyle.textContainer}>
+                  <View>
+                    <TextElement
+                      style={{...globalTextStyles.baseText, fontWeight: 'bold', color: PRIMARY_900, fontSize: 20}}>
+                      {' '}
+                      {exhibitionPreview.exhibitionTitle.value} 
+                    </TextElement>
+                    <TextElement
+                      style={{...globalTextStyles.baseText, fontStyle: 'italic', color: PRIMARY_900, fontSize: 16}}>
+                      {' '}
+                      {exhibitionPreview?.exhibitionArtist?.value ? exhibitionPreview?.exhibitionArtist?.value : "Group Show"}
+                    </TextElement>
+                  </View>
+                  <View>
+                  {exhibitionPreview?.closingDate?.value &&  
+                  exhibitionPreview?.openingDate?.value && 
+                  (
+                    <TextElement
+                      style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
+                      {' '}
+                      {exhibitionPreview.openingDate?.value ? customLocalDateString(new Date(exhibitionPreview.openingDate?.value)) : "Opening unavailable"}
+                      {" - "}
+                      {exhibitionPreview.closingDate?.value ? customLocalDateString(new Date(exhibitionPreview.closingDate?.value)) : "Closing unavailable"}
+                    </TextElement>
+                  )}
+                  <TextElement
+                    style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
+                    {' '}
+                    {simplifyAddress(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString.value)}
+                  </TextElement>
+                  </View>
               </View>
-              <View>
-              {exhibitionPreview?.closingDate?.value &&  
-              exhibitionPreview?.openingDate?.value && 
-              (
-                <TextElement
-                  style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
-                  {' '}
-                  {exhibitionPreview.openingDate?.value ? customLocalDateString(new Date(exhibitionPreview.openingDate?.value)) : "Opening unavailable"}
-                  {" - "}
-                  {exhibitionPreview.closingDate?.value ? customLocalDateString(new Date(exhibitionPreview.closingDate?.value)) : "Closing unavailable"}
-                </TextElement>
-              )}
-              <TextElement
-                style={{...globalTextStyles.baseText, color: PRIMARY_900, fontSize: 12}}>
-                {' '}
-                {simplifyAddress(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString.value)}
-              </TextElement>
+              <View style={exhibitionPreviewStyle.infoButtonContainer}>
+                <IconButton 
+                icon={icons.information}
+                size={20}
+                />
               </View>
             </TouchableOpacity>
-          </View>
           {/* <TouchableOpacity style={exhibitionPreviewStyle.seeMoreContainer} >
               <TextElement style={{color: PRIMARY_50}}>See More</TextElement>
           </TouchableOpacity> */}

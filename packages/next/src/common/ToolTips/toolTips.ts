@@ -61,4 +61,6 @@ export const exhibitionPressReleaseToolTip = {
     'The end time and date of the reception. Disabled if there is no reception.',
   'exhibitionLocation.exhibitionLocationString':
     'Required. Please select the location of your opening.',
+    videoLink: `Optional. Please include a link to a platform such as youtube or vimeo of a video of the exhibition, 
+    an interview with the artist, or any other media you would like to include with the exhibition.`,
 };

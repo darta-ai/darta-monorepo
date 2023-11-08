@@ -28,6 +28,7 @@ import {
   IExhibitionService,
   IGalleryService,
   INodeService,
+  IUserService
 } from './interfaces';
 
 const BUCKET_NAME = 'exhibitions';
@@ -42,7 +43,9 @@ export class ExhibitionService implements IExhibitionService {
     private readonly imageController: ImageController,
     @inject('INodeService') private readonly nodeService: INodeService,
     @inject('IGalleryService') private readonly galleryService: IGalleryService,
-  ) {}
+    @inject('IUserService') private readonly userService: IUserService
+    
+    ) {}
 
   public async createExhibition({
     galleryId,
@@ -760,6 +763,209 @@ export class ExhibitionService implements IExhibitionService {
     }
   }
 
+  public async listExhibitionsPreviewsCurrentForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: ExhibitionPreview} | void> {
+    const getExhibitionPreviewQuery = `
+    WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}
+    LET exhibitions = (
+      FOR exhibition IN ${CollectionNames.Exhibitions}
+      SORT exhibition.exhibitionDates.exhibitionStartDate.value DESC
+      FILTER exhibition.published == true 
+      AND exhibition.exhibitionDates.exhibitionStartDate.value <= DATE_ISO8601(DATE_NOW()) 
+      AND exhibition.exhibitionDates.exhibitionEndDate.value >= DATE_ISO8601(DATE_NOW())
+      LIMIT 0, @limit
+      RETURN exhibition
+    )
+    
+    FOR exhibition IN exhibitions
+        LET gallery = (
+            FOR g, edge IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
+                RETURN g
+        )[0]
+        LET artworks = (
+            FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
+            SORT artworkEdge.exhibitionOrder ASC
+            RETURN {
+                [artwork._id]: {
+                    _id: artwork._id,
+                    artworkImage: artwork.artworkImage,
+                    artworkTitle: artwork.artworkTitle
+                }
+            }
+        )
+        
+    RETURN {
+        artworkPreviews: artworks,
+        exhibitionId: exhibition._id,
+        galleryId: gallery._id,
+        exhibitionDuration: exhibition.exhibitionDates,
+        openingDate: {value: exhibition.exhibitionDates.exhibitionStartDate.value},
+        closingDate: {value: exhibition.exhibitionDates.exhibitionEndDate.value},
+        galleryLogo: gallery.galleryLogo,
+        galleryName: gallery.galleryName,
+        exhibitionTitle: exhibition.exhibitionTitle,
+        exhibitionArtist: exhibition.exhibitionArtist,
+        exhibitionLocation: {
+            exhibitionLocationString: exhibition.exhibitionLocation.locationString,
+            coordinates: exhibition.exhibitionLocation.coordinates
+        },
+        exhibitionPrimaryImage: {
+            value: exhibition.exhibitionPrimaryImage.value
+        },
+        receptionDates: exhibition.receptionDates
+    }
+    `
+  
+    try {
+      const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit });
+      const exhibitionPreviews = (await edgeCursor.all()).filter((el) => el && Object?.values(el.artworkPreviews)?.length > 0);
+
+      return exhibitionPreviews.reduce((acc, obj) =>{
+        acc[obj.exhibitionId as string] = {...obj, artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2}), {})}
+        return acc}, {})
+  
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
+
+  public async listExhibitionsPreviewsForthcomingForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: ExhibitionPreview} | void> {
+ 
+    const getExhibitionPreviewQuery = `
+    WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}
+    LET exhibitions = (
+      FOR exhibition IN ${CollectionNames.Exhibitions}
+      SORT exhibition.exhibitionDates.exhibitionStartDate.value DESC
+      FILTER exhibition.published == true AND exhibition.exhibitionDates.exhibitionStartDate.value > DATE_ISO8601(DATE_NOW())
+      LIMIT 0, @limit
+      RETURN exhibition
+    )
+    
+    FOR exhibition IN exhibitions
+        LET gallery = (
+            FOR g, edge IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
+                RETURN g
+        )[0]
+        LET artworks = (
+            FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
+            SORT artworkEdge.exhibitionOrder ASC
+            RETURN {
+                [artwork._id]: {
+                    _id: artwork._id,
+                    artworkImage: artwork.artworkImage,
+                    artworkTitle: artwork.artworkTitle
+                }
+            }
+        )
+        
+    RETURN {
+        artworkPreviews: artworks,
+        exhibitionId: exhibition._id,
+        galleryId: gallery._id,
+        exhibitionDuration: exhibition.exhibitionDates,
+        openingDate: {value: exhibition.exhibitionDates.exhibitionStartDate.value},
+        closingDate: {value: exhibition.exhibitionDates.exhibitionEndDate.value},
+        galleryLogo: gallery.galleryLogo,
+        galleryName: gallery.galleryName,
+        exhibitionTitle: exhibition.exhibitionTitle,
+        exhibitionArtist: exhibition.exhibitionArtist,
+        exhibitionLocation: {
+            exhibitionLocationString: exhibition.exhibitionLocation.locationString,
+            coordinates: exhibition.exhibitionLocation.coordinates
+        },
+        exhibitionPrimaryImage: {
+            value: exhibition.exhibitionPrimaryImage.value
+        },
+        receptionDates: exhibition.receptionDates
+    }
+    `
+  
+    try {
+      const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit });
+      const exhibitionPreviews = (await edgeCursor.all()).filter((el) => el && Object?.values(el.artworkPreviews)?.length > 0);
+
+      return exhibitionPreviews.reduce((acc, obj) =>{
+        acc[obj.exhibitionId as string] = {...obj, artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2}), {})}
+        return acc}, {})
+  
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
+
+  public async listExhibitionsPreviewsUserFollowingForUserByLimit(
+    {limit, uid} : {limit: number, uid: string}): Promise<{[key: string]: ExhibitionPreview} | void> {
+      const userId = this.userService.generateDartaUserId({uid})
+      const getExhibitionPreviewQuery = `
+       WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}, ${CollectionNames.DartaUsers}
+      LET followedGalleries = (
+        FOR v, e IN 1..1 OUTBOUND @userId ${EdgeNames.FROMDartaUserTOGalleryFOLLOWS}
+          RETURN v._id
+      )
+      LET exhibitions = (
+        FOR exhibition IN ${CollectionNames.Exhibitions}
+        FILTER exhibition.published == true AND LENGTH(
+          FOR g, edge IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
+            FILTER g._id IN followedGalleries
+            RETURN g
+        ) > 0
+        SORT exhibition.exhibitionDates.exhibitionStartDate.value DESC
+        LIMIT 0, @limit
+        RETURN exhibition
+      )
+      
+      FOR exhibition IN exhibitions
+          LET gallery = (
+              FOR g, edge IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
+                  RETURN g
+          )[0]
+          LET artworks = (
+              FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
+              SORT artworkEdge.exhibitionOrder ASC
+              RETURN {
+                  [artwork._id]: {
+                      _id: artwork._id,
+                      artworkImage: artwork.artworkImage,
+                      artworkTitle: artwork.artworkTitle
+                  }
+              }
+          )
+          
+      RETURN {
+          artworkPreviews: artworks,
+          exhibitionId: exhibition._id,
+          galleryId: gallery._id,
+          exhibitionDuration: exhibition.exhibitionDates,
+          openingDate: {value: exhibition.exhibitionDates.exhibitionStartDate.value},
+          closingDate: {value: exhibition.exhibitionDates.exhibitionEndDate.value},
+          galleryLogo: gallery.galleryLogo,
+          galleryName: gallery.galleryName,
+          exhibitionTitle: exhibition.exhibitionTitle,
+          exhibitionArtist: exhibition.exhibitionArtist,
+          exhibitionLocation: {
+              exhibitionLocationString: exhibition.exhibitionLocation.locationString,
+              coordinates: exhibition.exhibitionLocation.coordinates
+          },
+          exhibitionPrimaryImage: {
+              value: exhibition.exhibitionPrimaryImage.value
+          },
+          receptionDates: exhibition.receptionDates
+      }
+    `;
+    
+  
+    try {
+      const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit, userId});
+      const exhibitionPreviews = (await edgeCursor.all()).filter((el) => el && Object?.values(el.artworkPreviews)?.length > 0);
+      return exhibitionPreviews.reduce((acc, obj) =>{
+        acc[obj.exhibitionId as string] = {...obj, artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2}), {})}
+        return acc}, {})
+
+
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
+
   public async listActiveExhibitionsByCity({cityName} : {cityName: string}): Promise<any>{
 
     const findCollections = `
@@ -776,12 +982,11 @@ export class ExhibitionService implements IExhibitionService {
             COLLECT galleryId = gallery._id INTO groupByGallery = {exhibition, gallery}
             LET mostRecentExhibition = FIRST(groupByGallery)
             RETURN {
-                // Gallery information
                 galleryId: galleryId,
                 galleryName: mostRecentExhibition.gallery.galleryName,
                 galleryLogo: mostRecentExhibition.gallery.galleryLogo,
                 // Most recent exhibition information
-                exhibitionId: mostRecentExhibition.exhibition._key, // or .exhibitionId depending on your schema
+                exhibitionId: mostRecentExhibition.exhibition._key,
                 exhibitionTitle: mostRecentExhibition.exhibition.exhibitionTitle,
                 exhibitionLocation: mostRecentExhibition.exhibition.exhibitionLocation,
                 exhibitionPrimaryImage: mostRecentExhibition.exhibition.exhibitionPrimaryImage,
@@ -1064,7 +1269,7 @@ export class ExhibitionService implements IExhibitionService {
   }): Promise<boolean> {
     const promises = Object.values(artwork).map(async (art: Artwork) => {
       if (art?.artworkId) {
-        return await this.editArtworkToLocationEdge({
+        await this.editArtworkToLocationEdge({
           locationData,
           artworkId: art.artworkId,
         });

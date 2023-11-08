@@ -182,6 +182,8 @@ export function DartaRecommenderView({
     if(artwork.artworkDimensions.heightIn){
       height = Number(artwork.artworkDimensions.heightIn.value)
     }
+
+
     
     const tooTall = artworkHeight && height > 66;
 
@@ -313,7 +315,7 @@ export function DartaRecommenderView({
       currentArtworkHeader: artOnDisplay?.artworkTitle?.value!,
     });
     if (artOnDisplay){
-      navigation.navigate(RecommenderRoutesEnum.TopTabExhibition, {artOnDisplay, galleryId: artOnDisplay?.galleryId});
+      navigation.navigate(RecommenderRoutesEnum.TopTabExhibition, {artOnDisplay, galleryId: artOnDisplay?.galleryId, exhibitionId: artOnDisplay?.exhibitionId});
     }
   };
 
