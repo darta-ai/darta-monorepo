@@ -74,14 +74,14 @@ export function ExhibitionHomeTopTabNavigator({route} : {route: any}) {
     <ExhibitionHomeTopTab.Navigator screenOptions={{...tabBarScreenOptions}}>
       <ExhibitionHomeTopTab.Group>
           <ExhibitionHomeTopTab.Screen
-            name={ExhibitionPreviewEnum.following}
-            component={ExhibitionPreviewScreen}
-            options={{ title: 'Following' }}
-          />
-        <ExhibitionHomeTopTab.Screen
             name={ExhibitionPreviewEnum.onView}
             component={ExhibitionPreviewScreen}
             options={{ title: 'On View' }}
+          />
+          <ExhibitionHomeTopTab.Screen
+            name={ExhibitionPreviewEnum.following}
+            component={ExhibitionPreviewScreen}
+            options={{ title: 'Following' }}
           />
           <ExhibitionHomeTopTab.Screen
             name={ExhibitionPreviewEnum.forthcoming}
