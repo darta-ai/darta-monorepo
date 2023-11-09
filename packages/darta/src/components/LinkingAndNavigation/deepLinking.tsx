@@ -87,6 +87,7 @@ async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: st
     const params = Linking.parse(event.url).queryParams;
 
     if (params && params.locationId) {
+      navigation.navigate('exhibitions', { screen: ExhibitionRootEnum.genericLoading });
       try{
         const res = await fetchMostRecentExhibitionData({locationId: params.locationId.toString()})
         if (res){
@@ -107,6 +108,7 @@ async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: st
         return
       }
     } else if (params && params.exhibitionId && params.galleryId) {
+      navigation.navigate('exhibitions', { screen: ExhibitionRootEnum.genericLoading});
       const res = await fetchExhibitionById({exhibitionId: params.exhibitionId.toString(), galleryId: params.galleryId.toString()})
       if (res){
         const {exhibitionId, galleryId} = res

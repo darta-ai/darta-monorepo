@@ -19,6 +19,7 @@ import { Linking, Platform } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 import Share from 'react-native-share'
 import { ExhibitionHomeTopTabNavigator } from './ExhibitionHomeTopTabNavigator';
+import { GenericLoadingScreen } from '../../screens/Loading/GenericLoading';
 
 export const ExhibitionStack = createStackNavigator();
 
@@ -90,6 +91,29 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
                 onPress={() => shareExhibition()}
               />
             ),
+            headerLeft: () => ( 
+              <View>
+                <HeaderBackButton 
+                  onPress={() => {
+                    navigation.dispatch(
+                      CommonActions.reset({
+                        index: 0, // sets the active route index
+                        routes: [
+                          { name: ExhibitionRootEnum.exhibitionHome }, // the only route in the stack after reset
+                        ],
+                      })
+                    );
+                  }}
+                  tintColor={PRIMARY_800}
+                />
+              </View>
+            )
+            }}
+          />
+          <ExhibitionStack.Screen
+            name={ExhibitionRootEnum.genericLoading}
+            component={GenericLoadingScreen}
+            options={{...headerOptions, 
             headerLeft: () => ( 
               <View>
                 <HeaderBackButton 

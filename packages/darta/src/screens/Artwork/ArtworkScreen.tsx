@@ -3,19 +3,10 @@ import {Alert, View, Vibration} from 'react-native';
 import {ETypes, StoreContext} from '../../state/Store';
 import {TombstonePortrait} from '../../components/Tombstone/_index';
 import {NeedAccountDialog} from '../../components/Dialog/NeedAccountDialog';
-import { IGalleryProfileData, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
-import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
+import { USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
+import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
 import auth from '@react-native-firebase/auth';
-import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
-import { GalleryNavigatorEnum, GalleryRootStackParamList } from '../../typing/routes';
-import { RouteProp } from '@react-navigation/native';
 import { getDartaUser } from '../../api/userRoutes';
-
-
-type ProfileScreenNavigationProp = RouteProp<
-  GalleryRootStackParamList,
-  GalleryNavigatorEnum.gallery
->;
 
 
 export function ArtworkScreen({route}: {route: any}) {
