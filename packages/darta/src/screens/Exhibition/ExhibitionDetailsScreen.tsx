@@ -9,7 +9,6 @@ import { ETypes } from '../../state/Store';
 import {TextElement} from '../../components/Elements/_index';
 import {customLocalDateString, customFormatTimeString, simplifyAddress} from '../../utils/functions';
 import { ActivityIndicator } from 'react-native-paper';
-import {readMostRecentGalleryExhibitionForUser} from '../../api/exhibitionRoutes';
 import { listGalleryExhibitionPreviewForUser } from '../../api/galleryRoutes';
 import {
   ExhibitionRootEnum
@@ -25,6 +24,7 @@ import { readExhibition } from '../../api/exhibitionRoutes';
 import { mapStylesJson } from '../../utils/mapStylesJson';
 import { readGallery } from '../../api/galleryRoutes';
 import { TextElementMultiLine } from '../../components/Elements/TextElement';
+import { WebView } from 'react-native-webview';
 
 const exhibitionDetailsStyles = StyleSheet.create({
     exhibitionTitleContainer: {
@@ -131,6 +131,8 @@ export function ExhibitionDetailsScreen({
   const [exhibitionId, setExhibitionId] = React.useState<string>("")
   const [errorText, setErrorText] = React.useState<string>("");
   const [isGalleryLoaded, setIsGalleryLoaded] = React.useState<boolean>(false);
+  const [vimeoURL, setVimeoURL] = React.useState<string>("");
+
 
   const [currentExhibition, setCurrentExhibition] = React.useState<Exhibition | null>(null);
 
@@ -161,6 +163,18 @@ export function ExhibitionDetailsScreen({
   const [artistName, setArtistName] = React.useState<string>("")
 
   const setExhibitionData = ({currentExhibition, currentGallery} : {currentExhibition: Exhibition, currentGallery: IGalleryProfileData}) => {
+
+    if (currentExhibition?.videoLink?.value){
+        const url = currentExhibition.videoLink.value
+        if (url.includes('https://player.vimeo.com/video/')){
+            setVimeoURL(url)
+            return
+        }
+        const vimeoId = url.split('/').pop()
+        const vimeoUrl = `https://player.vimeo.com/video/${vimeoId}`
+        setVimeoURL(vimeoUrl)
+    }
+
     if (currentExhibition._id){
         setExhibitionId(currentExhibition._id)
     }
@@ -557,8 +571,24 @@ export function ExhibitionDetailsScreen({
             {isCalendarFailure && (
             <TextElement sx={{color: Colors.PRIMARY_900}}>error occurred adding event</TextElement>
             )}
+            </View>
         </View>
-        </View>
+        {currentExhibition?.videoLink?.value && (
+                <View style={exhibitionDetailsStyles.pressReleaseContainer}>
+                    <TextElement style={exhibitionDetailsStyles.descriptionText}>
+                        Video
+                    </TextElement>
+                    {vimeoURL && (
+                        <WebView
+                        source={{ uri: vimeoURL}}
+                        style={{ width: wp('95%'), height: hp('30%') }}
+                        allowsFullscreenVideo={true}
+                        javaScriptEnabled={true}
+                        domStorageEnabled={true}
+                        />
+                    )}
+                </View>
+            )}
             {currentExhibition?.exhibitionPressRelease?.value && (
                 <View style={exhibitionDetailsStyles.pressReleaseContainer}>
                     <TextElement style={exhibitionDetailsStyles.descriptionText}>

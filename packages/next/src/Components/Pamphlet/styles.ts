@@ -34,9 +34,9 @@ export const splashStyles = {
     },
   },
   typographyTitleContainer: {
-    minHeight: '30%',
+    minHeight: '25%',
     '@media (min-width:1280px)': {
-      height: '30%',
+      height: '25%',
     },
   },
   typographyTitle: {

@@ -1,6 +1,8 @@
+/* eslint-disable no-underscore-dangle */
 import * as Colors from '@darta-styles'
 import {Artwork, Exhibition} from '@darta-types';
 import Block from '@mui/icons-material/Block';
+import QrCodeIcon from '@mui/icons-material/QrCode';
 import SendIcon from '@mui/icons-material/Send';
 import {
   Box,
@@ -35,6 +37,7 @@ import {
 } from '../../API/exhibitions/exhibitionRotes';
 import {ArtworkHeader} from '../Artwork';
 import {DartaErrorAlert} from '../Modals';
+import { PreviewQRDialogue } from '../Modals/PreviewQRDialogue';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
 import {ExhibitionArtworkList} from './ExhibitionArtworkList';
 import {CreateExhibition} from './index';
@@ -60,6 +63,8 @@ export function ExhibitionCard({
   const {state, dispatch} = useAppState();
   const [artworks, setArtworks] = React.useState<any>(exhibition.artworks);
   const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
+  const [qrCodeOpen, setQrCodeOpen] = React.useState<boolean>(false);
+
   const [artworkLoading, setArtworkLoading] = React.useState<boolean>(false);
   const [isSwappingLoading, setIsSwappingLoading] =
     React.useState<boolean>(false);
@@ -519,6 +524,19 @@ export function ExhibitionCard({
               flexDirection: 'column',
             },
           }}>
+            <Button
+              variant="contained"
+              className="exhibition-publish-button"
+              disabled={publishSpinner}
+              style={{backgroundColor: Colors.PRIMARY_50}}
+              onClick={() => setQrCodeOpen(true)}
+              startIcon={<QrCodeIcon style={{color: Colors.PRIMARY_500}} 
+              />}
+              sx={{alignSelf: 'center', m: '1vh'}}>
+                <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_500}}>
+                    Preview
+                  </Typography>
+              </Button>
             {exhibition.published ? (
               <Button
               variant="contained"
@@ -643,6 +661,12 @@ export function ExhibitionCard({
       <DartaErrorAlert
         errorAlertOpen={errorAlertOpen}
         setErrorAlertOpen={setErrorAlertOpen}
+      />
+      <PreviewQRDialogue 
+        exhibitionId={exhibition._id!}
+        galleryId={state.galleryProfile._id!}
+        open={qrCodeOpen}
+        handleClose={() => {setQrCodeOpen(false)}}
       />
     </Card>
   );
