@@ -211,7 +211,8 @@ export function ExhibitionPreviewScreen({
             style={dartaLogo.image}
           />
           <TextElement style={{margin: 5, color: Colors.PRIMARY_50}}>{errorText}</TextElement>
-        </ScrollView>      ) 
+        </ScrollView>      
+        ) 
       : 
     (
       <FlatList 

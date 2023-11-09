@@ -63,6 +63,7 @@ export enum ExhibitionRootEnum {
   showGallery = 'showGallery',
   TopTab = 'EXHIBITION_TOP_TAB',
   qrRouter = 'QR_ROUTER',
+  genericLoading= 'GENERIC_LOADING',
 }
 
 
