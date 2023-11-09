@@ -151,7 +151,7 @@ export function ExhibitionPreviewCard({
               <View style={exhibitionPreviewStyle.textContainer}>
                   <View>
                     <TextElement
-                      style={{...globalTextStyles.baseText, fontWeight: 'bold', color: PRIMARY_900, fontSize: 20}}>
+                      style={{...globalTextStyles.baseText, fontWeight: 'bold', color: PRIMARY_900, fontSize: 18}}>
                       {' '}
                       {exhibitionPreview.exhibitionTitle.value} 
                     </TextElement>
@@ -187,9 +187,6 @@ export function ExhibitionPreviewCard({
                 />
               </View>
             </TouchableOpacity>
-          {/* <TouchableOpacity style={exhibitionPreviewStyle.seeMoreContainer} >
-              <TextElement style={{color: PRIMARY_50}}>See More</TextElement>
-          </TouchableOpacity> */}
       </View>
     </>
   );

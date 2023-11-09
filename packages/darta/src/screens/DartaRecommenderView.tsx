@@ -20,7 +20,6 @@ import {
 import { ArtOnWall } from '../components/Artwork/ArtOnWall';
 import {
   DEFAULT_GALLERY_IMAGE,
-  DEFAULT_Gallery_Image,
   duration,
   galleryDimensionsLandscape,
   galleryDimensionsPortrait,
@@ -30,10 +29,10 @@ import {
   RecommenderRoutesEnum,
 } from '../typing/routes';
 import {ETypes, StoreContext} from '../state/Store';
-import { createArtworkRelationshipAPI, listArtworksToRateAPI } from '../utils/apiCalls';
+import { createArtworkRelationshipAPI, listArtworksToRateAPI, listArtworksToRateStatelessRandomSamplingAPI } from '../utils/apiCalls';
 import { IconButton } from 'react-native-paper';
 import { TextElement } from '../components/Elements/TextElement';
-import FastImage from 'react-native-fast-image';
+import { listArtworksToRateStatelessRandomSampling } from '../api/recommenderRoutes';
 
 const galleryWallRaw = DEFAULT_GALLERY_IMAGE;
 
@@ -43,14 +42,13 @@ export function DartaRecommenderView({
   navigation: any;
 }) {
   const {state, dispatch} = React.useContext(StoreContext);
-  const [artOnDisplay, setArtOnDisplay] = React.useState<Artwork | undefined>((state.artworksToRate && state.artworksToRate[0]) ? state.artworksToRate[0] : undefined);
+  const [artOnDisplay, setArtOnDisplay] = React.useState<Artwork | undefined>();
 
   React.useEffect(() => {
     if (state.artworksToRate && state.artworksToRate[0]){
       setArtOnDisplay(state.artworksToRate[0])
     }
   }, [])
-
 
   const [backgroundImage] = React.useState<ImageSourcePropType>(galleryWallRaw);
   const [currentZoomScale, setCurrentZoomScale] = React.useState<number>(1);
@@ -207,6 +205,13 @@ export function DartaRecommenderView({
 
   const onDismissSnackBar = () => setVisible(false);
 
+
+  const [visibleError, setVisibleError] = React.useState(false);
+
+  const onToggleSnackBarError = () => setVisibleError(!visibleError);
+
+  const onDismissSnackBarError = () => setVisibleError(false);
+
   const opacity = new Animated.Value(1); 
 
   const fadeOutAndIn = async (callback: () => Promise<void>) => {
@@ -251,9 +256,12 @@ export function DartaRecommenderView({
         });
     } else if (state.artworksToRate) {
         const numberOfArtworks = Object.values(state.artworksToRate).length;
-        const artworksToRate = await listArtworksToRateAPI({
+        const artworkIds = findArtworkIds({artworks: Object.values(state.artworksToRate)})
+        try{
+          const artworksToRate = await listArtworksToRateStatelessRandomSamplingAPI({
             startNumber: numberOfArtworks,
             endNumber: numberOfArtworks + 10,
+            artworkIds
         });
 
         const artwork = artworksToRate[currentIndex + 1];
@@ -270,6 +278,9 @@ export function DartaRecommenderView({
         } else {
             onToggleSnackBar();
         }
+        } catch(error: any) {
+          onToggleSnackBarError();
+        } 
     }
 };
 
@@ -360,10 +371,15 @@ export function DartaRecommenderView({
     } catch(error){
       //TO-DO: update error handling
     }
-   
-
   };
 
+  const findArtworkIds = ({artworks} : {artworks : Artwork[]}) => {
+    const artworkIds: string[] = []
+    artworks.forEach(artwork => {
+      artworkIds.push(artwork._id!)
+    })
+    return artworkIds
+  }
 
   const SSDartaGalleryView = StyleSheet.create({
     container: {
@@ -512,6 +528,20 @@ export function DartaRecommenderView({
           
         }}>
         <TextElement style={{color: Colors.PRIMARY_50}}>No more artwork to rate right now.</TextElement>
+        <TextElement style={{color: Colors.PRIMARY_50}}>Please check back later!</TextElement>
+      </Snackbar>
+      <Snackbar
+        visible={visibleError}
+        onDismiss={onDismissSnackBarError}
+        style={{backgroundColor: Colors.PRIMARY_600}}
+        action={{
+          label: 'Ok',
+          textColor: Colors.PRIMARY_950,
+          onPress: () => {
+            onDismissSnackBarError()
+          }
+        }}>
+        <TextElement style={{color: Colors.PRIMARY_50}}>Something went wrong fetching more artwork.</TextElement>
         <TextElement style={{color: Colors.PRIMARY_50}}>Please check back later!</TextElement>
       </Snackbar>
     </GestureHandlerRootView>

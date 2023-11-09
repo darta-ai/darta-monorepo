@@ -11,4 +11,15 @@ export interface IRecommenderService {
     startNumber: number;
     endNumber: number;
   }): Promise<{[key: string] : Artwork}>
+  getRecommendationsRandomSampling({
+    uid,
+    startNumber,
+    endNumber,
+    artworkIds,
+  } : {
+    uid: string;
+    startNumber: number;
+    endNumber: number;
+    artworkIds: string[];
+  }): Promise<{[key: string] : Artwork}>
 }

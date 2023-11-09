@@ -47,7 +47,7 @@ export class RecommenderService implements IRecommenderService {
       FOR art IN ${CollectionNames.Artwork}
       SORT RAND()
       FILTER art.published == true AND art.artworkDimensions.depthIn.value == '' OR art.artworkDimensions.depthIn.value == null
-      RETURN art._key
+      RETURN DISTINCT art._key
     )
 
     LET ratedArtworkByUserSAVE = (
@@ -142,13 +142,15 @@ export class RecommenderService implements IRecommenderService {
       if (!groupedArtworks[exhibitionId]) {
         groupedArtworks[exhibitionId] = [];
       }
-      groupedArtworks[exhibitionId].push({
-        ...item.artwork,
-        artistName: {value: item.artistName},
-        galleryId: item.galleryId,
-        artworkMedium: {value: item.medium},
-        exhibitionId: item.exhibitionId
-      });
+      if (item.artwork?.published){
+        groupedArtworks[exhibitionId].push({
+          ...item.artwork,
+          artistName: {value: item.artistName},
+          galleryId: item.galleryId,
+          artworkMedium: {value: item.medium},
+          exhibitionId: item.exhibitionId
+        });
+    }
     });
     return groupedArtworks;
   }
@@ -170,4 +172,26 @@ export class RecommenderService implements IRecommenderService {
     return pickedArtworks;
   }
 
-}
+  public async getRecommendationsRandomSampling({
+    uid,
+    startNumber,
+    endNumber,
+    artworkIds,
+  }: {
+    uid: string;
+    startNumber: number;
+    endNumber: number;
+    artworkIds: string[];
+  }): Promise<{[key: string]: Artwork}> {
+    const artworks = await this.generateArtworkToRecommend({uid, startNumber, endNumber});
+    if (!artworkIds || artworkIds.length === 0) return artworks;
+    const filteredArtworks = Object.values(artworks).filter(artwork => !artworkIds.includes(artwork._id!));
+    
+    const results: {[key: string]: Artwork} = {};
+    filteredArtworks.forEach((artwork, index) => {
+      const resultKey = (startNumber + index).toString();
+      results[resultKey] = artwork;
+    });  
+    return results;
+  }
+}  

@@ -209,6 +209,8 @@ export type Exhibition = {
     artworkStyleTags?: string[];
     artworkVisualTags?: string[];
     artworkCategory: PublicFields;
+    videoLink?: PublicFields;
+    pressLink?: PublicFields;
 };
 export type ExhibitionObject = {
     [key: string]: Exhibition;

@@ -58,40 +58,47 @@ export const galleryPamphletData = [
   {
     headline: 'With Discretion Built In',
     line1:
-      'Darta recognizes the importance of discretion. We have built in tools to give galleries ultimate control over what inventory is viewable to the public and what is not.',
+      `Darta recognizes the importance of discretion. 
+      We have built in tools to give galleries ultimate control over what inventory is viewable to the public and what is not.`,
     line2:
-      'With Darta, collectors cannot look up the works in your inventory. They either follow your gallery exhibitions, or discovery your works through the darta machine learning algorithm.',
+      `With Darta, collectors cannot look up the works in your inventory. 
+      They either follow your gallery exhibitions, or discovery your works through the darta machine learning algorithm.`,
   },
 ];
 
 export const aboutData = {
-  DartaCoreValue1:
-    'Welcome to Darta, your personal digital art advisor. We are committed to revolutionizing the way you discover, appreciate, and collect physical art.',
-  DartaCoreValue3:
-    "This isn't about simply aggregating artworks based on popularity, it's about delivering a curated, individualized journey through the art world. Darta's mission is to make the process of discovering and collecting art as enjoyable and rewarding as owning the artwork itself.",
+  // DartaCoreValue1:
+  //   `Welcome to Darta, your personal digital art advisor. 
+  //   We are committed to revolutionizing the way you discover, appreciate, and collect physical art.`,
+  // DartaCoreValue3:
+  //   `This isn't about simply aggregating artworks based on popularity, it's about delivering a curated, individualized journey through the art world. 
+  //   Darta's mission is to make the process of discovering and collecting art as enjoyable and rewarding as owning the artwork itself.`,
   DartaBelief3: 'emerging artists deserve a platform that rewards merit.',
   Person2: 'Pat Kirts',
   Person2Email: 'kirts@darta.art',
-  Headline: 'Meet Darta',
+  // Headline: 'Meet Darta',
   Person1: 'TJ Wetmore',
   HeadTitle: 'Darta | About',
   Person1Email: 'tj@darta.art',
   Person1Bio:
     'TJ thought of darta wandering the many galleries of Santa Fe, NM, asking the question "how the hell does anyone find art they love?"',
-  DartaCoreValue4:
-    "Whether you're a seasoned collector or new to the art world, Darta is here to guide you through your own personalized art journey, helping you discover artworks that truly resonate with you and enhance your surroundings.",
-  Person1Responsibilities: 'Product, Frontend Dev',
+  // DartaCoreValue4:
+  //   `Whether you're a seasoned collector or new to the art world, 
+  //   Darta is here to guide you through your own personalized art journey, 
+  //   helping you discover artworks that truly resonate with you and enhance your surroundings.`,
+  // Person1Responsibilities: 'Product, Frontend Dev',
   DartaObjective: 'Bringing great art into your home.',
   Person2Bio:
     'Pat is a seasoned entrepreneur with a passion for backend development ',
   WhoWeAre:
     'Darta is a collection of technologists, designers, and art lovers.',
-  DartaCoreValue2:
-    "Art speaks to each of us in unique ways. However, the vast expanse of the art world can be overwhelming. That's where Darta steps in. Our platform leverages advanced machine learning algorithms to create a personalized, immersive, and engaging art discovery experience.",
+  // DartaCoreValue2:
+  //   `Art speaks to each of us in unique ways. However, the vast expanse of the art world can be overwhelming. 
+  //   That's where Darta steps in. Our platform leverages advanced machine learning algorithms to create a personalized, immersive, and engaging art discovery experience.`,
   DartaBelief1:
-    'our homes are an extension of ourselves, and our homes should have art that reflects that.',
+    'our homes are an extension of ourselves. Our homes should have art that reflects our tastes.',
   DartaBelief2: 'local galleries deserve a national audience.',
-  Person2Responsibilities: 'ML, Backend Dev',
+  // Person2Responsibilities: 'ML, Backend Dev',
 };
 
 export const welcomeBackData = {

@@ -3,7 +3,7 @@
     "name": "darta",
     "slug": "darta",
     "scheme": "darta",
-    "version": "1.0.12",
+    "version": "1.0.13",
     "orientation": "portrait",
     "icon": "./src/assets/darta-icon.png",
     "userInterfaceStyle": "dark",

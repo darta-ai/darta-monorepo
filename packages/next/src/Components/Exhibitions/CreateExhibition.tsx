@@ -40,6 +40,8 @@ export const createExhibitionErrors = {
     'Reception end time must be after reception start time.',
 };
 
+const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w.-]*)*\/?$/i;
+
 const createExhibitionSchema = yup
   .object({
     exhibitionTitle: yup.object().shape({
@@ -64,6 +66,20 @@ const createExhibitionSchema = yup
           .string()
           .required(createExhibitionErrors.exhibitionPrimaryImage),
       }),
+    }),
+    videoLink: yup.object().shape({
+      value: yup
+      .string()
+      .nullable() // Allow null values
+      .notRequired() // Not required
+      .matches(urlRegex, { message: 'Invalid URL', excludeEmptyString: true}, )
+    }),
+    pressLink: yup.object().shape({
+      value: yup
+      .string()
+      .nullable() // Allow null values
+      .notRequired() // Not required
+      .matches(urlRegex, { message: 'Invalid URL', excludeEmptyString: true}, )
     }),
     exhibitionDates: yup
       .object()
@@ -696,13 +712,28 @@ export function CreateExhibition({
       <Box key="videoLink" sx={createArtworkStyles.multiLineContainer}>
         <DartaTextInput
           fieldName="videoLink"
-          data={newExhibition.exhibitionArtistStatement?.value}
+          data={newExhibition.videoLink?.value}
           register={register}
           errors={errors}
           required={false}
           control={control}
-          helperTextString={errors.exhibitionArtistStatement?.value?.message}
+          helperTextString={errors.videoLink?.value?.message}
           inputAdornmentString="Video Link"
+          toolTips={exhibitionPressReleaseToolTip}
+          allowPrivate={false}
+          inputAdornmentValue={null}
+        />
+      </Box>
+      <Box key="pressLink" sx={createArtworkStyles.multiLineContainer}>
+        <DartaTextInput
+          fieldName="pressLink"
+          data={newExhibition.pressLink?.value}
+          register={register}
+          errors={errors}
+          required={false}
+          control={control}
+          helperTextString={errors.pressLink?.value?.message}
+          inputAdornmentString="Press Link"
           toolTips={exhibitionPressReleaseToolTip}
           allowPrivate={false}
           inputAdornmentValue={null}
