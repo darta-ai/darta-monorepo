@@ -10,7 +10,7 @@ import { listAllExhibitionsPreviewsForUser } from "../../api/exhibitionRoutes";
 
 
 import { ExhibitionPreview } from '@darta-types'
-import { ExhibitionPreviewCard } from '../../components/Previews/ExhibitionPreviewCard';
+import ExhibitionPreviewCard from '../../components/Previews/ExhibitionPreviewCard';
 import * as Colors from '@darta-styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as StoreReview from 'expo-store-review';
@@ -127,7 +127,7 @@ export function ExhibitionsHomeScreen({
   }, []);
 
 
-  const loadExhibition = async ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => {
+  const loadExhibition = React.useCallback(async ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => {
     if (state.exhibitionData && !state.exhibitionData[exhibitionId]) {
       dispatch({
         type: ETypes.setCurrentHeader,
@@ -141,9 +141,9 @@ export function ExhibitionsHomeScreen({
     } catch(error: any) {
       console.log(error)
     }
-  }   
+  }, [])
 
-  const loadGallery = async ({galleryId} : {galleryId: string}) => {
+  const loadGallery = React.useCallback(async({galleryId} : {galleryId: string}) => {
     if (state.galleryData && !state.galleryData[galleryId]) {
       dispatch({
         type: ETypes.setGalleryHeader,
@@ -156,26 +156,24 @@ export function ExhibitionsHomeScreen({
     } catch(error: any) {
       console.log(error)
     }
-  }
+  }, [])
 
   return (
-    <>
-      <FlatList 
-        data={exhibitionPreviews}
-        keyExtractor={(item) => item.exhibitionId}
-        renderItem={({item}) => (
-          <ExhibitionPreviewCard 
-              exhibitionPreview={item}
-              onPressExhibition={loadExhibition}
-              onPressGallery={loadGallery}
-            />
-          )}
-        refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}
-        onEndReachedThreshold={0.1}
-        onEndReached={onBottomLoad}
-        refreshing={bottomLoad}
-        style={{backgroundColor: Colors.PRIMARY_100}}
-        />
-    </>
+    <FlatList 
+      data={exhibitionPreviews}
+      keyExtractor={(item) => item.exhibitionId}
+      renderItem={({item}) => (
+        <ExhibitionPreviewCard 
+            exhibitionPreview={item}
+            onPressExhibition={loadExhibition}
+            onPressGallery={loadGallery}
+          />
+        )}
+      refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}
+      onEndReachedThreshold={0.1}
+      onEndReached={onBottomLoad}
+      refreshing={bottomLoad}
+      style={{backgroundColor: Colors.PRIMARY_100}}
+      />
   );
 }

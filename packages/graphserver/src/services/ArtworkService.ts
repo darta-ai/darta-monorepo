@@ -4,6 +4,7 @@ import {inject, injectable} from 'inversify';
 import _ from 'lodash';
 
 import {CollectionNames, EdgeNames} from '../config/collections';
+import { ENV } from '../config/config';
 import {newArtworkShell, standardConsoleLog} from '../config/templates';
 import {ImageController} from '../controllers/ImageController';
 import {ArtworkNode, Edge, Node} from '../models/models';
@@ -826,7 +827,7 @@ export class ArtworkService implements IArtworkService {
           fileName: artworkImage.fileName,
           bucketName: artworkImage.bucketName,
         });
-        if (artworkImageValue){
+        if (artworkImageValue && ENV === 'production'){
           await this.refreshArtworkImage({artworkId, url: artworkImageValue})
         }
       } catch (error) {

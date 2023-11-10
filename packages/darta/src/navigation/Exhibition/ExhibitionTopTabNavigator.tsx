@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import {ExhibitionRootEnum} from '../../typing/routes';
+import {ExhibitionRootEnum, ExploreMapRootEnum} from '../../typing/routes';
 import {ExhibitionGalleryScreen, ExhibitionDetailsScreen, ExhibitionArtworkScreen} from '../../screens/Exhibition'
 import { tabBarScreenOptions } from '../../theme/themeConstants';
 
@@ -17,6 +17,7 @@ export type ExhibitionStackParamList = {
     exhibitionId?: string;
     galleryId?: string;
     locationId?: string;
+    navigateTo: string;
   };
   [ExhibitionRootEnum.exhibitionGallery]: {
     galleryId?: string;
@@ -39,7 +40,7 @@ export function ExhibitionTopTabNavigator({route} : {route: any}) {
           <ExhibitionStackTopTab.Screen
             name={ExhibitionRootEnum.artworkList}
             component={ExhibitionArtworkScreen}
-            initialParams={{exhibitionId: route.params.exhibitionId, galleryId: route.params.galleryId}}
+            initialParams={{exhibitionId: route.params.exhibitionId, galleryId: route.params.galleryId, navigateTo: route.params.navigateTo}}
             options={{ title: 'Artwork' }}
           />
           <ExhibitionStackTopTab.Screen

@@ -6,7 +6,7 @@ import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-nati
 
 import * as Colors from '@darta-styles';
 import {Artwork} from '@darta-types'
-import {ArtworkCard} from '../../components/Artwork/ArtworkCard'
+import ArtworkCard from '../../components/Artwork/ArtworkCard'
 
 
 const artworkDetailsStyles = StyleSheet.create({
@@ -63,16 +63,14 @@ export function ArtworkList({
           data={[0]}
           keyExtractor={item => item.toString()}
           style={{ marginTop: hp('2.5%')}}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}
+          refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}
           renderItem={() => (
             <View style={artworkDetailsStyles.flexContainer}>
-              <View >
                 {evenArtwork && (
                   <FlatList
                     nestedScrollEnabled={false}
                     data={evenArtwork}
-                    keyExtractor={item => item.artworkId?.toString() ?? "654321"}
+                    keyExtractor={item => item._id?.toString() ?? "654321"}
                     renderItem={({item}) => (
                       <ArtworkCard
                         artwork={item}
@@ -84,15 +82,12 @@ export function ArtworkList({
                     )}
                   />
                 )}
-              </View>
-              <View>
                 {oddArtwork && (
                   <FlatList
                     nestedScrollEnabled={false}
                     data={oddArtwork}
                     keyExtractor={item => item.artworkId?.toString() ?? "123456"}
                     renderItem={({item}) => (
-                      <View>
                       <ArtworkCard
                         artwork={item}
                         displayLeft={false}
@@ -100,12 +95,10 @@ export function ArtworkList({
                         navigateTo={navigateTo}
                         navigateToParams={navigateToParams}
                       />
-                      </View>
                     )}
                   />
                 )}
               </View>
-            </View>
           )}
         />
         </View>

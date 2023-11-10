@@ -114,7 +114,7 @@ const exhibitionPreviewStyle = StyleSheet.create({
   },
 })
 
-export function ExhibitionPreviewCard({
+const ExhibitionPreviewCard = ({
     exhibitionPreview,
     onPressExhibition,
     onPressGallery,
@@ -122,7 +122,7 @@ export function ExhibitionPreviewCard({
     exhibitionPreview: ExhibitionPreview
     onPressExhibition: ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => void,
     onPressGallery: ({galleryId} : {galleryId: string}) => void,
-}) {
+}) => {
 
   const [images, setImages] = React.useState<{imageUrl: string, title?: string}[]>([])
 
@@ -134,7 +134,7 @@ export function ExhibitionPreviewCard({
       const primaryImage = {imageUrl: exhibitionPreview.exhibitionPrimaryImage?.value}
       setImages([primaryImage, ...images])
     } 
-  }, [])
+  }, [exhibitionPreview])
 
   return (
     <>
@@ -191,3 +191,17 @@ export function ExhibitionPreviewCard({
     </>
   );
 }
+
+export default React.memo(ExhibitionPreviewCard, (prevProps, nextProps) => {
+  /*
+    This is an optional comparison function that you can provide to React.memo for custom comparison logic.
+    If you omit this function, it will do a shallow comparison of props by default.
+    If you need to compare deeply nested properties, you can do so here.
+  */
+  return (
+    prevProps.exhibitionPreview === nextProps.exhibitionPreview &&
+    prevProps.onPressExhibition === nextProps.onPressExhibition &&
+    prevProps.onPressGallery === nextProps.onPressGallery 
+  );
+});
+

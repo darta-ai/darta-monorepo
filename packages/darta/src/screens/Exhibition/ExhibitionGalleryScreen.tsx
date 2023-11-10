@@ -258,15 +258,15 @@ export function ExhibitionGalleryScreen({
     const strippedExhibitionId = route?.params?.exhibitionId?.replace("Exhibitions/", "")
     const exhibitions = Object.values(inputGallery.galleryExhibitions).filter((exhibition: Exhibition) => exhibition.exhibitionId !== strippedExhibitionId)
     exhibitions.sort((a: Exhibition, b: Exhibition) => { 
-      return new Date(b.exhibitionDates.exhibitionStartDate.value as any).getTime() - new Date(a.exhibitionDates.exhibitionStartDate.value as any).getTime()
+      return new Date(b?.exhibitionDates?.exhibitionStartDate?.value as any).getTime() - new Date(a?.exhibitionDates?.exhibitionStartDate?.value as any).getTime()
     })
 
     const upcoming = exhibitions.filter((exhibition: Exhibition) => {
-      return new Date(exhibition.exhibitionDates.exhibitionStartDate.value as any) >= new Date()
+      return new Date(exhibition?.exhibitionDates?.exhibitionStartDate?.value as any) >= new Date()
     })
 
     const previous = exhibitions.filter((exhibition: Exhibition) => {
-      return new Date(exhibition.exhibitionDates.exhibitionStartDate.value as any) < new Date()
+      return new Date(exhibition?.exhibitionDates?.exhibitionStartDate?.value as any) < new Date()
     })
 
     setUpComingExhibitions(upcoming)
@@ -720,7 +720,7 @@ export function ExhibitionGalleryScreen({
                     exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
                     exhibitionGallery={gallery.galleryName?.value as string}
                     exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
-                    exhibitionDates={previousExhibition.exhibitionDates}
+                    exhibitionDates={previousExhibition?.exhibitionDates}
                     galleryLogoLink={gallery.galleryLogo?.value as string}
                     onPress={handleExhibitionPress}
                   />
@@ -746,7 +746,7 @@ export function ExhibitionGalleryScreen({
                     exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
                     exhibitionGallery={gallery.galleryName?.value as string}
                     exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
-                    exhibitionDates={previousExhibition.exhibitionDates}
+                    exhibitionDates={previousExhibition?.exhibitionDates}
                     galleryLogoLink={gallery.galleryLogo?.value as string}
                     onPress={handleExhibitionPress}
                   />

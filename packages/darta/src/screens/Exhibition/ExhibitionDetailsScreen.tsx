@@ -194,9 +194,9 @@ export function ExhibitionDetailsScreen({
         && currentExhibition.exhibitionDates?.exhibitionStartDate 
         && currentExhibition.exhibitionDates?.exhibitionEndDate
         && currentExhibition.exhibitionDates?.exhibitionDuration
-        && currentExhibition.exhibitionDates?.exhibitionStartDate.value
-        && currentExhibition.exhibitionDates?.exhibitionEndDate.value
-        && currentExhibition.exhibitionDates?.exhibitionDuration.value 
+        && currentExhibition.exhibitionDates.exhibitionStartDate?.value
+        && currentExhibition.exhibitionDates.exhibitionEndDate?.value
+        && currentExhibition.exhibitionDates.exhibitionDuration?.value 
         ) {
         setExhibitionStartDate(customLocalDateString(new Date(currentExhibition.exhibitionDates.exhibitionStartDate.value)));
         setExhibitionEndDate(customLocalDateString(new Date(currentExhibition?.exhibitionDates.exhibitionEndDate.value)));
@@ -208,8 +208,8 @@ export function ExhibitionDetailsScreen({
         && currentExhibition.receptionDates?.receptionStartTime
         && currentExhibition.receptionDates?.receptionEndTime
         && currentExhibition.receptionDates?.hasReception
-        && currentExhibition.receptionDates.receptionStartTime.value
-        && currentExhibition.receptionDates.receptionEndTime.value){
+        && currentExhibition.receptionDates.receptionStartTime?.value
+        && currentExhibition.receptionDates.receptionEndTime?.value){
             const receptionStartDay = customLocalDateString(new Date(currentExhibition.receptionDates.receptionEndTime.value))
             const receptionEndDay = customLocalDateString(new Date(currentExhibition.receptionDates.receptionEndTime.value))
 
@@ -243,8 +243,8 @@ export function ExhibitionDetailsScreen({
     if (currentGallery?.galleryName && currentGallery.galleryName.value){
         setGalleryName(currentGallery.galleryName.value);
     }
-    const startDate = currentExhibition.exhibitionDates.exhibitionStartDate.value && customLocalDateString(new Date(currentExhibition.exhibitionDates.exhibitionStartDate.value))
-    const endDate = currentExhibition?.exhibitionDates.exhibitionEndDate.value && customLocalDateString(new Date(currentExhibition?.exhibitionDates.exhibitionEndDate.value))
+    const startDate = currentExhibition?.exhibitionDates?.exhibitionStartDate?.value && customLocalDateString(new Date(currentExhibition.exhibitionDates.exhibitionStartDate.value))
+    const endDate = currentExhibition?.exhibitionDates?.exhibitionEndDate?.value && customLocalDateString(new Date(currentExhibition?.exhibitionDates.exhibitionEndDate.value))
 
     const shareString1 = `Check out this show: ${currentExhibition.exhibitionTitle.value} at ${currentGallery.galleryName.value}. `
     const shareString2 = `It's on display ${startDate} - ${endDate} at ${simplifyAddress(currentExhibition?.exhibitionLocation?.locationString?.value)}`

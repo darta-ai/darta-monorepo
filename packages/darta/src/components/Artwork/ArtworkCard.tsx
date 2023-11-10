@@ -12,7 +12,7 @@ import {TextElement} from '../Elements/_index';
 import {ETypes, StoreContext} from '../../state/Store';
 import FastImage from 'react-native-fast-image';
 
-export function ArtworkCard({
+const ArtworkCard = ({
   artwork,
   displayLeft,
   navigation,
@@ -24,7 +24,7 @@ export function ArtworkCard({
   navigation: any,
   navigateTo: string,
   navigateToParams: string
-}) {
+}) => {
   const {dispatch} = useContext(StoreContext);
 
   const navigateToTombstone = () => {
@@ -149,3 +149,18 @@ export function ArtworkCard({
     </TouchableOpacity>
   );
 }
+
+export default React.memo(ArtworkCard, (prevProps, nextProps) => {
+  /*
+    This is an optional comparison function that you can provide to React.memo for custom comparison logic.
+    If you omit this function, it will do a shallow comparison of props by default.
+    If you need to compare deeply nested properties, you can do so here.
+  */
+  return (
+    prevProps.artwork === nextProps.artwork &&
+    prevProps.displayLeft === nextProps.displayLeft &&
+    prevProps.navigation === nextProps.navigation &&
+    prevProps.navigateTo === nextProps.navigateTo &&
+    prevProps.navigateToParams === nextProps.navigateToParams
+  );
+});

@@ -15,7 +15,7 @@ import {
 
 
 import { ExhibitionPreview } from '@darta-types'
-import { ExhibitionPreviewCard } from '../../components/Previews/ExhibitionPreviewCard';
+import ExhibitionPreviewCard from '../../components/Previews/ExhibitionPreviewCard';
 import * as Colors from '@darta-styles';
 import { TextElement } from '../../components/Elements/TextElement';
 import { dartaLogo } from '../../components/User/UserInquiredArtwork';
@@ -125,7 +125,6 @@ export function ExhibitionPreviewScreen({
     try{
       const screenName = route.name
       let numberOfPreviews = 0
-      const newLimit = numberOfPreviews + 10
       switch(screenName) {
         case ExhibitionPreviewEnum.following:
           if(state.userFollowsExhibitionPreviews){
@@ -158,7 +157,7 @@ export function ExhibitionPreviewScreen({
   }, []);
 
 
-  const loadExhibition = async ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => {
+  const loadExhibition = React.useCallback(async ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => {
     if (state.exhibitionData && !state.exhibitionData[exhibitionId]) {
       dispatch({
         type: ETypes.setCurrentHeader,
@@ -172,9 +171,9 @@ export function ExhibitionPreviewScreen({
     } catch(error: any) {
       console.log(error)
     }
-  }   
+  }, [])
 
-  const loadGallery = async ({galleryId} : {galleryId: string}) => {
+  const loadGallery = React.useCallback(async({galleryId} : {galleryId: string}) => {
     if (state.galleryData && !state.galleryData[galleryId]) {
       dispatch({
         type: ETypes.setGalleryHeader,
@@ -187,7 +186,7 @@ export function ExhibitionPreviewScreen({
     } catch(error: any) {
       console.log(error)
     }
-  }
+  }, [])
 
   return (
     <>

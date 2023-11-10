@@ -2,7 +2,6 @@ import React from 'react';
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import {ExhibitionPreviewEnum, ExhibitionRootEnum} from '../../typing/routes';
-import {ExhibitionGalleryScreen, ExhibitionDetailsScreen, ExhibitionArtworkScreen} from '../../screens/Exhibition'
 import { tabBarScreenOptions } from '../../theme/themeConstants';
 import { ExhibitionPreviewScreen } from '../../screens/Exhibition/ExhibitionsPreviewScreen';
 import { StoreContext } from '../../state/Store';

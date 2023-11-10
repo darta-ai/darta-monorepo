@@ -3,7 +3,7 @@ import React, {useContext} from 'react';
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import {StoreContext} from '../../state/Store';
-import {PreviousExhibitionRootEnum} from '../../typing/routes';
+import {ExhibitionRootEnum, PreviousExhibitionRootEnum} from '../../typing/routes';
 import {ExhibitionDetailsScreen, ExhibitionArtworkScreen} from '../../screens/Exhibition'
 import { tabBarScreenOptions } from '../../theme/themeConstants';
 
@@ -42,7 +42,7 @@ export function PastExhibitionTopTabNavigator({route} : {route: any}) {
       <PreviousExhibitionStackTopTab.Screen
           name={PreviousExhibitionRootEnum.artworkList}
           component={ExhibitionArtworkScreen}
-          initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId}}
+          initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId, navigateTo: route.params?.navigateTo ?? ExhibitionRootEnum.individualArtwork }}
           options={{ title: 'artworks' }}
         />
     </PreviousExhibitionStackTopTab.Navigator>

@@ -64,11 +64,13 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
                 onPress={() => shareExhibition()}
               />
           )}}
+            initialParams={{navigateTo: ExhibitionRootEnum.individualArtwork}}
           />
           <ExhibitionStack.Screen
             name={PreviousExhibitionRootEnum.navigatorScreen}
             component={PastExhibitionTopTabNavigator}
             options={{...headerOptions, headerTitle: state.previousExhibitionHeader ?? ""}}
+            initialParams={{navigateTo: ExhibitionRootEnum.individualArtwork}}
             />
           <ExhibitionStack.Screen
             name={ExhibitionRootEnum.individualArtwork}
