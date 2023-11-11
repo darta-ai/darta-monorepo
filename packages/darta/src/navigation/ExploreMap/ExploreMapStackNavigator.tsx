@@ -2,12 +2,13 @@ import {PRIMARY_800} from '@darta-styles';
 import React, {useContext} from 'react';
 
 import {StoreContext} from '../../state/Store';
-import {headerOptions} from '../../styles/styles';
+import {headerOptions, modalHeaderOptions} from '../../styles/styles';
 import { ExploreMapRootEnum} from '../../typing/routes';
 import { ExploreMapHomeScreen } from '../../screens/ExploreMap/ExploreMapHomeScreen';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { ExhibitionTopTabNavigator } from '../Exhibition/ExhibitionTopTabNavigator';
 import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
+import { ArtworkScreen } from '../../screens/Artwork/ArtworkScreen';
 
 export const ExploreMapStack = createStackNavigator();
 
@@ -27,21 +28,26 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
         <ExploreMapStack.Screen
           name={ExploreMapRootEnum.TopTabExhibition}
           component={ExhibitionTopTabNavigator}
-          initialParams={{navigationRoute: ExploreMapRootEnum.explorePastNavigator}}
+          initialParams={{navigationRoute: ExploreMapRootEnum.explorePastNavigator, navigateTo: ExploreMapRootEnum.individualArtwork}}
           options={{...headerOptions, headerTitle: state.currentExhibitionHeader ?? ""}}
         />
         <ExploreMapStack.Screen
           name={ExploreMapRootEnum.explorePastNavigator}
           component={ExhibitionTopTabNavigator}
-          initialParams={{navigationRoute: ExploreMapRootEnum.explorePastNavigator}}
+          initialParams={{navigationRoute: ExploreMapRootEnum.explorePastNavigator, navigateTo: ExploreMapRootEnum.individualArtwork }}
           options={{...headerOptions, headerTitle: state.currentExhibitionHeader ?? ""}}
         />
         <ExploreMapStack.Screen
           name={ExploreMapRootEnum.exploreMapGallery}
           component={ExhibitionGalleryScreen}
-          initialParams={{galleryId: route.params?.galleryId, showPastExhibitions: true, navigationRoute: ExploreMapRootEnum.explorePastNavigator}}
+          initialParams={{galleryId: route.params?.galleryId, showPastExhibitions: true, navigationRoute: ExploreMapRootEnum.explorePastNavigator, navigateTo: ExploreMapRootEnum.individualArtwork}}
           options={{...headerOptions, headerTitle: state.galleryHeader ?? ""}}
         />
+        <ExploreMapStack.Screen
+            name={ExploreMapRootEnum.individualArtwork}
+            component={ArtworkScreen}
+            options={{...modalHeaderOptions, presentation: 'modal', headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
+          />
     </ExploreMapStack.Navigator>
   );
 }

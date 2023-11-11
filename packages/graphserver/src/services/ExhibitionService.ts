@@ -15,6 +15,7 @@ import {inject, injectable} from 'inversify';
 import _ from 'lodash';
 
 import {CollectionNames, EdgeNames} from '../config/collections';
+import { ENV } from '../config/config';
 import {newExhibitionShell} from '../config/templates';
 import {ImageController} from '../controllers/ImageController';
 import {
@@ -216,7 +217,7 @@ export class ExhibitionService implements IExhibitionService {
     if (exhibition?.exhibitionPrimaryImage?.value) {
       shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: exhibition?.exhibitionPrimaryImage.value})
     }
-    if (shouldRegenerate && exhibition?.exhibitionPrimaryImage?.fileName && exhibition?.exhibitionPrimaryImage?.bucketName) {
+    if (shouldRegenerate && ENV === 'production' && exhibition?.exhibitionPrimaryImage?.fileName && exhibition?.exhibitionPrimaryImage?.bucketName) {
       const {fileName, bucketName} = exhibition.exhibitionPrimaryImage;
       imageValue = await this.imageController.processGetFile({
         fileName,
@@ -719,6 +720,7 @@ export class ExhibitionService implements IExhibitionService {
         LET artworks = (
             FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
             SORT artworkEdge.exhibitionOrder ASC
+            LIMIT 10
             RETURN {
                 [artwork._id]: {
                     _id: artwork._id,
@@ -784,6 +786,7 @@ export class ExhibitionService implements IExhibitionService {
         LET artworks = (
             FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
             SORT artworkEdge.exhibitionOrder ASC
+            LIMIT 10
             RETURN {
                 [artwork._id]: {
                     _id: artwork._id,
@@ -848,6 +851,7 @@ export class ExhibitionService implements IExhibitionService {
         LET artworks = (
             FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
             SORT artworkEdge.exhibitionOrder ASC
+            LIMIT 10
             RETURN {
                 [artwork._id]: {
                     _id: artwork._id,
@@ -907,7 +911,7 @@ export class ExhibitionService implements IExhibitionService {
           FOR g, edge IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
             FILTER g._id IN followedGalleries
             RETURN g
-        ) > 0
+        ) > 0 AND exhibition.exhibitionDates.exhibitionStartDate.value <= DATE_ISO8601(DATE_NOW())
         SORT exhibition.exhibitionDates.exhibitionStartDate.value DESC
         LIMIT 0, @limit
         RETURN exhibition
@@ -921,6 +925,7 @@ export class ExhibitionService implements IExhibitionService {
           LET artworks = (
               FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
               SORT artworkEdge.exhibitionOrder ASC
+              LIMIT 10
               RETURN {
                   [artwork._id]: {
                       _id: artwork._id,

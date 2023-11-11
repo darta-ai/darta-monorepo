@@ -10,11 +10,13 @@ import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 
 import {CollectionNames, EdgeNames} from '../config/collections';
+import { ENV } from '../config/config';
 import {ImageController} from '../controllers/ImageController';
 import { filterOutPrivateRecordsMultiObject } from '../middleware';
 import {City, Gallery} from '../models/GalleryModel';
 import {Node} from '../models/models';
 import {IAdminService,IEdgeService, IGalleryService, INodeService} from './interfaces';
+
 
 const BUCKET_NAME = 'logo';
 
@@ -119,7 +121,7 @@ export class GalleryService implements IGalleryService {
     if (galleryLogo?.value) {
       shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: galleryLogo.value})
     }
-    if (shouldRegenerate && galleryLogo?.bucketName && galleryLogo?.fileName) {
+    if (shouldRegenerate && ENV === 'production' && galleryLogo?.bucketName && galleryLogo?.fileName) {
       try {
         url = await this.imageController.processGetFile({
           bucketName: galleryLogo?.bucketName,

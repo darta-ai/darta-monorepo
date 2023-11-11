@@ -178,7 +178,7 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
           evenArtwork={evenArtwork as Artwork[]}
           oddArtwork={oddArtwork as Artwork[]}
           navigation={navigation}
-          navigateTo={ExhibitionRootEnum.individualArtwork}
+          navigateTo={route?.params.navigateTo ?? ExhibitionRootEnum.individualArtwork}
           navigateToParams={ExhibitionRootEnum.TopTab}
         />
       )}

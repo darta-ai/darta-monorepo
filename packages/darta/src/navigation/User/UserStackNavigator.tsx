@@ -59,16 +59,18 @@ export function UserStackNavigator({route} : {route: any}) {
           name={UserRoutesEnum.UserGalleryAndArtwork}
           component={GalleryAndArtworkTopTabNavigator}
           options={{...headerOptions, headerTitle: state.currentArtworkTombstoneHeader}}
+          initialParams={{navigateTo: UserRoutesEnum.SavedArtworkModal}}
         />
         <UserStack.Screen
           name={UserRoutesEnum.UserPastTopTabNavigator}
           component={PastExhibitionTopTabNavigator}
-          options={{...headerOptions, headerTitle: state.previousExhibitionHeader ?? ""}}
+          options={{...headerOptions, headerTitle: state.previousExhibitionHeader ?? "" }}
+          initialParams={{navigateTo: UserRoutesEnum.SavedArtworkModal}}
           />
         <UserStack.Screen
           name={UserRoutesEnum.UserGallery}
           component={ExhibitionGalleryScreen}
-          initialParams={{galleryId: route.params?.artOnDisplay.galleryId, navigationRoute: UserRoutesEnum.UserPastTopTabNavigator, showPastExhibitions: true}}
+          initialParams={{galleryId: route.params?.artOnDisplay.galleryId, navigationRoute: UserRoutesEnum.UserPastTopTabNavigator, showPastExhibitions: true, navigateTo: UserRoutesEnum.SavedArtworkModal}}
           options={{...headerOptions, headerTitle: state.galleryHeader ?? ""}}
           />
       </UserStack.Group>

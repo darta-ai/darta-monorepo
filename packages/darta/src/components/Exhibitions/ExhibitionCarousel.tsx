@@ -38,21 +38,17 @@ interface ItemProps {
     title: string
   }
 }
-const CustomItem: React.FC<ItemProps> = ({ item, animationValue }: {item: any, animationValue: any}) => {
 
-  const image = item?.imageUrl ? {uri: item.imageUrl} : image404;
-  const maskStyle = useAnimatedStyle(() => {
-    const backgroundColor = interpolateColor(
+// Define the CustomItem component
+const CustomItemComponent = ({ item, animationValue }) => {
+  const image = item?.imageUrl ? { uri: item.imageUrl } : image404;
+  const maskStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
       animationValue.value,
       [-1, 0, 1],
       [Colors.PRIMARY_200, Colors.PRIMARY_100, Colors.PRIMARY_200],
-    );
-    
-
-    return {
-      backgroundColor,
-    };
-  }, [animationValue]);
+    ),
+  }));
 
   return (
     <View style={{ flex: 1 }}>
@@ -71,45 +67,38 @@ const CustomItem: React.FC<ItemProps> = ({ item, animationValue }: {item: any, a
         ]}
       >
         <FastImage 
-        source={{...image, priority: FastImage.priority.normal,
-        }} 
-        style={carouselStyle.heroImage} 
-        resizeMode={FastImage.resizeMode.contain}
+          source={{ ...image, priority: FastImage.priority.normal }}
+          style={carouselStyle.heroImage} 
+          resizeMode={FastImage.resizeMode.contain}
         />
-        <TextElement style={{fontFamily: "AvenirNext-Italic", color: Colors.PRIMARY_900, alignSelf: "center"}}>{item?.title}</TextElement>
-        </Animated.View>
+        <TextElement style={{ fontFamily: "AvenirNext-Italic", color: Colors.PRIMARY_900, alignSelf: "center" }}>
+          {item?.title}
+        </TextElement>
+      </Animated.View>
     </View>
   );
 };
-export function ExhibitionCarousel({images} : {images: {imageUrl: string, title?: string}[]}) {
-  const animationStyle: any = React.useCallback(
-    (value: number) => {
-      "worklet";
 
-      const zIndex = interpolate(value, [-1, 0, 1], [10, 20, 30]);
-      const translateX = interpolate(
-        value,
-        [-2, 0, 1],
-        [-WIDTH, 0, WIDTH],
-      );
+const CustomItem = React.memo(CustomItemComponent, (prevProps, nextProps) => {
+  return prevProps.item === nextProps.item;
+});
 
-      return {
-        transform: [{ translateX }],
-        zIndex,
-      };
-    },
-    [],
-  );
+const animationStyle = (value) => {
+  "worklet";
+  const zIndex = interpolate(value, [-1, 0, 1], [10, 20, 30]);
+  const translateX = interpolate(value, [-2, 0, 1], [-WIDTH, 0, WIDTH]);
+  return {
+    transform: [{ translateX }],
+    zIndex,
+  };
+};
 
+// The ExhibitionCarousel component
+export function ExhibitionCarousel({ images }) {
   const carouselRef = React.useRef<any>(null);
 
-  const prevSlide = () => {
-    carouselRef.current?.prev();
-  };
-
-  const nextSlide = () => {
-    carouselRef.current?.next();
-  };
+  const prevSlide = () => carouselRef.current?.prev();
+  const nextSlide = () => carouselRef.current?.next();
 
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -122,23 +111,20 @@ export function ExhibitionCarousel({images} : {images: {imageUrl: string, title?
         autoPlay={false}
         width={WIDTH}
         data={images}
-        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         scrollAnimationDuration={100}
-        renderItem={({ item, animationValue, index}) => {
-        return (
-            <CustomItem
-              key={item.title}
-              index={index}
-              item={item as any}
-              animationValue={animationValue}
-            />
-          );
-        }}
+        renderItem={({ item, animationValue }) => (
+          <CustomItem
+            item={item}
+            animationValue={animationValue}
+          />
+        )}
         customAnimation={animationStyle}
       />
       <TouchableOpacity onPress={nextSlide}>
         <TextElement>{">"}</TextElement>
-    </TouchableOpacity>
+      </TouchableOpacity>
     </View>
   );
 }
+

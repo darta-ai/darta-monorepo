@@ -14,6 +14,7 @@ export enum UserRoutesEnum {
     UserGalleryAndArtwork = 'USER_GALLERY_AND_ARTWORK',
     UserPastTopTabNavigator = 'USER_PAST_TOP_TAB_NAVIGATOR',
     UserGallery = 'USER_GALLERY',
+    individualArtwork= 'USER_INDIVIDUAL_ARTWORK',
   }
   
   // TO-DO
@@ -115,6 +116,7 @@ export enum ExploreMapRootEnum {
   TopTabExhibition = 'EXPLORE_MAP_TOP_TAB_EXHIBITION',
   exploreMapGallery = 'EXPLORE_MAP_GALLERY',
   explorePastNavigator = 'EXPLORE_PAST_NAVIGATOR', 
+  individualArtwork = 'INDIVIDUAL_ARTWORK',
 }
 
 export type ExploreMapParamList = {
