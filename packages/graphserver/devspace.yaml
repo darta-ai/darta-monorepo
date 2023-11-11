@@ -52,6 +52,7 @@ images:
       NODE_ENV: ${NODE_ENV}
       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
       SENDGRID_INQUIRE_TEMPLATE_ID: ${SENDGRID_INQUIRE_TEMPLATE_ID}
+      ENV: ${ENV}
 
 deployments:
   darta-api:
