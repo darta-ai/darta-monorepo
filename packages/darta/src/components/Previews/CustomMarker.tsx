@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Marker, Callout } from 'react-native-maps';
-import { Image, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
@@ -10,15 +10,16 @@ import FastImage from 'react-native-fast-image'
 import { TextElement, TextElementOneLine } from '../Elements/TextElement';
 import { globalTextStyles } from '../../styles/styles';
 
-import { simplifyAddress } from '../../utils/functions';
+import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddress, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 
 import * as Colors from '@darta-styles';
 import { ExhibitionMapPin } from '@darta-types';
 import { customDateString, customLocalDateString } from '../../utils/functions';
 import { ETypes, StoreContext } from '../../state/Store';
 import { ExploreMapRootEnum } from '../../typing/routes';
-import {IconButton} from 'react-native-paper';
+import {Button, IconButton} from 'react-native-paper';
 import { icons } from '../../utils/constants';
+import { GoogleMapsPinIcon } from '../../assets/SVGs';
 
 
 const CustomMarker = ({ 
@@ -64,14 +65,14 @@ const CustomMarker = ({
 
   const [line1, setLine1] = React.useState<string>("")
   const [line2, setLine2] = React.useState<string>("")
-  const [line3, setLine3] = React.useState<string>("")
-
+  const [exhibitionTitle, setExhibitionTitle] = React.useState<string>("")
+  const [artistName, setArtistName] = React.useState<string>("")
 
   React.useEffect(() => {
     let hasOpening = false;
     if (mapPin.exhibitionDates?.exhibitionStartDate.value && mapPin.exhibitionDates?.exhibitionEndDate.value) {
-      setStartDate(customDateString(new Date(mapPin.exhibitionDates.exhibitionStartDate.value)))
-      setEndDate(customDateString(new Date(mapPin.exhibitionDates.exhibitionEndDate.value)))
+      setStartDate(customLocalDateStringStart({date : new Date(mapPin.exhibitionDates.exhibitionStartDate.value), isUpperCase: false}))
+      setEndDate(customLocalDateStringEnd({date : new Date(mapPin.exhibitionDates.exhibitionEndDate.value), isUpperCase: false}))
     }
 
 
@@ -92,15 +93,14 @@ const CustomMarker = ({
     const hasOngoingOpening = mapPin.exhibitionDates?.exhibitionDuration?.value === "Ongoing/Indefinite";
     const hasGroupShow = mapPin.exhibitionType?.value === "Group Show"
 
-    if (hasCurrentOpening || hasOngoingOpening){
-      setLine1(mapPin.exhibitionArtist?.value || "Group Show")
-      setLine2(mapPin.exhibitionTitle?.value || "")
-      setLine3(simplifyAddress(mapPin.exhibitionLocation?.locationString?.value) ?? "")
-    } else {
-      setLine1(mapPin.galleryName.value || "")
-      setLine2(simplifyAddress(mapPin.exhibitionLocation?.locationString?.value) ?? "")
-    }
+    setLine1(mapPin.galleryName?.value || "")
+    const city = simplifyAddressCity(mapPin.exhibitionLocation?.locationString?.value)
+    const address = simplifyAddressMailing(mapPin.exhibitionLocation?.locationString?.value)
+    setLine2(`${address} ${city}`|| "")
 
+    setExhibitionTitle(mapPin.exhibitionTitle?.value || "")
+
+    setArtistName(mapPin.exhibitionArtist?.value || "Group Show")
     }, [])
 
 
@@ -115,20 +115,21 @@ const CustomMarker = ({
     container: {
       display: 'flex',
       flexDirection: 'column',
-      height: hasCurrentShow ? hp('30%') : hp('5%'),
-      width: 300,
-      justifyContent: 'space-around',
+      height: hasCurrentShow ? 281 : 158,
+      width: 315,
+      justifyContent: 'flex-start',
       alignItems: 'center',
+      padding: 24,
+      gap: 20
     },
     galleryContainer:{
         width: '100%',
+        height: 50,
         display:'flex',
-        height: hasCurrentShow ? hp('5%') : '100%',
         flexDirection: "row",
-        gap: 10,
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        margin: hp('1%'),
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        gap: 4
     },
     galleryNameContainer: {
       display: 'flex',
@@ -138,18 +139,17 @@ const CustomMarker = ({
     },
     exhibitionContainer: {
       display: 'flex',
-      flexDirection: 'column',
-      height: hp('22%'),
+      flexDirection: 'row',
+      height: 100,
       width: '100%',
-      marginTop: hp('3%'),
-      gap: wp('1%'),
+      gap: 16,
       justifyContent: 'space-around',
       alignItems: 'center',
       
     },
     heroImageContainer: {
-      height: hp('15%'),
-      width: '100%',
+      height: 100,
+      width: '40%',
       display:'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -159,13 +159,28 @@ const CustomMarker = ({
       height: '100%',
     },
     textContainer:{
-      width: '100%',
-      height: hp('5%'),
+      width: '60%',
+      height: 100,
       display: "flex",
       flexDirection: "column",
       alignContent: "center",
-      justifyContent: "space-around",
-
+      justifyContent: "center",
+    }, 
+    buttonStyles: {
+      width: 265,
+      height: 38,
+      backgroundColor: Colors.PRIMARY_950,
+      alignSelf: "center",
+    },
+    buttonContentStyle: {
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 0, // Or any other desired padding
+    },
+    buttonTextColor: {
+      color: Colors.PRIMARY_50,
+      fontSize: 14,
+      fontFamily: "DMSans_700Bold",
     }
   })
 
@@ -177,25 +192,15 @@ const CustomMarker = ({
       onTouchStart={() => setShowCallout(true)}
       pinColor={hasUpcomingOpening ? Colors.ADOBE_500 : Colors.PRIMARY_800}
     >
+      <GoogleMapsPinIcon />
       {showCallout && (
         <Callout style={customMarker.container} 
         onTouchStart={() => setShowCallout(false)} 
         onPress={() => {chooseRouteAndNavigate()}}>
             <View style={customMarker.galleryContainer} >
-                <FastImage
-                    source={{uri: mapPin.galleryLogo.value || ""}}
-                    style={{width: hp('5%'), maxHeight: hp('5%'), height: '100%'}}
-                    resizeMode={FastImage.resizeMode.contain}
-                />
                 <View style={customMarker.galleryNameContainer}>
-                  <TextElement style={{...globalTextStyles.centeredText, fontWeight: 'bold', color: Colors.PRIMARY_900, fontSize: 15}}>{line1}</TextElement>
-                  <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900, fontSize: 14}}>{line2}</TextElement>
-                </View>
-                <View>
-                  <IconButton 
-                    icon={icons.information}
-                    size={20}
-                  />
+                  <TextElement style={{...globalTextStyles.subHeaderInformation, fontSize: 22}}>{line1}</TextElement>
+                  <TextElement style={globalTextStyles.paragraphText}>{line2}</TextElement>
                 </View>
             </View> 
             {hasCurrentShow && (
@@ -209,14 +214,23 @@ const CustomMarker = ({
                 </View>
               <View style={customMarker.textContainer}>
                 <TextElement
-                  style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900, fontSize: 12}}>
-                  {' '}
+                  style={globalTextStyles.subHeaderInformationSize14}>
+                  {exhibitionTitle}
+                </TextElement>
+                <TextElement
+                  style={globalTextStyles.paragraphTextSize14}>
                   {startDate} {' - '} {endDate}
                 </TextElement>
-                <TextElement style={{...globalTextStyles.centeredText, color: Colors.PRIMARY_900, fontSize: 12}}>{line3}</TextElement>
+                <TextElement style={globalTextStyles.paragraphTextSize14}>{artistName}</TextElement>
               </View>
             </View>
             )}
+              <Button 
+                style={customMarker.buttonStyles}
+                contentStyle={customMarker.buttonContentStyle}
+                >
+              <TextElement style={customMarker.buttonTextColor}>View Gallery</TextElement>
+            </Button>
         </Callout>
        
       )}

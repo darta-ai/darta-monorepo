@@ -9,21 +9,36 @@ import {UserSettings} from '../../components/User/UserSettings';
 import {StoreContext} from '../../state/Store';
 import {headerOptions} from '../../styles/styles';
 import {UserRoutesEnum} from '../../typing/routes';
+import { View, Pressable, StyleSheet} from 'react-native';  
 
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { GalleryAndArtworkTopTabNavigator } from './GalleryAndArtworkTopTabNavigator';
 import { PastExhibitionTopTabNavigator } from '../Exhibition/PastExhibitionTopTabNavigator';
 import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
+import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 
 export const UserStack = createStackNavigator();
 
+const styles = StyleSheet.create({ 
+  backButton: {
+    marginLeft: 24,
+    marginTop: 10, 
+    marginBottom: 10
+  }
+});
 
 export function UserStackNavigator({route} : {route: any}) {
   const {state} = useContext(StoreContext);
   return (
     <UserStack.Navigator screenOptions={{
       headerTintColor: PRIMARY_950,
-      cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS
+      cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, 
+      headerBackImage: () => (
+        <View style={styles.backButton}>
+          <BackButtonIcon />
+        </View>
+        ),
+        headerBackTitleVisible: false,
       }}>
       <UserStack.Group>
         <UserStack.Screen

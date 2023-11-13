@@ -18,23 +18,70 @@ import { Text, Button} from 'react-native-paper'
 import {ETypes, StoreContext} from '../../state/Store';
 import {icons} from '../../utils/constants';
 import { BusinessHours, Exhibition, IGalleryProfileData } from '@darta-types';
-import { formatUSPhoneNumber, simplifyAddress } from '../../utils/functions';
+import { formatUSPhoneNumber, modifyHoursOfOperation, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
 import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
 import {readExhibition} from '../../api/exhibitionRoutes';
 import { mapStylesJson } from '../../utils/mapStylesJson';
+import { DartaIconButtonWithText } from '../../components/Darta/DartaIconButtonWithText';
+import * as SVGs from '../../assets/SVGs';
 
 const galleryDetailsStyles = StyleSheet.create({
   container: {
     flexDirection: 'column',
+    backgroundColor: Colors.PRIMARY_50,
+    width: wp('100%'),
+    height: '100%',
+    justifyContent: 'flex-start', 
+    alignItems: 'center',
+    paddingTop: 24,
+    gap: 48,
+    paddingBottom: 24,
+  },
+  bioContainer: {
+    width: wp('100%'),
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    gap: 24,
+    paddingLeft: 24,
+    paddingRight: 24,
+  },
+  galleryTitleContainer: {
+    width: wp('100%'),
+    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: Colors.PRIMARY_50,
-    width: '100%',
-    gap: hp("3%"),
-    paddingBottom: hp('5%'),
+},
+  galleryLogoContainer: {
+    display:'flex', 
+    flexDirection:'column',
+    height: 100,
+  },
+  heroImage: {
+    height: 100,
+    resizeMode: 'contain',
+  },
+  contactContainer: {
+    width: wp('100%'),
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: 24,
+    paddingLeft: 24,
+    paddingRight: 24,
+  },
+  galleryContactButtonsContainer: {
+    width: wp('100%'),
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: 16,
   },
   spinnerContainer: {
     display: 'flex',
@@ -46,41 +93,13 @@ const galleryDetailsStyles = StyleSheet.create({
     height: '100%',
     backgroundColor: Colors.PRIMARY_50,
   },
-  galleryTitleContainer: {
-      width: wp('100%'),
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: hp('3%'),
-      marginBottom: hp('1%'),
-  },
-  galleryLogoContainer: {
-      alignSelf: 'center',
-      justifyContent: 'center',
-      width: wp('90%'),
-      height: hp('20%'),
-    },
-  heroImage: {
-      maxHeight: hp('25%'),
-      minHeight: hp('20%'),
-      width: wp('90%'),
-      resizeMode: 'contain',
-  },
   galleryBioContainer: {
-      minHeight: hp('10%'),
       height: "auto",
-      width: wp('90%'),
       display: 'flex',
-      gap: wp('10%'),
-      marginTop: hp('3%'),
       flexDirection: 'column',
       justifyContent: 'flex-start',
-      alignItems: 'center',
+      alignItems: 'flex-start',
   },
-  galleryFollowContainer: {
-    minHeight: hp('10%'),
-},
   contactButtonContainer: {
     flex: 1,
     flexDirection: 'column',
@@ -122,37 +141,42 @@ const galleryDetailsStyles = StyleSheet.create({
       
   }, 
   locationContainer: {
-      width: '85%',
-      height: hp('35%'),
-      margin: 10, 
+      width: '100%',
       display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: wp('5%'),
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
+      gap: 16,
   },
   hoursContainer: {
-    backgroundColor: Colors.PRIMARY_50,
-    width: wp('85%'),
-    borderRadius: 8,
-    padding: 10,
-    shadowColor: Colors.PRIMARY_950,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
-    elevation: 2,
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'flex-start',
+    gap: 13
   },
   hoursRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 5,
+    justifyContent: 'space-between', 
   },
-  day: {
+  dayOpen: {
     fontSize: 16,
     color: '#333',
+    fontFamily: 'DMSans_400Regular',
   },
-  hours: {
+  hoursOpen: {
     fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
     color: Colors.PRIMARY_900,
+  },
+  dayClosed: {
+    fontSize: 16,
+    color: Colors.PRIMARY_200,
+    fontFamily: 'DMSans_400Regular',
+  },
+  hoursClosed: {
+    fontSize: 16,
+    fontFamily: 'Sans_400Regular_Italic',
+    color: Colors.PRIMARY_200,
+    fontStyle: 'italic'
   },
   addressContainer: {
     width: '85%',
@@ -168,12 +192,13 @@ const galleryDetailsStyles = StyleSheet.create({
     width: wp('20%'),
     color: Colors.PRIMARY_900
   },
-  previousShowContainer: {
-    width: '85%',
+  exhibitionPreviewContainer: {
+    width: '100%',
     height: 'auto',
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
+    marginBottom: 24,
   },
 })
 
@@ -241,13 +266,13 @@ export function ExhibitionGalleryScreen({
       setGalleryName(inputGallery.galleryName.value)
     }
 
-  const daysOrder = [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const daysOrder = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   if (inputGallery.galleryLocation0?.businessHours?.hoursOfOperation){
     setHoursOfOperation(inputGallery.galleryLocation0.businessHours.hoursOfOperation)
     const hoursArr = Object.entries(inputGallery.galleryLocation0.businessHours.hoursOfOperation).map(([day, hours]) => ({
-      day: day.slice(0, 3),
-      open: hours.open.value ?? "",
-      close: hours.close.value ?? ""
+      day: day,
+      open: modifyHoursOfOperation(hours.open.value),
+      close: modifyHoursOfOperation(hours.close.value)
     })).sort((a, b) => {
       return daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day);
     });
@@ -390,17 +415,17 @@ export function ExhibitionGalleryScreen({
     Animated.parallel([
       Animated.timing(opacitySetOne, {
         toValue: followsGallery ? 0 : 1,
-        duration: 300,
+        duration: 400,
         useNativeDriver: true,
       }),
       Animated.timing(opacitySetTwo, {
         toValue: followsGallery ? 1 : 0,
-        duration: 300,
+        duration: 400,
         useNativeDriver: true,
       }),
       Animated.timing(translateX, {
         toValue: followsGallery ? 100 : 0,
-        duration: 300,
+        duration: 400,
         useNativeDriver: true,
       }),
     ]).start(() => {
@@ -541,132 +566,106 @@ export function ExhibitionGalleryScreen({
     <ScrollView refreshControl={
       <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={() => onRefresh({galleryId: gallery?._id!})} />}>      
       <View style={galleryDetailsStyles.container}>
-        <View style={galleryDetailsStyles.galleryTitleContainer}>
-            <TextElement style={{...globalTextStyles.boldTitleText, fontSize: 20, color: Colors.PRIMARY_950}}>
-                {galleryName}
-            </TextElement>
-        </View>
-        <View style={galleryDetailsStyles.galleryLogoContainer}>
+        <View style={galleryDetailsStyles.bioContainer}>
+          <View style={galleryDetailsStyles.galleryTitleContainer}>
+              <TextElement style={globalTextStyles.sectionHeaderTitle}>
+                  {galleryName}
+              </TextElement>
+          </View>
           {gallery?.galleryLogo?.value && (
-          <FastImage 
-          source={{uri: gallery?.galleryLogo?.value ?? ""}}
-          style={galleryDetailsStyles.heroImage}
-          resizeMode={FastImage.resizeMode.contain}
-          />
-          )}
-        </View>
-        <View style={galleryDetailsStyles.galleryBioContainer}>
-          <Text style={{fontSize: 15, color: Colors.PRIMARY_950}}>
-            {gallery?.galleryBio?.value}
-          </Text>
-        </View>
-        <View style={galleryDetailsStyles.galleryFollowContainer}>
-        <Animated.View style={{opacity: opacitySetOne, transform: [{ translateX: translateX }] }}>
-          {!followsGallery && (
-            <Button
-            icon={"plus-box"}
-            labelStyle={{color: Colors.PRIMARY_100}}
-            style={{backgroundColor: Colors.PRIMARY_950}}
-            mode="contained"
-            onPress={() => followGallery()}
-            >Follow Gallery</Button>
-          )}
-        </Animated.View>
-        <Animated.View style={{opacity: opacitySetTwo, transform: [{ translateX: Animated.subtract(100, translateX) }]}}>
-        {followsGallery && (
-            <Button
-            icon={"minus-box"}
-            labelStyle={{color: Colors.PRIMARY_950}}
-            style={{backgroundColor: Colors.PRIMARY_100}}
-            mode="contained"
-            onPress={() => unFollowGallery()}
-            >Unfollow Gallery</Button>
-          )}
-        </Animated.View>
-
-        </View>
-        <View>
-          <TextElement style={galleryDetailsStyles.descriptionText}>
-              Contact
-          </TextElement>
-          <Divider style={galleryDetailsStyles.divider}/>
-        </View>
-
-        <View style={galleryDetailsStyles.contactButtonContainer}>
-          <View style={galleryDetailsStyles.rowButtonContainer}>
-          {gallery?.galleryInstagram?.value &&(
-            <Button
-            icon={icons.instagram}
-            labelStyle={{...galleryDetailsStyles.fontStyleButtons, width: gallery?.galleryPhone?.value ? wp('25%') : wp('40%')}}
-            style={{backgroundColor: Colors.PRIMARY_100}}
-            mode="contained"
-            onPress={() => sendToInstagram()}
-            >
-            <TextElement>{gallery.galleryInstagram.value}</TextElement>
-            </Button>
-          )}
-          {gallery?.galleryPhone?.value && (
-            <Button
-            icon={icons.phone}
-            labelStyle={{...galleryDetailsStyles.fontStyleButtons, width: gallery?.galleryInstagram?.value ? wp('25%') : wp('40%')}}
-            style={{backgroundColor: Colors.PRIMARY_100}}
-            mode="contained"
-            onPress={() => dialNumber()}
-            >
-            <TextElement>{formatUSPhoneNumber(gallery?.galleryPhone?.value)}</TextElement>
-            </Button>
+            <View style={galleryDetailsStyles.galleryLogoContainer}>
+              <FastImage 
+              source={{uri: gallery?.galleryLogo?.value ?? ""}}
+              style={galleryDetailsStyles.heroImage}
+              resizeMode={FastImage.resizeMode.contain}
+              />
+            </View>
             )}
+          <View style={galleryDetailsStyles.galleryBioContainer}>
+            <Text style={globalTextStyles.paragraphText}>
+              {gallery?.galleryBio?.value}
+            </Text>
           </View>
-          <View style={galleryDetailsStyles.rowButtonContainer}>
-            {gallery?.primaryContact?.value && (            
+            {!followsGallery && (
+          <Animated.View style={{opacity: opacitySetOne, transform: [{ translateX: translateX }] }}>
               <Button
-                icon={icons.email}
-                labelStyle={{...galleryDetailsStyles.fontStyleButtons, width: gallery?.galleryWebsite?.value ? wp('25%') : wp('40%')}}
-                style={{backgroundColor: Colors.PRIMARY_100}}
-                mode="contained"
-                onPress={() => sendEmail()}
-              >
-                <TextElement>{gallery?.primaryContact?.value}</TextElement>
-              </Button>
-            )}
-            {gallery?.galleryWebsite?.value && (
-            <Button
-              icon={icons.website}
-              labelStyle={{...galleryDetailsStyles.fontStyleButtons, width: gallery?.primaryContact?.value ? wp('25%') : wp('40%')}}
-              style={{backgroundColor: Colors.PRIMARY_100}}
+              icon={"plus"}
+              labelStyle={{color: Colors.PRIMARY_100}}
+              style={{backgroundColor: Colors.PRIMARY_950, width: wp('40%')}}
               mode="contained"
-                onPress={() => visitWebsite(gallery.galleryWebsite?.value!)}
-            >
-              <TextElement>{gallery.galleryWebsite.value.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</TextElement>
-            </Button>
+              onPress={() => followGallery()}
+              >Follow</Button>
+          </Animated.View>
+            )}
+          {followsGallery && (
+          <Animated.View style={{opacity: opacitySetTwo, transform: [{ translateX: Animated.subtract(100, translateX) }]}}>
+              <Button
+              icon={"minus"}
+              labelStyle={{color: Colors.PRIMARY_950}}
+              style={{backgroundColor: Colors.PRIMARY_100, width: wp('40%')}}
+              mode="contained"
+              onPress={() => unFollowGallery()}
+              >Unfollow</Button>
+          </Animated.View>
+            )} 
+        </View>
+      <View style={galleryDetailsStyles.contactContainer}>
+        <View>
+          <TextElement style={globalTextStyles.sectionHeaderTitle}>
+                Contact
+            </TextElement>
+          </View>
+        <View style={galleryDetailsStyles.galleryContactButtonsContainer}>
+            {gallery?.galleryPhone?.value && (
+              <DartaIconButtonWithText
+              text={formatUSPhoneNumber(gallery?.galleryPhone?.value) as string}
+              iconComponent={SVGs.PhoneIcon}
+              onPress={() => dialNumber()}
+              />
+            )}
+            {gallery?.galleryInstagram?.value &&(
+            <DartaIconButtonWithText 
+              text={gallery?.galleryInstagram?.value ?? ""}
+              iconComponent={SVGs.InstagramIcon}
+              onPress={() => sendToInstagram()}
+              />
+            )}
+            {gallery.galleryWebsite?.value &&(
+            <DartaIconButtonWithText 
+              text={gallery.galleryWebsite.value.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}
+              iconComponent={SVGs.WebIcon}
+              onPress={() => visitWebsite(gallery.galleryWebsite?.value!)}
+              />
+            )}
+            {gallery?.primaryContact?.value &&(
+            <DartaIconButtonWithText 
+              text={gallery?.primaryContact?.value}
+              iconComponent={SVGs.EmailIcon}
+              onPress={() => sendEmail()}
+              />
             )}
           </View>
         </View>
-        <View>
-          <TextElement style={galleryDetailsStyles.descriptionText}>Location{galleryAddresses.length > 1 && "s"}</TextElement>
-          <Divider style={galleryDetailsStyles.divider}/>
-        </View>
-        <View style={{...galleryDetailsStyles.locationContainer, height: galleryAddresses.length >= 2 ? hp('10%') : hp('5%')}}>
+        <View style={galleryDetailsStyles.contactContainer}>
+        <View >
+          <TextElement style={globalTextStyles.sectionHeaderTitle}>
+                Location
+            </TextElement>
+          </View>
+        <View style={galleryDetailsStyles.locationContainer}>
             {galleryAddresses.map((address) => {
+              const city = simplifyAddressCity(address)
+              const mailing = simplifyAddressMailing(address)
               return (
-                <View style={{marginBottom: 3}} key={address}>
-                  <Button
-                    icon={"map"}
-                    labelStyle={{color: Colors.PRIMARY_950}}
-                    mode="text"
-                    onPress={() => openInMaps(address)}
-                    >                
-                    <TextElement style={{...globalTextStyles.centeredText, textDecorationLine: 'underline', marginTop: hp('1%')}}>{simplifyAddress(address)}</TextElement>
-                    </Button>
-                </View>
+              <View key={address}>
+                <DartaIconButtonWithText 
+                text={`${mailing} ${city}`}
+                iconComponent={SVGs.BlackPinIcon}
+                onPress={() => openInMaps(address)}
+                />
+              </View>
               )
             })}
-        </View>
-        <View>
-          <TextElement style={galleryDetailsStyles.descriptionText}>
-              Map
-          </TextElement>
-          <Divider style={galleryDetailsStyles.divider}/>
         </View>
         <View style={{height: hp('30%'), width: wp('90%')}}>
           <MapView  
@@ -684,36 +683,41 @@ export function ExhibitionGalleryScreen({
               ))}
             </MapView>
           </View>
-        <View>
-          <TextElement style={galleryDetailsStyles.descriptionText}>Hours</TextElement>
-          <Divider style={galleryDetailsStyles.divider}/>
-        </View>
-        <View >
+         </View>
+        <View style={galleryDetailsStyles.contactContainer}>
+          <View>
+            <TextElement style={globalTextStyles.sectionHeaderTitle}>Hours</TextElement>
+          </View>
           {hoursOfOperationArray.length > 0 && (
         <View style={galleryDetailsStyles.hoursContainer}>
           {hoursOfOperationArray.map((day, index) => (
             <View key={`${day.day}-${day.open}-${day.close}-${index}`}>
-            {day.open !== "Closed" && (
+            {day.open !== "Closed" ?
+            (
             <View style={galleryDetailsStyles.hoursRow}>
-            <TextElement style={galleryDetailsStyles.day}>{day.day}</TextElement>
-              <TextElement style={galleryDetailsStyles.hours}>{day.open} - {day.close}</TextElement>
-              </View>
+              <TextElement style={galleryDetailsStyles.dayOpen}>{day.day}</TextElement>
+              <TextElement style={galleryDetailsStyles.hoursOpen}>{day.open} - {day.close}</TextElement>
+            </View>
+            ) : (
+            <View style={galleryDetailsStyles.hoursRow}>
+              <TextElement style={galleryDetailsStyles.dayClosed}>{day.day}</TextElement>
+              <TextElement style={galleryDetailsStyles.hoursClosed}>Closed</TextElement>
+            </View>
               )}
             </View>
           ))}
         </View>
-          )}
+        )}
         </View>
         {upcomingExhibitions.length > 0 && (
-          <>
-        <View>
-          <TextElement style={galleryDetailsStyles.descriptionText}>Forthcoming Shows</TextElement>
-          <Divider style={galleryDetailsStyles.divider}/>
-        </View>
-        <View style={galleryDetailsStyles.previousShowContainer}>
-          {upcomingExhibitions && upcomingExhibitions.map((previousExhibition : Exhibition, index : number) => {
+         <View style={galleryDetailsStyles.contactContainer}>
+          <View>
+            <TextElement style={globalTextStyles.sectionHeaderTitle}>Upcoming Exhibitions</TextElement>
+          </View>
+          <View>
+            {upcomingExhibitions.map((previousExhibition : Exhibition, index : number) => {
               return (
-                <View key={`${index}-${previousExhibition.exhibitionId}`}>
+                <View key={`${index}-${previousExhibition.exhibitionId}`} style={galleryDetailsStyles.exhibitionPreviewContainer}>
                   <ExhibitionPreviewMini 
                     exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
                     exhibitionId={previousExhibition._id!}
@@ -727,34 +731,33 @@ export function ExhibitionGalleryScreen({
                 </View>
               )
             })}
+            </View>
           </View>
-          </>
             )}
         {route?.params?.showPastExhibitions && previousExhibitions.length > 0 && (
-          <>
-        <View>
-          <TextElement style={galleryDetailsStyles.descriptionText}>Past Shows</TextElement>
-          <Divider style={galleryDetailsStyles.divider}/>
-        </View>
-        <View style={galleryDetailsStyles.previousShowContainer}>
-          {previousExhibitions && previousExhibitions.map((previousExhibition : Exhibition, index : number) => {
-              return (
-                <View key={`${index}-${previousExhibition.exhibitionId}`}>
-                  <ExhibitionPreviewMini 
-                    exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
-                    exhibitionId={previousExhibition._id!}
-                    exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
-                    exhibitionGallery={gallery.galleryName?.value as string}
-                    exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
-                    exhibitionDates={previousExhibition?.exhibitionDates}
-                    galleryLogoLink={gallery.galleryLogo?.value as string}
-                    onPress={handleExhibitionPress}
-                  />
-                </View>
-              )
-            })}
+         <View style={galleryDetailsStyles.contactContainer}>
+          <View>
+            <TextElement style={globalTextStyles.sectionHeaderTitle}>Past Exhibitions</TextElement>
+            </View>
+          <View>
+            {previousExhibitions.map((previousExhibition : Exhibition, index : number) => {
+                return (
+                  <View key={`${index}-${previousExhibition.exhibitionId}`} style={galleryDetailsStyles.exhibitionPreviewContainer}>
+                    <ExhibitionPreviewMini 
+                      exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
+                      exhibitionId={previousExhibition._id!}
+                      exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
+                      exhibitionGallery={gallery.galleryName?.value as string}
+                      exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
+                      exhibitionDates={previousExhibition?.exhibitionDates}
+                      galleryLogoLink={gallery.galleryLogo?.value as string}
+                      onPress={handleExhibitionPress}
+                    />
+                  </View>
+                )
+              })}
+            </View>
           </View>
-          </>
             )}
       </View>
     </ScrollView>

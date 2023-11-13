@@ -74,7 +74,6 @@ export function ArtworkList({
                     renderItem={({item}) => (
                       <ArtworkCard
                         artwork={item}
-                        displayLeft={true}
                         navigation={navigation}
                         navigateTo={navigateTo}
                         navigateToParams={navigateToParams}
@@ -90,7 +89,6 @@ export function ArtworkList({
                     renderItem={({item}) => (
                       <ArtworkCard
                         artwork={item}
-                        displayLeft={false}
                         navigation={navigation}
                         navigateTo={navigateTo}
                         navigateToParams={navigateToParams}

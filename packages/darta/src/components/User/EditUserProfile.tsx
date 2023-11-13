@@ -69,7 +69,7 @@ export const SSSignedInUserSettings = StyleSheet.create({
     marginBottom: hp('0.5%'),
   },
   text: {
-    fontFamily: 'AvenirNext-Bold',
+    fontFamily: 'DMSans_500Medium',
     fontSize: 15,
     alignSelf: 'flex-start',
     color: Colors.PRIMARY_700,
@@ -446,11 +446,11 @@ export function EditUserProfile({navigation} : {navigation: any}) {
                       activeOutlineColor={Colors.PRIMARY_600}
                       textColor={Colors.PRIMARY_700}
                       theme={{
-                        fonts: {default: {fontFamily: 'AvenirNext-Bold'}}
+                        fonts: {default: {fontFamily: 'DMSans_400Regular_Italic'}}
                       }}
                       style={{
                         backgroundColor: Colors.PRIMARY_50,
-                        fontFamily: 'AvenirNext-Bold',
+                        fontFamily: 'DMSans_700Bold',
                         color: Colors.PRIMARY_700,
                       }}
                     />
@@ -511,7 +511,6 @@ export function EditUserProfile({navigation} : {navigation: any}) {
                       textColor={Colors.PRIMARY_700}
                       style={{
                         backgroundColor: Colors.PRIMARY_50,
-                        fontFamily: 'AvenirNext-Bold',
                         color: Colors.PRIMARY_700,
                       }}
                     />

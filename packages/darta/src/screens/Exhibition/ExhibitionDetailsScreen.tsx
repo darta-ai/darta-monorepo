@@ -1,13 +1,12 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet, ScrollView, Platform, Linking, RefreshControl, PixelRatio} from 'react-native';
+import {View, StyleSheet, ScrollView, Platform, Linking, RefreshControl, Text} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
-import { Button, Divider, Text} from 'react-native-paper';
 import FastImage from 'react-native-fast-image'
 
 import * as Colors from '@darta-styles';
 import { ETypes } from '../../state/Store';
 import {TextElement} from '../../components/Elements/_index';
-import {customLocalDateString, customFormatTimeString, simplifyAddress} from '../../utils/functions';
+import {customFormatTimeString, customLocalDateStringStart, customLocalDateStringEnd, simplifyAddressCity, simplifyAddressMailing} from '../../utils/functions';
 import { ActivityIndicator } from 'react-native-paper';
 import { listGalleryExhibitionPreviewForUser } from '../../api/galleryRoutes';
 import {
@@ -24,24 +23,40 @@ import { readExhibition } from '../../api/exhibitionRoutes';
 import { mapStylesJson } from '../../utils/mapStylesJson';
 import { readGallery } from '../../api/galleryRoutes';
 import { TextElementMultiLine } from '../../components/Elements/TextElement';
-import { WebView } from 'react-native-webview';
+import { DartaIconButtonWithText } from '../../components/Darta/DartaIconButtonWithText';
+import * as SVGs from '../../assets/SVGs';
 
 const exhibitionDetailsStyles = StyleSheet.create({
-    exhibitionTitleContainer: {
-        width: wp('100%'),
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: hp('3%'),
-        marginBottom: hp('1%'),
-    },
     container: {
         flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
         backgroundColor: Colors.PRIMARY_50,
+        width: wp('100%'),
+        height: '100%',
+        justifyContent: 'flex-start', 
+        alignItems: 'center',
+        paddingTop: 24,
+        gap: 48,
+        paddingBottom: 24,
+    },
+    informationContainer: { 
+        width: wp('100%'),
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        paddingLeft: 24,
+        paddingRight: 24,
+    },
+    informationTitleContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        marginBottom: 24,
+    },
+    subInformationContainer: {
+        minHeight: 44, 
         width: '100%',
+        marginTop: 24,
     },
     spinnerContainer: {
         display: 'flex',
@@ -56,14 +71,21 @@ const exhibitionDetailsStyles = StyleSheet.create({
     heroImageContainer: {
         alignSelf: 'center',
         justifyContent: 'center',
-        width: wp('100%'),
-        height: hp('40%'),
+        height: 350,
+        width: 345,
       },
     heroImage: {
-        height: hp('35%'),
-        width: wp('100%'),
+        height: '100%',
+        width: '100%',
         resizeMode: 'contain',
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
+        shadowOpacity: 1, 
+        shadowRadius: 3.03,
+        shadowOffset: {
+            width: 0,
+            height: 3.03,
+        },
+        shadowColor: Colors.PRIMARY_500,
     },
     textContainer: {
         height: hp('80%'),
@@ -100,10 +122,8 @@ const exhibitionDetailsStyles = StyleSheet.create({
         color: Colors.PRIMARY_950
     },
     mapContainer: {
-        width: '90%',
-        borderWidth: 1,
-        borderColor: 'black',
-        height: hp('25%'),
+        width: 345,
+        height: 345,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -150,6 +170,7 @@ export function ExhibitionDetailsScreen({
 
   const [receptionDateString, setReceptionDateString] = React.useState<string>("")
   const [receptionTimeString, setReceptionTimeString] = React.useState<string>("")
+  const [exhibitionLocation, setExhibitionLocation] = React.useState<string>("")
   
   const [mapRegion, setMapRegion] = React.useState<any>({
     latitudeDelta: 0.01,
@@ -190,6 +211,12 @@ export function ExhibitionDetailsScreen({
     } else {
         setArtistName(currentExhibition?.exhibitionArtist?.value ?? "")
     }
+
+    if(currentExhibition?.exhibitionLocation?.locationString?.value){
+        const city = simplifyAddressCity(currentExhibition?.exhibitionLocation?.locationString?.value)
+        const mailing = simplifyAddressMailing(currentExhibition?.exhibitionLocation?.locationString?.value)
+        setExhibitionLocation(`${mailing} ${city}`)
+    }
     if (currentExhibition?.exhibitionDates 
         && currentExhibition.exhibitionDates?.exhibitionStartDate 
         && currentExhibition.exhibitionDates?.exhibitionEndDate
@@ -198,8 +225,8 @@ export function ExhibitionDetailsScreen({
         && currentExhibition.exhibitionDates.exhibitionEndDate?.value
         && currentExhibition.exhibitionDates.exhibitionDuration?.value 
         ) {
-        setExhibitionStartDate(customLocalDateString(new Date(currentExhibition.exhibitionDates.exhibitionStartDate.value)));
-        setExhibitionEndDate(customLocalDateString(new Date(currentExhibition?.exhibitionDates.exhibitionEndDate.value)));
+        setExhibitionStartDate(customLocalDateStringStart({date: new Date(currentExhibition.exhibitionDates.exhibitionStartDate.value), isUpperCase: false}));
+        setExhibitionEndDate(customLocalDateStringEnd({date: new Date(currentExhibition?.exhibitionDates.exhibitionEndDate.value), isUpperCase: false}));
         setIsTemporaryExhibition(currentExhibition.exhibitionDates.exhibitionDuration.value === "Temporary");
       }
     
@@ -210,8 +237,8 @@ export function ExhibitionDetailsScreen({
         && currentExhibition.receptionDates?.hasReception
         && currentExhibition.receptionDates.receptionStartTime?.value
         && currentExhibition.receptionDates.receptionEndTime?.value){
-            const receptionStartDay = customLocalDateString(new Date(currentExhibition.receptionDates.receptionEndTime.value))
-            const receptionEndDay = customLocalDateString(new Date(currentExhibition.receptionDates.receptionEndTime.value))
+            const receptionStartDay = customLocalDateStringStart({date: new Date(currentExhibition.receptionDates.receptionEndTime.value), isUpperCase: false})
+            const receptionEndDay = customLocalDateStringStart({date: new Date(currentExhibition.receptionDates.receptionEndTime.value), isUpperCase: false})
 
             setReceptionOpeningDay(receptionStartDay)
             setReceptionCloseDay(receptionEndDay)
@@ -243,17 +270,11 @@ export function ExhibitionDetailsScreen({
     if (currentGallery?.galleryName && currentGallery.galleryName.value){
         setGalleryName(currentGallery.galleryName.value);
     }
-    const startDate = currentExhibition?.exhibitionDates?.exhibitionStartDate?.value && customLocalDateString(new Date(currentExhibition.exhibitionDates.exhibitionStartDate.value))
-    const endDate = currentExhibition?.exhibitionDates?.exhibitionEndDate?.value && customLocalDateString(new Date(currentExhibition?.exhibitionDates.exhibitionEndDate.value))
-
-    const shareString1 = `Check out this show: ${currentExhibition.exhibitionTitle.value} at ${currentGallery.galleryName.value}. `
-    const shareString2 = `It's on display ${startDate} - ${endDate} at ${simplifyAddress(currentExhibition?.exhibitionLocation?.locationString?.value)}`
-    const shareURLMessage = startDate && endDate ? shareString1 + shareString2 : shareString1
 
     const shareURL = `https://darta.art/exhibition?exhibitionId=${currentExhibition._id}&galleryId=${currentGallery._id}`
     dispatch({
         type: ETypes.setExhibitionShareURL,
-        exhibitionShareDetails: {shareURL, shareURLMessage},
+        exhibitionShareDetails: {shareURL, shareURLMessage: ''},
     })
   }
 
@@ -452,37 +473,110 @@ export function ExhibitionDetailsScreen({
         </View>
         )
         : (
-        <ScrollView refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>
-        <View style={exhibitionDetailsStyles.container}>
-            <View>
-                <View style={exhibitionDetailsStyles.exhibitionTitleContainer}>
-                    <TextElement style={{...globalTextStyles.boldTitleText, fontSize: 22}}>
-                        {currentExhibition?.exhibitionTitle?.value}
-                    </TextElement>
+        <ScrollView  refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>
+            <View style={exhibitionDetailsStyles.container}>
+                <View style={exhibitionDetailsStyles.informationContainer}>
+                    <View style={exhibitionDetailsStyles.informationTitleContainer}>
+                        <TextElement style={globalTextStyles.sectionHeaderTitle}>
+                            {currentExhibition?.exhibitionTitle?.value}
+                        </TextElement>
+                    </View>
+                    <View style={exhibitionDetailsStyles.heroImageContainer}>
+                        <FastImage 
+                        source={{uri: currentExhibition?.exhibitionPrimaryImage?.value!}}
+                        style={exhibitionDetailsStyles.heroImage}
+                        resizeMode={FastImage.resizeMode.contain}
+                        />
+                    </View>
+                    <View style={exhibitionDetailsStyles.subInformationContainer}>
+                        <TextElement style={globalTextStyles.subHeaderTitle}>
+                            {isGroupShow ? "Artists" : "Artist"}
+                        </TextElement>
+                        {isGroupShow ? (
+                        <TextElementMultiLine style={{...globalTextStyles.subHeaderInformation, fontSize: 12}}>
+                            {artistName ?? "Group Show"}
+                            </TextElementMultiLine>
+                        ) : (
+                            <TextElement style={globalTextStyles.subHeaderInformation}>
+                            {artistName ?? "Artist"}
+                            </TextElement>
+                        )} 
+                    </View>
+                    <View style={exhibitionDetailsStyles.subInformationContainer}>
+                        <TextElement style={globalTextStyles.subHeaderTitle}>
+                            On view from
+                        </TextElement>
+                        <TextElement style={globalTextStyles.subHeaderInformation}>
+                            {exhibitionStartDate} {" - "} {exhibitionEndDate}
+                        </TextElement>
+                    </View>
                 </View>
-                <View style={exhibitionDetailsStyles.heroImageContainer}>
-                    <FastImage 
-                    source={{uri: currentExhibition?.exhibitionPrimaryImage?.value!}}
-                    style={exhibitionDetailsStyles.heroImage}
-                    resizeMode={FastImage.resizeMode.contain}
-                    />
+                <View style={{...exhibitionDetailsStyles.informationContainer}}>
+                    <View style={exhibitionDetailsStyles.informationTitleContainer}>
+                        <TextElement style={globalTextStyles.sectionHeaderTitle}>
+                            Location
+                        </TextElement>
+                    </View>
+                    <View style={{marginBottom: 24}}>
+                        <DartaIconButtonWithText 
+                        text={exhibitionLocation}
+                        iconComponent={SVGs.BlackPinIcon}
+                        onPress={() => openInMaps(currentExhibition?.exhibitionLocation?.locationString?.value!)} 
+                        />
+                    </View>
+                    {hasReception && (
+                    <View style={{marginBottom: 24}}>
+                        <DartaIconButtonWithText 
+                            text={`Reception: ${receptionDateString} ${receptionTimeString}`}
+                            // iconComponent={SVGs.CalendarIcon}
+                            iconName={"calendar"}
+                            onPress={() => saveExhibitionToCalendar()}
+                        />
+                    </View>
+                    )}
+                    <View style={exhibitionDetailsStyles.mapContainer}>
+                        <MapView  
+                        customMapStyle={mapStylesJson}
+                        provider={PROVIDER_GOOGLE}
+                        style={{ alignSelf: 'stretch', height: '100%', width: '100%'}}
+                        region={mapRegion} 
+                        >
+                            <Marker
+                            key={"12345"}
+                            coordinate={{latitude: mapRegion.latitude, longitude: mapRegion.longitude}}
+                            title={galleryName ?? "Gallery"}
+                            description={currentExhibition?.exhibitionLocation?.locationString?.value!}
+                            />
+                        </MapView>
+                    </View>
                 </View>
-            </View>
-        <View style={{...exhibitionDetailsStyles.textContainer, height: hasReception && isReceptionInPast ? hp('100%') : hp('80%')}}>
-            <View>
-                <TextElement style={exhibitionDetailsStyles.descriptionText}>{isGroupShow ? "Artists" : "Artist"}</TextElement>
-                <Divider style={exhibitionDetailsStyles.divider}/>
-                {isGroupShow ? (
-                <TextElementMultiLine style={{...globalTextStyles.italicTitleText, fontSize: 15, marginTop: hp('1%')}}>
-                    {artistName ?? "Group Show"}
-                    </TextElementMultiLine>
-                ) : (
-                    <TextElement style={{...globalTextStyles.italicTitleText, fontSize: 20, marginTop: hp('1%')}}>
-                    {artistName ?? "Artist"}
-                    </TextElement>
+                <View style={{...exhibitionDetailsStyles.informationContainer}}>
+                    <View style={{marginBottom: 24}}>
+                        <TextElement style={globalTextStyles.sectionHeaderTitle}>
+                            Press Release
+                        </TextElement>
+                    </View>
+                    <View>
+                        <Text style={globalTextStyles.paragraphText}>
+                        {currentExhibition?.exhibitionPressRelease?.value}
+                        </Text>
+                    </View>
+                </View>
+                {currentExhibition?.exhibitionArtistStatement?.value && (
+                    <View style={{...exhibitionDetailsStyles.informationContainer}}>
+                        <View style={{marginBottom: 24}}>
+                            <TextElement style={globalTextStyles.sectionHeaderTitle}>
+                                Artist Statement
+                            </TextElement>
+                        </View>
+                        <View>
+                            <Text style={globalTextStyles.paragraphText}>
+                            {currentExhibition?.exhibitionArtistStatement?.value}
+                            </Text>
+                        </View>
+                    </View>
                 )}
-                
-            </View>
+        {/* <View style={{...exhibitionDetailsStyles.textContainer, height: hasReception && isReceptionInPast ? hp('100%') : hp('80%')}}>
             <View>
             {isTemporaryExhibition ? (
             <View>
@@ -505,14 +599,7 @@ export function ExhibitionDetailsScreen({
             </TextElement>
             <Divider style={exhibitionDetailsStyles.divider}/>
                 <TextElement ></TextElement>
-                <Button
-                icon={"map"}
-                labelStyle={{color: Colors.PRIMARY_950}}
-                mode="text"
-                onPress={() => openInMaps(currentExhibition?.exhibitionLocation?.locationString?.value!)}
-                >                
-                <TextElement style={{...globalTextStyles.centeredText, fontSize: 18, marginTop: hp('1%'), textDecorationLine: 'underline'}}>{simplifyAddress(currentExhibition?.exhibitionLocation?.locationString?.value)}</TextElement>
-                </Button>
+
             </View>
             <View style={exhibitionDetailsStyles.mapContainer}>
                 <MapView  
@@ -572,8 +659,8 @@ export function ExhibitionDetailsScreen({
             <TextElement sx={{color: Colors.PRIMARY_900}}>error occurred adding event</TextElement>
             )}
             </View>
-        </View>
-        {currentExhibition?.videoLink?.value && (
+        </View> */}
+        {/* {currentExhibition?.videoLink?.value && (
                 <View style={exhibitionDetailsStyles.pressReleaseContainer}>
                     <TextElement style={exhibitionDetailsStyles.descriptionText}>
                         Video
@@ -610,8 +697,8 @@ export function ExhibitionDetailsScreen({
                         {currentExhibition?.exhibitionArtistStatement?.value}
                     </Text>
                 </View>
-            )}
-        </View>
+            )} */}
+            </View>
         </ScrollView>
         )}
     </>

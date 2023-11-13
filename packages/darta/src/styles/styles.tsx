@@ -5,7 +5,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-const baseText = {fontFamily: 'Avenir Next', color: Colors.PRIMARY_950};
+const baseText = {fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_950};
 
 export const DIMENSION_WIDTH = Dimensions.get('window').width;
 export const DIMENSION_HEIGHT = Dimensions.get('window').height;
@@ -16,15 +16,49 @@ export const globalTextStyles = StyleSheet.create({
   },
   italicTitleText: {
     ...baseText,
-    fontFamily: 'AvenirNext-Italic',
+    fontFamily: 'DMSans_400Regular_Italic',
   },
   boldTitleText: {
     ...baseText,
-    fontFamily: 'AvenirNext-Bold',
+    fontFamily: 'DMSans_500Medium',
     fontSize: 15,
   },
+  sectionHeaderTitle: {
+    ...baseText,
+    fontFamily: 'DMSans_700Bold',
+    fontSize: 24,
+  },
+  subHeaderTitle: {
+    fontFamily: 'DMSans_400Regular',
+    fontSize: 16,
+    color: Colors.PRIMARY_400,
+  },
+  subHeaderInformation: {
+    fontFamily: 'DMSans_700Bold',
+    fontSize: 20,
+    color: Colors.PRIMARY_950,
+  },
+  subHeaderInformationSize14: {
+    fontFamily: 'DMSans_700Bold',
+    fontSize: 14,
+    color: Colors.PRIMARY_950,
+  },
+  paragraphTextSize14: {
+    fontFamily: 'DMSans_400Regular',
+    fontSize: 14,
+    textAlign: 'left',
+    lineHeight: 22,
+    color: Colors.PRIMARY_900,
+  },
+  paragraphText: {
+    ...baseText,
+    fontSize: 16,
+    textAlign: 'left',
+    lineHeight: 22,
+    color: Colors.PRIMARY_900,
+  },
   boldTitleCenteredText: {
-    fontFamily: 'AvenirNext-Bold',
+    fontFamily: 'DMSans_700Bold',
     fontSize: 15,
     textAlign: 'center',
   },
@@ -41,30 +75,34 @@ export const globalTextStyles = StyleSheet.create({
 export const headerOptions = {
   headerTitle: 'darta',
   headerTitleStyle: {
-    fontFamily: 'Avenir Next',
-    fontSize: 16,
+    fontFamily: 'DMSans_700Bold',
+    fontSize: 17,
     color: Colors.PRIMARY_950,
+    marginLeft: 24,
   },
   headerBackTitleStyle: {
-    fontFamily: 'Avenir Next',
+    fontFamily: 'DMSans_400Regular',
     fontSize: 14,
     color: Colors.PRIMARY_900
   },
-  headerBackTitle: "back",
+  headerBackTitle: "",
   headerStyle: {
-    backgroundColor: Colors.PRIMARY_200,
+    backgroundColor: Colors.PRIMARY_50,
   },
+  headerTitleAlign: 'left' as 'left', 
+  headerMode: 'screen' as 'screen',
+  headerShadowVisible: false,
 };
 
 export const modalHeaderOptions = {
   headerTitle: 'darta',
   headerTitleStyle: {
-    fontFamily: 'Avenir Next',
+    fontFamily: 'DMSans_400Regular',
     fontSize: 16,
     color: Colors.PRIMARY_950,
   },
   headerBackTitleStyle: {
-    fontFamily: 'Avenir Next',
+    fontFamily: 'DMSans_400Regular',
     fontSize: 15,
     color: Colors.PRIMARY_900,
   },
@@ -76,7 +114,7 @@ export const modalHeaderOptions = {
 export const footerOptions = {
   headerTitle: 'darta',
   tabBarLabelStyle: {
-    fontFamily: 'Avenir Next',
+    fontFamily: 'DMSans_400Regular',
     fontSize: 15,
     color: Colors.PRIMARY_900,
   },
@@ -469,8 +507,12 @@ export const viewOptionsStyles = StyleSheet.create({
     flexDirection: 'column',
   },
   viewOptionsButtonStyle: {
-    backgroundColor: Colors.PRIMARY_100,
-    opacity: 0.8,
+    backgroundColor: Colors.PRIMARY_50,
+    opacity: 0.9,
+    height: 24,
+    width: 24,
+    marginRight: 24,
+    borderRadius: 0
   },
 });
 

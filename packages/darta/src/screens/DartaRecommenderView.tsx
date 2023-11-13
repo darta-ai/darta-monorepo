@@ -439,7 +439,7 @@ export function DartaRecommenderView({
       transform: state.isPortrait ? [{rotate: '0deg'}] : [{rotate: '90deg'}],
     },
     textElement: {
-      fontFamily: 'Avenir Next',
+      fontFamily: 'DMSans_700Bold',
       color: wallHeight === 96 ? Colors.PRIMARY_500 : Colors.PRIMARY_900,
       textAlign: 'center',
       maxWidth: '100%', // Or another value you want

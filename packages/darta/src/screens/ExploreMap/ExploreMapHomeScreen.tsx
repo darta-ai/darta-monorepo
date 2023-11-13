@@ -22,13 +22,10 @@ const exploreMapStyles = StyleSheet.create({
         alignItems: 'center',
     },
     mapContainer: {
-      borderColor: Colors.PRIMARY_900,
-      borderWidth: 3,
       backgroundColor: 'black',
-      height: hp('75%'),
-      width: wp('95%'),
+      height: hp('100%'),
+      width: wp('100%'),
       display: 'flex',
-      marginTop: wp('5%'),
       justifyContent: 'center',
       alignItems: 'center',
   },
@@ -54,8 +51,8 @@ export function ExploreMapHomeScreen({
   const [mapRegion, setMapRegion] = React.useState({
     latitudeDelta: 0.01,
     longitudeDelta: 0.06,
-    latitude: 40.721, 
-    longitude: -73.995
+    latitude: 40.709, 
+    longitude: -73.990
   })
 
   const [exhibitionPins, setExhibitionPins] = React.useState<{[key: string] :ExhibitionMapPin}>({})

@@ -4,7 +4,6 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import {ExhibitionPreviewEnum, ExhibitionRootEnum} from '../../typing/routes';
 import { tabBarScreenOptions } from '../../theme/themeConstants';
 import { ExhibitionPreviewScreen } from '../../screens/Exhibition/ExhibitionsPreviewScreen';
-import { StoreContext } from '../../state/Store';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as StoreReview from 'expo-store-review';
@@ -31,9 +30,7 @@ export type ExhibitionStackParamList = {
 };
 
 export function ExhibitionHomeTopTabNavigator({route} : {route: any}) {
-    
-    const {state, dispatch} = React.useContext(StoreContext);
-    
+        
     const requestReview = async () => {
         try {
         // Check if the device is able to review
@@ -75,7 +72,7 @@ export function ExhibitionHomeTopTabNavigator({route} : {route: any}) {
           <ExhibitionHomeTopTab.Screen
             name={ExhibitionPreviewEnum.onView}
             component={ExhibitionPreviewScreen}
-            options={{ title: 'On View' }}
+            options={{ title: 'Showing now' }}
           />
           <ExhibitionHomeTopTab.Screen
             name={ExhibitionPreviewEnum.following}
@@ -85,7 +82,7 @@ export function ExhibitionHomeTopTabNavigator({route} : {route: any}) {
           <ExhibitionHomeTopTab.Screen
             name={ExhibitionPreviewEnum.forthcoming}
             component={ExhibitionPreviewScreen}
-            options={{ title: 'Forthcoming' }}
+            options={{ title: 'Upcoming' }}
           />
         </ExhibitionHomeTopTab.Group>
     </ExhibitionHomeTopTab.Navigator>
