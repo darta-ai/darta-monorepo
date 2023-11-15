@@ -37,13 +37,13 @@ export function PastExhibitionTopTabNavigator({route} : {route: any}) {
           name={PreviousExhibitionRootEnum.exhibitionDetails}
           component={ExhibitionDetailsScreen}
           initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId}}
-          options={{ title: 'exhibition' }}
+          options={{ title: 'Exhibition' }}
         />
       <PreviousExhibitionStackTopTab.Screen
           name={PreviousExhibitionRootEnum.artworkList}
           component={ExhibitionArtworkScreen}
           initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId, navigateTo: route.params?.navigateTo ?? ExhibitionRootEnum.individualArtwork }}
-          options={{ title: 'artworks' }}
+          options={{ title: 'Artworks' }}
         />
     </PreviousExhibitionStackTopTab.Navigator>
   );

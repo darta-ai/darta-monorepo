@@ -1,6 +1,5 @@
 import React, {useContext} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import { Shadow } from 'react-native-shadow-2';
 import * as Colors from '@darta-styles';
 import {Artwork} from '@darta-types'
 import {TextElement} from '../Elements/_index';

@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
 import { Marker, Callout } from 'react-native-maps';
 import { View, StyleSheet } from 'react-native';
-import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
-  } from 'react-native-responsive-screen';
 
 import FastImage from 'react-native-fast-image'
-import { TextElement, TextElementOneLine } from '../Elements/TextElement';
+import { TextElement } from '../Elements/TextElement';
 import { globalTextStyles } from '../../styles/styles';
 
 import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddress, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
@@ -229,7 +225,7 @@ const CustomMarker = ({
                 style={customMarker.buttonStyles}
                 contentStyle={customMarker.buttonContentStyle}
                 >
-              <TextElement style={customMarker.buttonTextColor}>View Exhibition</TextElement>
+              <TextElement style={customMarker.buttonTextColor}>{hasCurrentShow ? "View Exhibition" : "View Gallery"}</TextElement>
             </Button>
         </Callout>
        

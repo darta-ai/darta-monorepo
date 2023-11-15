@@ -1,21 +1,13 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
 
-import {TextElement} from '../Elements/_index';
-import {globalTextStyles} from '../../styles/styles';
 import { StoreContext } from '../../state/Store';
 import { GalleryPreview } from '@darta-types';
 import { GalleryPreviewMini } from '../Previews/GalleryPreviewMini';
 
 export function GalleriesFollowing({
-  headline,
   navigation,
 }: {
-  headline: string;
   navigation: any;
 }) {
   const {state} = React.useContext(StoreContext);

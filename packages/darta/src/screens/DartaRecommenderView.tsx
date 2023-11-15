@@ -1,5 +1,5 @@
 import React from 'react';
-import {Animated, ImageSourcePropType, StyleSheet, View, Image, Pressable, } from 'react-native';
+import {Animated, ImageSourcePropType, StyleSheet, View } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import { GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
@@ -16,25 +16,19 @@ import {
   RatingEnum,
 } from '../typing/types';
 import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
-import {
-  CombinedInteractionButtons,
-} from '../components/Darta/_index';
 import { ArtOnWall } from '../components/Artwork/ArtOnWall';
 import {
   DEFAULT_GALLERY_IMAGE,
   duration,
   galleryDimensionsLandscape,
   galleryDimensionsPortrait,
-  icons,
 } from '../utils/constants';
 import {
   RecommenderRoutesEnum,
 } from '../typing/routes';
 import {ETypes, StoreContext} from '../state/Store';
 import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI, listArtworksToRateStatelessRandomSamplingAPI } from '../utils/apiCalls';
-import { IconButton } from 'react-native-paper';
 import { TextElement } from '../components/Elements/TextElement';
-import { listArtworksToRateStatelessRandomSampling } from '../api/recommenderRoutes';
 import * as SVGs from '../assets/SVGs';
 
 const galleryWallRaw = DEFAULT_GALLERY_IMAGE;
@@ -53,10 +47,9 @@ export function DartaRecommenderView({
     }
   }, [])
 
-  const [backgroundImage] = React.useState<ImageSourcePropType>(galleryWallRaw);
+  // const [backgroundImage] = React.useState<ImageSourcePropType>(galleryWallRaw);
   const [currentZoomScale, setCurrentZoomScale] = React.useState<number>(1);
 
-  const localButtonSizes = getButtonSizes(hp('100%'));
 
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   const [openRatings, setOpenRatings] = React.useState<boolean>(false);
@@ -443,6 +436,9 @@ export function DartaRecommenderView({
       alignItems: 'center',
       alignContent: 'center',
     },
+    touchableContainer: {
+      borderRadius: 50, width: 72, height: 72, justifyContent: 'center', alignItems: 'center'
+    },
     likeContainer: {
       position: 'absolute',
       alignSelf: 'center',
@@ -595,7 +591,7 @@ export function DartaRecommenderView({
     // Start the first part of the wiggle animation
     Animated.timing(wiggleAnim, {
       toValue: 1,  // Rotate slightly right
-      duration: 100,
+      duration: 50,
       useNativeDriver: true,
     }).start(async () => {
       // Network call in the middle of the wiggle
@@ -605,12 +601,12 @@ export function DartaRecommenderView({
       Animated.sequence([
         Animated.timing(wiggleAnim, {
           toValue: -1,  // Rotate slightly left
-          duration: 100,
+          duration: 50,
           useNativeDriver: true,
         }),
         Animated.timing(wiggleAnim, {
           toValue: 0,  // Return to original position
-          duration: 100,
+          duration: 50,
           useNativeDriver: true,
         }),
       ]).start(async () => {
@@ -637,7 +633,7 @@ export function DartaRecommenderView({
     // Start the rising animation
     Animated.timing(thumbsUpAnim, {
       toValue: -5,  // Move up (negative value for upward movement)
-      duration: 100,
+      duration: 50,
       useNativeDriver: true,
     }).start(async () => {
       // After the animation, make the network call
@@ -683,7 +679,7 @@ export function DartaRecommenderView({
     // Start the rising animation
     Animated.timing(thumbsDownAnim, {
       toValue: -5,  // Move up (negative value for upward movement)
-      duration: 100,
+      duration: 50,
       useNativeDriver: true,
     }).start(async () => {
       // After the animation, make the network call
@@ -762,7 +758,7 @@ export function DartaRecommenderView({
           {state.isPortrait && (
             <>
           <Surface style={SSDartaGalleryView.dislikeContainer}>
-            <TouchableOpacity onPress={handleThumbsDownPress}>
+            <TouchableOpacity onPress={handleThumbsDownPress} style={SSDartaGalleryView.touchableContainer}>
               <Animated.View style={{ transform: [{ translateY: thumbsDownAnim }] }}>
                 {currentArtRating[RatingEnum.dislike] ?  <SVGs.ThumbsDownLargeFillIcon /> : <SVGs.ThumbsDownLargeIcon />}
               </Animated.View>
@@ -776,7 +772,7 @@ export function DartaRecommenderView({
             </TouchableOpacity>
           </Surface>
           <Surface style={SSDartaGalleryView.likeContainer}>
-            <TouchableOpacity onPress={handleThumbsUpPress}>
+            <TouchableOpacity onPress={handleThumbsUpPress} style={SSDartaGalleryView.touchableContainer}>
               <Animated.View style={{ transform: [{ translateY: thumbsUpAnim }] }}>
                 {currentArtRating[RatingEnum.like]  ?  <SVGs.ThumbsDownLargeFillIcon /> : <SVGs.ThumbsDownLargeIcon />}
               </Animated.View>

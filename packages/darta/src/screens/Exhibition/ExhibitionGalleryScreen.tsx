@@ -660,6 +660,7 @@ export function ExhibitionGalleryScreen({
             provider={PROVIDER_GOOGLE}
             style={{ alignSelf: 'stretch', height: '100%' }}
             region={mapRegion} 
+            scrollEnabled={false}
             customMapStyle={mapStylesJson}
             >
               {mapMarkers && Object.values(mapMarkers).length > 0 && Object.values(mapMarkers).map((marker: any) => (

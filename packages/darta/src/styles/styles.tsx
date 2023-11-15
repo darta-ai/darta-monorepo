@@ -88,6 +88,7 @@ export const headerOptions = {
   headerBackTitle: "",
   headerStyle: {
     backgroundColor: Colors.PRIMARY_50,
+    height: 75,
   },
   headerTitleAlign: 'left' as 'left', 
   headerMode: 'screen' as 'screen',

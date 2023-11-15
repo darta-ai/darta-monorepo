@@ -419,6 +419,7 @@ export function ExhibitionDetailsScreen({
     const saveExhibitionToCalendar = async () => {
         // add an event to the calendar using the Calendar api from expo
         const { status } = await Calendar.requestCalendarPermissionsAsync();
+        console.log(receptionOpenFullDate)
           if (status === 'granted') {
             const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
 
@@ -454,7 +455,7 @@ export function ExhibitionDetailsScreen({
                 },
             ])
         } else {
-        Alert.alert(`Save the ${currentExhibition?.exhibitionTitle.value} reception to your calendar?`, ``, [
+        Alert.alert(`Save the reception for ${currentExhibition?.exhibitionTitle.value} to your calendar?`, ``, [
             {
               text: 'Cancel',
               onPress: () => {},
@@ -520,7 +521,7 @@ export function ExhibitionDetailsScreen({
                             {isGroupShow ? "Artists" : "Artist"}
                         </TextElement>
                         {isGroupShow ? (
-                        <TextElementMultiLine style={{...globalTextStyles.subHeaderInformation, fontSize: 18}}>
+                        <TextElementMultiLine style={{...globalTextStyles.subHeaderInformation}}>
                             {artistName ?? "Group Show"}
                             </TextElementMultiLine>
                         ) : (
@@ -551,7 +552,7 @@ export function ExhibitionDetailsScreen({
                         onPress={() => openInMaps(currentExhibition?.exhibitionLocation?.locationString?.value!)} 
                         />
                     </View>
-                    {hasReception && receptionOpenFullDate <= new Date() && (
+                    {hasReception && receptionOpenFullDate >= new Date() && (
                     <View style={{marginBottom: 24}}>
                         <DartaIconButtonWithText 
                             text={`Reception: ${receptionDateString} ${receptionTimeString}`}
@@ -564,6 +565,7 @@ export function ExhibitionDetailsScreen({
                         <MapView  
                         customMapStyle={mapStylesJson}
                         provider={PROVIDER_GOOGLE}
+                        scrollEnabled={false}
                         style={{ alignSelf: 'stretch', height: '100%', width: '100%'}}
                         region={mapRegion} 
                         >

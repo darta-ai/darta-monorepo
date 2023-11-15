@@ -14,7 +14,6 @@ import {
 } from 'react-native-responsive-screen';
 
 import * as Colors from '@darta-styles';
-import {getButtonSizes} from '../utils/functions';
 import {GalleriesFollowing} from '../components/Gallery/GalleriesFollowing';
 import {UserSpecificComponent} from '../components/User/UserSpecificComponent';
 import {UserProfile} from '../components/User/UserProfile';
@@ -28,13 +27,14 @@ const HEADER_MAX_HEIGHT = 100;
 const HEADER_MIN_HEIGHT = hp('10%');
 const HEADER_MAX_WIDTH = 100;
 const HEADER_MIN_WIDTH = wp('15%');
-const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+// const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 const HEADER_SCROLL_WIDTH_DISTANCE = HEADER_MAX_WIDTH - HEADER_MIN_WIDTH;
 
 export const userHomeStyles = StyleSheet.create({
   userHomeContainer: {
     backgroundColor: Colors.PRIMARY_50,
     flex: 1,
+    minHeight: '100%',
     flexDirection: 'column',
     alignContent: 'center',
     justifyContent: 'flex-start',
@@ -46,18 +46,11 @@ export const userHomeStyles = StyleSheet.create({
 
 export function UserHome({navigation}: {navigation: any}) {
   const {dispatch} = React.useContext(StoreContext);
-  const localButtonSizes = getButtonSizes(hp('100%'));
   const scrollY = useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
     scrollY.addListener(() => {})
   },[])
-
-  const headerHeightInterpolate = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
-    extrapolate: 'clamp',
-  });
 
   const imageWidthInterpolate = scrollY.interpolate({
     inputRange: [0, HEADER_SCROLL_WIDTH_DISTANCE],
@@ -147,7 +140,6 @@ export function UserHome({navigation}: {navigation: any}) {
             </View>
               <View>
                 <GalleriesFollowing
-                  headline="| f o l l o w i n g"
                   navigation={navigation}
                 />
               </View>

@@ -4,11 +4,9 @@ import React from 'react';
 import {
   Pressable,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {
-  heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
@@ -36,15 +34,13 @@ const exhibitionPreviewStyle = StyleSheet.create({
     width: '100%',
   },
   imagePreviewContainer: {
-    height: 375,
-    marginTop: 10,
+    height: 345,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
   },
   touchableContainer: {
     width: '100%',
-    margin: 16,
     textAlign: 'left',
   },
   textContainer:{
@@ -64,13 +60,11 @@ const exhibitionPreviewStyle = StyleSheet.create({
   },
   heroImageContainer: {
     height: '70%',
-    marginTop: 10,
     display:'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
   heroImage: {
-
     height: '100%',
     resizeMode: 'contain',
   },

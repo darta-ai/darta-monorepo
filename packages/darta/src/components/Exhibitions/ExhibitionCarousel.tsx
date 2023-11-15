@@ -12,9 +12,8 @@ import Animated, {
     useAnimatedStyle,
   } from "react-native-reanimated";
   
-  import { SBItem } from "./ExhibitionCarousel/SBItem";
-  import * as Colors from '@darta-styles';
-import { Surface } from 'react-native-paper';
+import { SBItem } from "./ExhibitionCarousel/SBItem";
+import * as Colors from '@darta-styles';
 
   const image404 = require('../../assets/image404.png');
   
@@ -147,6 +146,9 @@ export function ExhibitionCarousel({ images }) {
         width={WIDTH}
         onSnapToItem={onSnapToItem}
         data={images}
+        panGestureHandlerProps={{
+          activeOffsetX: [-10, 10],
+        }}
         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         scrollAnimationDuration={100}
         renderItem={({ item, animationValue }) => (

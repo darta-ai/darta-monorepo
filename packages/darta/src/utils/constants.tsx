@@ -6,7 +6,7 @@ import {
 import {GalleryLandingPage, Icons} from '../typing/types';
 
 export const galleryDimensionsPortrait = {
-  height: hp('75%'),
+  height: hp('80%'),
   width: wp('100%'),
 };
 

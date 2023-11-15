@@ -1,6 +1,6 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {Animated, Image, ScrollView, StyleSheet, View} from 'react-native';
+import {Alert, Animated, Image, ScrollView, StyleSheet, View} from 'react-native';
 import { RefreshControl } from 'react-native';
 import {Button, IconButton, TextInput} from 'react-native-paper';
 import {
@@ -18,9 +18,10 @@ import {TextElement} from '../Elements/_index';
 import {buttonSizes, icons} from '../../utils/constants';
 import {galleryInteractionStyles, globalTextStyles} from '../../styles/styles';
 import {ETypes, StoreContext} from '../../state/Store';
-import { editDartaUserAccount, getDartaUser } from '../../api/userRoutes';
+import { createUser, deleteDartaUser, editDartaUserAccount, getDartaUser } from '../../api/userRoutes';
 import { DeleteAccountDialog } from '../Dialog/DeleteAccountDialog';
 import { UserRoutesEnum } from '../../typing/routes';
+import { firebaseDeleteUser } from '../../api/firebase';
 
 type FieldState = {
   isEditing?: boolean;
@@ -67,6 +68,7 @@ export const SSSignedInUserSettings = StyleSheet.create({
     ...globalTextStyles.italicTitleText,
     alignSelf: 'center',
     marginBottom: hp('0.5%'),
+    fontFamily: 'DMSans_500Medium',
   },
   text: {
     fontFamily: 'DMSans_500Medium',
@@ -257,36 +259,49 @@ export function EditUserProfile({navigation} : {navigation: any}) {
       const uid = auth().currentUser?.uid
       const value = getValues()
      if (formData.userName.isEditing && uid) {
+      try{
         const results = await editDartaUserAccount({userName: value.userName, uid})
-       dispatch({
+        dispatch({
           type: ETypes.setUser,
           userData: {
             ...state.user,
             userName: results.userName
           }
        })
+      } catch(error){
+        console.log(error)
+      }
      }
     else if (formData.legalFirstName.isEditing && uid) {
-      const results = await editDartaUserAccount({legalFirstName: value.legalFirstName, uid})
-      dispatch({
-          type: ETypes.setUser,
-          userData: {
-            ...state.user,
-            legalFirstName: results.legalFirstName
-          }
-      })
-   }
-   else if (formData.legalLastName.isEditing && uid) {
-    const results = await editDartaUserAccount({legalLastName: value.legalLastName, uid})
+      try{
+        const results = await editDartaUserAccount({legalFirstName: value.legalFirstName, uid})
         dispatch({
             type: ETypes.setUser,
             userData: {
               ...state.user,
-              legalLastName: results.legalLastName
+              legalFirstName: results.legalFirstName
             }
-        })
+       })
+      } catch(error){
+        console.log(error)
+      }
+   }
+   else if (formData.legalLastName.isEditing && uid) {
+    try{
+      const results = await editDartaUserAccount({legalLastName: value.legalLastName, uid})
+      dispatch({
+          type: ETypes.setUser,
+          userData: {
+            ...state.user,
+            legalLastName: results.legalLastName
+          }
+      })
+    } catch(error){
+      console.log(error)
     }
+  }
     else if (formData.profilePicture.isEditing && uid) {
+      try{
         const results = await editDartaUserAccount({profilePicture: {
           fileData: tempBuffer
         }, uid})
@@ -304,24 +319,63 @@ export function EditUserProfile({navigation} : {navigation: any}) {
         }
         setValue('profilePicture', tempImage.uri);
         resetUi();
-
+      } catch(error){
+        console.log(error)
+      }
       }
     else if (formData.email.isEditing && uid && value.email) {
+      try{
         const results = await editDartaUserAccount({email: value.email, uid})
-            dispatch({
-                type: ETypes.setUser,
-                userData: {
-                  ...state.user,
-                  email: results.email
-                }
-            })
-        }
- 
+        dispatch({
+          type: ETypes.setUser,
+          userData: {
+            ...state.user,
+            email: results.email
+          }
+      })
+      } catch(error){
+        console.log(error)
+      }
+    }
       resetUi();
       setLoading(false)
     };
 
     const [dialogVisible, setDialogVisible] = useState<boolean>(false)
+
+      
+  const deleteAccount = async () => {
+    setLoading(true)
+    try {      
+      const uid = auth().currentUser?.uid
+      await firebaseDeleteUser();
+      if (uid) {
+        await deleteDartaUser({ uid });
+        await createUser({uid})
+      }
+    } catch (err) {
+      console.log(err)
+    } finally{
+      navigation.goBack()
+      setLoading(false)
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    Alert.alert(`Delete Profile?`, ``, [
+      {
+        text: `Yes`,
+        onPress: () => deleteAccount(),
+        style: 'destructive',
+      },
+      {
+        text: 'Cancel',
+        onPress: () => {},
+      },
+    ])
+
+  }
+
 
     const [refreshing, setRefreshing] = React.useState(false)
     
@@ -342,25 +396,6 @@ export function EditUserProfile({navigation} : {navigation: any}) {
         setRefreshing(false);
       }, 500)
     }, []);
-
-    const signOut = async () => { 
-      await auth().signOut()
-      dispatch({
-        type: ETypes.setUser,
-        userData: {
-          uid: "",
-          email: "",
-          userName: "",
-          legalFirstName: "",
-          legalLastName: "",
-          profilePicture: {
-            value: ""
-          }
-        }
-      })
-      navigation.navigate(UserRoutesEnum.home)
-    }
-
 
   return (
     <ScrollView style={showOnlyOne && {marginTop: hp('5%')}} 
@@ -705,16 +740,16 @@ export function EditUserProfile({navigation} : {navigation: any}) {
                 marginTop: hp('5%'),
                 alignSelf: 'center',
               }}
-              onPress={() => setDialogVisible(true)}>
+              onPress={() => handleDeleteAccount()}>
               Delete Profile
             </Button>
           </View>
         </View>
       )}
-      <DeleteAccountDialog 
+      {/* <DeleteAccountDialog 
         dialogVisible={dialogVisible}
         setDialogVisible={setDialogVisible}
-      />
+      /> */}
     </ScrollView>
   );
 }

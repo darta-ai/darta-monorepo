@@ -57,14 +57,12 @@ export const firebaseSetUser = async ({type, data}: {type: FirebaseSetUserEnum, 
   }
 }
 
-export const firebaseDeleteUser = async ({password} : {password: string}) => {
+export const firebaseDeleteUser = async () => {
   try {
     const user = auth().currentUser;
     if (!user) {
       throw new Error('No user found');
     }
-
-    await auth().signInWithEmailAndPassword(user.email!, password);
     const results = await user?.delete()
     return results;
   } catch(e){

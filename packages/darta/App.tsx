@@ -5,7 +5,7 @@ import 'react-native-get-random-values';
 import { NavigationContainer } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { ExploreMapStackNavigator } from './src/navigation/ExploreMap/ExploreMapStackNavigator';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { StatusBar } from 'react-native';
 import React from 'react';
 import {Provider as PaperProvider} from 'react-native-paper';
 import * as Colors from '@darta-styles';
@@ -152,6 +152,7 @@ function App() {
         <StoreProvider>
           <NavigationContainer onStateChange={handleNavigationChange}>
             <AnimatedAppLoader>
+              <StatusBar barStyle="dark-content" />
                 <RootStack.Navigator 
                 initialRouteName="explore"
                 activeColor={Colors.PRIMARY_950}

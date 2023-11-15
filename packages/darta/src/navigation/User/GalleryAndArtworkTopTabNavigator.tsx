@@ -6,12 +6,10 @@ import { ExhibitionGalleryScreen } from '../../screens/Exhibition'
 import { tabBarScreenOptions } from '../../theme/themeConstants';
 import { ArtworkScreen } from '../../screens/Artwork/ArtworkScreen';
 import { UserRoutesEnum } from '../../typing/routes';
-import { StoreContext } from '../../state/Store';
 
 export const GalleryAndArtworkTopTab = createMaterialTopTabNavigator();
 
 export function GalleryAndArtworkTopTabNavigator({route} : {route: any}) {
-  const {state} = React.useContext(StoreContext)
   return (
     <GalleryAndArtworkTopTab.Navigator screenOptions={{...tabBarScreenOptions}}>
       <GalleryAndArtworkTopTab.Screen

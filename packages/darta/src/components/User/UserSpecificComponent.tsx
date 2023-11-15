@@ -30,7 +30,7 @@ export function UserSpecificComponent({
   };
 
   const navigateToEditUserSettings = () => {
-    runOnJS(navigation.navigate(UserRoutesEnum.userSettings))();
+    navigation.navigate(UserRoutesEnum.userSettings)
   };
 
   const SSUserScreenSelector = StyleSheet.create({
