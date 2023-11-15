@@ -228,7 +228,6 @@ export function ExhibitionPreviewScreen({
       onEndReachedThreshold={0.1}
       onEndReached={onBottomLoad}
       refreshing={bottomLoad}
-      style={{backgroundColor: Colors.PRIMARY_100}}
       />
     )}
   </>

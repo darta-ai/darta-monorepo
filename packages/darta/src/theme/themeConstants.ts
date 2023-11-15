@@ -1,4 +1,5 @@
 import * as Colors from '@darta-styles';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 export const tabBarScreenOptions = {
   tabBarItemStyle: { 
@@ -13,20 +14,25 @@ export const tabBarScreenOptions = {
   tabBarIndicatorStyle: {
     backgroundColor: Colors.PRIMARY_950,
     height: 3, 
+    width: 0.7,
     borderRadius: 6,
-  },
-  headerTitleStyle: {
-    marginLeft: 24,
+    marginLeft: 10,
   },
   tabBarActiveTintColor: Colors.PRIMARY_950, // active label color
   tabBarInactiveTintColor: Colors.PRIMARY_300, // inactive label color
+  tabBarContentContainerStyle:{
+    marginLeft: 10,
+    marginTop: 11,
+    marginBottom: 12,
+  },
   tabBarStyle: {
     backgroundColor: Colors.PRIMARY_50,
     elevation: 0, // for Android - to remove the shadow
     shadowOpacity: 0, 
+    width: wp('100%'),
+    height: 54,
     borderWidth: 0, // to remove the border
   },
-  paddingLeft: 24,
 }
 
 

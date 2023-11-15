@@ -9,11 +9,22 @@ import auth from '@react-native-firebase/auth';
 import { getDartaUser } from '../../api/userRoutes';
 
 
-export function ArtworkScreen({route}: {route: any}) {
+export function ArtworkScreen({route, navigation}: {route: any, navigation: any}) {
   let artOnDisplay: any = null;
   if (route.params){
     ({artOnDisplay} = route.params);
   }
+
+  React.useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: "none"
+      }
+    });
+    return () => navigation.getParent()?.setOptions({
+      tabBarStyle: undefined
+    });
+  }, []);
   
   const [dialogVisible, setDialogVisible] = React.useState(false)
 

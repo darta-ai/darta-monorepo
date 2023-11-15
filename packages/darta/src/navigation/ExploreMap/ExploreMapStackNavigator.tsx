@@ -9,7 +9,7 @@ import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/st
 import { ExhibitionTopTabNavigator } from '../Exhibition/ExhibitionTopTabNavigator';
 import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
 import { ArtworkScreen } from '../../screens/Artwork/ArtworkScreen';
-import { Pressable, StyleSheet} from 'react-native';  
+import { Pressable, StyleSheet, View} from 'react-native';  
 import { useNavigation } from '@react-navigation/native';
 import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 
@@ -31,7 +31,13 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
   return (
     <ExploreMapStack.Navigator screenOptions={{
       headerTintColor: PRIMARY_800,
-      cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS
+      cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, 
+      headerBackImage: () => (
+        <View style={styles.backButton}>
+          <BackButtonIcon />
+        </View>
+        ),
+        headerBackTitleVisible: false,
       }}>
         <ExploreMapStack.Screen
           name={ExploreMapRootEnum.exploreMapHome}
@@ -55,7 +61,7 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
           name={ExploreMapRootEnum.explorePastNavigator}
           component={ExhibitionTopTabNavigator}
           initialParams={{navigationRoute: ExploreMapRootEnum.explorePastNavigator, navigateTo: ExploreMapRootEnum.individualArtwork }}
-          options={{...headerOptions, headerTitle: state.currentExhibitionHeader ?? ""}}
+          options={{...headerOptions, headerTitle: state.userExhibitionHeader ?? ""}}
         />
         <ExploreMapStack.Screen
           name={ExploreMapRootEnum.exploreMapGallery}
@@ -66,7 +72,7 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
         <ExploreMapStack.Screen
             name={ExploreMapRootEnum.individualArtwork}
             component={ArtworkScreen}
-            options={{...modalHeaderOptions, presentation: 'modal', headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
+            options={{...modalHeaderOptions, headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
           />
     </ExploreMapStack.Navigator>
   );

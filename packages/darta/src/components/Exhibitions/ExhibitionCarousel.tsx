@@ -14,17 +14,25 @@ import Animated, {
   
   import { SBItem } from "./ExhibitionCarousel/SBItem";
   import * as Colors from '@darta-styles';
+import { Surface } from 'react-native-paper';
 
   const image404 = require('../../assets/image404.png');
   
 
 const carouselStyle = StyleSheet.create({
     heroImage: {
-        width: '80%',
-        height: '80%',
-        marginTop: 10,
-        resizeMode: 'contain',
-        alignSelf: 'center',
+      width: '85%',
+      height: '85%',
+      marginTop: 10,
+      resizeMode: 'contain',
+      alignSelf: 'center',
+      // backgroundColor: Colors.PRIMARY_50, // Set this to the color of your choice
+      shadowOpacity: 1,
+      shadowRadius: 3.03,
+      shadowColor: Colors.PRIMARY_300,
+      shadowOffset: {height: 3.03, width: 0},
+      // Important: on Android, elevation is used to create shadows
+      elevation: 4,
     },
     paginationContainer: {
       position: 'absolute',
@@ -59,7 +67,7 @@ const CustomItemComponent = ({ item, animationValue }) => {
     backgroundColor: interpolateColor(
       animationValue.value,
       [-1, 0, 1],
-      [Colors.PRIMARY_100, Colors.PRIMARY_50, Colors.PRIMARY_200],
+      [Colors.PRIMARY_100, Colors.PRIMARY_50, Colors.PRIMARY_100],
     ),
   }));
 

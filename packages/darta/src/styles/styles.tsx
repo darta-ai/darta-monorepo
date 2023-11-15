@@ -21,7 +21,7 @@ export const globalTextStyles = StyleSheet.create({
   boldTitleText: {
     ...baseText,
     fontFamily: 'DMSans_500Medium',
-    fontSize: 15,
+    fontSize: 16,
   },
   sectionHeaderTitle: {
     ...baseText,
@@ -78,7 +78,7 @@ export const headerOptions = {
     fontFamily: 'DMSans_700Bold',
     fontSize: 17,
     color: Colors.PRIMARY_950,
-    marginLeft: 24,
+    marginLeft: 10,
   },
   headerBackTitleStyle: {
     fontFamily: 'DMSans_400Regular',
@@ -107,7 +107,8 @@ export const modalHeaderOptions = {
     color: Colors.PRIMARY_900,
   },
   headerStyle: {
-    backgroundColor: Colors.PRIMARY_200,
+    backgroundColor: Colors.PRIMARY_50,
+
   },
 }
 

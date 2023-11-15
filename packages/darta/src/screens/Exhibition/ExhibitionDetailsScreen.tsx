@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet, ScrollView, Platform, Linking, RefreshControl, Text} from 'react-native';
+import {View, StyleSheet, ScrollView, Platform, Linking, RefreshControl, Text, Alert} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image'
 
@@ -7,7 +7,7 @@ import * as Colors from '@darta-styles';
 import { ETypes } from '../../state/Store';
 import {TextElement} from '../../components/Elements/_index';
 import {customFormatTimeString, customLocalDateStringStart, customLocalDateStringEnd, simplifyAddressCity, simplifyAddressMailing} from '../../utils/functions';
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator, Surface } from 'react-native-paper';
 import { listGalleryExhibitionPreviewForUser } from '../../api/galleryRoutes';
 import {
   ExhibitionRootEnum
@@ -70,6 +70,7 @@ const exhibitionDetailsStyles = StyleSheet.create({
     },
     heroImageContainer: {
         alignSelf: 'center',
+        display:'flex',
         justifyContent: 'center',
         height: 350,
         width: 345,
@@ -79,13 +80,13 @@ const exhibitionDetailsStyles = StyleSheet.create({
         width: '100%',
         resizeMode: 'contain',
         backgroundColor: 'transparent',
-        shadowOpacity: 1, 
-        shadowRadius: 3.03,
-        shadowOffset: {
-            width: 0,
-            height: 3.03,
-        },
-        shadowColor: Colors.PRIMARY_500,
+        // shadowOpacity: 1, 
+        // shadowRadius: 3.03,
+        // shadowOffset: {
+        //     width: 0,
+        //     height: 3.03,
+        // },
+        // shadowColor: Colors.PRIMARY_300,
     },
     textContainer: {
         height: hp('80%'),
@@ -312,10 +313,10 @@ export function ExhibitionDetailsScreen({
                 type: ETypes.saveGallery,
                 galleryData: galleryData,
             })
-            dispatch({
-                type: ETypes.setCurrentHeader,
-                currentExhibitionHeader: exhibition.exhibitionTitle.value!,
-              })
+            // dispatch({
+            //     type: ETypes.setCurrentHeader,
+            //     currentExhibitionHeader: exhibition.exhibitionTitle.value!,
+            //   })
             dispatch({
                 type: ETypes.saveExhibition,
                 exhibitionData: exhibition,
@@ -443,6 +444,30 @@ export function ExhibitionDetailsScreen({
         }
     }
 
+    const alertCalendar = () => {
+        if(receptionOpenFullDate <= new Date()) {
+            Alert.alert(`The ${currentExhibition?.exhibitionTitle.value} is in the past`, ``, [
+                {
+                    text: 'Cancel',
+                    onPress: () => {},
+                    style: 'destructive',
+                },
+            ])
+        } else {
+        Alert.alert(`Save the ${currentExhibition?.exhibitionTitle.value} reception to your calendar?`, ``, [
+            {
+              text: 'Cancel',
+              onPress: () => {},
+              style: 'destructive',
+            },
+            {
+              text: `Yes`,
+              onPress: () => saveExhibitionToCalendar(),
+            },
+          ])
+        }
+    }
+
     const openInMaps = (address: string) => {
         if (!address) return;
     
@@ -482,18 +507,20 @@ export function ExhibitionDetailsScreen({
                         </TextElement>
                     </View>
                     <View style={exhibitionDetailsStyles.heroImageContainer}>
-                        <FastImage 
-                        source={{uri: currentExhibition?.exhibitionPrimaryImage?.value!}}
-                        style={exhibitionDetailsStyles.heroImage}
-                        resizeMode={FastImage.resizeMode.contain}
-                        />
+                        <Surface elevation={2} style={{backgroundColor: 'transparent'}}>
+                            <FastImage 
+                            source={{uri: currentExhibition?.exhibitionPrimaryImage?.value!}}
+                            style={exhibitionDetailsStyles.heroImage}
+                            resizeMode={FastImage.resizeMode.contain}
+                            />
+                        </Surface>
                     </View>
                     <View style={exhibitionDetailsStyles.subInformationContainer}>
                         <TextElement style={globalTextStyles.subHeaderTitle}>
                             {isGroupShow ? "Artists" : "Artist"}
                         </TextElement>
                         {isGroupShow ? (
-                        <TextElementMultiLine style={{...globalTextStyles.subHeaderInformation, fontSize: 12}}>
+                        <TextElementMultiLine style={{...globalTextStyles.subHeaderInformation, fontSize: 18}}>
                             {artistName ?? "Group Show"}
                             </TextElementMultiLine>
                         ) : (
@@ -524,13 +551,12 @@ export function ExhibitionDetailsScreen({
                         onPress={() => openInMaps(currentExhibition?.exhibitionLocation?.locationString?.value!)} 
                         />
                     </View>
-                    {hasReception && (
+                    {hasReception && receptionOpenFullDate <= new Date() && (
                     <View style={{marginBottom: 24}}>
                         <DartaIconButtonWithText 
                             text={`Reception: ${receptionDateString} ${receptionTimeString}`}
-                            // iconComponent={SVGs.CalendarIcon}
-                            iconName={"calendar"}
-                            onPress={() => saveExhibitionToCalendar()}
+                            iconComponent={SVGs.CalendarIcon}
+                            onPress={() => alertCalendar()}
                         />
                     </View>
                     )}
@@ -546,7 +572,9 @@ export function ExhibitionDetailsScreen({
                             coordinate={{latitude: mapRegion.latitude, longitude: mapRegion.longitude}}
                             title={galleryName ?? "Gallery"}
                             description={currentExhibition?.exhibitionLocation?.locationString?.value!}
-                            />
+                            >
+                                <SVGs.GoogleMapsPinIcon />
+                            </Marker>
                         </MapView>
                     </View>
                 </View>

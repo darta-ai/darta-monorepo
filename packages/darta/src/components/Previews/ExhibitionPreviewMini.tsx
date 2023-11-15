@@ -14,26 +14,28 @@ import {ExhibitionDates} from '@darta-types';
 import * as Colors from '@darta-styles';
 import { customLocalDateStringEnd, customLocalDateStringStart } from '../../utils/functions';
 import FastImage from 'react-native-fast-image';
-import { Button } from 'react-native-paper';
+import { Button, Surface } from 'react-native-paper';
 
 
-export function ExhibitionPreviewMini({
+type ExhibitionPreviewMiniProps = {
+  exhibitionHeroImage: string,
+  exhibitionId: string,
+  exhibitionTitle: string,
+  exhibitionGallery: string, 
+  exhibitionDates: ExhibitionDates, // Assuming ExhibitionDates is defined elsewhere
+  galleryLogoLink: string,
+  exhibitionArtist: string,
+  onPress: ({ exhibitionId }: { exhibitionId: string }) => void
+};
+
+const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
     exhibitionHeroImage,
     exhibitionId,
     exhibitionTitle,
     exhibitionDates,
     exhibitionArtist,
     onPress
-}: {
-    exhibitionHeroImage: string,
-    exhibitionId: string,
-    exhibitionTitle: string,
-    exhibitionGallery: string, 
-    exhibitionDates: ExhibitionDates,
-    galleryLogoLink: string,
-    exhibitionArtist: string,
-    onPress: ({exhibitionId} : {exhibitionId: string}) => void
-}) {
+}) => {
 
   const exhibitionPreview = StyleSheet.create({
     container: {
@@ -50,16 +52,18 @@ export function ExhibitionPreviewMini({
       justifyContent: 'center',
     },
     heroImage: {
-      width: '100%',
       height: '100%',
+      width: '100%',
+      resizeMode: 'contain',
       backgroundColor: 'transparent',
+      zIndex: 1,
       shadowOpacity: 1, 
       shadowRadius: 3.03,
       shadowOffset: {
           width: 0,
           height: 3.03,
       },
-      shadowColor: Colors.PRIMARY_500,
+      shadowColor: Colors.PRIMARY_300,
     },
     mapContainer: {
       width: '15%',
@@ -117,18 +121,18 @@ export function ExhibitionPreviewMini({
         style={exhibitionPreview.container}>
           <TextElement
             style={exhibitionPreview.exhibitionTitle}>
-            {exhibitionArtist}
+            {exhibitionArtist ?? "Group Show"}
           </TextElement>
           <TextElement
             style={exhibitionPreview.artistTitle}>
             {exhibitionTitle}
           </TextElement>
           <View style={{...exhibitionPreview.heroImageContainer, marginTop: 24}} >
-            <FastImage 
-                source={{uri: exhibitionHeroImage}} 
-                style={exhibitionPreview.heroImage} 
-                resizeMode={FastImage.resizeMode.contain}
-            />
+              <FastImage 
+                  source={{uri: exhibitionHeroImage}} 
+                  style={exhibitionPreview.heroImage} 
+                  resizeMode={FastImage.resizeMode.contain}
+              />
           </View>
           <TextElement
             style={{...exhibitionPreview.exhibitionTitle, marginTop: 24}}>
@@ -143,4 +147,6 @@ export function ExhibitionPreviewMini({
             </Button>
       </View>
   );
-}
+})
+
+export default ExhibitionPreviewMini  

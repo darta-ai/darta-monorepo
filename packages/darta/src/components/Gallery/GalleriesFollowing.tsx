@@ -25,10 +25,7 @@ export function GalleriesFollowing({
       flexDirection: 'column',
       alignContent: 'center',
       alignSelf: 'center',
-      marginTop: hp('2%'),
-      marginBottom: hp('2%'),
-      width: wp('90%'),
-      gap: hp('2%'),
+      gap: 12,
     }
   })
 
@@ -58,17 +55,6 @@ export function GalleriesFollowing({
   return (
     <View
       style={GalleriesFollowingStyles.container}>
-      <View
-        style={{
-          borderBottomColor: 'black',
-          borderBottomWidth: StyleSheet.hairlineWidth,
-          marginBottom: hp('1%'),
-        }}>
-        <TextElement
-          style={[globalTextStyles.boldTitleText, {marginBottom: hp('1%`')}]}>
-          {headline}
-        </TextElement>
-      </View>
       {galleriesFollowing.map((galleryPreview: GalleryPreview) => 
       <View
         key={galleryPreview._id}

@@ -45,7 +45,7 @@ export function ExhibitionStackNavigator() {
 
   const styles = StyleSheet.create({ 
     backButton: {
-      marginLeft: 24,
+      marginLeft: 10,
       marginTop: 10, 
       marginBottom: 10
     }
@@ -88,32 +88,13 @@ export function ExhibitionStackNavigator() {
             name={PreviousExhibitionRootEnum.navigatorScreen}
             component={PastExhibitionTopTabNavigator}
             options={{...headerOptions, headerTitle: state.previousExhibitionHeader ?? "", 
-            // headerLeft: () => ( 
-            //   <View>
-            //     <HeaderBackButton 
-            //       backImage={() => <BackButtonIcon />}
-            //       labelVisible={false}
-            //       style={styles.backButton}
-            //       onPress={() => {
-            //         navigation.dispatch(
-            //           CommonActions.reset({
-            //             routes: [
-            //               { name: ExhibitionRootEnum.TopTab }, // the only route in the stack after reset
-            //             ],
-            //           })
-            //         );
-            //       }}
-            //       tintColor={PRIMARY_800}
-            //     />
-            //   </View>
-            // )
             }}
             initialParams={{navigateTo: ExhibitionRootEnum.individualArtwork}}
             />
           <ExhibitionStack.Screen
             name={ExhibitionRootEnum.individualArtwork}
             component={ArtworkScreen}
-            options={{...modalHeaderOptions, presentation: 'modal', headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
+            options={{...headerOptions, headerTitle: state.currentArtworkTombstoneHeader ? `${state.currentArtworkTombstoneHeader.slice(0, 30)}...` : ""}}
           />
           <ExhibitionStack.Screen
           name={ExhibitionRootEnum.showGallery}

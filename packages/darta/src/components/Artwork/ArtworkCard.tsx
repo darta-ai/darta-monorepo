@@ -1,16 +1,12 @@
 import React, {useContext} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import {Image} from 'react-native-elements';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-
+import { Shadow } from 'react-native-shadow-2';
 import * as Colors from '@darta-styles';
 import {Artwork} from '@darta-types'
 import {TextElement} from '../Elements/_index';
 import {ETypes, StoreContext} from '../../state/Store';
 import FastImage from 'react-native-fast-image';
+import { Surface } from 'react-native-paper';
 
 const ArtworkCard = ({
   artwork,
@@ -58,38 +54,39 @@ const ArtworkCard = ({
 
   const SSArtworkSelectorCard = StyleSheet.create({
     container: {
-      marginTop: 36,
       flexDirection: 'column',
       justifyContent: 'center',
       alignContent: 'center',
       alignSelf: 'center',
-      width: wp('45%'),
+      width: 155,
+      height: 240,
+      marginBottom: 36,
     },
     imageContainer: {
       alignSelf: 'center',
       alignContent: 'center',
-      marginBottom: 16,
-      height: 161, 
-      width: 161
+      height: 155, 
+      width: 155
     },
     textContainer: {
       flexDirection: 'column',
       justifyContent: 'center',
       alignContent: 'center',
       alignSelf: 'flex-start',
-      margin: hp('1%'),
+      marginTop: 12
     },
     image: {
       backgroundColor: 'transparent',
-      shadowOpacity: 1, 
-      shadowRadius: 1.61,
-      shadowOffset: {
-          width: 0,
-          height: 1.61,
-      },
-      shadowColor: Colors.PRIMARY_500,
+      zIndex: 1,
       height: '100%',
       width: '100%',
+      // shadowOpacity: 1, 
+      // shadowRadius: 1.61,
+      // shadowOffset: {
+      //     width: 0,
+      //     height: 1.61,
+      // },
+      // shadowColor: Colors.PRIMARY_300,
     },
     imageArtistText: {
       fontFamily: 'DMSans_700Bold',
@@ -119,14 +116,15 @@ const ArtworkCard = ({
       <View style={SSArtworkSelectorCard.container}>
         <TouchableOpacity onPress={() => navigateToTombstone()} >
           <View style={SSArtworkSelectorCard.imageContainer}>
-            <FastImage
-              source={{
-                uri: artwork.artworkImage?.value ?? "",
-              }}
-              style={SSArtworkSelectorCard.image}
-              resizeMode={FastImage.resizeMode.contain}
-
-            />
+            <Surface style={{backgroundColor: 'transparent'}} elevation={3}>
+                <FastImage
+                  source={{
+                    uri: artwork.artworkImage?.value ?? "",
+                  }}
+                  style={SSArtworkSelectorCard.image}
+                  resizeMode={FastImage.resizeMode.contain}
+                />
+              </Surface>
           </View>
         </TouchableOpacity>
         <View style={SSArtworkSelectorCard.textContainer}>

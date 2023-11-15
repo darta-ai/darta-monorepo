@@ -19,7 +19,7 @@ import { ETypes, StoreContext } from '../../state/Store';
 import { ExploreMapRootEnum } from '../../typing/routes';
 import {Button, IconButton} from 'react-native-paper';
 import { icons } from '../../utils/constants';
-import { GoogleMapsPinIcon } from '../../assets/SVGs';
+import { GoogleMapsPinIcon, MinimalMapPinIcon } from '../../assets/SVGs';
 
 
 const CustomMarker = ({ 
@@ -192,7 +192,7 @@ const CustomMarker = ({
       onTouchStart={() => setShowCallout(true)}
       pinColor={hasUpcomingOpening ? Colors.ADOBE_500 : Colors.PRIMARY_800}
     >
-      <GoogleMapsPinIcon />
+      <GoogleMapsPinIcon /> 
       {showCallout && (
         <Callout style={customMarker.container} 
         onTouchStart={() => setShowCallout(false)} 
@@ -229,7 +229,7 @@ const CustomMarker = ({
                 style={customMarker.buttonStyles}
                 contentStyle={customMarker.buttonContentStyle}
                 >
-              <TextElement style={customMarker.buttonTextColor}>View Gallery</TextElement>
+              <TextElement style={customMarker.buttonTextColor}>View Exhibition</TextElement>
             </Button>
         </Callout>
        

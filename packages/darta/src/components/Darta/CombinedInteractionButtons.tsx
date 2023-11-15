@@ -49,6 +49,7 @@ export function CombinedInteractionButtons({
   const {state, dispatch} = useContext(StoreContext);
 
   React.useEffect(() => {
+    console.log('!!!!s')
     modifyDisplayRating()
   }, [artOnDisplay, state.userLikedArtwork, state.userDislikedArtwork, state.userSavedArtwork])
 

@@ -1,11 +1,10 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet, Linking, Platform, ScrollView, RefreshControl, Animated} from 'react-native';
-import { Divider } from 'react-native-paper'
+import {View, StyleSheet, Linking, Platform, ScrollView, RefreshControl, Animated, Pressable} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { globalTextStyles } from '../../styles/styles';
 import {TextElement} from '../../components/Elements/_index';
 import * as Colors from '@darta-styles';
-import { ExhibitionPreviewMini } from '../../components/Previews/ExhibitionPreviewMini';
+import  ExhibitionPreviewMini from '../../components/Previews/ExhibitionPreviewMini';
 import FastImage from 'react-native-fast-image'
 import { createGalleryRelationshipAPI, deleteGalleryRelationshipAPI } from '../../utils/apiCalls';
 import {
@@ -16,7 +15,6 @@ import { ActivityIndicator } from 'react-native-paper';
 
 import { Text, Button} from 'react-native-paper'
 import {ETypes, StoreContext} from '../../state/Store';
-import {icons} from '../../utils/constants';
 import { BusinessHours, Exhibition, IGalleryProfileData } from '@darta-types';
 import { formatUSPhoneNumber, modifyHoursOfOperation, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
@@ -100,21 +98,6 @@ const galleryDetailsStyles = StyleSheet.create({
       justifyContent: 'flex-start',
       alignItems: 'flex-start',
   },
-  contactButtonContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: wp('5%'),
-    height: hp('20%'),
-    width: wp('100%'),
-    borderRadius: 8,
-    shadowColor: Colors.PRIMARY_950,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
-    elevation: 2,
-  },
   rowButtonContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -174,7 +157,7 @@ const galleryDetailsStyles = StyleSheet.create({
   },
   hoursClosed: {
     fontSize: 16,
-    fontFamily: 'Sans_400Regular_Italic',
+    fontFamily: 'DMSans_400Regular_Italic',
     color: Colors.PRIMARY_200,
     fontStyle: 'italic'
   },
@@ -200,6 +183,17 @@ const galleryDetailsStyles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
+  pressableStyle: {
+    width: 123,
+    height: 38,
+    backgroundColor: Colors.PRIMARY_100,
+    borderRadius: 19,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  }
 })
 
 type ExhibitionGalleryRouteProp = RouteProp<ExhibitionStackParamList, ExhibitionRootEnum.exhibitionGallery>;
@@ -588,24 +582,18 @@ export function ExhibitionGalleryScreen({
           </View>
             {!followsGallery && (
           <Animated.View style={{opacity: opacitySetOne, transform: [{ translateX: translateX }] }}>
-              <Button
-              icon={"plus"}
-              labelStyle={{color: Colors.PRIMARY_100}}
-              style={{backgroundColor: Colors.PRIMARY_950, width: wp('40%')}}
-              mode="contained"
-              onPress={() => followGallery()}
-              >Follow</Button>
+              <Pressable style={{...galleryDetailsStyles.pressableStyle, backgroundColor: Colors.PRIMARY_950}} onPress={() => followGallery()}>
+                <SVGs.PlusIcon />
+                <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_50}}>Follow</TextElement>
+              </Pressable>
           </Animated.View>
             )}
           {followsGallery && (
           <Animated.View style={{opacity: opacitySetTwo, transform: [{ translateX: Animated.subtract(100, translateX) }]}}>
-              <Button
-              icon={"minus"}
-              labelStyle={{color: Colors.PRIMARY_950}}
-              style={{backgroundColor: Colors.PRIMARY_100, width: wp('40%')}}
-              mode="contained"
-              onPress={() => unFollowGallery()}
-              >Unfollow</Button>
+            <Pressable style={galleryDetailsStyles.pressableStyle} onPress={() => unFollowGallery()}>
+              <SVGs.MinusIcon />
+              <TextElement style={globalTextStyles.boldTitleText}>Unfollow</TextElement>
+            </Pressable>
           </Animated.View>
             )} 
         </View>
@@ -679,7 +667,9 @@ export function ExhibitionGalleryScreen({
                   key={marker.description}
                   coordinate={{latitude: marker.latitude, longitude: marker.longitude}}
                   description={marker.title ?? "Gallery"}
-                  />
+                  >
+                    <SVGs.GoogleMapsPinIcon />
+                  </Marker>
               ))}
             </MapView>
           </View>
@@ -723,7 +713,7 @@ export function ExhibitionGalleryScreen({
                     exhibitionId={previousExhibition._id!}
                     exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
                     exhibitionGallery={gallery.galleryName?.value as string}
-                    exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
+                    exhibitionArtist={previousExhibition.exhibitionArtist?.value === "" ? "Group Show" : previousExhibition.exhibitionArtist?.value as string}
                     exhibitionDates={previousExhibition?.exhibitionDates}
                     galleryLogoLink={gallery.galleryLogo?.value as string}
                     onPress={handleExhibitionPress}
@@ -737,7 +727,7 @@ export function ExhibitionGalleryScreen({
         {route?.params?.showPastExhibitions && previousExhibitions.length > 0 && (
          <View style={galleryDetailsStyles.contactContainer}>
           <View>
-            <TextElement style={globalTextStyles.sectionHeaderTitle}>Past Exhibitions</TextElement>
+            <TextElement style={globalTextStyles.sectionHeaderTitle}>Exhibitions</TextElement>
             </View>
           <View>
             {previousExhibitions.map((previousExhibition : Exhibition, index : number) => {
@@ -748,7 +738,7 @@ export function ExhibitionGalleryScreen({
                       exhibitionId={previousExhibition._id!}
                       exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
                       exhibitionGallery={gallery.galleryName?.value as string}
-                      exhibitionArtist={previousExhibition.exhibitionArtist?.value as string}
+                      exhibitionArtist={previousExhibition.exhibitionArtist?.value === "" ? "Group Show" : previousExhibition.exhibitionArtist?.value as string}
                       exhibitionDates={previousExhibition?.exhibitionDates}
                       galleryLogoLink={gallery.galleryLogo?.value as string}
                       onPress={handleExhibitionPress}
