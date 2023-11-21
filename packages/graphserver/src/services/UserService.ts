@@ -99,12 +99,19 @@ export class UserService implements IUserService {
     const galleryUserId = this.galleryService.generateGalleryId({galleryId});
     const userId = this.generateDartaUserId({uid});
     try {
+      const followsGallery = await this.edgeService.getEdge({
+        edgeName: EdgeNames.FROMDartaUserTOGalleryFOLLOWS,
+        from: userId,
+        to: galleryUserId
+      });
+      if (followsGallery) {
+        throw new Error('user already follows gallery')
+      }
       await this.edgeService.upsertEdge({
         edgeName: EdgeNames.FROMDartaUserTOGalleryFOLLOWS,
         from: userId,
         to: galleryUserId,
         data: {
-
           createdAt: new Date().toISOString(),
         }
       });

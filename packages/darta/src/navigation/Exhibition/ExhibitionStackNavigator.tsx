@@ -3,7 +3,7 @@ import React, {useContext} from 'react';
 
 import {ExhibitionGalleryScreen} from '../../screens/_index';
 import {StoreContext} from '../../state/Store';
-import {headerOptions, modalHeaderOptions, viewOptionsStyles} from '../../styles/styles';
+import {backButtonStyles, headerOptions, viewOptionsStyles} from '../../styles/styles';
 import {ExhibitionRootEnum, PreviousExhibitionRootEnum} from '../../typing/routes';
 import {ExhibitionTopTabNavigator} from './ExhibitionTopTabNavigator'
 import {ArtworkScreen} from '../../screens/Artwork/ArtworkScreen';
@@ -43,21 +43,12 @@ export function ExhibitionStackNavigator() {
 
   }
 
-  const styles = StyleSheet.create({ 
-    backButton: {
-      marginLeft: 10,
-      marginTop: 10, 
-      marginBottom: 10
-    }
-  });
-
-
   return (
       <ExhibitionStack.Navigator screenOptions={{
         headerTintColor: PRIMARY_800,
         cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, 
         headerBackImage: () => (
-        <View style={styles.backButton}>
+        <View style={backButtonStyles.backButton}>
           <BackButtonIcon />
         </View>
         ),
@@ -116,7 +107,7 @@ export function ExhibitionStackNavigator() {
             ),
             headerLeft: () => ( 
               <Pressable
-              style={styles.backButton}
+              style={backButtonStyles.backButton}
               onPress={() => {
                 navigation.dispatch(
                   CommonActions.reset({
@@ -137,7 +128,7 @@ export function ExhibitionStackNavigator() {
             component={GenericLoadingScreen}
             options={{...headerOptions, 
             headerLeft: () => ( 
-              <View style={styles.backButton}>
+              <View style={backButtonStyles.backButton}>
                 <HeaderBackButton 
                   backImage={() => <BackButtonIcon />}
                   labelVisible={false}

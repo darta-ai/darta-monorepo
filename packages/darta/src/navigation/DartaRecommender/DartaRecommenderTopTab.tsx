@@ -6,6 +6,8 @@ import { ArtworkScreen } from '../../screens/Artwork/ArtworkScreen';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { ExhibitionDetailsScreen, ExhibitionGalleryScreen } from '../../screens/Exhibition';
 import { tabBarScreenOptions } from '../../theme/themeConstants';
+import {headerOptions} from '../../styles/styles';
+
 
 const RecommenderStackTopTab = createMaterialTopTabNavigator();
 
@@ -17,7 +19,7 @@ export function DartaRecommenderTopTab({route} : {route: any}) {
           name={RecommenderRoutesEnum.recommenderDetails}
           initialParams={{artOnDisplay: route.params.artOnDisplay}}
           component={ArtworkScreen}
-          options={{ title: 'Artwork'}}
+          options={{ title: 'Artwork', ...headerOptions}}
         />
         <RecommenderStackTopTab.Screen
           name={RecommenderRoutesEnum.recommenderExhibition}

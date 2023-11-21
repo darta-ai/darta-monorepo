@@ -88,6 +88,8 @@ export interface IExhibitionService {
   }): Promise<ExhibitionObject | null>;
 
   listActiveExhibitionsByCity({cityName} : {cityName: MapPinCities}): Promise<any>
+  listActiveExhibitionsByLocality({locality} : {locality: string}): Promise<any>
+
 
   deleteExhibition({
     exhibitionId,

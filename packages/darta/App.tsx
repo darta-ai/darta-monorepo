@@ -143,6 +143,7 @@ function App() {
       [UserRoutesEnum.UserGalleryAndArtwork]: true,
       [UserRoutesEnum.UserPastTopTabNavigator]: true,
       [UserRoutesEnum.UserGallery]: true,
+      [ExhibitionRootEnum.genericLoading]: true,
     }
     setIsTabVisible(showTabBarRoutes[route]);
   };

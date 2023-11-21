@@ -85,7 +85,8 @@ export const headerStyles = {
     },
   },
   imageBox: {
-    height: '5vh',
+    maxHeight: '5vh',
+    maxWidth: '30vw'
   },
   dartaImageBox: {
     height: '5vh',

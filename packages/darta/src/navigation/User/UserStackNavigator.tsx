@@ -7,7 +7,7 @@ import {UserInquiredArtwork} from '../../components/User/UserInquiredArtwork';
 import {UserSavedArtwork} from '../../components/User/UserSavedArtwork';
 import {UserSettings} from '../../components/User/UserSettings';
 import {StoreContext} from '../../state/Store';
-import {headerOptions} from '../../styles/styles';
+import {backButtonStyles, headerOptions} from '../../styles/styles';
 import {UserRoutesEnum} from '../../typing/routes';
 import { View, StyleSheet} from 'react-native';  
 
@@ -19,13 +19,6 @@ import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 
 export const UserStack = createStackNavigator();
 
-const styles = StyleSheet.create({ 
-  backButton: {
-    marginLeft: 10,
-    marginTop: 10, 
-    marginBottom: 10
-  }
-});
 
 export function UserStackNavigator({route} : {route: any}) {
   const {state} = useContext(StoreContext);
@@ -34,7 +27,7 @@ export function UserStackNavigator({route} : {route: any}) {
       headerTintColor: PRIMARY_950,
       cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, 
       headerBackImage: () => (
-        <View style={styles.backButton}>
+        <View style={backButtonStyles.backButton}>
           <BackButtonIcon />
         </View>
         ),

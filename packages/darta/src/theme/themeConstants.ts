@@ -8,15 +8,16 @@ export const tabBarScreenOptions = {
   tabBarPressColor: 'transparent',
   tabBarLabelStyle: {
     fontFamily: 'DMSans_400Regular',
-    fontSize: 14,
+    fontSize: 15,
     textTransform: 'none' as 'none',
   },
   tabBarIndicatorStyle: {
     backgroundColor: Colors.PRIMARY_950,
     height: 3, 
-    width: 0.7,
-    borderRadius: 6,
+    width: 0.8,
+    borderRadius: 1,
     marginLeft: 10,
+    marginBottom: 20,
   },
   tabBarActiveTintColor: Colors.PRIMARY_950, // active label color
   tabBarInactiveTintColor: Colors.PRIMARY_300, // inactive label color
@@ -30,7 +31,6 @@ export const tabBarScreenOptions = {
     elevation: 0, // for Android - to remove the shadow
     shadowOpacity: 0, 
     width: wp('100%'),
-    height: 54,
     borderWidth: 0, // to remove the border
   },
 }

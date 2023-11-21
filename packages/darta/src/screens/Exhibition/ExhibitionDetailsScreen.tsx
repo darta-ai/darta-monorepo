@@ -419,7 +419,6 @@ export function ExhibitionDetailsScreen({
     const saveExhibitionToCalendar = async () => {
         // add an event to the calendar using the Calendar api from expo
         const { status } = await Calendar.requestCalendarPermissionsAsync();
-        console.log(receptionOpenFullDate)
           if (status === 'granted') {
             const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
 

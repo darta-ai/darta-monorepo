@@ -8,7 +8,8 @@ import {
   ExhibitionPreview, 
   IBusinessLocationData, 
   IGalleryProfileData, 
-  Images} from '@darta-types';
+  Images,
+  MapPinCities} from '@darta-types';
 import {Database} from 'arangojs';
 import {Edge} from 'arangojs/documents';
 import {inject, injectable} from 'inversify';
@@ -970,13 +971,38 @@ export class ExhibitionService implements IExhibitionService {
       throw new Error(error.message);
     }
   }
+  
+  public async listActiveExhibitionsByCity({ cityName }: { cityName: MapPinCities; }): Promise<any> {
+    if (!cityName) {
+      throw new Error('cityName is required');
+    }
+    const newYorkLocalities = ['New York', 'Brooklyn']
+    if (cityName === "New York"){
+      try{
+        const exhibitionMapPin: {[key: string]: ExhibitionMapPin} = {};
+        const promises: Promise<any>[] = []
+        newYorkLocalities.forEach((locality) => {
+          promises.push(this.listActiveExhibitionsByLocality({locality}))
+        })
+        const results = await Promise.all(promises)
+        results.forEach((result) => {
+          Object.keys(result).forEach((key) => {
+            exhibitionMapPin[key] = result[key]
+          })
+        })
+        return {...exhibitionMapPin}
+      } catch(error: any){
+        throw new Error(error.message)
+      }
+    }
+    throw new Error ('city not supported')
+  }
 
-  public async listActiveExhibitionsByCity({cityName} : {cityName: string}): Promise<any>{
-
+  public async listActiveExhibitionsByLocality({locality} : {locality: string}): Promise<any>{
     const findCollections = `
     WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}, ${CollectionNames.Cities}
     FOR city IN ${CollectionNames.Cities}
-        FILTER city.value == @cityName
+        FILTER city.value == @locality
         FOR exhibition IN 1..1 INBOUND city ${EdgeNames.FROMExhibitionTOCity}
             FILTER exhibition.published == true AND exhibition.exhibitionDates.exhibitionStartDate.value <= @currentDate
             LET gallery = FIRST(
@@ -1004,7 +1030,7 @@ export class ExhibitionService implements IExhibitionService {
             }
     `;
     try{
-      const edgeCursor = await this.db.query(findCollections, { cityName, currentDate: new Date().toISOString() });
+      const edgeCursor = await this.db.query(findCollections, { locality, currentDate: new Date().toISOString() });
       const exhibitionsAndPreviews: ExhibitionMapPin[] = await edgeCursor.all()
       const exhibitionMapPin: {[key: string]: ExhibitionMapPin} = {};
       exhibitionsAndPreviews.forEach((exhibitionAndPreview) => {
@@ -1365,7 +1391,7 @@ export class ExhibitionService implements IExhibitionService {
         from: fullExhibitionId,
         to: fullArtworkId,
       });
-      await this.reOrderExhibitionToArtworkEdgesAfterDelete({exhibitionId});
+      // await this.reOrderExhibitionToArtworkEdgesAfterDelete({exhibitionId});
       return true;
     } catch (error: any) {
       throw new Error(

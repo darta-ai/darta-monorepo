@@ -368,10 +368,6 @@ export class ArtworkController {
         return;
       }
       await this.artworkService.deleteArtwork({artworkId});
-      await this.exhibitionService.deleteExhibitionToArtworkEdge({
-        exhibitionId,
-        artworkId,
-      });
       const results = await this.exhibitionService.readExhibitionForGallery({
         exhibitionId,
       });

@@ -99,6 +99,8 @@ export const aboutData = {
     'our homes are an extension of ourselves. Our homes should have art that reflects our tastes.',
   DartaBelief2: 'local galleries deserve a national audience.',
   // Person2Responsibilities: 'ML, Backend Dev',
+  Person3: "Huli Curry",
+  
 };
 
 export const welcomeBackData = {

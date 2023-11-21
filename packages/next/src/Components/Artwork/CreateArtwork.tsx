@@ -73,6 +73,19 @@ const createArtworkSchema = yup
     artworkCurrency: yup.object().shape({
       value: yup.string().optional(),
     }),
+    editionStatus: yup.object().shape({
+      value: yup.string().required('Edition or Original is required.'),
+    }),
+    editionSize: yup.object().shape({
+      value: yup
+        .number()
+        .nullable()
+        .when(['isArtworkEdition.value'], {
+          is: (value: any) => value === 'Edition', // Check if the value is 'Edition'
+          then: (schema) => schema.required('The edition size of the artwork is required.'),
+          otherwise: (schema) => schema.nullable()
+        })
+    }),
     canInquire: yup.object().shape({
       value: yup
         .string()
@@ -153,7 +166,6 @@ export function CreateArtwork({
   deleteSpinner,
   croppingModalOpen,
   setCroppingModalOpen,
-  handleRemoveArtworkFromExhibition,
   handleDeleteArtworkFromDarta,
 }: {
   newArtwork: Artwork;
@@ -164,13 +176,6 @@ export function CreateArtwork({
   croppingModalOpen?: boolean;
   handleDelete?: (arg0: string) => void;
   setCroppingModalOpen?: (arg0: boolean) => void;
-  handleRemoveArtworkFromExhibition?: ({
-    exhibitionId,
-    artworkId,
-  }: {
-    exhibitionId: string;
-    artworkId: string;
-  }) => Promise<boolean>;
   handleDeleteArtworkFromDarta?: ({
     exhibitionId,
     artworkId,
@@ -258,6 +263,7 @@ export function CreateArtwork({
 
   const onSubmit = async (data: any) => {
     handleMeasurementChange();
+
     const artist_name = data.artistName.value
       .toLowerCase()
       .replace(/\s+/g, '-')
@@ -268,6 +274,9 @@ export function CreateArtwork({
       .replaceAll('.', '');
     const slug = `${artist_name}-${artwork_title}`;
     setValue('slug.value', slug);
+    if (data.editionStatus.value === 'Original') {
+      setValue('editionSize.value', 1)
+    }
     if (data.artworkPrice.value) {
       setValue(
         'artworkPrice.value',
@@ -303,6 +312,16 @@ export function CreateArtwork({
     }
     handleSave(data);
   };
+
+  const [isArtworkEdition, setIsArtworkEdition] = React.useState<boolean>(false)
+  
+  const setIsEdition = (value: string) => {
+    if (value === 'Edition') {
+      setIsArtworkEdition(true)
+    } else {
+      setIsArtworkEdition(false)
+    }
+  }
 
   const handleDrop = (acceptedFiles: any) => {
     const file = acceptedFiles[0];
@@ -486,7 +505,7 @@ export function CreateArtwork({
       <Box sx={createArtworkStyles.imageAndKeyInformationContainer}>
       <Box sx={createArtworkStyles.keyInformationContainer}>
         <Typography variant="h6" sx={{alignSelf: 'center'}}>Dimensions</Typography>
-        <Box sx={{alignContent: 'center', alignSelf: 'center'}}>
+        <Box sx={{alignContent: 'center', alignSelf: 'center', height: 40}}>
           <FormGroup >
               <FormControlLabel
                 data-testid="measurement-change"
@@ -498,7 +517,7 @@ export function CreateArtwork({
               />
           </FormGroup>
          </Box>
-        <Box key="artworkDimensionsHeight" sx={createArtworkStyles.multiLineContainer}>
+        <Box key="artworkDimensionsHeight" sx={{...createArtworkStyles.multiLineContainer, height: 80}}>
           <DartaTextInput
             fieldName={
               getValues('artworkDimensions.displayUnit.value') === 'cm'
@@ -521,7 +540,7 @@ export function CreateArtwork({
             inputAdornmentValue={isInchesMeasurement ? 'cm' : 'in'}
           />
         </Box>
-      <Box key="artworkDimensionsWidth" sx={createArtworkStyles.multiLineContainer}>
+      <Box key="artworkDimensionsWidth" sx={{...createArtworkStyles.multiLineContainer, height: 80}}>
         <DartaTextInput
               fieldName={
                 getValues('artworkDimensions.displayUnit.value') === 'cm'
@@ -544,7 +563,7 @@ export function CreateArtwork({
               inputAdornmentValue={isInchesMeasurement ? 'cm' : 'in'}
             />
         </Box>
-        <Box key="artworkDimensionsDepth" sx={createArtworkStyles.multiLineContainer}>
+        <Box key="artworkDimensionsDepth" sx={{...createArtworkStyles.multiLineContainer, height: 80}}>
           <DartaTextInput
               fieldName={
                 getValues('artworkDimensions.displayUnit.value') === 'cm'
@@ -582,7 +601,8 @@ export function CreateArtwork({
 
         <Box sx={createArtworkStyles.keyInformationContainer}>
         <Typography variant="h6" sx={{alignSelf: 'center'}}>Availability & Pricing</Typography>
-          <Box sx={createArtworkStyles.multiLineContainer}>
+        <Box sx={{alignContent: 'center', alignSelf: 'center', height: 40}} />
+          <Box sx={{...createArtworkStyles.multiLineContainer, height: 80}}>
             <DartaRadioButtonsGroup
               toolTips={createArtworkToolTips}
               fieldName="canInquire"
@@ -609,7 +629,7 @@ export function CreateArtwork({
               {errors.canInquire?.value?.message!}
             </Typography>
             )}
-          <Box sx={createArtworkStyles.multiLineContainer}>
+          <Box sx={{...createArtworkStyles.multiLineContainer, height: 80}}>
             <DartaRadioButtonsGroup
               toolTips={createArtworkToolTips}
               fieldName="artworkCurrency"
@@ -626,7 +646,7 @@ export function CreateArtwork({
               }
             />
             </Box>
-            <Box sx={createArtworkStyles.multiLineContainer}>
+            <Box sx={{...createArtworkStyles.multiLineContainer, height: 80}}>
               <DartaTextInput
                 fieldName="artworkPrice"
                 data={newArtwork?.artworkPrice?.value}
@@ -646,7 +666,7 @@ export function CreateArtwork({
       <Box sx={createArtworkStyles.imageAndKeyInformationContainer}>
       <Box sx={createArtworkStyles.keyInformationContainer}>
         <Typography variant="h6" sx={{alignSelf: 'center'}}>Information</Typography>
-      <Box key="artworkCategory" sx={createArtworkStyles.multiLineContainer}>
+        <Box key="artworkCategory" sx={createArtworkStyles.multiLineContainer}>
           <DartaDropdown
             fieldName="artworkCategory"
             options={category as any}
@@ -674,6 +694,36 @@ export function CreateArtwork({
             inputOptions={mediums}
           />
         </Box>
+        <Box key="edition" sx={createArtworkStyles.multiLineContainer}>
+          <DartaRadioButtonsGroup
+            options={['Original', 'Edition']}
+            setHigherLevelState={setIsEdition}
+            errors={errors}
+            fieldName="editionStatus"
+            helperTextString={errors.editionStatus?.value?.message}
+            control={control}
+            required
+            toolTips={createArtworkToolTips}
+            inputAdornmentString="Is Edition?"
+            value={
+              getValues('editionStatus.value') ? getValues('editionStatus.value') : 'Original'
+            }
+          />
+        </Box>
+        {isArtworkEdition && ( 
+          <Box key="edition" sx={createArtworkStyles.multiLineContainer}>
+            <DartaDropdown
+              options={Array.from(Array(19).keys()).map((i) => i + 2)}
+              fieldName="editionSize"
+              register={register}
+              helperTextString={errors.editionSize?.value?.message}
+              control={control}
+              required={isArtworkEdition}
+              toolTips={createArtworkToolTips}
+              inputAdornmentString="Edition Size"
+            />
+          </Box>
+        )}
       </Box>
       <Box sx={createArtworkStyles.keyInformationContainer}>
         <Typography variant="h6" sx={{alignSelf: 'center'}}>Tags</Typography>
@@ -777,8 +827,7 @@ export function CreateArtwork({
       {isInExhibition &&
         newArtwork.artworkId &&
         newArtwork.exhibitionId &&
-        handleDeleteArtworkFromDarta &&
-        handleRemoveArtworkFromExhibition && (
+        handleDeleteArtworkFromDarta && (
           <ConfirmDeleteExhibitionArtwork
             artworkId={newArtwork.artworkId}
             open={open}
@@ -805,6 +854,5 @@ CreateArtwork.defaultProps = {
   croppingModalOpen: false,
   setCroppingModalOpen: () => {},
   handleDeleteArtworkFromDarta: () => {},
-  handleRemoveArtworkFromExhibition: () => {},
   handleDelete: () => {},
 };

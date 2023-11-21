@@ -57,6 +57,25 @@ export async function createDartaUserFollowGallery({
   }
 }
 
+export async function createUserVisitedGallery({
+  galleryId,
+  uid,
+}: {
+  galleryId: string;
+  uid: string;
+}): Promise<Exhibition | void> {
+  try {
+    const idToken = await auth().currentUser?.getIdToken();
+    const {data} = await axios.post(`${URL}/createUserVisitedGallery`, {
+      uid,
+      galleryId,
+  }, {headers: {authorization: `Bearer ${idToken}`}});
+    return data;
+  } catch (error:any) {
+    throw new Error(error)
+  }
+}
+
 export async function getDartaUser({uid} : {uid: string}): Promise<any> {
 try {
   const idToken = await auth().currentUser?.getIdToken();

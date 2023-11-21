@@ -8,7 +8,6 @@ import * as Haptics from 'expo-haptics';
 import { Snackbar, Surface } from 'react-native-paper';
 
 
-import {getButtonSizes} from '../utils/functions';
 import {
   IUserArtworkRated,
   OpenStateEnum,
@@ -120,18 +119,6 @@ export function DartaRecommenderView({
       duration,
       useNativeDriver: true,
     }).start();
-  };
-
-  const toggleButtonView = (
-    openIdentifier: OpenStateEnum,
-    instructions?: boolean,
-  ) => {
-    const details = whichFadeAnim(openIdentifier);
-
-    if (details) {
-      const {fadeAnim, currentState} = details;
-      return fadeButtons(openIdentifier, fadeAnim, currentState, instructions);
-    }
   };
 
   const screenRotation = (orientation: string) => {

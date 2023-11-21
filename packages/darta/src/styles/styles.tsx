@@ -88,7 +88,6 @@ export const headerOptions = {
   headerBackTitle: "",
   headerStyle: {
     backgroundColor: Colors.PRIMARY_50,
-    height: 75,
   },
   headerTitleAlign: 'left' as 'left', 
   headerMode: 'screen' as 'screen',
@@ -546,3 +545,11 @@ export const SSDartaHome = StyleSheet.create({
     },
   });
   
+
+export const backButtonStyles = StyleSheet.create({ 
+    backButton: {
+      marginLeft: 24,
+      marginTop: 10, 
+      marginBottom: 10
+    }
+  });

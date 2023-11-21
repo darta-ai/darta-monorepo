@@ -40,7 +40,8 @@ export function ExhibitionPreviewScreen({
   
   const sortPreviews = (exhibitionPreviews: ExhibitionPreview[]) => {
     return exhibitionPreviews.sort((a, b) => {
-      return a.closingDate >= b.closingDate ? 1 : -1
+      if (!a.openingDate?.value || !b.openingDate?.value) return 0
+      return b.openingDate?.value >= a.openingDate?.value ? 1 : -1
     })
   }
 

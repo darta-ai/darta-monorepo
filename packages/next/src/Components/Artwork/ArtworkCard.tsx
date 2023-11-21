@@ -27,7 +27,6 @@ export function ArtworkCard({
   inquiries,
   croppingModalOpen,
   setCroppingModalOpen,
-  handleRemoveArtworkFromExhibition,
   handleDeleteArtworkFromDarta,
 }: {
   artwork: Artwork;
@@ -40,13 +39,6 @@ export function ArtworkCard({
   inquiries: InquiryArtworkData[] | null;
   croppingModalOpen?: boolean;
   setCroppingModalOpen?: (arg0: boolean) => void;
-  handleRemoveArtworkFromExhibition: ({
-    exhibitionId,
-    artworkId,
-  }: {
-    exhibitionId: string;
-    artworkId: string;
-  }) => Promise<boolean>;
   handleDeleteArtworkFromDarta: ({
     exhibitionId,
     artworkId,
@@ -285,9 +277,6 @@ export function ArtworkCard({
               setCroppingModalOpen={setCroppingModalOpen}
               saveSpinner={saveSpinner}
               deleteSpinner={deleteSpinner}
-              handleRemoveArtworkFromExhibition={
-                handleRemoveArtworkFromExhibition
-              }
               handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
             />
           </Box>

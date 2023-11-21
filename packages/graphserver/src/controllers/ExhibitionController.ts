@@ -257,7 +257,7 @@ export class ExhibitionController {
   public async listForGallery(
     @request() req: Request,
     @response() res: Response,
-  ): Promise<void> {
+  ): Promise<Response<any, Record<string, any>>> {
     const { user } = req as any;
     try {
       const galleryId = await this.galleryService.getGalleryIdFromUID({
@@ -266,16 +266,14 @@ export class ExhibitionController {
       const results = await this.exhibitionService.listExhibitionForGallery({
         galleryId,
       });
-      res.json(results);
+      return res.json(results);
     } catch (error: any) {
       standardConsoleLog({
         message: error?.message,
         data: 'exhibition/listForGallery',
         request: user?.user_id,
       });
-      if (!res.headersSent) {
-        res.status(500).send(error.message);
-      }
+        return res.status(500).send(error.message);
     }
   }  
 
