@@ -9,34 +9,49 @@ import {UserSettings} from '../../components/User/UserSettings';
 import {StoreContext} from '../../state/Store';
 import {headerOptions} from '../../styles/styles';
 import {UserRoutesEnum} from '../../typing/routes';
+import { View, StyleSheet} from 'react-native';  
 
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { GalleryAndArtworkTopTabNavigator } from './GalleryAndArtworkTopTabNavigator';
 import { PastExhibitionTopTabNavigator } from '../Exhibition/PastExhibitionTopTabNavigator';
 import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
+import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 
 export const UserStack = createStackNavigator();
 
+const styles = StyleSheet.create({ 
+  backButton: {
+    marginLeft: 10,
+    marginTop: 10, 
+    marginBottom: 10
+  }
+});
 
 export function UserStackNavigator({route} : {route: any}) {
   const {state} = useContext(StoreContext);
   return (
     <UserStack.Navigator screenOptions={{
       headerTintColor: PRIMARY_950,
-      cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS
+      cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, 
+      headerBackImage: () => (
+        <View style={styles.backButton}>
+          <BackButtonIcon />
+        </View>
+        ),
+        headerBackTitleVisible: false,
       }}>
       <UserStack.Group>
         <UserStack.Screen
           name={UserRoutesEnum.home}
           component={UserHome}
-          options={{...headerOptions, headerTitle: 'you'}}
+          options={{...headerOptions, headerTitle: 'Profile'}}
         />
         <UserStack.Screen
           name={UserRoutesEnum.userSettings}
           component={UserSettings}
           options={{
             ...headerOptions,
-            headerTitle: 'settings',
+            headerTitle: 'Settings',
           }}
         />
         <UserStack.Screen
@@ -44,7 +59,7 @@ export function UserStackNavigator({route} : {route: any}) {
           component={UserSavedArtwork}
           options={{
             ...headerOptions,
-            headerTitle: 's a v e d',
+            headerTitle: 'Saved',
           }}
         />
         <UserStack.Screen
@@ -52,7 +67,7 @@ export function UserStackNavigator({route} : {route: any}) {
           component={UserInquiredArtwork}
           options={{
             ...headerOptions,
-            headerTitle: 'i n q u i r e d',
+            headerTitle: 'Inquiries',
           }}
         />
         <UserStack.Screen 
@@ -71,15 +86,15 @@ export function UserStackNavigator({route} : {route: any}) {
           name={UserRoutesEnum.UserGallery}
           component={ExhibitionGalleryScreen}
           initialParams={{galleryId: route.params?.artOnDisplay.galleryId, navigationRoute: UserRoutesEnum.UserPastTopTabNavigator, showPastExhibitions: true, navigateTo: UserRoutesEnum.SavedArtworkModal}}
-          options={{...headerOptions, headerTitle: state.galleryHeader ?? ""}}
+          options={{...headerOptions, headerTitle: state?.galleryHeader ?? ""}}
           />
       </UserStack.Group>
 
-      <UserStack.Group screenOptions={{presentation: 'modal'}}>
+      <UserStack.Group>
         <UserStack.Screen
           name={UserRoutesEnum.SavedArtworkModal}
           component={ArtworkScreen}
-          options={{...headerOptions, headerTitle: state.tombstoneTitle}}
+          options={{...headerOptions, headerTitle: state?.currentArtworkTombstoneHeader ?? ""}}
         />
       </UserStack.Group>
     </UserStack.Navigator>

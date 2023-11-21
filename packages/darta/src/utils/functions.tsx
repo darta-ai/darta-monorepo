@@ -23,7 +23,10 @@ export const getUserUid = async () => {
     }
 }
 
-
+// listAllExhibitionsForUser
+/**
+ * @deprecated This function should be substituted with the below
+ */
 export function customLocalDateString(date: Date) {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
@@ -34,6 +37,27 @@ export function customLocalDateString(date: Date) {
   const year = date.getFullYear();
 
   return `${dayName}, ${monthName} ${dayOfMonth} ${year}`;
+}
+
+export function customLocalDateStringStart({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+
+  const monthName = isUpperCase ? months[date.getMonth()].toUpperCase() : months[date.getMonth()]
+
+  const dayOfMonth = date.getDate();
+
+  return `${monthName} ${dayOfMonth}`;
+}
+
+export function customLocalDateStringEnd({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+
+  const monthName = isUpperCase ? months[date.getMonth()].toUpperCase() : months[date.getMonth()]
+  const dayOfMonth = date.getDate();
+  const year = date.getFullYear();
+
+  return `${monthName} ${dayOfMonth} ${year}`;
 }
 
 export function customDateString(date: Date) {
@@ -61,7 +85,10 @@ export function customFormatTimeString(date: Date): string {
   return `${hours}:${minutes} ${amPm}`;
 } 
 
-
+// listAllExhibitionsForUser
+/**
+ * @deprecated This function should be substituted with the below
+ */
 export function simplifyAddress(address: string | undefined | null) {
   if (!address) {
       return '';
@@ -75,6 +102,38 @@ export function simplifyAddress(address: string | undefined | null) {
   // Join back and return
   return `${addr},${city}, ${state}`;
 }
+
+export function simplifyAddressMailing(address: string | undefined | null) {
+  if (!address) {
+      return '';
+  }
+  const parts = address.split(',');
+
+  const addr = parts[0].trim();
+
+  return `${addr}`;
+}
+
+export function simplifyAddressCity(address: string | undefined | null) {
+  if (!address) {
+      return '';
+  }
+  const parts = address.split(',');
+
+  const city = parts[1]?.trim();
+  const state = parts[2]?.trim()
+
+  const results = `${city}, ${state}`;
+  return results;
+}
+
+export function modifyHoursOfOperation(time: string | undefined | null): string {
+  if (!time) {
+      return '';
+  }
+  return time.toLowerCase().replace('closed', 'Closed').replace('open', 'Open').replace(':00', '').replace(" ", '');
+}
+
 
 export const getButtonSizes = (hp: number) => {
   const baseHeight = 926;

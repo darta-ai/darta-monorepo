@@ -16,7 +16,8 @@ const artworkDetailsStyles = StyleSheet.create({
       alignItems: 'center',
       backgroundColor: Colors.PRIMARY_50,
       width: '100%',
-      minHeight: '100%',
+      height: '100%',
+      padding: 24,
   },
   spinnerContainer: {
     display: 'flex',
@@ -31,10 +32,8 @@ const artworkDetailsStyles = StyleSheet.create({
   flexContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: wp('3%'),
-  },
-  flex1: {
-    flex: 1,
+    gap: 24,
+    alignContent: 'center',
   },
 })
 
@@ -62,7 +61,6 @@ export function ArtworkList({
         <FlatList
           data={[0]}
           keyExtractor={item => item.toString()}
-          style={{ marginTop: hp('2.5%')}}
           refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}
           renderItem={() => (
             <View style={artworkDetailsStyles.flexContainer}>
@@ -74,7 +72,6 @@ export function ArtworkList({
                     renderItem={({item}) => (
                       <ArtworkCard
                         artwork={item}
-                        displayLeft={true}
                         navigation={navigation}
                         navigateTo={navigateTo}
                         navigateToParams={navigateToParams}
@@ -90,7 +87,6 @@ export function ArtworkList({
                     renderItem={({item}) => (
                       <ArtworkCard
                         artwork={item}
-                        displayLeft={false}
                         navigation={navigation}
                         navigateTo={navigateTo}
                         navigateToParams={navigateToParams}

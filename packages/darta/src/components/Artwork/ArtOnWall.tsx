@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Animated,
   View,
+  Pressable
 } from 'react-native';
 import FastImage from 'react-native-fast-image'
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
@@ -20,6 +21,9 @@ import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types'
 import {ETypes, StoreContext} from '../../state/Store';
 import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
 import { Onboard } from '../Darta/Onboard';
+import { Surface } from 'react-native-paper';
+import * as Colors from '@darta-styles'
+import { LinearGradient } from 'expo-linear-gradient';
 
 export function ArtOnWall({
   artworkDimensions,
@@ -35,6 +39,7 @@ export function ArtOnWall({
   setCurrentZoomScale,
   toggleArtForward,
   toggleArtBackward,
+  toggleArtTombstone
 }: {
   artOnDisplay: Artwork;
   artImage: string | undefined;
@@ -49,6 +54,7 @@ export function ArtOnWall({
   setCurrentZoomScale: (arg0: number) => void;
   toggleArtForward: () => void;
   toggleArtBackward: () => void;
+  toggleArtTombstone: () => void;
 }) {
   const {state, dispatch} = useContext(StoreContext);
 
@@ -187,7 +193,7 @@ export function ArtOnWall({
 
     artImageLocation = {
       top:
-        0.5 * backgroundImageDimensionsPixels.height - 0.5 * artHeightPixels,
+        0.45 * backgroundImageDimensionsPixels.height - 0.5 * artHeightPixels,
       left:
         0.5 * backgroundImageDimensionsPixels.width - 0.5 * artWidthPixels,
     };
@@ -251,9 +257,11 @@ export function ArtOnWall({
         return;
       }
 
-      state.isPortrait
-        ? runOnJS(handleArtRatingGesture)(ArtRatingGesture.swipeDown)
-        : runOnJS(toggleArtBackward)();
+      if (!state.isPortrait){
+        runOnJS(toggleArtBackward)();
+      } else {
+        return
+      }
     });
 
   const panGestureDown = Gesture.Pan()
@@ -263,9 +271,11 @@ export function ArtOnWall({
         return;
       }
 
-      state.isPortrait
-        ? runOnJS(handleArtRatingGesture)(ArtRatingGesture.swipeUp)
-        : runOnJS(toggleArtForward)();
+      if (!state.isPortrait){
+        runOnJS(toggleArtForward)();
+      } else {
+        return
+      }
     });
 
   const doubleTapGesture = Gesture.Tap()
@@ -290,7 +300,7 @@ export function ArtOnWall({
   const galleryStylesPortrait = StyleSheet.create({
     container: {
       zIndex: 0,
-      height: '99%',
+      height: '100%',
       width: '100%',
       justifyContent: 'center',
       alignItems: 'center',
@@ -314,13 +324,13 @@ export function ArtOnWall({
       width: '100%',
       height: '100%',
       // backgroundColor: Colors.PRIMARY_100,
-      paddingBottom: 0.3,
-      paddingLeft: 0.3,
+      // paddingBottom: 0.3,
+      // paddingLeft: 0.3,
       position: 'absolute', // This ensures the artContainer is positioned relative to its first positioned (not static) ancestor element
-      shadowColor: "#000", // Shadow color should generally be black for realistic shadows
-      shadowOffset: { width: 0, height: 3 }, // Adjust the height for the depth of the shadow
-      shadowOpacity: 0.25, // A subtle shadow usually looks more natural
-      shadowRadius: 5, // A larger shadow
+      // shadowColor: "#000", // Shadow color should generally be black for realistic shadows
+      // shadowOffset: { width: 0, height: 3 }, // Adjust the height for the depth of the shadow
+      // shadowOpacity: 0.25, // A subtle shadow usually looks more natural
+      // shadowRadius: 5, // A larger shadow
       // backgroundColor: 'none',
     },
     artwork: {
@@ -332,19 +342,15 @@ export function ArtOnWall({
       top: isPortrait ? hp('35%') : hp('20%'),
       justifyContent: 'center',
     },
+    surface :{
+      shadowColor: Colors.PRIMARY_300, // Shadow color should generally be black for realistic shadows
+      shadowOffset: { width: 0, height: 4.29 }, // Adjust the height for the depth of the shadow
+      shadowOpacity: 0.5,
+      shadowRadius: 4.29, // A larger shadow
+      backgroundColor: 'transparent', 
+      elevation: 1
+    }
   });
-
-  const shadowStyle = {
-    width: 100,
-    height: 100,
-    color: "#000",
-    border: 2,
-    radius: 3,
-    opacity: 0.2,
-    x: 0,
-    y: 3,
-    style: { marginVertical: 5 },
-  }
 
   return (
     <GestureDetector gesture={composed}>
@@ -370,24 +376,26 @@ export function ArtOnWall({
         removeClippedSubviews
         snapToAlignment="center">
         <GestureDetector gesture={doubleTapGesture}>
-          <ImageBackground source={backgroundImage}>
+          {/* <ImageBackground source={backgroundImage}> */}
+          <LinearGradient colors={[Colors.PRIMARY_50, Colors.PRIMARY_100, Colors.PRIMARY_200]}>
             <Onboard />
-            <View >
               <View style={galleryStylesPortrait.screenContainer}>
                 <View style={galleryStylesPortrait.artContainer}>
                 
                   <View style={galleryStylesPortrait.frameStyle}>
                     {artImage ? (
                       <>
-                    {/* <Shadow> */}
                       <Animated.View style={{opacity: opacityAnimatedValue}}>
-                        <FastImage
-                          source={{uri: artImage, priority: FastImage.priority.normal}}
-                          style={galleryStylesPortrait.artwork}
-                          resizeMode={FastImage.resizeMode.contain}
-                        />
+                        <Surface style={galleryStylesPortrait.surface}>
+                          <Pressable onPress={toggleArtTombstone}>
+                            <FastImage
+                              source={{uri: artImage, priority: FastImage.priority.normal}}
+                              style={galleryStylesPortrait.artwork}
+                              resizeMode={FastImage.resizeMode.contain}
+                            />
+                          </Pressable>
+                        </Surface>
                       </Animated.View>
-                    {/* </Shadow> */}
                     </>
                         ) : (
                           <ActivityIndicator
@@ -397,8 +405,8 @@ export function ArtOnWall({
                   </View>
                 </View>
               </View>
-            </View>
-          </ImageBackground>
+            </LinearGradient>
+          {/* </ImageBackground> */}
         </GestureDetector>
       </ScrollView>
     </GestureDetector>

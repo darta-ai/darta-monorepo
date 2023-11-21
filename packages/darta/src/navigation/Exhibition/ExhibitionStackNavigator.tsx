@@ -1,9 +1,9 @@
 import {PRIMARY_800} from '@darta-styles';
 import React, {useContext} from 'react';
 
-import {ExhibitionGalleryScreen, ExhibitionsHomeScreen} from '../../screens/_index';
+import {ExhibitionGalleryScreen} from '../../screens/_index';
 import {StoreContext} from '../../state/Store';
-import {headerOptions, modalHeaderOptions} from '../../styles/styles';
+import {headerOptions, modalHeaderOptions, viewOptionsStyles} from '../../styles/styles';
 import {ExhibitionRootEnum, PreviousExhibitionRootEnum} from '../../typing/routes';
 import {ExhibitionTopTabNavigator} from './ExhibitionTopTabNavigator'
 import {ArtworkScreen} from '../../screens/Artwork/ArtworkScreen';
@@ -11,20 +11,20 @@ import { PastExhibitionTopTabNavigator } from './PastExhibitionTopTabNavigator';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { useDeepLinking } from '../../components/LinkingAndNavigation/deepLinking';
-import { View } from 'react-native';  
+import { View, Pressable, StyleSheet} from 'react-native';  
 import { HeaderBackButton } from '@react-navigation/elements';
 import { CommonActions } from '@react-navigation/native';
 import { IconButton } from 'react-native-paper';
-import { Linking, Platform } from 'react-native';
-import { captureRef } from 'react-native-view-shot';
 import Share from 'react-native-share'
 import { ExhibitionHomeTopTabNavigator } from './ExhibitionHomeTopTabNavigator';
 import { GenericLoadingScreen } from '../../screens/Loading/GenericLoading';
+import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
+import * as Colors from '@darta-styles'
 
 export const ExhibitionStack = createStackNavigator();
 
 
-export function ExhibitionStackNavigator({route} : {route: any}) {
+export function ExhibitionStackNavigator() {
   const {state} = useContext(StoreContext);
 
   const navigation = useNavigation();
@@ -43,16 +43,31 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
 
   }
 
+  const styles = StyleSheet.create({ 
+    backButton: {
+      marginLeft: 10,
+      marginTop: 10, 
+      marginBottom: 10
+    }
+  });
+
+
   return (
       <ExhibitionStack.Navigator screenOptions={{
         headerTintColor: PRIMARY_800,
-        cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS
+        cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, 
+        headerBackImage: () => (
+        <View style={styles.backButton}>
+          <BackButtonIcon />
+        </View>
+        ),
+        headerBackTitleVisible: false,
       }}
       >
         <ExhibitionStack.Screen
           name={ExhibitionRootEnum.exhibitionHome}
           component={ExhibitionHomeTopTabNavigator}
-          options={{...headerOptions, headerTitle: 'exhibitions'}}
+          options={{...headerOptions, headerTitle: 'Exhibitions'}}
         />
         <ExhibitionStack.Screen
             name={ExhibitionRootEnum.TopTab}
@@ -61,21 +76,25 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
             headerRight: () => (
               <IconButton 
                 icon={"export-variant"}
+                iconColor={Colors.PRIMARY_950}
+                style={viewOptionsStyles.viewOptionsButtonStyle}
                 onPress={() => shareExhibition()}
               />
-          )}}
+            )
+            }}
             initialParams={{navigateTo: ExhibitionRootEnum.individualArtwork}}
           />
           <ExhibitionStack.Screen
             name={PreviousExhibitionRootEnum.navigatorScreen}
             component={PastExhibitionTopTabNavigator}
-            options={{...headerOptions, headerTitle: state.previousExhibitionHeader ?? ""}}
+            options={{...headerOptions, headerTitle: state.previousExhibitionHeader ?? "", 
+            }}
             initialParams={{navigateTo: ExhibitionRootEnum.individualArtwork}}
             />
           <ExhibitionStack.Screen
             name={ExhibitionRootEnum.individualArtwork}
             component={ArtworkScreen}
-            options={{...modalHeaderOptions, presentation: 'modal', headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
+            options={{...headerOptions, headerTitle: state.currentArtworkTombstoneHeader ? state.currentArtworkTombstoneHeader.slice(0, 30) : ""}}
           />
           <ExhibitionStack.Screen
           name={ExhibitionRootEnum.showGallery}
@@ -90,25 +109,26 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
             headerRight: () => (
               <IconButton 
                 icon={"export-variant"}
+                iconColor={Colors.PRIMARY_950}
+                style={viewOptionsStyles.viewOptionsButtonStyle}
                 onPress={() => shareExhibition()}
               />
             ),
             headerLeft: () => ( 
-              <View>
-                <HeaderBackButton 
-                  onPress={() => {
-                    navigation.dispatch(
-                      CommonActions.reset({
-                        index: 0, // sets the active route index
-                        routes: [
-                          { name: ExhibitionRootEnum.exhibitionHome }, // the only route in the stack after reset
-                        ],
-                      })
-                    );
-                  }}
-                  tintColor={PRIMARY_800}
-                />
-              </View>
+              <Pressable
+              style={styles.backButton}
+              onPress={() => {
+                navigation.dispatch(
+                  CommonActions.reset({
+                    index: 0, // sets the active route index
+                    routes: [
+                      { name: ExhibitionRootEnum.exhibitionHome }, // the only route in the stack after reset
+                    ],
+                  })
+                );
+              }}>
+                <BackButtonIcon />
+              </Pressable>
             )
             }}
           />
@@ -117,8 +137,10 @@ export function ExhibitionStackNavigator({route} : {route: any}) {
             component={GenericLoadingScreen}
             options={{...headerOptions, 
             headerLeft: () => ( 
-              <View>
+              <View style={styles.backButton}>
                 <HeaderBackButton 
+                  backImage={() => <BackButtonIcon />}
+                  labelVisible={false}
                   onPress={() => {
                     navigation.dispatch(
                       CommonActions.reset({

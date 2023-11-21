@@ -1,38 +1,35 @@
 import React from 'react';
-import {Animated, ImageSourcePropType, StyleSheet, View, Image, } from 'react-native';
+import {Animated, ImageSourcePropType, StyleSheet, View } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
 import * as Colors from '@darta-styles'
 import * as Haptics from 'expo-haptics';
-import { Snackbar } from 'react-native-paper';
+import { Snackbar, Surface } from 'react-native-paper';
 
 
 import {getButtonSizes} from '../utils/functions';
 import {
+  IUserArtworkRated,
   OpenStateEnum,
   OrientationsEnum,
+  RatingEnum,
 } from '../typing/types';
 import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
-import {
-  CombinedInteractionButtons,
-} from '../components/Darta/_index';
 import { ArtOnWall } from '../components/Artwork/ArtOnWall';
 import {
   DEFAULT_GALLERY_IMAGE,
   duration,
   galleryDimensionsLandscape,
   galleryDimensionsPortrait,
-  icons,
 } from '../utils/constants';
 import {
   RecommenderRoutesEnum,
 } from '../typing/routes';
 import {ETypes, StoreContext} from '../state/Store';
-import { createArtworkRelationshipAPI, listArtworksToRateAPI, listArtworksToRateStatelessRandomSamplingAPI } from '../utils/apiCalls';
-import { IconButton } from 'react-native-paper';
+import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI, listArtworksToRateStatelessRandomSamplingAPI } from '../utils/apiCalls';
 import { TextElement } from '../components/Elements/TextElement';
-import { listArtworksToRateStatelessRandomSampling } from '../api/recommenderRoutes';
+import * as SVGs from '../assets/SVGs';
 
 const galleryWallRaw = DEFAULT_GALLERY_IMAGE;
 
@@ -50,10 +47,9 @@ export function DartaRecommenderView({
     }
   }, [])
 
-  const [backgroundImage] = React.useState<ImageSourcePropType>(galleryWallRaw);
+  // const [backgroundImage] = React.useState<ImageSourcePropType>(galleryWallRaw);
   const [currentZoomScale, setCurrentZoomScale] = React.useState<number>(1);
 
-  const localButtonSizes = getButtonSizes(hp('100%'));
 
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   const [openRatings, setOpenRatings] = React.useState<boolean>(false);
@@ -321,6 +317,7 @@ export function DartaRecommenderView({
   };
 
   const toggleArtTombstone = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
     dispatch({
       type: ETypes.setTombstoneHeader,
       currentArtworkHeader: artOnDisplay?.artworkTitle?.value!,
@@ -383,7 +380,7 @@ export function DartaRecommenderView({
 
   const SSDartaGalleryView = StyleSheet.create({
     container: {
-      backgroundColor: Colors.PRIMARY_200,
+      backgroundColor: Colors.PRIMARY_50,
       justifyContent: state.isPortrait ? 'flex-start': 'center',
       alignSelf: 'center',
       alignItems: 'center',
@@ -424,13 +421,54 @@ export function DartaRecommenderView({
       width: wp('90%'),
       left: hp('0%')
     },
-    tombstoneTriggerContainer: {
+    dislikeContainer: {
       position: 'absolute',
       alignSelf: 'center',
-      width: wp('10%'),
-      height: hp('10%'),
-      top: hp('0%'),
-      right: wp('5%'),
+      borderRadius: 50,
+      width: 72,
+      height: 72,
+      backgroundColor: Colors.PRIMARY_50,
+      top: 500,
+      left: 76,
+      display:'flex', 
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignContent: 'center',
+    },
+    touchableContainer: {
+      borderRadius: 50, width: 72, height: 72, justifyContent: 'center', alignItems: 'center'
+    },
+    likeContainer: {
+      position: 'absolute',
+      alignSelf: 'center',
+      borderRadius: 50,
+      width: 72,
+      height: 72,
+      backgroundColor: Colors.PRIMARY_50,
+      top: 500,
+      right: 76,
+      display:'flex', 
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignContent: 'center', 
+      transform: state.isPortrait ? [{rotate: '180deg'}] : [{rotate: '90deg'}],
+    },
+    saveContainer: {
+      position: 'absolute',
+      alignSelf: 'center',
+      borderRadius: 50,
+      width: 48,
+      height: 48,
+      backgroundColor: Colors.PRIMARY_50,
+      top: 500 + 12,
+      left: wp('50%') - 24,
+      display:'flex', 
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignContent: 'center'
     },
     secondaryButton: {
       backgroundColor: Colors.PRIMARY_50,
@@ -439,7 +477,7 @@ export function DartaRecommenderView({
       transform: state.isPortrait ? [{rotate: '0deg'}] : [{rotate: '90deg'}],
     },
     textElement: {
-      fontFamily: 'Avenir Next',
+      fontFamily: 'DMSans_400',
       color: wallHeight === 96 ? Colors.PRIMARY_500 : Colors.PRIMARY_900,
       textAlign: 'center',
       maxWidth: '100%', // Or another value you want
@@ -449,15 +487,247 @@ export function DartaRecommenderView({
     }
   });
 
-  const interactionContainer = state.isPortrait
-  ? SSDartaGalleryView.interactionContainerPortrait
-  : SSDartaGalleryView.interactionContainerLandscape;
 
-  const inverseFadeAnim = fadeAnimRating.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0]
-});
+  const [currentArtRating, setCurrentArtRating] = React.useState<IUserArtworkRated>({});
 
+  React.useEffect(() => {
+    modifyDisplayRating()
+  }, [artOnDisplay, state.userLikedArtwork, state.userDislikedArtwork, state.userSavedArtwork])
+
+  const handleArtworkRating = async (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => {
+    if (!artOnDisplay) return rating
+
+    const artworkOnDisplayId = artOnDisplay?._id;
+    const likedArtworks = state?.userLikedArtwork;
+    const dislikedArtworks = state?.userDislikedArtwork;
+    const savedArtworks = state?.userSavedArtwork;
+    const userLiked = likedArtworks?.[artworkOnDisplayId!] || false
+    const userSaved = savedArtworks?.[artworkOnDisplayId!] || false
+    const userDisliked = dislikedArtworks?.[artworkOnDisplayId!] || false
+    const userRated = userLiked || userSaved || userDisliked
+
+    if (userLiked && rating === USER_ARTWORK_EDGE_RELATIONSHIP.LIKE){
+      await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
+      dispatch({
+        type: ETypes.removeUserLikedArtwork,
+        artworkId: artOnDisplay._id,
+      })
+      return USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED
+    } else if (userSaved && rating === USER_ARTWORK_EDGE_RELATIONSHIP.SAVE){
+      await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
+      dispatch({
+        type: ETypes.removeUserSavedArtwork,
+        artworkId: artOnDisplay._id,
+      })
+      return USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED
+    } else if (userDisliked && rating === USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE){
+      dispatch({
+        type: ETypes.removeUserDislikedArtwork,
+        artworkId: artOnDisplay._id,
+      })
+      await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE})
+      return USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED
+    } else if (userRated){
+      if (userLiked){
+        await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
+        dispatch({
+          type: ETypes.removeUserLikedArtwork,
+          artworkId: artOnDisplay._id,
+        })
+      } else if (userSaved){
+        await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
+        dispatch({
+          type: ETypes.removeUserSavedArtwork,
+          artworkId: artOnDisplay._id,
+        })
+      } else if (userDisliked){
+        await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE})
+        dispatch({
+          type: ETypes.removeUserDislikedArtwork,
+          artworkId: artOnDisplay._id,
+        })
+      }
+      return rating
+    } else {
+      return rating
+    }
+  }
+
+  const modifyDisplayRating = () => {
+    const artworkOnDisplayId = artOnDisplay?._id;
+    const likedArtworks = state?.userLikedArtwork;
+    const dislikedArtworks = state?.userDislikedArtwork;
+    const savedArtworks = state?.userSavedArtwork;
+    
+    const userLiked = likedArtworks?.[artworkOnDisplayId!] || false
+    const userSaved = savedArtworks?.[artworkOnDisplayId!] || false
+    const userDisliked = dislikedArtworks?.[artworkOnDisplayId!] || false
+
+
+     if (userSaved){
+      setCurrentArtRating({[RatingEnum.save]: true})
+    } else if (userLiked){
+      setCurrentArtRating({[RatingEnum.like]: true})
+    } else if (userDisliked){
+      setCurrentArtRating({[RatingEnum.dislike]: true})
+    } else {
+      setCurrentArtRating({})
+    }
+  };
+
+  const wiggleAnim = React.useRef(new Animated.Value(0)).current; 
+  const thumbsUpAnim = React.useRef(new Animated.Value(1)).current; 
+  const thumbsDownAnim = React.useRef(new Animated.Value(1)).current; 
+
+  React.useEffect(() => {
+    wiggleAnim.addListener(() => {})
+    thumbsUpAnim.addListener(() => {})
+    thumbsDownAnim.addListener(() => {})
+  }, [])
+
+
+  
+  const handleSavePress = async () => {
+    // Start the first part of the wiggle animation
+    Animated.timing(wiggleAnim, {
+      toValue: 1,  // Rotate slightly right
+      duration: 50,
+      useNativeDriver: true,
+    }).start(async () => {
+      // Network call in the middle of the wiggle
+      await rateArtwork(await handleArtworkRating(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE));
+  
+      // Complete the wiggle animation
+      Animated.sequence([
+        Animated.timing(wiggleAnim, {
+          toValue: -1,  // Rotate slightly left
+          duration: 50,
+          useNativeDriver: true,
+        }),
+        Animated.timing(wiggleAnim, {
+          toValue: 0,  // Return to original position
+          duration: 50,
+          useNativeDriver: true,
+        }),
+      ]).start(async () => {
+        if(!currentArtRating[RatingEnum.save]) {
+          await toggleArtForward()
+        }
+        Animated.sequence([
+          Animated.timing(wiggleAnim, {
+            toValue: -1,  // Rotate slightly left
+            duration: 50,
+            useNativeDriver: true,
+          }),
+          Animated.timing(wiggleAnim, {
+            toValue: 0,  // Rotate slightly left
+            duration: 50,
+            useNativeDriver: true,
+          }),
+        ]).start()
+      });
+    });
+  };
+
+  const handleThumbsUpPress = async () => {
+    // Start the rising animation
+    Animated.timing(thumbsUpAnim, {
+      toValue: -5,  // Move up (negative value for upward movement)
+      duration: 50,
+      useNativeDriver: true,
+    }).start(async () => {
+      // After the animation, make the network call
+      await rateArtwork(await handleArtworkRating(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE));
+  
+      Animated.sequence([
+        Animated.timing(thumbsUpAnim, {
+          toValue: 5,  // Rotate slightly left
+          duration: 50,
+          useNativeDriver: true,
+        }),
+        Animated.timing(thumbsUpAnim, {
+          toValue: 0,  // Return to original position
+          duration: 50,
+          useNativeDriver: true,
+        }),
+      ]).start(async () => {
+        if(!currentArtRating[RatingEnum.like]) {
+          await toggleArtForward()
+        }
+         Animated.sequence([
+          Animated.timing(thumbsUpAnim, {
+            toValue: 0,  // Rotate slightly left
+            duration: 50,
+            useNativeDriver: true,
+          }),
+          Animated.timing(thumbsUpAnim, {
+            toValue: 5,  // Return to original position
+            duration: 50,
+            useNativeDriver: true,
+          }),
+          Animated.timing(thumbsUpAnim, {
+            toValue: 0,  // Rotate slightly left
+            duration: 50,
+            useNativeDriver: true,
+          }),
+        ]).start()
+      });
+    });
+  };
+
+  const handleThumbsDownPress = async () => {
+    // Start the rising animation
+    Animated.timing(thumbsDownAnim, {
+      toValue: -5,  // Move up (negative value for upward movement)
+      duration: 50,
+      useNativeDriver: true,
+    }).start(async () => {
+      // After the animation, make the network call
+      await rateArtwork(await handleArtworkRating(USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE));
+  
+      Animated.sequence([
+        Animated.timing(thumbsDownAnim, {
+          toValue: 5,  // Rotate slightly left
+          duration: 50,
+          useNativeDriver: true,
+        }),
+        Animated.timing(thumbsDownAnim, {
+          toValue: 0,  // Return to original position
+          duration: 50,
+          useNativeDriver: true,
+        }),
+      ]).start(async () => {
+        if(!currentArtRating[RatingEnum.dislike]) {
+          await toggleArtForward()
+        }
+        Animated.sequence([
+          Animated.timing(thumbsDownAnim, {
+            toValue: 0,  // Rotate slightly left
+            duration: 50,
+            useNativeDriver: true,
+          }),
+          Animated.timing(thumbsDownAnim, {
+            toValue: 5,  // Return to original position
+            duration: 50,
+            useNativeDriver: true,
+          }),
+          Animated.timing(thumbsDownAnim, {
+            toValue: 0,  // Rotate slightly left
+            duration: 50,
+            useNativeDriver: true,
+          }),
+        ]).start()
+      });
+    });
+  };
+
+
+  
+  const rotate = wiggleAnim.interpolate({
+    inputRange: [-1, 1],
+    outputRange: ['-25deg', '25deg'],  // Small rotation range for wiggle
+  });
+  
   return (
     <GestureHandlerRootView>
       <View style={SSDartaGalleryView.container}>
@@ -468,7 +738,7 @@ export function DartaRecommenderView({
           ]}>
           <ArtOnWall
             artImage={artOnDisplay?.artworkImage?.value!}
-            backgroundImage={backgroundImage}
+            backgroundImage={galleryWallRaw}
             backgroundImageDimensionsPixels={
               backgroundContainerDimensionsPixels
             }
@@ -482,36 +752,32 @@ export function DartaRecommenderView({
             setCurrentZoomScale={setCurrentZoomScale}
             toggleArtForward={toggleArtForward}
             toggleArtBackward={toggleArtBackward}
+            toggleArtTombstone={toggleArtTombstone}
           />
         </View>
           {state.isPortrait && (
             <>
-          <Animated.Text style={[SSDartaGalleryView.textElement, {opacity: inverseFadeAnim, fontWeight: wallHeight === 96 ? "normal" : "bold"}]}>{`as displayed on a ${wallHeight / 12} foot tall wall`}</Animated.Text>
-          <View style={interactionContainer}>
-            <View style={SSDartaGalleryView.interactionButtonsContainer}>
-              <CombinedInteractionButtons
-                artOnDisplay={artOnDisplay!}
-                localButtonSizes={localButtonSizes}
-                fadeAnimRating={fadeAnimRating}
-                isPortrait={state.isPortrait}
-                openRatings={openRatings}
-                rateArtwork={rateArtwork}
-                toggleButtonView={toggleButtonView}
-              />
-            </View>
-          </View>
-          <View style={SSDartaGalleryView.tombstoneTriggerContainer}>
-            <IconButton
-              icon={icons.learnMore}
-              mode="outlined"
-              size={localButtonSizes.medium}
-              iconColor={Colors.PRIMARY_900}
-              style={SSDartaGalleryView.secondaryButton}
-              accessibilityLabel="view tombstone"
-              testID="tombstone"
-              onPress={() => toggleArtTombstone()}
-            />
-          </View>
+          <Surface style={SSDartaGalleryView.dislikeContainer}>
+            <TouchableOpacity onPress={handleThumbsDownPress} style={SSDartaGalleryView.touchableContainer}>
+              <Animated.View style={{ transform: [{ translateY: thumbsDownAnim }] }}>
+                {currentArtRating[RatingEnum.dislike] ?  <SVGs.ThumbsDownLargeFillIcon /> : <SVGs.ThumbsDownLargeIcon />}
+              </Animated.View>
+            </TouchableOpacity>
+          </Surface>
+          <Surface style={SSDartaGalleryView.saveContainer}>
+            <TouchableOpacity onPress={handleSavePress}>
+              <Animated.View style={{ transform: [{ rotate }] }}>
+                {currentArtRating[RatingEnum.save]  ?  <SVGs.SavedActiveIconLarge /> : <SVGs.SavedInactiveIcon />}
+              </Animated.View>
+            </TouchableOpacity>
+          </Surface>
+          <Surface style={SSDartaGalleryView.likeContainer}>
+            <TouchableOpacity onPress={handleThumbsUpPress} style={SSDartaGalleryView.touchableContainer}>
+              <Animated.View style={{ transform: [{ translateY: thumbsUpAnim }] }}>
+                {currentArtRating[RatingEnum.like]  ?  <SVGs.ThumbsDownLargeFillIcon /> : <SVGs.ThumbsDownLargeIcon />}
+              </Animated.View>
+            </TouchableOpacity>
+          </Surface>
           </>
           )}
         </View>

@@ -6,8 +6,9 @@ import {DartaRecommenderView} from '../screens/DartaRecommenderView';
 import {TombstonePortrait} from '../components/Tombstone/TombstonePortrait';
 import {ETypes, StoreContext} from '../state/Store';
 import {headerOptions} from '../styles/styles';
-import {createOpeningTransition} from '../utils/openingTransition';
 import {GalleryNavigatorEnum} from '../typing/routes'
+import * as Colors from '@darta-styles';
+import { ArtworkScreen } from '../screens/Artwork/ArtworkScreen';
 
 export function RecommenderStackNavigator() {
   // const openingTransition = createOpeningTransition();
@@ -20,7 +21,7 @@ export function RecommenderStackNavigator() {
   }, [dispatch]);
 
   return (
-    <RecommenderStack.Navigator screenOptions={{headerTintColor: 'white'}}>
+    <RecommenderStack.Navigator screenOptions={{headerTintColor: Colors.PRIMARY_50}}>
       <RecommenderStack.Group>
         <RecommenderStack.Screen
           name={GalleryNavigatorEnum.gallery}
@@ -30,19 +31,13 @@ export function RecommenderStackNavigator() {
             headerTitle: state.galleryTitle,
           }}
         />
-      </RecommenderStack.Group>
-      <RecommenderStack.Group screenOptions={{presentation: 'modal'}}>
         <RecommenderStack.Screen
           name={GalleryNavigatorEnum.tombstone}
-          component={TombstonePortrait}
+          component={ArtworkScreen}
           initialParams={{} as any}
           options={{
             ...headerOptions,
-            headerTitle: state.tombstoneTitle,
-            headerTitleStyle: {
-              fontSize: 15,
-            },
-          }}
+            headerTitle: state.tombstoneTitle ?? ""}}
         />
       </RecommenderStack.Group>
     </RecommenderStack.Navigator>

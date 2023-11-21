@@ -14,53 +14,43 @@ import {
 } from 'react-native-responsive-screen';
 
 import * as Colors from '@darta-styles';
-import {getButtonSizes} from '../utils/functions';
 import {GalleriesFollowing} from '../components/Gallery/GalleriesFollowing';
-import {UserPersonalWorkSelector} from '../components/User/UserPersonalWorkSelector';
+import {UserSpecificComponent} from '../components/User/UserSpecificComponent';
 import {UserProfile} from '../components/User/UserProfile';
 import { ETypes, StoreContext } from '../state/Store';
 import { listGalleryRelationshipsAPI, listUserArtworkAPI } from '../utils/apiCalls';
 import { GalleryPreview, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
+import { TextElement } from '../components/Elements/TextElement';
+import { globalTextStyles } from '../styles/styles';
 
-const HEADER_MAX_HEIGHT = hp('17.5%');
+const HEADER_MAX_HEIGHT = 100;
 const HEADER_MIN_HEIGHT = hp('10%');
-const HEADER_MAX_WIDTH = wp('30%');
+const HEADER_MAX_WIDTH = 100;
 const HEADER_MIN_WIDTH = wp('15%');
-const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+// const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 const HEADER_SCROLL_WIDTH_DISTANCE = HEADER_MAX_WIDTH - HEADER_MIN_WIDTH;
 
 export const userHomeStyles = StyleSheet.create({
   userHomeContainer: {
-    backgroundColor: Colors.PRIMARY_100,
+    backgroundColor: Colors.PRIMARY_50,
     flex: 1,
+    minHeight: '100%',
     flexDirection: 'column',
     alignContent: 'center',
     justifyContent: 'flex-start',
-  },
-  header: {
-    backgroundColor: Colors.PRIMARY_100,
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: wp('2%'),
+    padding: 24, 
+    gap: 60
   },
 });
 
 
 export function UserHome({navigation}: {navigation: any}) {
   const {dispatch} = React.useContext(StoreContext);
-  const localButtonSizes = getButtonSizes(hp('100%'));
   const scrollY = useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
     scrollY.addListener(() => {})
   },[])
-
-  const headerHeightInterpolate = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
-    extrapolate: 'clamp',
-  });
 
   const imageWidthInterpolate = scrollY.interpolate({
     inputRange: [0, HEADER_SCROLL_WIDTH_DISTANCE],
@@ -125,33 +115,36 @@ export function UserHome({navigation}: {navigation: any}) {
             setRefreshing(false);
         }, 100)  }, []);
   return (
-    <View style={userHomeStyles.userHomeContainer}>
-      <Animated.View
-        style={[userHomeStyles.header, {height: headerHeightInterpolate}]}>
-        <UserProfile
-          navigation={navigation}
-          imageWidthInterpolate={imageWidthInterpolate}
-          imageHeightInterpolate={imageWidthInterpolate}
-          localButtonSizes={localButtonSizes}
-        />
-      </Animated.View>
-      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />} onScroll={handleScroll} scrollEventThrottle={16} style={{height: hp('60%'), marginTop: hp('5%')}}>
-        <View> 
-            <View>
-              <UserPersonalWorkSelector
-                navigation={navigation}
-                headline="| y o u"
-                localButtonSizes={localButtonSizes}
-              />
-            </View>
-            <View>
-              <GalleriesFollowing
-                headline="| f o l l o w i n g"
-                navigation={navigation}
-              />
-            </View>
+    <ScrollView refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />} onScroll={handleScroll} scrollEventThrottle={16} >
+      <View style={userHomeStyles.userHomeContainer}>
+        <View>
+          <UserProfile
+            navigation={navigation}
+            imageWidthInterpolate={imageWidthInterpolate}
+            imageHeightInterpolate={imageWidthInterpolate}
+          />
         </View>
-      </ScrollView>
-    </View>
+          <View> 
+            <View style={{marginBottom: 24}}>
+              <TextElement style={globalTextStyles.sectionHeaderTitle}>You</TextElement>
+            </View>
+            <View>
+              <UserSpecificComponent
+              navigation={navigation}
+              />
+            </View>
+          </View>
+          <View>
+            <View style={{marginBottom: 24}}>
+              <TextElement style={globalTextStyles.sectionHeaderTitle}>Following</TextElement>
+            </View>
+              <View>
+                <GalleriesFollowing
+                  navigation={navigation}
+                />
+              </View>
+          </View>
+      </View>
+    </ScrollView>
   );
 }

@@ -46,32 +46,27 @@ export function GalleryPreviewMini({
 
   const galleryPreviewMiniStyles = StyleSheet.create({
     container: {
-      height: hp('10%'),
-      width: wp('90%'),
+      height: 72,
+      width: 345,
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: Colors.PRIMARY_50,
-      borderColor: Colors.PRIMARY_800,
-      borderWidth: 0.5,
-      borderTopLeftRadius: hp('1%'),
-      borderBottomLeftRadius: hp('2%'),
-      borderTopRightRadius: hp('2%'),
-      borderBottomRightRadius: 5,
-      marginTop: 1, 
+      backgroundColor: "#B0B0B019",
+      padding: 12,
+      borderRadius: 19,
+      gap: 19
     },
     imageContainer: {
-      borderTopLeftRadius: hp('1%'),
-      borderBottomLeftRadius: hp('2%'),
-      width: wp('30%'),
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',    
-      flex: 0.5,
+      height: 72, 
+      width: 72, 
+      borderRadius: 50,
     },
     image: {
       resizeMode: 'contain',
       height: '100%',
-      width:  wp('20%'),
+      width: '100%'
     },
     prettyBlueLine: {
       flex: 0.05,
@@ -82,11 +77,8 @@ export function GalleryPreviewMini({
       height: '100%',
     },
     textContainer: {
-      flex: 1,
       justifyContent: 'flex-start',
       alignItems: 'flex-start',
-      paddingLeft: wp('2%'),
-      width: wp('60%'),
     }
   }) 
   
@@ -102,9 +94,8 @@ export function GalleryPreviewMini({
             resizeMode={FastImage.resizeMode.contain}
           />
         </View>
-        <View style={galleryPreviewMiniStyles.prettyBlueLine}></View>
         <View style={galleryPreviewMiniStyles.textContainer}>
-          <TextElement style={[globalTextStyles.titleText, {color: Colors.PRIMARY_DARK_GREY}]}>{galleryName.value}</TextElement>
+          <TextElement style={globalTextStyles.boldTitleText}>{galleryName.value}</TextElement>
         </View>
       </View>
     </TouchableOpacity>

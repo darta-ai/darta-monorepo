@@ -2,77 +2,68 @@
 /* eslint-disable no-return-assign */
 import React from 'react';
 import {
-  Image,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {
-  heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
 import {TextElement} from '../Elements/_index';
-import {globalTextStyles} from '../../styles/styles';
 import {ExhibitionDates} from '@darta-types';
-import { PRIMARY_700, PRIMARY_900, PRIMARY_100, PRIMARY_50 } from '@darta-styles';
-import { customLocalDateString } from '../../utils/functions';
+import * as Colors from '@darta-styles';
+import { customLocalDateStringEnd, customLocalDateStringStart } from '../../utils/functions';
 import FastImage from 'react-native-fast-image';
+import { Button, Surface } from 'react-native-paper';
 
 
-export function ExhibitionPreviewMini({
+type ExhibitionPreviewMiniProps = {
+  exhibitionHeroImage: string,
+  exhibitionId: string,
+  exhibitionTitle: string,
+  exhibitionGallery: string, 
+  exhibitionDates: ExhibitionDates, // Assuming ExhibitionDates is defined elsewhere
+  galleryLogoLink: string,
+  exhibitionArtist: string,
+  onPress: ({ exhibitionId }: { exhibitionId: string }) => void
+};
+
+const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
     exhibitionHeroImage,
     exhibitionId,
     exhibitionTitle,
     exhibitionDates,
     exhibitionArtist,
     onPress
-}: {
-    exhibitionHeroImage: string,
-    exhibitionId: string,
-    exhibitionTitle: string,
-    exhibitionGallery: string, 
-    exhibitionDates: ExhibitionDates,
-    galleryLogoLink: string,
-    exhibitionArtist: string,
-    onPress: ({exhibitionId} : {exhibitionId: string}) => void
-}) {
+}) => {
 
   const exhibitionPreview = StyleSheet.create({
     container: {
       display: 'flex',
       flexDirection: 'column',
-      height: hp('35%'),
-      width: wp('90%'),
-      margin: hp('1%'),
-      gap: wp('1%'),
       justifyContent: 'space-around',
-      alignItems: 'center',
-      borderRadius: 5,
-      borderColor: PRIMARY_700,
-      backgroundColor: PRIMARY_50,
-      borderWidth: 1,
+      alignItems: 'flex-start',
     },
     heroImageContainer: {
-      height: '65%',
-      marginTop: 10,
-      width: '100%',
+      height: 262,
+      width: wp('90%'),
       display:'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      marginLeft: wp('1%'),
     },
     heroImage: {
-      width: '100%',
       height: '100%',
-    },
-    textContainer:{
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'flex-start',
       width: '100%',
-      height: '25%',
-      alignItems: 'center',  
+      resizeMode: 'contain',
+      backgroundColor: 'transparent',
+      zIndex: 1,
+      shadowOpacity: 1, 
+      shadowRadius: 3.03,
+      shadowOffset: {
+          width: 0,
+          height: 3.03,
+      },
+      shadowColor: Colors.PRIMARY_300,
     },
     mapContainer: {
       width: '15%',
@@ -89,55 +80,73 @@ export function ExhibitionPreviewMini({
       right: 2,              
       borderRadius: 20,
     },
+    exhibitionTitle: {
+      fontFamily: 'DMSans_700Bold',
+      fontSize: 16,
+      color: Colors.PRIMARY_950,
+    },
+    artistTitle: {
+      fontFamily: 'DMSans_400Regular',
+      fontSize: 16,
+      color: Colors.PRIMARY_900,
+    },
+    buttonStyles: {
+      width: '100%',
+      backgroundColor: Colors.PRIMARY_950,
+      alignSelf: "center",
+      marginTop: 24,
+    },
+    buttonContentStyle: {
+      justifyContent: "center",
+      alignItems: "center",
+      width: wp('90%'),
+      padding: 0, // Or any other desired padding
+    },
+    buttonTextColor: {
+      color: Colors.PRIMARY_50,
+      fontFamily: "DMSans_700Bold",
+    }
   })
 
   let startDate = ""
   let endDate = "";
 
   if (exhibitionDates.exhibitionStartDate.value && exhibitionDates.exhibitionEndDate.value) {
-      startDate = customLocalDateString(new Date(exhibitionDates.exhibitionStartDate.value))
-      endDate = customLocalDateString(new Date(exhibitionDates.exhibitionEndDate.value))
+      startDate = customLocalDateStringStart({date: new Date(exhibitionDates.exhibitionStartDate.value), isUpperCase: false})
+      endDate = customLocalDateStringEnd({date: new Date(exhibitionDates.exhibitionEndDate.value), isUpperCase: false})
   }
 
   return (
-    <>
-    <TouchableOpacity 
-      onPress={() => onPress({exhibitionId})}
-    >
       <View
         style={exhibitionPreview.container}>
-          <View style={exhibitionPreview.heroImageContainer} >
-            <FastImage 
-                source={{uri: exhibitionHeroImage}} 
-                style={exhibitionPreview.heroImage} 
-                resizeMode={FastImage.resizeMode.contain}
-            />
-          </View>
-
-        <View style={exhibitionPreview.textContainer}>
           <TextElement
-            style={{...globalTextStyles.centeredText, fontWeight: 'bold', color: PRIMARY_900, fontSize: 18}}>
-            {' '}
-            {exhibitionArtist}
+            style={exhibitionPreview.exhibitionTitle}>
+            {exhibitionArtist ?? "Group Show"}
           </TextElement>
           <TextElement
-            style={{...globalTextStyles.italicTitleText, color: PRIMARY_900, fontSize: 16}}>
-            {' '}
+            style={exhibitionPreview.artistTitle}>
             {exhibitionTitle}
           </TextElement>
+          <View style={{...exhibitionPreview.heroImageContainer, marginTop: 24}} >
+              <FastImage 
+                  source={{uri: exhibitionHeroImage}} 
+                  style={exhibitionPreview.heroImage} 
+                  resizeMode={FastImage.resizeMode.contain}
+              />
+          </View>
           <TextElement
-            style={{...globalTextStyles.centeredText, color: PRIMARY_900, fontSize: 12}}>
-            {' '}
+            style={{...exhibitionPreview.exhibitionTitle, marginTop: 24}}>
             {startDate} {' - '} {endDate}
           </TextElement>
-        </View>
-      <TextElement
-      style={{...globalTextStyles.centeredText, textDecorationLine: 'underline', fontSize: 12}}>
-      {' '}
-      tap to view
-    </TextElement>
+          <Button 
+             onPress={() => onPress({exhibitionId})}
+             style={exhibitionPreview.buttonStyles}
+             contentStyle={exhibitionPreview.buttonContentStyle}
+             >
+              <TextElement style={exhibitionPreview.buttonTextColor}>View Details</TextElement>
+            </Button>
       </View>
-      </TouchableOpacity>
-    </>
   );
-}
+})
+
+export default ExhibitionPreviewMini  

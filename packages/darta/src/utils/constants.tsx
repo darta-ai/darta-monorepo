@@ -6,7 +6,7 @@ import {
 import {GalleryLandingPage, Icons} from '../typing/types';
 
 export const galleryDimensionsPortrait = {
-  height: hp('70%'),
+  height: hp('80%'),
   width: wp('100%'),
 };
 
@@ -19,6 +19,8 @@ export const galleryDimensionsLandscape = {
 export const USER_UID_KEY = 'DARTA_USER_UID';
 
 export const HAS_ONBOARD_DARTA = 'HAS_ONBOARD_DARTA';
+
+export const HAS_ONBOARD_DARTA_PART_2 = 'HAS_ONBOARD_DARTA_PART_2';
 
 export const DEFAULT_Gallery_Image =
   'https://lh3.googleusercontent.com/pw/AMWts8A127Q1kjVXhb88Fmm8APNKph27xdQ_chFVbh42T5PClwoMztq0EIj6fMpBoAAgM9TfjIQPCrfbYOqFTLqE8XhmLWhbLEWyq1vy77WqexLXo7Ehq2mhfpXZ3L3OKQra96wrOju1sj8chqzAY3-qr_QDTA=w1778-h998-s-no';

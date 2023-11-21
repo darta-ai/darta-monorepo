@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { TouchableOpacity, View, StyleSheet} from 'react-native';
+import { View, StyleSheet} from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import FastImage from 'react-native-fast-image'
-import { TextElement } from '../Elements/TextElement';
 import {
     widthPercentageToDP as wp,
   } from 'react-native-responsive-screen';
@@ -13,31 +12,52 @@ import Animated, {
     useAnimatedStyle,
   } from "react-native-reanimated";
   
-  import { SBItem } from "./ExhibitionCarousel/SBItem";
-  import * as Colors from '@darta-styles';
+import { SBItem } from "./ExhibitionCarousel/SBItem";
+import * as Colors from '@darta-styles';
 
   const image404 = require('../../assets/image404.png');
   
 
 const carouselStyle = StyleSheet.create({
     heroImage: {
-        width: '90%',
-        height: '90%',
-        resizeMode: 'contain',
-        alignSelf: 'center',
+      width: '85%',
+      height: '85%',
+      marginTop: 10,
+      resizeMode: 'contain',
+      alignSelf: 'center',
+      // backgroundColor: Colors.PRIMARY_50, // Set this to the color of your choice
+      shadowOpacity: 1,
+      shadowRadius: 3.03,
+      shadowColor: Colors.PRIMARY_300,
+      shadowOffset: {height: 3.03, width: 0},
+      // Important: on Android, elevation is used to create shadows
+      elevation: 4,
+    },
+    paginationContainer: {
+      position: 'absolute',
+      bottom: 10,
+      left: 0,
+      right: 0,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    paginationDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      marginHorizontal: 2,
+    },
+    paginationDotActive: {
+      backgroundColor: Colors.PRIMARY_950,
+    },
+    paginationDotInactive: {
+      backgroundColor: Colors.PRIMARY_200,
     },
 })
 
-const WIDTH = wp('80%');
+const WIDTH = wp('90%');
 
-interface ItemProps {
-  animationValue: Animated.SharedValue<number>
-  index: number
-  item: {
-    imageUrl: string
-    title: string
-  }
-}
 
 // Define the CustomItem component
 const CustomItemComponent = ({ item, animationValue }) => {
@@ -46,7 +66,7 @@ const CustomItemComponent = ({ item, animationValue }) => {
     backgroundColor: interpolateColor(
       animationValue.value,
       [-1, 0, 1],
-      [Colors.PRIMARY_200, Colors.PRIMARY_100, Colors.PRIMARY_200],
+      [Colors.PRIMARY_100, Colors.PRIMARY_50, Colors.PRIMARY_100],
     ),
   }));
 
@@ -71,9 +91,6 @@ const CustomItemComponent = ({ item, animationValue }) => {
           style={carouselStyle.heroImage} 
           resizeMode={FastImage.resizeMode.contain}
         />
-        <TextElement style={{ fontFamily: "AvenirNext-Italic", color: Colors.PRIMARY_900, alignSelf: "center" }}>
-          {item?.title}
-        </TextElement>
       </Animated.View>
     </View>
   );
@@ -93,24 +110,45 @@ const animationStyle = (value) => {
   };
 };
 
+const PaginationDots = ({ currentIndex, itemCount }) => {
+  return (
+    <View style={carouselStyle.paginationContainer}>
+      {Array.from({ length: itemCount }, (_, index) => (
+        <View
+          key={index}
+          style={[
+            carouselStyle.paginationDot,
+            currentIndex === index ? carouselStyle.paginationDotActive : carouselStyle.paginationDotInactive,
+          ]}
+        />
+      ))}
+    </View>
+  );
+};
+
+
 // The ExhibitionCarousel component
 export function ExhibitionCarousel({ images }) {
   const carouselRef = React.useRef<any>(null);
 
-  const prevSlide = () => carouselRef.current?.prev();
-  const nextSlide = () => carouselRef.current?.next();
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+
+  const onSnapToItem = (index) => {
+    setCurrentIndex(index);
+  };
 
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <TouchableOpacity onPress={prevSlide}>
-        <TextElement>{"<"}</TextElement>
-      </TouchableOpacity>
       <Carousel
         ref={carouselRef}
         loop={true}
         autoPlay={false}
         width={WIDTH}
+        onSnapToItem={onSnapToItem}
         data={images}
+        panGestureHandlerProps={{
+          activeOffsetX: [-10, 10],
+        }}
         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         scrollAnimationDuration={100}
         renderItem={({ item, animationValue }) => (
@@ -121,9 +159,7 @@ export function ExhibitionCarousel({ images }) {
         )}
         customAnimation={animationStyle}
       />
-      <TouchableOpacity onPress={nextSlide}>
-        <TextElement>{">"}</TextElement>
-      </TouchableOpacity>
+      <PaginationDots currentIndex={currentIndex} itemCount={images.length} />
     </View>
   );
 }
