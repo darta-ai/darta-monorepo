@@ -87,15 +87,21 @@ importers:
       '@react-native-async-storage/async-storage':
         specifier: 1.18.2
         version: 1.18.2(react-native@0.72.6)
+      '@react-native-firebase/analytics':
+        specifier: ^18.6.1
+        version: 18.6.1(@react-native-firebase/app@18.6.1)
       '@react-native-firebase/app':
-        specifier: ^18.5.0
-        version: 18.5.0(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
+        specifier: ^18.6.1
+        version: 18.6.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
       '@react-native-firebase/auth':
-        specifier: ^18.5.0
-        version: 18.5.0(@react-native-firebase/app@18.5.0)(expo@49.0.11)
+        specifier: 18.6.1
+        version: 18.6.1(@react-native-firebase/app@18.6.1)(expo@49.0.11)
+      '@react-native-firebase/crashlytics':
+        specifier: ^18.6.1
+        version: 18.6.1(@react-native-firebase/app@18.6.1)(expo@49.0.11)
       '@react-native-firebase/perf':
-        specifier: ^18.5.0
-        version: 18.5.0(@react-native-firebase/app@18.5.0)(expo@49.0.11)
+        specifier: 18.6.1
+        version: 18.6.1(@react-native-firebase/app@18.6.1)(expo@49.0.11)
       '@react-navigation/bottom-tabs':
         specifier: ^6.5.4
         version: 6.5.4(@react-navigation/native@6.1.8)(react-native-safe-area-context@4.6.3)(react-native-screens@3.22.0)(react-native@0.72.6)(react@18.2.0)
@@ -129,9 +135,6 @@ importers:
       expo-dev-client:
         specifier: ~2.4.12
         version: 2.4.12(expo@49.0.11)
-      expo-file-system:
-        specifier: ~15.4.4
-        version: 15.4.4(expo@49.0.11)
       expo-font:
         specifier: ~11.4.0
         version: 11.4.0(expo@49.0.11)
@@ -2861,28 +2864,6 @@ packages:
       nullthrows: 1.1.1
     dev: false
 
-  /@expo/config-plugins@7.2.4:
-    resolution: {integrity: sha512-TItGwmKH1GDjA5GlMkXo1A8pqeqppSK40aSVRVQaGZraUj+nuvtpWxNgEWZxWFumiatP2ocWwyWVjfmH+rJY6g==}
-    dependencies:
-      '@expo/config-types': 49.0.0
-      '@expo/json-file': 8.2.37
-      '@expo/plist': 0.0.20
-      '@expo/sdk-runtime-versions': 1.0.0
-      '@react-native/normalize-color': 2.1.0
-      chalk: 4.1.2
-      debug: 4.3.4(supports-color@8.1.1)
-      find-up: 5.0.0
-      getenv: 1.0.0
-      glob: 7.1.6
-      resolve-from: 5.0.0
-      semver: 7.5.4
-      slash: 3.0.0
-      xcode: 3.0.1
-      xml2js: 0.6.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
   /@expo/config-plugins@7.2.5:
     resolution: {integrity: sha512-w+5ccu1IxBHgyQk9CPFKLZOk8yZQEyTjbJwOzESK1eR7QwosbcsLkN1c1WWUZYiCXwORu3UTwJYll4+X2xxJhQ==}
     dependencies:
@@ -2913,7 +2894,7 @@ packages:
     resolution: {integrity: sha512-4e7hzPj50mQIlsrzOH6XZ36O094mPfPTIDIH4yv49bWNMc7GFLTofB/lcT+QyxiLaJuC0Wlk9yOLB8DIqmtwug==}
     dependencies:
       '@babel/code-frame': 7.10.4
-      '@expo/config-plugins': 7.2.4
+      '@expo/config-plugins': 7.2.5
       '@expo/config-types': 49.0.0
       '@expo/json-file': 8.2.37
       getenv: 1.0.0
@@ -4643,8 +4624,16 @@ packages:
     resolution: {integrity: sha512-+zDZ20NUnSWghj7Ku5aFphMzuM9JulqCW+aPXT6IfIXFbb8tzYTTOSeRFOtuekJ99ibW2fUCSsjuKNlwDIbHFg==}
     dev: true
 
-  /@react-native-firebase/app@18.5.0(expo@49.0.11)(react-native@0.72.6)(react@18.2.0):
-    resolution: {integrity: sha512-AhHQi5KFDlKZn/lH7rEYtLfpsGamEq+P/cXZWcNPcP0WGlmi++abk7Pxnn4MjnG7TNhEyG/C9uq//qb6VhXaZg==}
+  /@react-native-firebase/analytics@18.6.1(@react-native-firebase/app@18.6.1):
+    resolution: {integrity: sha512-ae43ud4N4m6jLfuR4b7XVFwARVW2WIa+rrZt5FrbnRYvh3Fje21fttK3UsMB40KgRaz0S1orV3gGLuSxqr8RRQ==}
+    peerDependencies:
+      '@react-native-firebase/app': 18.6.1
+    dependencies:
+      '@react-native-firebase/app': 18.6.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
+    dev: false
+
+  /@react-native-firebase/app@18.6.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0):
+    resolution: {integrity: sha512-lqINQLLTCmBSeln/cSPfvuJNQuwsPY9n6QyxSRRCTjyZdEPI3EY2df7isOCp8BwuxqYmkR9YhTNw2yFI72th+w==}
     peerDependencies:
       expo: '>=47.0.0'
       react: '*'
@@ -4660,30 +4649,44 @@ packages:
       superstruct: 0.6.2
     dev: false
 
-  /@react-native-firebase/auth@18.5.0(@react-native-firebase/app@18.5.0)(expo@49.0.11):
-    resolution: {integrity: sha512-RGuqXVQWIRc0edomtS8JxsfEZD7PKUz95L5Q1t+kLI+4lULOFamKlYY5sadv+QnMkYmMmcbKpTeTWfnf+WvHcQ==}
+  /@react-native-firebase/auth@18.6.1(@react-native-firebase/app@18.6.1)(expo@49.0.11):
+    resolution: {integrity: sha512-UkULLVtUTUvTKfCVmSAxhPPTyXAgchE9J8KGaSjMpMZnDdW0R4Cr+w4lElOFPfpFq1+i8bKjTl/8nK16QHv3dA==}
     peerDependencies:
-      '@react-native-firebase/app': 18.5.0
+      '@react-native-firebase/app': 18.6.1
       expo: '>=47.0.0'
     peerDependenciesMeta:
       expo:
         optional: true
     dependencies:
-      '@react-native-firebase/app': 18.5.0(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
+      '@react-native-firebase/app': 18.6.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
       expo: 49.0.11(@babel/core@7.22.20)
       plist: 3.1.0
     dev: false
 
-  /@react-native-firebase/perf@18.5.0(@react-native-firebase/app@18.5.0)(expo@49.0.11):
-    resolution: {integrity: sha512-XeBCJVPeVHbVMJ3rqHwX0mqhXprSEEVBW+pBlCgTYZSK2UnVNrX4IvCqowOJhDOWtte4ZHB05fde0tXSytEimg==}
+  /@react-native-firebase/crashlytics@18.6.1(@react-native-firebase/app@18.6.1)(expo@49.0.11):
+    resolution: {integrity: sha512-mPP6RKwy0cCL4rYyanplwg2HGAswE4z4I9p0p3q8ZOuvD/F48IwVMebbE0f5aeEztlEBguL3KOeGXGUttw61+w==}
     peerDependencies:
-      '@react-native-firebase/app': 18.5.0
+      '@react-native-firebase/app': 18.6.1
       expo: '>=47.0.0'
     peerDependenciesMeta:
       expo:
         optional: true
     dependencies:
-      '@react-native-firebase/app': 18.5.0(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
+      '@react-native-firebase/app': 18.6.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
+      expo: 49.0.11(@babel/core@7.22.20)
+      stacktrace-js: 2.0.2
+    dev: false
+
+  /@react-native-firebase/perf@18.6.1(@react-native-firebase/app@18.6.1)(expo@49.0.11):
+    resolution: {integrity: sha512-C0bmPJgYQhHtPqC3HBHGci4FYafwiAa4bjGMDN6kArKbG77/6L/DoYJUR1a57PXU3H0gdsScYnuuVZFGUntx1A==}
+    peerDependencies:
+      '@react-native-firebase/app': 18.6.1
+      expo: '>=47.0.0'
+    peerDependenciesMeta:
+      expo:
+        optional: true
+    dependencies:
+      '@react-native-firebase/app': 18.6.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
       expo: 49.0.11(@babel/core@7.22.20)
     dev: false
 
@@ -9205,7 +9208,7 @@ packages:
     dependencies:
       blueimp-md5: 2.19.0
       expo-constants: 14.4.2(expo@49.0.11)
-      expo-file-system: 15.4.4(expo@49.0.11)
+      expo-file-system: 15.4.5(expo@49.0.11)
       invariant: 2.2.4
       md5-file: 3.2.3
       path-browserify: 1.0.1
@@ -9287,8 +9290,8 @@ packages:
       semver: 7.5.4
     dev: false
 
-  /expo-file-system@15.4.4(expo@49.0.11):
-    resolution: {integrity: sha512-F0xS88D85F7qVQ61r0qBnzh6VW/s6iIl+VaQEEi2nAIOQHw1JIEj4yCXPLTtbyn5VmArbe2dSL3KYz1V+BLkKA==}
+  /expo-file-system@15.4.5(expo@49.0.11):
+    resolution: {integrity: sha512-xy61KaTaDgXhT/dllwYDHm3ch026EyO8j4eC6wSVr/yE12MMMxAC09yGwy4f7kkOs6ztGVQF5j7ldRzNLN4l0Q==}
     peerDependencies:
       expo: '*'
     dependencies:
@@ -9484,7 +9487,7 @@ packages:
       expo-application: 5.3.1(expo@49.0.11)
       expo-asset: 8.10.1(expo@49.0.11)
       expo-constants: 14.4.2(expo@49.0.11)
-      expo-file-system: 15.4.4(expo@49.0.11)
+      expo-file-system: 15.4.5(expo@49.0.11)
       expo-font: 11.4.0(expo@49.0.11)
       expo-keep-awake: 12.3.0(expo@49.0.11)
       expo-modules-autolinking: 1.5.1
@@ -15478,6 +15481,11 @@ packages:
       buffer-from: 1.1.2
       source-map: 0.6.1
 
+  /source-map@0.5.6:
+    resolution: {integrity: sha512-MjZkVp0NHr5+TPihLcadqnlVoGIoWo4IBHptutGh9wI3ttUYvCG26HkSuDi+K6lsZ25syXJXcctwgyVCt//xqA==}
+    engines: {node: '>=0.10.0'}
+    dev: false
+
   /source-map@0.5.7:
     resolution: {integrity: sha512-LbrmJOMUSdEVxIKvdcJzQC+nQhe8FUZQTXQy6+I75skNgn3OoQ0DZA8YnFa7gp8tqtL3KPf1kmo0R5DoApeSGQ==}
     engines: {node: '>=0.10.0'}
@@ -15567,6 +15575,12 @@ packages:
     deprecated: 'Modern JS already guarantees Array#sort() is a stable sort, so this library is deprecated. See the compatibility table on MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#browser_compatibility'
     dev: false
 
+  /stack-generator@2.0.10:
+    resolution: {integrity: sha512-mwnua/hkqM6pF4k8SnmZ2zfETsRUpWXREfA/goT8SLCV4iOFa4bzOX2nDipWAZFPTjLvQB82f5yaodMVhK0yJQ==}
+    dependencies:
+      stackframe: 1.3.4
+    dev: false
+
   /stack-utils@2.0.6:
     resolution: {integrity: sha512-XlkWvfIm6RmsWtNJx+uqtKLS8eqFbxUg0ZzLXqY0caEy9l7hruX8IpiDnjsLavoBgqCCR71TqWO8MaXYheJ3RQ==}
     engines: {node: '>=10'}
@@ -15576,6 +15590,21 @@ packages:
 
   /stackframe@1.3.4:
     resolution: {integrity: sha512-oeVtt7eWQS+Na6F//S4kJ2K2VbRlS9D43mAlMyVpVWovy9o+jfgH8O9agzANzaiLjclA0oYzUXEM4PurhSUChw==}
+    dev: false
+
+  /stacktrace-gps@3.1.2:
+    resolution: {integrity: sha512-GcUgbO4Jsqqg6RxfyTHFiPxdPqF+3LFmQhm7MgCuYQOYuWyqxo5pwRPz5d/u6/WYJdEnWfK4r+jGbyD8TSggXQ==}
+    dependencies:
+      source-map: 0.5.6
+      stackframe: 1.3.4
+    dev: false
+
+  /stacktrace-js@2.0.2:
+    resolution: {integrity: sha512-Je5vBeY4S1r/RnLydLl0TBTi3F2qdfWmYsGvtfZgEI+SCprPppaIhQf5nGcal4gI4cGpCV/duLcAzT1np6sQqg==}
+    dependencies:
+      error-stack-parser: 2.1.4
+      stack-generator: 2.0.10
+      stacktrace-gps: 3.1.2
     dev: false
 
   /stacktrace-parser@0.1.10:

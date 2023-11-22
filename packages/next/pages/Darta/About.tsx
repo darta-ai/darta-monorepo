@@ -177,7 +177,7 @@ export default function About() {
           data-testid="founders-grid">
           <Grid item xs={12} sm={4} data-testid="founder-1-grid">
             <Card sx={aboutStyles.card} data-testid="founder-1-card">
-              <div
+              <Box
                 style={aboutStyles.imageSize}
                 data-testid="founder-1-image-container">
                 <Box
@@ -188,7 +188,7 @@ export default function About() {
                   alt="Founder 1"
                   data-testid="founder-1-image"
                 />
-              </div>
+              </Box>
               <CardContent data-testid="founder-1-card-content">
                 <Typography variant="h5" data-testid="founder-1-name">
                   {aboutData.Person1}
@@ -211,7 +211,7 @@ export default function About() {
           </Grid>
           <Grid item xs={12} sm={4} data-testid="founder-2-grid">
             <Card sx={aboutStyles.card} data-testid="founder-2-card">
-              <div
+              <Box
                 style={aboutStyles.imageSize}
                 data-testid="founder-2-image-container">
                 <Box
@@ -222,7 +222,7 @@ export default function About() {
                   alt="Founder 2"
                   data-testid="founder-2-image"
                 />
-              </div>
+              </Box>
               <CardContent data-testid="founder-2-card-content">
                 <Typography variant="h5" data-testid="founder-2-name">
                   {aboutData.Person2}

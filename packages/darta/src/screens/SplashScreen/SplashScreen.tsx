@@ -1,14 +1,13 @@
 import * as Colors from "@darta-styles";
 import * as SplashScreen from "expo-splash-screen";
 import React from "react";
-import { Image } from "react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Animated,
   StyleSheet,
   View,
 } from "react-native";
-import { listAllExhibitionsPreviewsForUser, listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
+import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
 import { ETypes, StoreContext } from "../../state/Store";
 import { Artwork, GalleryPreview, MapPinCities, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types";
 import { listExhibitionPinsByCity } from "../../api/locationRoutes";
@@ -16,6 +15,7 @@ import { getDartaUser } from "../../api/userRoutes";
 import { getUserUid } from "../../utils/functions";
 import { listArtworksToRateAPI, listGalleryRelationshipsAPI, listUserArtworkAPI } from "../../utils/apiCalls";
 import FastImage from "react-native-fast-image";
+import analytics from '@react-native-firebase/analytics';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -230,8 +230,9 @@ export function AnimatedAppLoader({ children }) {
   useEffect(() => {
     async function prepare() {
       setSplashReady(true);
+      analytics().setAnalyticsCollectionEnabled(true);
+      analytics().logAppOpen()
     }
-
     prepare();
   }, []);
 

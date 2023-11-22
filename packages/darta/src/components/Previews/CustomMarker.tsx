@@ -6,16 +6,14 @@ import FastImage from 'react-native-fast-image'
 import { TextElement } from '../Elements/TextElement';
 import { globalTextStyles } from '../../styles/styles';
 
-import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddress, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
+import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 
 import * as Colors from '@darta-styles';
 import { ExhibitionMapPin } from '@darta-types';
-import { customDateString, customLocalDateString } from '../../utils/functions';
 import { ETypes, StoreContext } from '../../state/Store';
 import { ExploreMapRootEnum } from '../../typing/routes';
-import {Button, IconButton} from 'react-native-paper';
-import { icons } from '../../utils/constants';
-import { GoogleMapsPinIcon, MinimalMapPinIcon } from '../../assets/SVGs';
+import {Button } from 'react-native-paper';
+import { GoogleMapsPinIcon } from '../../assets/SVGs';
 
 
 const CustomMarker = ({ 
@@ -76,19 +74,15 @@ const CustomMarker = ({
       const endDateOpening = new Date(mapPin.receptionDates.receptionEndTime.value);
       setHasUpcomingOpening(endDateOpening >= new Date());
       if(hasUpcomingOpening){
-        setOpeningEnd(customLocalDateString(endDateOpening))
+        setOpeningEnd(customLocalDateStringStart({date: endDateOpening, isUpperCase: false}))
       }
     }
-    if (mapPin.exhibitionDates.exhibitionDuration && mapPin.exhibitionDates.exhibitionDuration.value === "Ongoing/Indefinite"){
+    if (mapPin.exhibitionDates?.exhibitionDuration && mapPin.exhibitionDates.exhibitionDuration?.value === "Ongoing/Indefinite"){
       setHasCurrentOpening(true)
       hasOpening = true
     } else if (mapPin.exhibitionDates?.exhibitionEndDate?.value){
       setHasCurrentOpening(mapPin.exhibitionDates.exhibitionEndDate.value >= new Date().toISOString())
     } 
-    const hasCurrentOpening = mapPin.exhibitionDates.exhibitionEndDate.value && mapPin.exhibitionDates.exhibitionEndDate.value >= new Date().toISOString()
-    const hasOngoingOpening = mapPin.exhibitionDates?.exhibitionDuration?.value === "Ongoing/Indefinite";
-    const hasGroupShow = mapPin.exhibitionType?.value === "Group Show"
-
     setLine1(mapPin.galleryName?.value || "")
     const city = simplifyAddressCity(mapPin.exhibitionLocation?.locationString?.value)
     const address = simplifyAddressMailing(mapPin.exhibitionLocation?.locationString?.value)
@@ -224,7 +218,7 @@ const CustomMarker = ({
               <Button 
                 style={customMarker.buttonStyles}
                 contentStyle={customMarker.buttonContentStyle}
-                >
+                onPress={() => {chooseRouteAndNavigate()}}>
               <TextElement style={customMarker.buttonTextColor}>{hasCurrentShow ? "View Exhibition" : "View Gallery"}</TextElement>
             </Button>
         </Callout>

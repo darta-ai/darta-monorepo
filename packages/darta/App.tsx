@@ -2,13 +2,14 @@
 import 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { ExploreMapStackNavigator } from './src/navigation/ExploreMap/ExploreMapStackNavigator';
 import { StatusBar } from 'react-native';
 import React from 'react';
 import {Provider as PaperProvider} from 'react-native-paper';
 import * as Colors from '@darta-styles';
+import analytics from '@react-native-firebase/analytics';
 
 import {
   MD3LightTheme as DefaultTheme,
@@ -38,6 +39,7 @@ import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { DartaRecommenderNavigator } from './src/navigation/DartaRecommender/DartaRecommenderNavigator';
 import * as SVGs from './src/assets/SVGs';
 import { ExhibitionRootEnum, ExploreMapRootEnum, PreviousExhibitionRootEnum, RecommenderRoutesEnum, UserRoutesEnum, ExhibitionPreviewEnum} from './src/typing/routes';
+import ErrorBoundary from './src/components/ErrorBoundary/ErrorBoundary';
 export const RecommenderStack = createStackNavigator();
 export const RootStack = createMaterialBottomTabNavigator();
 
@@ -81,7 +83,6 @@ function App() {
     console.log("error loading fonts")
   }
 
-
   const theme = {
     ...DefaultTheme,
     // Specify custom property
@@ -107,6 +108,9 @@ function App() {
     return route.name;
   }
   
+
+  const navigationRef = useNavigationContainerRef();
+  const routeNameRef = React.useRef();
 
   const handleNavigationChange = (state) => {
     // Find the current active route
@@ -146,67 +150,78 @@ function App() {
       [ExhibitionRootEnum.genericLoading]: true,
     }
     setIsTabVisible(showTabBarRoutes[route]);
-  };
 
+  };
    return (
       <PaperProvider theme={theme}>
         <StoreProvider>
-          <NavigationContainer onStateChange={handleNavigationChange}>
-            <AnimatedAppLoader>
-              <StatusBar barStyle="dark-content" />
-                <RootStack.Navigator 
-                initialRouteName="explore"
-                activeColor={Colors.PRIMARY_950}
-                inactiveColor={Colors.PRIMARY_300}
-                backBehavior={'order'}
-                barStyle={{ backgroundColor: Colors.PRIMARY_50, paddingBottom: 0, display: isTabVisible ? 'flex' : 'none'}}
-                
-                labeled={true} // This ensures labels are shown
-                >
-                  <RootStack.Screen
-                    name="View"
-                    component={DartaRecommenderNavigator}
-                    options={{
-                      tabBarLabel: "View",
-                      tabBarIcon: ({ focused }) => {
-                        return (
-                        focused ? <SVGs.ViewFocusedIcon /> : <SVGs.ViewUnfocusedIcon />
-                      )},
-                    }}
-                  />
-                  <RootStack.Screen
-                    name="exhibitions"
-                    component={ExhibitionStackNavigator}
-                    options={{
-                      tabBarLabel: "Exhibitions",
-                      tabBarIcon: ({ focused }) => (
-                        focused ? <SVGs.PaletteFocusedIcon /> : <SVGs.PaletteUnfocusedIcon />
-                      )
-                    }}
-                  />
+          <ErrorBoundary>
+            <NavigationContainer ref={navigationRef} onStateChange={(state) => {
+              handleNavigationChange(state)
+              const previousRouteName = routeNameRef.current;
+              const currentRouteName = navigationRef?.getCurrentRoute()?.name;
+              if (previousRouteName !== currentRouteName) {
+                analytics().logEvent('screen_view', {
+                  screen_name: currentRouteName,
+                });
+              }
+              }}>
+              <AnimatedAppLoader>
+                <StatusBar barStyle="dark-content" />
+                  <RootStack.Navigator 
+                  initialRouteName="explore"
+                  activeColor={Colors.PRIMARY_950}
+                  inactiveColor={Colors.PRIMARY_300}
+                  backBehavior={'order'}
+                  barStyle={{ backgroundColor: Colors.PRIMARY_50, paddingBottom: 0, display: isTabVisible ? 'flex' : 'none'}}
+                  
+                  labeled={true} // This ensures labels are shown
+                  >
                     <RootStack.Screen
-                      name="Visit"
-                      component={ExploreMapStackNavigator}
+                      name="View"
+                      component={DartaRecommenderNavigator}
                       options={{
-                        tabBarLabel: "Visit",
+                        tabBarLabel: "View",
+                        tabBarIcon: ({ focused }) => {
+                          return (
+                          focused ? <SVGs.ViewFocusedIcon /> : <SVGs.ViewUnfocusedIcon />
+                        )},
+                      }}
+                    />
+                    <RootStack.Screen
+                      name="exhibitions"
+                      component={ExhibitionStackNavigator}
+                      options={{
+                        tabBarLabel: "Exhibitions",
                         tabBarIcon: ({ focused }) => (
-                          focused ? <SVGs.VisitFocusedIcon /> : <SVGs.VisitUnfocusedIcon />
+                          focused ? <SVGs.PaletteFocusedIcon /> : <SVGs.PaletteUnfocusedIcon />
                         )
                       }}
                     />
-                  <RootStack.Screen
-                    name="Profile"
-                    component={UserStackNavigator}
-                    options={{
-                      tabBarLabel: "Profile",
-                      tabBarIcon: ({ focused }) => (
-                        focused ? <SVGs.ProfileFocusedIcon /> : <SVGs.ProfileUnfocusedIcon />
-                      )
-                    }}
-                  />
-                </RootStack.Navigator>
-              </AnimatedAppLoader>  
-            </NavigationContainer>
+                      <RootStack.Screen
+                        name="Visit"
+                        component={ExploreMapStackNavigator}
+                        options={{
+                          tabBarLabel: "Visit",
+                          tabBarIcon: ({ focused }) => (
+                            focused ? <SVGs.VisitFocusedIcon /> : <SVGs.VisitUnfocusedIcon />
+                          )
+                        }}
+                      />
+                    <RootStack.Screen
+                      name="Profile"
+                      component={UserStackNavigator}
+                      options={{
+                        tabBarLabel: "Profile",
+                        tabBarIcon: ({ focused }) => (
+                          focused ? <SVGs.ProfileFocusedIcon /> : <SVGs.ProfileUnfocusedIcon />
+                        )
+                      }}
+                    />
+                  </RootStack.Navigator>
+                </AnimatedAppLoader>  
+              </NavigationContainer>
+            </ErrorBoundary>
           </StoreProvider>
         </PaperProvider>
     );

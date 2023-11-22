@@ -47,7 +47,7 @@ export function ExploreMapHomeScreen({
     navigation?: any;
 }) {
   const {state, dispatch} = useContext(StoreContext);
-  const [currentLocation, setCurrentLocation] = React.useState<MapPinCities>(MapPinCities.newYork)
+  const [currentLocation] = React.useState<MapPinCities>(MapPinCities.newYork)
   const [mapRegion, setMapRegion] = React.useState({
     latitudeDelta: 0.01,
     longitudeDelta: 0.06,
@@ -107,10 +107,10 @@ export function ExploreMapHomeScreen({
               >
                 {exhibitionPins && Object.values(exhibitionPins).length > 0 
                 && Object.values(exhibitionPins).map((pin: ExhibitionMapPin) => {
-                  if(pin.exhibitionLocation.coordinates?.latitude 
-                    && pin.exhibitionLocation.coordinates?.longitude){
+                  if(pin?.exhibitionLocation?.coordinates?.latitude 
+                    && pin?.exhibitionLocation?.coordinates?.longitude){
                       return (
-                      <View key={pin.exhibitionId}>
+                      <View key={pin?.exhibitionId}>
                         <CustomMarker 
                           coordinate={{latitude: Number(pin.exhibitionLocation.coordinates.latitude.value), longitude: Number(pin.exhibitionLocation.coordinates.longitude.value)}}
                           mapPin={pin}

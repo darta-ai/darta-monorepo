@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useDeepLinking } from '../../components/LinkingAndNavigation/deepLinking';
 import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 export const RecommenderStack = createStackNavigator();
 
@@ -28,6 +29,7 @@ export function DartaRecommenderNavigator() {
   };
   const navigation = useNavigation();
   useDeepLinking(navigation);
+
   return (
     <RecommenderStack.Navigator 
       screenOptions={{
