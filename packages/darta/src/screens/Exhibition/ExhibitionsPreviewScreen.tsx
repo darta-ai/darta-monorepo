@@ -124,6 +124,7 @@ export function ExhibitionPreviewScreen({
   const onBottomLoad = React.useCallback(async () => {
     setBottomLoad(true);
     try{
+      console.log('fired')
       const screenName = route.name
       let numberOfPreviews = 0
       switch(screenName) {
@@ -170,7 +171,6 @@ export function ExhibitionPreviewScreen({
         if (!exhibitionId || !galleryId) return
         navigation.navigate(ExhibitionRootEnum.TopTab, {exhibitionId, galleryId, internalAppRoute: true});
     } catch(error: any) {
-      console.log(error)
     }
   }, [])
 
@@ -185,13 +185,12 @@ export function ExhibitionPreviewScreen({
         if (!galleryId) return
         navigation.navigate(ExhibitionRootEnum.showGallery, {galleryId});
     } catch(error: any) {
-      console.log(error)
     }
   }, [])
 
   return (
     <>
-      {exhibitionPreviews.length === 0 ?  (
+      {exhibitionPreviews.length === 0 && (
         <ScrollView 
         style={{
           height: hp('40%'),
@@ -212,10 +211,10 @@ export function ExhibitionPreviewScreen({
           />
           <TextElement style={{margin: 5, color: Colors.PRIMARY_50}}>{errorText}</TextElement>
         </ScrollView>      
-        ) 
-      : 
-    (
+        )}
+      {exhibitionPreviews.length > 0 && (
       <FlatList 
+      ref={(ref) => { this.flatListRef = ref }}
       data={exhibitionPreviews}
       keyExtractor={(item) => item.exhibitionId}
       renderItem={({item}) => (
@@ -226,7 +225,7 @@ export function ExhibitionPreviewScreen({
           />
         )}
       refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}
-      onEndReachedThreshold={0.1}
+      onEndReachedThreshold={1}
       onEndReached={onBottomLoad}
       refreshing={bottomLoad}
       />

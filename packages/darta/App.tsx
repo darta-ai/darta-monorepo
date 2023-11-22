@@ -161,7 +161,7 @@ function App() {
               const previousRouteName = routeNameRef.current;
               const currentRouteName = navigationRef?.getCurrentRoute()?.name;
               if (previousRouteName !== currentRouteName) {
-                analytics().logEvent('screen_view', {
+                analytics().logEvent(`screen_view`, {
                   screen_name: currentRouteName,
                 });
               }

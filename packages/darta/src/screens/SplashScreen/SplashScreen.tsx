@@ -59,11 +59,11 @@ function AnimatedSplashScreen({ children }) {
         //galleryFollows
         listGalleryRelationshipsAPI(),
         //exhibitionPreviewsCurrent
-        listExhibitionPreviewsCurrent({ limit: 10 }),
+        listExhibitionPreviewsCurrent({ limit: 5 }),
         //exhibitionPreviewsUpcoming 
-        listExhibitionPreviewsForthcoming({ limit: 10 }),
+        listExhibitionPreviewsForthcoming({ limit: 5 }),
         //exhibitionPreviewsUserFollowing
-        listExhibitionPreviewUserFollowing({ limit: 10 }),
+        listExhibitionPreviewUserFollowing({ limit: 5 }),
         // exhibitionMapPins
         listExhibitionPinsByCity({ cityName: MapPinCities.newYork }),
         // likedArtwork

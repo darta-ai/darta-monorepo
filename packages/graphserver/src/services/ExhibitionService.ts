@@ -787,7 +787,7 @@ export class ExhibitionService implements IExhibitionService {
         LET artworks = (
             FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
             SORT artworkEdge.exhibitionOrder ASC
-            LIMIT 10
+            LIMIT 5
             RETURN {
                 [artwork._id]: {
                     _id: artwork._id,
@@ -852,7 +852,7 @@ export class ExhibitionService implements IExhibitionService {
         LET artworks = (
             FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
             SORT artworkEdge.exhibitionOrder ASC
-            LIMIT 10
+            LIMIT 5
             RETURN {
                 [artwork._id]: {
                     _id: artwork._id,
@@ -926,7 +926,7 @@ export class ExhibitionService implements IExhibitionService {
           LET artworks = (
               FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
               SORT artworkEdge.exhibitionOrder ASC
-              LIMIT 10
+              LIMIT 5
               RETURN {
                   [artwork._id]: {
                       _id: artwork._id,

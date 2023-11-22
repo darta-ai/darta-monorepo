@@ -65,7 +65,8 @@ const ArtworkCard = ({
       alignSelf: 'center',
       alignContent: 'center',
       height: 155, 
-      width: 155
+      width: 155, 
+      backgroundColor: Colors.PRIMARY_50,
     },
     textContainer: {
       flexDirection: 'column',
@@ -115,7 +116,7 @@ const ArtworkCard = ({
       <View style={SSArtworkSelectorCard.container}>
         <TouchableOpacity onPress={() => navigateToTombstone()} >
           <View style={SSArtworkSelectorCard.imageContainer}>
-            <Surface style={{backgroundColor: 'transparent'}} elevation={3}>
+            <Surface style={{backgroundColor: 'transparent', shadowOpacity:0}} elevation={2}>
                 <FastImage
                   source={{
                     uri: artwork.artworkImage?.value ?? "",

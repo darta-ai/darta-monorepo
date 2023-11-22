@@ -68,6 +68,7 @@ export function ArtworkList({
                   <FlatList
                     nestedScrollEnabled={false}
                     data={evenArtwork}
+                    initialNumToRender={evenArtwork.length}
                     keyExtractor={item => item._id?.toString() ?? "654321"}
                     renderItem={({item}) => (
                       <ArtworkCard
@@ -83,6 +84,7 @@ export function ArtworkList({
                   <FlatList
                     nestedScrollEnabled={false}
                     data={oddArtwork}
+                    initialNumToRender={oddArtwork.length}
                     keyExtractor={item => item.artworkId?.toString() ?? "123456"}
                     renderItem={({item}) => (
                       <ArtworkCard
