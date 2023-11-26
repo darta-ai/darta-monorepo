@@ -69,7 +69,8 @@
     "react-native-vector-icons": "^9.2.0",
     "react-native-view-shot": "3.7.0",
     "react-native-web": "^0.19.9",
-    "react-native-webview": "13.2.2"
+    "react-native-webview": "13.2.2",
+    "recyclerlistview": "^4.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.22.20",

@@ -76,6 +76,7 @@ export async function listExhibitionPreviewsCurrent({
   });
     return data;
   } catch (error:any) {
+    console.log(error.message)
     console.log({error: error, message: error.message, where: 'listAllExhibitionsPreviewsForUser'})
     return {};
   }

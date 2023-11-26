@@ -2,19 +2,11 @@ import * as React from 'react';
 import { View, StyleSheet} from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import FastImage from 'react-native-fast-image'
-import { Surface } from 'react-native-paper';
 import {
     widthPercentageToDP as wp,
   } from 'react-native-responsive-screen';
-
-import Animated, {
-    interpolate,
-    interpolateColor,
-    useAnimatedStyle,
-  } from "react-native-reanimated";
-  
-import { SBItem } from "./ExhibitionCarousel/SBItem";
 import * as Colors from '@darta-styles';
+import { Surface } from 'react-native-paper';
 
   const image404 = require('../../assets/image404.png');
   
@@ -23,20 +15,17 @@ const carouselStyle = StyleSheet.create({
     heroImage: {
       width: '95%',
       height: '95%',
-      marginTop: 10,
+      marginTop: 7, 
       resizeMode: 'contain',
       alignSelf: 'center',
-      // backgroundColor: Colors.PRIMARY_50, // Set this to the color of your choice
-      // shadowOpacity: 1,
-      // shadowRadius: 3.03,
-      // shadowColor: Colors.PRIMARY_300,
-      // shadowOffset: {height: 3.03, width: 0},
-      // Important: on Android, elevation is used to create shadows
-      // elevation: 4,
+      shadowOpacity: 1,
+      shadowRadius: 3.03,
+      shadowColor: Colors.PRIMARY_300,
+      shadowOffset: {height: 3.03, width: 0},
     },
     paginationContainer: {
       position: 'absolute',
-      bottom: 10,
+      bottom: 0,
       left: 0,
       right: 0,
       flexDirection: 'row',
@@ -44,8 +33,8 @@ const carouselStyle = StyleSheet.create({
       alignItems: 'center',
     },
     paginationDot: {
-      width: 8,
-      height: 8,
+      width: 4,
+      height: 4,
       borderRadius: 4,
       marginHorizontal: 2,
     },
@@ -61,28 +50,12 @@ const WIDTH = wp('90%');
 
 
 // Define the CustomItem component
-const CustomItemComponent = ({ item, animationValue }) => {
+const CustomItemComponent = ({ item }) => {
   const image = item?.imageUrl ? { uri: item.imageUrl } : image404;
-  // const maskStyle = useAnimatedStyle(() => ({
-  //   backgroundColor: interpolateColor(
-  //     animationValue.value,
-  //     [-1, 0, 1],
-  //     [Colors.PRIMARY_100, Colors.PRIMARY_50, Colors.PRIMARY_100],
-  //   ),
-  // }));
 
   return (
-    <View style={{ flex: 1, margin: 10 }}>
-      {/* <SBItem style={{ borderRadius: 0 }} /> */}
-        <Surface style={{ 
-          backgroundColor: "transparent",
-          padding: 2,
-          height: 'auto',
-          width: 'auto',
-          alignItems: 'center',
-          justifyContent: 'center',
-          elevation: 4,
-        }} >
+    <View style={{ flex: 1,  width: '100%'}} key={image}>
+        <Surface style={{backgroundColor: 'transparent'}} elevation={2}>
           <FastImage 
             source={{ ...image, priority: FastImage.priority.normal }}
             style={carouselStyle.heroImage} 
@@ -96,16 +69,6 @@ const CustomItemComponent = ({ item, animationValue }) => {
 const CustomItem = React.memo(CustomItemComponent, (prevProps, nextProps) => {
   return prevProps.item === nextProps.item;
 });
-
-// const animationStyle = (value) => {
-//   "worklet";
-//   const zIndex = interpolate(value, [-1, 0, 1], [10, 20, 30]);
-//   const translateX = interpolate(value, [-2, 0, 1], [-WIDTH, 0, WIDTH]);
-//   return {
-//     transform: [{ translateX }],
-//     zIndex,
-//   };
-// };
 
 const PaginationDots = ({ currentIndex, itemCount }) => {
   return (
@@ -125,7 +88,7 @@ const PaginationDots = ({ currentIndex, itemCount }) => {
 
 
 // The ExhibitionCarousel component
-export function ExhibitionCarousel({ images }) {
+function ExhibitionCarouselComponent({ images }) {
   const carouselRef = React.useRef<any>(null);
 
   const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -148,16 +111,17 @@ export function ExhibitionCarousel({ images }) {
         }}
         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         scrollAnimationDuration={100}
-        renderItem={({ item, animationValue }) => (
+        renderItem={({ item }) => (
           <CustomItem
             item={item}
-            animationValue={animationValue}
           />
         )}
-        // customAnimation={animationStyle}
       />
       <PaginationDots currentIndex={currentIndex} itemCount={images.length} />
     </View>
   );
 }
 
+export const ExhibitionCarousel = React.memo(ExhibitionCarouselComponent, (prevProps, nextProps) => {
+  return prevProps.images === nextProps.images;
+});

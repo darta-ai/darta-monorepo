@@ -150,7 +150,6 @@ function App() {
       [ExhibitionRootEnum.genericLoading]: true,
     }
     setIsTabVisible(showTabBarRoutes[route]);
-
   };
    return (
       <PaperProvider theme={theme}>
@@ -174,7 +173,6 @@ function App() {
                   inactiveColor={Colors.PRIMARY_300}
                   backBehavior={'order'}
                   barStyle={{ backgroundColor: Colors.PRIMARY_50, paddingBottom: 0, display: isTabVisible ? 'flex' : 'none'}}
-                  
                   labeled={true} // This ensures labels are shown
                   >
                     <RootStack.Screen

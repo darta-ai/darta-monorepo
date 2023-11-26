@@ -13,7 +13,7 @@ import {
 } from '../../typing/routes';
 import { ActivityIndicator } from 'react-native-paper';
 
-import { Text, Button} from 'react-native-paper'
+import { Text } from 'react-native-paper'
 import {ETypes, StoreContext} from '../../state/Store';
 import { BusinessHours, Exhibition, IGalleryProfileData } from '@darta-types';
 import { formatUSPhoneNumber, modifyHoursOfOperation, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
@@ -98,31 +98,6 @@ const galleryDetailsStyles = StyleSheet.create({
       justifyContent: 'flex-start',
       alignItems: 'flex-start',
   },
-  rowButtonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    height: '100%',
-    gap: wp('2%'),
-  },
-  fontStyleButtons:{
-    color: Colors.PRIMARY_950, 
-    fontSize: 13,
-    width: wp('25%'),
-  },
-  divider: {
-      width: wp('20%'),
-      alignSelf: 'center',
-      color: Colors.PRIMARY_950
-  },
-  descriptionText: {
-      ...globalTextStyles.centeredText,
-      fontSize: 15,
-      color: Colors.PRIMARY_950,
-      height: hp('3%'),
-      
-  }, 
   locationContainer: {
       width: '100%',
       display: 'flex',
@@ -193,6 +168,14 @@ const galleryDetailsStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 8,
+  }, 
+  mapContainer: {
+    height: hp('30%'), 
+    width: wp('90%')
+  },
+  map: {
+    alignSelf: 'stretch', 
+    height: '100%' 
   }
 })
 
@@ -655,10 +638,10 @@ export function ExhibitionGalleryScreen({
               )
             })}
         </View>
-        <View style={{height: hp('30%'), width: wp('90%')}}>
+        <View style={galleryDetailsStyles.mapContainer}>
           <MapView  
             provider={PROVIDER_GOOGLE}
-            style={{ alignSelf: 'stretch', height: '100%' }}
+            style={galleryDetailsStyles.map}
             region={mapRegion} 
             scrollEnabled={false}
             customMapStyle={mapStylesJson}

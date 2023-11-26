@@ -90,91 +90,41 @@ async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: st
       navigation.navigate('exhibitions', { screen: ExhibitionRootEnum.genericLoading });
       try{
         const res = await fetchMostRecentExhibitionData({locationId: params.locationId.toString()})
-        // if (res){
-        //   const {exhibitionId, galleryId} = res
-        //     navigation.navigate('exhibitions', {
-        //       screen: ExhibitionRootEnum.qrRouter,
-        //       params: {
-        //           screen: ExhibitionRootEnum.exhibitionDetails,  
-        //           params: {
-        //             exhibitionId,
-        //             galleryId
-        //           }
-        //       }
-        //   });
-        //   await createGalleryRelationshipAPI({galleryId})
-        // }
-        if (res) {
-          const { exhibitionId, galleryId } = res;
-          
-          // Reset the stack and navigate to the new route
-          navigation.reset({
-            index: 1, // Defines the active route in the stack after the reset
-            routes: [
-              { name: 'exhibitions' }, // This is your initial route in the stack
-              { 
-                name: 'exhibitions',
-                params: {
-                  screen: ExhibitionRootEnum.qrRouter,
+        if (res){
+          const {exhibitionId, galleryId} = res
+            navigation.navigate('exhibitions', {
+              screen: ExhibitionRootEnum.qrRouter,
+              params: {
+                  screen: ExhibitionRootEnum.exhibitionDetails,  
                   params: {
-                    screen: ExhibitionRootEnum.exhibitionDetails,
-                    params: {
-                      exhibitionId,
-                      galleryId,
-                    },
-                  },
-                },
-              },
-            ],
+                    exhibitionId,
+                    galleryId
+                  }
+              }
           });
           await createGalleryRelationshipAPI({galleryId})
         }
       } catch(error: any){
-        navigation.goBack()
+        return
       }
     } else if (params && params.exhibitionId && params.galleryId) {
       navigation.navigate('exhibitions', { screen: ExhibitionRootEnum.genericLoading});
       const res = await fetchExhibitionById({exhibitionId: params.exhibitionId.toString(), galleryId: params.galleryId.toString()})
-      // if (res){
-      //   const {exhibitionId, galleryId} = res
-      //   navigation.navigate('exhibitions', {
-      //     screen: ExhibitionRootEnum.qrRouter,
-      //     params: {
-      //         screen: ExhibitionRootEnum.exhibitionDetails,  
-      //         params: {
-      //           exhibitionId,
-      //           galleryId,
-      //         }
-      //     }
-      // });
-      // }
-      if (res) {
-        const { exhibitionId, galleryId } = res;
-        
-        // Reset the stack and navigate to the new route
-        navigation.reset({
-          index: 1, // Defines the active route in the stack after the reset
-          routes: [
-            { name: 'exhibitions' }, // This is your initial route in the stack
-            { 
-              name: 'exhibitions',
+      if (res){
+        const {exhibitionId, galleryId} = res
+        navigation.navigate('exhibitions', {
+          screen: ExhibitionRootEnum.qrRouter,
+          params: {
+              screen: ExhibitionRootEnum.exhibitionDetails,  
               params: {
-                screen: ExhibitionRootEnum.qrRouter,
-                params: {
-                  screen: ExhibitionRootEnum.exhibitionDetails,
-                  params: {
-                    exhibitionId,
-                    galleryId,
-                  },
-                },
-              },
-            },
-          ],
-        });
+                exhibitionId,
+                galleryId,
+              }
+          }
+      });
       }
-      
     } else {
-        navigation.goBack()
+        return
       } 
   };
 

@@ -159,13 +159,11 @@ export function ExhibitionDetailsScreen({
 
   const [exhibitionStartDate, setExhibitionStartDate] = React.useState<string>(new Date().toLocaleDateString());
   const [exhibitionEndDate, setExhibitionEndDate] = React.useState<string>(new Date().toLocaleDateString());
-  const [isTemporaryExhibition, setIsTemporaryExhibition] = React.useState<boolean>(false);
   
   const [receptionOpeningDay, setReceptionOpeningDay ] = React.useState<string>(new Date().toLocaleDateString())
   const [receptionCloseDay, setReceptionCloseDay ] = React.useState<string>(new Date().toLocaleDateString())
   const [isReceptionMultipleDays, setIsReceptionMultipleDays ] = React.useState<boolean>(false)
   const [hasReception, setHasReception ] = React.useState<boolean>(false)
-  const [isReceptionInPast, setIsReceptionInPast ] = React.useState<boolean>(true);
   const [receptionOpenFullDate, setReceptionOpenFullDate ] = React.useState<Date>(new Date())
   const [receptionCloseFullDate, setReceptionCloseFullDate ] = React.useState<Date>(new Date())
 
@@ -228,7 +226,6 @@ export function ExhibitionDetailsScreen({
         ) {
         setExhibitionStartDate(customLocalDateStringStart({date: new Date(currentExhibition.exhibitionDates.exhibitionStartDate.value), isUpperCase: false}));
         setExhibitionEndDate(customLocalDateStringEnd({date: new Date(currentExhibition?.exhibitionDates.exhibitionEndDate.value), isUpperCase: false}));
-        setIsTemporaryExhibition(currentExhibition.exhibitionDates.exhibitionDuration.value === "Temporary");
       }
     
 
@@ -245,7 +242,6 @@ export function ExhibitionDetailsScreen({
             setReceptionCloseDay(receptionEndDay)
             setIsReceptionMultipleDays(receptionCloseDay !== receptionOpeningDay);
             const receptionInPast = new Date(currentExhibition.receptionDates.receptionEndTime.value) > new Date()
-            setIsReceptionInPast(receptionInPast)
             setHasReception(currentExhibition.receptionDates.hasReception.value === "Yes");
             setReceptionOpenFullDate(new Date(currentExhibition.receptionDates.receptionStartTime.value));
             setReceptionCloseFullDate(new Date(currentExhibition.receptionDates.receptionEndTime.value));
@@ -560,12 +556,12 @@ export function ExhibitionDetailsScreen({
                         />
                     </View>
                     )}
-                    <View style={exhibitionDetailsStyles.mapContainer}>
+                    <View style={{height: hp('30%'), width: wp('90%')}}>
                         <MapView  
                         customMapStyle={mapStylesJson}
                         provider={PROVIDER_GOOGLE}
                         scrollEnabled={false}
-                        style={{ alignSelf: 'stretch', height: '100%', width: '100%'}}
+                        style={{ alignSelf: 'stretch', height: '100%'}}
                         region={mapRegion} 
                         >
                             <Marker
@@ -595,7 +591,7 @@ export function ExhibitionDetailsScreen({
                     <View style={{...exhibitionDetailsStyles.informationContainer}}>
                         <View style={{marginBottom: 24}}>
                             <TextElement style={globalTextStyles.sectionHeaderTitle}>
-                                Artist Statement
+                                Artist
                             </TextElement>
                         </View>
                         <View>
@@ -605,128 +601,6 @@ export function ExhibitionDetailsScreen({
                         </View>
                     </View>
                 )}
-        {/* <View style={{...exhibitionDetailsStyles.textContainer, height: hasReception && isReceptionInPast ? hp('100%') : hp('80%')}}>
-            <View>
-            {isTemporaryExhibition ? (
-            <View>
-            <TextElement style={exhibitionDetailsStyles.descriptionText}>On View</TextElement>
-            <Divider style={exhibitionDetailsStyles.divider}/>
-            <TextElement style={{...globalTextStyles.centeredText, fontSize: 18, marginTop: hp('1%')}}>
-                {exhibitionStartDate} {" - "} {exhibitionEndDate}
-            </TextElement>
-            </View>
-            )
-            :
-            (
-            <TextElement style={{...globalTextStyles.centeredText}}>Ongoing</TextElement>
-            )
-            }
-            </View>
-            <View>
-            <TextElement style={exhibitionDetailsStyles.descriptionText}>
-                Location
-            </TextElement>
-            <Divider style={exhibitionDetailsStyles.divider}/>
-                <TextElement ></TextElement>
-
-            </View>
-            <View style={exhibitionDetailsStyles.mapContainer}>
-                <MapView  
-                customMapStyle={mapStylesJson}
-                provider={PROVIDER_GOOGLE}
-                style={{ alignSelf: 'stretch', height: '100%', width: '100%'}}
-                region={mapRegion} 
-                >
-                    <Marker
-                    key={"12345"}
-                    coordinate={{latitude: mapRegion.latitude, longitude: mapRegion.longitude}}
-                    title={galleryName ?? "Gallery"}
-                    description={currentExhibition?.exhibitionLocation?.locationString?.value!}
-                    />
-                </MapView>
-            </View>
-            <View style={{margin: hp('2%')}}>
-            {hasReception && isReceptionInPast && (
-                <>
-                <View>
-                    <TextElement style={exhibitionDetailsStyles.descriptionText}>
-                        Reception
-                    </TextElement>
-                    <Divider style={exhibitionDetailsStyles.divider}/>
-                    <TextElement style={{...globalTextStyles.centeredText, fontSize: 20, marginTop: hp('1%')}}>
-                        {receptionDateString}
-                    </TextElement>
-                    <TextElement style={{...globalTextStyles.centeredText, fontSize: 20}}>
-                        {receptionTimeString}
-                    </TextElement>
-                </View>
-                {!isReceptionInPast && (
-                    <Button 
-                    icon={!isCalendarSuccess ? "calendar" : ""}
-                    textColor={Colors.PRIMARY_900}
-                    mode="text"
-                    disabled={isCalendarSuccess}
-                    compact={true}
-                    labelStyle={{color: Colors.PRIMARY_950}}
-                    onPress={() => saveExhibitionToCalendar()}
-                    >   
-                        {!isCalendarSuccess ?
-                        (
-                            <TextElement style={{...globalTextStyles.centeredText, textDecorationLine: 'underline'}}>Add Reception to Calendar</TextElement>
-                        )
-                        :
-                        (
-                            <TextElement style={{...globalTextStyles.centeredText, textDecorationLine: 'underline' }}>Added to Calendar</TextElement>
-                        )
-                        }
-                    </Button>
-                )}
-                </>
-            )}
-
-            {isCalendarFailure && (
-            <TextElement sx={{color: Colors.PRIMARY_900}}>error occurred adding event</TextElement>
-            )}
-            </View>
-        </View> */}
-        {/* {currentExhibition?.videoLink?.value && (
-                <View style={exhibitionDetailsStyles.pressReleaseContainer}>
-                    <TextElement style={exhibitionDetailsStyles.descriptionText}>
-                        Video
-                    </TextElement>
-                    {vimeoURL && (
-                        <WebView
-                        source={{ uri: vimeoURL}}
-                        style={{ width: wp('95%'), height: hp('30%') }}
-                        allowsFullscreenVideo={true}
-                        javaScriptEnabled={true}
-                        domStorageEnabled={true}
-                        />
-                    )}
-                </View>
-            )}
-            {currentExhibition?.exhibitionPressRelease?.value && (
-                <View style={exhibitionDetailsStyles.pressReleaseContainer}>
-                    <TextElement style={exhibitionDetailsStyles.descriptionText}>
-                        Press Release
-                    </TextElement>
-                    <Divider style={exhibitionDetailsStyles.divider}/>
-                    <Text style={{...globalTextStyles.baseText, fontSize: 15, color: Colors.PRIMARY_950, marginTop: hp('1%')}}>
-                        {currentExhibition?.exhibitionPressRelease?.value}
-                    </Text>
-                </View>
-            )}
-            {currentExhibition?.exhibitionArtistStatement?.value && (
-                <View style={exhibitionDetailsStyles.pressReleaseContainer}>
-                    <TextElement style={exhibitionDetailsStyles.descriptionText}>
-                        Artist Statement
-                    </TextElement>
-                    <Divider style={exhibitionDetailsStyles.divider}/>
-                    <Text style={{...globalTextStyles.baseText, fontSize: 15, color: Colors.PRIMARY_950, marginTop: hp('1%')}}>
-                        {currentExhibition?.exhibitionArtistStatement?.value}
-                    </Text>
-                </View>
-            )} */}
             </View>
         </ScrollView>
         )}

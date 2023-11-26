@@ -37,7 +37,11 @@ const exploreMapStyles = StyleSheet.create({
       width: wp('100%'),
       margin: hp('1%'),
       height: hp('5%'),
-    }
+    }, 
+  mapView: {
+    alignSelf: 'stretch', 
+    height: '100%' 
+  }
 })
 
 
@@ -61,7 +65,14 @@ export function ExploreMapHomeScreen({
     if (state.mapPins && state.mapPins?.[currentLocation]){
       setExhibitionPins(state.mapPins?.[currentLocation])
     }
-  }, [])
+    (async () => {
+      
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        return;
+      }
+    })();
+  }, [state.mapPins])
 
   const [refreshing, setRefreshing] = React.useState(false);
   const onRefresh = React.useCallback(async () => {
@@ -76,15 +87,18 @@ export function ExploreMapHomeScreen({
       setRefreshing(false);
   }, 500)  }, []);
 
-  React.useEffect(() => {
-    (async () => {
-      
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        return;
-      }
-    })();
+
+  const handleMarkerPress = React.useCallback((event) => {
+    setMapRegion({
+      ...mapRegion,
+      ...event.nativeEvent.coordinate,
+    });
+  }, [mapRegion]);
+  
+  const handleRegionChangeComplete = React.useCallback((event) => {
+    setMapRegion(event);
   }, []);
+  
 
   return (
     <ScrollView refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>
@@ -93,16 +107,11 @@ export function ExploreMapHomeScreen({
             {Object.values(mapRegion).length > 0 && ( 
             <MapView  
               provider={PROVIDER_GOOGLE}
-              style={{ alignSelf: 'stretch', height: '100%' }}
+              style={ exploreMapStyles.mapView }
               region={mapRegion} 
               customMapStyle={mapStylesJson}
-              onMarkerPress={(event) =>{
-                setMapRegion({
-                  ...mapRegion,
-                  ...event.nativeEvent.coordinate,
-                })
-              }}
-              onRegionChangeComplete={(event) => {setMapRegion(event)}}
+              onMarkerPress={handleMarkerPress}
+              onRegionChangeComplete={handleRegionChangeComplete}
               showsUserLocation={true}
               >
                 {exhibitionPins && Object.values(exhibitionPins).length > 0 

@@ -60,7 +60,7 @@ export function ExhibitionArtworkScreen({
   const [errorText, setErrorText] = React.useState<string>("");
   const [isArtworkLoaded, setIsArtworkLoaded] = React.useState<boolean>(false);
 
-  const [oddArtwork, setOddsArtwork] = React.useState<Artwork[] | null>(null)
+  const [artworkData, setArtworkData] = React.useState<Artwork[] | null>(null)
   const [evenArtwork, setEvensArtwork] = React.useState<Artwork[] | null>(null)
 
   const setArtworksFromExhibitionId = async ({exhibitionId}: {exhibitionId: string}) => {
@@ -72,22 +72,16 @@ export function ExhibitionArtworkScreen({
         type ImageUrlObject = { uri: string };
 
         const imageUrlsToPrefetch: ImageUrlObject[] = [];
-        const odds: Artwork[] = [];
-        const evens: Artwork[]  = [];
+        const data: Artwork[] = [];
         Object.values(artwork).sort((a: Artwork, b: Artwork) => a?.exhibitionOrder! - b?.exhibitionOrder!)
-        .forEach((artwork: Artwork, index: number) => {
-          if (index % 2 === 0){
-            evens.push(artwork)
-          } else{
-            odds.push(artwork)
-          }
-          if (artwork.artworkImage.value){
+        .forEach((artwork: Artwork) => {
+          if (artwork?.artworkImage.value){
             imageUrlsToPrefetch.push({uri: artwork.artworkImage.value})
           }
+          data.push(artwork)
         })
         FastImage.preload(imageUrlsToPrefetch)
-        setOddsArtwork(odds)
-        setEvensArtwork(evens)
+        setArtworkData(data)
         setIsArtworkLoaded(true)
         setErrorText("")
   } else {
@@ -175,8 +169,7 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
           <ArtworkList 
           refreshing={refreshing}
           onRefresh={onRefresh}
-          evenArtwork={evenArtwork as Artwork[]}
-          oddArtwork={oddArtwork as Artwork[]}
+          artworkData={artworkData as Artwork[]}
           navigation={navigation}
           navigateTo={route?.params.navigateTo ?? ExhibitionRootEnum.individualArtwork}
           navigateToParams={ExhibitionRootEnum.TopTab}
