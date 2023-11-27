@@ -7,6 +7,7 @@ import { USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
 import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
 import auth from '@react-native-firebase/auth';
 import { getDartaUser } from '../../api/userRoutes';
+import analytics from '@react-native-firebase/analytics';
 
 
 export function ArtworkScreen({route, navigation}: {route: any, navigation: any}) {
@@ -68,6 +69,7 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
         type: ETypes.saveArtworkMulti,
         artworkDataMulti: {[artworkId]: artOnDisplay},
       })
+      analytics().logEvent('save_artwork_modal', {artworkId})
     } catch(error){
       console.log(error)
     } finally {
@@ -85,6 +87,7 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
         type: ETypes.setUserInquiredArtwork,
         artworkId,
       })
+      analytics().logEvent('inquire_artwork', {artworkId})
       inquireSuccessAlert()
     } catch(error){
       console.log(error)

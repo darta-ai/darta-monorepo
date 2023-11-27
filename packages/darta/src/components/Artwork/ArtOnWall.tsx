@@ -1,8 +1,6 @@
 import React, {useCallback, useContext, useRef, useState} from 'react';
 import {
   ActivityIndicator,
-  ImageBackground,
-  ImageSourcePropType,
   ScrollView,
   StyleSheet,
   Animated,
@@ -24,17 +22,44 @@ import { Onboard } from '../Darta/Onboard';
 import { Surface } from 'react-native-paper';
 import * as Colors from '@darta-styles'
 import { LinearGradient } from 'expo-linear-gradient';
+import { SkeletonLoader } from '../Darta/SkeletonLoader';
+
+const galleryStylesPortrait = StyleSheet.create({
+  container: {
+    zIndex: 0,
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scrollViewStyles: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  frameStyle: {
+    backgroundColor: 'transparent',
+    width: '100%',
+    height: '100%',
+    position: 'absolute', // This ensures the artContainer is positioned relative to its first positioned (not static) ancestor element
+  },
+});
+
+interface ArtDimensions {
+  artImageSize: { height: number; width: number; } | null;
+  artImageLocation: { top: number; left: number; } | null;
+  artHeightPixels: number;
+  artWidthPixels: number;
+}
 
 export function ArtOnWall({
   artworkDimensions,
   artOnDisplay,
   artImage,
-  backgroundImage,
   backgroundImageDimensionsPixels,
   currentZoomScale,
   isPortrait,
   opacityAnimatedValue,
-  wallHeight,
+  wallHeight = 96,
   rateArtwork,
   setCurrentZoomScale,
   toggleArtForward,
@@ -43,13 +68,12 @@ export function ArtOnWall({
 }: {
   artOnDisplay: Artwork;
   artImage: string | undefined;
-  backgroundImage: ImageSourcePropType;
   backgroundImageDimensionsPixels: any;
   currentZoomScale: number;
   artworkDimensions: Artwork['artworkDimensions'] | undefined;
   isPortrait: boolean;
   opacityAnimatedValue: any;
-  wallHeight: number;
+  wallHeight?: number;
   rateArtwork: (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => void;
   setCurrentZoomScale: (arg0: number) => void;
   toggleArtForward: () => void;
@@ -66,18 +90,6 @@ export function ArtOnWall({
     swipeUp = 'swipeUp',
     swipeDown = 'swipeDown',
   }
-
-  React.useEffect(() => {
-    const setSaw = async () => {
-      try{
-        if (artOnDisplay?._id) {
-          createArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.VIEWED})
-        }
-      } catch(err: any){
-      }
-    }
-    setSaw()
-  }, [artOnDisplay])
 
   const handleArtRatingGesture = useCallback(
     async (gesture: ArtRatingGesture) => {
@@ -160,44 +172,79 @@ export function ArtOnWall({
     [state, ArtRatingGesture.swipeUp, ArtRatingGesture.swipeDown, rateArtwork],
   );
 
-  const dimensionsMultiplierPortrait =
-    backgroundImageDimensionsPixels.width /
-    backgroundImageDimensionsPixels.height;
+  const [artDimensions, setArtDimensions] = React.useState<ArtDimensions>({
+    artImageSize: null,
+    artImageLocation: null,
+    artHeightPixels: 0,
+    artWidthPixels: 0,
+  });
 
-  const backgroundHeightInches = wallHeight;
+  const getDimensions = React.useCallback(() => {
+    const dimensionsMultiplierPortrait =
+      backgroundImageDimensionsPixels.width /
+      backgroundImageDimensionsPixels.height;
 
-  const backgroundWidthInches = wallHeight * dimensionsMultiplierPortrait;
+    const backgroundWidthInches = wallHeight * dimensionsMultiplierPortrait;
 
-  let artHeightInches;
-  let artWidthInches;
-  let artImageSize;
-  let artImageLocation;
-  let artHeightPixels = 0;
-  let artWidthPixels = 0;
-  if (artworkDimensions && artworkDimensions.heightIn.value && artworkDimensions.widthIn.value) {
-    artHeightInches = parseInt(artworkDimensions.heightIn.value);
-    artWidthInches = parseInt(artworkDimensions.widthIn.value);
+    let artHeightInches, artWidthInches, artImageSize, artImageLocation, artHeightPixels, artWidthPixels;
 
-    const pixelsPerInchHeight =
-      backgroundImageDimensionsPixels.height / backgroundHeightInches;
-    const pixelsPerInchWidth =
-      backgroundImageDimensionsPixels.width / backgroundWidthInches;
+    if (artworkDimensions && artworkDimensions.heightIn.value && artworkDimensions.widthIn.value) {
+      artHeightInches = parseInt(artworkDimensions.heightIn.value);
+      artWidthInches = parseInt(artworkDimensions.widthIn.value);
 
-    artImageSize = {
-      height: artHeightInches * pixelsPerInchHeight,
-      width: artWidthInches * pixelsPerInchWidth,
-    };
+      const pixelsPerInchHeight =
+        backgroundImageDimensionsPixels.height / wallHeight;
+      const pixelsPerInchWidth =
+        backgroundImageDimensionsPixels.width / backgroundWidthInches;
 
-    artHeightPixels = artHeightInches * pixelsPerInchHeight;
-    artWidthPixels = artWidthInches * pixelsPerInchWidth;
+      artHeightPixels = artHeightInches * pixelsPerInchHeight;
+      artWidthPixels = artWidthInches * pixelsPerInchWidth;
 
-    artImageLocation = {
-      top:
-        0.45 * backgroundImageDimensionsPixels.height - 0.5 * artHeightPixels,
-      left:
-        0.5 * backgroundImageDimensionsPixels.width - 0.5 * artWidthPixels,
-    };
+      artImageSize = {
+        height: artHeightPixels,
+        width: artWidthPixels,
+      };
+
+      artImageLocation = {
+        top: 0.45 * backgroundImageDimensionsPixels.height - 0.5 * artHeightPixels,
+        left: 0.5 * backgroundImageDimensionsPixels.width - 0.5 * artWidthPixels,
+      };
+    }
+
+    return { artImageSize, artImageLocation, artHeightPixels, artWidthPixels };
+
+  }, [artworkDimensions, backgroundImageDimensionsPixels, wallHeight]);
+
+  React.useEffect(() => {
+    
+    const { artImageSize, artImageLocation, artHeightPixels, artWidthPixels } = getDimensions();
+    setArtDimensions({ artImageSize, artImageLocation, artHeightPixels, artWidthPixels });
+
+    const setSaw = async () => {
+      try{
+        if (artOnDisplay?._id) {
+          createArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.VIEWED})
+        }
+      } catch(err: any){
+      }
+    }
+    setSaw()
+  }, [artOnDisplay]);
+
+  React.useEffect(() => {
+    const { artImageSize, artImageLocation, artHeightPixels, artWidthPixels } = getDimensions();
+    setArtDimensions({ artImageSize, artImageLocation, artHeightPixels, artWidthPixels });
+  }, [state.isPortrait])
+
+
+  const handleToggleArtForward = () => {
+    toggleArtForward();
   }
+
+  const handleToggleArtBackwards = () => {
+    toggleArtBackward();
+  }
+
 
   const handleDoubleTap = () => {
     if (isPanActionEnabled) {
@@ -234,7 +281,7 @@ export function ArtOnWall({
         return;
       }
       state.isPortrait
-        ? runOnJS(toggleArtBackward)()
+        ? runOnJS(handleToggleArtBackwards)()
         : runOnJS(handleArtRatingGesture)(ArtRatingGesture.swipeUp);
     });
 
@@ -246,7 +293,7 @@ export function ArtOnWall({
       }
 
       state.isPortrait
-        ? runOnJS(toggleArtForward)()
+        ? runOnJS(handleToggleArtForward)()
         : runOnJS(handleArtRatingGesture)(ArtRatingGesture.swipeDown);
     });
 
@@ -258,7 +305,7 @@ export function ArtOnWall({
       }
 
       if (!state.isPortrait){
-        runOnJS(toggleArtBackward)();
+        runOnJS(handleToggleArtBackwards)();
       } else {
         return
       }
@@ -272,16 +319,29 @@ export function ArtOnWall({
       }
 
       if (!state.isPortrait){
-        runOnJS(toggleArtForward)();
+        runOnJS(handleToggleArtForward)();
       } else {
         return
       }
     });
 
+    const [isLoaded, setIsLoading] = useState<boolean>(false);
+
+    const imageOpacity = React.useRef(new Animated.Value(0)).current;
+  
+    const handleImageLoad = () => {
+      setIsLoading(true);
+      Animated.timing(imageOpacity, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start();
+    };
+
   const doubleTapGesture = Gesture.Tap()
     .numberOfTaps(2)
     .maxDistance(9)
-    .onEnd((event, success) => {
+    .onEnd((_, success) => {
       'worklet';
 
       if (success) {
@@ -297,59 +357,30 @@ export function ArtOnWall({
     panGestureDown,
   );
 
-  const galleryStylesPortrait = StyleSheet.create({
-    container: {
-      zIndex: 0,
-      height: '100%',
-      width: '100%',
-      justifyContent: 'center',
-      alignItems: 'center',
+  const galleryStylesPortraitDynamic = StyleSheet.create({
+    artContainer: {
+      top: artDimensions.artImageLocation?.top,
+      left: artDimensions.artImageLocation?.left,
+      height: artDimensions.artImageSize?.height,
+      width: artDimensions.artImageSize?.width,
     },
-    scrollViewStyles: {
-      flexGrow: 1,
+    artwork: {
+      height: artDimensions.artImageSize?.height,
+      width: artDimensions.artImageSize?.width,
+      resizeMode: 'contain',
+      shadowColor: Colors.PRIMARY_300, // Shadow color should generally be black for realistic shadows
+      shadowOffset: { width: 0, height: 4.29 }, // Adjust the height for the depth of the shadow
+      shadowOpacity: 1,
+      shadowRadius: 4.29, // A larger shadow
+    },
+    activityIndicator: {
+      top: isPortrait ? hp('35%') : hp('20%'),
       justifyContent: 'center',
     },
     screenContainer: {
       width: backgroundImageDimensionsPixels.width,
       height: hp('100%'),
     },
-    artContainer: {
-      top: artImageLocation?.top,
-      left: artImageLocation?.left,
-      height: artImageSize?.height,
-      width: artImageSize?.width,
-    },
-    frameStyle: {
-      backgroundColor: 'transparent',
-      width: '100%',
-      height: '100%',
-      // backgroundColor: Colors.PRIMARY_100,
-      // paddingBottom: 0.3,
-      // paddingLeft: 0.3,
-      position: 'absolute', // This ensures the artContainer is positioned relative to its first positioned (not static) ancestor element
-      // shadowColor: "#000", // Shadow color should generally be black for realistic shadows
-      // shadowOffset: { width: 0, height: 3 }, // Adjust the height for the depth of the shadow
-      // shadowOpacity: 0.25, // A subtle shadow usually looks more natural
-      // shadowRadius: 5, // A larger shadow
-      // backgroundColor: 'none',
-    },
-    artwork: {
-      height: artImageSize?.height,
-      width: artImageSize?.width,
-      resizeMode: 'contain',
-    },
-    activityIndicator: {
-      top: isPortrait ? hp('35%') : hp('20%'),
-      justifyContent: 'center',
-    },
-    surface :{
-      shadowColor: Colors.PRIMARY_300, // Shadow color should generally be black for realistic shadows
-      shadowOffset: { width: 0, height: 4.29 }, // Adjust the height for the depth of the shadow
-      shadowOpacity: 0.5,
-      shadowRadius: 4.29, // A larger shadow
-      backgroundColor: 'transparent', 
-      elevation: 1
-    }
   });
 
   return (
@@ -376,37 +407,32 @@ export function ArtOnWall({
         removeClippedSubviews
         snapToAlignment="center">
         <GestureDetector gesture={doubleTapGesture}>
-          {/* <ImageBackground source={backgroundImage}> */}
           <LinearGradient colors={[Colors.PRIMARY_50, Colors.PRIMARY_100, Colors.PRIMARY_200]}>
             <Onboard />
-              <View style={galleryStylesPortrait.screenContainer}>
-                <View style={galleryStylesPortrait.artContainer}>
-                
+              <View style={galleryStylesPortraitDynamic.screenContainer}>
+                <View style={galleryStylesPortraitDynamic.artContainer}>
                   <View style={galleryStylesPortrait.frameStyle}>
-                    {artImage ? (
-                      <>
-                      <Animated.View style={{opacity: opacityAnimatedValue}}>
-                        <Surface style={galleryStylesPortrait.surface}>
-                          <Pressable onPress={toggleArtTombstone}>
-                            <FastImage
-                              source={{uri: artImage, priority: FastImage.priority.normal}}
-                              style={galleryStylesPortrait.artwork}
-                              resizeMode={FastImage.resizeMode.contain}
-                            />
-                          </Pressable>
-                        </Surface>
-                      </Animated.View>
-                    </>
-                        ) : (
-                          <ActivityIndicator
-                          style={galleryStylesPortrait.activityIndicator}
-                          />
-                          )}
+                    {artImage && (
+                      <Pressable onPress={toggleArtTombstone}>
+                        <Surface style={{backgroundColor:"transparent"}}>
+                          <Animated.View style={{opacity: opacityAnimatedValue}}>
+                            <Animated.View style={{opacity: imageOpacity}}>
+                              <FastImage
+                                source={{uri: artImage, priority: FastImage.priority.normal}}
+                                style={galleryStylesPortraitDynamic.artwork}
+                                resizeMode={FastImage.resizeMode.contain}
+                                onLoad={handleImageLoad}
+                              />
+                            </Animated.View>
+                            {!isLoaded && (<SkeletonLoader height={galleryStylesPortraitDynamic.artwork.height} width={galleryStylesPortraitDynamic.artwork.width} />)}
+                          </Animated.View>
+                          </Surface>
+                        </Pressable>
+                    )} 
                   </View>
                 </View>
               </View>
             </LinearGradient>
-          {/* </ImageBackground> */}
         </GestureDetector>
       </ScrollView>
     </GestureDetector>

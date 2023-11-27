@@ -158,6 +158,12 @@ export type Artwork = {
     _id?: string;
     artworkStyleTags?: string[];
     artworkVisualTags?: string[];
+    editionStatus?: {
+        value: "Original" | "Edition";
+    };
+    editionSize?: {
+        value: number;
+    };
 };
 export type ExhibitionDates = {
     exhibitionStartDate: DateFields;

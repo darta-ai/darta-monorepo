@@ -14,7 +14,6 @@ import {
   deleteExhibitionArtwork,
   editArtworkAPI,
   listArtworkInquiresAPI,
-  removeArtworkFromExhibition,
 } from '../../API/artworks/artworkRoutes';
 // import authRequired from 'common/AuthRequired/AuthRequired';
 import {
@@ -131,30 +130,6 @@ export function GalleryArtwork() {
       } else {
         throw new Error('unable to edit artwork');
       }
-    } catch (error) {
-      setErrorAlertOpen(true);
-    }
-    return Promise.resolve(false);
-  };
-
-  const handleRemoveArtworkFromExhibition = async ({
-    exhibitionId,
-    artworkId,
-  }: {
-    exhibitionId: string;
-    artworkId: string;
-  }): Promise<boolean> => {
-    try {
-      const results = await removeArtworkFromExhibition({
-        exhibitionId,
-        artworkId,
-      });
-      dispatch({
-        type: GalleryReducerActions.SAVE_EXHIBITION,
-        payload: results,
-        exhibitionId,
-      });
-      return Promise.resolve(true);
     } catch (error) {
       setErrorAlertOpen(true);
     }
@@ -409,9 +384,6 @@ export function GalleryArtwork() {
                               inquiries[artwork?._id!] ??
                               ([] as InquiryArtworkData[])
                             }
-                            handleRemoveArtworkFromExhibition={
-                              handleRemoveArtworkFromExhibition
-                            }
                             handleDeleteArtworkFromDarta={
                               handleDeleteArtworkFromDarta
                             }
@@ -431,9 +403,6 @@ export function GalleryArtwork() {
                   croppingModalOpen={croppingModalOpen}
                   setCroppingModalOpen={setCroppingModalOpen}
                   inquiries={[] as InquiryArtworkData[]}
-                  handleRemoveArtworkFromExhibition={() =>
-                    Promise.resolve(true)
-                  }
                   handleDeleteArtworkFromDarta={() => Promise.resolve(true)}
                 />
               </Box>

@@ -57,11 +57,11 @@ export enum RootStackEnum {
 
 export enum ExhibitionRootEnum {
   exhibitionHome = 'EXHIBITION_HOME',
-  exhibitionDetails = 'exhibition',
-  artworkList = 'artwork',
-  individualArtwork = 'individualArtwork',
-  exhibitionGallery = 'gallery',
-  showGallery = 'showGallery',
+  exhibitionDetails = 'EXHIBITION_HOME_exhibition',
+  artworkList = 'EXHIBITION_HOME_artwork_list',
+  individualArtwork = 'EXHIBITION_HOME_individualArtwork',
+  exhibitionGallery = 'EXHIBITION_HOME_gallery',
+  showGallery = 'EXHIBITION_HOME_showGallery',
   TopTab = 'EXHIBITION_TOP_TAB',
   qrRouter = 'QR_ROUTER',
   genericLoading= 'GENERIC_LOADING',
@@ -69,9 +69,9 @@ export enum ExhibitionRootEnum {
 
 
 export enum ExhibitionPreviewEnum {
-  onView = 'on view',
-  forthcoming = 'forthcoming',
-  following = 'following',
+  onView = 'EXHIBITION_PREVIEW_ON_VIEW',
+  forthcoming = 'EXHIBITION_PREVIEW_FORTHCOMING',
+  following = 'EXHIBITION_PREVIEW_FOLLOWING',
 }
 
 

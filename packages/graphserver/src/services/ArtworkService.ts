@@ -582,10 +582,11 @@ export class ArtworkService implements IArtworkService {
     });
 
     if (artwork.exhibitionId) {
-      edgesToDelete.push({
+      await this.edgeService.deleteEdge({
         edgeName: EdgeNames.FROMCollectionTOArtwork,
         from: artwork.exhibitionId.includes(CollectionNames.Exhibitions) ? 
-          artwork.exhibitionId : `${CollectionNames.Exhibitions}/${artwork.exhibitionId}`,
+        artwork.exhibitionId : `${CollectionNames.Exhibitions}/${artwork.exhibitionId}`,
+        to: key,
       });
     }
 

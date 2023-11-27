@@ -32,7 +32,7 @@ const dartaListDisplay = {
     width: '5vw',
   },
   displayComponentShowMobile: {
-    width: '12vw',
+    width: '18vw',
     fontSize: '0.8rem',
     '@media (min-width: 1280px)': {
       width: '6vw',
@@ -60,7 +60,6 @@ function DartaListArtwork({
   swapExhibitionOrder,
   saveArtwork,
   handleDeleteArtworkFromDarta,
-  handleRemoveArtworkFromExhibition,
 }: {
   artwork: Artwork;
   arrayLength: number;
@@ -77,13 +76,6 @@ function DartaListArtwork({
   }) => void;
   saveArtwork: (arg1: Artwork) => Promise<boolean>;
   handleDeleteArtworkFromDarta: ({
-    exhibitionId,
-    artworkId,
-  }: {
-    exhibitionId: string;
-    artworkId: string;
-  }) => Promise<boolean>;
-  handleRemoveArtworkFromExhibition: ({
     exhibitionId,
     artworkId,
   }: {
@@ -230,9 +222,6 @@ function DartaListArtwork({
             saveSpinner={saveSpinner}
             deleteSpinner={deleteSpinner}
             handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
-            handleRemoveArtworkFromExhibition={
-              handleRemoveArtworkFromExhibition
-            }
           />
         </Box>
       </Collapse>
@@ -251,7 +240,6 @@ export function ExhibitionArtworkList({
   swapExhibitionOrder,
   saveArtwork,
   handleDeleteArtworkFromDarta,
-  handleRemoveArtworkFromExhibition,
 }: {
   artworks: any;
   saveSpinner: boolean;
@@ -266,13 +254,6 @@ export function ExhibitionArtworkList({
   }) => void;
   saveArtwork: (arg1: Artwork) => Promise<boolean>;
   handleDeleteArtworkFromDarta: ({
-    exhibitionId,
-    artworkId,
-  }: {
-    exhibitionId: string;
-    artworkId: string;
-  }) => Promise<boolean>;
-  handleRemoveArtworkFromExhibition: ({
     exhibitionId,
     artworkId,
   }: {
@@ -313,9 +294,6 @@ export function ExhibitionArtworkList({
             saveSpinner={saveSpinner}
             deleteSpinner={deleteSpinner}
             handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
-            handleRemoveArtworkFromExhibition={
-              handleRemoveArtworkFromExhibition
-            }
           />
         </Box>
       ))}

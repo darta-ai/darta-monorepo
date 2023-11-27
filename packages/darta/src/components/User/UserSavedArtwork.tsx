@@ -11,6 +11,7 @@ import { RefreshControl, ScrollView } from 'react-native';
 import * as Colors from '@darta-styles';
 import { UserRoutesEnum } from '../../typing/routes';
 import { dartaLogo } from './UserInquiredArtwork';
+import FastImage from 'react-native-fast-image';
 
 export function UserSavedArtwork({navigation}: {navigation: any}) {
   const {state, dispatch} = React.useContext(StoreContext);
@@ -18,29 +19,30 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
   const errorMessageText = "when you save artwork, it will appear here"
 
 
-  const [oddArtwork, setOddsArtwork] = React.useState<Artwork[] | null>(null)
-  const [evenArtwork, setEvensArtwork] = React.useState<Artwork[] | null>(null)
+  const [artworkData, setArtworkData] = React.useState<Artwork[] | null>(null)
   const [getStartedText, setGetStartedText] = React.useState<string | null>(errorMessageText)
 
   React.useEffect(() => {
     const savedArtwork = state.userSavedArtwork;
     if (savedArtwork){
-      const odds: Artwork[] = [];
-      const evens: Artwork[] = [];
+      type ImageUrlObject = { uri: string };
+      const imageUrlsToPrefetch: ImageUrlObject[] = [];
+      const data: Artwork[] = [];
       Object.keys(savedArtwork as any)
       .filter(key => savedArtwork[key])
       .filter((artworkId) => state.artworkData && state.artworkData[artworkId])
-      .map((el, index) => {
-        if (index % 2 !== 0 && state.artworkData && state.artworkData[el]){
-          odds.push(state.artworkData[el])
-        }else if (state.artworkData && state.artworkData[el]){
-          evens.push(state.artworkData[el])
+      .forEach((artwork: any) => {
+        if (!state.artworkData) return
+        const fullArtwork = state?.artworkData[artwork]
+        if (fullArtwork.artworkImage?.value){
+          imageUrlsToPrefetch.push({uri: fullArtwork.artworkImage.value})
         }
+        data.push(fullArtwork)
       })
-      setOddsArtwork(odds)
-      setEvensArtwork(evens)
-      
-      if (evens.length !== 0){
+      FastImage.preload(imageUrlsToPrefetch)
+      setArtworkData(data)
+
+      if (data.length !== 0){
         setGetStartedText(null)
       }
     }else {
@@ -106,8 +108,7 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
         <ArtworkList 
         refreshing={refreshing}
         onRefresh={onRefresh}
-        evenArtwork={evenArtwork as Artwork[]}
-        oddArtwork={oddArtwork as Artwork[]}
+        artworkData={artworkData as Artwork[]}
         navigation={navigation}
         navigateTo={UserRoutesEnum.UserGalleryAndArtwork}
         navigateToParams={UserRoutesEnum.UserPastTopTabNavigator}

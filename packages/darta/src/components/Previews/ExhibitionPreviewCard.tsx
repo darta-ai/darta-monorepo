@@ -28,13 +28,14 @@ const exhibitionPreviewStyle = StyleSheet.create({
     borderColor: Colors.PRIMARY_400,
     backgroundColor: Colors.PRIMARY_50,
     padding: 24,
+    height: 590,
     gap: 16,
   },
   galleryIconContainer: {   
     width: '100%',
   },
   imagePreviewContainer: {
-    height: 345,
+    height: "55%",
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -42,40 +43,6 @@ const exhibitionPreviewStyle = StyleSheet.create({
   touchableContainer: {
     width: '100%',
     textAlign: 'left',
-  },
-  textContainer:{
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-
-    alignContent: 'flex-start',
-  },
-  infoButtonContainer:{
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',           
-    height: "100%",
-    width: '10%',
-  },
-  heroImageContainer: {
-    height: '70%',
-    display:'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  heroImage: {
-    height: '100%',
-    resizeMode: 'contain',
-  },
-  seeMoreContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',           
-    height: "5%",
-
-    backgroundColor: Colors.PRIMARY_950,
   },
   buttonStyles: {
     width: wp('90%'),
@@ -91,6 +58,33 @@ const exhibitionPreviewStyle = StyleSheet.create({
   buttonTextColor: {
     color: Colors.PRIMARY_50,
     fontFamily: "DMSans_700Bold",
+  }, 
+  headerText: {
+    fontFamily:"DMSans_700Bold", 
+    color: Colors.PRIMARY_950, 
+    fontSize: 24
+  },
+  datesText: {
+    fontFamily:"DMSans_700Bold",  
+    marginTop: 2, 
+    color: Colors.PRIMARY_950, 
+    fontSize: 16
+  }, 
+  artistText: {
+    marginTop: 8, 
+    color: Colors.PRIMARY_900, 
+    fontSize: 16, 
+    fontFamily: "DMSans_400Regular"
+  },
+  galleryText: {
+    fontFamily: "DMSans_400Regular", 
+    color: Colors.PRIMARY_950,
+    fontSize: 16
+  }, 
+  addressText: {
+    fontFamily: "DMSans_400Regular", 
+    color: Colors.PRIMARY_400, 
+    fontSize: 16
   }
 })
 
@@ -123,23 +117,23 @@ const ExhibitionPreviewCard = ({
           <View style={exhibitionPreviewStyle.galleryIconContainer} >
             <Pressable style={exhibitionPreviewStyle.galleryIconContainer} onPress={() => onPressExhibition({exhibitionId: exhibitionPreview?.exhibitionId, galleryId: exhibitionPreview?.galleryId}) }>
               <TextElement
-                style={{fontFamily:"DMSans_700Bold", color: Colors.PRIMARY_950, fontSize: 24}}>
-                {exhibitionPreview.exhibitionTitle.value} 
+                style={ exhibitionPreviewStyle.headerText}>
+                {exhibitionPreview?.exhibitionTitle?.value ? exhibitionPreview.exhibitionTitle.value.trim() : exhibitionPreview?.galleryName}
               </TextElement>
             </Pressable>
             {exhibitionPreview?.closingDate?.value &&  
               exhibitionPreview?.openingDate?.value && 
               (
                 <TextElement
-                  style={{fontFamily:"DMSans_700Bold",  marginTop: 2, color: Colors.PRIMARY_950, fontSize: 16}}>
+                  style={ exhibitionPreviewStyle.datesText }>
                   {exhibitionPreview.openingDate?.value ? customLocalDateStringStart({date: new Date(exhibitionPreview.openingDate?.value), isUpperCase: true}).trimStart() : "Opening unavailable"}
                   {" - "}
                   {exhibitionPreview.closingDate?.value ? customLocalDateStringEnd({date: new Date(exhibitionPreview.closingDate?.value), isUpperCase: true}) : "Closing unavailable"}
                 </TextElement>
               )}
               <TextElement
-                style={{marginTop: 8, color: Colors.PRIMARY_900, fontSize: 16, fontFamily: "DMSans_400Regular"}}>
-                  {exhibitionPreview?.exhibitionArtist?.value ? exhibitionPreview?.exhibitionArtist?.value : "Group Show"}
+                style={exhibitionPreviewStyle.artistText}>
+                  {exhibitionPreview?.exhibitionArtist?.value ? exhibitionPreview.exhibitionArtist.value?.trim() : "Group Show"}
                 </TextElement>
           
           </View>
@@ -148,15 +142,15 @@ const ExhibitionPreviewCard = ({
           </View>
             <View style={exhibitionPreviewStyle.touchableContainer}>
               <Pressable onPress={() => onPressGallery({galleryId: exhibitionPreview.galleryId})}>
-                  <TextElement style={{fontFamily: "DMSans_400Regular", color: Colors.PRIMARY_950, fontSize: 16}}>{exhibitionPreview?.galleryName.value?.trim()}</TextElement>
+                  <TextElement style={exhibitionPreviewStyle.galleryText}>{exhibitionPreview?.galleryName.value?.trim()}</TextElement>
                 </Pressable>
                 <View>
                   <TextElement
-                    style={{ fontFamily: "DMSans_400Regular", color: Colors.PRIMARY_400, fontSize: 16}}>
+                    style={exhibitionPreviewStyle.addressText}>
                     {simplifyAddressMailing(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString.value)}
                   </TextElement>
                   <TextElement
-                    style={{fontFamily: "DMSans_400Regular" ,color: Colors.PRIMARY_400, fontSize: 16}}>
+                    style={exhibitionPreviewStyle.addressText}>
                     {simplifyAddressCity(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString.value)}
                   </TextElement>
                 </View>

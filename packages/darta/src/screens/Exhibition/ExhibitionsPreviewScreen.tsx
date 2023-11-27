@@ -1,6 +1,6 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext} from 'react';
-import { RefreshControl, FlatList, ScrollView, Image} from 'react-native';
+import { RefreshControl, FlatList, ScrollView, Image, View} from 'react-native';
 import {
   ExhibitionNavigatorParamList,
   ExhibitionPreviewEnum,
@@ -11,6 +11,7 @@ import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, list
 
 import {
   heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
 
@@ -19,6 +20,8 @@ import ExhibitionPreviewCard from '../../components/Previews/ExhibitionPreviewCa
 import * as Colors from '@darta-styles';
 import { TextElement } from '../../components/Elements/TextElement';
 import { dartaLogo } from '../../components/User/UserInquiredArtwork';
+import { ActivityIndicator } from 'react-native-paper';
+import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
 
 
 type ExhibitionHomeScreenNavigationProp = StackNavigationProp<
@@ -35,12 +38,12 @@ export function ExhibitionPreviewScreen({
 }) {
   const {state, dispatch} = useContext(StoreContext);
   const [exhibitionPreviews, setExhibitionPreviews] = React.useState<ExhibitionPreview[]>([])
-  const [numberOfPreviews, setNumberOfPreviews] = React.useState<number>(0)
   const [errorText, setErrorText] = React.useState<string>("")
   
   const sortPreviews = (exhibitionPreviews: ExhibitionPreview[]) => {
     return exhibitionPreviews.sort((a, b) => {
-      return a.closingDate >= b.closingDate ? 1 : -1
+      if (!a.openingDate?.value || !b.openingDate?.value) return 0
+      return b.openingDate?.value >= a.openingDate?.value ? 1 : -1
     })
   }
 
@@ -63,15 +66,16 @@ export function ExhibitionPreviewScreen({
   }
 
 
-  
-  React.useEffect(()=> {
+  const setExhibitionPreviewsState = () : ExhibitionPreview[] | [] => {
     const previews = determineExhibitionPreviews()
     if (previews) {
       const exhibitionPreviewsOpen: ExhibitionPreview[] = []
       const exhibitionPreviewsClosed: ExhibitionPreview[] = []
 
-      for (const preview of Object.values(previews)) {
-        if (preview.exhibitionDuration.value && preview.exhibitionDuration.value === "Ongoing/Indefinite"){
+      const statePreviews = previews ? Object.values(previews) : []
+
+      for (const preview of statePreviews) {
+        if (preview?.exhibitionDuration?.value && preview.exhibitionDuration.value === "Ongoing/Indefinite"){
           break
         }
         else if (preview?.closingDate?.value && preview.closingDate.value >= new Date().toISOString()) {
@@ -84,10 +88,15 @@ export function ExhibitionPreviewScreen({
       sortPreviews(exhibitionPreviewsOpen)
       sortPreviews(exhibitionPreviewsClosed)
       
-      setExhibitionPreviews([...exhibitionPreviewsOpen, ...exhibitionPreviewsClosed])
-      setNumberOfPreviews(Object.values(exhibitionPreviews).length)  
+      return [...exhibitionPreviewsOpen, ...exhibitionPreviewsClosed]
     }
-  }, [state.userFollowsExhibitionPreviews, state.exhibitionPreviews, state.forthcomingExhibitionPreviews])
+    return []
+  }
+  
+  React.useEffect(()=> {
+    const previews = setExhibitionPreviewsState()
+    setExhibitionPreviews(previews)
+  }, [state.userFollowsExhibitionPreviews, state.forthcomingExhibitionPreviews, state.currentExhibitionPreviews])
 
   const [refreshing, setRefreshing] = React.useState(false);
   const [bottomLoad, setBottomLoad] = React.useState(false);
@@ -121,6 +130,7 @@ export function ExhibitionPreviewScreen({
   }, []);
 
   const onBottomLoad = React.useCallback(async () => {
+    console.log('bottom loaded')
     setBottomLoad(true);
     try{
       const screenName = route.name
@@ -131,30 +141,39 @@ export function ExhibitionPreviewScreen({
             numberOfPreviews = Object.values(state.userFollowsExhibitionPreviews).length
           }
           const userFollowingExhibitionPreviews = await listExhibitionPreviewUserFollowing({ limit: numberOfPreviews + 10 })
-          dispatch({type: ETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
+          if(Object.keys(userFollowingExhibitionPreviews).length > numberOfPreviews){
+            dispatch({type: ETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
+          }
+          break;
         case ExhibitionPreviewEnum.onView:
           if(state.currentExhibitionPreviews){
             numberOfPreviews = Object.values(state.currentExhibitionPreviews).length
+          } 
+          const exhibitionPreviewsCurrent = await listExhibitionPreviewsCurrent({ limit: numberOfPreviews + 10 })
+          if(Object.keys(exhibitionPreviewsCurrent).length > numberOfPreviews){
+            dispatch({type: ETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
           }
-          const exhibitionPreviewsForthcoming = await listExhibitionPreviewsForthcoming({ limit: numberOfPreviews + 10 })
-          dispatch({type: ETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
+          break;
         case ExhibitionPreviewEnum.forthcoming:
           if(state.forthcomingExhibitionPreviews){
             numberOfPreviews = Object.values(state.forthcomingExhibitionPreviews).length
           }
-          const exhibitionPreviewsCurrent = await listExhibitionPreviewsCurrent({ limit: numberOfPreviews + 10 })
-          dispatch({type: ETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
+          const exhibitionPreviewsForthcoming = await listExhibitionPreviewsForthcoming({ limit: numberOfPreviews + 10 })
+          if(Object.keys(exhibitionPreviewsForthcoming).length > numberOfPreviews){
+            dispatch({type: ETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
+          }
+          break
         default:
           setTimeout(() => {
             setRefreshing(false);
           }, 500)
+          break;
         }
+        setBottomLoad(false);
     } catch {
       setBottomLoad(false);
-    } finally {
-      setBottomLoad(false);
-    }
-  }, []);
+    } 
+  }, [state.forthcomingExhibitionPreviews, state.currentExhibitionPreviews, state.userFollowsExhibitionPreviews]);
 
 
   const loadExhibition = React.useCallback(async ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => {
@@ -169,7 +188,6 @@ export function ExhibitionPreviewScreen({
         if (!exhibitionId || !galleryId) return
         navigation.navigate(ExhibitionRootEnum.TopTab, {exhibitionId, galleryId, internalAppRoute: true});
     } catch(error: any) {
-      console.log(error)
     }
   }, [])
 
@@ -184,13 +202,45 @@ export function ExhibitionPreviewScreen({
         if (!galleryId) return
         navigation.navigate(ExhibitionRootEnum.showGallery, {galleryId});
     } catch(error: any) {
-      console.log(error)
     }
   }, [])
 
+  const renderItem = React.useCallback((_, data) => {
+    return (
+      <View key={data?.exhibitionId}>
+        <ExhibitionPreviewCard 
+        exhibitionPreview={data}
+        onPressExhibition={loadExhibition}
+        onPressGallery={loadGallery}
+      />
+    </View>
+    );
+  }, [loadExhibition, loadGallery]);
+
+
+  const layoutProvider = new LayoutProvider(
+    index => {
+      return 'NORMAL'; // If you have multiple types of items, you can differentiate here using the index
+    },
+    (_, dim) => {
+      dim.width = wp('100%');
+      dim.height = 600;
+    }
+  );
+
+  layoutProvider.shouldRefreshWithAnchoring = false;
+
+  const renderFooter = () => {
+    return bottomLoad ? (
+      <View style={{justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.PRIMARY_50 }}>
+        <ActivityIndicator size={"small"} color={Colors.PRIMARY_700}/>
+      </View>
+    ) : null;
+  };
+
   return (
     <>
-      {exhibitionPreviews.length === 0 ?  (
+      {exhibitionPreviews.length === 0 && (
         <ScrollView 
         style={{
           height: hp('40%'),
@@ -211,24 +261,29 @@ export function ExhibitionPreviewScreen({
           />
           <TextElement style={{margin: 5, color: Colors.PRIMARY_50}}>{errorText}</TextElement>
         </ScrollView>      
-        ) 
-      : 
-    (
-      <FlatList 
-      data={exhibitionPreviews}
-      keyExtractor={(item) => item.exhibitionId}
-      renderItem={({item}) => (
-        <ExhibitionPreviewCard 
-            exhibitionPreview={item}
-            onPressExhibition={loadExhibition}
-            onPressGallery={loadGallery}
-          />
         )}
-      refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}
-      onEndReachedThreshold={0.1}
-      onEndReached={onBottomLoad}
-      refreshing={bottomLoad}
-      />
+      {exhibitionPreviews.length > 0 && (
+        <View style={{flex: 1, backgroundColor: Colors.PRIMARY_50}}>
+          <RecyclerListView 
+          ref={(ref) => { this.flatListRef = ref }}
+          dataProvider={new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(exhibitionPreviews)}
+          layoutProvider={layoutProvider}
+          rowRenderer={renderItem}
+          scrollViewProps={{
+            refreshControl: (
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={Colors.PRIMARY_600}
+              />
+              )
+            }}
+          decelerationRate={0.5}
+          onEndReached={onBottomLoad}
+          onEndReachedThreshold={0.1}
+          renderFooter={renderFooter}
+          />
+        </View>
     )}
   </>
   );

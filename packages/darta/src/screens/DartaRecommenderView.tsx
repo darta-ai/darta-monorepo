@@ -1,25 +1,18 @@
 import React from 'react';
-import {Animated, ImageSourcePropType, StyleSheet, View } from 'react-native';
-import * as ScreenOrientation from 'expo-screen-orientation';
+import {Animated, StyleSheet, View } from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import { GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
 import * as Colors from '@darta-styles'
 import * as Haptics from 'expo-haptics';
 import { Snackbar, Surface } from 'react-native-paper';
 
-
-import {getButtonSizes} from '../utils/functions';
 import {
   IUserArtworkRated,
-  OpenStateEnum,
-  OrientationsEnum,
   RatingEnum,
 } from '../typing/types';
 import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
 import { ArtOnWall } from '../components/Artwork/ArtOnWall';
 import {
-  DEFAULT_GALLERY_IMAGE,
-  duration,
   galleryDimensionsLandscape,
   galleryDimensionsPortrait,
 } from '../utils/constants';
@@ -30,8 +23,58 @@ import {ETypes, StoreContext} from '../state/Store';
 import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI, listArtworksToRateStatelessRandomSamplingAPI } from '../utils/apiCalls';
 import { TextElement } from '../components/Elements/TextElement';
 import * as SVGs from '../assets/SVGs';
+import analytics from '@react-native-firebase/analytics';
 
-const galleryWallRaw = DEFAULT_GALLERY_IMAGE;
+const SSDartaGalleryView = StyleSheet.create({
+  interactionButtonsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  galleryViewContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  progressBarContainer: {
+    alignSelf: 'center',
+  },
+  interactionContainerPortrait: {
+    position: 'absolute',
+    alignSelf: 'center',
+    width: wp('100%'),
+    height: hp('6%'),
+    bottom: hp('0%'),
+    left: hp('0%'),
+  },
+  interactionContainerLandscape: {
+    position: 'absolute',
+    alignSelf: 'center',
+    height: wp('20%'),
+    bottom: hp('0%'),
+    width: wp('90%'),
+    left: hp('0%')
+  },
+  dislikeContainer: {
+    position: 'absolute',
+    alignSelf: 'center',
+    borderRadius: 50,
+    width: 72,
+    height: 72,
+    backgroundColor: Colors.PRIMARY_50,
+    top: hp('65%'),
+    left: 76,
+    display:'flex', 
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+  },
+  touchableContainer: {
+    borderRadius: 50, width: 72, height: 72, justifyContent: 'center', alignItems: 'center',
+  },
+});
 
 export function DartaRecommenderView({
   navigation,
@@ -40,160 +83,15 @@ export function DartaRecommenderView({
 }) {
   const {state, dispatch} = React.useContext(StoreContext);
   const [artOnDisplay, setArtOnDisplay] = React.useState<Artwork | undefined>();
-
-  React.useEffect(() => {
-    if (state.artworksToRate && state.artworksToRate[0]){
-      setArtOnDisplay(state.artworksToRate[0])
-    }
-  }, [])
-
-  // const [backgroundImage] = React.useState<ImageSourcePropType>(galleryWallRaw);
   const [currentZoomScale, setCurrentZoomScale] = React.useState<number>(1);
-
-
-  const [openNav, setOpenNav] = React.useState<boolean>(false);
-  const [openRatings, setOpenRatings] = React.useState<boolean>(false);
-  const [openOptions, setOpenOptions] = React.useState<boolean>(false);
-
   const fadeAnimNav = React.useRef(new Animated.Value(0)).current;
   const fadeAnimRating = React.useRef(new Animated.Value(0)).current;
   const fadeAnimOptions = React.useRef(new Animated.Value(0)).current;
 
 
-  React.useEffect(() => {
-    fadeAnimNav.addListener(() => {})
-    fadeAnimRating.addListener(() => {})
-    fadeAnimOptions.addListener(() => {})
-  }, [])
-
-
-  const openOrCloseContainer = (
-    openIdentifier: OpenStateEnum,
-    instructions?: boolean,
-  ) => {
-    switch (openIdentifier) {
-      case OpenStateEnum.openNav:
-        setOpenNav(instructions || !openNav);
-        break;
-      case OpenStateEnum.openRatings:
-        setOpenRatings(instructions || !openRatings);
-        break;
-      case OpenStateEnum.openOptions:
-        setOpenOptions(instructions || !openOptions);
-        break;
-      default:
-        break;
-    }
-  };
-
-  const whichFadeAnim = (
-    openIdentifier: OpenStateEnum,
-  ): {fadeAnim: Animated.Value; currentState: boolean} | null => {
-    switch (openIdentifier) {
-      case OpenStateEnum.openNav:
-        return {fadeAnim: fadeAnimNav, currentState: openNav};
-      case OpenStateEnum.openRatings:
-        return {fadeAnim: fadeAnimRating, currentState: openRatings};
-      case OpenStateEnum.openOptions:
-        return {fadeAnim: fadeAnimOptions, currentState: openOptions};
-      default:
-        return null;
-    }
-  };
-
-  const fadeButtons = (
-    openIdentifier: OpenStateEnum,
-    fadeAnim: Animated.Value,
-    currentState: boolean,
-    instructions?: boolean,
-  ) => {
-    openOrCloseContainer(openIdentifier, instructions);
-    let toValue;
-    if (instructions) {
-      toValue = instructions ? 1 : 0;
-    } else {
-      toValue = currentState ? 0 : 1;
-    }
-
-    Animated.timing(fadeAnim, {
-      toValue,
-      duration,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const toggleButtonView = (
-    openIdentifier: OpenStateEnum,
-    instructions?: boolean,
-  ) => {
-    const details = whichFadeAnim(openIdentifier);
-
-    if (details) {
-      const {fadeAnim, currentState} = details;
-      return fadeButtons(openIdentifier, fadeAnim, currentState, instructions);
-    }
-  };
-
-  const screenRotation = (orientation: string) => {
-    if (
-      (state.isPortrait &&
-        (orientation === OrientationsEnum.landscapeLeft ||
-          orientation === OrientationsEnum.landscapeRight)) ||
-      (!state.isPortrait &&
-        (orientation === OrientationsEnum.portrait ||
-          orientation === OrientationsEnum.portraitUp))
-    ) {
-      setCurrentZoomScale(1);
-      dispatch({
-        type: ETypes.setPortrait,
-      });
-    }
-  };
-
-  React.useEffect(() => {
-    // Function that gets called whenever the orientation changes
-    function handleOrientationChange(event: any) {
-      screenRotation(event.orientationInfo.orientation);
-      // You can handle the orientation change event here
-    }
-    const subscription = ScreenOrientation.addOrientationChangeListener(handleOrientationChange);
-    return () => {
-      ScreenOrientation.removeOrientationChangeListener(subscription);
-    };
-  }, []);
-
   const backgroundContainerDimensionsPixels = state.isPortrait
     ? {...galleryDimensionsPortrait}
     : {...galleryDimensionsLandscape};
-
-  const [wallHeight, setWallHeight] = React.useState<number>(96);
-
-
-  const checkAndSetWallHeight = ({artwork} : {artwork: Artwork}) => {
-    const artworkHeight = artwork.artworkDimensions?.heightIn;
-    let height = 80;
-
-    if(artwork.artworkDimensions.heightIn){
-      height = Number(artwork.artworkDimensions.heightIn.value)
-    }
-
-
-    
-    const tooTall = artworkHeight && height > 66;
-
-    if (tooTall){
-      setWallHeight((Math.ceil(height / 12) * 12) + 36)
-    } else{
-      setWallHeight(96)
-    }
-  }
-
-  React.useEffect(() => {
-    if (state.artworksToRate && state.artworkRatingIndex && state.artworksToRate[state.artworkRatingIndex]){
-      checkAndSetWallHeight({artwork: state.artworksToRate[state.artworkRatingIndex]})
-    }
-  }, [state.artworkRatingIndex])
-
 
   const [visible, setVisible] = React.useState(false);
 
@@ -289,18 +187,17 @@ export function DartaRecommenderView({
       const artwork = state.artworksToRate[currentIndex - 1];
       fadeOutAndIn(async () => {
         try{ 
-        // FastImage.preload([{uri : artwork.artworkImage?.value!}])
         dispatch({
           type: ETypes.setRatingIndex,
           artworkRatingIndex: currentIndex - 1,
         });
         setArtOnDisplay(artwork)
       } catch(error){
-        dispatch({
-          type: ETypes.setRatingIndex,
-          artworkRatingIndex: currentIndex - 2,
-        });
         if (state.artworksToRate && state.artworksToRate[currentIndex - 2]){
+          dispatch({
+            type: ETypes.setRatingIndex,
+            artworkRatingIndex: currentIndex - 2,
+          });
           setArtOnDisplay(state.artworksToRate[currentIndex - 2])
         } else {
           onToggleSnackBar()
@@ -340,22 +237,25 @@ export function DartaRecommenderView({
             artworkId: artOnDisplay?._id!,
           })
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+          analytics().logEvent('like_artwork')
           break;
         case (USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE):
           dispatch({
             type: ETypes.setUserDislikedArtwork,
             artworkId: artOnDisplay?._id!,
           })
+          analytics().logEvent('dislike_artwork')
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
           break;
         case (USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED):
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-            break;
+          break;
         case (USER_ARTWORK_EDGE_RELATIONSHIP.SAVE):
           dispatch({
             type: ETypes.setUserSavedArtwork,
             artworkId: artOnDisplay?._id!,
           })
+          analytics().logEvent('save_artwork')
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
           break;
         case (USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE):
@@ -363,6 +263,7 @@ export function DartaRecommenderView({
             type: ETypes.setUserInquiredArtwork,
             artworkId: artOnDisplay?._id!,
           })
+          analytics().logEvent('inquire_artwork')
           break;
         }
     } catch(error){
@@ -378,7 +279,7 @@ export function DartaRecommenderView({
     return artworkIds
   }
 
-  const SSDartaGalleryView = StyleSheet.create({
+  const SSDartaGalleryViewDynamic = StyleSheet.create({
     container: {
       backgroundColor: Colors.PRIMARY_50,
       justifyContent: state.isPortrait ? 'flex-start': 'center',
@@ -391,54 +292,6 @@ export function DartaRecommenderView({
       transform: state.isPortrait ? [{rotate: '0deg'}] : [{rotate: '90deg'}],
       backgroundColor: 'black',
     },
-    interactionButtonsContainer: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    galleryViewContainer: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-    },
-    progressBarContainer: {
-      alignSelf: 'center',
-    },
-    interactionContainerPortrait: {
-      position: 'absolute',
-      alignSelf: 'center',
-      width: wp('100%'),
-      height: hp('6%'),
-      bottom: hp('0%'),
-      left: hp('0%'),
-    },
-    interactionContainerLandscape: {
-      position: 'absolute',
-      alignSelf: 'center',
-      height: wp('20%'),
-      bottom: hp('0%'),
-      width: wp('90%'),
-      left: hp('0%')
-    },
-    dislikeContainer: {
-      position: 'absolute',
-      alignSelf: 'center',
-      borderRadius: 50,
-      width: 72,
-      height: 72,
-      backgroundColor: Colors.PRIMARY_50,
-      top: 500,
-      left: 76,
-      display:'flex', 
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      alignContent: 'center',
-    },
-    touchableContainer: {
-      borderRadius: 50, width: 72, height: 72, justifyContent: 'center', alignItems: 'center'
-    },
     likeContainer: {
       position: 'absolute',
       alignSelf: 'center',
@@ -446,7 +299,7 @@ export function DartaRecommenderView({
       width: 72,
       height: 72,
       backgroundColor: Colors.PRIMARY_50,
-      top: 500,
+      top: hp('65%'),
       right: 76,
       display:'flex', 
       flexDirection: 'row',
@@ -462,7 +315,7 @@ export function DartaRecommenderView({
       width: 48,
       height: 48,
       backgroundColor: Colors.PRIMARY_50,
-      top: 500 + 12,
+      top: hp('65%') + 12,
       left: wp('50%') - 24,
       display:'flex', 
       flexDirection: 'row',
@@ -476,15 +329,6 @@ export function DartaRecommenderView({
       opacity: 0.9,
       transform: state.isPortrait ? [{rotate: '0deg'}] : [{rotate: '90deg'}],
     },
-    textElement: {
-      fontFamily: 'DMSans_400',
-      color: wallHeight === 96 ? Colors.PRIMARY_500 : Colors.PRIMARY_900,
-      textAlign: 'center',
-      maxWidth: '100%', // Or another value you want
-      lineHeight: 20,   // Adjust based on your design
-      transform: state.isPortrait ? [{rotate: '0deg'}] : [{rotate: '90deg'}],
-
-    }
   });
 
 
@@ -580,11 +424,17 @@ export function DartaRecommenderView({
   const thumbsDownAnim = React.useRef(new Animated.Value(1)).current; 
 
   React.useEffect(() => {
+    if (state.artworksToRate && state.artworksToRate[0]){
+      setArtOnDisplay(state.artworksToRate[0])
+    }
+    fadeAnimNav.addListener(() => {})
+    fadeAnimRating.addListener(() => {})
+    fadeAnimOptions.addListener(() => {})
+
     wiggleAnim.addListener(() => {})
     thumbsUpAnim.addListener(() => {})
     thumbsDownAnim.addListener(() => {})
   }, [])
-
 
   
   const handleSavePress = async () => {
@@ -730,15 +580,14 @@ export function DartaRecommenderView({
   
   return (
     <GestureHandlerRootView>
-      <View style={SSDartaGalleryView.container}>
+      <View style={SSDartaGalleryViewDynamic.container}>
         <View
           style={[
             backgroundContainerDimensionsPixels,
-            SSDartaGalleryView.artOnDisplayContainer,
+            SSDartaGalleryViewDynamic.artOnDisplayContainer,
           ]}>
           <ArtOnWall
             artImage={artOnDisplay?.artworkImage?.value!}
-            backgroundImage={galleryWallRaw}
             backgroundImageDimensionsPixels={
               backgroundContainerDimensionsPixels
             }
@@ -746,7 +595,6 @@ export function DartaRecommenderView({
             currentZoomScale={currentZoomScale}
             artworkDimensions={artOnDisplay?.artworkDimensions}
             isPortrait={state.isPortrait}
-            wallHeight={wallHeight}
             opacityAnimatedValue={opacity}
             rateArtwork={rateArtwork}
             setCurrentZoomScale={setCurrentZoomScale}
@@ -757,21 +605,21 @@ export function DartaRecommenderView({
         </View>
           {state.isPortrait && (
             <>
-          <Surface style={SSDartaGalleryView.dislikeContainer}>
+          <Surface key={"dislikeButton"} style={SSDartaGalleryView.dislikeContainer} elevation={2}>
             <TouchableOpacity onPress={handleThumbsDownPress} style={SSDartaGalleryView.touchableContainer}>
               <Animated.View style={{ transform: [{ translateY: thumbsDownAnim }] }}>
                 {currentArtRating[RatingEnum.dislike] ?  <SVGs.ThumbsDownLargeFillIcon /> : <SVGs.ThumbsDownLargeIcon />}
               </Animated.View>
             </TouchableOpacity>
           </Surface>
-          <Surface style={SSDartaGalleryView.saveContainer}>
+          <Surface key={"saveButton"} style={SSDartaGalleryViewDynamic.saveContainer} elevation={2}>
             <TouchableOpacity onPress={handleSavePress}>
               <Animated.View style={{ transform: [{ rotate }] }}>
                 {currentArtRating[RatingEnum.save]  ?  <SVGs.SavedActiveIconLarge /> : <SVGs.SavedInactiveIcon />}
               </Animated.View>
             </TouchableOpacity>
           </Surface>
-          <Surface style={SSDartaGalleryView.likeContainer}>
+          <Surface key={"likeButton"} style={SSDartaGalleryViewDynamic.likeContainer} elevation={2}>
             <TouchableOpacity onPress={handleThumbsUpPress} style={SSDartaGalleryView.touchableContainer}>
               <Animated.View style={{ transform: [{ translateY: thumbsUpAnim }] }}>
                 {currentArtRating[RatingEnum.like]  ?  <SVGs.ThumbsDownLargeFillIcon /> : <SVGs.ThumbsDownLargeIcon />}

@@ -50,6 +50,7 @@ const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
       display:'flex',
       alignItems: 'center',
       justifyContent: 'center',
+      backgroundColor: 'transparent',
     },
     heroImage: {
       height: '100%',
@@ -127,13 +128,13 @@ const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
             style={exhibitionPreview.artistTitle}>
             {exhibitionTitle}
           </TextElement>
-          <View style={{...exhibitionPreview.heroImageContainer, marginTop: 24}} >
-              <FastImage 
-                  source={{uri: exhibitionHeroImage}} 
-                  style={exhibitionPreview.heroImage} 
-                  resizeMode={FastImage.resizeMode.contain}
-              />
-          </View>
+          <Surface elevation={1} style={{...exhibitionPreview.heroImageContainer, marginTop: 24}}>
+            <FastImage 
+                source={{uri: exhibitionHeroImage}} 
+                style={exhibitionPreview.heroImage} 
+                resizeMode={FastImage.resizeMode.contain}
+            />
+          </Surface>
           <TextElement
             style={{...exhibitionPreview.exhibitionTitle, marginTop: 24}}>
             {startDate} {' - '} {endDate}

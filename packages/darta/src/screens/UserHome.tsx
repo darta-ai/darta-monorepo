@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  Linking,
   RefreshControl,
 } from 'react-native';
 import {
@@ -22,6 +23,9 @@ import { listGalleryRelationshipsAPI, listUserArtworkAPI } from '../utils/apiCal
 import { GalleryPreview, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
 import { TextElement } from '../components/Elements/TextElement';
 import { globalTextStyles } from '../styles/styles';
+import { DartaIconButtonWithText } from '../components/Darta/DartaIconButtonWithText';
+import * as SVGs from '../assets/SVGs';
+
 
 const HEADER_MAX_HEIGHT = 100;
 const HEADER_MIN_HEIGHT = hp('10%');
@@ -41,6 +45,17 @@ export const userHomeStyles = StyleSheet.create({
     padding: 24, 
     gap: 60
   },
+  galleryContactButtonsContainer: {
+    width: wp('100%'),
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: 16,
+  },
+  marginBottom24: {
+    marginBottom: 24
+  }
 });
 
 
@@ -114,6 +129,45 @@ export function UserHome({navigation}: {navigation: any}) {
         setTimeout(() => {
             setRefreshing(false);
         }, 100)  }, []);
+
+    
+  const sendToInstagram = () => {
+    Linking.canOpenURL('instagram://app').then((supported) => {
+    if (supported) {
+        Linking.openURL(`instagram://user?username=darta.art`);
+    } else {
+        Linking.openURL(`https://www.instagram.com/darta.art/`);
+    }
+  });
+  }
+
+  const sendEmail = () => {
+    const url = `mailto:collaborate@darta.art`;
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          console.log(`Can't handle URL: ${url}`);
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error('An error occurred', err));
+  };
+
+  const visitWebsite = () => {
+
+    const url = `https://www.darta.art`;
+  
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          console.log(`Can't handle URL: ${url}`);
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error('An error occurred', err));
+  };  
   return (
     <ScrollView refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />} onScroll={handleScroll} scrollEventThrottle={16} >
       <View style={userHomeStyles.userHomeContainer}>
@@ -125,7 +179,7 @@ export function UserHome({navigation}: {navigation: any}) {
           />
         </View>
           <View> 
-            <View style={{marginBottom: 24}}>
+            <View style={userHomeStyles.marginBottom24}>
               <TextElement style={globalTextStyles.sectionHeaderTitle}>You</TextElement>
             </View>
             <View>
@@ -135,12 +189,34 @@ export function UserHome({navigation}: {navigation: any}) {
             </View>
           </View>
           <View>
-            <View style={{marginBottom: 24}}>
+            <View style={userHomeStyles.marginBottom24}>
               <TextElement style={globalTextStyles.sectionHeaderTitle}>Following</TextElement>
             </View>
               <View>
                 <GalleriesFollowing
                   navigation={navigation}
+                />
+              </View>
+          </View>
+          <View>
+            <View style={userHomeStyles.marginBottom24}>
+              <TextElement style={globalTextStyles.sectionHeaderTitle}>Contact Us</TextElement>
+            </View>
+              <View style={userHomeStyles.galleryContactButtonsContainer}>
+                <DartaIconButtonWithText 
+                text={"collaborate@darta.art"}
+                iconComponent={SVGs.EmailIcon}
+                onPress={() => sendEmail()}
+                />
+                <DartaIconButtonWithText 
+                text={"darta.art"}
+                iconComponent={SVGs.WebIcon}
+                onPress={() => visitWebsite()}
+                />
+                <DartaIconButtonWithText 
+                text={"@darta.art"}
+                iconComponent={SVGs.InstagramIcon}
+                onPress={() => sendToInstagram()}
                 />
               </View>
           </View>

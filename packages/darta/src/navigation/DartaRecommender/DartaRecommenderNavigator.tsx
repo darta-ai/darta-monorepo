@@ -2,7 +2,7 @@ import * as Colors from '@darta-styles';
 import React, {useContext} from 'react';
 
 import {ETypes, StoreContext} from '../../state/Store';
-import {headerOptions, viewOptionsStyles} from '../../styles/styles';
+import {backButtonStyles, headerOptions, viewOptionsStyles} from '../../styles/styles';
 import {RecommenderRoutesEnum} from '../../typing/routes';
 import {View, StyleSheet} from 'react-native';
 import { DartaRecommenderView } from '../../screens/DartaRecommenderView';
@@ -13,16 +13,11 @@ import { useNavigation } from '@react-navigation/native';
 import { useDeepLinking } from '../../components/LinkingAndNavigation/deepLinking';
 import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 export const RecommenderStack = createStackNavigator();
 
-const styles = StyleSheet.create({ 
-  backButton: {
-    marginLeft: 16,
-    marginTop: 10, 
-    marginBottom: 10
-  }
-});
+
 
 
 export function DartaRecommenderNavigator() {
@@ -34,13 +29,14 @@ export function DartaRecommenderNavigator() {
   };
   const navigation = useNavigation();
   useDeepLinking(navigation);
+
   return (
     <RecommenderStack.Navigator 
       screenOptions={{
         headerTintColor: Colors.PRIMARY_950, 
         cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, 
         headerBackImage: () => (
-          <View style={styles.backButton}>
+          <View style={backButtonStyles.backButton}>
             <BackButtonIcon />
           </View>
         ), 

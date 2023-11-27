@@ -25,7 +25,7 @@ import {
   createArtworkForExhibitionAPI,
   deleteExhibitionArtwork,
   editArtworkForExhibitionAPI,
-  removeArtworkFromExhibition,
+  // removeArtworkFromExhibition,
   // swapArtworkOrderAPI,
 } from '../../API/artworks/artworkRoutes';
 import {
@@ -211,29 +211,29 @@ export function ExhibitionCard({
     }
   };
 
-  const handleRemoveArtworkFromExhibition = async ({
-    exhibitionId,
-    artworkId,
-  }: {
-    exhibitionId: string;
-    artworkId: string;
-  }): Promise<boolean> => {
-    try {
-      const results = await removeArtworkFromExhibition({
-        exhibitionId,
-        artworkId,
-      });
-      dispatch({
-        type: GalleryReducerActions.SAVE_EXHIBITION,
-        payload: results,
-        exhibitionId,
-      });
-      return Promise.resolve(true);
-    } catch (error) {
-      setErrorAlertOpen(true);
-    }
-    return Promise.resolve(false);
-  };
+  // const handleRemoveArtworkFromExhibition = async ({
+  //   exhibitionId,
+  //   artworkId,
+  // }: {
+  //   exhibitionId: string;
+  //   artworkId: string;
+  // }): Promise<boolean> => {
+  //   try {
+  //     const results = await removeArtworkFromExhibition({
+  //       exhibitionId,
+  //       artworkId,
+  //     });
+  //     dispatch({
+  //       type: GalleryReducerActions.SAVE_EXHIBITION,
+  //       payload: results,
+  //       exhibitionId,
+  //     });
+  //     return Promise.resolve(true);
+  //   } catch (error) {
+  //     setErrorAlertOpen(true);
+  //   }
+  //   return Promise.resolve(false);
+  // };
 
   const handleDeleteArtworkFromDarta = async ({
     exhibitionId,
@@ -650,9 +650,6 @@ export function ExhibitionCard({
             saveArtwork={saveArtwork}
             saveSpinner={saveSpinner}
             deleteSpinner={deleteSpinner}
-            handleRemoveArtworkFromExhibition={
-              handleRemoveArtworkFromExhibition
-            }
             handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
           />
           )}

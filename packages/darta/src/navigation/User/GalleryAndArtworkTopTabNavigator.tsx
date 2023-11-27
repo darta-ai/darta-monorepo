@@ -6,6 +6,8 @@ import { ExhibitionGalleryScreen } from '../../screens/Exhibition'
 import { tabBarScreenOptions } from '../../theme/themeConstants';
 import { ArtworkScreen } from '../../screens/Artwork/ArtworkScreen';
 import { UserRoutesEnum } from '../../typing/routes';
+import {headerOptions} from '../../styles/styles';
+
 
 export const GalleryAndArtworkTopTab = createMaterialTopTabNavigator();
 
@@ -16,7 +18,7 @@ export function GalleryAndArtworkTopTabNavigator({route} : {route: any}) {
           name={PreviousExhibitionRootEnum.artworkList}
           component={ArtworkScreen}
           initialParams={{artOnDisplay: route.params?.artOnDisplay}}
-          options={{ title: "Artwork"}}
+          options={{ title: "Artwork", ...headerOptions}}
         />
       <GalleryAndArtworkTopTab.Screen
           name={PreviousExhibitionRootEnum.exhibitionDetails}

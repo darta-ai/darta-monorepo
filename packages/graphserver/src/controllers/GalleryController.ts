@@ -33,6 +33,7 @@ export class GalleryController {
         return;
       }
       res.json(gallery);
+      
     } catch (error: any) {
       res.status(500).send(error.message);
     }

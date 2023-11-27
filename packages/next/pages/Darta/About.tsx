@@ -51,7 +51,7 @@ const aboutStyles = {
     },
   },
   image: {
-    width: `100%`,
+    width: `90%`,
     height: 'unset',
     alignSelf: 'center',
     borderRadius: 20,
@@ -85,14 +85,14 @@ const aboutStyles = {
   peopleContainer: {
     display: 'flex',
     flexDirection: 'column',
-    '@media (min-width: 760px)': {
+    '@media (min-width: 1080px)': {
       flexDirection: 'row',
     },
   },
   card: {
     width: '90vw',
-    '@media (min-width: 800px)': {
-      width: '20vw',
+    '@media (min-width: 1080px)': {
+      width: '15vw',
     },
   },
 };
@@ -108,56 +108,6 @@ export default function About() {
         maxWidth="md"
         sx={aboutStyles.container}
         data-testid="about-container">
-        <Box data-testid="headline-box">
-          <Typography
-            variant="h2"
-            sx={aboutStyles.typographyTitle}
-            data-testid="headline">
-            {aboutData.Headline}
-          </Typography>
-          <Box component="span" m={1} data-testid="values-list">
-            {aboutData?.DartaCoreValue1 && (
-              <ListItem data-testid="value-item-1" key="value-item-1">
-                <Typography
-                  paragraph
-                  sx={aboutStyles.typography}
-                  data-testid="value-item-text-1">
-                  {aboutData.DartaCoreValue1}
-                </Typography>
-              </ListItem>
-            )}
-            {aboutData?.DartaCoreValue2 && (
-              <ListItem data-testid="value-item-2" key="value-item-2">
-                <Typography
-                  paragraph
-                  sx={aboutStyles.typography}
-                  data-testid="value-item-text-2">
-                  {aboutData.DartaCoreValue2}
-                </Typography>
-              </ListItem>
-            )}
-            {aboutData?.DartaCoreValue3 && (
-              <ListItem data-testid="value-item-3" key="value-item-3">
-                <Typography
-                  paragraph
-                  sx={aboutStyles.typography}
-                  data-testid="value-item-text-3">
-                  {aboutData.DartaCoreValue3}
-                </Typography>
-              </ListItem>
-            )}
-            {aboutData?.DartaCoreValue4 && (
-              <ListItem data-testid="value-item-4" key="value-item-4">
-                <Typography
-                  paragraph
-                  sx={aboutStyles.typography}
-                  data-testid="value-item-text-4">
-                  {aboutData.DartaCoreValue4}
-                </Typography>
-              </ListItem>
-            )}
-          </Box>
-        </Box>
         <Box data-testid="beliefs-box">
           <Typography
             variant="h2"
@@ -223,11 +173,11 @@ export default function About() {
         <Grid
           container
           sx={aboutStyles.peopleContainer}
-          spacing={12}
+          spacing={2}
           data-testid="founders-grid">
-          <Grid item data-testid="founder-1-grid">
+          <Grid item xs={12} sm={4} data-testid="founder-1-grid">
             <Card sx={aboutStyles.card} data-testid="founder-1-card">
-              <div
+              <Box
                 style={aboutStyles.imageSize}
                 data-testid="founder-1-image-container">
                 <Box
@@ -238,7 +188,7 @@ export default function About() {
                   alt="Founder 1"
                   data-testid="founder-1-image"
                 />
-              </div>
+              </Box>
               <CardContent data-testid="founder-1-card-content">
                 <Typography variant="h5" data-testid="founder-1-name">
                   {aboutData.Person1}
@@ -246,7 +196,7 @@ export default function About() {
                 <Typography
                   variant="h6"
                   data-testid="founder-1-responsibilities">
-                  {aboutData.Person1Responsibilities}
+                  Development
                 </Typography>
                 {/* <Typography variant="body1" data-testid="founder-1-bio">{data.Person1Bio}</Typography> */}
                 <Typography variant="body1" data-testid="founder-1-email">
@@ -259,9 +209,9 @@ export default function About() {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} sm={3} data-testid="founder-2-grid">
+          <Grid item xs={12} sm={4} data-testid="founder-2-grid">
             <Card sx={aboutStyles.card} data-testid="founder-2-card">
-              <div
+              <Box
                 style={aboutStyles.imageSize}
                 data-testid="founder-2-image-container">
                 <Box
@@ -272,7 +222,7 @@ export default function About() {
                   alt="Founder 2"
                   data-testid="founder-2-image"
                 />
-              </div>
+              </Box>
               <CardContent data-testid="founder-2-card-content">
                 <Typography variant="h5" data-testid="founder-2-name">
                   {aboutData.Person2}
@@ -280,7 +230,7 @@ export default function About() {
                 <Typography
                   variant="h6"
                   data-testid="founder-2-responsibilities">
-                  {aboutData.Person2Responsibilities}
+                  Architecture
                 </Typography>
                 {/* <Typography variant="body1" data-testid="founder-2-bio">{data.Person2Bio}</Typography> */}
                 <Typography variant="body1" data-testid="founder-2-email">
@@ -289,6 +239,32 @@ export default function About() {
                     data-testid="founder-2-email-link">
                     {aboutData.Person2Email}
                   </a>
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={4} data-testid="founder-3-grid">
+            <Card sx={aboutStyles.card} data-testid="founder-3-card">
+              <div
+                style={aboutStyles.imageSize}
+                data-testid="founder-2-image-container">
+                <Box
+                  component="img"
+                  src="/static/images/About/Founder3.jpeg"
+                  title="Huli"
+                  style={aboutStyles.image}
+                  alt="Huli"
+                  data-testid="founder-2-image"
+                />
+              </div>
+              <CardContent data-testid="founder-3-card-content">
+                <Typography variant="h5" data-testid="founder-3-name">
+                  Huli Curry
+                </Typography>
+                <Typography
+                  variant="h6"
+                  data-testid="founder-2-responsibilities">
+                  Design
                 </Typography>
               </CardContent>
             </Card>

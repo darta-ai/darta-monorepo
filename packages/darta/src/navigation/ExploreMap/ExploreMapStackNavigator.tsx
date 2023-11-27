@@ -2,7 +2,7 @@ import {PRIMARY_800} from '@darta-styles';
 import React, {useContext} from 'react';
 
 import {StoreContext} from '../../state/Store';
-import {headerOptions, modalHeaderOptions} from '../../styles/styles';
+import {backButtonStyles, headerOptions, modalHeaderOptions} from '../../styles/styles';
 import { ExploreMapRootEnum} from '../../typing/routes';
 import { ExploreMapHomeScreen } from '../../screens/ExploreMap/ExploreMapHomeScreen';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
@@ -15,15 +15,6 @@ import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 
 
 export const ExploreMapStack = createStackNavigator();
-const styles = StyleSheet.create({ 
-  backButton: {
-    marginLeft: 24,
-    marginTop: 10, 
-    marginBottom: 10
-  }
-});
-
-
 
 export function ExploreMapStackNavigator({route} : {route: any}) {
   const {state} = useContext(StoreContext);
@@ -33,7 +24,7 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
       headerTintColor: PRIMARY_800,
       cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, 
       headerBackImage: () => (
-        <View style={styles.backButton}>
+        <View style={backButtonStyles.backButton}>
           <BackButtonIcon />
         </View>
         ),
@@ -51,7 +42,7 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
           options={{...headerOptions, headerTitle: state.currentExhibitionHeader ?? "",
           headerLeft: () => ( 
             <Pressable
-            style={styles.backButton}
+            style={backButtonStyles.backButton}
             onPress={() => {navigation.navigate(ExploreMapRootEnum.exploreMapHome as never)}}>
               <BackButtonIcon />
             </Pressable>
@@ -72,7 +63,7 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
         <ExploreMapStack.Screen
             name={ExploreMapRootEnum.individualArtwork}
             component={ArtworkScreen}
-            options={{...modalHeaderOptions, headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
+            options={{...headerOptions, headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
           />
     </ExploreMapStack.Navigator>
   );

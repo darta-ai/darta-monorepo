@@ -21,7 +21,7 @@ export function DartaDropdown({
   required,
   inputAdornmentString,
 }: {
-  options: string[];
+  options: string[] | number[];
   toolTips: {
     [key: string]: string;
   };

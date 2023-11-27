@@ -1,6 +1,6 @@
 import { Artwork, GalleryPreview, Images, MobileUser, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types/dist";
 import { createUserArtworkRelationship, deleteUserArtworkRelationship, listUserArtworkAPIRelationships } from "../api/artworkRoutes";
-import { createDartaUserFollowGallery, deleteDartaUserFollowGallery, editDartaUserAccount, listDartaUserFollowsGallery } from "../api/userRoutes";
+import { createDartaUserFollowGallery, createUserVisitedGallery, deleteDartaUserFollowGallery, editDartaUserAccount, listDartaUserFollowsGallery } from "../api/userRoutes";
 import {listArtworksToRate, listArtworksToRateStatelessRandomSampling} from "../api/recommenderRoutes";
 import auth from '@react-native-firebase/auth';
 
@@ -31,6 +31,17 @@ export const createGalleryRelationshipAPI = async ({galleryId} :{galleryId: stri
         const uid = auth().currentUser?.uid
         if (!uid) return null;
         return await createDartaUserFollowGallery({uid, galleryId});
+    } catch (error){
+        console.log(error)
+        throw new Error(error)
+    }
+}
+
+export const galleryVisitorAPI = async ({galleryId} :{galleryId: string;}) => {
+    try{
+        const uid = auth().currentUser?.uid
+        if (!uid) return null;
+        return await createUserVisitedGallery({uid, galleryId});
     } catch (error){
         console.log(error)
         throw new Error(error)
