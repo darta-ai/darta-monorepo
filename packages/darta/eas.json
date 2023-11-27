@@ -4,6 +4,7 @@
   },
   "build": {
     "development-simulator": {
+      "pnpm": "8.6.12",
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
@@ -41,11 +42,11 @@
       }
     },
     "production": {
+      "pnpm": "8.6.12",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.darta.art/",
         "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyDToUzSItfm8m8MSAAGmQq8Xt8zNub_phA",
-        "ENVIRONMENT": "prod",
-        "pnpmVersion": "8.6.12"
+        "ENVIRONMENT": "prod"
       }
     }
   },

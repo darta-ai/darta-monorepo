@@ -278,7 +278,7 @@ export function ExhibitionPreviewScreen({
               />
               )
             }}
-          decelerationRate={"fast"}
+          decelerationRate={0.5}
           onEndReached={onBottomLoad}
           onEndReachedThreshold={0.1}
           renderFooter={renderFooter}

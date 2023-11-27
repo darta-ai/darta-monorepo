@@ -99,7 +99,7 @@ export function ArtworkListComponent({
             updateCellsBatchingPeriod={100}
             maxToRenderPerBatch={5}
             keyExtractor={item => item._id?.toString() ?? "654321"}
-            decelerationRate={"slow"}
+            decelerationRate={0.5}
             scrollViewProps={{
               refreshControl: (
                 <RefreshControl

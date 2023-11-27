@@ -1,6 +1,5 @@
 import React from 'react';
 import {Animated, StyleSheet, View } from 'react-native';
-import * as ScreenOrientation from 'expo-screen-orientation';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import { GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
 import * as Colors from '@darta-styles'
@@ -9,14 +8,11 @@ import { Snackbar, Surface } from 'react-native-paper';
 
 import {
   IUserArtworkRated,
-  OpenStateEnum,
-  OrientationsEnum,
   RatingEnum,
 } from '../typing/types';
 import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
 import { ArtOnWall } from '../components/Artwork/ArtOnWall';
 import {
-  duration,
   galleryDimensionsLandscape,
   galleryDimensionsPortrait,
 } from '../utils/constants';
@@ -27,6 +23,7 @@ import {ETypes, StoreContext} from '../state/Store';
 import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI, listArtworksToRateStatelessRandomSamplingAPI } from '../utils/apiCalls';
 import { TextElement } from '../components/Elements/TextElement';
 import * as SVGs from '../assets/SVGs';
+import analytics from '@react-native-firebase/analytics';
 
 const SSDartaGalleryView = StyleSheet.create({
   interactionButtonsContainer: {
@@ -240,22 +237,25 @@ export function DartaRecommenderView({
             artworkId: artOnDisplay?._id!,
           })
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+          analytics().logEvent('like_artwork')
           break;
         case (USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE):
           dispatch({
             type: ETypes.setUserDislikedArtwork,
             artworkId: artOnDisplay?._id!,
           })
+          analytics().logEvent('dislike_artwork')
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
           break;
         case (USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED):
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-            break;
+          break;
         case (USER_ARTWORK_EDGE_RELATIONSHIP.SAVE):
           dispatch({
             type: ETypes.setUserSavedArtwork,
             artworkId: artOnDisplay?._id!,
           })
+          analytics().logEvent('save_artwork')
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
           break;
         case (USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE):
@@ -263,6 +263,7 @@ export function DartaRecommenderView({
             type: ETypes.setUserInquiredArtwork,
             artworkId: artOnDisplay?._id!,
           })
+          analytics().logEvent('inquire_artwork')
           break;
         }
     } catch(error){
