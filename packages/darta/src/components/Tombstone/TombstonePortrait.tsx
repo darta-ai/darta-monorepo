@@ -178,6 +178,7 @@ export function TombstonePortrait({
   const [isSaved, setIsSaved] = React.useState(false);
   const [isInquired, setIsInquired] = React.useState(false);
   const [isLiked, setIsLiked] = React.useState(false);
+  const [canInquire, setCanInquire] = React.useState(true);
   const opacityLikedButton = React.useRef(new Animated.Value(1)).current; 
   const opacitySavedButton = React.useRef(new Animated.Value(1)).current; 
   const opacityInquiredButton = React.useRef(new Animated.Value(1)).current; 
@@ -222,6 +223,10 @@ export function TombstonePortrait({
     }
     if (state.userLikedArtwork?.[artworkId]){
       setIsLiked(true)
+    }
+
+    if(artwork.canInquire?.value === "No"){
+      setCanInquire(false)
     }
     
   }, [state.userInquiredArtwork, state.userSavedArtwork, state.userLikedArtwork]);
@@ -297,7 +302,7 @@ export function TombstonePortrait({
         </View>
           <View style={SSTombstonePortrait.inquireButton}>
             <Animated.View style={{opacity: opacityInquiredButton, flex: 1}}>
-              {isInquired ? ( 
+              {isInquired && ( 
               <ButtonGenerator 
                 displayText="Inquired"
                 iconComponent={SVGs.EmailWhiteFillIcon}
@@ -305,15 +310,16 @@ export function TombstonePortrait({
                 textColor={Colors.PRIMARY_50}
                 buttonColor={Colors.PRIMARY_950}
               />
-            ) : (
+            )} 
+            {!isInquired && canInquire && (
               <ButtonGenerator 
-                displayText="Inquire"
-                iconComponent={SVGs.EmailIcon}
-                onPress={() => toggleButtons({buttonRef: opacityInquiredButton, callback: () => inquireAlert({artworkId: artwork._id!})})}
-                textColor={Colors.PRIMARY_950}
-                buttonColor={"#B0B0B019"}
-              />
-            )}
+              displayText="Inquire"
+              iconComponent={SVGs.EmailIcon}
+              onPress={() => toggleButtons({buttonRef: opacityInquiredButton, callback: () => inquireAlert({artworkId: artwork._id!})})}
+              textColor={Colors.PRIMARY_950}
+              buttonColor={"#B0B0B019"}
+            />
+            )} 
             </Animated.View>
             <Animated.View style={{opacity: opacitySavedButton, flex: 1}}>
               {isSaved ? ( 

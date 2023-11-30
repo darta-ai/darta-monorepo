@@ -130,7 +130,6 @@ export function ExhibitionPreviewScreen({
   }, []);
 
   const onBottomLoad = React.useCallback(async () => {
-    console.log('bottom loaded')
     setBottomLoad(true);
     try{
       const screenName = route.name

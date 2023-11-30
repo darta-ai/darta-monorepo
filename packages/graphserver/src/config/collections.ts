@@ -18,6 +18,8 @@ export const CollectionNames = {
   GalleryAdminNode: 'GalleryAdminNode',
 
   DartaUsers: 'DartaUsers',
+
+  DartaUserLists: 'DartaUserLists',
 };
 
 export const EdgeNames = {
@@ -51,6 +53,9 @@ export const EdgeNames = {
 
   FROMDartaUserTOExhibitionVIEWED: 'FROMDartaUserTOExhibitionVIEWED',
   FROMDartaUserTOExhibitionVIEW_TIME: 'FROMDartaUserTOExhibitionVIEW_TIME',
+
+  FROMDartaUserTOList: 'FROMDartaUserTOList',
+  FROMListTOArtwork: 'FROMListTOArtwork',
 
 };
 
