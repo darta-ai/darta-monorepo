@@ -14,6 +14,8 @@ import { useDeepLinking } from '../../components/LinkingAndNavigation/deepLinkin
 import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import crashlytics from '@react-native-firebase/crashlytics';
+import { AddToListScreen } from '../../screens/Lists/AddToList';
+import { TextElement } from '../../components/Elements/TextElement';
 
 export const RecommenderStack = createStackNavigator();
 
@@ -43,29 +45,55 @@ export function DartaRecommenderNavigator() {
         headerBackTitleVisible: false,
       }}
       >
-      <RecommenderStack.Screen
-        name={RecommenderRoutesEnum.recommenderHome}
-        component={DartaRecommenderView}
-        options={{...headerOptions, 
-          headerTitle: 'View',
-          headerRight: () => (
-            <IconButton
-              icon={icons.screenRotation}    
-              iconColor={Colors.PRIMARY_950}
-              containerColor={Colors.PRIMARY_50}
-              style={viewOptionsStyles.viewOptionsButtonStyle}
-              accessibilityLabel="Flip Screen Orientation"
-              testID="flipScreenButton"
-              onPress={() => flipOrientation()}
+        <RecommenderStack.Group>
+          <RecommenderStack.Screen
+            name={RecommenderRoutesEnum.recommenderHome}
+            component={DartaRecommenderView}
+            options={{...headerOptions, 
+              headerTitle: 'View',
+              headerRight: () => (
+                <IconButton
+                  icon={icons.screenRotation}    
+                  iconColor={Colors.PRIMARY_950}
+                  containerColor={Colors.PRIMARY_50}
+                  style={viewOptionsStyles.viewOptionsButtonStyle}
+                  accessibilityLabel="Flip Screen Orientation"
+                  testID="flipScreenButton"
+                  onPress={() => flipOrientation()}
+                />
+              ),
+            }}
+          />
+          <RecommenderStack.Screen
+            name={RecommenderRoutesEnum.TopTabExhibition}
+            component={DartaRecommenderTopTab}
+            options={{...headerOptions, headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
+          />
+        </RecommenderStack.Group>
+        <RecommenderStack.Group screenOptions={{
+              presentation: 'transparentModal',
+              cardStyle: {backgroundColor: 'transparent'},
+            }}>
+            <RecommenderStack.Screen
+              name={RecommenderRoutesEnum.recommenderLists}
+              component={AddToListScreen}
+              options={{ 
+                headerMode: 'float', 
+                cardStyle: {opacity: 0.8, margin:0, backgroundColor: 'transparent', height: '80%', width: '100%'}, 
+                headerTitle: 'Add to list',
+                headerTintColor: Colors.PRIMARY_50,
+                headerStyle: {
+                  backgroundColor: Colors.PRIMARY_950, 
+                  opacity: 0.9,
+                },
+                headerBackImage: () => (
+                  <View style={backButtonStyles.backButton}>
+                    <TextElement style={{color: Colors.PRIMARY_50}}>Cancel</TextElement>
+                  </View>
+              ), }}
+              
             />
-          ),
-        }}
-      />
-      <RecommenderStack.Screen
-        name={RecommenderRoutesEnum.TopTabExhibition}
-        component={DartaRecommenderTopTab}
-        options={{...headerOptions, headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
-      />
+          </RecommenderStack.Group>
     </RecommenderStack.Navigator>
   );
 }

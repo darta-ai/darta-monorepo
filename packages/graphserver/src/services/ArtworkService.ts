@@ -1,4 +1,4 @@
-import {Artwork, Dimensions, IGalleryProfileData, Images} from '@darta-types';
+import {Artwork, Dimensions, IGalleryProfileData, Images, PreviewArtwork} from '@darta-types';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 import _ from 'lodash';
@@ -132,6 +132,20 @@ export class ArtworkService implements IArtworkService {
     const artwork = await this.getArtworkById(artworkId);
 
     return artwork;
+  }
+
+  public async readArtworkPreview(artworkId: string): Promise<PreviewArtwork | null> {
+    // TO-DO: build out?
+    const artwork = await this.getArtworkById(artworkId);
+
+    if (!artwork || !artwork._id) throw new Error('no artwork found at readArtworkPreview')
+
+    return {
+      _id: artwork._id,
+      artworkTitle: artwork.artworkTitle,
+      artworkImage: {value: artwork.artworkImage?.value},
+      artistName: artwork.artistName,
+    };
   }
 
   public async readArtworkAndGallery(

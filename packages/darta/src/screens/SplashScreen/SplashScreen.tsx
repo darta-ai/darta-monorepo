@@ -16,6 +16,7 @@ import { getUserUid } from "../../utils/functions";
 import { listArtworksToRateAPI, listGalleryRelationshipsAPI, listUserArtworkAPI } from "../../utils/apiCalls";
 import FastImage from "react-native-fast-image";
 import analytics from '@react-native-firebase/analytics';
+import { listUserLists } from "../../api/listRoutes";
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -52,7 +53,8 @@ function AnimatedSplashScreen({ children }) {
         likedArtwork,
         savedArtwork,
         inquiredArtwork,
-        artworksToRate
+        artworksToRate, 
+        userLists
       ] = await Promise.all([
         // user
         uid ? getDartaUser({uid}) : null,
@@ -73,8 +75,12 @@ function AnimatedSplashScreen({ children }) {
         // inquiredArtwork
         listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10 }),
         // artworksToRate
-        listArtworksToRateAPI({startNumber: 0, endNumber: 20})
+        listArtworksToRateAPI({startNumber: 0, endNumber: 20}),
+        // userLists
+        listUserLists()
       ]);
+
+      console.log(userLists)
 
       // User Profile
       if (user) {

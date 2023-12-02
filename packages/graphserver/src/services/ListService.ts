@@ -1,4 +1,4 @@
-import { FullList, List } from '@darta-types/dist';
+import { FullList, List, ListPreview } from '@darta-types/dist';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 
@@ -64,7 +64,7 @@ export class ListService implements IListService {
       throw new Error('!! no artwork !!');
     }
     return {
-      ...list, 
+      ...list as FullList, 
       artwork: {
         [artworkId]: artwork,
       },
@@ -95,7 +95,7 @@ export class ListService implements IListService {
         return 0;
       }
       return a.data.listPosition - b.data.listPosition;
-    }).map((edge) => edge.to)
+    }).map((edge) => edge._to)
 
     const artworkPromises = artworkIds.map((artworkId) => this.artworkService.readArtwork(artworkId));
 
@@ -116,6 +116,77 @@ export class ListService implements IListService {
     } as FullList;
   }
 
+  public async listLists({uid}: {uid: string}): Promise<ListPreview[]>{
+    const fullUserId = this.userService.generateDartaUserId({uid});
+    const edges = await this.edgeService.getAllEdgesFromNode({
+      edgeName: EdgeNames.FROMDartaUserTOList,
+      from: fullUserId,
+    });
+
+    if (!edges) {
+      throw new Error('!! no edges when listing Lists !!');
+    }
+
+    const listIds = edges.map((edge) => edge._to);
+
+    const listPromises = listIds.map((listId) => this.getListPreview({listId}));
+
+    const lists = await Promise.all(listPromises);
+
+    console.log({lists})
+    if (!lists) {
+      throw new Error('!! no lists !!');
+    }
+
+    return lists;
+  }
+
+  public async getListPreview({listId}: {listId: string}): Promise<ListPreview> {
+    const fullListId = this.generateListId({id: listId});
+    // get list node 
+    const list = await this.db.collection(CollectionNames.DartaUserLists).document(fullListId);
+
+    if (!list) {
+      throw new Error('!! no list !!');
+    }
+
+
+    // get all artworks from list
+    const edges = await this.edgeService.getEdgesFromNodeWithLimit({
+      edgeName: EdgeNames.FROMListTOArtwork,
+      from: fullListId,
+      limit: 4,
+    });
+
+    if (!edges) {
+      throw new Error('!! no edges for list!!');
+    }
+
+    const artworkIds = edges.sort((a, b) => {
+      if (!a || !b) {
+        return 0;
+      }
+      return a.data.listPosition - b.data.listPosition;
+    }).map((edge) => edge._to)
+
+    const artworkPromises = artworkIds.map((artworkId) => this.artworkService.readArtworkPreview(artworkId));
+
+    const artwork = await Promise.all(artworkPromises)
+
+    if (!artwork) {
+      throw new Error('!! no artwork !!');
+    }
+
+    return {
+      ...list,
+      artwork: artwork.reduce((acc: any, curr: any) => {
+        if (curr) {
+          acc[curr._id] = curr;
+        }
+        return acc;
+      }, {}),
+    } as ListPreview;
+  }
 
   public async addArtworkToList({listId, artworkId}: {listId: string, artworkId: string}): Promise<any> {
     const fullListId = this.generateListId({id: listId});

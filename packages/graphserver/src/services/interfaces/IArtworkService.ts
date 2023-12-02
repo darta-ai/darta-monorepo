@@ -1,4 +1,4 @@
-import {Artwork, Dimensions, IGalleryProfileData} from '@darta-types';
+import {Artwork, Dimensions, IGalleryProfileData, PreviewArtwork} from '@darta-types';
 import { Edge } from 'arangojs/documents';
 
 import {ArtworkNode} from '../../models/models';
@@ -29,6 +29,7 @@ export interface IArtworkService {
   }): Promise<void>;
   readArtwork(artworkId: string): Promise<Artwork | null>;
   readArtworkAndGallery(artworkId: string): Promise<ArtworkAndGallery | null>;
+  readArtworkPreview(artworkId: string): Promise<PreviewArtwork | null>
   editArtwork({artwork}: {artwork: Artwork}): Promise<ArtworkNode | null>;
   editArtworkInquiry({edgeId, status}: {edgeId: string, status: string;}) : Promise<Edge | void>
   deleteArtwork({artworkId}: {artworkId: string}): Promise<boolean>;

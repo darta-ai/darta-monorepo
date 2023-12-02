@@ -7,7 +7,7 @@ import {verifyToken} from '../middleware/accessTokenVerify';
 import {IListService} from '../services/interfaces';
 
 @controller('/lists')
-export class UserController {
+export class ListController {
   constructor(
     @inject('IListService') private listService: IListService,
   ) {}
@@ -56,6 +56,25 @@ export class UserController {
         res.status(200).send(results);
     } catch (error: any) {
       standardConsoleLog({message: error.message, data: req?.body, request: 'lists/createList'})
+      if (!res.headersSent) {
+        res.status(500).send('unable to create new list');
+      }
+    }
+  }
+
+  @httpGet('/listLists', verifyToken)
+  public async listLists(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    const {user} = req as any;
+    try {
+      const results = await this.listService.listLists({
+          uid: user.uid,
+        });
+        res.status(200).send(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req?.body, request: 'lists/listLists'})
       if (!res.headersSent) {
         res.status(500).send('unable to create new list');
       }

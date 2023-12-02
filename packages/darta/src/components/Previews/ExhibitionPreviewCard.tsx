@@ -16,6 +16,7 @@ import * as Colors from '@darta-styles';
 import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 import { ExhibitionCarousel } from '../../components/Exhibitions/ExhibitionCarousel';
 import { Button } from 'react-native-paper';
+// import { NadaLogo } from '../../assets/SVGs';
 
 const exhibitionPreviewStyle = StyleSheet.create({
   container: {

@@ -13,7 +13,7 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "http://localhost:1160/",
         "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyDToUzSItfm8m8MSAAGmQq8Xt8zNub_phA",
-        "ENVIRONMENT": "dev"
+        "EXPO_PUBLIC_ENVIRONMENT": "dev"
       }
     },
     "development": {
@@ -28,7 +28,7 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "http://localhost:1160/",
         "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyDToUzSItfm8m8MSAAGmQq8Xt8zNub_phA",
-        "ENVIRONMENT": "dev"
+        "EXPO_PUBLIC_ENVIRONMENT": "dev"
       }
     },
     "preview": {
@@ -46,7 +46,7 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.darta.art/",
         "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyDToUzSItfm8m8MSAAGmQq8Xt8zNub_phA",
-        "ENVIRONMENT": "prod"
+        "EXPO_PUBLIC_ENVIRONMENT": "prod"
       }
     }
   },

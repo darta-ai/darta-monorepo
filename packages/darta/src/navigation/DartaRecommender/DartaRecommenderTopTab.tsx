@@ -7,6 +7,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { ExhibitionDetailsScreen, ExhibitionGalleryScreen } from '../../screens/Exhibition';
 import { tabBarScreenOptions } from '../../theme/themeConstants';
 import {headerOptions} from '../../styles/styles';
+import { AddToListScreen } from '../../screens/Lists/AddToList';
 
 
 const RecommenderStackTopTab = createMaterialTopTabNavigator();

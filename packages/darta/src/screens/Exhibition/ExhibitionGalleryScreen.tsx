@@ -57,6 +57,8 @@ const galleryDetailsStyles = StyleSheet.create({
   galleryLogoContainer: {
     display:'flex', 
     flexDirection:'column',
+    justifyContent: 'flex-start',
+    alignContent: 'flex-start',
     height: 100,
   },
   heroImage: {

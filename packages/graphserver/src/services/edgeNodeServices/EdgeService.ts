@@ -226,6 +226,30 @@ export class EdgeService implements IEdgeService {
     return cursor.all();
   }
 
+  public async getEdgesFromNodeWithLimit({
+    edgeName,
+    from,
+    limit
+  }: {
+    edgeName: string;
+    from: string;
+    limit: number;
+  }): Promise<any[]> {
+    const query = `
+            FOR edge IN @@edgeName
+            FILTER edge._from == @from
+            LIMIT @limit
+            RETURN edge
+            `;
+
+    const cursor = await this.db.query(query, {
+      '@edgeName': edgeName,
+      from,
+      limit
+    });
+    return cursor.all();
+  }
+
   public async getAllEdgesToPointingToNode({
     edgeName,
     to,

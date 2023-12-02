@@ -1,9 +1,11 @@
-import { Artwork } from "./galleries";
+import { Artwork, PublicFields } from "./galleries";
 export interface List {
     _id: string;
     listName: string;
-    listDescription: string;
     creator: string;
+}
+export interface NewList {
+    listName: string;
 }
 export interface ListUserEdge {
     _id: string;
@@ -17,10 +19,10 @@ export interface ListArtworkEdge {
 }
 export type PreviewArtwork = {
     _id: string;
-    title: string;
-    artist: string;
-    image: {
-        value: string;
+    artworkTitle: PublicFields;
+    artistName: PublicFields;
+    artworkImage: {
+        value: string | null | undefined;
     };
 };
 export interface ListPreview {

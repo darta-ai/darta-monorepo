@@ -1,8 +1,9 @@
-import { Artwork, GalleryPreview, Images, MobileUser, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types/dist";
+import { Artwork, GalleryPreview, Images, List, MobileUser, NewList, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types/dist";
 import { createUserArtworkRelationship, deleteUserArtworkRelationship, listUserArtworkAPIRelationships } from "../api/artworkRoutes";
 import { createDartaUserFollowGallery, createUserVisitedGallery, deleteDartaUserFollowGallery, editDartaUserAccount, listDartaUserFollowsGallery } from "../api/userRoutes";
 import {listArtworksToRate, listArtworksToRateStatelessRandomSampling} from "../api/recommenderRoutes";
 import auth from '@react-native-firebase/auth';
+import { createListForUser, listUserLists } from "../api/listRoutes";
 
 export const createArtworkRelationshipAPI = async ({artworkId, action} :{artworkId: string;action: USER_ARTWORK_EDGE_RELATIONSHIP;}) => {
     try{
@@ -101,6 +102,28 @@ export const listArtworksToRateStatelessRandomSamplingAPI = async ({startNumber,
         if (uid) {
         return await listArtworksToRateStatelessRandomSampling({uid, startNumber, endNumber, artworkIds});
         }
+    } catch (error){
+        console.log(error)
+        throw new Error(error)
+    }
+}
+
+export const createArtworkListAPI = async ({artworkId, newList} :{artworkId: string; newList: NewList}) => {
+    try{
+        const uid = auth().currentUser?.uid;
+        if (!uid) return null;
+        return await createListForUser({newList, artworkId});
+    } catch (error){
+        console.log(error)
+        throw new Error(error)
+    }
+}
+
+export const listUserListsAPI = async () => {
+    try{
+        const uid = auth().currentUser?.uid;
+        if (!uid) return null;
+        return await listUserLists();
     } catch (error){
         console.log(error)
         throw new Error(error)

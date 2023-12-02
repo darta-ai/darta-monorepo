@@ -134,6 +134,7 @@ export enum RecommenderRoutesEnum {
   recommenderGallery = 'RECOMMENDER_GALLERY',
   recommenderExhibition= 'RECOMMENDER_EXHIBITION',
   TopTabExhibition = 'RECOMMENDER_TOP_TAB_EXHIBITION',
+  recommenderLists = 'RECOMMENDER_LISTS',
 }
 
 export type RecommenderParamList = {

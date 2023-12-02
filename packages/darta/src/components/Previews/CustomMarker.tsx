@@ -13,7 +13,7 @@ import { ExhibitionMapPin } from '@darta-types';
 import { ETypes, StoreContext } from '../../state/Store';
 import { ExploreMapRootEnum } from '../../typing/routes';
 import {Button } from 'react-native-paper';
-import { GoogleMapsPinIcon } from '../../assets/SVGs';
+import { GoogleMapsPinIcon, MapPinCircleDotIcon} from '../../assets/SVGs';
 
 const customMarker = StyleSheet.create({
   galleryContainer:{
@@ -127,7 +127,6 @@ const CustomMarker = React.memo(({
   const [line2, setLine2] = React.useState<string>("")
   const [exhibitionTitle, setExhibitionTitle] = React.useState<string>("")
   const [artistName, setArtistName] = React.useState<string>("")
-  const [pinColor, setPinColor] = React.useState<string>(Colors.PRIMARY_800)
   const [buttonText, setButtonText] = React.useState<string>("View Gallery")
 
 
@@ -140,10 +139,9 @@ const CustomMarker = React.memo(({
 
 
     if (mapPin.receptionDates?.receptionStartTime.value && mapPin.receptionDates?.receptionEndTime.value) {
-      const endDateOpening = new Date(mapPin.receptionDates.receptionEndTime.value);
-      setHasUpcomingOpening(endDateOpening >= new Date());
-      setPinColor(endDateOpening >= new Date() ? Colors.ADOBE_500 : Colors.PRIMARY_800)
-
+      const receptionEndDate = new Date(mapPin.receptionDates.receptionEndTime.value);
+      const isOpeningUpcoming = (receptionEndDate >= new Date());
+      setHasUpcomingOpening(isOpeningUpcoming);
     }
     if (mapPin.exhibitionDates?.exhibitionDuration && mapPin.exhibitionDates.exhibitionDuration?.value === "Ongoing/Indefinite"){
       setHasCurrentOpening(true)
@@ -192,9 +190,8 @@ const CustomMarker = React.memo(({
       coordinate={coordinate}
       key={mapPin.exhibitionId}
       onTouchStart={() => setShowCallout(true)}
-      pinColor={pinColor}
     >
-      <GoogleMapsPinIcon /> 
+      {hasUpcomingOpening ? <MapPinCircleDotIcon />: <GoogleMapsPinIcon/> }
       {showCallout && (
         <Callout style={customMarkerDynamic.container} 
         onTouchStart={() => setShowCallout(false)} 

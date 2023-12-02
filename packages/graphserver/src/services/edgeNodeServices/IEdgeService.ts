@@ -70,6 +70,15 @@ export interface IEdgeService {
     edgeName: string;
     from: string;
   }): Promise<any[]>;
+  getEdgesFromNodeWithLimit({
+    edgeName,
+    from,
+    limit,
+  }: {
+    edgeName: string;
+    from: string;
+    limit: number;
+  }): Promise<any[]>;
   replaceMediumEdge({
     edgeName,
     from,

@@ -159,7 +159,8 @@ function App() {
               handleNavigationChange(state)
               const previousRouteName = routeNameRef.current;
               const currentRouteName = navigationRef?.getCurrentRoute()?.name;
-              if (previousRouteName !== currentRouteName) {
+              const isDev = process.env.EXPO_PUBLIC_ENVIRONMENT === "development";
+              if (previousRouteName !== currentRouteName && !isDev) {
                 analytics().logEvent(`screen_view`, {
                   screen_name: currentRouteName,
                 });

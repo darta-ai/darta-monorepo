@@ -14,6 +14,8 @@ const SSGallerySelectorComponent = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: Colors.PRIMARY_100,
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.PRIMARY_900,
     height: 78,
     width: 345,
     padding: 16,
@@ -21,6 +23,7 @@ const SSGallerySelectorComponent = StyleSheet.create({
   },
   badgeContainer: {
     flex: 0.15,
+    height: '100%',
     justifyContent: 'center',
     alignSelf: 'center',
   },
@@ -31,6 +34,7 @@ const SSGallerySelectorComponent = StyleSheet.create({
   },
   textContainer: {
     flex: 0.8,
+    height: '100%',
     justifyContent: 'center',
     gap: 2
   },
@@ -40,14 +44,22 @@ const SSGallerySelectorComponent = StyleSheet.create({
 type DartaIconButtonWithTextProps = {
   headline: string,
   subHeadline: string,
-  iconComponent: React.ElementType; // Use a more descriptive prop name
+  isAdding: boolean
 };
 
+const Icon = () => {
+  return (
+    <View>
+      <SVGs.BlackPinIcon />
+    </View>
+  )
+}
 
-export const YouComponent: React.FC<DartaIconButtonWithTextProps> = ({
+
+export const UserListComponent: React.FC<DartaIconButtonWithTextProps> = ({
   headline,
   subHeadline,
-  iconComponent : Icon,
+  isAdding
 }) => {
   return (
     <TouchableOpacity style={SSGallerySelectorComponent.componentContainer}>
@@ -60,15 +72,12 @@ export const YouComponent: React.FC<DartaIconButtonWithTextProps> = ({
           {headline}
         </TextElement>
         <TextElement
-          style={[
-            globalTextStyles.paragraphTextSize14,
-            {color: Colors.PRIMARY_600},
-          ]}>
+          style={globalTextStyles.paragraphTextSize14}>
           {subHeadline}
         </TextElement>
       </View>
       <View style={SSGallerySelectorComponent.forwardButtonContainer}>
-          <SVGs.ForwardIcon />
+          {isAdding ? <SVGs.PlusCircleIcon /> : <SVGs.ForwardIcon />}
       </View>
     </TouchableOpacity>
   );

@@ -445,6 +445,9 @@ export function DartaRecommenderView({
       useNativeDriver: true,
     }).start(async () => {
       // Network call in the middle of the wiggle
+
+      navigation.navigate(RecommenderRoutesEnum.recommenderLists, {artwork: artOnDisplay})
+
       await rateArtwork(await handleArtworkRating(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE));
   
       // Complete the wiggle animation
@@ -461,7 +464,7 @@ export function DartaRecommenderView({
         }),
       ]).start(async () => {
         if(!currentArtRating[RatingEnum.save]) {
-          await toggleArtForward()
+          // await toggleArtForward()
         }
         Animated.sequence([
           Animated.timing(wiggleAnim, {

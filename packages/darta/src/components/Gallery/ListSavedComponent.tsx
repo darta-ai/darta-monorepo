@@ -6,6 +6,9 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {globalTextStyles} from '../../styles/styles';
 import {TextElement} from '../Elements/_index';
 import * as SVGs from '../../assets/SVGs/index';
+import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
+import { USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
+import { ETypes, StoreContext } from '../../state/Store';
 
 const SSGallerySelectorComponent = StyleSheet.create({
   componentContainer: {
@@ -14,6 +17,8 @@ const SSGallerySelectorComponent = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: Colors.PRIMARY_100,
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.PRIMARY_900,
     height: 78,
     width: 345,
     padding: 16,
@@ -21,6 +26,7 @@ const SSGallerySelectorComponent = StyleSheet.create({
   },
   badgeContainer: {
     flex: 0.15,
+    height: '100%',
     justifyContent: 'center',
     alignSelf: 'center',
   },
@@ -31,6 +37,7 @@ const SSGallerySelectorComponent = StyleSheet.create({
   },
   textContainer: {
     flex: 0.8,
+    height: '100%',
     justifyContent: 'center',
     gap: 2
   },
@@ -41,16 +48,33 @@ type DartaIconButtonWithTextProps = {
   headline: string,
   subHeadline: string,
   iconComponent: React.ElementType; // Use a more descriptive prop name
+  isAdding: boolean,
+  artworkId: string,
 };
 
 
-export const YouComponent: React.FC<DartaIconButtonWithTextProps> = ({
+export const ListSavedComponent: React.FC<DartaIconButtonWithTextProps> = ({
   headline,
   subHeadline,
   iconComponent : Icon,
+  isAdding,
+  artworkId,
 }) => {
+  const {dispatch} = React.useContext(StoreContext);
+  const onPress = async () => {
+    if (isAdding) {
+      await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE});
+      dispatch({
+        type: ETypes.setUserSavedArtworkMulti,
+        artworkIds: {[artworkId]: true},
+      })
+    }
+    else {
+      // Navigate to list
+    }
+  }
   return (
-    <TouchableOpacity style={SSGallerySelectorComponent.componentContainer}>
+    <TouchableOpacity style={SSGallerySelectorComponent.componentContainer} onPress={onPress}>
       <View style={SSGallerySelectorComponent.badgeContainer}>
           <Icon />
       </View>
@@ -60,15 +84,12 @@ export const YouComponent: React.FC<DartaIconButtonWithTextProps> = ({
           {headline}
         </TextElement>
         <TextElement
-          style={[
-            globalTextStyles.paragraphTextSize14,
-            {color: Colors.PRIMARY_600},
-          ]}>
+          style={globalTextStyles.paragraphTextSize14}>
           {subHeadline}
         </TextElement>
       </View>
       <View style={SSGallerySelectorComponent.forwardButtonContainer}>
-          <SVGs.ForwardIcon />
+          {isAdding ? <SVGs.PlusCircleIcon /> : <SVGs.ForwardIcon />}
       </View>
     </TouchableOpacity>
   );
