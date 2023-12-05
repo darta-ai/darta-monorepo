@@ -4,7 +4,7 @@ import React, {useContext} from 'react';
 import {ETypes, StoreContext} from '../../state/Store';
 import {backButtonStyles, headerOptions, viewOptionsStyles} from '../../styles/styles';
 import {RecommenderRoutesEnum} from '../../typing/routes';
-import {View, StyleSheet} from 'react-native';
+import {View } from 'react-native';
 import { DartaRecommenderView } from '../../screens/DartaRecommenderView';
 import { DartaRecommenderTopTab } from './DartaRecommenderTopTab';
 import { IconButton} from 'react-native-paper';
@@ -13,7 +13,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useDeepLinking } from '../../components/LinkingAndNavigation/deepLinking';
 import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
-import crashlytics from '@react-native-firebase/crashlytics';
 import { AddToListScreen } from '../../screens/Lists/AddToList';
 import { TextElement } from '../../components/Elements/TextElement';
 
@@ -79,7 +78,7 @@ export function DartaRecommenderNavigator() {
               component={AddToListScreen}
               options={{ 
                 headerMode: 'float', 
-                cardStyle: {opacity: 0.8, margin:0, backgroundColor: 'transparent', height: '80%', width: '100%'}, 
+                cardStyle: {opacity: 1, margin:0, backgroundColor: 'transparent', width: '100%'}, 
                 headerTitle: 'Add to list',
                 headerTintColor: Colors.PRIMARY_50,
                 headerStyle: {
@@ -90,9 +89,8 @@ export function DartaRecommenderNavigator() {
                   <View style={backButtonStyles.backButton}>
                     <TextElement style={{color: Colors.PRIMARY_50}}>Cancel</TextElement>
                   </View>
-              ), }}
-              
-            />
+              ), 
+            }}/>
           </RecommenderStack.Group>
     </RecommenderStack.Navigator>
   );

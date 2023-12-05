@@ -23,7 +23,7 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 });
 
 function AnimatedSplashScreen({ children }) {
-  const {state, dispatch} = React.useContext(StoreContext)
+  const {dispatch} = React.useContext(StoreContext)
   const animation = useMemo(() => new Animated.Value(1), []);
   const [isAppReady, setAppReady] = useState(false);
   const [isSplashAnimationComplete, setAnimationComplete] = useState(false);
@@ -54,7 +54,7 @@ function AnimatedSplashScreen({ children }) {
         savedArtwork,
         inquiredArtwork,
         artworksToRate, 
-        userLists
+        userListPreviews
       ] = await Promise.all([
         // user
         uid ? getDartaUser({uid}) : null,
@@ -80,13 +80,20 @@ function AnimatedSplashScreen({ children }) {
         listUserLists()
       ]);
 
-      console.log(userLists)
-
       // User Profile
       if (user) {
         dispatch({
           type: ETypes.setUser,
           userData: user
+        });
+      }
+
+      // User Lists
+      if (userListPreviews) {
+        console.log(userListPreviews)
+        dispatch({
+          type: ETypes.setUserListPreviews,
+          userListPreviews
         });
       }
 

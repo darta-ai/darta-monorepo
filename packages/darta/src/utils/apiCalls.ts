@@ -119,6 +119,17 @@ export const createArtworkListAPI = async ({artworkId, newList} :{artworkId: str
     }
 }
 
+export const addArtworkToListAPI = async ({artworkId, listId} :{artworkId: string; listId: string}) => {
+    try{
+        const uid = auth().currentUser?.uid;
+        if (!uid) return null;
+        return await addArtworkToListAPI({listId, artworkId});
+    } catch (error){
+        console.log(error)
+        throw new Error(error)
+    }
+}
+
 export const listUserListsAPI = async () => {
     try{
         const uid = auth().currentUser?.uid;
@@ -129,6 +140,8 @@ export const listUserListsAPI = async () => {
         throw new Error(error)
     }
 }
+
+
 
 export const editDartaUserAccountAPI = async ({
     data

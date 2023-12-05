@@ -321,7 +321,6 @@ export function ExhibitionDetailsScreen({
     }
 
   React.useEffect(() => {
-
     function handleExhibitionData() {
         let galleryId = ""
         let exhibitionId = ""
@@ -392,10 +391,10 @@ export function ExhibitionDetailsScreen({
             type: ETypes.saveExhibition,
             exhibitionData: newExhibition,
         })
-        dispatch({
-            type: ETypes.setFullyLoadedExhibitions,
-            fullyLoadedExhibitions: {[newExhibition.exhibitionId] : true},
-        })
+        // dispatch({
+        //     type: ETypes.setFullyLoadedExhibitions,
+        //     fullyLoadedExhibitions: {[newExhibition.exhibitionId] : true},
+        // })
         dispatch({
             type: ETypes.setCurrentHeader,
             currentExhibitionHeader: newExhibition.exhibitionTitle.value!

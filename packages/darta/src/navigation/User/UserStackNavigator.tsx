@@ -1,5 +1,7 @@
 import {PRIMARY_950} from '@darta-styles';
 import React, {useContext} from 'react';
+import * as Colors from '@darta-styles';
+
 
 import {ArtworkScreen} from '../../screens/Artwork/ArtworkScreen';
 import {UserHome} from '../../screens/UserHome';
@@ -15,7 +17,10 @@ import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/st
 import { GalleryAndArtworkTopTabNavigator } from './GalleryAndArtworkTopTabNavigator';
 import { PastExhibitionTopTabNavigator } from '../Exhibition/PastExhibitionTopTabNavigator';
 import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
-import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
+import * as SVGs from '../../assets/SVGs';
+import { ViewListsScreen } from '../../screens/Lists/ViewLists';
+import { TextElement } from '../../components/Elements/TextElement';
+import { FullListScreen } from '../../screens/Lists/FullListScreen';
 
 export const UserStack = createStackNavigator();
 
@@ -28,7 +33,7 @@ export function UserStackNavigator({route} : {route: any}) {
       cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, 
       headerBackImage: () => (
         <View style={backButtonStyles.backButton}>
-          <BackButtonIcon />
+          <SVGs.BackButtonIcon />
         </View>
         ),
         headerBackTitleVisible: false,
@@ -81,6 +86,22 @@ export function UserStackNavigator({route} : {route: any}) {
           initialParams={{galleryId: route.params?.artOnDisplay.galleryId, navigationRoute: UserRoutesEnum.UserPastTopTabNavigator, showPastExhibitions: true, navigateTo: UserRoutesEnum.SavedArtworkModal}}
           options={{...headerOptions, headerTitle: state?.galleryHeader ?? ""}}
           />
+          <UserStack.Screen
+          name={UserRoutesEnum.userListFull}
+          component={FullListScreen}
+          options={{
+            headerTintColor: Colors.PRIMARY_50,
+            headerStyle: {
+              backgroundColor: Colors.PRIMARY_950, 
+              opacity: 0.9,
+            }, 
+            headerBackImage: () => (
+              <View style={backButtonStyles.backButton}>
+                <SVGs.BackButtonIconWhite />
+              </View>
+          ), 
+            headerTitle: state.listHeader ?? ""}}
+        />
       </UserStack.Group>
 
       <UserStack.Group>
@@ -88,6 +109,24 @@ export function UserStackNavigator({route} : {route: any}) {
           name={UserRoutesEnum.SavedArtworkModal}
           component={ArtworkScreen}
           options={{...headerOptions, headerTitle: state?.currentArtworkTombstoneHeader ?? ""}}
+        />
+        <UserStack.Screen
+          name={UserRoutesEnum.UserListsScreen}
+          component={ViewListsScreen}
+          options={{
+            headerMode: 'float', 
+            cardStyle: {opacity: 1, margin:0, backgroundColor: 'transparent', width: '100%'}, 
+            headerTintColor: Colors.PRIMARY_50,
+            headerStyle: {
+              backgroundColor: Colors.PRIMARY_950, 
+              opacity: 0.9,
+            }, 
+            headerBackImage: () => (
+              <View style={backButtonStyles.backButton}>
+                <SVGs.BackButtonIconWhite />
+              </View>
+          ), 
+            headerTitle: "Lists"}}
         />
       </UserStack.Group>
     </UserStack.Navigator>

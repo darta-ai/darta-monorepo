@@ -27,8 +27,6 @@ import { DartaIconButtonWithText } from '../components/Darta/DartaIconButtonWith
 import * as SVGs from '../assets/SVGs';
 
 
-const HEADER_MAX_HEIGHT = 100;
-const HEADER_MIN_HEIGHT = hp('10%');
 const HEADER_MAX_WIDTH = 100;
 const HEADER_MIN_WIDTH = wp('15%');
 // const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;

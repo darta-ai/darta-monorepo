@@ -9,6 +9,8 @@ import * as SVGs from '../../assets/SVGs/index';
 import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
 import { USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
 import { ETypes, StoreContext } from '../../state/Store';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {userListComponentStyles} from './UserListComponent';
 
 const SSGallerySelectorComponent = StyleSheet.create({
   componentContainer: {
@@ -20,9 +22,8 @@ const SSGallerySelectorComponent = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.PRIMARY_900,
     height: 78,
-    width: 345,
+    width: wp('90%'),
     padding: 16,
-    borderRadius: 19,
   },
   badgeContainer: {
     flex: 0.15,
@@ -49,7 +50,7 @@ type DartaIconButtonWithTextProps = {
   subHeadline: string,
   iconComponent: React.ElementType; // Use a more descriptive prop name
   isAdding: boolean,
-  artworkId: string,
+  handlePress: ({listId} : {listId: string}) => void,
 };
 
 
@@ -58,27 +59,19 @@ export const ListSavedComponent: React.FC<DartaIconButtonWithTextProps> = ({
   subHeadline,
   iconComponent : Icon,
   isAdding,
-  artworkId,
+  handlePress,
 }) => {
-  const {dispatch} = React.useContext(StoreContext);
-  const onPress = async () => {
-    if (isAdding) {
-      await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE});
-      dispatch({
-        type: ETypes.setUserSavedArtworkMulti,
-        artworkIds: {[artworkId]: true},
-      })
-    }
-    else {
-      // Navigate to list
-    }
+  const [isPressed, setIsPressed] = React.useState(false);
+  const pressHandler = () => {
+    setIsPressed(!isPressed);
+    handlePress({listId: 'saved'});
   }
   return (
-    <TouchableOpacity style={SSGallerySelectorComponent.componentContainer} onPress={onPress}>
-      <View style={SSGallerySelectorComponent.badgeContainer}>
+    <TouchableOpacity style={userListComponentStyles.componentContainer} onPress={pressHandler}>
+      <View style={userListComponentStyles.badgeContainer}>
           <Icon />
       </View>
-      <View style={SSGallerySelectorComponent.textContainer}>
+      <View style={userListComponentStyles.textContainer}>
         <TextElement
           style={globalTextStyles.boldTitleText}>
           {headline}
@@ -88,8 +81,8 @@ export const ListSavedComponent: React.FC<DartaIconButtonWithTextProps> = ({
           {subHeadline}
         </TextElement>
       </View>
-      <View style={SSGallerySelectorComponent.forwardButtonContainer}>
-          {isAdding ? <SVGs.PlusCircleIcon /> : <SVGs.ForwardIcon />}
+      <View style={userListComponentStyles.forwardButtonContainer}>
+        {isAdding && isPressed ? <SVGs.PlusCircleIcon /> : <SVGs.EmptyCircle />}
       </View>
     </TouchableOpacity>
   );

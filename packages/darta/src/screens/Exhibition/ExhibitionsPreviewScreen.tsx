@@ -1,6 +1,6 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext} from 'react';
-import { RefreshControl, FlatList, ScrollView, Image, View} from 'react-native';
+import { RefreshControl, ScrollView, Image, View} from 'react-native';
 import {
   ExhibitionNavigatorParamList,
   ExhibitionPreviewEnum,

@@ -19,8 +19,6 @@ import {buttonSizes, icons} from '../../utils/constants';
 import {galleryInteractionStyles, globalTextStyles} from '../../styles/styles';
 import {ETypes, StoreContext} from '../../state/Store';
 import { createUser, deleteDartaUser, editDartaUserAccount, getDartaUser } from '../../api/userRoutes';
-import { DeleteAccountDialog } from '../Dialog/DeleteAccountDialog';
-import { UserRoutesEnum } from '../../typing/routes';
 import { firebaseDeleteUser } from '../../api/firebase';
 
 type FieldState = {

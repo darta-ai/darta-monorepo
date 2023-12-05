@@ -11,9 +11,11 @@ export enum UserRoutesEnum {
     userSavedArtwork = 'USER_SAVED_ARTWORK',
     userInquiredArtwork = 'USER_INQUIRED_ARTWORK',
     SavedArtworkModal = 'TOMBSTONE',
+    UserListsScreen = 'USER_LISTS_SCREEN',
     UserGalleryAndArtwork = 'USER_GALLERY_AND_ARTWORK',
     UserPastTopTabNavigator = 'USER_PAST_TOP_TAB_NAVIGATOR',
     UserGallery = 'USER_GALLERY',
+    userListFull = 'USER_LIST_FULL',
     individualArtwork= 'USER_INDIVIDUAL_ARTWORK',
   }
   
@@ -135,6 +137,7 @@ export enum RecommenderRoutesEnum {
   recommenderExhibition= 'RECOMMENDER_EXHIBITION',
   TopTabExhibition = 'RECOMMENDER_TOP_TAB_EXHIBITION',
   recommenderLists = 'RECOMMENDER_LISTS',
+  recommenderNewList = 'RECOMMENDER_NEW_LIST',
 }
 
 export type RecommenderParamList = {

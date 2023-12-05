@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, {createContext, ReactNode, useReducer} from 'react';
 
 import {RatingEnum} from '../typing/types';
-import {Artwork, Exhibition, ExhibitionPreview, IGalleryProfileData, MapPinCities, ExhibitionMapPin, MobileUser, GalleryPreview} from '@darta-types'
+import {Artwork, Exhibition, ExhibitionPreview, IGalleryProfileData, MapPinCities, ExhibitionMapPin, MobileUser, GalleryPreview, ListPreview, List} from '@darta-types'
 
 export interface IUserArtworkRatings {
   [id: string]: {
@@ -150,6 +150,9 @@ export interface IState {
     shareURL: string,
     shareURLMessage: string,
   },
+  userListPreviews?: {[key: string]: ListPreview}
+  userLists?: {[key: string]: List}
+  listHeader?: string;
 }
 
 export enum ETypes {
@@ -224,6 +227,10 @@ export enum ETypes {
   setRatingIndex = 'SET_RATING_INDEX',
 
   setExhibitionShareURL = 'SET_EXHIBITION_SHARE_URL',
+
+  setUserListPreviews = 'SET_USER_LIST_PREVIEWS',
+  setUserLists = 'SET_USER_LISTS',
+  setListHeader = 'SET_LIST_HEADER',
 }
 
 // Define the action type
@@ -293,6 +300,9 @@ interface IAction {
     shareURL: string,
     shareURLMessage: string,
   }
+  userListPreviews?: {[key: string]: ListPreview}
+  userLists?: {[key: string]: List}
+  listHeader?: string;
 }
 
 // Define the initial state
@@ -487,7 +497,15 @@ const reducer = (state: IState, action: IAction): IState => {
             ...state,
             galleryHeader: action.galleryHeader,
           };
-  
+      case ETypes.setListHeader:
+        if (!action.listHeader) {
+          return state;
+        }
+        return {
+          ...state,
+          listHeader: action.listHeader,
+        };
+
       case ETypes.saveExhibitionMapPins:
         if (!action.mapPins && !action.mapPinCity) {
           return state;
@@ -745,6 +763,28 @@ const reducer = (state: IState, action: IAction): IState => {
           ...state,
           exhibitionShareDetails: action.exhibitionShareDetails,
         };
+      case ETypes.setUserListPreviews:
+        if (!action?.userListPreviews){
+          return state;
+        }
+        return {
+          ...state,
+          userListPreviews: {
+            ...state.userListPreviews,
+            ...action.userListPreviews
+          },
+        };
+        case ETypes.setUserLists:
+          if (!action?.userLists){
+            return state;
+          }
+          return {
+            ...state,
+            userLists: {
+              ...state.userLists,
+              ...action.userLists
+            },
+          };
     default:
       return state;
   }

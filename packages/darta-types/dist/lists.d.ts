@@ -3,9 +3,13 @@ export interface List {
     _id: string;
     listName: string;
     creator: string;
+    isPrivate: boolean;
+    createdAt: string;
 }
 export interface NewList {
     listName: string;
+    isCollaborative: boolean;
+    isPrivate: boolean;
 }
 export interface ListUserEdge {
     _id: string;
@@ -24,15 +28,20 @@ export type PreviewArtwork = {
     artworkImage: {
         value: string | null | undefined;
     };
+    addedAt: string;
 };
 export interface ListPreview {
     _id: string;
     listName: string;
-    artwork0: PreviewArtwork;
-    artwork1: PreviewArtwork;
-    artwork2: PreviewArtwork;
-    artwork3: PreviewArtwork;
+    artworkPreviews: {
+        [key: string]: PreviewArtwork;
+    };
     creator: string;
+    creatorName: string;
+    creatorProfilePicture: string;
+    isPrivate: boolean;
+    isCollaborative: boolean;
+    createdAt: string;
 }
 export interface FullList extends List {
     artwork: {

@@ -1,24 +1,33 @@
 import React from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, ScrollView } from 'react-native'
+import { Button } from 'react-native-paper'
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import * as SVGs from '../../assets/SVGs/index';
 import * as Colors from '@darta-styles';
 import { ListSavedComponent } from '../../components/Gallery/ListSavedComponent';
-import { IconButton, TextInput } from 'react-native-paper';
-import { saveArtworkToList } from '../../state/hooks';
+import { ETypes, StoreContext } from '../../state/Store';
+import { ListPreview, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
+import { UserListComponent } from '../../components/Gallery/UserListComponent';
+import { TextElement } from '../../components/Elements/TextElement';
+import { NewListModal } from '../../components/Lists/NewListModal';
+import { addArtworkToList } from '../../api/listRoutes';
+import { createUserArtworkRelationship } from '../../api/artworkRoutes';
 
 const addToListStyles = StyleSheet.create({
     container: {
-        height: hp('50%'),
+        height: '100%',
         width: '100%',
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
         padding: 24,
-        alignItems: 'center',
         backgroundColor: Colors.PRIMARY_950,
         opacity: 0.9,
+    },
+    contentContainer: {
+        display: 'flex', 
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
         gap: 24,
+        paddingBottom: 100,
     },
     addContainer: {
         flexDirection: 'row',
@@ -45,11 +54,31 @@ const addToListStyles = StyleSheet.create({
         height: '100%',
         justifyContent: 'center',
       },
-      text: {
+    text: {
         flex: 0.8,
-
         justifyContent: 'center',
       },
+    newList: {
+        backgroundColor: Colors.PRIMARY_50, 
+        width: wp('40%'), 
+        padding: 6
+    }, 
+    newListText: {
+        color: Colors.PRIMARY_950, 
+        fontFamily: 'DMSans_700Bold'
+    },
+    saveButtonContainer: {
+        position: 'absolute',
+        top: hp('75%'),
+        left: wp('35%'),
+    }, 
+    doneButton: {
+        backgroundColor: Colors.PRIMARY_50, 
+        width: wp('30%'), 
+        padding: 6,
+        borderWidth: 2,
+        borderColor: Colors.PRIMARY_950,
+    }
 })
 
 
@@ -64,46 +93,107 @@ export function AddToListScreen({
     if (route.params && route.params.artwork && route.params.artwork._id) {
         artworkId = route.params.artwork._id;
     }
-    const [listName, setListName] = React.useState<string>("")
-    const saveList = async () => {
-        try{
-            await saveArtworkToList({artworkId, newList:{
-                listName: 'New List',
-            }})
-        } catch (e) {   
-            console.log(e)
+    const {state, dispatch} = React.useContext(StoreContext);
+    const [visible, setVisible] = React.useState<boolean>(false)
+    const [saveToSaved, setSaveToSaved] = React.useState<boolean>(false)
+    const [isLoading, setIsLoading] = React.useState<boolean>(false)
+
+    type listArtworkIds = {
+        [key: string]: string[]
+    }
+
+    const [pressedLists, setPressedLists] = React.useState<listArtworkIds>({})
+
+
+    const handlePress = ({listId} : {listId: string}) => {
+        if (!artworkId) return
+        if (listId === 'saved') {
+            setSaveToSaved(!saveToSaved)
+        }
+        if (pressedLists[listId]?.includes(artworkId)) {
+            const newList = pressedLists[listId].filter((id: string) => id !== artworkId)
+            setPressedLists({...pressedLists, [listId]: newList})
+        }
+        else {
+            if (!pressedLists[listId]) {
+                setPressedLists({...pressedLists, [listId]: [artworkId]})
+            } else {
+                setPressedLists({...pressedLists, [listId]: [...pressedLists?.[listId], artworkId]})
+            }
+        }
+    }
+
+    const handleDone = async () => {
+        setIsLoading(true)
+        const promises: Promise<void>[]= [];
+        let listIds: string[] = [];
+
+        if (saveToSaved) {
+            await createUserArtworkRelationship({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE});
+            dispatch({
+                type: ETypes.setUserSavedArtworkMulti,
+                artworkIds: {[artworkId]: true},
+            })
+        }
+    
+        try {
+            Object.keys(pressedLists).forEach( async (listId) => {
+                await addArtworkToList({ listId, artworkId })
+            });
+            setIsLoading(false)
+            navigation.goBack()
+        } catch (error) {
+            // Handle any errors here
+            console.error('An error occurred:', error);
         }
     }
     return (
         <View style={addToListStyles.container}>
-            <View style={addToListStyles.addContainer}>
-                <View style={addToListStyles.text}>
-                <TextInput 
-                label="New List"
-                inputAccessoryViewID="userNameInput"
-                testID="userNameInput"
-                value={listName}
-                onChange={(e) => setListName(e.nativeEvent.text)}
-                mode="outlined"
-                activeOutlineColor={Colors.PRIMARY_800}
-                textColor={Colors.PRIMARY_700}
-                theme={{
-                fonts: {default: {fontFamily: 'DMSans_400Regular'}}
-                }}
-                style={{width: '100%'}}
+            <ScrollView  contentContainerStyle={addToListStyles.contentContainer}>
+                <Button 
+                style={addToListStyles.newList}
+                onPress={() => setVisible(!visible)}>
+                    <TextElement style={addToListStyles.newListText}>New List</TextElement>
+                </Button>
+                <ListSavedComponent 
+                headline="Saved"
+                subHeadline="Add to your saved list"
+                iconComponent={SVGs.SavedActiveIconLarge}
+                isAdding={true}
+                handlePress={handlePress}
                 />
-                </View>
-                <View style={addToListStyles.forwardButtonContainer}>
-                    <IconButton onPress={() => saveList()} icon={() => <SVGs.PlusCircleIcon />}/>
-                </View>
+                {state.userListPreviews && Object.values(state.userListPreviews).sort((a, b) => {
+                    
+                    if (b?.createdAt > a?.createdAt) return 1
+                    if (b?.createdAt < a?.createdAt) return -1
+                    return 0
+                }).map((listPreview: ListPreview ) => {
+                    return (
+                    <View key={listPreview._id}>
+                        <UserListComponent 
+                        listPreview={listPreview}
+                        isAdding={true}
+                        handlePress={handlePress}
+                        />
+                    </View>
+                    )
+                })}
+                <NewListModal 
+                navigation={navigation}
+                artworkId={artworkId}
+                visible={visible}
+                setVisible={setVisible}
+                />
+            </ScrollView>
+            <View style={addToListStyles.saveButtonContainer}>
+                <Button 
+                style={addToListStyles.doneButton}
+                loading={isLoading}
+                disabled={isLoading}
+                onPress={handleDone}>
+                    <TextElement style={{color: Colors.PRIMARY_950, fontFamily: 'DMSans_700Bold'}}>Done</TextElement>
+                </Button>
             </View>
-            <ListSavedComponent 
-              headline="Saved"
-              subHeadline="Add to your saved list"
-              iconComponent={SVGs.SavedActiveIconLarge}
-              isAdding={true}
-              artworkId={artworkId}
-            />
         </View>
     )
 }

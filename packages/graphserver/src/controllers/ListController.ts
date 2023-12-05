@@ -42,16 +42,40 @@ export class ListController {
     @request() req: Request,
     @response() res: Response,
   ): Promise<void> {
-    const {user} = req as any;
-    const {newList, artworkId} = req.body;
+    const {listId} = req.query;
     try {
-      if (!newList || !artworkId) {
-        throw new Error('!! no newList or artworkId !!');
+      if (!listId) {
+        throw new Error('!! no listId !!');
       }
-      const results = await this.listService.createList({
-          newList, 
+      const listIdString = listId.toString()
+      const results = await this.listService.getFullList({
+          listId: listIdString,
+        });
+        res.status(200).send(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req?.body, request: 'lists/readList'})
+      if (!res.headersSent) {
+        res.status(500).send('unable to create new list');
+      }
+    }
+  }
+
+
+  @httpPost('/addArtworkToList', verifyToken)
+  public async addArtworkToList(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    const {user} = req as any;
+    const {listId, artworkId} = req.body;
+    try {
+      if (!listId || !artworkId) {
+        throw new Error('!! no listId or artworkId !!');
+      }
+      const results = await this.listService.addArtworkToList({
           artworkId,
-          uid: user.uid,
+          listId, 
+          userUid: user.uid,
         });
         res.status(200).send(results);
     } catch (error: any) {
@@ -72,7 +96,7 @@ export class ListController {
       const results = await this.listService.listLists({
           uid: user.uid,
         });
-        res.status(200).send(results);
+      res.status(200).send(results);
     } catch (error: any) {
       standardConsoleLog({message: error.message, data: req?.body, request: 'lists/listLists'})
       if (!res.headersSent) {

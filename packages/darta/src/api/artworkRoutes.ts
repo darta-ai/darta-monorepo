@@ -20,12 +20,13 @@ export async function createUserArtworkRelationship({
   action,
   artworkId
 }: {
-  uid: string;
+  uid?: string;
   action: USER_ARTWORK_EDGE_RELATIONSHIP;
   artworkId: string;
 }): Promise<any> {
   try {
     const idToken = await auth().currentUser?.getIdToken();
+    const uid = auth().currentUser?.uid;
     const {data} = await axios.post(`${URL}/createUserArtworkRelationship`, {uid, action, artworkId}, {headers: {authorization: `Bearer ${idToken}`}});
     return data;
   } catch (error:any) {

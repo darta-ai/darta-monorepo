@@ -110,10 +110,10 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
           type: ETypes.setQRCodeExhibitionId,
           qRCodeExhibitionId: exhibition.exhibitionId,
         })
-      dispatch({
-          type: ETypes.setFullyLoadedExhibitions,
-          fullyLoadedExhibitions: {[exhibition._id] : true},
-      })
+      // dispatch({
+      //     type: ETypes.setFullyLoadedExhibitions,
+      //     fullyLoadedExhibitions: {[exhibition._id] : true},
+      // })
       return exhibition.artworks
   } catch (error: any){
       console.log(error)

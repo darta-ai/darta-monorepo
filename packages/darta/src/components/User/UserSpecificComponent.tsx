@@ -33,6 +33,10 @@ export function UserSpecificComponent({
     navigation.navigate(UserRoutesEnum.userSettings)
   };
 
+  const navigateToLists = () => {
+    navigation.navigate(UserRoutesEnum.UserListsScreen)
+  }
+
   const SSUserScreenSelector = StyleSheet.create({
     container: {
       flexDirection: 'column',
@@ -71,6 +75,13 @@ export function UserSpecificComponent({
             headline="Inquiries"
             subHeadline="Artwork you've inquired about"
             iconComponent={SVGs.EmailLargeIcon}
+          />
+        </Pressable>
+        <Pressable onPress={async () => navigateToLists()}>
+          <YouComponent
+            headline="Lists"
+            subHeadline="The lists you've created and saved"
+            iconComponent={SVGs.PaletteFocusedIcon}
           />
         </Pressable>
       </View>

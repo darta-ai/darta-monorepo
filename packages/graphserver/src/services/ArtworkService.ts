@@ -134,7 +134,7 @@ export class ArtworkService implements IArtworkService {
     return artwork;
   }
 
-  public async readArtworkPreview(artworkId: string): Promise<PreviewArtwork | null> {
+  public async readArtworkPreview({artworkId, addedAt}: {artworkId: string, addedAt: string}): Promise<PreviewArtwork | null> {
     // TO-DO: build out?
     const artwork = await this.getArtworkById(artworkId);
 
@@ -145,6 +145,7 @@ export class ArtworkService implements IArtworkService {
       artworkTitle: artwork.artworkTitle,
       artworkImage: {value: artwork.artworkImage?.value},
       artistName: artwork.artistName,
+      addedAt
     };
   }
 

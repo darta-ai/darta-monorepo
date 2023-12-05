@@ -84,7 +84,7 @@ try {
 } catch (error:any) {
   console.log({error})
   console.log({error: error, message: error.message, where: 'getDartaUser'})
-  return {};
+  return null;
 }
 }
 
