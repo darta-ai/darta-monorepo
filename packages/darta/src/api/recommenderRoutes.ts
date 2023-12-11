@@ -1,6 +1,7 @@
 import {Artwork} from '@darta-types';
 import axios from 'axios';
 import auth from '@react-native-firebase/auth';
+import { generateHeaders } from './utls';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}recommendations`;
 
@@ -15,13 +16,13 @@ export async function listArtworksToRate({
   endNumber: number;
 }): Promise<{[key: string] : Artwork} | any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
+    const headers = await generateHeaders();
     const {data} = await axios.get(`${URL}/getDartaUserRecommendations`, {
       params: {
         uid,
         startNumber,
         endNumber,
-  }, headers: {authorization: `Bearer ${idToken}`}});
+  }, headers});
     return data;
   } catch (error:any) {
     console.log(error.message)
@@ -42,14 +43,14 @@ export async function listArtworksToRateStatelessRandomSampling({
   artworkIds: string[];
 }): Promise<{[key: string] : Artwork} | any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
+    const headers = await generateHeaders();
     const {data} = await axios.get(`${URL}/getRecommendationsRandomSampling`, {
       params: {
         uid,
         startNumber,
         endNumber,
         artworkIds
-  }, headers: {authorization: `Bearer ${idToken}`}});
+  }, headers});
     return data;
   } catch (error:any) {
     console.log(error.message)

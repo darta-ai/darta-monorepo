@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { NewList, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
 import auth from '@react-native-firebase/auth';
+import { generateHeaders } from './utls';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}lists`;
 
 export async function readListForUser({listId} : {listId: string}){
   try {
-    const idToken = await auth().currentUser?.getIdToken();
-    const {data} = await axios.get(`${URL}/readList`, {params : {listId}, headers: {authorization: `Bearer ${idToken}`}});
+    const headers = await generateHeaders()
+    const {data} = await axios.get(`${URL}/readList`, {params : {listId}, headers});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'readArtworkForUser'})
@@ -23,8 +24,8 @@ export async function createListForUser({
   artworkId: string;
 }): Promise<any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
-    const {data} = await axios.post(`${URL}/createList`, {newList, artworkId}, {headers: {authorization: `Bearer ${idToken}`}});
+    const headers = await generateHeaders()
+    const {data} = await axios.post(`${URL}/createList`, {newList, artworkId}, {headers});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'createUserArtworkRelationship'})
@@ -43,8 +44,8 @@ export async function deleteListForUser({
   artworkId: string;
 }): Promise<any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
-    const {data} = await axios.post(`${URL}/deleteUserArtworkRelationship`, {uid, action, artworkId}, {headers: {authorization: `Bearer ${idToken}`}});
+    const headers = await generateHeaders()
+    const {data} = await axios.post(`${URL}/deleteUserArtworkRelationship`, {uid, action, artworkId}, {headers});
     throw new Error('Not implemented')
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'deleteUserArtworkRelationship'})
@@ -54,8 +55,8 @@ export async function deleteListForUser({
 
 export async function listUserLists(): Promise<any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
-    const {data} = await axios.get(`${URL}/listLists`, {headers: {authorization: `Bearer ${idToken}`}})
+    const headers = await generateHeaders()
+    const {data} = await axios.get(`${URL}/listLists`, {headers})
     return data
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'listUserLists'})
@@ -66,8 +67,8 @@ export async function listUserLists(): Promise<any> {
 
 export async function addArtworkToList({listId, artworkId}: {listId : string, artworkId: string}): Promise<any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
-    const {data} = await axios.post(`${URL}/addArtworkToList`, {listId, artworkId}, {headers: {authorization: `Bearer ${idToken}`}});
+    const headers = await generateHeaders()
+    const {data} = await axios.post(`${URL}/addArtworkToList`, {listId, artworkId}, {headers});
     return data
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'addArtworkToList'})
@@ -78,8 +79,8 @@ export async function addArtworkToList({listId, artworkId}: {listId : string, ar
 
 export async function getFullList({listId}: {listId : string}): Promise<any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
-    const {data} = await axios.get(`${URL}/readList`, {params: {listId}, headers: {authorization: `Bearer ${idToken}`}});
+    const headers = await generateHeaders()
+    const {data} = await axios.get(`${URL}/readList`, {params: {listId}, headers});
     return data
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'addArtworkToList'})

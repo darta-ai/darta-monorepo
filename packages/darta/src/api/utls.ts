@@ -1,0 +1,17 @@
+import auth from '@react-native-firebase/auth';
+
+export const generateHeaders = async () => {
+  try {
+    const user = auth().currentUser;
+    if (!user) {
+      throw new Error('No user found');
+    }
+    const token = await user.getIdToken();
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  } catch(e){
+    throw new Error ('Unable to generate headers')
+  }
+}

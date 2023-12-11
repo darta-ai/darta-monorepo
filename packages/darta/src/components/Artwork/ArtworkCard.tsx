@@ -142,6 +142,7 @@ const ArtworkCard = ({
   );
 }
 
+// Check the docs for React.memo for an explanation of this function
 export default React.memo(ArtworkCard, (prevProps, nextProps) => {
   /*
     This is an optional comparison function that you can provide to React.memo for custom comparison logic.

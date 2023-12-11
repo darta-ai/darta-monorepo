@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import React, {createContext, ReactNode, useReducer} from 'react';
 
-import {RatingEnum} from '../typing/types';
-import {Artwork, Exhibition, ExhibitionPreview, IGalleryProfileData, MapPinCities, ExhibitionMapPin, MobileUser, GalleryPreview, ListPreview, List} from '@darta-types'
+import {Artwork, Exhibition, ExhibitionPreview, IGalleryProfileData, MapPinCities, ExhibitionMapPin, MobileUser, GalleryPreview, ListPreview, List, FullList} from '@darta-types'
 
 export interface IUserArtworkRatings {
   [id: string]: {
@@ -151,7 +150,7 @@ export interface IState {
     shareURLMessage: string,
   },
   userListPreviews?: {[key: string]: ListPreview}
-  userLists?: {[key: string]: List}
+  userLists?: {[key: string]: FullList}
   listHeader?: string;
 }
 
@@ -301,7 +300,7 @@ interface IAction {
     shareURLMessage: string,
   }
   userListPreviews?: {[key: string]: ListPreview}
-  userLists?: {[key: string]: List}
+  userLists?: {[key: string]: FullList}
   listHeader?: string;
 }
 

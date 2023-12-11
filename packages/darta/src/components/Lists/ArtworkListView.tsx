@@ -31,6 +31,67 @@ type ButtonGeneratorProps = {
 };
 
 
+const SSTombstonePortrait = StyleSheet.create({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+  imageContainer: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: hp('45%'),
+  },
+  image: {
+    height: '100%',
+    width: '100%',
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+  textContainer: {
+    width: "100%",
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    alignSelf: 'flex-start',
+    alignItems: 'flex-start',
+    gap: 12,
+    marginTop: 24,
+  },
+  textRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  priceRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'flex-end',
+  },
+  artTitle: {fontSize: 16, fontFamily: 'DMSans_400Regular_Italic', color: Colors.PRIMARY_950},
+  artYear: {fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_950},
+  artPrice: {fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_950},
+  artDimensions: {fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_400},
+  artMedium: {
+    fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
+    color: Colors.PRIMARY_400,
+  },
+  inquireButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 24,
+    gap: 8,
+  },
+});
+
+
 const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({displayText, iconComponent: Icon, onPress, textColor, buttonColor}) => {
   const buttonStyle = StyleSheet.create({
     container: {
@@ -58,7 +119,7 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({displayText, iconCompo
 }
 
 
-export function TombstonePortrait({
+export function ArtworkListView({
   artwork,
   saveLoading,
   likeLoading,
@@ -114,65 +175,7 @@ export function TombstonePortrait({
     artWidth = maxDimension;
     artHeight = Math.floor((height / width) * artWidth);
   }
-  const SSTombstonePortrait = StyleSheet.create({
-    container: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignContent: 'center',
-    },
-    imageContainer: {
-      alignSelf: 'center',
-      justifyContent: 'center',
-      width: '100%',
-      height: hp('45%'),
-    },
-    image: {
-      height: '100%',
-      width: '100%',
-      resizeMode: 'contain',
-      alignSelf: 'center',
-    },
-    textContainer: {
-      width: "100%",
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-around',
-      alignSelf: 'flex-start',
-      alignItems: 'flex-start',
-      gap: 12,
-      marginTop: 24,
-    },
-    textRow: {
-      display: 'flex',
-      flexDirection: 'row',
-      width: '100%',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-    },
-    priceRow: {
-      display: 'flex',
-      flexDirection: 'row',
-      width: '100%',
-      alignItems: 'flex-end',
-    },
-    artTitle: {fontSize: 16, fontFamily: 'DMSans_400Regular_Italic', color: Colors.PRIMARY_950},
-    artYear: {fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_950},
-    artPrice: {fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_950},
-    artDimensions: {fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_400},
-    artMedium: {
-      fontSize: 16,
-      fontFamily: 'DMSans_400Regular',
-      color: Colors.PRIMARY_400,
-    },
-    inquireButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginTop: 24,
-      gap: 8,
-    },
-  });
+ 
 
 
   const [isSaved, setIsSaved] = React.useState(false);

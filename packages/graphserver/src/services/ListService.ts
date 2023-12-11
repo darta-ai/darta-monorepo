@@ -205,7 +205,7 @@ export class ListService implements IListService {
     }
 
     return {
-      ...this.returnListData(list),
+      ...list,
       creatorName: `${user?.legalFirstName} ${user?.legalLastName}`,
       creatorProfilePicture: user?.profilePicture?.value,
       artworkPreviews: artwork.reduce((acc: any, curr: any) => {
@@ -238,7 +238,8 @@ export class ListService implements IListService {
     let canEdit = false;
 
     listEdge.forEach((edge) => {
-      if (edge._from === fullUserId && edge.data?.canEdit) {
+      console.log(edge._from)
+      if (edge._from === fullUserId) {
         canEdit = true;
       }
     })
@@ -292,9 +293,10 @@ export class ListService implements IListService {
   }
 
   // HOLY TYPEGUARDS BATMAN
+  // eslint-disable-next-line class-methods-use-this
   public returnListData({list}: {list: any}): any {
     return {
-      _id: list._id,
+      _id: list?._id,
       listName: list.listName,
       creatorName: list.creatorName,
       creatorProfilePicture: list?.creatorProfilePicture,

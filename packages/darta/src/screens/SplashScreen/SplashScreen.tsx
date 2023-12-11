@@ -90,21 +90,28 @@ function AnimatedSplashScreen({ children }) {
 
       // User Lists
       if (userListPreviews) {
-        console.log(userListPreviews)
         dispatch({
           type: ETypes.setUserListPreviews,
           userListPreviews
         });
       }
 
+      let artworksToRateUrls: {uri : string}[] =  []
       // Artworks To Rate Screen
       if(artworksToRate){
         dispatch({
           type: ETypes.setArtworksToRate,
           artworksToRate
         })
+        for(let art of Object.values(artworksToRate)){
+          if(art?.artworkImage?.value){
+            artworksToRateUrls.push({uri: art?.artworkImage?.value})
+          }
+        }
+        FastImage.preload(artworksToRateUrls)
       }
 
+      console.log({artworksToRateUrls})
       // Exhibition Preview Screen 
       dispatch({type: ETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
       dispatch({type: ETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
@@ -169,9 +176,9 @@ function AnimatedSplashScreen({ children }) {
         imageUrlsToPrefetch.push({ uri: url });
       };
       
-      for (let artworkValue of Object.values(combinedArtwork)) {
-        addImageUrlToPrefetch(artworkValue?.artworkImage?.value);
-      }
+      // for (let artworkValue of artworksToRate) {
+      //   addImageUrlToPrefetch(artworkValue?.artworkImage?.value);
+      // }
       
       for (let exhibitionValue of Object.values({...exhibitionPreviewsCurrent, ...exhibitionPreviewsForthcoming, ...exhibitionPreviewsCurrent})) {
         if (exhibitionValue?.artworkPreviews) {
@@ -184,7 +191,24 @@ function AnimatedSplashScreen({ children }) {
         if (exhibitionValue?.galleryLogo?.value) addImageUrlToPrefetch(exhibitionValue?.galleryLogo?.value);
       }
       
-      FastImage.preload(imageUrlsToPrefetch);
+      // Need to figure out what takes the longest to load and prefetch those images. What takes so long? 
+      // Then try to make that more efficient. 
+      // Cache images is key. 
+      // DO some research - is it cacheing the images by default. 
+      // Preload the ones that they're going to see first. 
+      // FastImage.preload(imageUrlsToPrefetch);
+
+      // Colors only when it animates. 
+
+      // Not leaving the app. Directions?
+
+      // Need to make new groups on the screen. 
+
+      // Need to look into pre-rendering components for the view screen to quickly move between all of them. 
+
+      // Need to give the user option to turn off scaling
+
+      // Too minimalist? No title on the image. Need to add the title of the image. 
       
       await SplashScreen.hideAsync();
 

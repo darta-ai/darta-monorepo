@@ -104,7 +104,6 @@ export function ViewListsScreen({
                 listHeader: list[listId].listName
             })
         }
-        console.log({list: list[listId]})
         navigation.navigate(UserRoutesEnum.userListFull, {listId})
     }
     const [dataProvider, setDataProvider] = React.useState(
