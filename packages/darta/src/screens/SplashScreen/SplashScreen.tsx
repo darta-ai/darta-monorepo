@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
-import { ETypes, StoreContext } from "../../state/Store";
+import { ETypes, StoreContext, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes, ViewStoreContext, ViewETypes} from "../../state";
 import { Artwork, GalleryPreview, MapPinCities, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types";
 import { listExhibitionPinsByCity } from "../../api/locationRoutes";
 import { getDartaUser } from "../../api/userRoutes";
@@ -17,6 +17,8 @@ import { listArtworksToRateAPI, listGalleryRelationshipsAPI, listUserArtworkAPI 
 import FastImage from "react-native-fast-image";
 import analytics from '@react-native-firebase/analytics';
 import { listUserLists } from "../../api/listRoutes";
+import {  } from "../../state";
+import { UserETypes, UserStoreContext } from "../../state/UserStore";
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -24,6 +26,10 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 
 function AnimatedSplashScreen({ children }) {
   const {dispatch} = React.useContext(StoreContext)
+  const {galleryDispatch} = React.useContext(GalleryStoreContext)
+  const {exhibitionDispatch} = React.useContext(ExhibitionStoreContext)
+  const {viewDispatch} = React.useContext(ViewStoreContext)
+  const {userDispatch} = React.useContext(UserStoreContext)
   const animation = useMemo(() => new Animated.Value(1), []);
   const [isAppReady, setAppReady] = useState(false);
   const [isSplashAnimationComplete, setAnimationComplete] = useState(false);
@@ -82,8 +88,8 @@ function AnimatedSplashScreen({ children }) {
 
       // User Profile
       if (user) {
-        dispatch({
-          type: ETypes.setUser,
+        userDispatch({
+          type: UserETypes.setUser,
           userData: user
         });
       }
@@ -99,8 +105,8 @@ function AnimatedSplashScreen({ children }) {
       let artworksToRateUrls: {uri : string}[] =  []
       // Artworks To Rate Screen
       if(artworksToRate){
-        dispatch({
-          type: ETypes.setArtworksToRate,
+        viewDispatch({
+          type: ViewETypes.setArtworksToRate,
           artworksToRate
         })
         for(let art of Object.values(artworksToRate)){
@@ -111,11 +117,10 @@ function AnimatedSplashScreen({ children }) {
         FastImage.preload(artworksToRateUrls)
       }
 
-      console.log({artworksToRateUrls})
       // Exhibition Preview Screen 
-      dispatch({type: ETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
-      dispatch({type: ETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
-      dispatch({type: ETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
+      exhibitionDispatch({type: ExhibitionETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
+      exhibitionDispatch({type: ExhibitionETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
+      exhibitionDispatch({type: ExhibitionETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
 
 
 
@@ -133,22 +138,22 @@ function AnimatedSplashScreen({ children }) {
       // Gallery Follows Screen
       if (galleryFollows?.length) {
         const galleryPreviews: {[key: string] : GalleryPreview} = galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: el }), {})
-        dispatch({
-          type: ETypes.setGalleryPreviewMulti,
+        galleryDispatch({
+          type: GalleryETypes.setGalleryPreviewMulti,
           galleryPreviews
         });
-        dispatch({
-          type: ETypes.setUserFollowGalleriesMulti,
+        userDispatch({
+          type: UserETypes.setUserFollowGalleriesMulti,
           galleryFollowIds: galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: true }), {})
         });
       }
 
   
-      const processArtworkData = (data: any, dispatchType: ETypes) => {
+      const processArtworkData = (data: any, dispatchType: UserETypes) => {
         if (data && Object.values(data).length > 0) {
           let artworkIds: { [key: string]: boolean } = {};
           artworkIds = Object.values(data).reduce((acc: any, el: any) => ({ ...acc, [el?._id]: true }), {}) as { [key: string]: boolean };
-          dispatch({
+          userDispatch({
             type: dispatchType,
             artworkIds
           });
@@ -156,14 +161,14 @@ function AnimatedSplashScreen({ children }) {
         return data;
       };
 
-      const likedArtworkData = processArtworkData(likedArtwork, ETypes.setUserLikedArtworkMulti);
-      const savedArtworkData = processArtworkData(savedArtwork, ETypes.setUserSavedArtworkMulti);
-      const inquiredArtworkData = processArtworkData(inquiredArtwork, ETypes.setUserInquiredArtworkMulti);
+      const likedArtworkData = processArtworkData(likedArtwork, UserETypes.setUserLikedArtworkMulti);
+      const savedArtworkData = processArtworkData(savedArtwork, UserETypes.setUserSavedArtworkMulti);
+      const inquiredArtworkData = processArtworkData(inquiredArtwork, UserETypes.setUserInquiredArtworkMulti);
   
       const combinedArtwork: {[key: string] : Artwork} = { ...likedArtworkData, ...savedArtworkData, ...inquiredArtworkData };
       if (combinedArtwork && Object.values(combinedArtwork).length > 0) {
-        dispatch({
-          type: ETypes.saveArtworkMulti,
+        userDispatch({
+          type: UserETypes.saveArtworkMulti,
           artworkDataMulti: combinedArtwork
         });
       }

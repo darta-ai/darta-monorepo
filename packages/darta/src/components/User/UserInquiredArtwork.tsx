@@ -6,7 +6,6 @@ import { Image } from 'react-native';
 import { TextElement } from '../Elements/TextElement';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import * as Colors from '@darta-styles';
-import {ETypes, StoreContext} from '../../state/Store';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -15,6 +14,7 @@ import {
 import { listUserArtworkAPI } from '../../utils/apiCalls';
 import { UserRoutesEnum } from '../../typing/routes';
 import FastImage from 'react-native-fast-image';
+import { UserETypes, UserStoreContext } from '../../state/UserStore';
 
 export const dartaLogo = StyleSheet.create({
   image: {
@@ -28,7 +28,7 @@ export const dartaLogo = StyleSheet.create({
 
 
 export function UserInquiredArtwork({navigation}: {navigation: any}) {
-  const {state, dispatch} = React.useContext(StoreContext);
+  const {userState, userDispatch} = React.useContext(UserStoreContext);
 
   const errorMessageText = "when you inquire about artwork, it will appear here"
 
@@ -36,17 +36,17 @@ export function UserInquiredArtwork({navigation}: {navigation: any}) {
   const [getStartedText, setGetStartedText] = React.useState<string | null>(errorMessageText)
 
   React.useEffect(() => {
-    const inquiredArtwork = state.userInquiredArtwork;
+    const inquiredArtwork = userState.userInquiredArtwork;
     if (inquiredArtwork){
       type ImageUrlObject = { uri: string };
       const imageUrlsToPrefetch: ImageUrlObject[] = [];
       const data: Artwork[] = [];
       Object.keys(inquiredArtwork as any)
       .filter(key => inquiredArtwork[key])
-      .filter((artworkId) => state.artworkData && state.artworkData[artworkId])
+      .filter((artworkId) => userState.artworkData && userState.artworkData[artworkId])
       .forEach((artwork: any) => {
-        if (!state.artworkData) return
-        const fullArtwork = state?.artworkData[artwork]
+        if (!userState.artworkData) return
+        const fullArtwork = userState?.artworkData[artwork]
         if (fullArtwork.artworkImage?.value){
           imageUrlsToPrefetch.push({uri: fullArtwork.artworkImage.value})
         }
@@ -63,7 +63,7 @@ export function UserInquiredArtwork({navigation}: {navigation: any}) {
     }
 
 
-  }, [state.userInquiredArtwork]);
+  }, [userState.userInquiredArtwork]);
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -75,12 +75,12 @@ export function UserInquiredArtwork({navigation}: {navigation: any}) {
       if (inquiredArt && Object.values(inquiredArt).length > 0){
         inquiredArtworkIds = Object.values(inquiredArt).reduce((acc, el) => ({...acc, [el?._id as string] : true}), {})
       }
-      dispatch({
-        type: ETypes.setUserInquiredArtworkMulti,
+      userDispatch({
+        type: UserETypes.setUserInquiredArtworkMulti,
         artworkIds: inquiredArtworkIds
       })
-      dispatch({
-        type: ETypes.saveArtworkMulti,
+      userDispatch({
+        type: UserETypes.saveArtworkMulti,
         artworkDataMulti: inquiredArt
       })
     } catch {

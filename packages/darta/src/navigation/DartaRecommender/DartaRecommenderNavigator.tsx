@@ -1,11 +1,10 @@
 import * as Colors from '@darta-styles';
 import React, {useContext} from 'react';
 
-import {ETypes, StoreContext} from '../../state/Store';
+import {ETypes, StoreContext, UIStoreContext} from '../../state';
 import {backButtonStyles, headerOptions, viewOptionsStyles} from '../../styles/styles';
 import {RecommenderRoutesEnum} from '../../typing/routes';
 import {View } from 'react-native';
-import { DartaRecommenderView } from '../../screens/DartaRecommenderView';
 import { DartaRecommenderTopTab } from './DartaRecommenderTopTab';
 import { IconButton} from 'react-native-paper';
 import {icons} from '../../utils/constants';
@@ -15,15 +14,14 @@ import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { AddToListScreen } from '../../screens/Lists/AddToList';
 import { TextElement } from '../../components/Elements/TextElement';
-import { DartaRecommenderViewFlatList } from '../../screens/DartaRecommenderViewFlatList';
+import { DartaRecommenderViewMemo } from '../../screens/DartaRecommenderViewFlatList';
+import { DartaRecommenderView } from '../../screens/DartaRecommenderView';
 
 export const RecommenderStack = createStackNavigator();
-
-
-
-
 export function DartaRecommenderNavigator() {
-  const {state, dispatch} = useContext(StoreContext);
+  const {dispatch} = useContext(StoreContext);
+  const {uiState} = React.useContext(UIStoreContext);
+
   const flipOrientation = () => {
     dispatch({
       type: ETypes.setPortrait,
@@ -48,7 +46,7 @@ export function DartaRecommenderNavigator() {
         <RecommenderStack.Group>
           <RecommenderStack.Screen
             name={RecommenderRoutesEnum.recommenderHome}
-            component={DartaRecommenderViewFlatList}
+            component={DartaRecommenderViewMemo}
             options={{...headerOptions, 
               headerTitle: 'View',
               headerRight: () => (
@@ -67,7 +65,7 @@ export function DartaRecommenderNavigator() {
           <RecommenderStack.Screen
             name={RecommenderRoutesEnum.TopTabExhibition}
             component={DartaRecommenderTopTab}
-            options={{...headerOptions, headerTitle: state.currentArtworkTombstoneHeader ?? ""}}
+            options={{...headerOptions, headerTitle: uiState.currentArtworkTombstoneHeader ?? ""}}
           />
         </RecommenderStack.Group>
         <RecommenderStack.Group screenOptions={{

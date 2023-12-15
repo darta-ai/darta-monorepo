@@ -10,7 +10,7 @@ import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCi
 
 import * as Colors from '@darta-styles';
 import { ExhibitionMapPin } from '@darta-types';
-import { ETypes, StoreContext } from '../../state/Store';
+import { StoreContext, UIStoreContext, UiETypes } from '../../state';
 import { ExploreMapRootEnum } from '../../typing/routes';
 import {Button } from 'react-native-paper';
 import { GoogleMapsPinIcon, MapPinCircleDotIcon} from '../../assets/SVGs';
@@ -93,7 +93,9 @@ const CustomMarker = React.memo(({
   navigation: any
 }) => {
 
-  const {state, dispatch} = React.useContext(StoreContext);
+  const {state} = React.useContext(StoreContext);
+  const {uiDispatch} = React.useContext(UIStoreContext);
+
   const [showCallout, setShowCallout] = useState(true);
 
   const navigateToExhibitionScreens = async () => {
@@ -102,8 +104,8 @@ const CustomMarker = React.memo(({
     }
     if (state.exhibitionData && state.exhibitionData[mapPin.exhibitionId]){
       const exhibition = state.exhibitionData[mapPin.exhibitionId]
-      dispatch({
-        type: ETypes.setCurrentHeader,
+      uiDispatch({
+        type: UiETypes.setCurrentHeader,
         currentExhibitionHeader: exhibition.exhibitionTitle.value!,
       })
     }

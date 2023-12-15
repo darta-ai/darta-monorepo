@@ -1,12 +1,11 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import * as Colors from '@darta-styles';
 import {Artwork} from '@darta-types'
 import {TextElement} from '../Elements/_index';
-import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
-import {ETypes, StoreContext} from '../../state/Store';
 import FastImage from 'react-native-fast-image';
 import { Surface } from 'react-native-paper';
+import { UIStoreContext, UiETypes } from '../../state';
 
 const ArtworkCard = ({
   artwork,
@@ -19,11 +18,11 @@ const ArtworkCard = ({
   navigateTo: string,
   navigateToParams: string
 }) => {
-  const {dispatch} = useContext(StoreContext);
+  const {uiDispatch} = React.useContext(UIStoreContext);
 
   const navigateToTombstone = () => {
-    dispatch({
-      type: ETypes.setTombstoneHeader,
+    uiDispatch({
+      type: UiETypes.setTombstoneHeader,
       currentArtworkHeader: artwork?.artworkTitle?.value ?? "",
     });
     navigation.navigate(navigateTo, {

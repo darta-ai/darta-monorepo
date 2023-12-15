@@ -17,6 +17,7 @@ import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
 import { addArtworkToList, readListForUser } from '../../api/listRoutes';
 import { createUserArtworkRelationship } from '../../api/artworkRoutes';
 import { UserRoutesEnum } from '../../typing/routes';
+import { UIStoreContext, UiETypes } from '../../state';
 
 const addToListStyles = StyleSheet.create({
     container: {
@@ -94,13 +95,15 @@ export function ViewListsScreen({
     navigation?: any;
     route: any;
 }) {
-    const {state, dispatch} = React.useContext(StoreContext);
+    const {state} = React.useContext(StoreContext);
+    const {uiDispatch} = React.useContext(UIStoreContext);
+
     const handlePress = ({listId} : {listId: string}) => {
         if(!state.userListPreviews) return;
         const list = state?.userListPreviews;
         if (list[listId] && list[listId].listName){
-            dispatch({
-                type: ETypes.setListHeader,
+            uiDispatch({
+                type: UiETypes.setListHeader,
                 listHeader: list[listId].listName
             })
         }

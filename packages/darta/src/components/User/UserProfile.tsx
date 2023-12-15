@@ -10,6 +10,7 @@ import {
 } from '../../typing/routes';
 import {StoreContext} from '../../state/Store'
 import {globalTextStyles} from '../../styles/styles';
+import { UserStoreContext } from '../../state/UserStore';
 
 type UserScreenNavigationProp = StackNavigationProp<
   UserRouteStackParamList,
@@ -19,11 +20,9 @@ type UserScreenNavigationProp = StackNavigationProp<
 export function UserProfile({
   imageWidthInterpolate,
   imageHeightInterpolate,
-  navigation,
 }: {
   imageWidthInterpolate: any;
   imageHeightInterpolate: any;
-  navigation: UserScreenNavigationProp;
 }) {
   const userProfileStyles = StyleSheet.create({
     image: {
@@ -35,7 +34,7 @@ export function UserProfile({
     },
   });
 
-  const {state} = useContext(StoreContext);
+  const {userState} = useContext(UserStoreContext);
 
 
   const [userProfilePic, setUserProfilePic] = React.useState<ImageURISource>('' as any);
@@ -44,7 +43,7 @@ export function UserProfile({
 
   React.useEffect(() => {
     const defaultImage = require('../../assets/dartahousewhite.png');
-    const userProfileURL = state?.user?.profilePicture?.value;
+    const userProfileURL = userState?.user?.profilePicture?.value;
     
     let imageSource: any;
     if (typeof userProfileURL === 'string') {
@@ -55,13 +54,13 @@ export function UserProfile({
     
     setUserProfilePic(imageSource);
     
-    const name = state?.user?.userName ? state?.user?.userName : "darta user"
+    const name = userState?.user?.userName ? userState?.user?.userName : "darta user"
     setUserName(name)
-    const firstName = state?.user?.legalFirstName ? state?.user?.legalFirstName : ""
-    const lastName = state?.user?.legalLastName ? state?.user?.legalLastName : ""
+    const firstName = userState?.user?.legalFirstName ? userState?.user?.legalFirstName : ""
+    const lastName = userState?.user?.legalLastName ? userState?.user?.legalLastName : ""
     setFullName(`${firstName} ${lastName}`)
 
-    }, [, state?.user]);
+    }, [, userState?.user]);
 
   const SSUserProfile = StyleSheet.create({
     container: {

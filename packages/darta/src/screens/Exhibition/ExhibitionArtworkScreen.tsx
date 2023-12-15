@@ -16,6 +16,7 @@ import {Artwork} from '@darta-types'
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
 import FastImage from 'react-native-fast-image';
+import { ExhibitionETypes, ExhibitionStoreContext, UIStoreContext } from '../../state';
 
 
 const artworkDetailsStyles = StyleSheet.create({
@@ -55,6 +56,9 @@ export function ExhibitionArtworkScreen({
   navigation?: any
 }) {
   const {state, dispatch} = useContext(StoreContext);
+  const {exhibitionState, exhibitionDispatch} = React.useContext(ExhibitionStoreContext);
+  const {uiState} = React.useContext(UIStoreContext);
+
 
   const [exhibitionId, setExhibitionId] = React.useState<string>("")
   const [errorText, setErrorText] = React.useState<string>("");
@@ -65,8 +69,8 @@ export function ExhibitionArtworkScreen({
 
   const setArtworksFromExhibitionId = async ({exhibitionId}: {exhibitionId: string}) => {
       let artwork: {[key: string] : Artwork} = {}
-      if (state.exhibitionData && state.exhibitionData[exhibitionId] && state.exhibitionData[exhibitionId].artworks){
-        artwork = state.exhibitionData[exhibitionId].artworks ?? {}
+      if (exhibitionState.exhibitionData && exhibitionState.exhibitionData[exhibitionId] && exhibitionState.exhibitionData[exhibitionId].artworks){
+        artwork = exhibitionState.exhibitionData[exhibitionId].artworks ?? {}
       } 
       if (artwork){
         type ImageUrlObject = { uri: string };
@@ -102,8 +106,8 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
       })
       Promise.all(artworkPromises)
       
-      dispatch({
-          type: ETypes.saveExhibition,
+      exhibitionDispatch({
+          type: ExhibitionETypes.saveExhibition,
           exhibitionData: exhibition,
       })
       dispatch({
@@ -123,7 +127,7 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
 
 
   React.useEffect(()=>{
-    if (route?.params?.exhibitionId && state.exhibitionData && state.exhibitionData[route?.params?.exhibitionId] && state.exhibitionData[route?.params?.exhibitionId].artworks){
+    if (route?.params?.exhibitionId && exhibitionState.exhibitionData && exhibitionState.exhibitionData[route?.params?.exhibitionId] && exhibitionState.exhibitionData[route?.params?.exhibitionId].artworks){
       setExhibitionId(route.params.exhibitionId);
       setArtworksFromExhibitionId({exhibitionId: route.params.exhibitionId})
     } else if (state.qrCodeExhibitionId) {
@@ -133,7 +137,7 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
       setErrorText('something went wrong, please refresh and try again')
     }
 
-  }, [state.exhibitionData, state.currentExhibitionHeader, state.qrCodeExhibitionId])
+  }, [exhibitionState.exhibitionData, uiState.currentExhibitionHeader, state.qrCodeExhibitionId])
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -142,8 +146,8 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
     try{
         const exhibId = route?.params.exhibitionId ?? exhibitionId
         const newExhibition = await readExhibition({exhibitionId: exhibId});
-        dispatch({
-            type: ETypes.saveExhibition,
+        exhibitionDispatch({
+            type: ExhibitionETypes.saveExhibition,
             exhibitionData: newExhibition,
         })
     } catch {

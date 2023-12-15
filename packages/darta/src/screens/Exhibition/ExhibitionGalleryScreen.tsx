@@ -14,7 +14,6 @@ import {
 import { ActivityIndicator } from 'react-native-paper';
 
 import { Text } from 'react-native-paper'
-import {ETypes, StoreContext} from '../../state/Store';
 import { BusinessHours, Exhibition, IGalleryProfileData } from '@darta-types';
 import { formatUSPhoneNumber, modifyHoursOfOperation, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
@@ -25,6 +24,8 @@ import {readExhibition} from '../../api/exhibitionRoutes';
 import { mapStylesJson } from '../../utils/mapStylesJson';
 import { DartaIconButtonWithText } from '../../components/Darta/DartaIconButtonWithText';
 import * as SVGs from '../../assets/SVGs';
+import { UIStoreContext, UiETypes, GalleryStoreContext, ETypes, StoreContext, GalleryETypes } from '../../state';
+
 
 const galleryDetailsStyles = StyleSheet.create({
   container: {
@@ -191,7 +192,9 @@ export function ExhibitionGalleryScreen({
   route?: ExhibitionGalleryRouteProp;
   navigation?: any;
 }) {
-  const {state, dispatch} = useContext(StoreContext);
+  const {state, dispatch} = React.useContext(StoreContext);
+  const {uiDispatch} = React.useContext(UIStoreContext);
+  const {galleryState, galleryDispatch} = React.useContext(GalleryStoreContext)
   const [galleryId, setGalleryId] = React.useState<string>("")
   const [errorText, setErrorText] = React.useState<string>("");
   const [isGalleryLoaded, setIsGalleryLoaded] = React.useState<boolean>(false);
@@ -283,19 +286,19 @@ export function ExhibitionGalleryScreen({
 
   React.useEffect(() => {
     const setState = async () => {
-      if (route?.params?.galleryId && state.galleryData && state.galleryData[route.params.galleryId]){
-        const gal = state.galleryData[route.params.galleryId]
+      if (route?.params?.galleryId && galleryState.galleryData && galleryState.galleryData[route.params.galleryId]){
+        const gal = galleryState.galleryData[route.params.galleryId]
         setGalleryId(route.params.galleryId);
         setGalleryData({inputGallery: gal})
         setGallery(gal)
-        dispatch({
-          type: ETypes.setGalleryHeader,
+        uiDispatch({
+          type: UiETypes.setGalleryHeader,
           galleryHeader: gal.galleryName.value ?? "",
         })
-      } else if (state.qrCodeGalleryId && state.galleryData){
+      } else if (state.qrCodeGalleryId && galleryState.galleryData){
         setGalleryId(state.qrCodeGalleryId);
-        setGalleryData({inputGallery: state.galleryData[state.qrCodeGalleryId]})
-        setGallery(state.galleryData[state.qrCodeGalleryId])
+        setGalleryData({inputGallery: galleryState.galleryData[state.qrCodeGalleryId]})
+        setGallery(galleryState.galleryData[state.qrCodeGalleryId])
       } else if (route?.params?.galleryId && !route.params?.exhibitionId) { 
         let galleryData: IGalleryProfileData = {} as IGalleryProfileData
         try{
@@ -310,12 +313,12 @@ export function ExhibitionGalleryScreen({
           setGalleryId(galleryData._id);
           setGalleryData({inputGallery: galleryData})
           setGallery(galleryData)
-          dispatch({
-            type: ETypes.saveGallery,
+          galleryDispatch({
+            type: GalleryETypes.saveGallery,
             galleryData: galleryData,
           })
-          dispatch({
-            type: ETypes.setGalleryHeader,
+          uiDispatch({
+            type: UiETypes.setGalleryHeader,
             galleryHeader: galleryData.galleryName.value ?? "",
           })
         }
@@ -325,7 +328,7 @@ export function ExhibitionGalleryScreen({
     }
 
     setState()
-  }, [state.galleryData, galleryId, state.qrCodeGalleryId])
+  }, [galleryState.galleryData, galleryId, state.qrCodeGalleryId])
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -334,9 +337,9 @@ export function ExhibitionGalleryScreen({
     try{
         const newGallery = await readGallery({galleryId});
         setGalleryData({inputGallery: newGallery})
-        dispatch({
-            type: ETypes.saveGallery,
-            exhibitionData: newGallery,
+        galleryDispatch({
+            type: GalleryETypes.saveGallery,
+            galleryData: newGallery,
         })
         setGallery(newGallery)
     } catch {
@@ -433,12 +436,12 @@ export function ExhibitionGalleryScreen({
       const results = await readExhibition({exhibitionId});
       exhibitionTitle = results.exhibitionTitle?.value as string
       await Promise.resolve(() => {
-        dispatch({
-          type: ETypes.setPreviousExhibitionHeader,
+        uiDispatch({
+          type: UiETypes.setPreviousExhibitionHeader,
           previousExhibitionHeader: exhibitionTitle,
         })
-        dispatch({
-          type: ETypes.setUserExhibitionHeader,
+        uiDispatch({
+          type: UiETypes.setUserExhibitionHeader,
           userExhibitionHeader: exhibitionTitle,
         })
         dispatch({

@@ -137,23 +137,23 @@ export function DartaRecommenderView({
         const nextArtwork = viewState.artworksToRate[currentIndex + 2];
 
         fadeOutAndIn(async () => {
-          try {
-            const artworkRatingIndex = currentIndex + 1;
-              // FastImage.preload([{uri : artwork.artworkImage?.value!}])
+            try {
+              const artworkRatingIndex = currentIndex + 1;
+                // FastImage.preload([{uri : artwork.artworkImage?.value!}])
+                viewDispatch({
+                  type: ViewETypes.setRatingIndex,
+                  artworkRatingIndex,
+              });
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+                setArtOnDisplay(artwork)
+            } catch (error) {
               viewDispatch({
-                type: ViewETypes.setRatingIndex,
-                artworkRatingIndex,
-              });
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
-              setArtOnDisplay(artwork)
-          } catch (error) {
-            viewDispatch({
-                type: ViewETypes.setRatingIndex,
-                artworkRatingIndex: currentIndex + 2,
-              });
-              Haptics.NotificationFeedbackType.Error
-              setArtOnDisplay(nextArtwork)
-          }
+                  type: ViewETypes.setRatingIndex,
+                  artworkRatingIndex: currentIndex + 2,
+                });
+                Haptics.NotificationFeedbackType.Error
+                setArtOnDisplay(nextArtwork)
+            }
         });
     } else if (viewState.artworksToRate) {
         const numberOfArtworks = Object.values(viewState.artworksToRate).length;
@@ -186,7 +186,7 @@ export function DartaRecommenderView({
 };
 
 
-  const toggleArtBackward = async () => {
+  const toggleArtBackward = React.useCallback(async () => {
     const currentIndex = viewState.artworkRatingIndex ?? 0;
     if (!currentIndex) {
       return 
@@ -218,7 +218,7 @@ export function DartaRecommenderView({
       });
     }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
-  };
+  }, [viewState.artworkRatingIndex, viewState.artworksToRate]);
 
   const toggleArtTombstone = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)

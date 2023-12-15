@@ -20,6 +20,7 @@
     "@expo/html-elements": "^0.5.1",
     "@expo/webpack-config": "^19.0.0",
     "@mdi/js": "^7.2.96",
+    "@openspacelabs/react-native-zoomable-view": "^2.1.5",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-firebase/analytics": "^18.6.1",
     "@react-native-firebase/app": "^18.6.1",
@@ -40,6 +41,7 @@
     "expo-dev-client": "~2.4.12",
     "expo-font": "~11.4.0",
     "expo-haptics": "~12.4.0",
+    "expo-image": "~1.3.5",
     "expo-image-picker": "~14.3.2",
     "expo-linear-gradient": "~12.3.0",
     "expo-linking": "~5.0.2",
@@ -71,13 +73,16 @@
     "react-native-view-shot": "3.7.0",
     "react-native-web": "^0.19.9",
     "react-native-webview": "13.2.2",
+    "reassure": "^0.10.2",
     "recyclerlistview": "^4.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.22.20",
+    "@types/jest": "^29.5.11",
     "@types/react": "~18.2.14",
     "babel-plugin-module-resolver": "^5.0.0",
     "eslint-config-react-native": "^4.1.0",
+    "i": "^0.3.7",
     "react-native-codegen": "^0.71.6",
     "typescript": "^5.1.3"
   },

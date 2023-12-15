@@ -1,178 +1,73 @@
-import React, {useCallback, useContext, useRef, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
-  ActivityIndicator,
-  ScrollView,
   StyleSheet,
-  Animated,
   View,
-  Pressable
+  Pressable,
+  useWindowDimensions
 } from 'react-native';
 import FastImage from 'react-native-fast-image'
-import {Gesture, GestureDetector} from 'react-native-gesture-handler';
-import {runOnJS} from 'react-native-reanimated';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import * as Haptics from 'expo-haptics';
 
 import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types'
-import {ETypes, StoreContext} from '../../state/Store';
-import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
-import { Onboard } from '../Darta/Onboard';
+import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
 import { Surface } from 'react-native-paper';
 import * as Colors from '@darta-styles'
-import { LinearGradient } from 'expo-linear-gradient';
-import { SkeletonLoader } from '../Darta/SkeletonLoader';
+import {runOnJS} from 'react-native-reanimated';
+import { RecommenderRoutesEnum } from '../../typing/routes';
+import {
+  galleryDimensionsLandscape,
+  galleryDimensionsPortrait,
+} from '../../utils/constants';
+import { UIStoreContext, StoreContext, UiETypes } from '../../state';
+import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
+import { Gesture, GestureDetector , } from 'react-native-gesture-handler';
 
-const galleryStylesPortrait = StyleSheet.create({
-  container: {
-    zIndex: 0,
-    height: '100%',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scrollViewStyles: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  frameStyle: {
-    backgroundColor: 'transparent',
-    width: '100%',
-    height: '100%',
-    position: 'absolute', // This ensures the artContainer is positioned relative to its first positioned (not static) ancestor element
-  },
-});
 
-interface ArtDimensions {
-  artImageSize: { height: number; width: number; } | null;
-  artImageLocation: { top: number; left: number; } | null;
-  artHeightPixels: number;
-  artWidthPixels: number;
-}
 
 export function ArtOnWallFlatList({
   artworkDimensions,
   artOnDisplay,
   artImage,
-  backgroundImageDimensionsPixels,
-  currentZoomScale,
-  isPortrait,
-  opacityAnimatedValue,
   wallHeight = 96,
-  rateArtwork,
-  setCurrentZoomScale,
+  navigation,
+  onPanResponderEnd,
   toggleArtForward,
   toggleArtBackward,
-  toggleArtTombstone
 }: {
   artOnDisplay: Artwork;
   artImage: string | undefined;
-  backgroundImageDimensionsPixels: any;
-  currentZoomScale: number;
   artworkDimensions: Artwork['artworkDimensions'] | undefined;
-  isPortrait: boolean;
-  opacityAnimatedValue: any;
   wallHeight?: number;
-  rateArtwork: (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => void;
-  setCurrentZoomScale: (arg0: number) => void;
-  toggleArtForward: () => void;
-  toggleArtBackward: () => void;
-  toggleArtTombstone: () => void;
+  navigation: any
+  onPanResponderEnd: (event: any, gestureState: any, zoomableViewEventObject: any) => void
+  toggleArtForward: () => void
+  toggleArtBackward: () => void
 }) {
-  const {state, dispatch} = useContext(StoreContext);
+  const {state} = useContext(StoreContext);
+  console.log({state: state.isPortrait})
+  const {uiDispatch} = React.useContext(UIStoreContext);
 
-  const [isPanActionEnabled, setIsPanActionEnabled] = useState(true);
+  const [backgroundContainerDimensionsPixels, setBackgroundContainerDimensionsPixels] = useState(galleryDimensionsPortrait) 
 
-  const scrollViewRef = useRef<ScrollView | null>(null);
 
-  enum ArtRatingGesture {
-    swipeUp = 'swipeUp',
-    swipeDown = 'swipeDown',
+  React.useEffect(() => {
+    if (state.isPortrait) {
+      setBackgroundContainerDimensionsPixels(galleryDimensionsPortrait);
+    } else {
+      setBackgroundContainerDimensionsPixels(galleryDimensionsLandscape);
+    }
+  }, [state.isPortrait])
+
+  interface ArtDimensions {
+    artImageSize: { height: number; width: number; } | null;
+    artImageLocation: { top: number; left: number; } | null;
+    artHeightPixels: number;
+    artWidthPixels: number;
   }
-
-  console.log("artOnDisplay", artOnDisplay._id)
-
-  const handleArtRatingGesture = useCallback(
-    async (gesture: ArtRatingGesture) => {
-      const artworkOnDisplayId = artOnDisplay._id;
-      const likedArtworks = state.userLikedArtwork;
-      const dislikedArtworks = state.userDislikedArtwork;
-      const savedArtworks = state.userSavedArtwork;
-
-      const userLiked = likedArtworks?.[artworkOnDisplayId!] || false
-      const userSaved = savedArtworks?.[artworkOnDisplayId!] || false
-      const userDisliked = dislikedArtworks?.[artworkOnDisplayId!] || false
-
-      switch (gesture) {
-        case ArtRatingGesture.swipeUp:
-          if (userLiked) {
-            rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE);
-            break;
-          } else if (userDisliked) {
-            dispatch({
-              type: ETypes.removeUserDislikedArtwork,
-              artworkId: artOnDisplay._id,
-            })
-            try{
-              await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE})
-            } catch {
-              console.log("error removing disliked artwork")
-            }
-            rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED);
-            break;
-          } else if (userSaved) {
-            break;
-          } else {
-            rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE);
-            break;
-          }
-        case ArtRatingGesture.swipeDown:
-          if (userSaved) {
-
-            dispatch({
-              type: ETypes.removeUserSavedArtwork,
-              artworkId: artOnDisplay._id,
-            })
-            try{
-              await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
-            } catch {
-              console.log("error removing disliked artwork")
-            }
-            rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE);
-            break;
-          } else if (userLiked) {
-            dispatch({
-              type: ETypes.removeUserLikedArtwork,
-              artworkId: artOnDisplay._id,
-            })
-            try{
-              await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
-            } catch {
-              console.log("error removing disliked artwork")
-            }
-            rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED);
-            break;
-          } else if (userDisliked) {
-            break;
-          } else {
-            dispatch({
-              type: ETypes.removeUserDislikedArtwork,
-              artworkId: artOnDisplay._id,
-            })
-            try{
-              await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE})
-            } catch {
-              console.log("error removing disliked artwork")
-            }
-            rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE);
-            break;
-          }
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [state, ArtRatingGesture.swipeUp, ArtRatingGesture.swipeDown, rateArtwork],
-  );
 
   const [artDimensions, setArtDimensions] = React.useState<ArtDimensions>({
     artImageSize: null,
@@ -181,10 +76,22 @@ export function ArtOnWallFlatList({
     artWidthPixels: 0,
   });
 
+  const toggleArtTombstone = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+    uiDispatch({
+      type: UiETypes.setTombstoneHeader,
+      currentArtworkHeader: artOnDisplay?.artworkTitle?.value!,
+    });
+    if (artOnDisplay){
+      navigation.navigate(RecommenderRoutesEnum.TopTabExhibition, {artOnDisplay, galleryId: artOnDisplay?.galleryId, exhibitionId: artOnDisplay?.exhibitionId});
+    }
+  };
+
+
   const getDimensions = React.useCallback(() => {
     const dimensionsMultiplierPortrait =
-      backgroundImageDimensionsPixels.width /
-      backgroundImageDimensionsPixels.height;
+      backgroundContainerDimensionsPixels.width /
+      backgroundContainerDimensionsPixels.height;
 
     const backgroundWidthInches = wallHeight * dimensionsMultiplierPortrait;
 
@@ -195,9 +102,9 @@ export function ArtOnWallFlatList({
       artWidthInches = parseInt(artworkDimensions.widthIn.value);
 
       const pixelsPerInchHeight =
-        backgroundImageDimensionsPixels.height / wallHeight;
+        backgroundContainerDimensionsPixels.height / wallHeight;
       const pixelsPerInchWidth =
-        backgroundImageDimensionsPixels.width / backgroundWidthInches;
+        backgroundContainerDimensionsPixels.width / backgroundWidthInches;
 
       artHeightPixels = artHeightInches * pixelsPerInchHeight;
       artWidthPixels = artWidthInches * pixelsPerInchWidth;
@@ -208,14 +115,14 @@ export function ArtOnWallFlatList({
       };
 
       artImageLocation = {
-        top: 0.45 * backgroundImageDimensionsPixels.height - 0.5 * artHeightPixels,
-        left: 0.5 * backgroundImageDimensionsPixels.width - 0.5 * artWidthPixels,
+        top: 0.45 * backgroundContainerDimensionsPixels.height - 0.5 * artHeightPixels,
+        left: 0.5 * backgroundContainerDimensionsPixels.width - 0.5 * artWidthPixels,
       };
     }
 
     return { artImageSize, artImageLocation, artHeightPixels, artWidthPixels };
 
-  }, [artworkDimensions, backgroundImageDimensionsPixels, wallHeight]);
+  }, [artworkDimensions, backgroundContainerDimensionsPixels, wallHeight]);
 
   React.useEffect(() => {
     
@@ -238,126 +145,8 @@ export function ArtOnWallFlatList({
     setArtDimensions({ artImageSize, artImageLocation, artHeightPixels, artWidthPixels });
   }, [state.isPortrait])
 
-
-  const handleToggleArtForward = () => {
-    toggleArtForward();
-  }
-
-  const handleToggleArtBackwards = () => {
-    toggleArtBackward();
-  }
-
-
-  const handleDoubleTap = () => {
-    if (isPanActionEnabled) {
-      setIsPanActionEnabled(false);
-      const targetScale = 3;
-
-      // Calculate the translation values
-      setCurrentZoomScale(targetScale);
-
-      if (state.isPortrait){
-        scrollViewRef.current?.scrollTo({
-          x: wp('100%'),
-          y: hp('70%'),
-          animated: false,
-        });
-      } else {
-        scrollViewRef.current?.scrollTo({
-          x: hp('75%'),
-          y: wp('100%'),
-          animated: false,
-        });
-      }
-    } else {
-      setIsPanActionEnabled(true);
-      setCurrentZoomScale(1);
-      scrollViewRef.current?.scrollToEnd({animated: false});
-    }
-  };
-
-  const panGestureRight = Gesture.Pan()
-    .activeOffsetX(wp('20%'))
-    .onStart(() => {
-      if (!isPanActionEnabled) {
-        return;
-      }
-      state.isPortrait
-        ? runOnJS(handleToggleArtBackwards)()
-        : runOnJS(handleArtRatingGesture)(ArtRatingGesture.swipeUp);
-    });
-
-  const panGestureLeft = Gesture.Pan()
-    .activeOffsetX(-wp('20%'))
-    .onStart(() => {
-      if (!isPanActionEnabled) {
-        return;
-      }
-
-      state.isPortrait
-        ? runOnJS(handleToggleArtForward)()
-        : runOnJS(handleArtRatingGesture)(ArtRatingGesture.swipeDown);
-    });
-
-  const panGestureUp = Gesture.Pan()
-    .activeOffsetY(wp('20%'))
-    .onStart(() => {
-      if (!isPanActionEnabled) {
-        return;
-      }
-
-      if (!state.isPortrait){
-        runOnJS(handleToggleArtBackwards)();
-      } else {
-        return
-      }
-    });
-
-  const panGestureDown = Gesture.Pan()
-    .activeOffsetY(-wp('20%'))
-    .onStart(async () => {
-      if (!isPanActionEnabled) {
-        return;
-      }
-
-      if (!state.isPortrait){
-        runOnJS(handleToggleArtForward)();
-      } else {
-        return
-      }
-    });
-
-    const [isLoaded, setIsLoading] = useState<boolean>(false);
-
-    const imageOpacity = React.useRef(new Animated.Value(0)).current;
-  
-    const handleImageLoad = () => {
-      setIsLoading(true);
-      Animated.timing(imageOpacity, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }).start();
-    };
-
-  const doubleTapGesture = Gesture.Tap()
-    .numberOfTaps(2)
-    .maxDistance(9)
-    .onEnd((_, success) => {
-      'worklet';
-
-      if (success) {
-        runOnJS(handleDoubleTap)();
-      }
-      return success;
-    });
-
-  const composed = Gesture.Exclusive(
-    panGestureRight,
-    panGestureLeft,
-    panGestureUp,
-    panGestureDown,
-  );
+  const windowHeight = useWindowDimensions().height;
+  const windowWidth = useWindowDimensions().width;
 
   const galleryStylesPortraitDynamic = StyleSheet.create({
     artContainer: {
@@ -375,68 +164,177 @@ export function ArtOnWallFlatList({
       shadowOpacity: 1,
       shadowRadius: 4.29, // A larger shadow
     },
-    activityIndicator: {
-      top: isPortrait ? hp('35%') : hp('20%'),
-      justifyContent: 'center',
-    },
     screenContainer: {
-      width: backgroundImageDimensionsPixels.width,
-      height: hp('100%'),
+      width: wp('100%'),
+      borderWidth: 1, 
+      height: '100%',
+    },
+    container: {
+      backgroundColor: Colors.PRIMARY_50,
+      justifyContent: 'flex-start',
+      alignSelf: 'center',
+      alignItems: 'center',
+      height: '100%',
+      width: '100%',
+    },
+    artOnDisplayContainer: {
+      transform: state.isPortrait ? [{rotate: '0deg'}] : [{rotate: '90deg'}],
+      backgroundColor: 'black',
+    },
+    likeContainer: {
+      position: 'absolute',
+      alignSelf: 'center',
+      borderRadius: 50,
+      width: 72,
+      height: 72,
+      backgroundColor: Colors.PRIMARY_50,
+      top: hp('65%'),
+      right: 76,
+      display:'flex', 
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignContent: 'center', 
+      transform: state.isPortrait ? [{rotate: '180deg'}] : [{rotate: '90deg'}],
+    },
+    saveContainer: {
+      position: 'absolute',
+      alignSelf: 'center',
+      borderRadius: 50,
+      width: 48,
+      height: 48,
+      backgroundColor: Colors.PRIMARY_50,
+      top: hp('65%') + 12,
+      left: wp('50%') - 24,
+      display:'flex', 
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignContent: 'center'
+    },
+    secondaryButton: {
+      backgroundColor: Colors.PRIMARY_50,
+      color: 'black',
+      opacity: 0.9,
+      transform: state.isPortrait ? [{rotate: '0deg'}] : [{rotate: '90deg'}],
+    },
+    dislikeContainer: {
+      position: 'absolute',
+      alignSelf: 'center',
+      borderRadius: 50,
+      width: 72,
+      height: 72,
+      backgroundColor: Colors.PRIMARY_50,
+      top: hp('65%'),
+      left: 76,
+      display:'flex', 
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignContent: 'center',
+    },
+    touchableContainer: {
+      borderRadius: 50, 
+      width: 72, 
+      height: 72, 
+      justifyContent: 'center', 
+      alignItems: 'center',
     },
   });
 
+
+  const panGestureRight = Gesture.Pan()
+    .activeOffsetX(wp('20%'))
+    .onStart(() => {
+      console.log('triggered pan left', state)
+      state.isPortrait && runOnJS(toggleArtBackward)()
+        // : runOnJS(handleArtRatingGesture)(ArtRatingGesture.swipeUp);
+    });
+
+  const panGestureLeft = Gesture.Pan()
+    .activeOffsetX(-wp('20%'))
+    .onStart(() => {
+
+      state.isPortrait && runOnJS(toggleArtForward)()
+      
+    });
+
+  const panGestureUp = Gesture.Pan()
+    .activeOffsetY(wp('20%'))
+    .onStart(() => {
+
+      if (!state.isPortrait){
+        runOnJS(toggleArtBackward)();
+      } else {
+        return
+      }
+    });
+
+  const panGestureDown = Gesture.Pan()
+    .activeOffsetY(-wp('20%'))
+    .onStart(async () => {
+
+      if (!state.isPortrait){
+        runOnJS(toggleArtForward)();
+      } else {
+        return
+      }
+    });
+
+  const composed = Gesture.Exclusive(
+    panGestureRight,
+    panGestureLeft,
+    panGestureUp,
+    panGestureDown,
+  );
+
+  const doubleTapGesture = Gesture.Tap()
+  .numberOfTaps(2)
+  .maxDistance(9)
+  .onEnd((_, success) => {
+    'worklet';
+
+    if (success) {
+      // runOnJS(handleDoubleTap)();
+    }
+    return success;
+  });
+
+
   return (
     <GestureDetector gesture={composed}>
-      <ScrollView
-        ref={scrollViewRef}
-        scrollEnabled={!isPanActionEnabled}
-        onScrollEndDrag={({nativeEvent: {zoomScale}}) => {
-          setCurrentZoomScale(zoomScale);
-          if (zoomScale <= 1.1) {
-            setIsPanActionEnabled(true);
-          } else {
-            setIsPanActionEnabled(false);
-          }
-        }}
-        zoomScale={currentZoomScale}
-        scrollEventThrottle={7}
-        maximumZoomScale={6}
-        minimumZoomScale={1}
-        scrollToOverflowEnabled={false}
-        contentContainerStyle={galleryStylesPortrait.scrollViewStyles}
-        centerContent
-        horizontal
-        removeClippedSubviews
-        snapToAlignment="center">
-        <GestureDetector gesture={doubleTapGesture}>
-          <LinearGradient colors={[Colors.PRIMARY_50, Colors.PRIMARY_100, Colors.PRIMARY_200]}>
-            <Onboard />
-              <View style={galleryStylesPortraitDynamic.screenContainer}>
-                <View style={galleryStylesPortraitDynamic.artContainer}>
-                  <View style={galleryStylesPortrait.frameStyle}>
-                    {artImage && (
-                      <Pressable onPress={toggleArtTombstone}>
-                        <Surface style={{backgroundColor:"transparent"}}>
-                          <Animated.View style={{opacity: opacityAnimatedValue}}>
-                            <Animated.View style={{opacity: imageOpacity}}>
-                              <FastImage
-                                source={{uri: artImage, priority: FastImage.priority.normal}}
-                                style={galleryStylesPortraitDynamic.artwork}
-                                resizeMode={FastImage.resizeMode.contain}
-                                onLoad={handleImageLoad}
-                              />
-                            </Animated.View>
-                            {!isLoaded && (<SkeletonLoader height={galleryStylesPortraitDynamic.artwork.height} width={galleryStylesPortraitDynamic.artwork.width} />)}
-                          </Animated.View>
-                          </Surface>
-                        </Pressable>
-                    )} 
-                  </View>
-                </View>
-              </View>
-            </LinearGradient>
-        </GestureDetector>
-      </ScrollView>
+        <View style={galleryStylesPortraitDynamic.screenContainer}>
+              <View style={galleryStylesPortraitDynamic.artContainer}>
+                {/* <View style={galleryStylesPortrait.frameStyle}> */}
+                  {artImage && (
+                  <Pressable onPress={toggleArtTombstone}>
+                    <Surface style={{backgroundColor:"transparent"}}>
+                          <FastImage
+                            source={{uri: artImage, priority: FastImage.priority.normal}}
+                            style={galleryStylesPortraitDynamic.artwork}
+                            resizeMode={FastImage.resizeMode.contain}
+                          />
+                      </Surface>
+                    </Pressable>
+                  )} 
+            </View>
+          </View>
     </GestureDetector>
   );
 }
+
+
+export const ArtOnWallMemo =  React.memo(ArtOnWallFlatList, (prevProps, nextProps) => {
+  /*
+    This is an optional comparison function that you can provide to React.memo for custom comparison logic.
+    If you omit this function, it will do a shallow comparison of props by default.
+    If you need to compare deeply nested properties, you can do so here.
+  */
+  return (
+    prevProps.artOnDisplay === nextProps.artOnDisplay &&
+    prevProps.artImage === nextProps.artImage &&
+    prevProps.artworkDimensions === nextProps.artworkDimensions &&
+    prevProps.wallHeight === nextProps.wallHeight &&
+    prevProps.navigation === nextProps.navigation 
+  );
+});

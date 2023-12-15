@@ -1,12 +1,12 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useContext} from 'react';
+import React from 'react';
 import { RefreshControl, ScrollView, Image, View} from 'react-native';
 import {
   ExhibitionNavigatorParamList,
   ExhibitionPreviewEnum,
   ExhibitionRootEnum
 } from '../../typing/routes';
-import {ETypes, StoreContext} from '../../state/Store';
+import { ETypes, StoreContext, UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes} from '../../state';
 import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
 
 import {
@@ -36,7 +36,10 @@ export function ExhibitionPreviewScreen({
   navigation: ExhibitionHomeScreenNavigationProp;
   route: any;
 }) {
-  const {state, dispatch} = useContext(StoreContext);
+  const {exhibitionState, exhibitionDispatch} = React.useContext(ExhibitionStoreContext);
+  const {uiDispatch} = React.useContext(UIStoreContext);
+  const {galleryState} = React.useContext(GalleryStoreContext);
+
   const [exhibitionPreviews, setExhibitionPreviews] = React.useState<ExhibitionPreview[]>([])
   const [errorText, setErrorText] = React.useState<string>("")
   
@@ -53,15 +56,15 @@ export function ExhibitionPreviewScreen({
     switch(screenName) {
       case ExhibitionPreviewEnum.following:
         setErrorText('No exhibitions to show. Follow more galleries to see their exhibitions here.')
-        return state.userFollowsExhibitionPreviews
+        return exhibitionState.userFollowsExhibitionPreviews
       case ExhibitionPreviewEnum.onView:
         setErrorText('No exhibitions to show. When more exhibitions are on display you will see them here.')
-        return state.currentExhibitionPreviews
+        return exhibitionState.currentExhibitionPreviews
       case ExhibitionPreviewEnum.forthcoming:
         setErrorText('No exhibitions to show. When future exhibitions are available you will see them here.')
-        return state.forthcomingExhibitionPreviews
+        return exhibitionState.forthcomingExhibitionPreviews
       default:
-        return state.exhibitionPreviews
+        return exhibitionState.exhibitionPreviews
     }
   }
 
@@ -96,7 +99,7 @@ export function ExhibitionPreviewScreen({
   React.useEffect(()=> {
     const previews = setExhibitionPreviewsState()
     setExhibitionPreviews(previews)
-  }, [state.userFollowsExhibitionPreviews, state.forthcomingExhibitionPreviews, state.currentExhibitionPreviews])
+  }, [exhibitionState.userFollowsExhibitionPreviews, exhibitionState.forthcomingExhibitionPreviews, exhibitionState.currentExhibitionPreviews])
 
   const [refreshing, setRefreshing] = React.useState(false);
   const [bottomLoad, setBottomLoad] = React.useState(false);
@@ -109,13 +112,13 @@ export function ExhibitionPreviewScreen({
     switch(screenName) {
       case ExhibitionPreviewEnum.following:
         const userFollowingExhibitionPreviews = await listExhibitionPreviewUserFollowing({ limit: 10 })
-        dispatch({type: ETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
+        exhibitionDispatch({type: ExhibitionETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
       case ExhibitionPreviewEnum.onView:
         const exhibitionPreviewsForthcoming = await listExhibitionPreviewsForthcoming({ limit: 10 })
-        dispatch({type: ETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
+        exhibitionDispatch({type: ExhibitionETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
       case ExhibitionPreviewEnum.forthcoming:
         const exhibitionPreviewsCurrent = await listExhibitionPreviewsCurrent({ limit: 10 })
-        dispatch({type: ETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
+        exhibitionDispatch({type: ExhibitionETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
       default:
         setTimeout(() => {
           setRefreshing(false);
@@ -136,30 +139,30 @@ export function ExhibitionPreviewScreen({
       let numberOfPreviews = 0
       switch(screenName) {
         case ExhibitionPreviewEnum.following:
-          if(state.userFollowsExhibitionPreviews){
-            numberOfPreviews = Object.values(state.userFollowsExhibitionPreviews).length
+          if(exhibitionState.userFollowsExhibitionPreviews){
+            numberOfPreviews = Object.values(exhibitionState.userFollowsExhibitionPreviews).length
           }
           const userFollowingExhibitionPreviews = await listExhibitionPreviewUserFollowing({ limit: numberOfPreviews + 10 })
           if(Object.keys(userFollowingExhibitionPreviews).length > numberOfPreviews){
-            dispatch({type: ETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
+            exhibitionDispatch({type: ExhibitionETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
           }
           break;
         case ExhibitionPreviewEnum.onView:
-          if(state.currentExhibitionPreviews){
-            numberOfPreviews = Object.values(state.currentExhibitionPreviews).length
+          if(exhibitionState.currentExhibitionPreviews){
+            numberOfPreviews = Object.values(exhibitionState.currentExhibitionPreviews).length
           } 
           const exhibitionPreviewsCurrent = await listExhibitionPreviewsCurrent({ limit: numberOfPreviews + 10 })
           if(Object.keys(exhibitionPreviewsCurrent).length > numberOfPreviews){
-            dispatch({type: ETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
+            exhibitionDispatch({type: ExhibitionETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
           }
           break;
         case ExhibitionPreviewEnum.forthcoming:
-          if(state.forthcomingExhibitionPreviews){
-            numberOfPreviews = Object.values(state.forthcomingExhibitionPreviews).length
+          if(exhibitionState.forthcomingExhibitionPreviews){
+            numberOfPreviews = Object.values(exhibitionState.forthcomingExhibitionPreviews).length
           }
           const exhibitionPreviewsForthcoming = await listExhibitionPreviewsForthcoming({ limit: numberOfPreviews + 10 })
           if(Object.keys(exhibitionPreviewsForthcoming).length > numberOfPreviews){
-            dispatch({type: ETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
+            exhibitionDispatch({type: ExhibitionETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
           }
           break
         default:
@@ -172,13 +175,13 @@ export function ExhibitionPreviewScreen({
     } catch {
       setBottomLoad(false);
     } 
-  }, [state.forthcomingExhibitionPreviews, state.currentExhibitionPreviews, state.userFollowsExhibitionPreviews]);
+  }, [exhibitionState.forthcomingExhibitionPreviews, exhibitionState.currentExhibitionPreviews, exhibitionState.userFollowsExhibitionPreviews]);
 
 
   const loadExhibition = React.useCallback(async ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => {
-    if (state.exhibitionData && !state.exhibitionData[exhibitionId]) {
-      dispatch({
-        type: ETypes.setCurrentHeader,
+    if (exhibitionState.exhibitionData && !exhibitionState.exhibitionData[exhibitionId]) {
+      uiDispatch({
+        type: UiETypes.setCurrentHeader,
         currentExhibitionHeader: ""
       })
     }
@@ -191,9 +194,9 @@ export function ExhibitionPreviewScreen({
   }, [])
 
   const loadGallery = React.useCallback(async({galleryId} : {galleryId: string}) => {
-    if (state.galleryData && !state.galleryData[galleryId]) {
-      dispatch({
-        type: ETypes.setGalleryHeader,
+    if (galleryState.galleryData && !galleryState.galleryData[galleryId]) {
+      uiDispatch({
+        type: UiETypes.setGalleryHeader,
         galleryHeader: ""
       })
     }

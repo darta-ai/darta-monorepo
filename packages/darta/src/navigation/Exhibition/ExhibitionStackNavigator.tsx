@@ -2,7 +2,7 @@ import {PRIMARY_800} from '@darta-styles';
 import React, {useContext} from 'react';
 
 import {ExhibitionGalleryScreen} from '../../screens/_index';
-import {StoreContext} from '../../state/Store';
+import {ETypes, StoreContext, UIStoreContext} from '../../state';
 import {backButtonStyles, headerOptions, viewOptionsStyles} from '../../styles/styles';
 import {ExhibitionRootEnum, PreviousExhibitionRootEnum} from '../../typing/routes';
 import {ExhibitionTopTabNavigator} from './ExhibitionTopTabNavigator'
@@ -25,16 +25,17 @@ export const ExhibitionStack = createStackNavigator();
 
 
 export function ExhibitionStackNavigator() {
-  const {state} = useContext(StoreContext);
+  const {uiState} = React.useContext(UIStoreContext);
+
 
   const navigation = useNavigation();
   useDeepLinking(navigation);
 
   const shareExhibition = async () => {
-    if (!state.exhibitionShareDetails) return;
+    if (!uiState.exhibitionShareDetails) return;
     try {
       await Share.open({
-        url: state.exhibitionShareDetails.shareURL ?? "",
+        url: uiState.exhibitionShareDetails.shareURL ?? "",
         // message: state.exhibitionShareDetails.shareURLMessage ?? "",
       });
     } catch (error) {
@@ -63,7 +64,7 @@ export function ExhibitionStackNavigator() {
         <ExhibitionStack.Screen
             name={ExhibitionRootEnum.TopTab}
             component={ExhibitionTopTabNavigator}
-            options={{...headerOptions, headerTitle: state.currentExhibitionHeader ?? "",
+            options={{...headerOptions, headerTitle: uiState.currentExhibitionHeader ?? "",
             headerRight: () => (
               <IconButton 
                 icon={"export-variant"}
@@ -78,25 +79,25 @@ export function ExhibitionStackNavigator() {
           <ExhibitionStack.Screen
             name={PreviousExhibitionRootEnum.navigatorScreen}
             component={PastExhibitionTopTabNavigator}
-            options={{...headerOptions, headerTitle: state.previousExhibitionHeader ?? "", 
+            options={{...headerOptions, headerTitle: uiState.previousExhibitionHeader ?? "", 
             }}
             initialParams={{navigateTo: ExhibitionRootEnum.individualArtwork}}
             />
           <ExhibitionStack.Screen
             name={ExhibitionRootEnum.individualArtwork}
             component={ArtworkScreen}
-            options={{...headerOptions, headerTitle: state.currentArtworkTombstoneHeader ? state.currentArtworkTombstoneHeader.slice(0, 30) : ""}}
+            options={{...headerOptions, headerTitle: uiState.currentArtworkTombstoneHeader ? uiState.currentArtworkTombstoneHeader.slice(0, 30) : ""}}
           />
           <ExhibitionStack.Screen
           name={ExhibitionRootEnum.showGallery}
           component={ExhibitionGalleryScreen}
           initialParams={{galleryId: ""}}
-          options={{...headerOptions, headerTitle: state.galleryHeader ?? "" }}
+          options={{...headerOptions, headerTitle: uiState.galleryHeader ?? "" }}
           />
           <ExhibitionStack.Screen
             name={ExhibitionRootEnum.qrRouter}
             component={ExhibitionTopTabNavigator}
-            options={{...headerOptions, headerTitle: state.currentExhibitionHeader ?? "", 
+            options={{...headerOptions, headerTitle: uiState.currentExhibitionHeader ?? "", 
             headerRight: () => (
               <IconButton 
                 icon={"export-variant"}

@@ -1,5 +1,5 @@
-import { useEffect, useState, useContext } from 'react';
-import { ETypes, StoreContext } from '../../state/Store';
+import React, { useEffect, useState } from 'react';
+import { ETypes, StoreContext, UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes } from '../../state';
 import * as Linking from 'expo-linking';
 import { ExhibitionRootEnum } from '../../typing/routes';
 import { readExhibition, readMostRecentGalleryExhibitionForUser } from '../../api/exhibitionRoutes';
@@ -8,7 +8,10 @@ import { createGalleryRelationshipAPI } from '../../utils/apiCalls';
 
 
 export function useDeepLinking(navigation) {
-  const {state, dispatch} = useContext(StoreContext);
+  const {dispatch} = React.useContext(StoreContext);
+  const {uiDispatch} = React.useContext(UIStoreContext);
+  const {galleryDispatch} = React.useContext(GalleryStoreContext);
+
 
 
   async function fetchMostRecentExhibitionData({locationId} : {locationId: string}): Promise<{exhibitionId: string, galleryId: string} | void> {
@@ -16,12 +19,12 @@ export function useDeepLinking(navigation) {
         const {exhibition, gallery} = await readMostRecentGalleryExhibitionForUser({locationId})
         const supplementalExhibitions = await listGalleryExhibitionPreviewForUser({galleryId: gallery._id})
         const galleryData = {...gallery, galleryExhibitions: supplementalExhibitions}
-        dispatch({
-            type: ETypes.saveGallery,
+        galleryDispatch({
+            type: GalleryETypes.saveGallery,
             galleryData: galleryData,
         })
-        dispatch({
-            type: ETypes.setCurrentHeader,
+        uiDispatch({
+            type: UiETypes.setCurrentHeader,
             currentExhibitionHeader: exhibition.exhibitionTitle.value!,
           })
         dispatch({
@@ -54,14 +57,14 @@ async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: st
         readExhibition({ exhibitionId })
     ])
       const galleryData = { ...gallery, galleryExhibitions: supplementalExhibitions };
-      dispatch({
-          type: ETypes.saveGallery,
+      galleryDispatch({
+          type: GalleryETypes.saveGallery,
           galleryData: galleryData,
       })
-      dispatch({
-          type: ETypes.setCurrentHeader,
-          currentExhibitionHeader: exhibition.exhibitionTitle.value!,
-        })
+      uiDispatch({
+        type: UiETypes.setCurrentHeader,
+        currentExhibitionHeader: exhibition.exhibitionTitle.value!,
+      })
       dispatch({
           type: ETypes.saveExhibition,
           exhibitionData: exhibition,

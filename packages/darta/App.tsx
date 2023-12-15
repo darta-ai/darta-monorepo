@@ -16,7 +16,7 @@ import {
 } from 'react-native-paper';
 import {ExhibitionStackNavigator} from './src/navigation/Exhibition/ExhibitionStackNavigator';
 import {UserStackNavigator} from './src/navigation/User/UserStackNavigator';
-import {ETypes, StoreContext, StoreProvider} from './src/state/Store';
+import StoreProvider  from './src/state/index';
 
 import * as SplashScreen from 'expo-splash-screen';
 import {AnimatedAppLoader} from './src/screens/SplashScreen/SplashScreen';
@@ -40,25 +40,26 @@ import { DartaRecommenderNavigator } from './src/navigation/DartaRecommender/Dar
 import * as SVGs from './src/assets/SVGs';
 import { ExhibitionRootEnum, ExploreMapRootEnum, PreviousExhibitionRootEnum, RecommenderRoutesEnum, UserRoutesEnum, ExhibitionPreviewEnum} from './src/typing/routes';
 import ErrorBoundary from './src/components/ErrorBoundary/ErrorBoundary';
+import { UserETypes, UserStoreContext } from './src/state/UserStore';
 export const RecommenderStack = createStackNavigator();
 export const RootStack = createMaterialBottomTabNavigator();
 
 
 function App() {
-  const {dispatch} = React.useContext( StoreContext );
+  const {userDispatch} = React.useContext( UserStoreContext );
   React.useEffect(() => {
     auth().onAuthStateChanged((userState: FirebaseAuthTypes.User | null) => {
       if (userState?.uid && userState.email) {
-        dispatch({
-          type: ETypes.setUser,
+        userDispatch({
+          type: UserETypes.setUser,
           userData: {
             uid: userState.uid,
             email: userState.email,
           }
         })
       } else{
-        dispatch({
-          type: ETypes.setUser,
+        userDispatch({
+          type: UserETypes.setUser,
           userData: {
             uid: "",
             email: "",
@@ -101,7 +102,7 @@ function App() {
 
   function getActiveRouteName(state) {
     const route = state.routes[state.index];
-    if (route.state) {
+    if (route?.state) {
       // Dive into nested navigators
       return getActiveRouteName(route.state);
     }

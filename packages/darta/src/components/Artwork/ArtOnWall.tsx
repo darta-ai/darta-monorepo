@@ -23,6 +23,7 @@ import { Surface } from 'react-native-paper';
 import * as Colors from '@darta-styles'
 import { LinearGradient } from 'expo-linear-gradient';
 import { SkeletonLoader } from '../Darta/SkeletonLoader';
+import { UserETypes, UserStoreContext } from '../../state/UserStore';
 
 const galleryStylesPortrait = StyleSheet.create({
   container: {
@@ -81,6 +82,7 @@ export function ArtOnWall({
   toggleArtTombstone: () => void;
 }) {
   const {state, dispatch} = useContext(StoreContext);
+  const {userState, userDispatch} = React.useContext(UserStoreContext);
 
   const [isPanActionEnabled, setIsPanActionEnabled] = useState(true);
 
@@ -94,9 +96,9 @@ export function ArtOnWall({
   const handleArtRatingGesture = useCallback(
     async (gesture: ArtRatingGesture) => {
       const artworkOnDisplayId = artOnDisplay._id;
-      const likedArtworks = state.userLikedArtwork;
-      const dislikedArtworks = state.userDislikedArtwork;
-      const savedArtworks = state.userSavedArtwork;
+      const likedArtworks = userState.userLikedArtwork;
+      const dislikedArtworks = userState.userDislikedArtwork;
+      const savedArtworks = userState.userSavedArtwork;
 
       const userLiked = likedArtworks?.[artworkOnDisplayId!] || false
       const userSaved = savedArtworks?.[artworkOnDisplayId!] || false
@@ -108,8 +110,8 @@ export function ArtOnWall({
             rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE);
             break;
           } else if (userDisliked) {
-            dispatch({
-              type: ETypes.removeUserDislikedArtwork,
+            userDispatch({
+              type: UserETypes.removeUserDislikedArtwork,
               artworkId: artOnDisplay._id,
             })
             try{
@@ -127,9 +129,8 @@ export function ArtOnWall({
           }
         case ArtRatingGesture.swipeDown:
           if (userSaved) {
-
-            dispatch({
-              type: ETypes.removeUserSavedArtwork,
+            userDispatch({
+              type: UserETypes.removeUserSavedArtwork,
               artworkId: artOnDisplay._id,
             })
             try{
@@ -140,8 +141,8 @@ export function ArtOnWall({
             rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE);
             break;
           } else if (userLiked) {
-            dispatch({
-              type: ETypes.removeUserLikedArtwork,
+            userDispatch({
+              type: UserETypes.removeUserLikedArtwork,
               artworkId: artOnDisplay._id,
             })
             try{
@@ -154,8 +155,8 @@ export function ArtOnWall({
           } else if (userDisliked) {
             break;
           } else {
-            dispatch({
-              type: ETypes.removeUserDislikedArtwork,
+            userDispatch({
+              type: UserETypes.removeUserDislikedArtwork,
               artworkId: artOnDisplay._id,
             })
             try{

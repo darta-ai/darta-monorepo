@@ -1,7 +1,6 @@
 import React from 'react';
 
 import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
-import {ETypes, StoreContext} from '../../state/Store';
 import { ArtworkList } from '../Artwork/ArtworkList';
 import { TextElement } from '../Elements/TextElement';
 import { Image } from 'react-native';
@@ -12,9 +11,10 @@ import * as Colors from '@darta-styles';
 import { UserRoutesEnum } from '../../typing/routes';
 import { dartaLogo } from './UserInquiredArtwork';
 import FastImage from 'react-native-fast-image';
+import { UserETypes, UserStoreContext } from '../../state/UserStore';
 
 export function UserSavedArtwork({navigation}: {navigation: any}) {
-  const {state, dispatch} = React.useContext(StoreContext);
+  const {userState, userDispatch} = React.useContext(UserStoreContext);
 
   const errorMessageText = "when you save artwork, it will appear here"
 
@@ -23,17 +23,17 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
   const [getStartedText, setGetStartedText] = React.useState<string | null>(errorMessageText)
 
   React.useEffect(() => {
-    const savedArtwork = state.userSavedArtwork;
+    const savedArtwork = userState.userSavedArtwork;
     if (savedArtwork){
       type ImageUrlObject = { uri: string };
       const imageUrlsToPrefetch: ImageUrlObject[] = [];
       const data: Artwork[] = [];
       Object.keys(savedArtwork as any)
       .filter(key => savedArtwork[key])
-      .filter((artworkId) => state.artworkData && state.artworkData[artworkId])
+      .filter((artworkId) => userState.artworkData && userState.artworkData[artworkId])
       .forEach((artwork: any) => {
-        if (!state.artworkData) return
-        const fullArtwork = state?.artworkData[artwork]
+        if (!userState.artworkData) return
+        const fullArtwork = userState?.artworkData[artwork]
         if (fullArtwork.artworkImage?.value){
           imageUrlsToPrefetch.push({uri: fullArtwork.artworkImage.value})
         }
@@ -49,7 +49,7 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
       setGetStartedText(errorMessageText)
     }
 
-  }, [state.userSavedArtwork]);
+  }, [userState.userSavedArtwork]);
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -61,12 +61,12 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
       if (savedArtwork && Object.values(savedArtwork).length > 0){
         savedArtworkIds = Object.values(savedArtwork).reduce((acc, el) => ({...acc, [el?._id as string] : true}), {})
       }
-      dispatch({
-        type: ETypes.setUserSavedArtworkMulti,
+      userDispatch({
+        type: UserETypes.setUserSavedArtworkMulti,
         artworkIds: savedArtworkIds
       })
-      dispatch({
-        type: ETypes.saveArtworkMulti,
+      userDispatch({
+        type: UserETypes.saveArtworkMulti,
         artworkDataMulti: savedArtwork
       })
     } catch {
