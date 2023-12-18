@@ -23,15 +23,12 @@ interface ViewIAction {
 
 // Define the initial state
 const initialViewState: ViewState = {
-  artworkRatingIndex: 0,
+
 };
 
 // Define the reducer function
 const viewReducer = (state: ViewState, action: ViewIAction): ViewState => {
   const { type } = action;
-
-  console.log("hey")
-  console.log(action)
   switch (type) {
     case ViewETypes.setArtworksToRate:
       if (!action?.artworksToRate){
@@ -48,6 +45,7 @@ const viewReducer = (state: ViewState, action: ViewIAction): ViewState => {
         if (!action?.artworkRatingIndex){
           return state;
         }
+        console.log(' ######## setting view index', action.artworkRatingIndex)
         return {
           ...state,
           artworkRatingIndex: action.artworkRatingIndex,

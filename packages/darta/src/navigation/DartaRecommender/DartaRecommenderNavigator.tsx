@@ -14,7 +14,7 @@ import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { AddToListScreen } from '../../screens/Lists/AddToList';
 import { TextElement } from '../../components/Elements/TextElement';
-import { DartaRecommenderViewMemo } from '../../screens/DartaRecommenderViewFlatList';
+import { DartaRecommenderViewMemo, DartaRecommenderViewFlatList } from '../../screens/DartaRecommenderViewFlatList';
 import { DartaRecommenderView } from '../../screens/DartaRecommenderView';
 
 export const RecommenderStack = createStackNavigator();
@@ -46,7 +46,7 @@ export function DartaRecommenderNavigator() {
         <RecommenderStack.Group>
           <RecommenderStack.Screen
             name={RecommenderRoutesEnum.recommenderHome}
-            component={DartaRecommenderViewMemo}
+            component={DartaRecommenderViewFlatList}
             options={{...headerOptions, 
               headerTitle: 'View',
               headerRight: () => (

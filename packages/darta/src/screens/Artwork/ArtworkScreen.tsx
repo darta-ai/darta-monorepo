@@ -8,6 +8,8 @@ import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
 import auth from '@react-native-firebase/auth';
 import { getDartaUser } from '../../api/userRoutes';
 import analytics from '@react-native-firebase/analytics';
+import { GalleryStoreContext, UserETypes } from '../../state';
+import { UserStoreContext } from '../../state/UserStore';
 
 
 export function ArtworkScreen({route, navigation}: {route: any, navigation: any}) {
@@ -30,6 +32,8 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
   const [dialogVisible, setDialogVisible] = React.useState(false)
 
   const {state, dispatch} = useContext(StoreContext);
+  const {userDispatch} = useContext(UserStoreContext);
+  const {galleryState} = useContext(GalleryStoreContext);
   
   const [saveLoading, setSaveLoading] = React.useState(false);  
   const [likeLoading, setLikeLoading] = React.useState(false);
@@ -41,8 +45,8 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
     setLikeLoading(true)
     try {
       await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
-      dispatch({
-        type: ETypes.setUserLikedArtwork,
+      userDispatch({
+        type: UserETypes.setUserLikedArtwork,
         artworkId,
       })
       
@@ -61,12 +65,12 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
     setSaveLoading(true)
     try {
       await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
-      dispatch({
-        type: ETypes.setUserSavedArtworkMulti,
+      userDispatch({
+        type: UserETypes.setUserSavedArtworkMulti,
         artworkIds: {[artworkId]: true},
       })
-      dispatch({
-        type: ETypes.saveArtworkMulti,
+      userDispatch({
+        type: UserETypes.saveArtworkMulti,
         artworkDataMulti: {[artworkId]: artOnDisplay},
       })
       analytics().logEvent('save_artwork_modal', {artworkId})
@@ -83,8 +87,8 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
     }
     try {
       await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE})
-      dispatch({
-        type: ETypes.setUserInquiredArtwork,
+      userDispatch({
+        type: UserETypes.setUserInquiredArtwork,
         artworkId,
       })
       analytics().logEvent('inquire_artwork', {artworkId})
@@ -106,7 +110,7 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
     const email = auth().currentUser?.email ?? user?.email;
     const firstName = user?.legalFirstName;
     const lastName = user?.legalLastName;
-    const galleryName = state.galleryData?.[artOnDisplay?.galleryId]?.galleryName?.value ?? "the gallery";
+    const galleryName = galleryState.galleryData?.[artOnDisplay?.galleryId]?.galleryName?.value ?? "the gallery";
     if (email && firstName && lastName){
       Alert.alert(`Share your name and email with ${galleryName}?`, `We will email ${galleryName} and let them know you're interested`, [
         {

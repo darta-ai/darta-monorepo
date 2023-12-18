@@ -16,17 +16,17 @@ function StoreProvider({ children }) {
   
     return (
       <StoreContext.Provider value={{ state, dispatch }}>
+        <ViewStoreContext.Provider value={{viewState, viewDispatch}}>
           <UIStoreContext.Provider value={{ uiState, uiDispatch }}>
             <GalleryStoreContext.Provider value={{galleryState, galleryDispatch}}>
                 <ExhibitionStoreContext.Provider value={{exhibitionState, exhibitionDispatch}}>
-                    <ViewStoreContext.Provider value={{viewState, viewDispatch}}>
-                        <UserStoreContext.Provider value={{userState, userDispatch}}>
-                            {children}
-                        </UserStoreContext.Provider>
-                    </ViewStoreContext.Provider>
+                  <UserStoreContext.Provider value={{userState, userDispatch}}>
+                    {children}
+                  </UserStoreContext.Provider>
                 </ExhibitionStoreContext.Provider>
             </GalleryStoreContext.Provider>
           </UIStoreContext.Provider>
+          </ViewStoreContext.Provider>
       </StoreContext.Provider>
     );
   }

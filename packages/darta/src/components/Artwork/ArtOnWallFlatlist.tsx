@@ -23,8 +23,7 @@ import {
   galleryDimensionsPortrait,
 } from '../../utils/constants';
 import { UIStoreContext, StoreContext, UiETypes } from '../../state';
-import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
-import { Gesture, GestureDetector , } from 'react-native-gesture-handler';
+import { Gesture } from 'react-native-gesture-handler';
 
 
 
@@ -34,21 +33,20 @@ export function ArtOnWallFlatList({
   artImage,
   wallHeight = 96,
   navigation,
-  onPanResponderEnd,
   toggleArtForward,
   toggleArtBackward,
+  longestPainting,
 }: {
   artOnDisplay: Artwork;
   artImage: string | undefined;
   artworkDimensions: Artwork['artworkDimensions'] | undefined;
   wallHeight?: number;
   navigation: any
-  onPanResponderEnd: (event: any, gestureState: any, zoomableViewEventObject: any) => void
   toggleArtForward: () => void
-  toggleArtBackward: () => void
+  toggleArtBackward: () => void,
+  longestPainting: number
 }) {
   const {state} = useContext(StoreContext);
-  console.log({state: state.isPortrait})
   const {uiDispatch} = React.useContext(UIStoreContext);
 
   const [backgroundContainerDimensionsPixels, setBackgroundContainerDimensionsPixels] = useState(galleryDimensionsPortrait) 
@@ -109,6 +107,16 @@ export function ArtOnWallFlatList({
       artHeightPixels = artHeightInches * pixelsPerInchHeight;
       artWidthPixels = artWidthInches * pixelsPerInchWidth;
 
+      // need to adjust proportions if the art is too big for the screen
+
+      if (artWidthPixels > backgroundContainerDimensionsPixels.width) {
+        artWidthPixels = backgroundContainerDimensionsPixels.width;
+        artHeightPixels = artHeightPixels * (artWidthPixels / artWidthInches);
+      } else if (artHeightPixels > backgroundContainerDimensionsPixels.height) {
+        artHeightPixels = backgroundContainerDimensionsPixels.height;
+        artWidthPixels = artWidthPixels * (artHeightPixels / artHeightInches);
+      }
+
       artImageSize = {
         height: artHeightPixels,
         width: artWidthPixels,
@@ -150,14 +158,22 @@ export function ArtOnWallFlatList({
 
   const galleryStylesPortraitDynamic = StyleSheet.create({
     artContainer: {
-      top: artDimensions.artImageLocation?.top,
-      left: artDimensions.artImageLocation?.left,
-      height: artDimensions.artImageSize?.height,
-      width: artDimensions.artImageSize?.width,
+      // top: artDimensions.artImageLocation?.top,
+      // left: artDimensions.artImageLocation?.left,
+      // height: artDimensions.artImageSize?.height,
+      // width: artDimensions.artImageSize?.width,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignContent: 'center',
+      height: hp('70%'),
+      width: wp('100%'),
     },
     artwork: {
       height: artDimensions.artImageSize?.height,
       width: artDimensions.artImageSize?.width,
+      // height: '100%',
+      // width: artDimensions.artImageSize?.width,
       resizeMode: 'contain',
       shadowColor: Colors.PRIMARY_300, // Shadow color should generally be black for realistic shadows
       shadowOffset: { width: 0, height: 4.29 }, // Adjust the height for the depth of the shadow
@@ -165,8 +181,7 @@ export function ArtOnWallFlatList({
       shadowRadius: 4.29, // A larger shadow
     },
     screenContainer: {
-      width: wp('100%'),
-      borderWidth: 1, 
+      // width: longestPainting,
       height: '100%',
     },
     container: {
@@ -243,51 +258,6 @@ export function ArtOnWallFlatList({
   });
 
 
-  const panGestureRight = Gesture.Pan()
-    .activeOffsetX(wp('20%'))
-    .onStart(() => {
-      console.log('triggered pan left', state)
-      state.isPortrait && runOnJS(toggleArtBackward)()
-        // : runOnJS(handleArtRatingGesture)(ArtRatingGesture.swipeUp);
-    });
-
-  const panGestureLeft = Gesture.Pan()
-    .activeOffsetX(-wp('20%'))
-    .onStart(() => {
-
-      state.isPortrait && runOnJS(toggleArtForward)()
-      
-    });
-
-  const panGestureUp = Gesture.Pan()
-    .activeOffsetY(wp('20%'))
-    .onStart(() => {
-
-      if (!state.isPortrait){
-        runOnJS(toggleArtBackward)();
-      } else {
-        return
-      }
-    });
-
-  const panGestureDown = Gesture.Pan()
-    .activeOffsetY(-wp('20%'))
-    .onStart(async () => {
-
-      if (!state.isPortrait){
-        runOnJS(toggleArtForward)();
-      } else {
-        return
-      }
-    });
-
-  const composed = Gesture.Exclusive(
-    panGestureRight,
-    panGestureLeft,
-    panGestureUp,
-    panGestureDown,
-  );
-
   const doubleTapGesture = Gesture.Tap()
   .numberOfTaps(2)
   .maxDistance(9)
@@ -302,24 +272,20 @@ export function ArtOnWallFlatList({
 
 
   return (
-    <GestureDetector gesture={composed}>
-        <View style={galleryStylesPortraitDynamic.screenContainer}>
-              <View style={galleryStylesPortraitDynamic.artContainer}>
-                {/* <View style={galleryStylesPortrait.frameStyle}> */}
-                  {artImage && (
-                  <Pressable onPress={toggleArtTombstone}>
-                    <Surface style={{backgroundColor:"transparent"}}>
-                          <FastImage
-                            source={{uri: artImage, priority: FastImage.priority.normal}}
-                            style={galleryStylesPortraitDynamic.artwork}
-                            resizeMode={FastImage.resizeMode.contain}
-                          />
-                      </Surface>
-                    </Pressable>
-                  )} 
-            </View>
-          </View>
-    </GestureDetector>
+      <View style={galleryStylesPortraitDynamic.artContainer}>
+        {/* <View style={galleryStylesPortrait.frameStyle}> */}
+          {artImage && (
+          <Pressable onPress={toggleArtTombstone}>
+            <Surface style={{backgroundColor:"transparent"}}>
+                  <FastImage
+                    source={{uri: artImage, priority: FastImage.priority.normal}}
+                    style={galleryStylesPortraitDynamic.artwork}
+                    resizeMode={FastImage.resizeMode.contain}
+                  />
+              </Surface>
+            </Pressable>
+          )} 
+    </View>
   );
 }
 

@@ -31,7 +31,7 @@ Then, use devspace to deploy:
 ## Setup the TLS Secrets:
 
 # Create: 
-`sudo certbot certonly --manual --preferred-challenges "dns-01" --server "https://dv.acme-v02.api.pki.goog/directory" --domains "darta.art,www.darta.art, api.darta.art"`
+`sudo certbot certonly --manual --preferred-challenges "dns-01" --server "https://dv.acme-v02.api.pki.goog/directory" --domains "darta.art,www.darta.art, api.darta.art, images.darta.art"`
 
 then run: 
 
@@ -39,11 +39,18 @@ then run:
 
 then run:
 
-`sudo cat /etc/letsencrypt/live/darta.works/privkey.pem | base64`
+`sudo cat /etc/letsencrypt/live/darta.art/privkey.pem | base64`
 
 copy and paste those results into the my-tls-secret.yaml file in `charts/production/my-tls-secret.yaml`
 
 then my-tls-secret with tls.cert and tls.key (e.g., `kubectl apply -f ./charts/productionmy-tls-secret.yaml`)
+
+
+<!-- Certificate is saved at: /etc/letsencrypt/live/darta.art-0001/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/darta.art-0001/privkey.pem -->
+
+<!-- Certificate is saved at: /etc/letsencrypt/live/images.darta.art/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/images.darta.art/privkey.pem -->
 
 ## Deploy LoadBalancer & IngressRoute:
 
