@@ -14,19 +14,12 @@ import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { AddToListScreen } from '../../screens/Lists/AddToList';
 import { TextElement } from '../../components/Elements/TextElement';
-import { DartaRecommenderViewMemo, DartaRecommenderViewFlatList } from '../../screens/DartaRecommenderViewFlatList';
-import { DartaRecommenderView } from '../../screens/DartaRecommenderView';
+import { DartaRecommenderViewFlatList } from '../../screens/DartaRecommenderViewFlatList';
 
 export const RecommenderStack = createStackNavigator();
 export function DartaRecommenderNavigator() {
-  const {dispatch} = useContext(StoreContext);
   const {uiState} = React.useContext(UIStoreContext);
 
-  const flipOrientation = () => {
-    dispatch({
-      type: ETypes.setPortrait,
-    });
-  };
   const navigation = useNavigation();
   useDeepLinking(navigation);
 
@@ -49,17 +42,17 @@ export function DartaRecommenderNavigator() {
             component={DartaRecommenderViewFlatList}
             options={{...headerOptions, 
               headerTitle: 'View',
-              headerRight: () => (
-                <IconButton
-                  icon={icons.screenRotation}    
-                  iconColor={Colors.PRIMARY_950}
-                  containerColor={Colors.PRIMARY_50}
-                  style={viewOptionsStyles.viewOptionsButtonStyle}
-                  accessibilityLabel="Flip Screen Orientation"
-                  testID="flipScreenButton"
-                  onPress={() => flipOrientation()}
-                />
-              ),
+              // headerRight: () => (
+              //   <IconButton
+              //     icon={icons.screenRotation}    
+              //     iconColor={Colors.PRIMARY_950}
+              //     containerColor={Colors.PRIMARY_50}
+              //     style={viewOptionsStyles.viewOptionsButtonStyle}
+              //     accessibilityLabel="Flip Screen Orientation"
+              //     testID="flipScreenButton"
+              //     onPress={() => flipOrientation()}
+              //   />
+              // ),
             }}
           />
           <RecommenderStack.Screen

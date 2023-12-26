@@ -1,9 +1,10 @@
-import React, {useContext, useState} from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
   Pressable,
-  useWindowDimensions
+  ActivityIndicator,
+  ImageSourcePropType
 } from 'react-native';
 import FastImage from 'react-native-fast-image'
 import {
@@ -16,16 +17,23 @@ import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types'
 import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
 import { Surface } from 'react-native-paper';
 import * as Colors from '@darta-styles'
-import {runOnJS} from 'react-native-reanimated';
 import { RecommenderRoutesEnum } from '../../typing/routes';
 import {
   galleryDimensionsLandscape,
   galleryDimensionsPortrait,
 } from '../../utils/constants';
 import { UIStoreContext, StoreContext, UiETypes } from '../../state';
-import { Gesture } from 'react-native-gesture-handler';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import {runOnJS} from 'react-native-reanimated';
 
 
+
+interface ArtDimensions {
+  artImageSize: { height: number; width: number; } | null;
+  artImageLocation: { top: number; left: number; } | null;
+  artHeightPixels: number;
+  artWidthPixels: number;
+}
 
 export function ArtOnWallFlatList({
   artworkDimensions,
@@ -33,39 +41,31 @@ export function ArtOnWallFlatList({
   artImage,
   wallHeight = 96,
   navigation,
-  toggleArtForward,
-  toggleArtBackward,
-  longestPainting,
 }: {
   artOnDisplay: Artwork;
   artImage: string | undefined;
   artworkDimensions: Artwork['artworkDimensions'] | undefined;
   wallHeight?: number;
   navigation: any
-  toggleArtForward: () => void
-  toggleArtBackward: () => void,
-  longestPainting: number
 }) {
-  const {state} = useContext(StoreContext);
+  const {state} = React.useContext(StoreContext);
   const {uiDispatch} = React.useContext(UIStoreContext);
 
-  const [backgroundContainerDimensionsPixels, setBackgroundContainerDimensionsPixels] = useState(galleryDimensionsPortrait) 
+  const [backgroundContainerDimensionsPixels, setBackgroundContainerDimensionsPixels] = React.useState(galleryDimensionsPortrait) 
+  const [isLoading, setIsLoading] = React.useState(false);
 
 
-  React.useEffect(() => {
-    if (state.isPortrait) {
-      setBackgroundContainerDimensionsPixels(galleryDimensionsPortrait);
-    } else {
-      setBackgroundContainerDimensionsPixels(galleryDimensionsLandscape);
-    }
-  }, [state.isPortrait])
+  // React.useEffect(() => {
+  //   if (state.isPortrait) {
+  //     setBackgroundContainerDimensionsPixels(galleryDimensionsPortrait);
+  //   } else {
+  //     setBackgroundContainerDimensionsPixels(galleryDimensionsLandscape);
+  //   }
+  // }, [state.isPortrait])
 
-  interface ArtDimensions {
-    artImageSize: { height: number; width: number; } | null;
-    artImageLocation: { top: number; left: number; } | null;
-    artHeightPixels: number;
-    artWidthPixels: number;
-  }
+  const onSingleTap = (event) => {
+    toggleArtTombstone(); // Handle tap
+  };
 
   const [artDimensions, setArtDimensions] = React.useState<ArtDimensions>({
     artImageSize: null,
@@ -80,6 +80,7 @@ export function ArtOnWallFlatList({
       type: UiETypes.setTombstoneHeader,
       currentArtworkHeader: artOnDisplay?.artworkTitle?.value!,
     });
+    console.log('triggered')
     if (artOnDisplay){
       navigation.navigate(RecommenderRoutesEnum.TopTabExhibition, {artOnDisplay, galleryId: artOnDisplay?.galleryId, exhibitionId: artOnDisplay?.exhibitionId});
     }
@@ -148,20 +149,13 @@ export function ArtOnWallFlatList({
     setSaw()
   }, [artOnDisplay]);
 
-  React.useEffect(() => {
-    const { artImageSize, artImageLocation, artHeightPixels, artWidthPixels } = getDimensions();
-    setArtDimensions({ artImageSize, artImageLocation, artHeightPixels, artWidthPixels });
-  }, [state.isPortrait])
-
-  const windowHeight = useWindowDimensions().height;
-  const windowWidth = useWindowDimensions().width;
+  // React.useEffect(() => {
+  //   const { artImageSize, artImageLocation, artHeightPixels, artWidthPixels } = getDimensions();
+  //   setArtDimensions({ artImageSize, artImageLocation, artHeightPixels, artWidthPixels });
+  // }, [state.isPortrait])
 
   const galleryStylesPortraitDynamic = StyleSheet.create({
     artContainer: {
-      // top: artDimensions.artImageLocation?.top,
-      // left: artDimensions.artImageLocation?.left,
-      // height: artDimensions.artImageSize?.height,
-      // width: artDimensions.artImageSize?.width,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
@@ -169,11 +163,13 @@ export function ArtOnWallFlatList({
       height: hp('70%'),
       width: wp('100%'),
     },
+    artworkDimensions: {
+      height: artDimensions.artImageSize?.height,
+      width: artDimensions.artImageSize?.width,
+    },
     artwork: {
       height: artDimensions.artImageSize?.height,
       width: artDimensions.artImageSize?.width,
-      // height: '100%',
-      // width: artDimensions.artImageSize?.width,
       resizeMode: 'contain',
       shadowColor: Colors.PRIMARY_300, // Shadow color should generally be black for realistic shadows
       shadowOffset: { width: 0, height: 4.29 }, // Adjust the height for the depth of the shadow
@@ -193,97 +189,37 @@ export function ArtOnWallFlatList({
       width: '100%',
     },
     artOnDisplayContainer: {
-      transform: state.isPortrait ? [{rotate: '0deg'}] : [{rotate: '90deg'}],
+      transform: [{rotate: '0deg'}],
       backgroundColor: 'black',
     },
-    likeContainer: {
-      position: 'absolute',
-      alignSelf: 'center',
-      borderRadius: 50,
-      width: 72,
-      height: 72,
-      backgroundColor: Colors.PRIMARY_50,
-      top: hp('65%'),
-      right: 76,
-      display:'flex', 
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      alignContent: 'center', 
-      transform: state.isPortrait ? [{rotate: '180deg'}] : [{rotate: '90deg'}],
-    },
-    saveContainer: {
-      position: 'absolute',
-      alignSelf: 'center',
-      borderRadius: 50,
-      width: 48,
-      height: 48,
-      backgroundColor: Colors.PRIMARY_50,
-      top: hp('65%') + 12,
-      left: wp('50%') - 24,
-      display:'flex', 
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      alignContent: 'center'
-    },
-    secondaryButton: {
-      backgroundColor: Colors.PRIMARY_50,
-      color: 'black',
-      opacity: 0.9,
-      transform: state.isPortrait ? [{rotate: '0deg'}] : [{rotate: '90deg'}],
-    },
-    dislikeContainer: {
-      position: 'absolute',
-      alignSelf: 'center',
-      borderRadius: 50,
-      width: 72,
-      height: 72,
-      backgroundColor: Colors.PRIMARY_50,
-      top: hp('65%'),
-      left: 76,
-      display:'flex', 
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      alignContent: 'center',
-    },
-    touchableContainer: {
-      borderRadius: 50, 
-      width: 72, 
-      height: 72, 
-      justifyContent: 'center', 
-      alignItems: 'center',
-    },
   });
 
-
-  const doubleTapGesture = Gesture.Tap()
-  .numberOfTaps(2)
-  .maxDistance(9)
-  .onEnd((_, success) => {
-    'worklet';
-
-    if (success) {
-      // runOnJS(handleDoubleTap)();
-    }
-    return success;
-  });
-
+  const tapGesture = Gesture.Tap()
+    .onEnd((event) => {
+      if (event.numberOfPointers === 1) {
+        runOnJS(toggleArtTombstone)(); // handle single tap
+      }
+    });
 
   return (
       <View style={galleryStylesPortraitDynamic.artContainer}>
-        {/* <View style={galleryStylesPortrait.frameStyle}> */}
           {artImage && (
-          <Pressable onPress={toggleArtTombstone}>
-            <Surface style={{backgroundColor:"transparent"}}>
-                  <FastImage
-                    source={{uri: artImage, priority: FastImage.priority.normal}}
-                    style={galleryStylesPortraitDynamic.artwork}
-                    resizeMode={FastImage.resizeMode.contain}
-                  />
+          // <View style={galleryStylesPortraitDynamic.artworkDimensions}>
+            <GestureDetector gesture={tapGesture}>
+              <Surface style={{backgroundColor:"transparent"}}>
+                <FastImage
+                  source={{uri: artImage, priority: FastImage.priority.high}}
+                  style={galleryStylesPortraitDynamic.artwork}
+                  resizeMode={FastImage.resizeMode.contain}
+                  onLoadStart={() => setIsLoading(true)}
+                  onLoadEnd={() => setIsLoading(false)}
+                />
+                {isLoading && (
+                <ActivityIndicator size="small"/> 
+                )}
               </Surface>
-            </Pressable>
+            </GestureDetector>
+          // </View>
           )} 
     </View>
   );

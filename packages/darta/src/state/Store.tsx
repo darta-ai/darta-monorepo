@@ -113,6 +113,7 @@ export enum ETypes {
 
   setUserListPreviews = 'SET_USER_LIST_PREVIEWS',
   setUserLists = 'SET_USER_LISTS',
+  addArtworkToList = 'ADD_ARTWORK_TO_LIST',
 }
 
 // Define the action type
@@ -157,6 +158,8 @@ interface IAction {
 
   userListPreviews?: {[key: string]: ListPreview}
   userLists?: {[key: string]: FullList}
+  artwork?: Artwork;
+  listId?: string;
 }
 
 // Define the initial state
@@ -230,6 +233,23 @@ const reducer = (state: IState, action: IAction): IState => {
             ...action.userLists
           },
         };
+    case ETypes.addArtworkToList:
+      if (!action?.artwork || !action?.artwork._id || !action?.listId || !state.userLists){
+        return state;
+      }
+      return {
+        ...state,
+        userLists: {
+          ...state.userLists,
+          [action.listId]: {
+            ...state.userLists[action.listId],
+            artwork: {
+              ...state.userLists[action.listId].artwork,
+              [action.artwork._id]: action.artwork
+            }
+          }
+        },
+      };
     default:
       return state;
   }

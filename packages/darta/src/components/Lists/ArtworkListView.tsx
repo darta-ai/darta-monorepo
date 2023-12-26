@@ -13,7 +13,7 @@ import * as Colors from '@darta-styles'
 import {TextElement} from '../Elements/_index';
 import {icons} from '../../utils/constants';
 import {globalTextStyles} from '../../styles/styles';
-import { ETypes, StoreContext } from '../../state/Store';
+import { ETypes, StoreContext, UserETypes, UserStoreContext } from '../../state';
 import { deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
 import * as SVGs from '../../assets/SVGs/index';
 
@@ -135,7 +135,7 @@ export function ArtworkListView({
   inquireAlert: ({artworkId} : {artworkId: string}) => void,
 }) {
 
-  const {state, dispatch} = React.useContext(StoreContext);
+  const {userState, userDispatch} = React.useContext(UserStoreContext)
 
   let inputHeight = artwork?.artworkDimensions?.heightIn?.value ?? "1"
   let inputWidth = artwork?.artworkDimensions?.widthIn?.value ?? "1"
@@ -218,13 +218,13 @@ export function ArtworkListView({
 
   React.useEffect(() => {
     const artworkId = artwork?._id!;
-    if (state.userInquiredArtwork?.[artworkId]){
+    if (userState.userInquiredArtwork?.[artworkId]){
       setIsInquired(true)
     }
-    if (state.userSavedArtwork?.[artworkId]){
+    if (userState.userSavedArtwork?.[artworkId]){
       setIsSaved(true)
     }
-    if (state.userLikedArtwork?.[artworkId]){
+    if (userState.userLikedArtwork?.[artworkId]){
       setIsLiked(true)
     }
 
@@ -232,11 +232,11 @@ export function ArtworkListView({
       setCanInquire(false)
     }
     
-  }, [state.userInquiredArtwork, state.userSavedArtwork, state.userLikedArtwork]);
+  }, [userState.userInquiredArtwork, userState.userSavedArtwork, userState.userLikedArtwork]);
 
   const removeSavedRating = async () => {
-    dispatch({
-      type: ETypes.removeUserSavedArtwork,
+    userDispatch({
+      type: UserETypes.removeUserSavedArtwork,
       artworkId: artwork._id!,
     })
     setIsSaved(false)
@@ -244,8 +244,8 @@ export function ArtworkListView({
   }
 
   const removeInquiredRating = async () => {
-    dispatch({
-      type: ETypes.removeUserInquiredArtwork,
+    userDispatch({
+      type: UserETypes.removeUserInquiredArtwork,
       artworkId: artwork._id!,
     })
     setIsInquired(false)
@@ -253,8 +253,8 @@ export function ArtworkListView({
   }
 
   const removeLikeRating = async () => {
-    dispatch({
-      type: ETypes.removeUserLikedArtwork,
+    userDispatch({
+      type: UserETypes.removeUserLikedArtwork,
       artworkId: artwork._id!,
     })
     setIsLiked(false)

@@ -77,9 +77,9 @@ function AnimatedSplashScreen({ children }) {
         // likedArtwork
         listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 10 }),
         // savedArtwork
-        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 10 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 40 }),
         // inquiredArtwork
-        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 40 }),
         // artworksToRate
         listArtworksToRateAPI({startNumber: 0, endNumber: 20}),
         // userLists

@@ -8,10 +8,9 @@ import {UserHome} from '../../screens/UserHome';
 import {UserInquiredArtwork} from '../../components/User/UserInquiredArtwork';
 import {UserSavedArtwork} from '../../components/User/UserSavedArtwork';
 import {UserSettings} from '../../components/User/UserSettings';
-import {StoreContext} from '../../state/Store';
 import {backButtonStyles, headerOptions} from '../../styles/styles';
 import {UserRoutesEnum} from '../../typing/routes';
-import { View, StyleSheet} from 'react-native';  
+import { View } from 'react-native';  
 
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { GalleryAndArtworkTopTabNavigator } from './GalleryAndArtworkTopTabNavigator';
@@ -21,12 +20,13 @@ import * as SVGs from '../../assets/SVGs';
 import { ViewListsScreen } from '../../screens/Lists/ViewLists';
 import { TextElement } from '../../components/Elements/TextElement';
 import { FullListScreen } from '../../screens/Lists/FullListScreen';
+import { UIStoreContext } from '../../state';
 
 export const UserStack = createStackNavigator();
 
 
 export function UserStackNavigator({route} : {route: any}) {
-  const {state} = useContext(StoreContext);
+  const {uiState} = React.useContext(UIStoreContext);
   return (
     <UserStack.Navigator screenOptions={{
       headerTintColor: PRIMARY_950,
@@ -71,20 +71,20 @@ export function UserStackNavigator({route} : {route: any}) {
         <UserStack.Screen 
           name={UserRoutesEnum.UserGalleryAndArtwork}
           component={GalleryAndArtworkTopTabNavigator}
-          options={{...headerOptions, headerTitle: state.currentArtworkTombstoneHeader}}
+          options={{...headerOptions, headerTitle: uiState.currentArtworkTombstoneHeader}}
           initialParams={{navigateTo: UserRoutesEnum.SavedArtworkModal}}
         />
         <UserStack.Screen
           name={UserRoutesEnum.UserPastTopTabNavigator}
           component={PastExhibitionTopTabNavigator}
-          options={{...headerOptions, headerTitle: state.previousExhibitionHeader ?? "" }}
+          options={{...headerOptions, headerTitle: uiState.previousExhibitionHeader ?? "" }}
           initialParams={{navigateTo: UserRoutesEnum.SavedArtworkModal}}
           />
         <UserStack.Screen
           name={UserRoutesEnum.UserGallery}
           component={ExhibitionGalleryScreen}
           initialParams={{galleryId: route.params?.artOnDisplay.galleryId, navigationRoute: UserRoutesEnum.UserPastTopTabNavigator, showPastExhibitions: true, navigateTo: UserRoutesEnum.SavedArtworkModal}}
-          options={{...headerOptions, headerTitle: state?.galleryHeader ?? ""}}
+          options={{...headerOptions, headerTitle: uiState?.galleryHeader ?? ""}}
           />
           <UserStack.Screen
           name={UserRoutesEnum.userListFull}
@@ -100,7 +100,7 @@ export function UserStackNavigator({route} : {route: any}) {
                 <SVGs.BackButtonIconWhite />
               </View>
           ), 
-            headerTitle: state.listHeader ?? ""}}
+            headerTitle: uiState.listHeader ?? ""}}
         />
       </UserStack.Group>
 
@@ -108,7 +108,7 @@ export function UserStackNavigator({route} : {route: any}) {
         <UserStack.Screen
           name={UserRoutesEnum.SavedArtworkModal}
           component={ArtworkScreen}
-          options={{...headerOptions, headerTitle: state?.currentArtworkTombstoneHeader ?? ""}}
+          options={{...headerOptions, headerTitle: uiState?.currentArtworkTombstoneHeader ?? ""}}
         />
         <UserStack.Screen
           name={UserRoutesEnum.UserListsScreen}

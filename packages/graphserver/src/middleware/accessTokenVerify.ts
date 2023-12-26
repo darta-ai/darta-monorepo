@@ -11,8 +11,8 @@ export const verifyToken = async (
   if (idToken) {
     try {
       // !!!!! FIX !!!!!!
-      // const decodedToken = await auth.verifyIdToken(idToken);
-      // (req as any).user = decodedToken;
+      const decodedToken = await auth.verifyIdToken(idToken);
+      (req as any).user = decodedToken;
       next();
     } catch (error) {
       res.status(403).send('Unauthorized');

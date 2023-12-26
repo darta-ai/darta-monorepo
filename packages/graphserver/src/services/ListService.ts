@@ -218,6 +218,8 @@ export class ListService implements IListService {
   }
 
   public async addArtworkToList({listId, artworkId, userUid}: {listId: string, artworkId: string, userUid: string}): Promise<FullList> {
+
+    try{
     const fullListId = this.generateListId({id: listId});
     // get list node
     const list = await this.db.collection(CollectionNames.DartaUserLists).document(fullListId);
@@ -238,7 +240,6 @@ export class ListService implements IListService {
     let canEdit = false;
 
     listEdge.forEach((edge) => {
-      console.log(edge._from)
       if (edge._from === fullUserId) {
         canEdit = true;
       }
@@ -282,8 +283,90 @@ export class ListService implements IListService {
         [artworkId]: await this.artworkService.readArtwork(artworkId),
       },
     } as FullList
-
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
   }
+
+  public async removeArtworkFromList({listId, artworkId, userUid}: {listId: string, artworkId: string, userUid: string}): Promise<FullList> {
+
+    try{
+    const fullListId = this.generateListId({id: listId});
+    // get list node
+    const list = await this.db.collection(CollectionNames.DartaUserLists).document(fullListId);
+    const fullUserId = this.userService.generateDartaUserId({uid: userUid});
+
+  
+    if (!list) {
+      throw new Error('!! no list !!');
+    }
+
+     // confirm that the user is the creator of the list
+     const listEdge = await this.edgeService.getAllEdgesToPointingToNode({edgeName: EdgeNames.FROMDartaUserTOList, to: fullListId});
+
+     if (!listEdge) {
+       throw new Error('!! no list edge !!');
+     }
+ 
+     let canEdit = false;
+ 
+     listEdge.forEach((edge) => {
+       if (edge._from === fullUserId) {
+         canEdit = true;
+       }
+     })
+ 
+     if (!canEdit) {
+       throw new Error('!! user cannot edit list !!');
+     }
+  
+    // Check and remove the artwork
+    const edgeToRemove = await this.edgeService.getEdge({
+      edgeName: EdgeNames.FROMListTOArtwork,
+      from: fullListId,
+      to: artworkId,
+    });
+  
+    if (!edgeToRemove) {
+      throw new Error('!! artwork not in list !!');
+    }
+  
+    await this.edgeService.deleteEdge({
+      edgeName: EdgeNames.FROMListTOArtwork,
+      from: fullListId,
+      to: artworkId,
+    });
+  
+    // Fetch remaining artworks and their positions
+    const remainingEdges = await this.edgeService.getAllEdgesFromNode({
+      edgeName: EdgeNames.FROMListTOArtwork,
+      from: fullListId,
+    });
+  
+    // Update list positions if necessary
+    if (remainingEdges && remainingEdges.length > 0) {
+      remainingEdges.forEach(async (edge) => {
+        if (edge.data?.listPosition > edgeToRemove.data?.listPosition) {
+          await this.edgeService.updateEdge({
+            edgeName: EdgeNames.FROMListTOArtwork,
+            from: fullListId,
+            to: edge._to,
+            data: {
+              ...edge.data,
+              listPosition: edge.data.listPosition - 1,
+            },
+          });
+        }
+      });
+    }
+  
+    // Update and return the list...
+    return await this.db.collection(CollectionNames.DartaUserLists).document(fullListId) as FullList
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
+  
 
   // eslint-disable-next-line class-methods-use-this
   public generateListId({id}: {id: string}): string {

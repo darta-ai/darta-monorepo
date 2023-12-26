@@ -85,6 +85,14 @@ interface GalleryFields extends GalleryBase {
   galleryExhibitions?: ExhibitionObject;
   galleryInternalEmail?: PublicFields;
 }
+
+export interface SupplementalGalleryInformationForLists {
+  galleryName: PublicFields;
+  galleryLogo: Images;
+  galleryId: string;
+  exhibitionLocationString: IBusinessLocationData;
+}
+
 export interface IGalleryProfileData
   extends GalleryFields,
     GalleryAddressFields {}

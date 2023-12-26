@@ -53,6 +53,7 @@ export function FullListScreen({
                 return
             } else if (state.userLists && state.userLists[route.params.listId]){
                 // if there is, check to see if it is in the state
+                console.log('state.userLists[route.params.listId]', Object.keys(state.userLists[route.params.listId].artwork))
                 setFullList(state.userLists[route.params.listId])
                 setFullArtwork(state.userLists[route.params.listId].artwork)
                 setIsLoading(false)
@@ -64,6 +65,7 @@ export function FullListScreen({
                         type: ETypes.setUserLists,
                         userLists: fullList
                     })
+                    console.log({fullList})
                     setFullList(Object.values(fullList)[0])
                     setFullArtwork(Object.values(fullList)[0].artwork)
                     setIsLoading(false)
@@ -75,7 +77,7 @@ export function FullListScreen({
         setIsLoading(true)
 
         setListData()
-    }, [])
+    }, [state.userLists])
 
     const handlePress = ({listId} : {listId: string}) => {
         console.log('hey hey hey', listId)
@@ -88,24 +90,23 @@ export function FullListScreen({
         () => 1, // Assuming all items are of the same type
         (_, dim) => {
             dim.width = wp('100%');
-            dim.height = 300; // Replace with actual height of ArtworkListView
+            dim.height = hp('100%'); // Replace with actual height of ArtworkListView
         }
     );
 
     React.useEffect(() => {
         if (fullArtwork) {
-            console.log({fullArtwork})
             const sortedArtworks = Object.values(fullArtwork).sort((a, b) => {
-                if (a.createdAt === undefined || b.createdAt === undefined) {
+                if (!a.createdAt || !b.createdAt) {
                     return 0;
                 }
-                return new Date(b?.createdAt) - new Date(a?.createdAt);
+                return Number(new Date(b?.createdAt)) - Number(new Date(a?.createdAt));
             });
             setDataProvider(dataProvider.cloneWithRows(sortedArtworks));
         }
     }, [fullArtwork]);
 
-    const rowRenderer = (type, artwork) => {
+    const rowRenderer = (_, artwork) => {
         return (
             <ArtworkListView 
                 artwork={artwork}

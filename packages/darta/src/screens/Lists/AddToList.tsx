@@ -6,12 +6,13 @@ import * as SVGs from '../../assets/SVGs/index';
 import * as Colors from '@darta-styles';
 import { ListSavedComponent } from '../../components/Gallery/ListSavedComponent';
 import { ETypes, StoreContext } from '../../state/Store';
-import { ListPreview, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
+import { Artwork, ListPreview, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
 import { UserListComponent } from '../../components/Gallery/UserListComponent';
 import { TextElement } from '../../components/Elements/TextElement';
 import { NewListModal } from '../../components/Lists/NewListModal';
 import { addArtworkToList } from '../../api/listRoutes';
 import { createUserArtworkRelationship } from '../../api/artworkRoutes';
+import { UserETypes, UserStoreContext } from '../../state/UserStore';
 
 const addToListStyles = StyleSheet.create({
     container: {
@@ -90,10 +91,13 @@ export function AddToListScreen({
     route: any;
 }) {
     let artworkId;
+    let artwork: Artwork | null = null;
     if (route.params && route.params.artwork && route.params.artwork._id) {
         artworkId = route.params.artwork._id;
+        artwork = route.params.artwork;
     }
     const {state, dispatch} = React.useContext(StoreContext);
+    const {userState, userDispatch} = React.useContext(UserStoreContext);
     const [visible, setVisible] = React.useState<boolean>(false)
     const [saveToSaved, setSaveToSaved] = React.useState<boolean>(false)
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
@@ -130,15 +134,24 @@ export function AddToListScreen({
 
         if (saveToSaved) {
             await createUserArtworkRelationship({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE});
-            dispatch({
-                type: ETypes.setUserSavedArtworkMulti,
+            userDispatch({
+                type: UserETypes.setUserSavedArtworkMulti,
                 artworkIds: {[artworkId]: true},
+            })
+            userDispatch({
+                type: UserETypes.saveArtwork,
+                artworkData: artwork!,
             })
         }
     
         try {
             Object.keys(pressedLists).forEach( async (listId) => {
                 await addArtworkToList({ listId, artworkId })
+                dispatch({
+                    type: ETypes.addArtworkToList,
+                    artwork: artwork!,
+                    listId,
+                })
             });
             setIsLoading(false)
             navigation.goBack()
@@ -163,7 +176,6 @@ export function AddToListScreen({
                 handlePress={handlePress}
                 />
                 {state.userListPreviews && Object.values(state.userListPreviews).sort((a, b) => {
-                    
                     if (b?.createdAt > a?.createdAt) return 1
                     if (b?.createdAt < a?.createdAt) return -1
                     return 0

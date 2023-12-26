@@ -3,18 +3,17 @@ import { View, Image} from 'react-native';
 import * as Colors from '@darta-styles';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { dartaLogo } from '../../components/User/UserInquiredArtwork';
-import { TextElement } from '../../components/Elements/TextElement';
 import { ActivityIndicator } from 'react-native-paper';
 
 
-export function GenericLoadingScreen({route}: {route: any}) {
+export function GenericLoadingScreen() {
   
   return (
     <View 
         style={{
         height: hp('100%'),
         width: '100%',
-        backgroundColor: Colors.PRIMARY_600,
+        backgroundColor: Colors.PRIMARY_50,
         display: 'flex',
         alignItems: 'center',
         }}>  

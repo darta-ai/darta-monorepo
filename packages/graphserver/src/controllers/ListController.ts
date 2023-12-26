@@ -79,7 +79,7 @@ export class ListController {
         });
         res.status(200).send(results);
     } catch (error: any) {
-      standardConsoleLog({message: error.message, data: req?.body, request: 'lists/createList'})
+      standardConsoleLog({message: error.message, data: req?.body, request: 'lists/addArtworkToList'})
       if (!res.headersSent) {
         res.status(500).send('unable to create new list');
       }

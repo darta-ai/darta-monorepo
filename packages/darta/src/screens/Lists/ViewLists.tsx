@@ -1,21 +1,10 @@
 import React from 'react'
-import { View, StyleSheet, ScrollView } from 'react-native'
-import { Button } from 'react-native-paper'
+import { View, StyleSheet } from 'react-native'
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import * as SVGs from '../../assets/SVGs/index';
 import * as Colors from '@darta-styles';
-import { ListSavedComponent } from '../../components/Gallery/ListSavedComponent';
-import { IconButton, TextInput } from 'react-native-paper';
-import { saveArtworkToList } from '../../state/hooks';
-import { ETypes, StoreContext } from '../../state/Store';
-import { ListPreview, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
+import { StoreContext } from '../../state/Store';
 import { UserListComponent } from '../../components/Gallery/UserListComponent';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
-import { TextElement } from '../../components/Elements/TextElement';
-import { NewListModal } from '../../components/Lists/NewListModal';
-import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
-import { addArtworkToList, readListForUser } from '../../api/listRoutes';
-import { createUserArtworkRelationship } from '../../api/artworkRoutes';
 import { UserRoutesEnum } from '../../typing/routes';
 import { UIStoreContext, UiETypes } from '../../state';
 

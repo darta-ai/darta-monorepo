@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList, StyleSheet, Animated, TouchableOpacity, View, ScrollViewComponent } from 'react-native';
+import {StyleSheet, Animated, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import { GestureHandlerRootView, PinchGestureHandler } from 'react-native-gesture-handler';
 import * as Colors from '@darta-styles'
@@ -7,7 +7,6 @@ import * as Haptics from 'expo-haptics';
 import { Snackbar, Surface } from 'react-native-paper';
 import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
 import {
-  galleryDimensionsLandscape,
   galleryDimensionsPortrait,
 } from '../utils/constants';
 import {ViewETypes, ViewStoreContext, StoreContext } from '../state';
@@ -15,17 +14,16 @@ import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI, listArtwork
 import { TextElement } from '../components/Elements/TextElement';
 import { ArtOnWallMemo} from '../components/Artwork/ArtOnWallFlatlist';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
-import { State } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import {runOnJS} from 'react-native-reanimated';
 import { Onboard } from '../components/Darta/Onboard';
 import analytics from '@react-native-firebase/analytics';
 import { IUserArtworkRated, RatingEnum } from '../typing/types';
 import * as SVGs from '../assets/SVGs';
-import { RecommenderRoutesEnum } from '../typing/routes';
 import { UserETypes, UserStoreContext } from '../state/UserStore';
-import { RecyclerListView, DataProvider, LayoutProvider, RecyclerListViewProps } from 'recyclerlistview';
-import { throttle } from 'lodash';
+import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
+import { ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
+import { RecommenderRoutesEnum } from '../typing/routes';
 
 
 
@@ -85,6 +83,7 @@ export const SSDartaGalleryView = StyleSheet.create({
     alignItems: 'center',
     height: '100%',
     width: '100%',
+    justifyContent: 'flex-start'
   },
   artOnDisplayContainer: {
     backgroundColor: 'black',
@@ -120,6 +119,14 @@ export const SSDartaGalleryView = StyleSheet.create({
     alignItems: 'center',
     alignContent: 'center'
   },
+  footerContainer: {
+    height: hp('70%'),
+    width: wp('100%'),
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+  }
 });
 
 export function DartaRecommenderViewFlatList({
@@ -127,22 +134,12 @@ export function DartaRecommenderViewFlatList({
 }: {
   navigation: any;
 }) {
-  const {state} = React.useContext(StoreContext);
   const {viewState, viewDispatch} = React.useContext(ViewStoreContext);
   const {userState, userDispatch} = React.useContext(UserStoreContext);
-  const [isPanActionEnabled, setIsPanActionEnabled] = React.useState(false);
 
   const [backgroundContainerDimensionsPixels, setBackgroundImageDimensionsPixels] = React.useState(galleryDimensionsPortrait);
   
-  const scrollViewRef = React.useRef<FlatList>(null);
-
-  React.useEffect(() => {
-    if (state.isPortrait) {
-      setBackgroundImageDimensionsPixels(galleryDimensionsPortrait);
-    } else {
-      setBackgroundImageDimensionsPixels(galleryDimensionsLandscape);
-    }
-  }, [state.isPortrait])
+  const scrollViewRef = React.useRef<RecyclerListView<any, any>>(null);
 
   const [visible, setVisible] = React.useState(false);
 
@@ -159,27 +156,34 @@ export function DartaRecommenderViewFlatList({
 
 
 
-  const [wallHeight, setWallHeight] = React.useState<number>(84)
   const [longestPainting, setLongestPainting] = React.useState<number>(0)
 
+  const [currentIndex, setCurrentIndex] = React.useState<number>(0);
 
+  const wiggleAnim = React.useRef(new Animated.Value(0)).current; 
+  const thumbsUpAnim = React.useRef(new Animated.Value(1)).current; 
+  const thumbsDownAnim = React.useRef(new Animated.Value(1)).current; 
 
-  const [currentIndex, setCurrentIndex] = React.useState<number>();
+  const [currentArtRating, setCurrentArtRating] = React.useState<IUserArtworkRated>({});
+
+  React.useEffect(() => {
+    wiggleAnim.addListener(() => {})
+    thumbsUpAnim.addListener(() => {})
+    thumbsDownAnim.addListener(() => {})
+  }, [])
+
   const itemWidth = wp('100%'); // Assuming each item has a fixed height
   
-  const handleScroll = (event) => {
-    const updateIndex = (event) => {
-      const currentScrollPosition = event.nativeEvent.contentOffset.x
-      const visibleIndex = Math.floor(currentScrollPosition / itemWidth);
-      console.log('triggered', visibleIndex)
-      if (visibleIndex !== currentIndex){
-        setCurrentIndex(visibleIndex);
-      }
-  }
-
-    updateIndex(event);
-  }
-
+  const handleScroll = (rawEvent: ScrollEvent, offsetX: number, offsetY: number) => {
+    const currentScrollPosition = rawEvent.nativeEvent.contentOffset.x;
+    const visibleIndex = Math.round(currentScrollPosition / itemWidth);
+  
+    if (visibleIndex !== currentIndex) {
+      setCurrentIndex(visibleIndex);
+      modifyDisplayRating({ index: visibleIndex });
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }
+  };
 
   const findTallestArtwork = React.useCallback((artworks: Artwork[]) => {   
     let tallestArtworkLength = 0
@@ -188,7 +192,7 @@ export function DartaRecommenderViewFlatList({
         tallestArtworkLength = Number(artwork.artworkDimensions?.heightIn.value!)
       }
     })
-    return Math.max(tallestArtworkLength, 84)
+    return Math.max(tallestArtworkLength, 96)
     // return largestArtWidthPixels
   }, [])
 
@@ -210,25 +214,24 @@ export function DartaRecommenderViewFlatList({
   React.useEffect(() => {
     if (viewState.artworksToRate && Object.values(viewState.artworksToRate).length > 0) {
       setLongestPainting(findLongestArtwork(Object.values(viewState.artworksToRate)))
-      setWallHeight(findTallestArtwork(Object.values(viewState.artworksToRate)))
     }
   }, [viewState.artworksToRate])
 
-  const toggleArtForward = async () => {
+  React.useEffect(() => {
+    modifyDisplayRating({})
+  }, [userState?.userLikedArtwork, userState?.userDislikedArtwork, userState?.userSavedArtwork])
+
+  const toggleArtForward = React.useCallback(async () => {
     const index = currentIndex ?? 0;
-
-    const remainingArtworks = Object.values(viewState.artworksToRate ?? {}).length - index
-
 
     if (viewState.artworksToRate && viewState.artworksToRate[index + 1]) {
         try {
             const artworkRatingIndex = index + 1;
-
-            scrollViewRef.current?.scrollToIndex({index: artworkRatingIndex, animated: true})
+            scrollViewRef.current?.scrollToIndex(artworkRatingIndex, true)
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+            setCurrentIndex(artworkRatingIndex)
         } catch (error) {
-          console.log(error)
-          scrollViewRef.current?.scrollToIndex({index: index + 2, animated: true})
+          scrollViewRef.current?.scrollToIndex(index + 2, true)
           Haptics.NotificationFeedbackType.Error
         }
     } else if (viewState.artworksToRate) {
@@ -249,41 +252,19 @@ export function DartaRecommenderViewFlatList({
           onToggleSnackBarError();
         }
     }
-  }
+  }, [viewState.artworksToRate, currentIndex])
 
 
-  // const toggleArtBackward = async () => {
-  //   const currentIndex = viewState.artworkRatingIndex ?? 0;
-  //   console.log({currentIndex})
-  //   if (!currentIndex) {
-  //     return 
-  //   } else if (viewState.artworksToRate && viewState.artworksToRate[currentIndex - 1]) {
-  //     try{ 
-  //         scrollViewRef.current?.scrollToIndex(currentIndex - 1, true)
-  //         viewDispatch({
-  //         type: ViewETypes.setRatingIndex,
-  //         artworkRatingIndex: currentIndex - 1,
-  //       });
-  //     } catch(error){
-  //       if (viewState.artworksToRate && viewState.artworksToRate[currentIndex - 2]){
-  //         viewDispatch({
-  //           type: ViewETypes.setRatingIndex,
-  //           artworkRatingIndex: currentIndex - 2,
-  //         });
-  //         scrollViewRef.current?.scrollToIndex(currentIndex - 2, true)
-  //       } else {
-  //         onToggleSnackBar()
-  //       }
-  //     }
-  //   } else {
-  //     viewDispatch({
-  //       type: ViewETypes.setRatingIndex,
-  //       artworkRatingIndex: currentIndex - 1,
-  //     });
-  //     scrollViewRef.current?.scrollToIndex(currentIndex - 1, true)
-  //   }
-  //   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
-  // }
+  const toggleArtBackwards = React.useCallback(async () => {
+    const index = currentIndex ?? 0;
+
+    if (index !== 0) {
+      const artworkRatingIndex = index - 1;
+      scrollViewRef.current?.scrollToIndex(artworkRatingIndex, true)
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+      setCurrentIndex(artworkRatingIndex)
+    }
+  }, [viewState.artworksToRate, currentIndex])
 
   const findArtworkIds = React.useCallback(({artworks} : {artworks : Artwork[]}) => {
     const artworkIds: string[] = []
@@ -293,7 +274,7 @@ export function DartaRecommenderViewFlatList({
     return artworkIds
   }, [viewState.artworkRatingIndex, viewState.artworksToRate])
 
-  const onEndReached = async () => {
+  const onEndReached = React.useCallback(async () => {
   
     const numberOfArtworks = Object.values(viewState?.artworksToRate ?? {}).length > 0 ? Object.values(viewState.artworksToRate!).length : 0
     const artworkIds = findArtworkIds({artworks: Object.values(viewState.artworksToRate ?? {})})
@@ -309,45 +290,30 @@ export function DartaRecommenderViewFlatList({
                 artworksToRate,
             });
       }
-      // scrollViewRef.current?.scrollToEnd(true)
     } catch (error){
       console.log(error)
     }
-  }
+  }, [viewState.artworksToRate])
 
 
   const renderItem = React.useCallback(({ item }) => {
     if (!item) return null
-  return (
+    return (
     <View key={item._id} style={{flex: 1}}>
       <ArtOnWallMemo
         artImage={item?.artworkImage?.value!}
         artOnDisplay={item!}
         artworkDimensions={item?.artworkDimensions}
         navigation={navigation}
-        wallHeight={wallHeight}
-        toggleArtForward={() => {}}
-        toggleArtBackward={() => {}}
-        longestPainting={longestPainting}
+        wallHeight={86}
       />
     </View>
-  )}, [backgroundContainerDimensionsPixels, viewState.artworksToRate, wallHeight, longestPainting])
+  )}, [backgroundContainerDimensionsPixels, viewState.artworksToRate, longestPainting])
 
-  const layoutProvider = new LayoutProvider(
-    index => {
-      return index; // Assuming all items are of the same type
-    },
-    (_, dim, index) => {
-      // const paintingWidth = getPaintingWidth(index); 
-      // dim.width = paintingWidth + wp('100%');
-      dim.width = wp('100%');
-      dim.height = hp('100%');
-    }
-  );
-
-  const handleArtworkRating = React.useCallback(async (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => {
-    const currentIndexOfArtwork = viewState.artworkRatingIndex ?? 0;
+  const handleArtworkRating = async (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => {
+    const currentIndexOfArtwork = currentIndex ?? 0;
     const artOnDisplay = viewState.artworksToRate?.[currentIndexOfArtwork]
+
     if (!artOnDisplay) return rating
 
     const artworkOnDisplayId = artOnDisplay?._id;
@@ -404,78 +370,7 @@ export function DartaRecommenderViewFlatList({
     } else {
       return rating
     }
-  }, [viewState.artworkRatingIndex, viewState.artworksToRate, userState?.userLikedArtwork, userState?.userDislikedArtwork, userState?.userSavedArtwork, /* other dependencies */]);
-
-  const handleThumbsUpPress = async () => {
-    // Start the rising animation
-    console.log('triggered thumbs up press')
-    Animated.timing(thumbsUpAnim, {
-      toValue: -5,  // Move up (negative value for upward movement)
-      duration: 50,
-      useNativeDriver: true,
-    }).start(async () => {
-      // After the animation, make the network call
-      await rateArtwork(await handleArtworkRating(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE));
-
-      Animated.sequence([
-        Animated.timing(thumbsUpAnim, {
-          toValue: 5,  // Rotate slightly left
-          duration: 50,
-          useNativeDriver: true,
-        }),
-        Animated.timing(thumbsUpAnim, {
-          toValue: 0,  // Return to original position
-          duration: 50,
-          useNativeDriver: true,
-        }),
-      ]).start(async () => {
-        if(!currentArtRating[RatingEnum.like]) {
-          await toggleArtForward()
-        } else{
-          userDispatch({
-            type: UserETypes.setUserLikedArtwork,
-            artworkId: viewState.artworksToRate?.[currentIndex ?? 0]?._id!,
-          })
-        }
-         Animated.sequence([
-          Animated.timing(thumbsUpAnim, {
-            toValue: 0,  // Rotate slightly left
-            duration: 50,
-            useNativeDriver: true,
-          }),
-          Animated.timing(thumbsUpAnim, {
-            toValue: 5,  // Return to original position
-            duration: 50,
-            useNativeDriver: true,
-          }),
-          Animated.timing(thumbsUpAnim, {
-            toValue: 0,  // Rotate slightly left
-            duration: 50,
-            useNativeDriver: true,
-          }),
-        ]).start()
-      });
-    });
-  };
-
-  const wiggleAnim = React.useRef(new Animated.Value(0)).current; 
-  const thumbsUpAnim = React.useRef(new Animated.Value(1)).current; 
-  const thumbsDownAnim = React.useRef(new Animated.Value(1)).current; 
-  const [currentArtRating, setCurrentArtRating] = React.useState<IUserArtworkRated>({});
-  const fadeAnimNav = React.useRef(new Animated.Value(0)).current;
-  const fadeAnimRating = React.useRef(new Animated.Value(0)).current;
-  const fadeAnimOptions = React.useRef(new Animated.Value(0)).current;
-
-
-  React.useEffect(() => {
-    fadeAnimNav.addListener(() => {})
-    fadeAnimRating.addListener(() => {})
-    fadeAnimOptions.addListener(() => {})
-
-    wiggleAnim.addListener(() => {})
-    thumbsUpAnim.addListener(() => {})
-    thumbsDownAnim.addListener(() => {})
-  }, [])
+  }
 
   const rateArtwork = async (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => {
     const currentIndexOfArtwork = currentIndex ?? 0;
@@ -511,6 +406,10 @@ export function DartaRecommenderViewFlatList({
             type: UserETypes.setUserSavedArtwork,
             artworkId: artOnDisplay?._id!,
           })
+          userDispatch({
+            type: UserETypes.saveArtwork, 
+            artworkData: artOnDisplay
+          })
           analytics().logEvent('save_artwork')
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
           break;
@@ -521,13 +420,166 @@ export function DartaRecommenderViewFlatList({
           })
           analytics().logEvent('inquire_artwork')
           break;
+        default: 
+          break;
         }
     } catch(error){
       //TO-DO: update error handling
     }
+  }
+
+  const handleThumbsUpPress = async () => {
+    // Start the rising animation
+    Animated.timing(thumbsUpAnim, {
+      toValue: -5,  // Move up (negative value for upward movement)
+      duration: 50,
+      useNativeDriver: true,
+    }).start(async () => {
+      // After the animation, make the network call
+      await rateArtwork(await handleArtworkRating(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE));
+
+      Animated.sequence([
+        Animated.timing(thumbsUpAnim, {
+          toValue: 5,  // Rotate slightly left
+          duration: 50,
+          useNativeDriver: true,
+        }),
+        Animated.timing(thumbsUpAnim, {
+          toValue: 0,  // Return to original position
+          duration: 50,
+          useNativeDriver: true,
+        }),
+      ]).start(async () => {
+         Animated.sequence([
+          Animated.timing(thumbsUpAnim, {
+            toValue: 0,  // Rotate slightly left
+            duration: 50,
+            useNativeDriver: true,
+          }),
+          Animated.timing(thumbsUpAnim, {
+            toValue: 5,  // Return to original position
+            duration: 50,
+            useNativeDriver: true,
+          }),
+          Animated.timing(thumbsUpAnim, {
+            toValue: 0,  // Rotate slightly left
+            duration: 50,
+            useNativeDriver: true,
+          }),
+        ]).start(async () => {
+          if(!currentArtRating[RatingEnum.like]) {
+            await toggleArtForward()
+          }
+        })
+      });
+    });
+  }
+
+  const thumbsDownWiggle = React.useCallback(() => {
+    // Configuration for moving up
+    const moveUpConfig = {
+      toValue: -5,
+      duration: 50,
+      useNativeDriver: true,
+    };
+  
+    // Configuration for rotating slightly left
+    const rotateLeftConfig = {
+      toValue: 5,
+      duration: 50,
+      useNativeDriver: true,
+    };
+  
+    // Configuration for returning to the original position
+    const returnToOriginalConfig = {
+      toValue: 0,
+      duration: 50,
+      useNativeDriver: true,
+    };
+  
+    // Start the initial move up animation
+    Animated.timing(thumbsDownAnim, moveUpConfig).start(() => {
+      // After moving up, start the sequence of rotating left and returning to original position
+      Animated.sequence([
+        Animated.timing(thumbsDownAnim, rotateLeftConfig),
+        Animated.timing(thumbsDownAnim, returnToOriginalConfig),
+      ]).start();
+    });
+  }, []);
+  
+
+const thumbsDownWiggleTiny = React.useCallback(() => {
+  // Animation configurations
+  const moveUpConfig = {
+    toValue: -5,  // Move up (negative value for upward movement)
+    duration: 50,
+    useNativeDriver: true,
   };
 
-  const handleThumbsDownPress = async () => {
+  const rotateLeftConfig = {
+    toValue: 0,  // Rotate slightly left
+    duration: 50,
+    useNativeDriver: true,
+  };
+
+  // Start the first animation
+  Animated.timing(thumbsDownAnim, moveUpConfig).start(() => {  
+    // Start the second animation after the first one completes
+    Animated.timing(thumbsDownAnim, rotateLeftConfig).start();
+  });
+}, []);
+
+
+const thumbsUpWiggle = React.useCallback(async () => {
+  Animated.timing(thumbsUpAnim, {
+    toValue: -5,  // Move up (negative value for upward movement)
+    duration: 50,
+    useNativeDriver: true,
+  }).start(async () => {
+    Animated.sequence([
+      Animated.timing(thumbsUpAnim, {
+        toValue: 5,  // Rotate slightly left
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(thumbsUpAnim, {
+        toValue: 0,  // Return to original position
+        duration: 50,
+        useNativeDriver: true,
+      }),
+    ]).start()
+  })
+}, [thumbsDownAnim, currentArtRating, toggleArtForward, handleArtworkRating])
+
+const saveWiggle = React.useCallback(async () => {
+  Animated.sequence([
+    Animated.timing(wiggleAnim, {
+      toValue: 1,  // Rotate slightly right
+      duration: 50,
+      useNativeDriver: true,
+    }),
+    Animated.timing(wiggleAnim, {
+      toValue: 0,  // Return to original position
+      duration: 50,
+      useNativeDriver: true,
+    }),
+    ]).start(async () => {
+    Animated.sequence([
+      Animated.timing(wiggleAnim, {
+        toValue: -1,  // Rotate slightly left
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: 0,  // Rotate slightly left
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      ]).start()
+    });
+  }, [wiggleAnim, currentArtRating, toggleArtForward, handleArtworkRating])
+
+  const handleThumbsDownPress = React.useCallback(async () => {
     // Start the rising animation
     Animated.timing(thumbsDownAnim, {
       toValue: -5,  // Move up (negative value for upward movement)
@@ -549,9 +601,6 @@ export function DartaRecommenderViewFlatList({
           useNativeDriver: true,
         }),
       ]).start(async () => {
-        if(!currentArtRating[RatingEnum.dislike]) {
-          scrollViewRef.current?.scrollToIndex({index: currentIndex ?? 0 + 1, animated: true})
-        }
         Animated.sequence([
           Animated.timing(thumbsDownAnim, {
             toValue: 0,  // Rotate slightly left
@@ -568,13 +617,15 @@ export function DartaRecommenderViewFlatList({
             duration: 50,
             useNativeDriver: true,
           }),
-        ]).start()
+        ]).start( async () => {
+          await toggleArtForward()
+        })
       });
     });
-  };
+  }, [thumbsDownAnim, currentArtRating, toggleArtForward, handleArtworkRating])
 
 
-  const handleSavePress = async () => {
+  const handleSavePress = React.useCallback(async () => {
     // Start the first part of the wiggle animation
     Animated.timing(wiggleAnim, {
       toValue: 1,  // Rotate slightly right
@@ -582,12 +633,12 @@ export function DartaRecommenderViewFlatList({
       useNativeDriver: true,
     }).start(async () => {
       // Network call in the middle of the wiggle
-      const currentIndexOfArtwork = viewState.artworkRatingIndex ?? 0;
+      const currentIndexOfArtwork = currentIndex ?? 0;
       const artOnDisplay = viewState.artworksToRate?.[currentIndexOfArtwork]  
 
       navigation.navigate(RecommenderRoutesEnum.recommenderLists, {artwork: artOnDisplay})
 
-      await rateArtwork(await handleArtworkRating(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE));
+      // await rateArtwork(await handleArtworkRating(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE));
   
       // Complete the wiggle animation
       Animated.sequence([
@@ -603,7 +654,7 @@ export function DartaRecommenderViewFlatList({
         }),
       ]).start(async () => {
         if(!currentArtRating[RatingEnum.save]) {
-          scrollViewRef.current?.scrollToIndex({index: currentIndex ?? 0 + 1, animated: true})
+          toggleArtForward()
         }
         Animated.sequence([
           Animated.timing(wiggleAnim, {
@@ -619,11 +670,20 @@ export function DartaRecommenderViewFlatList({
         ]).start()
       });
     });
-  };
+  }, [wiggleAnim, currentArtRating, toggleArtForward, handleArtworkRating])
 
-  const modifyDisplayRating = () => {
-    const currentIndexOfArtwork = currentIndex ?? 0;
-    const artOnDisplay = viewState.artworksToRate?.[currentIndexOfArtwork]  
+  const modifyDisplayRating = React.useCallback(({index} : {index?: number}) => {
+
+    let currentIndexOfArtwork: number;
+
+    if (index === 0){
+      currentIndexOfArtwork = index
+    } else if (!index){
+      currentIndexOfArtwork = currentIndex ?? 0;
+    } else {
+      currentIndexOfArtwork = index
+    }
+    const artOnDisplay = viewState.artworksToRate?.[currentIndexOfArtwork]
   
     const artworkOnDisplayId = artOnDisplay?._id;
     const likedArtworks = userState?.userLikedArtwork;
@@ -635,100 +695,138 @@ export function DartaRecommenderViewFlatList({
     const userDisliked = dislikedArtworks?.[artworkOnDisplayId!] || false
 
      if (userSaved){
+      saveWiggle()
       setCurrentArtRating({[RatingEnum.save]: true})
     } else if (userLiked){
+      thumbsUpWiggle()
       setCurrentArtRating({[RatingEnum.like]: true})
     } else if (userDisliked){
+      thumbsDownWiggle()
       setCurrentArtRating({[RatingEnum.dislike]: true})
-    } else {
+    } else if (currentArtRating[RatingEnum.like]) {
+      thumbsUpWiggle()
+      setCurrentArtRating({})
+    } else if (currentArtRating[RatingEnum.dislike]) {
+      thumbsDownWiggleTiny()
+      setCurrentArtRating({})
+    }else if (currentArtRating[RatingEnum.save]) {
+      saveWiggle()
+      setCurrentArtRating({})
+    } else{
       setCurrentArtRating({})
     }
-  }
-
-
+  }, [viewState.artworksToRate, currentIndex, userState?.userLikedArtwork, userState?.userDislikedArtwork, userState?.userSavedArtwork])
 
   const rotate = wiggleAnim.interpolate({
     inputRange: [-1, 1],
     outputRange: ['-25deg', '25deg'],  // Small rotation range for wiggle
   });
 
+  const layoutProvider = React.useMemo(() => {
+    return new LayoutProvider(
+      () => {
+        return 'FULL_WIDTH'; // Assuming a single type of item
+    },
+    (type, dim) => {
+        dim.width = wp('100%');
+        dim.height = hp('100%')
+    })
+  }, []);
 
   const dataProvider = new DataProvider((r1, r2) => {
-    return r1 !== r2;
+    return r1.id !== r2.id;
   }).cloneWithRows(Object.values(viewState?.artworksToRate!));
-  
 
+  const panGestureRight = Gesture.Pan()
+  .activeOffsetX(wp('20%'))
+  .onStart(() => {
+    runOnJS(toggleArtBackwards)()
+  });
 
-  console.log('re-render', currentIndex)
+const panGestureLeft = Gesture.Pan()
+  .activeOffsetX(-wp('20%'))
+  .onStart(() => {
+    runOnJS(toggleArtForward)()
+  });
 
-  
-  React.useEffect(() => {
-      modifyDisplayRating()
-      console.log('triggered Modify Display Rating')
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
-  }, [currentIndex])
+  const composed = Gesture.Exclusive(
+    panGestureRight,
+    panGestureLeft,
+  );
+
 
   return (
     <GestureHandlerRootView>
-      <View style={{...SSDartaGalleryView.container, justifyContent: state.isPortrait ? 'flex-start': 'center'}}>
+      <View style={SSDartaGalleryView.container}>
         <View
           style={[
             backgroundContainerDimensionsPixels,
             SSDartaGalleryView.artOnDisplayContainer,
-            {transform: state.isPortrait ? [{rotate: '0deg'}] : [{rotate: '90deg'}]}
           ]}>
             <Onboard />
-            <LinearGradient style={{flex: 1}} colors={[Colors.PRIMARY_50, Colors.PRIMARY_100, Colors.PRIMARY_200]}>
-              {/* <RecyclerListView
-                  layoutProvider={layoutProvider}
-                  dataProvider={dataProvider}
-                  ref={scrollViewRef}
-                  rowRenderer={(_, item) => renderItem({ item })}
-                  onEndReached={onEndReached}
-                  onEndReachedThreshold={wp('500%')}
-                  isHorizontal={true}
-                  scrollThrottle={0.1}
-                  disableIntervalMomentum={ true }
-                  snapToInterval={wp('100%')} 
-                  snapToAlignment={"center"}
-                  // pagingEnabled={true}
-                  zoomableViewProps={{
-                    disabled: true,
-                  }}
-                  // onVisibleIndicesChanged = {(all: number[], now: number[]) => {
-                  // // console.log(now)
-                  // }}
-                  style={{ transform: [{ scale: scale }], flex: 1 }}
-                  // onVisibleIndicesChanged={handleScroll}
-                  onVisibleIndicesChanged={handleVisibleIndicesChanged}
-                /> */}
-                <FlatList
-                  data={Object.values(viewState?.artworksToRate!)}
-                  ref={scrollViewRef}
-                  horizontal={true}
-                  renderItem={({ item }) => renderItem({ item })}
-                  keyExtractor={(item, index) => `key-${index}`} // Adjust as needed
-                  onEndReached={onEndReached}
-                  onEndReachedThreshold={5} // This is a ratio, not a percentage like in RecyclerListView
-                  decelerationRate={0.1} // For smooth scrolling, may adjust as needed
-                  snapToInterval={wp('100%')}
-                  snapToAlignment="center"
-                  disableIntervalMomentum={ true }
-                  pagingEnabled={true}
-                  onScroll={handleScroll} // Adjust if needed for your specific use case
-                  // Additional props as needed
+            <GestureDetector gesture={composed}>
+              <LinearGradient style={{flex: 1}} colors={[Colors.PRIMARY_50, Colors.PRIMARY_100, Colors.PRIMARY_200]}>
+                <RecyclerListView
+                    layoutProvider={layoutProvider}
+                    dataProvider={dataProvider}
+                    ref={scrollViewRef}
+                    rowRenderer={(_, item) => renderItem({ item })}
+                    onEndReached={onEndReached}
+                    isHorizontal={true}
+                    scrollThrottle={2}
+                    snapToInterval={wp('100%')} 
+                    snapToAlignment={"center"}
+                    pagingEnabled={true}
+                    zoomableViewProps={{
+                      disabled: true,
+                    }}
+                    
+                    renderFooter={() => <View 
+                    style={SSDartaGalleryView.footerContainer}>
+                      <ActivityIndicator size="small" color={Colors.PRIMARY_600} />
+                    </View>}
+                    onScroll={handleScroll}
+                    scrollViewProps={{
+                        decelerationRate: "fast",
+                        disableScrollViewPanResponder: true,
+                        directionalLockEnabled: true,
+                        snapToInterval: wp('100%'),
+                        snapToAlignment: 'center',
+                        scrollEnabled: false,
+                        disableIntervalMomentum: true,
+                        pagingEnabled: true,
+                        onEndReachedThreshold: 0.5,
+                        // Add any other ScrollView props here
+                    }}
+        
                   />
+                  {/* <FlatList
+                    data={Object.values(viewState?.artworksToRate!)}
+                    ref={scrollViewRef}
+                    horizontal={true}
+                    renderItem={({ item }) => renderItem({ item })}
+                    keyExtractor={(_, index) => `key-${index}`} // Adjust as needed
+                    onEndReached={onEndReached}
+                    onEndReachedThreshold={5} // This is a ratio, not a percentage like in RecyclerListView
+                    decelerationRate={0.5}// For smooth scrolling, may adjust as needed
+                    disableScrollViewPanResponder={true}
+                    directionalLockEnabled={true}
+                    snapToInterval={wp('100%')}
+                    snapToAlignment="center"
+                    disableIntervalMomentum={ true }
+                    pagingEnabled={true}
+                    onScroll={handleScroll} // Adjust if needed for your specific use case
+                    /> */}
               </LinearGradient>
+            </GestureDetector>
         </View>
       </View>
-      {state.isPortrait && (
-            <>
           <Surface key={`disLikeButton`} style={SSDartaGalleryView.dislikeContainer} elevation={2}>
             <TouchableOpacity 
               onPress={handleThumbsDownPress} 
               style={SSDartaGalleryView.touchableContainer}>
               <Animated.View 
-              style={{ transform: [{ translateY: thumbsDownAnim }] }}
+              style={{ transform: [{ translateY: thumbsDownAnim }], opacity: 1 }}
               >
                 {currentArtRating[RatingEnum.dislike] ?  <SVGs.ThumbsDownLargeFillIcon /> : <SVGs.ThumbsDownLargeIcon />}
               </Animated.View>
@@ -739,7 +837,7 @@ export function DartaRecommenderViewFlatList({
             onPress={handleSavePress}
             >
               <Animated.View 
-              style={{ transform: [{ rotate }] }}
+              style={{ transform: [{ rotate }], opacity: 1 }}
               >
                 {currentArtRating[RatingEnum.save]  ?  <SVGs.SavedActiveIconLarge /> : <SVGs.SavedInactiveIcon />}
               </Animated.View>
@@ -751,14 +849,12 @@ export function DartaRecommenderViewFlatList({
             style={SSDartaGalleryView.touchableContainer}
             >
               <Animated.View 
-              style={{ transform: [{ translateY: thumbsUpAnim }] }}
+              style={{ transform: [{ translateY: thumbsUpAnim }], opacity: 1 }}
               >
                 {currentArtRating[RatingEnum.like]  ?  <SVGs.ThumbsDownLargeFillIcon /> : <SVGs.ThumbsDownLargeIcon />}
               </Animated.View>
             </TouchableOpacity>
           </Surface>
-          </>
-          )}
         <Snackbar
         visible={visible}
         onDismiss={onDismissSnackBar}

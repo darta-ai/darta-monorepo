@@ -214,7 +214,7 @@ export class GalleryService implements IGalleryService {
         if (gallery[key as keyof Gallery]) {
           const cityValue =
             gallery[key as keyof GalleryAddressFields] &&
-            gallery[key as keyof GalleryAddressFields]?.city?.value;
+            gallery[key as keyof GalleryAddressFields]?.locality?.value;
           if (cityValue) {
             // Check if city exists and upsert it
             const upsertCityQuery = `

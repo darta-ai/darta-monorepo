@@ -358,8 +358,8 @@ export class ExhibitionService implements IExhibitionService {
 
     let cityName = ""
 
-    if(exhibitionLocation?.city?.value){
-      cityName = exhibitionLocation.city.value
+    if(exhibitionLocation?.locality?.value){
+      cityName = exhibitionLocation.locality.value
     }
 
     if (cityName) {
@@ -418,7 +418,8 @@ export class ExhibitionService implements IExhibitionService {
   public async publishExhibition({
     exhibitionId, 
     galleryId, 
-    isPublished} : {
+    isPublished
+    } : {
       exhibitionId: string, 
       galleryId: string, 
       isPublished: boolean}): Promise<Exhibition | void>{
@@ -976,7 +977,7 @@ export class ExhibitionService implements IExhibitionService {
     if (!cityName) {
       throw new Error('cityName is required');
     }
-    const newYorkLocalities = ['New York', 'Brooklyn']
+    const newYorkLocalities = ['New York', 'Brooklyn', 'Manhattan']
     if (cityName === "New York"){
       try{
         const exhibitionMapPin: {[key: string]: ExhibitionMapPin} = {};

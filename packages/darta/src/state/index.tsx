@@ -33,7 +33,7 @@ function StoreProvider({ children }) {
   
 export default StoreProvider;
 
-export {StoreContext, UIStoreContext, GalleryStoreContext, ExhibitionStoreContext, ViewStoreContext}
+export {StoreContext, UIStoreContext, GalleryStoreContext, ExhibitionStoreContext, ViewStoreContext, UserStoreContext}
 
 export {ETypes} from './Store'
 export {UiETypes} from './UIStore'
