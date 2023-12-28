@@ -1,12 +1,7 @@
-import {Artwork, Dimensions, IGalleryProfileData, PreviewArtwork} from '@darta-types';
+import {Artwork, Dimensions, PreviewArtwork} from '@darta-types';
 import { Edge } from 'arangojs/documents';
 
 import {ArtworkNode} from '../../models/models';
-
-export type ArtworkAndGallery = {
-  artwork: Artwork | null;
-  gallery: IGalleryProfileData | null;
-};
 
 export interface IArtworkService {
   createArtwork({
@@ -28,7 +23,7 @@ export interface IArtworkService {
     artworkId: string;
   }): Promise<void>;
   readArtwork(artworkId: string): Promise<Artwork | null>;
-  readArtworkAndGallery(artworkId: string): Promise<ArtworkAndGallery | null>;
+  readArtworkForList(artworkId: string): Promise<Artwork | null>;
   readArtworkPreview({artworkId, addedAt}: {artworkId: string, addedAt: string}): Promise<PreviewArtwork | null>
   editArtwork({artwork}: {artwork: Artwork}): Promise<ArtworkNode | null>;
   editArtworkInquiry({edgeId, status}: {edgeId: string, status: string;}) : Promise<Edge | void>

@@ -87,19 +87,19 @@ export function UserStackNavigator({route} : {route: any}) {
           options={{...headerOptions, headerTitle: uiState?.galleryHeader ?? ""}}
           />
           <UserStack.Screen
-          name={UserRoutesEnum.userListFull}
-          component={FullListScreen}
-          options={{
-            headerTintColor: Colors.PRIMARY_50,
-            headerStyle: {
-              backgroundColor: Colors.PRIMARY_950, 
-              opacity: 0.9,
-            }, 
-            headerBackImage: () => (
-              <View style={backButtonStyles.backButton}>
-                <SVGs.BackButtonIconWhite />
-              </View>
-          ), 
+            name={UserRoutesEnum.userListFull}
+            component={FullListScreen}
+            options={{
+              headerTintColor: Colors.PRIMARY_50,
+              headerStyle: {
+                backgroundColor: Colors.PRIMARY_950, 
+                opacity: 0.9,
+              }, 
+              headerBackImage: () => (
+                <View style={backButtonStyles.backButton}>
+                  <SVGs.BackButtonIconWhite />
+                </View>
+            ), 
             headerTitle: uiState.listHeader ?? ""}}
         />
       </UserStack.Group>

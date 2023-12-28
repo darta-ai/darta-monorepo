@@ -780,7 +780,6 @@ const panGestureLeft = Gesture.Pan()
                     zoomableViewProps={{
                       disabled: true,
                     }}
-                    
                     renderFooter={() => <View 
                     style={SSDartaGalleryView.footerContainer}>
                       <ActivityIndicator size="small" color={Colors.PRIMARY_600} />

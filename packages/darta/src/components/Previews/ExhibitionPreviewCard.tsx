@@ -143,16 +143,16 @@ const ExhibitionPreviewCard = ({
           </View>
             <View style={exhibitionPreviewStyle.touchableContainer}>
               <Pressable onPress={() => onPressGallery({galleryId: exhibitionPreview.galleryId})}>
-                  <TextElement style={exhibitionPreviewStyle.galleryText}>{exhibitionPreview?.galleryName.value?.trim()}</TextElement>
+                  <TextElement style={exhibitionPreviewStyle.galleryText}>{exhibitionPreview?.galleryName?.value?.trim()}</TextElement>
                 </Pressable>
                 <View>
                   <TextElement
                     style={exhibitionPreviewStyle.addressText}>
-                    {simplifyAddressMailing(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString.value)}
+                    {simplifyAddressMailing(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString?.value)}
                   </TextElement>
                   <TextElement
                     style={exhibitionPreviewStyle.addressText}>
-                    {simplifyAddressCity(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString.value)}
+                    {simplifyAddressCity(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString?.value)}
                   </TextElement>
                 </View>
             </View>

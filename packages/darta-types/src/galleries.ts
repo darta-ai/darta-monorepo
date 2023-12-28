@@ -277,6 +277,29 @@ export type ExhibitionMapPin = {
   _id?: string;
 }
 
+export type GalleryForList = {
+  galleryName: PublicFields | null;
+  galleryLogo: Images | null;
+  galleryId: string | null;
+  primaryContact: PrivateFields | null;
+}
+
+export type ExhibitionForList = {
+  exhibitionLocationString: PublicFields | null;
+  exhibitionDates: ExhibitionDates | null;
+  exhibitionTitle: PublicFields | null;
+  exhibitionId: string | null;
+}
+
+export interface ArtworkAndGalleryForList {
+  artwork: Artwork | null;
+  gallery: GalleryForList;
+}
+
+export interface ArtworkListInformation extends ArtworkAndGalleryForList  {
+  exhibition: ExhibitionForList | null;
+}
+
 export type GalleryPreview = {
   galleryLogo: Images;
   galleryName: PublicFields;

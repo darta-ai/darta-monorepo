@@ -1,4 +1,4 @@
-import { Artwork, PublicFields } from "./galleries";
+import { ArtworkListInformation, PublicFields } from "./galleries";
 export interface List {
     _id: string;
     listName: string;
@@ -45,6 +45,6 @@ export interface ListPreview {
 }
 export interface FullList extends List {
     artwork: {
-        [key: string]: Artwork;
+        [key: string]: ArtworkListInformation;
     };
 }

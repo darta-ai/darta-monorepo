@@ -3,6 +3,7 @@
 import {
   Artwork, 
   Exhibition, 
+  ExhibitionForList, 
   ExhibitionMapPin, 
   ExhibitionObject, 
   ExhibitionPreview, 
@@ -46,7 +47,6 @@ export class ExhibitionService implements IExhibitionService {
     @inject('INodeService') private readonly nodeService: INodeService,
     @inject('IGalleryService') private readonly galleryService: IGalleryService,
     @inject('IUserService') private readonly userService: IUserService
-    
     ) {}
 
   public async createExhibition({
@@ -136,6 +136,32 @@ export class ExhibitionService implements IExhibitionService {
   } catch (error: any){
     throw new Error(error.message)
   }
+  }
+
+  public async readExhibitionForList({artworkId}: {artworkId: string}): Promise<ExhibitionForList>{
+    try{
+      const fullArtworkId = this.artworkService.generateArtworkId({artworkId})
+      const artworkEdge = await this.edgeService.getEdgeWithTo({
+        edgeName: EdgeNames.FROMCollectionTOArtwork,
+        to: fullArtworkId
+      })
+
+      if (!artworkEdge){
+        throw new Error('unable to find artwork edge')
+      }
+      const exhibitionId = artworkEdge._from
+      const exhibition = await this.getExhibitionById({exhibitionId})
+
+      return {
+        exhibitionLocationString: exhibition?.exhibitionLocation?.locationString ?? null,
+        exhibitionDates: exhibition?.exhibitionDates ?? null,
+        exhibitionTitle: exhibition?.exhibitionTitle ?? null,
+        exhibitionId: exhibition?.exhibitionId ?? null
+      }
+
+    } catch (e: any){
+      throw new Error(e.message)
+    }
   }
 
   public async readMostRecentGalleryExhibitionForUser(

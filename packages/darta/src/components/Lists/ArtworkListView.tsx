@@ -1,21 +1,23 @@
 import React from 'react';
-import {Image, StyleSheet, View, Animated, Pressable} from 'react-native';
+import {StyleSheet, View, Animated, Pressable, TouchableOpacity} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
-import {Button} from 'react-native-paper';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image'
 
-import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
+import {Artwork, ExhibitionForList, GalleryForList, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
 import * as Colors from '@darta-styles'
 import {TextElement} from '../Elements/_index';
-import {icons} from '../../utils/constants';
 import {globalTextStyles} from '../../styles/styles';
-import { ETypes, StoreContext, UserETypes, UserStoreContext } from '../../state';
+import { UserETypes, UserStoreContext } from '../../state';
 import { deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
 import * as SVGs from '../../assets/SVGs/index';
+import { DartaIconButtonWithText } from '../Darta/DartaIconButtonWithText';
+import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
+import { Swipeable } from 'react-native-gesture-handler';
+import { Button } from 'react-native-paper';
 
 export const currencyConverter = {
   USD: '$',
@@ -35,14 +37,15 @@ const SSTombstonePortrait = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignContent: 'center',
+    // width: wp('100%'),
   },
   imageContainer: {
     alignSelf: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: hp('45%'),
+    height: hp('40%'),
   },
   image: {
     height: '100%',
@@ -58,7 +61,6 @@ const SSTombstonePortrait = StyleSheet.create({
     alignSelf: 'flex-start',
     alignItems: 'flex-start',
     gap: 12,
-    marginTop: 24,
   },
   textRow: {
     display: 'flex',
@@ -87,6 +89,7 @@ const SSTombstonePortrait = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 24,
+    padding: 8,
     gap: 8,
   },
 });
@@ -121,76 +124,55 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({displayText, iconCompo
 
 export function ArtworkListView({
   artwork,
-  saveLoading,
-  likeLoading,
+  gallery, 
+  exhibition,
   inquireAlert,
-  likeArtwork, 
-  saveArtwork,
+  navigation,
+  onDelete,
+  onMoveUp,
+  onMoveDown,
 }: {
   artwork: Artwork,
-  saveLoading: boolean,
-  likeLoading: boolean,
-  likeArtwork: ({artworkId} : {artworkId: string}) => void,
-  saveArtwork: ({artworkId} : {artworkId: string}) => void,
+  gallery: GalleryForList,
+  exhibition: ExhibitionForList,
   inquireAlert: ({artworkId} : {artworkId: string}) => void,
+  navigation: any,
+  onDelete: ({artworkId} : {artworkId: string}) => Promise<boolean>,
+  onMoveUp: ({artworkId} : {artworkId: string}) => void,
+  onMoveDown: ({artworkId} : {artworkId: string}) => void,
 }) {
 
   const {userState, userDispatch} = React.useContext(UserStoreContext)
-
-  let inputHeight = artwork?.artworkDimensions?.heightIn?.value ?? "1"
-  let inputWidth = artwork?.artworkDimensions?.widthIn?.value ?? "1"
-
-  const height = parseInt(inputHeight, 10)
-  const width = parseInt(inputWidth, 10)
-
-
-  let displayDimensionsString = "";
-  if(artwork?.artworkDimensions?.text?.value){
-    displayDimensionsString = artwork.artworkDimensions.text.value
-    .replace(/[\r\n]+/g, '')
-    .replace(/ /g, '')
-    .replace(/x/g, ' x ')
-    .replace(/;/g, '; ')
-  }
-  let displayPrice = "";
-
-  if (artwork?.artworkPrice?.value){
-    const currency = artwork?.artworkCurrency?.value ?? "USD"
-    const displayCurrency = currencyConverter[currency]
-    displayPrice = displayCurrency + parseInt(artwork?.artworkPrice?.value, 10)?.toLocaleString()
-  } else {
-    displayPrice = "Price Upon Request"
-  }
-
   
-  const maxDimension = Math.floor(wp('100%') * 0.7);
-
-  let artHeight: number | undefined;
-  let artWidth : number | undefined;
-  if (height && width && height >= width) {
-    artHeight = maxDimension;
-    artWidth = Math.floor((width / height) * artHeight);
-  }
-  if (height && width && height < width) {
-    artWidth = maxDimension;
-    artHeight = Math.floor((height / width) * artWidth);
-  }
- 
-
-
-  const [isSaved, setIsSaved] = React.useState(false);
   const [isInquired, setIsInquired] = React.useState(false);
-  const [isLiked, setIsLiked] = React.useState(false);
   const [canInquire, setCanInquire] = React.useState(true);
-  const opacityLikedButton = React.useRef(new Animated.Value(1)).current; 
-  const opacitySavedButton = React.useRef(new Animated.Value(1)).current; 
+
+  const [exhibitionStartDate, setExhibitionStartDate] = React.useState<string>();
+  const [exhibitionEndDate, setExhibitionEndDate] = React.useState<string>(new Date().toLocaleDateString());
+  const [showSwipeActions, setShowSwipeActions] = React.useState(true);
+
+  React.useEffect(()=> {
+    if (exhibition?.exhibitionDates?.exhibitionStartDate.value && exhibition?.exhibitionDates?.exhibitionEndDate.value) {
+      setExhibitionStartDate(customLocalDateStringStart({date: new Date(exhibition?.exhibitionDates?.exhibitionStartDate.value), isUpperCase: false}))
+      setExhibitionEndDate(customLocalDateStringEnd({date: new Date(exhibition?.exhibitionDates.exhibitionEndDate.value), isUpperCase: false}));
+
+    }
+  }, [])
+
   const opacityInquiredButton = React.useRef(new Animated.Value(1)).current; 
 
   React.useEffect(() => {
-    opacityLikedButton.addListener(() => {})
-    opacitySavedButton.addListener(() => {})
     opacityInquiredButton.addListener(() => {})
   }, [])
+
+  const [loadingDelete, setLoadingDelete] = React.useState<boolean>(false);
+
+  const handleDelete = async () => {
+    setLoadingDelete(true)
+    await onDelete({artworkId: artwork._id!})
+    setLoadingDelete(false)
+    setShowSwipeActions(false)
+  }
 
   const toggleButtons = ({buttonRef, callback} : {buttonRef: any, callback?: () => void}) => {
     // Animate Out
@@ -221,27 +203,12 @@ export function ArtworkListView({
     if (userState.userInquiredArtwork?.[artworkId]){
       setIsInquired(true)
     }
-    if (userState.userSavedArtwork?.[artworkId]){
-      setIsSaved(true)
-    }
-    if (userState.userLikedArtwork?.[artworkId]){
-      setIsLiked(true)
-    }
-
     if(artwork?.canInquire?.value === "No"){
       setCanInquire(false)
     }
     
-  }, [userState.userInquiredArtwork, userState.userSavedArtwork, userState.userLikedArtwork]);
+  }, [userState.userInquiredArtwork]);
 
-  const removeSavedRating = async () => {
-    userDispatch({
-      type: UserETypes.removeUserSavedArtwork,
-      artworkId: artwork._id!,
-    })
-    setIsSaved(false)
-    await deleteArtworkRelationshipAPI({artworkId: artwork._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
-  }
 
   const removeInquiredRating = async () => {
     userDispatch({
@@ -252,118 +219,178 @@ export function ArtworkListView({
     await deleteArtworkRelationshipAPI({artworkId: artwork._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
   }
 
-  const removeLikeRating = async () => {
-    userDispatch({
-      type: UserETypes.removeUserLikedArtwork,
-      artworkId: artwork._id!,
+
+  const renderRightActions = (_, dragX) => {
+
+    if (!showSwipeActions) {
+      return null;
+    }
+
+    const trans = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [0, 100],
+      extrapolate: 'clamp',
+    });
+
+    const styles = StyleSheet.create({
+      container: {
+        transform: [{ translateX: trans }], 
+        flexDirection: 'column', 
+        alignItems: 'flex-start', 
+        justifyContent: 'space-between', 
+        paddingTop: 128, 
+        paddingBottom: 128, 
+        backgroundColor: Colors.PRIMARY_100
+      },
+      movementContainer: {
+        gap: 8,
+        flexDirection: 'column',
+      }, 
+      buttonWidth: {
+        width: wp('35%')
+      }, 
+      textColor: {
+        color: Colors.PRIMARY_50
+      }
     })
-    setIsLiked(false)
-    await deleteArtworkRelationshipAPI({artworkId: artwork._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
-  }
+
+    return (
+        <Animated.View style={styles.container}>
+          <View style={styles.movementContainer}>
+            <Button 
+                onPress={() => onMoveUp({artworkId: artwork.artworkId!})}
+                icon={"chevron-up"}
+                mode={"text"}
+                textColor={Colors.PRIMARY_50}
+                buttonColor={Colors.PRIMARY_700}
+                style={styles.buttonWidth}
+                >
+                <TextElement style={{ color: Colors.PRIMARY_50 }}>Move Up</TextElement>
+              </Button>
+              <Button 
+                onPress={() => onMoveDown({artworkId: artwork.artworkId!})}
+                icon={"chevron-down"}
+                mode={"text"}
+                textColor={Colors.PRIMARY_50}
+                buttonColor={Colors.PRIMARY_700}
+                style={styles.buttonWidth}
+                >
+                <TextElement style={{ color: Colors.PRIMARY_50 }}>Move Down</TextElement>
+              </Button>
+            </View>
+          <View>
+            <Button 
+              onPress={handleDelete}
+              icon={"delete"}
+              mode={"text"}
+              loading={loadingDelete}
+              textColor={Colors.PRIMARY_50}
+              buttonColor={Colors.PRIMARY_950}
+              style={styles.buttonWidth}
+              >
+              <TextElement style={styles.textColor}>Delete</TextElement>
+            </Button>
+          </View>
+        </Animated.View>
+    );
+  };
 
   return (
-    <View style={{backgroundColor: Colors.PRIMARY_50, padding: 24, height: hp('100%')}}>
-        <View style={SSTombstonePortrait.container}>
-          <ScrollView
-            scrollEventThrottle={7}
-            maximumZoomScale={6}
-            minimumZoomScale={1}
-            scrollToOverflowEnabled={false}
-            centerContent>
-            <View style={SSTombstonePortrait.imageContainer}>
-              <FastImage
-                source={{uri: artwork?.artworkImage?.value!}}
-                style={SSTombstonePortrait.image}
-                resizeMode={FastImage.resizeMode.contain}
-              />
-            </View>
-          </ScrollView>
-        </View>
-      <ScrollView scrollEventThrottle={7}>
-        <View style={SSTombstonePortrait.textContainer}>
-          <TextElement
-            style={globalTextStyles.sectionHeaderTitle}>
-            {artwork?.artistName?.value}
-          </TextElement>
-          <View style={SSTombstonePortrait.textRow}>
-            <View style={{maxWidth: '65%'}}>
-              <TextElement
-                style={SSTombstonePortrait.artTitle}
-                numberOfLines={5}>
-                {artwork?.artworkTitle?.value}          
-              </TextElement>
-            </View>
-            <TextElement style={SSTombstonePortrait.artYear}>{artwork?.artworkCreatedYear?.value}</TextElement>
+  <View style={{height: hp("85%")}}>
+    <Swipeable renderRightActions={renderRightActions}>
+          <View style={SSTombstonePortrait.container}>
+            <View style={SSTombstonePortrait.textContainer}>
+              <View>
+                <TextElement style={globalTextStyles.subHeaderTitle}>
+                  Artist
+                </TextElement>
+                <TextElement
+                  style={globalTextStyles.sectionHeaderTitle}>
+                  {artwork?.artistName?.value}
+                </TextElement>
+              </View>
+              <View>
+                <TextElement style={globalTextStyles.subHeaderTitle}>
+                  Artwork Title
+                </TextElement>
+                <TextElement
+                  style={{...globalTextStyles.sectionHeaderTitle, fontSize: 18}}
+                  numberOfLines={5}>
+                  {artwork?.artworkTitle?.value}          
+                </TextElement>
+              </View>
+          </View>
+            <ScrollView
+              scrollEventThrottle={7}
+              maximumZoomScale={6}
+              minimumZoomScale={1}
+              scrollToOverflowEnabled={false}
+              centerContent>
+              <View style={SSTombstonePortrait.imageContainer}>
+                <FastImage
+                  source={{uri: artwork?.artworkImage?.value!}}
+                  style={SSTombstonePortrait.image}
+                  resizeMode={FastImage.resizeMode.contain}
+                />
+              </View>
+            </ScrollView>
           </View>
           <View>
-            <TextElement style={SSTombstonePortrait.artMedium} numberOfLines={1}>{artwork?.artworkMedium?.value}</TextElement>
-            <TextElement style={SSTombstonePortrait.artDimensions}>{displayDimensionsString}</TextElement>
-          </View>
-          <View style={{width: '100%'}}>
-            <TextElement style={SSTombstonePortrait.artPrice}>{displayPrice}</TextElement>
-          </View>
-        </View>
-          <View style={SSTombstonePortrait.inquireButton}>
-            <Animated.View style={{opacity: opacityInquiredButton, flex: 1}}>
-              {isInquired && ( 
-              <ButtonGenerator 
-                displayText="Inquired"
-                iconComponent={SVGs.EmailWhiteFillIcon}
-                onPress={() => toggleButtons({buttonRef: opacityInquiredButton, callback: () => removeInquiredRating()})}
-                textColor={Colors.PRIMARY_50}
-                buttonColor={Colors.PRIMARY_950}
+          <View style={SSTombstonePortrait.textContainer}>
+              <View>
+                <TextElement style={globalTextStyles.subHeaderTitle}>
+                  Exhibition
+                </TextElement>
+                <TextElement
+                  style={globalTextStyles.sectionHeaderTitle}>
+                  {exhibition?.exhibitionTitle?.value }
+                </TextElement>
+              </View>
+              <View>
+                <TextElement style={globalTextStyles.subHeaderTitle}>
+                  Gallery
+                </TextElement>
+                <TextElement
+                  style={{...globalTextStyles.sectionHeaderTitle, fontSize: 18}}
+                  numberOfLines={5}>
+                  {gallery?.galleryName?.value}          
+                </TextElement>
+              </View>
+              <DartaIconButtonWithText 
+              text={`${simplifyAddressMailing(exhibition?.exhibitionLocationString?.value)} ${simplifyAddressCity(exhibition?.exhibitionLocationString?.value)}` as string}
+              iconComponent={SVGs.BlackPinIcon}
+              onPress={() => {}}
               />
-            )} 
-            {!isInquired && canInquire && (
-              <ButtonGenerator 
-              displayText="Inquire"
-              iconComponent={SVGs.EmailIcon}
-              onPress={() => toggleButtons({buttonRef: opacityInquiredButton, callback: () => inquireAlert({artworkId: artwork._id!})})}
-              textColor={Colors.PRIMARY_950}
-              buttonColor={"#B0B0B019"}
+              <DartaIconButtonWithText 
+              text={`${exhibitionStartDate} - ${exhibitionEndDate}` as string}
+              iconComponent={SVGs.CalendarBasicIcon}
+              onPress={() => {}}
             />
-            )} 
-            </Animated.View>
-            <Animated.View style={{opacity: opacitySavedButton, flex: 1}}>
-              {isSaved ? ( 
-              <ButtonGenerator 
-                displayText="Saved"
-                iconComponent={SVGs.SavedWhiteFillIcon}
-                onPress={() => toggleButtons({buttonRef: opacitySavedButton, callback: () => removeSavedRating()})}
+            </View>
+          </View>
+            <View style={SSTombstonePortrait.inquireButton}>
+              <Animated.View style={{opacity: opacityInquiredButton, flex: 1}}>
+                {isInquired && ( 
+                <ButtonGenerator 
+                  displayText="Inquired"
+                  iconComponent={SVGs.EmailWhiteFillIcon}
+                  onPress={() => toggleButtons({buttonRef: opacityInquiredButton, callback: () => removeInquiredRating()})}
+                  textColor={Colors.PRIMARY_50}
+                  buttonColor={Colors.PRIMARY_950}
+                />
+              )} 
+              {!isInquired && canInquire && (
+                <ButtonGenerator 
+                displayText="Inquire"
+                iconComponent={SVGs.EmailWhiteFillIcon}
+                onPress={() => toggleButtons({buttonRef: opacityInquiredButton, callback: () => inquireAlert({artworkId: artwork._id!})})}
                 textColor={Colors.PRIMARY_50}
                 buttonColor={Colors.PRIMARY_950}
               />
-            ) : (
-              <ButtonGenerator 
-                displayText="Save"
-                iconComponent={SVGs.SavedInactiveIconSmall}
-                onPress={() => toggleButtons({buttonRef: opacitySavedButton, callback: () => saveArtwork({artworkId: artwork._id!})})}
-                textColor={Colors.PRIMARY_950}
-                buttonColor={"#B0B0B019"}
-              />
-            )}
-            </Animated.View>
-            <Animated.View style={{opacity: opacityLikedButton, flex: 1}}>
-              {isLiked ? ( 
-              <ButtonGenerator 
-                displayText="Liked"
-                iconComponent={SVGs.ThumbsUpActiveIcon}
-                onPress={() => toggleButtons({buttonRef: opacityLikedButton, callback: () => removeLikeRating()})}
-                textColor={Colors.PRIMARY_950}
-                buttonColor={"#B0B0B019"}
-              />
-            ) : (
-              <ButtonGenerator 
-                displayText="Like"
-                iconComponent={SVGs.ThumbsUpInactiveIcon}
-                onPress={() => toggleButtons({buttonRef: opacityLikedButton, callback: () => likeArtwork({artworkId: artwork._id!})})}
-                textColor={Colors.PRIMARY_950}
-                buttonColor={"#B0B0B019"}
-              />
-            )}
-            </Animated.View>
-          </View>
-      </ScrollView>
-    </View>
+              )} 
+              </Animated.View>
+            </View>
+      </Swipeable>
+      </View>
   );
 }

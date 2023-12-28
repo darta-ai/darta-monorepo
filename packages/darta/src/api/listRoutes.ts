@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { NewList, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
+import { FullList, NewList, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
 import auth from '@react-native-firebase/auth';
 import { generateHeaders } from './utls';
 
@@ -87,5 +87,18 @@ export async function getFullList({listId}: {listId : string}): Promise<any> {
     return null
   }
 }
+
+export async function removeArtworkFromList({listId, artworkId}: {listId : string, artworkId: string}): Promise<{[key: string]: FullList} | null> {
+  try {
+    const headers = await generateHeaders()
+    const {data} = await axios.post(`${URL}/removeArtworkFromList`, {listId, artworkId}, {headers});
+    return data
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'removeArtworkFromList'})
+    return null
+  }
+}
+
+
 
 

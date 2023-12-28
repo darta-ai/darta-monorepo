@@ -176,25 +176,25 @@ export class ArtworkController {
     }
   }
 
-  // OPEN Endpoint
-  @httpGet('/readArtworkAndGallery')
-  public async readArtworkAndGallery(
-    @request() req: Request,
-    @response() res: Response,
-  ): Promise<void> {
-    const {artworkId} = req.body;
-    try {
-      const results = await this.artworkService.readArtworkAndGallery(
-        artworkId,
-      );
-      // removing anything that isPrivate
-      await filterOutPrivateRecordsSingleObject(results);
-      res.json(results);
-    } catch (error: any) {
-      standardConsoleLog({message: error?.message, data: 'artwork/readArtworkAndGallery', request: req?.body})
-      res.status(500).send(error.message);
-    }
-  }
+  // // OPEN Endpoint
+  // @httpGet('/readArtworkAndGallery')
+  // public async readArtworkAndGallery(
+  //   @request() req: Request,
+  //   @response() res: Response,
+  // ): Promise<void> {
+  //   const {artworkId} = req.body;
+  //   try {
+  //     const results = await this.artworkService.readArtworkAndGallery(
+  //       artworkId,
+  //     );
+  //     // removing anything that isPrivate
+  //     await filterOutPrivateRecordsSingleObject(results);
+  //     res.json(results);
+  //   } catch (error: any) {
+  //     standardConsoleLog({message: error?.message, data: 'artwork/readArtworkAndGallery', request: req?.body})
+  //     res.status(500).send(error.message);
+  //   }
+  // }
 
   @httpPost('/edit', verifyToken)
   public async editArtwork(

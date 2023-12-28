@@ -16,7 +16,6 @@ import {
   INodeService,
   IUserService} from './interfaces';
 import { DynamicTemplateData } from './interfaces/IAdminService';
-import {ArtworkAndGallery} from './interfaces/IArtworkService';
 
 const BUCKET_NAME = 'artwork';
 
@@ -149,32 +148,21 @@ export class ArtworkService implements IArtworkService {
     };
   }
 
-  public async readArtworkAndGallery(
+  public async readArtworkForList(
     artworkId: string,
-  ): Promise<ArtworkAndGallery> {
+  ): Promise<Artwork> {
     // TO-DO: build out?
     try {
       const artwork = await this.getArtworkById(artworkId);
 
-      // ############## get gallery ##############
-  
-      let galleryEdge: Edge;
-      let gallery = null;
-  
-      if (artwork?._id) {
-        galleryEdge = await this.edgeService.getEdgeWithTo({
-          edgeName: EdgeNames.FROMGalleryToArtwork,
-          to: artwork._id,
-        });
-        gallery = await this.galleryService.readGalleryProfileFromGalleryId({
-          galleryId: galleryEdge._from,
-        });
+      if (!artwork){
+        throw new Error('no artwork found at readArtworkAndGalleryForList')
       }
-      return {artwork, gallery};
+  
+      return artwork
     } catch (error){
       throw new Error('error reading artwork and gallery at readArtworkAndGallery')
     }
-
   }
 
   public async editArtwork({

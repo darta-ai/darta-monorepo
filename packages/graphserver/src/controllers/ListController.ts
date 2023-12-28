@@ -17,9 +17,9 @@ export class ListController {
     @request() req: Request,
     @response() res: Response,
   ): Promise<void> {
-    const {user} = req as any;
-    const {newList, artworkId} = req.body;
     try {
+      const {user} = req as any;
+      const {newList, artworkId} = req.body;
       if (!newList || !artworkId) {
         throw new Error('!! no newList or artworkId !!');
       }
@@ -42,8 +42,8 @@ export class ListController {
     @request() req: Request,
     @response() res: Response,
   ): Promise<void> {
-    const {listId} = req.query;
     try {
+      const {listId} = req.query;
       if (!listId) {
         throw new Error('!! no listId !!');
       }
@@ -60,15 +60,14 @@ export class ListController {
     }
   }
 
-
   @httpPost('/addArtworkToList', verifyToken)
   public async addArtworkToList(
     @request() req: Request,
     @response() res: Response,
   ): Promise<void> {
-    const {user} = req as any;
-    const {listId, artworkId} = req.body;
     try {
+      const {user} = req as any;
+      const {listId, artworkId} = req.body;
       if (!listId || !artworkId) {
         throw new Error('!! no listId or artworkId !!');
       }
@@ -85,6 +84,33 @@ export class ListController {
       }
     }
   }
+
+
+  @httpPost('/removeArtworkFromList', verifyToken)
+  public async removeArtworkFromList(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const {user} = req as any;
+      const {listId, artworkId} = req.body;
+      if (!listId || !artworkId) {
+        throw new Error('!! no listId or artworkId !!');
+      }
+      const results = await this.listService.removeArtworkFromList({
+          artworkId,
+          listId, 
+          userUid: user.uid,
+        });
+        res.status(200).send(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req?.body, request: 'lists/removeArtworkFromList'})
+      if (!res.headersSent) {
+        res.status(500).send('unable to create new list');
+      }
+    }
+  }
+
 
   @httpGet('/listLists', verifyToken)
   public async listLists(

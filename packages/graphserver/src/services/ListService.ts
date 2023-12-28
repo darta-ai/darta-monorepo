@@ -6,6 +6,8 @@ import {CollectionNames, EdgeNames} from '../config/collections';
 import {
   IArtworkService,  
   IEdgeService,
+  IExhibitionService,
+  IGalleryService,
   IListService,
   INodeService,
   IUserService} from './interfaces';
@@ -19,6 +21,8 @@ export class ListService implements IListService {
     @inject('INodeService') private readonly nodeService: INodeService,
     @inject('IArtworkService') private readonly artworkService: IArtworkService,
     @inject('IUserService') private readonly userService: IUserService,
+    @inject('IExhibitionService') private readonly exhibitionService: IExhibitionService,
+    @inject('IGalleryService') private readonly galleryService: IGalleryService,
   ) {}
 
 
@@ -64,60 +68,94 @@ export class ListService implements IListService {
     if (!artwork) {
       throw new Error('!! no artwork !!');
     }
+    // TO-DO: fix return statement 
     return {
-      ...list as FullList, 
-      artwork: {
-        [artworkId]: artwork,
-      },
+      ...list as FullList
     }
   }
 
   // TO-DO: add check for isCreator
-  public async getFullList({listId}: {listId: string}): Promise<{[key: string] :FullList}> {
-    const fullListId = this.generateListId({id: listId});
-    // get list node
-    const list = await this.db.collection(CollectionNames.DartaUserLists).document(fullListId);
+  public async getFullList({listId}: {listId: string}): Promise<{[key: string] : FullList}> {
+    try{
+      const fullListId = this.generateListId({id: listId});
+      // get list node
 
-    if (!list) {
-      throw new Error('!! no list !!');
-    }
-
-    // get all artworks from list
-    const edges = await this.edgeService.getAllEdgesFromNode({
-      edgeName: EdgeNames.FROMListTOArtwork,
-      from: fullListId,
-    });
-
-    if (!edges) {
-      throw new Error('!! no edges for list!!');
-    }
-
-    const artworkIds = edges.sort((a, b) => {
-      if (!a || !b || !a.data || !b.data || !a.data?.listPosition || !b.data?.listPosition) {
-        return 0;
+      const list: FullList = await this.db.collection(CollectionNames.DartaUserLists).document(fullListId);
+  
+      if (!list) {
+        throw new Error('!! no list !!');
       }
-      return a.data.listPosition - b.data.listPosition;
-    }).map((edge) => edge._to)
-
-    const artworkPromises = artworkIds.map((artworkId) => this.artworkService.readArtwork(artworkId));
-
-    const artwork = await Promise.all(artworkPromises)
-
-    if (!artwork) {
-      throw new Error('!! no artwork !!');
-    }
-
-    return {
-      [list._id] : {
-        ...list,
-        artwork: artwork.reduce((acc: any, curr: any) => {
-          if (curr) {
-            acc[curr._id] = curr
-          }
-          return acc;
-        }, {}),
+  
+      // get all artworks from list
+      const edges = await this.edgeService.getAllEdgesFromNode({
+        edgeName: EdgeNames.FROMListTOArtwork,
+        from: fullListId,
+      });
+  
+      if (!edges) {
+        throw new Error('!! no edges for list!!');
       }
-    };
+  
+      const artworkIds = edges.sort((a, b) => {
+        if (!a || !b || !a.data || !b.data || !a.data?.listPosition || !b.data?.listPosition) {
+          return 0;
+        }
+        return a.data.listPosition - b.data.listPosition;
+      }).map((edge) => edge._to)
+  
+      // Fetch both artwork/gallery and exhibition data in parallel
+      const artworkPromises = artworkIds.map((artworkId) => 
+        this.artworkService.readArtworkForList(artworkId)
+      );
+  
+      const galleryPromises = artworkIds.map((artworkId) =>
+        this.galleryService.readGalleryForList({artworkId})
+      );
+  
+      const exhibitionPromises = artworkIds.map((artworkId) => 
+        this.exhibitionService.readExhibitionForList({artworkId})
+      );
+  
+      // Wait for all promises to resolve
+      const [artworks, galleries, exhibitions] = await Promise.all([
+        Promise.all(artworkPromises),
+        Promise.all(galleryPromises),
+        Promise.all(exhibitionPromises)
+      ]);
+  
+      if (!artworks) {
+        throw new Error('!! no artwork !!');
+      }
+  
+      // Combine artworks and exhibitions into ArtworkListInformation objects
+      const combinedData = artworks.map((artwork, index) => ({
+          [artwork?._id as string] : {
+          artwork: artwork || null,
+          gallery: galleries[index] || null,
+          exhibition: exhibitions[index] || null
+        }
+      }));
+
+      const results = {
+        [listId]: {
+          ...list,
+          artwork: combinedData.reduce((acc, curr) => {
+            const id = Object.keys(curr)[0];
+            acc[id] = {
+              artwork: curr[id].artwork,
+              gallery: curr[id].gallery,
+              exhibition: curr[id].exhibition,
+            };
+            return acc;
+          }, {}),
+        }
+      }
+
+      return results
+
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
   }
 
   public async listLists({ uid }: { uid: string }): Promise<{[key:string] :ListPreview}> {
@@ -181,7 +219,7 @@ export class ListService implements IListService {
     const edges = await this.edgeService.getEdgesFromNodeWithLimit({
       edgeName: EdgeNames.FROMListTOArtwork,
       from: fullListId,
-      limit: 4,
+      limit: 1,
     });
 
     if (!edges) {
@@ -273,7 +311,7 @@ export class ListService implements IListService {
       to: artworkId,
       data: {
         addedAt: new Date().toISOString(),
-        listPosition: highestNumber + 1,
+        listPosition: highestNumber,
       }
     });
 
@@ -288,9 +326,10 @@ export class ListService implements IListService {
     }
   }
 
-  public async removeArtworkFromList({listId, artworkId, userUid}: {listId: string, artworkId: string, userUid: string}): Promise<FullList> {
-
-    try{
+  public async removeArtworkFromList(
+    {listId, artworkId, userUid} : 
+    {listId: string, artworkId: string, userUid: string}): Promise<{[key: string] : FullList}> {
+    try {
     const fullListId = this.generateListId({id: listId});
     // get list node
     const list = await this.db.collection(CollectionNames.DartaUserLists).document(fullListId);
@@ -320,11 +359,13 @@ export class ListService implements IListService {
        throw new Error('!! user cannot edit list !!');
      }
   
+     const fullArtworkId = this.artworkService.generateArtworkId({artworkId});
+
     // Check and remove the artwork
     const edgeToRemove = await this.edgeService.getEdge({
       edgeName: EdgeNames.FROMListTOArtwork,
       from: fullListId,
-      to: artworkId,
+      to: fullArtworkId,
     });
   
     if (!edgeToRemove) {
@@ -334,7 +375,7 @@ export class ListService implements IListService {
     await this.edgeService.deleteEdge({
       edgeName: EdgeNames.FROMListTOArtwork,
       from: fullListId,
-      to: artworkId,
+      to: fullArtworkId,
     });
   
     // Fetch remaining artworks and their positions
@@ -361,7 +402,7 @@ export class ListService implements IListService {
     }
   
     // Update and return the list...
-    return await this.db.collection(CollectionNames.DartaUserLists).document(fullListId) as FullList
+    return await this.getFullList({listId});
     } catch (error: any) {
       throw new Error(error.message);
     }
