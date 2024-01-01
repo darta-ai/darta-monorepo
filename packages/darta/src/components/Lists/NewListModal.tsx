@@ -4,19 +4,19 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 import * as SVGs from '../../assets/SVGs/index';
 import * as Colors from '@darta-styles';
 import { ETypes, StoreContext } from '../../state/Store';
-import { TextElement } from '../Elements/TextElement';
+import { TextElement, TextElementMultiLine } from '../Elements/TextElement';
 import {Portal, Modal, Button, Switch, TextInput, Snackbar} from 'react-native-paper'
 import { createArtworkListAPI } from '../../utils/apiCalls';
 import { FailureToast } from '../Toasts/FailureToast';
 
 const addToListStyles = StyleSheet.create({
     container: {
-        height: hp('55%'),
+        height: hp('40%'),
         width: wp('90%'),
         padding: 24,
         alignSelf: 'center',
         backgroundColor: Colors.PRIMARY_50,
-        opacity: 0.9,
+        // opacity: 0.9,
         display: 'flex', 
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -27,7 +27,7 @@ const addToListStyles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        height: 48,
+        // height: 48,
         width: '100%',
         alignItems: 'center',
     },
@@ -118,9 +118,9 @@ export function NewListModal({
                     />
                     {errorText && <TextElement>{errorText}</TextElement>}
                     <View style={addToListStyles.switchContainer}>
-                        <View>
+                        <View style={{width: '70%'}}>
                             <TextElement style={addToListStyles.switchTextHeader}>Private</TextElement>
-                            <TextElement style={addToListStyles.switchTextDescription}>Prevent users from viewing this list</TextElement>
+                            <TextElementMultiLine style={addToListStyles.switchTextDescription}>When private, you can share this list but other users cannot</TextElementMultiLine>
                         </View>
                         <Switch 
                         theme={{
@@ -130,19 +130,7 @@ export function NewListModal({
                         }}
                         value={isPrivate} onValueChange={setIsPrivate} />
                     </View>
-                    <View style={addToListStyles.switchContainer}>
-                        <View>
-                            <TextElement style={addToListStyles.switchTextHeader}>Collaborative</TextElement>
-                            <TextElement style={addToListStyles.switchTextDescription}>Invite others to edit this list</TextElement>
-                        </View>
-                        <Switch 
-                        theme={{
-                            colors: {
-                                primary: Colors.PRIMARY_950,
-                            },
-                        }}
-                        value={isCollaborative} onValueChange={setIsCollaborative} />
-                    </View>
+
                     <Button style={addToListStyles.createButton} onPress={saveList} mode={'outlined'}>
                         <TextElement style={addToListStyles.buttonText}>Create</TextElement>
                     </Button>

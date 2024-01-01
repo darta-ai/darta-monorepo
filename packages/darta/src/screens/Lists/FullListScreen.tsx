@@ -1,29 +1,16 @@
 import React from 'react'
-import { View, StyleSheet, RefreshControl } from 'react-native'
+import { View, StyleSheet, RefreshControl, Alert, Linking } from 'react-native'
 import { Button } from 'react-native-paper'
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import * as Colors from '@darta-styles';
 import { ETypes, StoreContext } from '../../state/Store';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
-import { ArtworkListInformation, FullList } from '@darta-types/dist';
+import { Artwork, ArtworkListInformation, ExhibitionForList, FullList, GalleryForList, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
 import { getFullList, removeArtworkFromList } from '../../api/listRoutes';
 import { ArtworkListView } from '../../components/Lists/ArtworkListView';
-
-const newListStyles = StyleSheet.create({
-    container: {
-        height: hp('100%'),
-        width: wp('100%'),
-        margin: 24,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        // marginBottom: 10,
-        backgroundColor: Colors.PRIMARY_50,
-        opacity: 0.9,
-        flex: 1,
-    },
-})
+import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
+import { UserETypes, UserStoreContext } from '../../state';
+import analytics from '@react-native-firebase/analytics';
 
 
 export function FullListScreen({
@@ -35,6 +22,7 @@ export function FullListScreen({
 }) {
 
     const {state, dispatch} = React.useContext(StoreContext);
+    const {userState, userDispatch} = React.useContext(UserStoreContext);
     const [fullList, setFullList] = React.useState<FullList | null>(null);
     const [fullArtwork, setFullArtwork] = React.useState<{[key: string] : ArtworkListInformation} | null>(null);
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
@@ -122,7 +110,7 @@ export function FullListScreen({
         return false
     }
 
-    const refreshControl = async () => {
+    const refreshControl = React.useCallback(async () => {
         setRefreshing(true)
         const fullList = await getListData({listId: route.params.listId})
         dispatch({
@@ -132,6 +120,60 @@ export function FullListScreen({
         setFullList(Object.values(fullList)[0])
         setFullArtwork(Object.values(fullList)[0].artwork)
         setRefreshing(false)
+    }, [route.params.listId])
+
+
+  const inquireArtwork = React.useCallback(async ({artwork, gallery, exhibition} : {artwork: Artwork, gallery: GalleryForList, exhibition: ExhibitionForList}) => {
+
+    try {
+        const artworkId = artwork?._id
+        if (!artworkId) return
+
+        // await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE})
+        userDispatch({
+            type: UserETypes.setUserInquiredArtwork,
+            artworkId,
+        })
+        analytics().logEvent('inquire_artwork', {artworkId})
+
+        const emailAddress = gallery.primaryContact?.value 
+        if (!emailAddress) return
+
+        const subject = `Inquiry about ${artwork.artworkTitle?.value} at ${gallery.galleryName?.value}`
+        
+        const body = `Hi ${gallery.galleryName?.value},%0D%0A%0D%0A I saw ${artwork.artworkTitle?.value} by ${artwork.artistName?.value} on darta and I'm interested in learning more. %0D%0A%0D%0A Best,%0D%0A%0D%0A${userState.user?.legalFirstName}`
+
+        const url = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      
+        Linking.canOpenURL(url)
+          .then((supported) => {
+            if (!supported) {
+              console.log(`Can't handle URL: ${url}`);
+            } else {
+              return Linking.openURL(url);
+            }
+          })
+          .catch((err) => console.error('An error occurred', err));
+    } catch(error){
+        console.log(error)
+    } 
+    }, [])
+
+    const inquireAlert = ({artwork, gallery, exhibition} : {artwork: Artwork, gallery: GalleryForList, exhibition: ExhibitionForList}) => {
+
+        const galleryName = gallery?.galleryName?.value || "the gallery"
+
+        Alert.alert(`Reach out to ${galleryName}?`, `We'll autofill an email from you and let the gallery tell you all about the work!`, [
+            {
+              text: 'Cancel',
+              onPress: () => {},
+              style: 'destructive',
+            },
+            {
+              text: `Yes`,
+              onPress: () => inquireArtwork({artwork, gallery, exhibition}),
+            },
+          ])
     }
 
     const rowRenderer = (_, artwork) => {
@@ -141,11 +183,9 @@ export function FullListScreen({
                     artwork={artwork.artwork}
                     exhibition={artwork.exhibition}
                     gallery={artwork.gallery}
-                    inquireAlert={() => {}}
+                    inquireAlert={inquireAlert}
                     navigation={navigation}
                     onDelete={handleDelete}
-                    onMoveUp={() => {}}
-                    onMoveDown={() => {}}
                 />
             </View>
         );
@@ -179,7 +219,7 @@ export function FullListScreen({
             scrollViewProps={{
                 decelerationRate: "fast",
                 snapToInterval: hp('90%'),
-                snapToAlignment: 'center',
+                // snapToAlignment: 'center',
                 scrollEnabled: true,
                 disableIntervalMomentum: true,
                 pagingEnabled: true,

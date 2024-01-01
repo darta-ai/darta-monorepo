@@ -39,7 +39,7 @@ export function ArtOnWallFlatList({
   artworkDimensions,
   artOnDisplay,
   artImage,
-  wallHeight = 96,
+  wallHeight = 84,
   navigation,
 }: {
   artOnDisplay: Artwork;
@@ -48,24 +48,10 @@ export function ArtOnWallFlatList({
   wallHeight?: number;
   navigation: any
 }) {
-  const {state} = React.useContext(StoreContext);
   const {uiDispatch} = React.useContext(UIStoreContext);
 
-  const [backgroundContainerDimensionsPixels, setBackgroundContainerDimensionsPixels] = React.useState(galleryDimensionsPortrait) 
+  const [backgroundContainerDimensionsPixels] = React.useState(galleryDimensionsPortrait) 
   const [isLoading, setIsLoading] = React.useState(false);
-
-
-  // React.useEffect(() => {
-  //   if (state.isPortrait) {
-  //     setBackgroundContainerDimensionsPixels(galleryDimensionsPortrait);
-  //   } else {
-  //     setBackgroundContainerDimensionsPixels(galleryDimensionsLandscape);
-  //   }
-  // }, [state.isPortrait])
-
-  const onSingleTap = (event) => {
-    toggleArtTombstone(); // Handle tap
-  };
 
   const [artDimensions, setArtDimensions] = React.useState<ArtDimensions>({
     artImageSize: null,
@@ -80,7 +66,6 @@ export function ArtOnWallFlatList({
       type: UiETypes.setTombstoneHeader,
       currentArtworkHeader: artOnDisplay?.artworkTitle?.value!,
     });
-    console.log('triggered')
     if (artOnDisplay){
       navigation.navigate(RecommenderRoutesEnum.TopTabExhibition, {artOnDisplay, galleryId: artOnDisplay?.galleryId, exhibitionId: artOnDisplay?.exhibitionId});
     }
@@ -149,11 +134,6 @@ export function ArtOnWallFlatList({
     setSaw()
   }, [artOnDisplay]);
 
-  // React.useEffect(() => {
-  //   const { artImageSize, artImageLocation, artHeightPixels, artWidthPixels } = getDimensions();
-  //   setArtDimensions({ artImageSize, artImageLocation, artHeightPixels, artWidthPixels });
-  // }, [state.isPortrait])
-
   const galleryStylesPortraitDynamic = StyleSheet.create({
     artContainer: {
       display: 'flex',
@@ -204,7 +184,6 @@ export function ArtOnWallFlatList({
   return (
       <View style={galleryStylesPortraitDynamic.artContainer}>
           {artImage && (
-          // <View style={galleryStylesPortraitDynamic.artworkDimensions}>
             <GestureDetector gesture={tapGesture}>
               <Surface style={{backgroundColor:"transparent"}}>
                 <FastImage
@@ -219,7 +198,6 @@ export function ArtOnWallFlatList({
                 )}
               </Surface>
             </GestureDetector>
-          // </View>
           )} 
     </View>
   );
@@ -227,11 +205,6 @@ export function ArtOnWallFlatList({
 
 
 export const ArtOnWallMemo =  React.memo(ArtOnWallFlatList, (prevProps, nextProps) => {
-  /*
-    This is an optional comparison function that you can provide to React.memo for custom comparison logic.
-    If you omit this function, it will do a shallow comparison of props by default.
-    If you need to compare deeply nested properties, you can do so here.
-  */
   return (
     prevProps.artOnDisplay === nextProps.artOnDisplay &&
     prevProps.artImage === nextProps.artImage &&

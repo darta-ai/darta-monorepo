@@ -59,6 +59,7 @@ const customMarker = StyleSheet.create({
     flexDirection: "column",
     alignContent: "center",
     justifyContent: "center",
+    gap: 12,
   }, 
   buttonStyles: {
     width: 265,
@@ -83,7 +84,7 @@ const customMarker = StyleSheet.create({
 })
 
 
-const CustomMarker = React.memo(({ 
+const CustomMarkerList = React.memo(({ 
   coordinate, 
   mapPin, 
   navigation
@@ -93,6 +94,7 @@ const CustomMarker = React.memo(({
   navigation: any
 }) => {
 
+  console.log()
   const {exhibitionState} = React.useContext(ExhibitionStoreContext);
   const {uiDispatch} = React.useContext(UIStoreContext);
 
@@ -125,12 +127,12 @@ const CustomMarker = React.memo(({
   const [hasCurrentShow, setHasCurrentOpening] = React.useState<boolean>(false)
 
 
-  const [line1, setLine1] = React.useState<string>("")
-  const [line2, setLine2] = React.useState<string>("")
-  const [exhibitionTitle, setExhibitionTitle] = React.useState<string>("")
+  const [galleryName, setGalleryName] = React.useState<string>("")
+  const [artworkTitle, setArtworkTitle] = React.useState<string>("")
   const [artistName, setArtistName] = React.useState<string>("")
   const [buttonText, setButtonText] = React.useState<string>("View Gallery")
-
+  const [galleryAddress, setGalleryAddress] = React.useState<string>("")
+  const [galleryCity, setGalleryCity] = React.useState<string>("")
 
   React.useEffect(() => {
     let hasOpening = false;
@@ -154,13 +156,14 @@ const CustomMarker = React.memo(({
       setHasCurrentOpening(currentOpening)
       setButtonText(currentOpening ? "View Exhibition" : "View Gallery")
     } 
-    setLine1(mapPin.galleryName?.value || "")
+    setGalleryName(mapPin.galleryName?.value || "")
     console.log({mapPin: mapPin.exhibitionLocation?.locationString?.value})
     const city = simplifyAddressCity(mapPin.exhibitionLocation?.locationString?.value)
     const address = simplifyAddressMailing(mapPin.exhibitionLocation?.locationString?.value)
-    setLine2(`${address} ${city}`|| "")
+    setGalleryAddress(address || "")
+    setGalleryCity( city|| "")
 
-    setExhibitionTitle(mapPin.exhibitionTitle?.value || "")
+    setArtworkTitle(mapPin.exhibitionTitle?.value || "")
 
     setArtistName(mapPin.exhibitionArtist?.value || "Group Show")
     }, [])
@@ -201,8 +204,8 @@ const CustomMarker = React.memo(({
         onPress={() => {chooseRouteAndNavigate()}}>
             <View style={customMarker.galleryContainer} >
                 <View style={customMarker.galleryNameContainer}>
-                  <TextElement style={customMarker.subheaderInformation}>{line1}</TextElement>
-                  <TextElement style={globalTextStyles.paragraphText}>{line2}</TextElement>
+                  <TextElement style={customMarker.subheaderInformation}>{artistName}</TextElement>
+                  <TextElement style={globalTextStyles.paragraphText}>{artworkTitle}</TextElement>
                 </View>
             </View> 
             {hasCurrentShow && (
@@ -217,13 +220,22 @@ const CustomMarker = React.memo(({
               <View style={customMarker.textContainer}>
                 <TextElement
                   style={globalTextStyles.subHeaderInformationSize14}>
-                  {exhibitionTitle}
+                  {galleryName}
                 </TextElement>
+                <View>
+                  <TextElement
+                    style={globalTextStyles.paragraphTextSize14NoHeight}>
+                    {galleryAddress}
+                  </TextElement>
+                  <TextElement
+                    style={globalTextStyles.paragraphTextSize14NoHeight}>
+                    {galleryCity}
+                  </TextElement>
+                </View>
                 <TextElement
                   style={globalTextStyles.paragraphTextSize14}>
                   {startDate} {' - '} {endDate}
                 </TextElement>
-                <TextElement style={globalTextStyles.paragraphTextSize14}>{artistName}</TextElement>
               </View>
             </View>
             )}
@@ -240,4 +252,4 @@ const CustomMarker = React.memo(({
   );
 })
 
-export default CustomMarker;
+export default CustomMarkerList;

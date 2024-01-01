@@ -1,4 +1,4 @@
-import { FullList, List, ListPreview } from '@darta-types/dist';
+import { ExhibitionMapPin, FullList, List, ListPreview } from '@darta-types/dist';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 
@@ -158,7 +158,7 @@ export class ListService implements IListService {
     }
   }
 
-  public async listLists({ uid }: { uid: string }): Promise<{[key:string] :ListPreview}> {
+  public async listLists({ uid }: { uid: string }): Promise<{[key:string] : ListPreview}> {
     try {
       const fullUserId = this.userService.generateDartaUserId({ uid });
       const edges = await this.edgeService.getAllEdgesFromNode({
@@ -408,6 +408,43 @@ export class ListService implements IListService {
     }
   }
   
+
+  // TO-DO: Delete 
+  public async listExhibitionPinsByListId({listId}: {listId: string}): Promise<ExhibitionMapPin[]>{
+    const fullListId = this.generateListId({id: listId});
+    // get list node
+    const list = await this.db.collection(CollectionNames.DartaUserLists).document(fullListId);
+
+    if (!list) {
+      throw new Error('!! no list !!');
+    }
+
+    // get all artworks from list
+    const edges = await this.edgeService.getAllEdgesFromNode({
+      edgeName: EdgeNames.FROMListTOArtwork,
+      from: fullListId,
+    });
+
+    if (!edges) {
+      throw new Error('!! no edges for list!!');
+    }
+
+    const artworkIds = edges.map((edge) => edge._to)
+
+    // Fetch both artwork/gallery and exhibition data in parallel
+    const exhibitionPromises = artworkIds.map((artworkId) => 
+      this.exhibitionService.readExhibitionForList({artworkId})
+    );
+
+    // Wait for all promises to resolve
+    const exhibitions = await Promise.all(exhibitionPromises);
+
+    if (!exhibitions) {
+      throw new Error('!! no exhibitions !!');
+    }
+
+    return [] as ExhibitionMapPin[];
+  }
 
   // eslint-disable-next-line class-methods-use-this
   public generateListId({id}: {id: string}): string {

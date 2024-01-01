@@ -4,7 +4,7 @@ import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-nati
 import FastImage from 'react-native-fast-image'
 
 import * as Colors from '@darta-styles';
-import { ETypes, StoreContext, UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes} from '../../state';
+import { UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes} from '../../state';
 import {TextElement} from '../../components/Elements/_index';
 import {customFormatTimeString, customLocalDateStringStart, customLocalDateStringEnd, simplifyAddressCity, simplifyAddressMailing} from '../../utils/functions';
 import { ActivityIndicator, Surface } from 'react-native-paper';

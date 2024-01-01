@@ -82,9 +82,9 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
   }
 
   const inquireArtwork = async ({artworkId} : {artworkId: string}) => {
-    if (auth().currentUser === null) {
-      return setDialogVisible(true)
-    }
+    // if (auth().currentUser === null) {
+    //   return setDialogVisible(true)
+    // }
     try {
       await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE})
       userDispatch({

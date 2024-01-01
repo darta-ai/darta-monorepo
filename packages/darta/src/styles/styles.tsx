@@ -50,6 +50,12 @@ export const globalTextStyles = StyleSheet.create({
     lineHeight: 22,
     color: Colors.PRIMARY_900,
   },
+  paragraphTextSize14NoHeight: {
+    fontFamily: 'DMSans_400Regular',
+    fontSize: 14,
+    textAlign: 'left',
+    color: Colors.PRIMARY_900,
+  },
   paragraphText: {
     ...baseText,
     fontSize: 16,

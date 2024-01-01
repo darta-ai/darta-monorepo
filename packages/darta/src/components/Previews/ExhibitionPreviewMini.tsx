@@ -122,11 +122,11 @@ const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
         style={exhibitionPreview.container}>
           <TextElement
             style={exhibitionPreview.exhibitionTitle}>
-            {exhibitionArtist ?? "Group Show"}
+            {exhibitionArtist?.trim() ?? "Group Show"}
           </TextElement>
           <TextElement
             style={exhibitionPreview.artistTitle}>
-            {exhibitionTitle}
+            {exhibitionTitle?.trim()}
           </TextElement>
           <Surface elevation={1} style={{...exhibitionPreview.heroImageContainer, marginTop: 24}}>
             <FastImage 

@@ -1,5 +1,7 @@
 import React from 'react';
-import {StyleSheet, View, Animated, Pressable, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Animated, Pressable, ActivityIndicator} from 'react-native';
+import {Platform, Linking} from 'react-native';
+
 import {ScrollView} from 'react-native-gesture-handler';
 import {
   heightPercentageToDP as hp,
@@ -45,7 +47,7 @@ const SSTombstonePortrait = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: hp('40%'),
+    height: hp('35%'),
   },
   image: {
     height: '100%',
@@ -129,22 +131,19 @@ export function ArtworkListView({
   inquireAlert,
   navigation,
   onDelete,
-  onMoveUp,
-  onMoveDown,
 }: {
   artwork: Artwork,
   gallery: GalleryForList,
   exhibition: ExhibitionForList,
-  inquireAlert: ({artworkId} : {artworkId: string}) => void,
+  inquireAlert: ({artwork, gallery, exhibition} : {artwork: Artwork, gallery: GalleryForList, exhibition: ExhibitionForList}) => void,
   navigation: any,
   onDelete: ({artworkId} : {artworkId: string}) => Promise<boolean>,
-  onMoveUp: ({artworkId} : {artworkId: string}) => void,
-  onMoveDown: ({artworkId} : {artworkId: string}) => void,
 }) {
 
   const {userState, userDispatch} = React.useContext(UserStoreContext)
   
   const [isInquired, setIsInquired] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
   const [canInquire, setCanInquire] = React.useState(true);
 
   const [exhibitionStartDate, setExhibitionStartDate] = React.useState<string>();
@@ -172,6 +171,11 @@ export function ArtworkListView({
     await onDelete({artworkId: artwork._id!})
     setLoadingDelete(false)
     setShowSwipeActions(false)
+  }
+
+  const handleInquire = () => {
+    if (!artwork?._id || !gallery || !exhibition) return;
+    inquireAlert({artwork, gallery, exhibition})
   }
 
   const toggleButtons = ({buttonRef, callback} : {buttonRef: any, callback?: () => void}) => {
@@ -220,101 +224,87 @@ export function ArtworkListView({
   }
 
 
-  const renderRightActions = (_, dragX) => {
-
+  const renderLeftActions = (_, dragX) => {
     if (!showSwipeActions) {
       return null;
     }
-
+  
     const trans = dragX.interpolate({
-      inputRange: [-100, 0],
-      outputRange: [0, 100],
+      inputRange: [0, 100],
+      outputRange: [-100, 0],
       extrapolate: 'clamp',
-    });
-
+    });  
+  
     const styles = StyleSheet.create({
       container: {
-        transform: [{ translateX: trans }], 
-        flexDirection: 'column', 
-        alignItems: 'flex-start', 
-        justifyContent: 'space-between', 
-        paddingTop: 128, 
-        paddingBottom: 128, 
+        transform: [{ translateX: trans }],
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: hp('85%'),
         backgroundColor: Colors.PRIMARY_100
       },
-      movementContainer: {
-        gap: 8,
-        flexDirection: 'column',
-      }, 
       buttonWidth: {
         width: wp('35%')
-      }, 
+      },
       textColor: {
         color: Colors.PRIMARY_50
       }
-    })
-
+    });
+  
     return (
-        <Animated.View style={styles.container}>
-          <View style={styles.movementContainer}>
-            <Button 
-                onPress={() => onMoveUp({artworkId: artwork.artworkId!})}
-                icon={"chevron-up"}
-                mode={"text"}
-                textColor={Colors.PRIMARY_50}
-                buttonColor={Colors.PRIMARY_700}
-                style={styles.buttonWidth}
-                >
-                <TextElement style={{ color: Colors.PRIMARY_50 }}>Move Up</TextElement>
-              </Button>
-              <Button 
-                onPress={() => onMoveDown({artworkId: artwork.artworkId!})}
-                icon={"chevron-down"}
-                mode={"text"}
-                textColor={Colors.PRIMARY_50}
-                buttonColor={Colors.PRIMARY_700}
-                style={styles.buttonWidth}
-                >
-                <TextElement style={{ color: Colors.PRIMARY_50 }}>Move Down</TextElement>
-              </Button>
-            </View>
-          <View>
-            <Button 
-              onPress={handleDelete}
-              icon={"delete"}
-              mode={"text"}
-              loading={loadingDelete}
-              textColor={Colors.PRIMARY_50}
-              buttonColor={Colors.PRIMARY_950}
-              style={styles.buttonWidth}
-              >
-              <TextElement style={styles.textColor}>Delete</TextElement>
-            </Button>
-          </View>
-        </Animated.View>
+      <Animated.View style={styles.container}>
+        <View >
+          <Button 
+            onPress={handleDelete}
+            icon="delete"
+            mode="text"
+            loading={loadingDelete}
+            textColor={Colors.PRIMARY_50}
+            buttonColor={Colors.PRIMARY_950}
+            style={styles.buttonWidth}>
+            <TextElement style={styles.textColor}>Remove</TextElement>
+          </Button>
+        </View>
+      </Animated.View>
     );
   };
 
+  const openInMaps = (address: string) => {
+    if (!address) return;
+
+    const formattedAddress = encodeURIComponent(address);
+    const scheme = Platform.OS === 'ios' ? 'maps:0,0?q=' : 'geo:0,0?q=';
+    const url = scheme + formattedAddress;
+  
+  
+    Linking.canOpenURL(url)
+    .then((supported) => {
+      if (supported) {
+        return Linking.openURL(url);
+      } else {
+        const browserUrl = 'https://www.google.com/maps/search/?api=1&query=' + formattedAddress;
+        return Linking.openURL(browserUrl);
+      }
+    })
+    .catch((err) => console.error('Error opening maps app:', err));
+  };  
+
+
   return (
-  <View style={{height: hp("85%")}}>
-    <Swipeable renderRightActions={renderRightActions}>
+  <View style={{height: hp("90%")}}>
+    <Swipeable renderLeftActions={renderLeftActions}>
           <View style={SSTombstonePortrait.container}>
             <View style={SSTombstonePortrait.textContainer}>
               <View>
-                <TextElement style={globalTextStyles.subHeaderTitle}>
-                  Artist
-                </TextElement>
                 <TextElement
                   style={globalTextStyles.sectionHeaderTitle}>
                   {artwork?.artistName?.value}
                 </TextElement>
               </View>
               <View>
-                <TextElement style={globalTextStyles.subHeaderTitle}>
-                  Artwork Title
-                </TextElement>
                 <TextElement
-                  style={{...globalTextStyles.sectionHeaderTitle, fontSize: 18}}
+                  style={{...globalTextStyles.sectionHeaderTitle, fontSize: 18, marginBottom: 24}}
                   numberOfLines={5}>
                   {artwork?.artworkTitle?.value}          
                 </TextElement>
@@ -331,7 +321,12 @@ export function ArtworkListView({
                   source={{uri: artwork?.artworkImage?.value!}}
                   style={SSTombstonePortrait.image}
                   resizeMode={FastImage.resizeMode.contain}
+                  onLoadStart={() => setIsLoading(true)}
+                  onLoadEnd={() => setIsLoading(false)}
                 />
+                {isLoading && (
+                  <ActivityIndicator size="small"/> 
+                )}
               </View>
             </ScrollView>
           </View>
@@ -359,7 +354,7 @@ export function ArtworkListView({
               <DartaIconButtonWithText 
               text={`${simplifyAddressMailing(exhibition?.exhibitionLocationString?.value)} ${simplifyAddressCity(exhibition?.exhibitionLocationString?.value)}` as string}
               iconComponent={SVGs.BlackPinIcon}
-              onPress={() => {}}
+              onPress={() => openInMaps(exhibition?.exhibitionLocationString?.value!)}
               />
               <DartaIconButtonWithText 
               text={`${exhibitionStartDate} - ${exhibitionEndDate}` as string}
@@ -383,14 +378,14 @@ export function ArtworkListView({
                 <ButtonGenerator 
                 displayText="Inquire"
                 iconComponent={SVGs.EmailWhiteFillIcon}
-                onPress={() => toggleButtons({buttonRef: opacityInquiredButton, callback: () => inquireAlert({artworkId: artwork._id!})})}
+                onPress={() => toggleButtons({buttonRef: opacityInquiredButton, callback: () => handleInquire()})}
                 textColor={Colors.PRIMARY_50}
                 buttonColor={Colors.PRIMARY_950}
               />
               )} 
               </Animated.View>
             </View>
-      </Swipeable>
+        </Swipeable>
       </View>
   );
 }

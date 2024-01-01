@@ -45,7 +45,6 @@ const viewReducer = (state: ViewState, action: ViewIAction): ViewState => {
         if (!action?.artworkRatingIndex){
           return state;
         }
-        console.log(' ######## setting view index', action.artworkRatingIndex)
         return {
           ...state,
           artworkRatingIndex: action.artworkRatingIndex,

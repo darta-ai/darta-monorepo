@@ -24,7 +24,6 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
 
   React.useEffect(() => {
     const savedArtwork = userState.userSavedArtwork;
-    console.log({savedArtwork})
     if (savedArtwork){
       type ImageUrlObject = { uri: string };
       const imageUrlsToPrefetch: ImageUrlObject[] = [];

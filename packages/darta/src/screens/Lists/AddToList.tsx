@@ -97,7 +97,7 @@ export function AddToListScreen({
         artwork = route.params.artwork;
     }
     const {state, dispatch} = React.useContext(StoreContext);
-    const {userState, userDispatch} = React.useContext(UserStoreContext);
+    const {userDispatch} = React.useContext(UserStoreContext);
     const [visible, setVisible] = React.useState<boolean>(false)
     const [saveToSaved, setSaveToSaved] = React.useState<boolean>(false)
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
@@ -130,7 +130,6 @@ export function AddToListScreen({
     const handleDone = async () => {
         setIsLoading(true)
         const promises: Promise<void>[]= [];
-        let listIds: string[] = [];
 
         if (saveToSaved) {
             await createUserArtworkRelationship({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE});
@@ -176,9 +175,7 @@ export function AddToListScreen({
                 handlePress={handlePress}
                 />
                 {state.userListPreviews && Object.values(state.userListPreviews).sort((a, b) => {
-                    if (b?.createdAt > a?.createdAt) return 1
-                    if (b?.createdAt < a?.createdAt) return -1
-                    return 0
+                    return b?.createdAt > a?.createdAt ? 1 : -1;
                 }).map((listPreview: ListPreview ) => {
                     return (
                     <View key={listPreview._id}>

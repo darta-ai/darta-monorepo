@@ -21,6 +21,7 @@ import { ViewListsScreen } from '../../screens/Lists/ViewLists';
 import { TextElement } from '../../components/Elements/TextElement';
 import { FullListScreen } from '../../screens/Lists/FullListScreen';
 import { UIStoreContext } from '../../state';
+import { ListTopTab } from '../List/ListTopTab';
 
 export const UserStack = createStackNavigator();
 
@@ -88,7 +89,7 @@ export function UserStackNavigator({route} : {route: any}) {
           />
           <UserStack.Screen
             name={UserRoutesEnum.userListFull}
-            component={FullListScreen}
+            component={ListTopTab}
             options={{
               headerTintColor: Colors.PRIMARY_50,
               headerStyle: {

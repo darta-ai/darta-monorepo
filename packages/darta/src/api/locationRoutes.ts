@@ -23,3 +23,22 @@ export async function listExhibitionPinsByCity({
     return {};
   }
 }
+
+
+export async function listExhibitionPinsByListId({
+  listId,
+}: {
+  listId: string;
+}): Promise<Exhibition | any> {
+  try {
+    const headers = await generateHeaders();
+    const {data} = await axios.get(`${URL}/listExhibitionPinsByListId`, {
+      params: {
+        listId
+  }, headers });
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'listExhibitionPinsByListId'})
+    return {};
+  }
+}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, StyleSheet} from 'react-native';
+import { View, StyleSheet, ActivityIndicator} from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import FastImage from 'react-native-fast-image'
 import {
@@ -53,6 +53,9 @@ const WIDTH = wp('90%');
 const CustomItemComponent = ({ item }) => {
   const image = item?.imageUrl ? { uri: item.imageUrl } : image404;
 
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+
   return (
     <View style={{ flex: 1,  width: '100%'}} key={image}>
         <Surface style={{backgroundColor: 'transparent'}} elevation={2}>
@@ -60,7 +63,12 @@ const CustomItemComponent = ({ item }) => {
             source={{ ...image, priority: FastImage.priority.normal }}
             style={carouselStyle.heroImage} 
             resizeMode={FastImage.resizeMode.contain}
+            onLoadStart={() => setIsLoading(true)}
+            onLoadEnd={() => setIsLoading(false)}
           />
+          {isLoading && (
+            <ActivityIndicator size="small"/> 
+            )}
         </Surface>
     </View>
   );

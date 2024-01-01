@@ -152,11 +152,19 @@ export class ExhibitionService implements IExhibitionService {
       const exhibitionId = artworkEdge._from
       const exhibition = await this.getExhibitionById({exhibitionId})
 
+      let isCurrentlyShowing = false;
+      if (exhibition?.exhibitionDates?.exhibitionStartDate?.value && exhibition?.exhibitionDates?.exhibitionEndDate?.value){
+        isCurrentlyShowing = exhibition?.exhibitionDates?.exhibitionStartDate?.value <= new Date().toISOString() 
+        && exhibition?.exhibitionDates?.exhibitionEndDate?.value >= new Date().toISOString()
+      }
+
       return {
         exhibitionLocationString: exhibition?.exhibitionLocation?.locationString ?? null,
         exhibitionDates: exhibition?.exhibitionDates ?? null,
         exhibitionTitle: exhibition?.exhibitionTitle ?? null,
-        exhibitionId: exhibition?.exhibitionId ?? null
+        exhibitionId: exhibition?.exhibitionId ?? null,
+        exhibitionLocation: exhibition?.exhibitionLocation ?? null,
+        isCurrentlyShowing
       }
 
     } catch (e: any){

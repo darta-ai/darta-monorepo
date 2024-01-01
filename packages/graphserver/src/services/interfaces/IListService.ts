@@ -6,4 +6,5 @@ export interface IListService {
   listLists({ uid }: { uid: string }): Promise<{[key:string] : Types.ListPreview}>
   addArtworkToList({listId, artworkId, userUid}: {listId: string, artworkId: string, userUid: string}): Promise<Types.FullList> 
   removeArtworkFromList({listId, artworkId, userUid}: {listId: string, artworkId: string, userUid: string}): Promise<{[key: string] : Types.FullList}>
+  listExhibitionPinsByListId({listId}: {listId: string}): Promise<Types.ExhibitionMapPin[]>
 }

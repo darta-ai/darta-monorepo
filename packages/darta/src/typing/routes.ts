@@ -76,6 +76,12 @@ export enum ExhibitionPreviewEnum {
   following = 'EXHIBITION_PREVIEW_FOLLOWING',
 }
 
+export enum ListEnum {
+  fullList = 'FULL_LIST',
+  fullMap = 'FULL_MAP',
+}
+
+
 
 export type ExhibitionNavigatorParamList = {
   [ExhibitionRootEnum.exhibitionHome]: undefined;

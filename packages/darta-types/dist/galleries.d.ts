@@ -260,9 +260,6 @@ export type ExhibitionMapPin = {
     exhibitionType: {
         value: 'Group Show' | 'Solo Show';
     };
-    artworks?: {
-        [key: string]: Artwork;
-    };
     _id?: string;
 };
 export type GalleryForList = {
@@ -273,9 +270,11 @@ export type GalleryForList = {
 };
 export type ExhibitionForList = {
     exhibitionLocationString: PublicFields | null;
+    exhibitionLocation: IOpeningLocationData | null;
     exhibitionDates: ExhibitionDates | null;
     exhibitionTitle: PublicFields | null;
     exhibitionId: string | null;
+    isCurrentlyShowing: boolean;
 };
 export interface ArtworkAndGalleryForList {
     artwork: Artwork | null;
