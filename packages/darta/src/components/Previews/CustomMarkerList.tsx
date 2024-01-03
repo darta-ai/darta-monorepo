@@ -11,9 +11,10 @@ import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCi
 import * as Colors from '@darta-styles';
 import { ExhibitionMapPin } from '@darta-types';
 import { ExhibitionStoreContext, StoreContext, UIStoreContext, UiETypes } from '../../state';
-import { ExploreMapRootEnum } from '../../typing/routes';
+import { ExploreMapRootEnum, UserRoutesEnum } from '../../typing/routes';
 import {Button } from 'react-native-paper';
 import { GoogleMapsPinIcon, MapPinCircleDotIcon} from '../../assets/SVGs';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 const customMarker = StyleSheet.create({
   galleryContainer:{
@@ -94,7 +95,6 @@ const CustomMarkerList = React.memo(({
   navigation: any
 }) => {
 
-  console.log()
   const {exhibitionState} = React.useContext(ExhibitionStoreContext);
   const {uiDispatch} = React.useContext(UIStoreContext);
 
@@ -111,7 +111,7 @@ const CustomMarkerList = React.memo(({
         currentExhibitionHeader: exhibition.exhibitionTitle.value!,
       })
     }
-    navigation.navigate(ExploreMapRootEnum.TopTabExhibition, {galleryId: mapPin.galleryId, exhibitionId: mapPin._id, internalAppRoute: true});
+    navigation.navigate(UserRoutesEnum.UserPastTopTabNavigator, {galleryId: mapPin.galleryId, exhibitionId: mapPin.exhibitionId, internalAppRoute: true});
   }
 
   const navigateToGalleryScreen = async () => {
@@ -157,7 +157,6 @@ const CustomMarkerList = React.memo(({
       setButtonText(currentOpening ? "View Exhibition" : "View Gallery")
     } 
     setGalleryName(mapPin.galleryName?.value || "")
-    console.log({mapPin: mapPin.exhibitionLocation?.locationString?.value})
     const city = simplifyAddressCity(mapPin.exhibitionLocation?.locationString?.value)
     const address = simplifyAddressMailing(mapPin.exhibitionLocation?.locationString?.value)
     setGalleryAddress(address || "")
@@ -211,15 +210,16 @@ const CustomMarkerList = React.memo(({
             {hasCurrentShow && (
             <View style={customMarker.exhibitionContainer}>
                 <View style={customMarker.heroImageContainer} >
-                  <FastImage 
-                  source={{uri: mapPin?.exhibitionPrimaryImage?.value || ""}} 
+                  <DartaImageComponent 
+                  uri= {mapPin?.exhibitionPrimaryImage?.value || ""}
+                  priority={FastImage.priority.normal}
                   style={customMarker.heroImage} 
                   resizeMode={FastImage.resizeMode.contain}
                   />
                 </View>
               <View style={customMarker.textContainer}>
                 <TextElement
-                  style={globalTextStyles.subHeaderInformationSize14}>
+                  style={globalTextStyles.subHeaderInformationSize16}>
                   {galleryName}
                 </TextElement>
                 <View>

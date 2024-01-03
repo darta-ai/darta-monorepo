@@ -7,6 +7,7 @@ import {
   } from 'react-native-responsive-screen';
 import * as Colors from '@darta-styles';
 import { Surface } from 'react-native-paper';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
   const image404 = require('../../assets/image404.png');
   
@@ -59,16 +60,13 @@ const CustomItemComponent = ({ item }) => {
   return (
     <View style={{ flex: 1,  width: '100%'}} key={image}>
         <Surface style={{backgroundColor: 'transparent'}} elevation={2}>
-          <FastImage 
+          <DartaImageComponent
+            uri = {item?.imageUrl ?? ""} 
+            priority={FastImage.priority.normal}
             source={{ ...image, priority: FastImage.priority.normal }}
             style={carouselStyle.heroImage} 
             resizeMode={FastImage.resizeMode.contain}
-            onLoadStart={() => setIsLoading(true)}
-            onLoadEnd={() => setIsLoading(false)}
           />
-          {isLoading && (
-            <ActivityIndicator size="small"/> 
-            )}
         </Surface>
     </View>
   );

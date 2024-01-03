@@ -8,9 +8,8 @@ import {
 import * as Colors from '@darta-styles'
 import { TextElement } from '../Elements/TextElement';
 import { firebaseSignIn } from '../../api/firebase';
-import { ETypes, StoreContext } from '../../state/Store';
 import { getDartaUser } from '../../api/userRoutes';
-import auth from '@react-native-firebase/auth'
+import { UserETypes, UserStoreContext } from '../../state';
 
 export const SignIn = ({
     setDialogVisible, 
@@ -20,7 +19,7 @@ export const SignIn = ({
 
   const hideDialog = () => setDialogVisible(false)
 
-  const {dispatch} = React.useContext(StoreContext);
+  const {userDispatch} = React.useContext(UserStoreContext);
 
   const theme = useTheme()
   const { colors } = theme;
@@ -40,8 +39,8 @@ export const SignIn = ({
       const user = firebaseRes?.user;
       const dartaUser = await getDartaUser({uid: user?.uid})
       if (user && user.uid && user.email){
-        dispatch({
-          type: ETypes.setUser,
+        userDispatch({
+          type: UserETypes.setUser,
           userData: {
             uid: user.uid,
             email: user.email,

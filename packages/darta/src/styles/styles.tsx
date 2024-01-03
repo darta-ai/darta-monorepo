@@ -43,6 +43,11 @@ export const globalTextStyles = StyleSheet.create({
     fontSize: 14,
     color: Colors.PRIMARY_950,
   },
+  subHeaderInformationSize16: {
+    fontFamily: 'DMSans_700Bold',
+    fontSize: 16,
+    color: Colors.PRIMARY_950,
+  },
   paragraphTextSize14: {
     fontFamily: 'DMSans_400Regular',
     fontSize: 14,

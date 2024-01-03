@@ -1,17 +1,41 @@
 import React from 'react'
-import { View, StyleSheet, RefreshControl, Alert, Linking } from 'react-native'
+import { View, RefreshControl, Alert, Linking, StyleSheet, ScrollView } from 'react-native'
 import { Button } from 'react-native-paper'
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import * as Colors from '@darta-styles';
 import { ETypes, StoreContext } from '../../state/Store';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
-import { Artwork, ArtworkListInformation, ExhibitionForList, FullList, GalleryForList, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
+import { Artwork, ArtworkListInformation, ExhibitionForList, FullList, GalleryForList } from '@darta-types/dist';
 import { getFullList, removeArtworkFromList } from '../../api/listRoutes';
 import { ArtworkListView } from '../../components/Lists/ArtworkListView';
-import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
 import { UserETypes, UserStoreContext } from '../../state';
 import analytics from '@react-native-firebase/analytics';
+import { TextElement } from '../../components/Elements/TextElement';
 
+
+const container = StyleSheet.create({
+    textContainer: {
+        backgroundColor: Colors.PRIMARY_100,
+    },
+    flexTextContainer: {
+        height: '100%',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    textHeader:{
+        color: Colors.PRIMARY_950,
+        fontSize: 20,
+        marginBottom: 24,
+        fontFamily: 'DMSans',
+      },
+      text:{
+        color: Colors.PRIMARY_950,
+        fontSize: 14,
+        marginBottom: 24,
+        fontFamily: 'DMSans',
+      },
+})
 
 export function FullListScreen({
     navigation,
@@ -89,7 +113,10 @@ export function FullListScreen({
     React.useEffect(() => {
         if (fullArtwork) {
             const sortedArtworks = Object.values(fullArtwork)
-            setDataProvider(dataProvider.cloneWithRows(sortedArtworks));
+            if (sortedArtworks.length === 0) setNoArtwork(true)
+            else {
+                setDataProvider(dataProvider.cloneWithRows(sortedArtworks));
+            }
         }
     }, [fullArtwork]);
 
@@ -184,7 +211,6 @@ export function FullListScreen({
                     exhibition={artwork.exhibition}
                     gallery={artwork.gallery}
                     inquireAlert={inquireAlert}
-                    navigation={navigation}
                     onDelete={handleDelete}
                 />
             </View>
@@ -192,24 +218,34 @@ export function FullListScreen({
     };
     if (isError){
         return(
-            <View>
+            <View style={container.textContainer}>
                 <Button onPress={() => navigation.goBack()} textColor={Colors.PRIMARY_950}>Go Back</Button>
             </View>
         )
     } else if (isLoading){
         return(
-            <View>
+            <View style={container.textContainer}>
                 <Button onPress={() => navigation.goBack()} textColor={Colors.PRIMARY_950}>Loading...</Button>
             </View>
         )
     } else if (noArtwork){
         return(
-            <View>
-                <Button onPress={() => navigation.goBack()} textColor={Colors.PRIMARY_950}>No artwork to display</Button>
-            </View>
+            <ScrollView 
+            style={container.textContainer}
+            contentContainerStyle={container.flexTextContainer}
+            refreshControl={
+                <RefreshControl 
+                        refreshing={isRefreshing} 
+                        onRefresh={refreshControl}
+                        tintColor={Colors.PRIMARY_600}
+                    />
+            }>
+                <TextElement style={container.textHeader}>This list contains no artwork</TextElement>
+                <TextElement style={container.text}>Add more artwork to the list to develop a custom list</TextElement>
+            </ScrollView>
         )
     } 
-    else if (fullArtwork){
+    else if (fullArtwork && Object.values(fullArtwork).length !== 0){
         return (
             <RecyclerListView
             style={{ flex: 1 }}
@@ -219,7 +255,6 @@ export function FullListScreen({
             scrollViewProps={{
                 decelerationRate: "fast",
                 snapToInterval: hp('90%'),
-                // snapToAlignment: 'center',
                 scrollEnabled: true,
                 disableIntervalMomentum: true,
                 pagingEnabled: true,

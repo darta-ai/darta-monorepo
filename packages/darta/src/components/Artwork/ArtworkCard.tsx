@@ -7,6 +7,7 @@ import FastImage from 'react-native-fast-image';
 import { Surface } from 'react-native-paper';
 import { UIStoreContext, UiETypes } from '../../state';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 const SSArtworkSelectorCard = StyleSheet.create({
   container: {
@@ -108,10 +109,9 @@ const ArtworkCard = ({
           <TouchableOpacity onPress={() => navigateToTombstone()}>
             <Surface style={{backgroundColor: "transparent"}}>
               <View style={SSArtworkSelectorCard.loadingImageContainer}>
-                <FastImage
-                  source={{
-                    uri: artwork.artworkImage?.value ?? "",
-                  }}
+                <DartaImageComponent
+                  uri = {artwork.artworkImage?.value ?? ""}
+                  priority={FastImage.priority.normal}
                   style={SSArtworkSelectorCard.image}
                   resizeMode={FastImage.resizeMode.contain}
                   onLoadStart={() => setIsLoading(true)}

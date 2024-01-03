@@ -255,7 +255,7 @@ export class ListService implements IListService {
     };
   }
 
-  public async addArtworkToList({listId, artworkId, userUid}: {listId: string, artworkId: string, userUid: string}): Promise<FullList> {
+  public async addArtworkToList({listId, artworkId, userUid}: {listId: string, artworkId: string, userUid: string}): Promise<{[key: string] : FullList}> {
 
     try{
     const fullListId = this.generateListId({id: listId});
@@ -315,12 +315,9 @@ export class ListService implements IListService {
       }
     });
 
-    return {
-      ...list,
-      artwork: {
-        [artworkId]: await this.artworkService.readArtwork(artworkId),
-      },
-    } as FullList
+
+
+    return await this.getFullList({listId}) 
     } catch (error: any) {
       throw new Error(error.message);
     }
@@ -408,6 +405,82 @@ export class ListService implements IListService {
     }
   }
   
+  public async deleteList({listId, userUid}: {listId: string, userUid: string}): Promise<{[key: string] : ListPreview}> {
+    // delete the list and the edges from the list to the artwork 
+    try {
+
+    const fullListId = this.generateListId({id: listId});
+    // get list node
+    const list = await this.db.collection(CollectionNames.DartaUserLists).document(fullListId);
+    const fullUserId = this.userService.generateDartaUserId({uid: userUid});
+
+    if (!list) {
+      throw new Error('!! no list !!');
+    }
+    
+     // confirm that the user is the creator of the list
+     const listEdge = await this.edgeService.getAllEdgesToPointingToNode({edgeName: EdgeNames.FROMDartaUserTOList, to: fullListId});
+
+     if (!listEdge) {
+       throw new Error('!! no list edge !!');
+     }
+ 
+     let canEdit = false;
+ 
+     listEdge.forEach((edge) => {
+       if (edge._from === fullUserId) {
+         canEdit = true;
+       }
+     })
+ 
+     if (!canEdit) {
+       throw new Error('!! user cannot edit list !!');
+     }
+
+    // get all artworks from list
+    const edges = await this.edgeService.getAllEdgesFromNode({
+      edgeName: EdgeNames.FROMListTOArtwork,
+      from: fullListId,
+    });
+
+    if (!edges) {
+      throw new Error('!! no edges !!');
+    }
+
+    const artworkIds = edges.map((edge) => edge._to)
+
+    // delete all edges from list to artwork
+    const edgePromises = artworkIds.map((artworkId) => 
+      this.edgeService.deleteEdge({
+        edgeName: EdgeNames.FROMListTOArtwork,
+        from: fullListId,
+        to: artworkId,
+      })
+    );
+
+    await Promise.all(edgePromises);
+
+    // delete all edges from user to list
+    const userEdgePromises = artworkIds.map(() => 
+      this.edgeService.deleteEdge({
+        edgeName: EdgeNames.FROMDartaUserTOList,
+        from: fullUserId,
+        to: fullListId,
+      })
+    );
+
+    await Promise.all(userEdgePromises);
+
+    // delete list node
+    await this.db.collection(CollectionNames.DartaUserLists).remove(fullListId);
+
+    // return updated list previews
+    return await this.listLists({uid: userUid});
+
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
 
   // TO-DO: Delete 
   public async listExhibitionPinsByListId({listId}: {listId: string}): Promise<ExhibitionMapPin[]>{

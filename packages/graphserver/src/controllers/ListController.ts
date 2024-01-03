@@ -85,6 +85,30 @@ export class ListController {
     }
   }
 
+  @httpPost('/deleteList', verifyToken)
+  public async deleteList(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const {user} = req as any;
+      const {listId} = req.body;
+      if (!listId) {
+        throw new Error('!! no listId !!');
+      }
+      const results = await this.listService.deleteList({
+          listId, 
+          userUid: user.uid,
+        });
+        res.status(200).send(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req?.body, request: 'lists/deleteList'})
+      if (!res.headersSent) {
+        res.status(500).send('unable to create new list');
+      }
+    }
+  }
+
 
   @httpPost('/removeArtworkFromList', verifyToken)
   public async removeArtworkFromList(

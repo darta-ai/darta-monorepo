@@ -2,9 +2,7 @@ import React from 'react';
 import {
   StyleSheet,
   View,
-  Pressable,
   ActivityIndicator,
-  ImageSourcePropType
 } from 'react-native';
 import FastImage from 'react-native-fast-image'
 import {
@@ -19,14 +17,12 @@ import { Surface } from 'react-native-paper';
 import * as Colors from '@darta-styles'
 import { RecommenderRoutesEnum } from '../../typing/routes';
 import {
-  galleryDimensionsLandscape,
   galleryDimensionsPortrait,
 } from '../../utils/constants';
-import { UIStoreContext, StoreContext, UiETypes } from '../../state';
+import { UIStoreContext, UiETypes } from '../../state';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import {runOnJS} from 'react-native-reanimated';
-
-
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 interface ArtDimensions {
   artImageSize: { height: number; width: number; } | null;
@@ -186,16 +182,13 @@ export function ArtOnWallFlatList({
           {artImage && (
             <GestureDetector gesture={tapGesture}>
               <Surface style={{backgroundColor:"transparent"}}>
-                <FastImage
+                <DartaImageComponent
+                  uri={artImage}
+                  priority={FastImage.priority.high}
                   source={{uri: artImage, priority: FastImage.priority.high}}
                   style={galleryStylesPortraitDynamic.artwork}
                   resizeMode={FastImage.resizeMode.contain}
-                  onLoadStart={() => setIsLoading(true)}
-                  onLoadEnd={() => setIsLoading(false)}
                 />
-                {isLoading && (
-                <ActivityIndicator size="small"/> 
-                )}
               </Surface>
             </GestureDetector>
           )} 

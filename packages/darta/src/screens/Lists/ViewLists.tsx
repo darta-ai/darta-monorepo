@@ -96,6 +96,11 @@ export function ViewListsScreen({
                 listHeader: list[listId].listName
             })
         }
+        const listUrl = `https://darta.art/exhibition?listId=${listId}`
+        uiDispatch({
+            type: UiETypes.setListURL,
+            listUrl
+        })
         navigation.navigate(UserRoutesEnum.userListFull, {listId})
     }
     const [dataProvider, setDataProvider] = React.useState(

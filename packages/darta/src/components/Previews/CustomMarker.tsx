@@ -14,6 +14,7 @@ import { ExhibitionStoreContext, StoreContext, UIStoreContext, UiETypes } from '
 import { ExploreMapRootEnum } from '../../typing/routes';
 import {Button } from 'react-native-paper';
 import { GoogleMapsPinIcon, MapPinCircleDotIcon} from '../../assets/SVGs';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 const customMarker = StyleSheet.create({
   galleryContainer:{
@@ -155,7 +156,6 @@ const CustomMarker = React.memo(({
       setButtonText(currentOpening ? "View Exhibition" : "View Gallery")
     } 
     setLine1(mapPin.galleryName?.value || "")
-    console.log({mapPin: mapPin.exhibitionLocation?.locationString?.value})
     const city = simplifyAddressCity(mapPin.exhibitionLocation?.locationString?.value)
     const address = simplifyAddressMailing(mapPin.exhibitionLocation?.locationString?.value)
     setLine2(`${address} ${city}`|| "")
@@ -208,8 +208,9 @@ const CustomMarker = React.memo(({
             {hasCurrentShow && (
             <View style={customMarker.exhibitionContainer}>
                 <View style={customMarker.heroImageContainer} >
-                  <FastImage 
-                  source={{uri: mapPin?.exhibitionPrimaryImage?.value || ""}} 
+                  <DartaImageComponent 
+                  uri={mapPin?.exhibitionPrimaryImage?.value || ""}
+                  priority={FastImage.priority.normal}
                   style={customMarker.heroImage} 
                   resizeMode={FastImage.resizeMode.contain}
                   />

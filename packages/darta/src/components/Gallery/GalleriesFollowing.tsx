@@ -38,7 +38,6 @@ export function GalleriesFollowing({
         }
       }
       result.sort((a, b) => {
-        // Assuming galleryName is a string
         if (!a.galleryName.value || !b.galleryName.value) return 0;
         if (a.galleryName.value < b.galleryName.value) return -1;
         if (a.galleryName.value > b.galleryName.value) return 1;

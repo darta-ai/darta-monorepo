@@ -1,5 +1,5 @@
 import {PRIMARY_950} from '@darta-styles';
-import React, {useContext} from 'react';
+import React from 'react';
 import * as Colors from '@darta-styles';
 
 
@@ -10,7 +10,9 @@ import {UserSavedArtwork} from '../../components/User/UserSavedArtwork';
 import {UserSettings} from '../../components/User/UserSettings';
 import {backButtonStyles, headerOptions} from '../../styles/styles';
 import {UserRoutesEnum} from '../../typing/routes';
-import { View } from 'react-native';  
+import { View, StyleSheet } from 'react-native';  
+import Share from 'react-native-share'
+
 
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { GalleryAndArtworkTopTabNavigator } from './GalleryAndArtworkTopTabNavigator';
@@ -18,16 +20,40 @@ import { PastExhibitionTopTabNavigator } from '../Exhibition/PastExhibitionTopTa
 import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
 import * as SVGs from '../../assets/SVGs';
 import { ViewListsScreen } from '../../screens/Lists/ViewLists';
-import { TextElement } from '../../components/Elements/TextElement';
-import { FullListScreen } from '../../screens/Lists/FullListScreen';
 import { UIStoreContext } from '../../state';
 import { ListTopTab } from '../List/ListTopTab';
+import { IconButton } from 'react-native-paper';
 
 export const UserStack = createStackNavigator();
 
 
+export const viewOptionsStyles = StyleSheet.create({
+  viewOptionsButtonStyle: {
+    opacity: 0.9,
+    height: 24,
+    width: 24,
+    marginRight: 24,
+    borderRadius: 0,
+    color: Colors.PRIMARY_50,
+  },
+});
+
+
 export function UserStackNavigator({route} : {route: any}) {
   const {uiState} = React.useContext(UIStoreContext);
+
+  const shareList = async () => {
+    if (!uiState.listUrl) return;
+    try {
+      await Share.open({
+        url: uiState.listUrl
+        // message: state.exhibitionShareDetails.shareURLMessage ?? "",
+      });
+    } catch (error) {
+
+    }
+
+  }
   return (
     <UserStack.Navigator screenOptions={{
       headerTintColor: PRIMARY_950,
@@ -96,6 +122,14 @@ export function UserStackNavigator({route} : {route: any}) {
                 backgroundColor: Colors.PRIMARY_950, 
                 opacity: 0.9,
               }, 
+              headerRight: () => (
+                <IconButton 
+                  icon={"export-variant"}
+                  iconColor={Colors.PRIMARY_50}
+                  style={viewOptionsStyles.viewOptionsButtonStyle}
+                  onPress={() => shareList()}
+                />
+              ),
               headerBackImage: () => (
                 <View style={backButtonStyles.backButton}>
                   <SVGs.BackButtonIconWhite />

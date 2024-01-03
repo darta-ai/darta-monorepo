@@ -17,6 +17,7 @@ import { ETypes, StoreContext } from '../../state/Store';
 import { deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
 import * as SVGs from '../../assets/SVGs/index';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 export const currencyConverter = {
   USD: '$',
@@ -270,8 +271,9 @@ export function TombstonePortrait({
             scrollToOverflowEnabled={false}
             centerContent>
             <View style={SSTombstonePortrait.imageContainer}>
-              <FastImage
-                source={{uri: artwork?.artworkImage?.value!}}
+              <DartaImageComponent
+                uri={artwork?.artworkImage?.value!}
+                priority={FastImage.priority.normal}
                 style={SSTombstonePortrait.image}
                 resizeMode={FastImage.resizeMode.contain}
               />

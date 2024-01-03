@@ -24,6 +24,7 @@ import { readGallery } from '../../api/galleryRoutes';
 import { TextElementMultiLine } from '../../components/Elements/TextElement';
 import { DartaIconButtonWithText } from '../../components/Darta/DartaIconButtonWithText';
 import * as SVGs from '../../assets/SVGs';
+import { DartaImageComponent } from '../../components/Images/DartaImageComponent';
 
 const exhibitionDetailsStyles = StyleSheet.create({
     container: {
@@ -498,8 +499,9 @@ export function ExhibitionDetailsScreen({
                     </View>
                     <View style={exhibitionDetailsStyles.heroImageContainer}>
                         <Surface elevation={2} style={{backgroundColor: 'transparent'}}>
-                            <FastImage 
-                            source={{uri: currentExhibition?.exhibitionPrimaryImage?.value!}}
+                            <DartaImageComponent 
+                            uri={currentExhibition?.exhibitionPrimaryImage?.value! ?? ""}
+                            priority={FastImage.priority.normal}
                             style={exhibitionDetailsStyles.heroImage}
                             resizeMode={FastImage.resizeMode.contain}
                             />

@@ -16,6 +16,7 @@ export interface UiState {
     shareURL: string,
     shareURLMessage: string,
   }
+  listUrl: string | undefined;
 }
 
 export enum UiETypes {
@@ -25,6 +26,7 @@ export enum UiETypes {
   setTombstoneHeader = 'SET_TOMBSTONE_HEADER',
   setUserExhibitionHeader = 'SET_USER_EXHIBITION_HEADER',
   setListHeader = 'SET_LIST_HEADER',
+  setListURL = 'SET_LIST_URL',
   setExhibitionShareURL = 'SET_EXHIBITION_SHARE_URL',
 }
 
@@ -41,6 +43,7 @@ interface UiIAction {
     shareURL: string,
     shareURLMessage: string,
   },
+  listUrl?: string;
 }
 
 // Define the initial state
@@ -51,6 +54,7 @@ const initialUIState: UiState = {
   currentArtworkTombstoneHeader: undefined,
   userExhibitionHeader: undefined,
   listHeader: undefined,
+  listUrl: undefined  
 };
 
 // Define the reducer function
@@ -106,6 +110,14 @@ const uiReducer = (state: UiState, action: UiIAction): UiState => {
           ...state,
           listHeader: action.listHeader,
         };
+      case UiETypes.setListURL:
+          if (!action.listUrl) {
+            return state;
+          }
+          return {
+            ...state,
+            listUrl: action.listUrl,
+          };
       case UiETypes.setExhibitionShareURL:
           if (!action?.exhibitionShareDetails){
             return state;

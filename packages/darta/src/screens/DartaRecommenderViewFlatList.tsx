@@ -185,18 +185,6 @@ export function DartaRecommenderViewFlatList({
     }
   };
 
-  const findTallestArtwork = React.useCallback((artworks: Artwork[]) => {   
-    let tallestArtworkLength = 0
-    artworks.forEach(artwork => {
-      if (Number(artwork.artworkDimensions?.heightIn.value!) > tallestArtworkLength!){
-        tallestArtworkLength = Number(artwork.artworkDimensions?.heightIn.value!)
-      }
-    })
-    return Math.max(tallestArtworkLength, 96)
-    // return largestArtWidthPixels
-  }, [])
-
-
   const findLongestArtwork = React.useCallback((artworks: Artwork[]) => {
     const backgroundWidthInches = 96 * (backgroundContainerDimensionsPixels.width / backgroundContainerDimensionsPixels.height);
     const pixelsPerInchWidth = backgroundContainerDimensionsPixels.width / backgroundWidthInches;
@@ -654,7 +642,7 @@ const saveWiggle = React.useCallback(async () => {
         }),
       ]).start(async () => {
         if(!currentArtRating[RatingEnum.save]) {
-          toggleArtForward()
+          // toggleArtForward()
         }
         Animated.sequence([
           Animated.timing(wiggleAnim, {

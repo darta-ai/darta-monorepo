@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { ETypes, StoreContext, UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes } from '../../state';
+import { ETypes, StoreContext, UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes } from '../../state';
 import * as Linking from 'expo-linking';
-import { ExhibitionRootEnum } from '../../typing/routes';
+import { ExhibitionRootEnum, UserRoutesEnum } from '../../typing/routes';
 import { readExhibition, readMostRecentGalleryExhibitionForUser } from '../../api/exhibitionRoutes';
 import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
 import { createGalleryRelationshipAPI } from '../../utils/apiCalls';
+import { readListForUser } from '../../api/listRoutes';
 
 
 export function useDeepLinking(navigation) {
   const {dispatch} = React.useContext(StoreContext);
   const {uiDispatch} = React.useContext(UIStoreContext);
   const {galleryDispatch} = React.useContext(GalleryStoreContext);
+  const {exhibitionDispatch} = React.useContext(ExhibitionStoreContext);
 
 
 
@@ -27,8 +29,8 @@ export function useDeepLinking(navigation) {
             type: UiETypes.setCurrentHeader,
             currentExhibitionHeader: exhibition.exhibitionTitle.value!,
           })
-        dispatch({
-            type: ETypes.saveExhibition,
+          exhibitionDispatch({
+            type: ExhibitionETypes.saveExhibition,
             exhibitionData: exhibition,
         })
         dispatch({
@@ -65,8 +67,8 @@ async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: st
         type: UiETypes.setCurrentHeader,
         currentExhibitionHeader: exhibition.exhibitionTitle.value!,
       })
-      dispatch({
-          type: ETypes.saveExhibition,
+      exhibitionDispatch({
+          type: ExhibitionETypes.saveExhibition,
           exhibitionData: exhibition,
       })
       dispatch({
@@ -83,6 +85,18 @@ async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: st
       }
   } catch (error: any){
       console.log(error)
+  }
+}
+
+async function fetchListById({listId} : {listId: string}){
+  try {
+    const list = await readListForUser({ listId })
+    dispatch({
+      type: ETypes.setUserLists,
+      userLists: list,
+    })
+  } catch (error: any){
+    console.log(error)
   }
 }
 
@@ -126,6 +140,14 @@ async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: st
           }
       });
       }
+    } else if (params && params.listId) {
+      await fetchListById({listId: params.listId.toString()})
+      navigation.navigate('Profile', {
+        screen: UserRoutesEnum.userListFull,
+        params: {
+          listId: params.listId.toString(),
+        }
+    });
     } else {
         return
       } 

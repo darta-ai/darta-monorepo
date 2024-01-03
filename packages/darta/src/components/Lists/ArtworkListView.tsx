@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View, Animated, Pressable, ActivityIndicator} from 'react-native';
+import {StyleSheet, View, Animated, Pressable, ActivityIndicator, TouchableOpacity} from 'react-native';
 import {Platform, Linking} from 'react-native';
 
 import {ScrollView} from 'react-native-gesture-handler';
@@ -19,7 +19,8 @@ import * as SVGs from '../../assets/SVGs/index';
 import { DartaIconButtonWithText } from '../Darta/DartaIconButtonWithText';
 import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 import { Swipeable } from 'react-native-gesture-handler';
-import { Button } from 'react-native-paper';
+import { Icon } from 'react-native-elements';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 export const currencyConverter = {
   USD: '$',
@@ -129,14 +130,12 @@ export function ArtworkListView({
   gallery, 
   exhibition,
   inquireAlert,
-  navigation,
   onDelete,
 }: {
   artwork: Artwork,
   gallery: GalleryForList,
   exhibition: ExhibitionForList,
   inquireAlert: ({artwork, gallery, exhibition} : {artwork: Artwork, gallery: GalleryForList, exhibition: ExhibitionForList}) => void,
-  navigation: any,
   onDelete: ({artworkId} : {artworkId: string}) => Promise<boolean>,
 }) {
 
@@ -241,11 +240,15 @@ export function ArtworkListView({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: hp('85%'),
+        width: wp('25%'),
+        height: '100%',
         backgroundColor: Colors.PRIMARY_100
       },
       buttonWidth: {
-        width: wp('35%')
+        width: wp('20%'),
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
       },
       textColor: {
         color: Colors.PRIMARY_50
@@ -254,18 +257,13 @@ export function ArtworkListView({
   
     return (
       <Animated.View style={styles.container}>
-        <View >
-          <Button 
-            onPress={handleDelete}
-            icon="delete"
-            mode="text"
-            loading={loadingDelete}
-            textColor={Colors.PRIMARY_50}
-            buttonColor={Colors.PRIMARY_950}
-            style={styles.buttonWidth}>
-            <TextElement style={styles.textColor}>Remove</TextElement>
-          </Button>
-        </View>
+        <TouchableOpacity style={styles.buttonWidth} onPress={handleDelete}>
+            {loadingDelete ? (
+              <ActivityIndicator size="small"/>
+            ) : (
+              <Icon name="delete" solid={false}/>
+            )}
+        </TouchableOpacity>
       </Animated.View>
     );
   };
@@ -317,8 +315,9 @@ export function ArtworkListView({
               scrollToOverflowEnabled={false}
               centerContent>
               <View style={SSTombstonePortrait.imageContainer}>
-                <FastImage
-                  source={{uri: artwork?.artworkImage?.value!}}
+                <DartaImageComponent
+                  uri= {artwork?.artworkImage?.value!}
+                  priority={FastImage.priority.normal}
                   style={SSTombstonePortrait.image}
                   resizeMode={FastImage.resizeMode.contain}
                   onLoadStart={() => setIsLoading(true)}

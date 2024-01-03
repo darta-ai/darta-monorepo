@@ -26,6 +26,7 @@ import { DartaIconButtonWithText } from '../../components/Darta/DartaIconButtonW
 import * as SVGs from '../../assets/SVGs';
 import { UIStoreContext, UiETypes, GalleryStoreContext, ETypes, StoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes } from '../../state';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
+import { DartaImageComponent } from '../../components/Images/DartaImageComponent';
 
 
 const galleryDetailsStyles = StyleSheet.create({
@@ -562,8 +563,9 @@ export function ExhibitionGalleryScreen({
           </View>
           {gallery?.galleryLogo?.value && (
             <View style={galleryDetailsStyles.galleryLogoContainer}>
-              <FastImage 
-              source={{uri: gallery?.galleryLogo?.value ?? ""}}
+              <DartaImageComponent 
+              uri={gallery?.galleryLogo?.value ?? ""}
+              priority={FastImage.priority.normal}
               style={galleryDetailsStyles.heroImage}
               resizeMode={FastImage.resizeMode.contain}
               />

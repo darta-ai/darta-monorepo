@@ -11,7 +11,7 @@ import { FailureToast } from '../Toasts/FailureToast';
 
 const addToListStyles = StyleSheet.create({
     container: {
-        height: hp('40%'),
+        height: hp('25%'),
         width: wp('90%'),
         padding: 24,
         alignSelf: 'center',
@@ -117,7 +117,7 @@ export function NewListModal({
                     }}
                     />
                     {errorText && <TextElement>{errorText}</TextElement>}
-                    <View style={addToListStyles.switchContainer}>
+                    {/* <View style={addToListStyles.switchContainer}>
                         <View style={{width: '70%'}}>
                             <TextElement style={addToListStyles.switchTextHeader}>Private</TextElement>
                             <TextElementMultiLine style={addToListStyles.switchTextDescription}>When private, you can share this list but other users cannot</TextElementMultiLine>
@@ -129,7 +129,7 @@ export function NewListModal({
                             },
                         }}
                         value={isPrivate} onValueChange={setIsPrivate} />
-                    </View>
+                    </View> */}
 
                     <Button style={addToListStyles.createButton} onPress={saveList} mode={'outlined'}>
                         <TextElement style={addToListStyles.buttonText}>Create</TextElement>

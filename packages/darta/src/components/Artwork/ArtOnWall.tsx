@@ -423,6 +423,7 @@ export function ArtOnWall({
                                 style={galleryStylesPortraitDynamic.artwork}
                                 resizeMode={FastImage.resizeMode.contain}
                                 onLoad={handleImageLoad}
+                                
                               />
                             </Animated.View>
                             {!isLoaded && (<SkeletonLoader height={galleryStylesPortraitDynamic.artwork.height} width={galleryStylesPortraitDynamic.artwork.width} />)}

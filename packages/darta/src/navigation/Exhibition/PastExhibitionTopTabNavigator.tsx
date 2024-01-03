@@ -6,6 +6,7 @@ import {StoreContext} from '../../state/Store';
 import {ExhibitionRootEnum, PreviousExhibitionRootEnum} from '../../typing/routes';
 import {ExhibitionDetailsScreen, ExhibitionArtworkScreen} from '../../screens/Exhibition'
 import { tabBarScreenOptions } from '../../theme/themeConstants';
+import { ExhibitionStoreContext } from '../../state';
 
 export const PreviousExhibitionStackTopTab = createMaterialTopTabNavigator();
 export type PreviousExhibitionStackParamList = {
@@ -20,14 +21,15 @@ export type PreviousExhibitionStackParamList = {
 export function PastExhibitionTopTabNavigator({route} : {route: any}) {
 
   const {state} = useContext(StoreContext);
+  const {exhibitionState} = useContext(ExhibitionStoreContext);
   let exhibitionId = "";
   if (route?.params?.exhibitionId){
     exhibitionId = route.params.exhibitionId;
   }
 
   let pastExhibitionTitle = 'past exhibition'
-  if (exhibitionId && state.exhibitionData && state.exhibitionData[exhibitionId] && state.exhibitionData[exhibitionId].exhibitionTitle){
-    pastExhibitionTitle = state.exhibitionData[exhibitionId].exhibitionTitle.value!
+  if (exhibitionId && exhibitionState.exhibitionData && exhibitionState.exhibitionData[exhibitionId] && exhibitionState.exhibitionData[exhibitionId].exhibitionTitle){
+    pastExhibitionTitle = exhibitionState.exhibitionData[exhibitionId].exhibitionTitle.value!
   }
 
 

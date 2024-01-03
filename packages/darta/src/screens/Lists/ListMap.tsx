@@ -1,29 +1,48 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet, ScrollView, RefreshControl} from 'react-native';
+import {View, StyleSheet } from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import * as Location from 'expo-location';
 
 import * as Colors from '@darta-styles';
 import { mapStylesJson } from '../../utils/mapStylesJson';
-import {ETypes, StoreContext} from '../../state/Store';
+import {StoreContext} from '../../state/Store';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
-import { CoordinateFields, ExhibitionDates, ExhibitionMapPin, IBusinessLocationData, IOpeningLocationData, Images, MapPinCities, PublicFields, ReceptionDates } from '@darta-types';
+import { ExhibitionDates, ExhibitionMapPin, Images, MapPinCities, PrivateFields, PublicFields, ReceptionDates } from '@darta-types';
 import CustomMarkerList from '../../components/Previews/CustomMarkerList';
-import { listExhibitionPinsByCity } from "../../api/locationRoutes";
-import { UserStoreContext } from '../../state';
+import { TextElement } from '../../components/Elements/TextElement';
 
 
 const exploreMapStyles = StyleSheet.create({
     container: {
-        height: '95%',
+        height: '75%',
         width: wp('100%'),
         backgroundColor: Colors.PRIMARY_100,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
     },
+    textContainer: {
+      height: '100%',
+      width: wp('100%'),
+      backgroundColor: Colors.PRIMARY_100,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+  },
+    textHeader:{
+      color: Colors.PRIMARY_950,
+      fontSize: 20,
+      marginBottom: 24,
+      fontFamily: 'DMSans',
+    },
+    text:{
+      color: Colors.PRIMARY_950,
+      fontSize: 14,
+      marginBottom: 24,
+      fontFamily: 'DMSans',
+    },
     mapContainer: {
-      backgroundColor: 'black',
+      // backgroundColor: 'black',
       height: hp('100%'),
       width: wp('100%'),
       display: 'flex',
@@ -53,14 +72,17 @@ export function ListMap({
     navigation?: any;
     route: any;
 }) {
-  const {state, dispatch} = useContext(StoreContext);
-  const [currentLocation] = React.useState<MapPinCities>(MapPinCities.newYork)
-  const [mapRegion, setMapRegion] = React.useState({
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.06,
-    latitude: 40.709, 
-    longitude: -73.990
-  })
+  const {state} = useContext(StoreContext);
+  const [mapRegion, setMapRegion] = React.useState<any>()
+
+  React.useEffect(()=>{
+    setMapRegion({
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.06,
+      latitude: 40.719, 
+      longitude: -73.990
+    })
+  }, [])
 
   const [exhibitionPins, setExhibitionPins] = React.useState<{[key: string] :ExhibitionMapPin}>({})
 
@@ -68,17 +90,21 @@ export function ListMap({
     if (state.userLists && state.userLists[route.params.listId]){
       const list = state.userLists[route.params.listId]
       const listArtwork = list.artwork
-      let maxLongitude = 40.709;
-      let maxLatitude = -73.990;
+      let minLat = Number.MAX_VALUE;
+      let maxLat = -Number.MAX_VALUE;
+      let minLng = Number.MAX_VALUE;
+      let maxLng = -Number.MAX_VALUE;
+
       const formattedListPins: ExhibitionMapPin[] = Object.values(listArtwork).map((artwork) => {
-        // console.log(artwork.exhibition.exhibitionLocation)
-        if (artwork.exhibition?.exhibitionLocation?.coordinates?.latitude?.value && artwork.exhibition?.exhibitionLocation?.coordinates?.longitude?.value){
-          if (Number(artwork.exhibition?.exhibitionLocation?.coordinates?.latitude?.value) > maxLongitude){
-            maxLongitude = Number(artwork.exhibition?.exhibitionLocation?.coordinates?.latitude?.value)
-          }
-          if (Number(artwork.exhibition?.exhibitionLocation?.coordinates?.longitude?.value) > maxLatitude){
-            maxLatitude = Number(artwork.exhibition?.exhibitionLocation?.coordinates?.longitude?.value)
-          }
+        const latitude = Number(artwork.exhibition?.exhibitionLocation?.coordinates?.latitude?.value);
+        const longitude = Number(artwork.exhibition?.exhibitionLocation?.coordinates?.longitude?.value);
+
+        if(latitude && longitude){
+          // Update min and max values
+          minLat = Math.min(minLat, latitude);
+          maxLat = Math.max(maxLat, latitude);
+          minLng = Math.min(minLng, longitude);
+          maxLng = Math.max(maxLng, longitude);
         }
         if (!artwork.exhibition?.isCurrentlyShowing) return {} as ExhibitionMapPin
         return {
@@ -98,7 +124,7 @@ export function ListMap({
               }, 
               googleMapsPlaceId: { value: ""}
             }, 
-            locationString: artwork.exhibition?.exhibitionLocation?.locationString as PublicFields,
+            locationString: artwork.exhibition?.exhibitionLocation?.locationString as PrivateFields,
           },
           exhibitionPrimaryImage: artwork.artwork?.artworkImage as Images,
           galleryName: artwork.gallery?.galleryName as PublicFields,
@@ -110,12 +136,28 @@ export function ListMap({
         }
       })
 
-      setMapRegion({
-        ...mapRegion,
-        latitude: maxLongitude,
-        longitude: maxLatitude
-      })
+              // Calculate center and delta
+        const centerLat = (minLat + maxLat) / 2;
+        const centerLng = (minLng + maxLng) / 2;
+        const latitudeDelta = maxLat - minLat + 0.05; // Added padding
+        const longitudeDelta = maxLng - minLng + 0.05; // Added padding
 
+        // Set the map region
+        if (centerLat && centerLng && latitudeDelta && longitudeDelta){
+          setMapRegion({
+            latitude: centerLat,
+            longitude: centerLng,
+            latitudeDelta,
+            longitudeDelta
+          });
+        } else {
+          setMapRegion({
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.06,
+            latitude: 40.719, 
+            longitude: -73.990
+          })
+        }
       const objectPins = formattedListPins.reduce((accumulator, artwork) => {
         // Use artworkId as a unique key for each artwork
         const key = artwork.exhibitionId;
@@ -135,21 +177,17 @@ export function ListMap({
         return;
       }
     })();
-  }, [state.mapPins])
+  }, [state.userLists]);
 
-  const [refreshing, setRefreshing] = React.useState(false);
-  const onRefresh = React.useCallback(async () => {
-    setRefreshing(true);
-    try{
-      const exhibitionMapPins = await listExhibitionPinsByCity({cityName: currentLocation})
-      dispatch({type: ETypes.saveExhibitionMapPins, mapPins: exhibitionMapPins, mapPinCity: currentLocation})
-    } catch {
+  const [showPins, setShowPins] = React.useState<boolean>(true)
 
+  React.useEffect(()=> {
+    if (exhibitionPins && Object.values(exhibitionPins).length > 0 ){
+      setShowPins(true)
+    }else{
+      setShowPins(false)
     }
-  setTimeout(() => {
-      setRefreshing(false);
-  }, 500)  }, []);
-
+  },[exhibitionPins])
 
   const handleMarkerPress = React.useCallback((event) => {
     setMapRegion({
@@ -162,11 +200,11 @@ export function ListMap({
     setMapRegion(event);
   }, []);
   
-
-  return (
-    <ScrollView refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>
-        <View style={exploreMapStyles.container}>
-          <View style={exploreMapStyles.mapContainer}>
+  if (showPins){
+    return (
+      <View style={exploreMapStyles.container}>
+        <View style={exploreMapStyles.mapContainer}>
+          {mapRegion && showPins && (
             <MapView  
               provider={PROVIDER_GOOGLE}
               style={ exploreMapStyles.mapView }
@@ -176,8 +214,7 @@ export function ListMap({
               onRegionChangeComplete={handleRegionChangeComplete}
               showsUserLocation={true}
               >
-                {exhibitionPins && Object.values(exhibitionPins).length > 0 
-                && Object.values(exhibitionPins).map((pin: ExhibitionMapPin) => {
+                {showPins && Object.values(exhibitionPins).map((pin: ExhibitionMapPin) => {
                   if(pin?.exhibitionLocation?.coordinates?.latitude 
                     && pin?.exhibitionLocation?.coordinates?.longitude){
                       return (
@@ -191,9 +228,19 @@ export function ListMap({
                     )
                   } 
                 })}
-              </MapView>
-          </View>
+            </MapView>
+          )}
         </View>
-    </ScrollView>
-  );
+      </View>
+    );
+  } else if (!showPins) {
+    return(
+      <View style={exploreMapStyles.textContainer}>
+        <TextElement style={exploreMapStyles.textHeader}>No artwork from list currently on display</TextElement>
+        <TextElement style={exploreMapStyles.text}>Add more artwork to the list to develop a custom map</TextElement>
+      </View>
+
+    )
+  }
+
 }
