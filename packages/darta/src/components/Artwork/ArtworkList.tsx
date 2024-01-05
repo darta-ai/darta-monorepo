@@ -7,6 +7,7 @@ import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview
 import * as Colors from '@darta-styles';
 import {Artwork} from '@darta-types'
 import ArtworkCard from '../../components/Artwork/ArtworkCard'
+import { TextElement } from '../Elements/TextElement';
 
 
 const artworkDetailsStyles = StyleSheet.create({
@@ -83,8 +84,20 @@ export function ArtworkListComponent({
       dim.height = 240 + 36;
     }
   );
-  
 
+  console.log({artworkData})
+  
+  if (artworkData.length === 0){
+    return (
+    <View style= {{backgroundColor: Colors.PRIMARY_50, alignItems: 'center', justifyContent: 'center', gap: 24, height: '100%'}}>
+        <TextElement style={{ fontFamily: 'DMSans_700Bold', fontSize: 24 }}>
+          Preview unavailable 
+        </TextElement>
+        <TextElement style={{fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_950}}>Please check back soon</TextElement>
+      </View>
+  )
+  }
+  else if (artworkData.length !== 0){
   return (
     <>
       <View style={artworkDetailsStyles.container}>
@@ -114,6 +127,7 @@ export function ArtworkListComponent({
       </View>
     </>
   );
+            }
 }
 
 export const ArtworkList =  React.memo(ArtworkListComponent, (prevProps, nextProps) => {
@@ -126,4 +140,4 @@ export const ArtworkList =  React.memo(ArtworkListComponent, (prevProps, nextPro
     prevProps.navigateTo === nextProps.navigateTo &&
     prevProps.navigateToParams === nextProps.navigateToParams
   );
-});
+})

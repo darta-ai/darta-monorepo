@@ -15,7 +15,8 @@ import { TextElement } from '../../components/Elements/TextElement';
 
 const container = StyleSheet.create({
     textContainer: {
-        backgroundColor: Colors.PRIMARY_100,
+        backgroundColor: Colors.PRIMARY_50,
+        height: '100%',
     },
     flexTextContainer: {
         height: '100%',
@@ -112,7 +113,16 @@ export function FullListScreen({
 
     React.useEffect(() => {
         if (fullArtwork) {
-            const sortedArtworks = Object.values(fullArtwork)
+            const sortedArtworks = Object.values(fullArtwork).sort((a, b) => {
+                if (a.exhibition?.exhibitionDates?.exhibitionEndDate?.value && b.exhibition?.exhibitionDates?.exhibitionEndDate?.value) {
+                    const bEnd = new Date(b.exhibition?.exhibitionDates?.exhibitionEndDate?.value)
+                    const aEnd = new Date(a.exhibition?.exhibitionDates?.exhibitionEndDate?.value)
+                    if (bEnd > aEnd) return 1
+                    else if (bEnd < aEnd) return -1
+                    else return 0
+                }
+                else return 0
+            })
             if (sortedArtworks.length === 0) setNoArtwork(true)
             else {
                 setDataProvider(dataProvider.cloneWithRows(sortedArtworks));

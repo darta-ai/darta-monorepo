@@ -14,7 +14,7 @@ import { listExhibitionPinsByCity } from "../../api/locationRoutes";
 
 const exploreMapStyles = StyleSheet.create({
     container: {
-        height: '95%',
+        height: '100%',
         width: wp('100%'),
         backgroundColor: Colors.PRIMARY_100,
         flexDirection: 'column',

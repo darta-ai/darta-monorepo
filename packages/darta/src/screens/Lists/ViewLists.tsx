@@ -1,12 +1,15 @@
 import React from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, Animated, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import * as Colors from '@darta-styles';
-import { StoreContext } from '../../state/Store';
+import { ETypes, StoreContext } from '../../state/Store';
 import { UserListComponent } from '../../components/Gallery/UserListComponent';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 import { UserRoutesEnum } from '../../typing/routes';
-import { UIStoreContext, UiETypes } from '../../state';
+import { UIStoreContext, UiETypes, UserStoreContext } from '../../state';
+import { Icon } from 'react-native-elements';
+import { Swipeable } from 'react-native-gesture-handler';
+import { deleteListAPI } from '../../api/listRoutes';
 
 const addToListStyles = StyleSheet.create({
     container: {
@@ -84,8 +87,9 @@ export function ViewListsScreen({
     navigation?: any;
     route: any;
 }) {
-    const {state} = React.useContext(StoreContext);
+    const {state, dispatch} = React.useContext(StoreContext);
     const {uiDispatch} = React.useContext(UIStoreContext);
+    const {userDispatch} = React.useContext(UserStoreContext);
 
     const handlePress = ({listId} : {listId: string}) => {
         if(!state.userListPreviews) return;
@@ -127,14 +131,85 @@ export function ViewListsScreen({
     const rowRenderer = (_, listPreview) => {
         return (
             <View key={listPreview?._id}>
-                <UserListComponent 
-                    listPreview={listPreview}
-                    isAdding={false}
-                    handlePress={handlePress}
-                />
+                <Swipeable renderRightActions={(dragX) => renderRightActions(_, dragX, listPreview?._id)}> 
+                    <UserListComponent 
+                        listPreview={listPreview}
+                        isAdding={false}
+                        handlePress={handlePress}
+                    />
+                </Swipeable>
             </View>
         );
     };
+
+    const [loadingDelete, setLoadingDelete] = React.useState(false);
+
+    const handleDelete = async (listId) => {
+        Alert.alert("Delete List", "Are you sure you want to delete this list?", [
+            {
+                text: "Cancel",
+                style: "cancel",
+            },
+            {
+                text: "Delete",
+                onPress: async () => {
+                    setLoadingDelete(true);
+
+                    console.log('here', {listId})
+                    if (listId) {
+                        await deleteListAPI({listId});
+                        dispatch({
+                            type: ETypes.deleteList,
+                            listId,
+                        })
+                        setLoadingDelete(false);
+                    }
+                    // navigation.goBack()
+                },
+            },
+        ]);
+    }
+
+    const renderRightActions = (_, dragX, listId) => {
+      
+        const trans = dragX.interpolate({
+          inputRange: [-50, 0],  // Start from -100 (fully swiped to the right) to 0 (no swipe)
+          outputRange: [0, 0], // Corresponding translation: start off-screen and move to fully visible
+          extrapolate: 'clamp',   // Clamps the output to the specified range
+        });
+        const styles = StyleSheet.create({
+          container: {
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: wp('20%'),  // Adjust as needed
+            height: '100%',
+            backgroundColor: Colors.PRIMARY_400,
+            transform: [{ translateX: trans }],  // Ensure this moves as expected
+          },
+          buttonWidth: {
+            width: '100%',  // Adjust as needed
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+          textColor: {
+            color: Colors.PRIMARY_50,  // Ensure good contrast
+          }
+        });
+    
+        return (
+          <Animated.View style={styles.container}>
+            <TouchableOpacity style={styles.buttonWidth} onPress={() => handleDelete(listId)}>
+                {loadingDelete ? (
+                  <ActivityIndicator size="small"/>
+                ) : (
+                  <Icon name="delete" solid={false}/>
+                )}
+            </TouchableOpacity>
+          </Animated.View>
+        );
+      };
 
     return (
         <View style={addToListStyles.container}>

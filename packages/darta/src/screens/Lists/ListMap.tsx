@@ -14,7 +14,7 @@ import { TextElement } from '../../components/Elements/TextElement';
 
 const exploreMapStyles = StyleSheet.create({
     container: {
-        height: '75%',
+        height: hp('75%'),
         width: wp('100%'),
         backgroundColor: Colors.PRIMARY_100,
         flexDirection: 'column',
@@ -42,22 +42,12 @@ const exploreMapStyles = StyleSheet.create({
       fontFamily: 'DMSans',
     },
     mapContainer: {
-      // backgroundColor: 'black',
       height: hp('100%'),
       width: wp('100%'),
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
   },
-    buttonContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      alignItems: 'center',
-      width: wp('100%'),
-      margin: hp('1%'),
-      height: hp('5%'),
-    }, 
   mapView: {
     alignSelf: 'stretch', 
     height: '100%' 
@@ -73,7 +63,12 @@ export function ListMap({
     route: any;
 }) {
   const {state} = useContext(StoreContext);
-  const [mapRegion, setMapRegion] = React.useState<any>()
+  const [mapRegion, setMapRegion] = React.useState<any>({
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.06,
+    latitude: 40.719, 
+    longitude: -73.990
+  })
 
   React.useEffect(()=>{
     setMapRegion({
@@ -82,9 +77,12 @@ export function ListMap({
       latitude: 40.719, 
       longitude: -73.990
     })
+    setMapRegion(mapRegion)
   }, [])
 
   const [exhibitionPins, setExhibitionPins] = React.useState<{[key: string] :ExhibitionMapPin}>({})
+
+
 
   React.useEffect(() => {
     if (state.userLists && state.userLists[route.params.listId]){
@@ -179,7 +177,7 @@ export function ListMap({
     })();
   }, [state.userLists]);
 
-  const [showPins, setShowPins] = React.useState<boolean>(true)
+  const [showPins, setShowPins] = React.useState<boolean>(false)
 
   React.useEffect(()=> {
     if (exhibitionPins && Object.values(exhibitionPins).length > 0 ){

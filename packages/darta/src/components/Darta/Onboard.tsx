@@ -88,34 +88,13 @@ export const Onboard = () => {
         )}
         {step === 1 && (
             <View style={onboardStyles.overlay}>
-                <TextElement style={onboardStyles.headerTextElement}>Pinch, tap, and swipe this screen</TextElement>
+                <TextElement style={onboardStyles.headerTextElement}>Tap and swipe this screen</TextElement>
                 <SVGs.SwipeIcon />
                 <TextElement style={onboardStyles.bodyTextElement}>Swipe right and left to browse artwork</TextElement>
+                <TextElement style={onboardStyles.bodyTextElement}>Tap to artwork more details</TextElement>
                 <View style={onboardStyles.buttonContainer}>
                     <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step - 1)}><TextElement style={onboardStyles.buttonTextColor}>Back</TextElement></Button>
-                    <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step + 1)}><TextElement style={onboardStyles.buttonTextColor}>Next</TextElement></Button>
-                </View>
-            </View>
-        )}
-        {step === 2 && (
-            <View style={onboardStyles.overlay}>
-                <TextElement style={onboardStyles.headerTextElement}>Like what you like</TextElement>
-                <View style={{transform: [{rotate: '180deg'}]}}><SVGs.ThumbsDownIntroSizeIcon /></View>
-                <TextElement style={onboardStyles.bodyTextElement}>This helps us understand your tastes</TextElement>
-                <View style={onboardStyles.buttonContainer}>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step - 1)}><TextElement style={onboardStyles.buttonTextColor}>Back</TextElement></Button>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step + 1)}><TextElement style={onboardStyles.buttonTextColor}>Next</TextElement></Button>
-                </View>
-            </View>
-        )}
-        {step === 3 && (
-            <View style={onboardStyles.overlay}>
-                <TextElement style={onboardStyles.headerTextElement}>See something you love? </TextElement>
-                <SVGs.BookmarkIcon />
-                <TextElement style={onboardStyles.bodyTextElement}>Save it for later. You'll find it on your profile tab</TextElement>
-                <View style={onboardStyles.buttonContainer}>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step - 1)}><TextElement style={onboardStyles.buttonTextColor}>Back</TextElement></Button>
-                <Button style={onboardStyles.buttonStyles} onPress={() => handleClose()}><TextElement style={onboardStyles.buttonTextColor}>Done</TextElement></Button>
+                    <Button style={onboardStyles.buttonStyles} onPress={() => handleClose()}><TextElement style={onboardStyles.buttonTextColor}>Done</TextElement></Button>
                 </View>
             </View>
         )}

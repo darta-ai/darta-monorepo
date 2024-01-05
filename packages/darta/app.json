@@ -5,11 +5,11 @@
     "scheme": "darta",
     "version": "1.2.7",
     "orientation": "portrait",
-    "icon": "./src/assets/darta-icon.png",
+    "icon": "./src/assets/darta-icon-text.png",
     "userInterfaceStyle": "dark",
     "splash": {
       "resizeMode": "contain",
-      "backgroundColor": "#817875"
+      "backgroundColor": "#F8F8F8"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -32,14 +32,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/darta-icon.png",
-        "backgroundColor": "#b58a6a"
+        "foregroundImage": "./src/assets/darta-icon-text.png",
+        "backgroundColor": "#F8F8F8"
       },
       "package": "com.darta.darta",
       "googleServicesFile": "./googleService/GoogleService-Info.plist"
     },
     "web": {
-      "favicon": "./src/assets/darta-icon.png",
+      "favicon": "./src/assets/darta-icon-text.png",
       "config": {
         "firebase": {
           "apiKey": "AIzaSyAdp-GRcbfIrkqxwGC2pvW-bVTNX0PU5m8",

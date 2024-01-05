@@ -13,12 +13,16 @@ import { UserStoreContext } from '../../state/UserStore';
 
 
 export function ArtworkScreen({route, navigation}: {route: any, navigation: any}) {
-  let artOnDisplay: any = null;
-  if (route.params){
-    ({artOnDisplay} = route.params);
-  }
+  const [artOnDisplay, setArtOnDisplay] = React.useState<any>(null)
+  const [saveRoute, setSaveRoute] = React.useState<any>(null)
 
   React.useEffect(() => {
+
+    if (route.params){
+      setArtOnDisplay(route.params.artOnDisplay)
+      setSaveRoute(route.params.saveRoute)
+    }
+
     navigation.getParent()?.setOptions({
       tabBarStyle: {
         display: "none"
@@ -27,11 +31,13 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
     return () => navigation.getParent()?.setOptions({
       tabBarStyle: undefined
     });
+
+      
+
   }, []);
   
   const [dialogVisible, setDialogVisible] = React.useState(false)
 
-  const {state, dispatch} = useContext(StoreContext);
   const {userDispatch} = useContext(UserStoreContext);
   const {galleryState} = useContext(GalleryStoreContext);
   
@@ -62,29 +68,27 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
     if (auth().currentUser === null) {
       return setDialogVisible(true)
     }
-    setSaveLoading(true)
+    // setSaveLoading(true)
+    navigation.navigate(saveRoute, {artwork: artOnDisplay})
     try {
-      await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
-      userDispatch({
-        type: UserETypes.setUserSavedArtworkMulti,
-        artworkIds: {[artworkId]: true},
-      })
-      userDispatch({
-        type: UserETypes.saveArtworkMulti,
-        artworkDataMulti: {[artworkId]: artOnDisplay},
-      })
-      analytics().logEvent('save_artwork_modal', {artworkId})
+      // await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
+      // userDispatch({
+      //   type: UserETypes.setUserSavedArtworkMulti,
+      //   artworkIds: {[artworkId]: true},
+      // })
+      // userDispatch({
+      //   type: UserETypes.saveArtworkMulti,
+      //   artworkDataMulti: {[artworkId]: artOnDisplay},
+      // })
+      // analytics().logEvent('save_artwork_modal', {artworkId})
     } catch(error){
       console.log(error)
     } finally {
-      setSaveLoading(false)
+      // setSaveLoading(false)
     }
   }
 
   const inquireArtwork = async ({artworkId} : {artworkId: string}) => {
-    // if (auth().currentUser === null) {
-    //   return setDialogVisible(true)
-    // }
     try {
       await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE})
       userDispatch({

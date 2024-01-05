@@ -13,6 +13,7 @@ import { NewListModal } from '../../components/Lists/NewListModal';
 import { addArtworkToList } from '../../api/listRoutes';
 import { createUserArtworkRelationship } from '../../api/artworkRoutes';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
+import { Swipeable } from 'react-native-gesture-handler';
 
 const addToListStyles = StyleSheet.create({
     container: {
@@ -144,14 +145,16 @@ export function AddToListScreen({
         }
     
         try {
-            Object.keys(pressedLists).forEach( async (listId) => {
-                await addArtworkToList({ listId, artworkId })
-                dispatch({
-                    type: ETypes.addArtworkToList,
-                    artwork: artwork!,
-                    listId,
-                })
+            const promises = Object.keys(pressedLists).map(listId => {
+                return addArtworkToList({ listId, artworkId }).then((res) => {
+                    console.log('added to list', res)
+                    dispatch({
+                        type: ETypes.setUserLists,
+                        userLists: res
+                    });
+                });
             });
+            Promise.all(promises)
             setIsLoading(false)
             navigation.goBack()
         } catch (error) {

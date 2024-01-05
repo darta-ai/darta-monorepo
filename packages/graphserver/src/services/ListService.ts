@@ -1,4 +1,4 @@
-import { ExhibitionMapPin, FullList, List, ListPreview } from '@darta-types/dist';
+import { ExhibitionMapPin, FullList, List, ListPreview, PreviewArtwork } from '@darta-types/dist';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 
@@ -198,64 +198,61 @@ export class ListService implements IListService {
   }
   
   public async getListPreview({listId}: {listId: string}): Promise<ListPreview> {
-    const fullListId = this.generateListId({id: listId});
-    // get list node 
-    const list = await this.db.collection(CollectionNames.DartaUserLists).document(fullListId);
-
-    if (!list) {
-      throw new Error('!! no list !!');
-    }
-
-    // get user node
-    const userEdge = await this.edgeService.getEdgeWithTo({edgeName: EdgeNames.FROMDartaUserTOList, to: fullListId});
-
-    if (!userEdge) {
-      throw new Error('!! no user edge !!');
-    }
-
-    const user = await this.userService.readDartaUser({uid: userEdge._from});
-
-    // get all artworks from list
-    const edges = await this.edgeService.getEdgesFromNodeWithLimit({
-      edgeName: EdgeNames.FROMListTOArtwork,
-      from: fullListId,
-      limit: 1,
-    });
-
-    if (!edges) {
-      throw new Error('!! no edges for list!!');
-    }
-
-    const artworkIds = edges.sort((a, b) => {
-      if (!a || !b || !a.data || !b.data || !a.data?.listPosition || !b.data?.listPosition) {
-        return 0;
+    try{
+      const fullListId = this.generateListId({id: listId});
+      // get list node 
+      const list = await this.db.collection(CollectionNames.DartaUserLists).document(fullListId);
+  
+      if (!list) {
+        throw new Error('!! no list !!');
       }
-      return a.data.listPosition - b.data.listPosition;
-    }).map((edge) => ({artworkId: edge._to, addedAt: edge?.addedAt}))
-
-    const artworkPromises = artworkIds.map((artwork) => 
-    this.artworkService.readArtworkPreview({artworkId: artwork.artworkId, addedAt: artwork.addedAt}));
-
-    const artwork = await Promise.all(artworkPromises)
-
-    if (!artwork) {
-      throw new Error('!! no artwork !!');
-    }
-
-    return {
-      ...list,
-      creatorName: `${user?.legalFirstName} ${user?.legalLastName}`,
-      creatorProfilePicture: user?.profilePicture?.value,
-      artworkPreviews: artwork.reduce((acc: any, curr: any) => {
-        if (curr) {
-          acc[curr._id] = curr;
+  
+      // get user node
+      const userEdge = await this.edgeService.getEdgeWithTo({edgeName: EdgeNames.FROMDartaUserTOList, to: fullListId});
+  
+      if (!userEdge) {
+        throw new Error('!! no user edge !!');
+      }
+  
+      const user = await this.userService.readDartaUser({uid: userEdge._from});
+  
+      // get all artworks from list
+      const edges = await this.edgeService.getEdgesFromNodeWithLimit({
+        edgeName: EdgeNames.FROMListTOArtwork,
+        from: fullListId,
+        limit: 1,
+      });
+  
+      if (!edges) {
+        throw new Error('!! no edges for list!!');
+      }
+  
+      const artworkIds = edges.sort((a, b) => {
+        if (!a || !b || !a.data || !b.data || !a.data?.listPosition || !b.data?.listPosition) {
+          return 0;
         }
-        return acc;
-      }, {}),
-    };
+        return a.data.listPosition - b.data.listPosition;
+      }).map((edge) => ({artworkId: edge._to, addedAt: edge?.addedAt}))
+
+      let artworkPreview: PreviewArtwork | null = null;
+  
+      if (artworkIds[0].artworkId !== undefined) {
+          artworkPreview = await this.artworkService.readArtworkPreview({artworkId: artworkIds[0].artworkId.toString()});
+        }
+  
+      return {
+        ...list,
+        creatorName: `${user?.legalFirstName} ${user?.legalLastName}`,
+        previewImage: artworkPreview?.artworkImage ?? null,
+      };
+    } catch(e: any){
+      throw new Error(e.message);
+    }
   }
 
-  public async addArtworkToList({listId, artworkId, userUid}: {listId: string, artworkId: string, userUid: string}): Promise<{[key: string] : FullList}> {
+  public async addArtworkToList(
+    {listId, artworkId, userUid}: 
+    {listId: string, artworkId: string, userUid: string}): Promise<{[key: string] : FullList}> {
 
     try{
     const fullListId = this.generateListId({id: listId});
@@ -539,6 +536,7 @@ export class ListService implements IListService {
       isPrivate: list?.isPrivate,
       createdAt: list?.createdAt,
       creator: list?.creator,
+      previewImage: list?.previewImage,
     };
   }
 }

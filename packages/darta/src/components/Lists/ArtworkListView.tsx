@@ -151,6 +151,7 @@ export function ArtworkListView({
 
   React.useEffect(()=> {
     if (exhibition?.exhibitionDates?.exhibitionStartDate.value && exhibition?.exhibitionDates?.exhibitionEndDate.value) {
+      console.log(exhibition?.exhibitionDates?.exhibitionStartDate.value)
       setExhibitionStartDate(customLocalDateStringStart({date: new Date(exhibition?.exhibitionDates?.exhibitionStartDate.value), isUpperCase: false}))
       setExhibitionEndDate(customLocalDateStringEnd({date: new Date(exhibition?.exhibitionDates.exhibitionEndDate.value), isUpperCase: false}));
 
@@ -171,6 +172,10 @@ export function ArtworkListView({
     setLoadingDelete(false)
     setShowSwipeActions(false)
   }
+
+  React.useEffect(() => {
+    setShowSwipeActions(true)
+  },[showSwipeActions])
 
   const handleInquire = () => {
     if (!artwork?._id || !gallery || !exhibition) return;
@@ -223,38 +228,37 @@ export function ArtworkListView({
   }
 
 
-  const renderLeftActions = (_, dragX) => {
+  const renderRightActions = (_, dragX) => {
     if (!showSwipeActions) {
       return null;
     }
   
     const trans = dragX.interpolate({
-      inputRange: [0, 100],
-      outputRange: [-100, 0],
-      extrapolate: 'clamp',
-    });  
-  
+      inputRange: [-50, 0],  // Start from -100 (fully swiped to the right) to 0 (no swipe)
+      outputRange: [0, 0], // Corresponding translation: start off-screen and move to fully visible
+      extrapolate: 'clamp',   // Clamps the output to the specified range
+    });
     const styles = StyleSheet.create({
       container: {
-        transform: [{ translateX: trans }],
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        width: wp('25%'),
+        width: wp('20%'),  // Adjust as needed
         height: '100%',
-        backgroundColor: Colors.PRIMARY_100
+        backgroundColor: Colors.PRIMARY_400,
+        transform: [{ translateX: trans }],  // Ensure this moves as expected
       },
       buttonWidth: {
-        width: wp('20%'),
+        width: '100%',  // Adjust as needed
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
       },
       textColor: {
-        color: Colors.PRIMARY_50
+        color: Colors.PRIMARY_50,  // Ensure good contrast
       }
     });
-  
+
     return (
       <Animated.View style={styles.container}>
         <TouchableOpacity style={styles.buttonWidth} onPress={handleDelete}>
@@ -291,7 +295,7 @@ export function ArtworkListView({
 
   return (
   <View style={{height: hp("90%")}}>
-    <Swipeable renderLeftActions={renderLeftActions}>
+    <Swipeable renderRightActions={renderRightActions}>
           <View style={SSTombstonePortrait.container}>
             <View style={SSTombstonePortrait.textContainer}>
               <View>
@@ -356,7 +360,7 @@ export function ArtworkListView({
               onPress={() => openInMaps(exhibition?.exhibitionLocationString?.value!)}
               />
               <DartaIconButtonWithText 
-              text={`${exhibitionStartDate} - ${exhibitionEndDate}` as string}
+              text={`${exhibitionStartDate && exhibitionStartDate} - ${exhibitionEndDate && exhibitionEndDate}` as string}
               iconComponent={SVGs.CalendarBasicIcon}
               onPress={() => {}}
             />

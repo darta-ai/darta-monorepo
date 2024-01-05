@@ -41,7 +41,10 @@ export function ExhibitionPreviewScreen({
   const {galleryState} = React.useContext(GalleryStoreContext);
 
   const [exhibitionPreviews, setExhibitionPreviews] = React.useState<ExhibitionPreview[]>([])
+  const [errorHeader, setErrorHeader] = React.useState<string>("")
   const [errorText, setErrorText] = React.useState<string>("")
+
+  console.log({exhibitionPreviews})
   
   const sortPreviews = (exhibitionPreviews: ExhibitionPreview[]) => {
     return exhibitionPreviews.sort((a, b) => {
@@ -55,13 +58,16 @@ export function ExhibitionPreviewScreen({
     const screenName = route.name
     switch(screenName) {
       case ExhibitionPreviewEnum.following:
-        setErrorText('No exhibitions to show. Follow more galleries to see their exhibitions here.')
+        setErrorHeader('No exhibitions to show')
+        setErrorText('Follow more galleries to see their exhibitions here.')
         return exhibitionState.userFollowsExhibitionPreviews
       case ExhibitionPreviewEnum.onView:
-        setErrorText('No exhibitions to show. When more exhibitions are on display you will see them here.')
+        setErrorHeader('No exhibitions to show')
+        setErrorText('When more exhibitions are on display you will see them here.')
         return exhibitionState.currentExhibitionPreviews
       case ExhibitionPreviewEnum.forthcoming:
-        setErrorText('No exhibitions to show. When future exhibitions are available you will see them here.')
+        setErrorHeader('No exhibitions to show')
+        setErrorText('When future exhibitions are available you will see them here.')
         return exhibitionState.forthcomingExhibitionPreviews
       default:
         return exhibitionState.exhibitionPreviews
@@ -247,21 +253,22 @@ export function ExhibitionPreviewScreen({
         style={{
           height: hp('40%'),
           width: '100%',
-          backgroundColor: Colors.PRIMARY_600,
+          backgroundColor: Colors.PRIMARY_50,
         }}
         contentContainerStyle={{ 
           flexGrow: 1, 
           display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 24,
+          margin: 24,
           flexDirection: 'column',
-          justifyContent: 'center', 
-          alignItems: 'center' }}
+        }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>  
-          <Image 
-            source={require('../../assets/dartahousewhite.png')}
-            style={dartaLogo.image}
-          />
-          <TextElement style={{margin: 5, color: Colors.PRIMARY_50}}>{errorText}</TextElement>
+          <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_950} onRefresh={onRefresh} />}>  
+          <TextElement style={{ fontFamily: 'DMSans_700Bold', fontSize: 24 }}>{errorHeader}</TextElement>
+          <TextElement style={{fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_950}}>{errorText}</TextElement>
+
         </ScrollView>      
         )}
       {exhibitionPreviews.length > 0 && (

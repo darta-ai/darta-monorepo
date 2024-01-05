@@ -99,6 +99,17 @@ export async function removeArtworkFromList({listId, artworkId}: {listId : strin
   }
 }
 
+export async function deleteListAPI({listId}: {listId : string}): Promise<{[key: string]: FullList} | null> {
+  try {
+    const headers = await generateHeaders()
+    console.log('!!!', {listId})
+    const {data} = await axios.post(`${URL}/deleteList`, {listId}, {headers});
+    return data
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'deleteList'})
+    return null
+  }
+}
 
 
 

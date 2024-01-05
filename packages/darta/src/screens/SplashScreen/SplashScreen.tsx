@@ -6,6 +6,7 @@ import {
   Animated,
   StyleSheet,
   View,
+  Easing,
 } from "react-native";
 import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
 import { ETypes, StoreContext, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes, ViewStoreContext, ViewETypes} from "../../state";
@@ -19,6 +20,8 @@ import analytics from '@react-native-firebase/analytics';
 import { listUserLists } from "../../api/listRoutes";
 import {  } from "../../state";
 import { UserETypes, UserStoreContext } from "../../state/UserStore";
+import { TextElement } from "../../components/Elements/TextElement";
+import { heightPercentageToDP } from "react-native-responsive-screen";
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -38,14 +41,14 @@ function AnimatedSplashScreen({ children }) {
     if (isAppReady) {
       Animated.timing(animation, {
         toValue: 0,
-        duration: 2000,
+        duration: 3000,
         useNativeDriver: true,
       }).start(() => setAnimationComplete(true));
     }
   }, [isAppReady]);
  
 
-  const onImageLoaded = useCallback(async () => {
+  const loadDataAsync = useCallback(async () => {
     try {
       const uid = await getUserUid();
   
@@ -216,18 +219,109 @@ function AnimatedSplashScreen({ children }) {
       // Too minimalist? No title on the image. Need to add the title of the image. 
       
       await SplashScreen.hideAsync();
-
+      setAppReady(true)
     } catch (e) {
       console.log(e);
     } finally {
       setAppReady(true);
     }
   }, []);
-  
 
+
+  const wiggleAnim = React.useRef(new Animated.Value(0)).current; 
+
+  React.useEffect(() => {
+    wiggleAnim.addListener(() => {})
+  }, [])
+
+  useEffect(() => {
+    loadDataAsync(); // This function will load data and set 'isAppReady' to true
+    handleWiggle();
+  }, []);
+
+
+  const handleWiggle = () => {
+    const wiggleSequence = Animated.sequence([
+      Animated.timing(wiggleAnim, {
+        toValue: 0,  // Rotate slightly right
+        duration: 750,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: 0.5,  // Rotate slightly right
+        duration: 750,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: 0,  // Rotate slightly left
+        duration: 750,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: -0.5,  // Rotate slightly left
+        duration: 750,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: 0,  // Rotate slightly left
+        duration: 750,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+    ]);
+  
+    // Continuous loop of wiggle
+    Animated.loop(wiggleSequence).start();
+  };
+
+  // const handleWiggle = async () => {
+  //   // Start the first part of the wiggle animation
+  //   Animated.timing(wiggleAnim, {
+  //     toValue: 0.5,  // Rotate slightly right
+  //     duration: 500,
+  //     useNativeDriver: true,
+  //   }).start(async () => {
+      
+  //     Animated.sequence([
+  //       Animated.timing(wiggleAnim, {
+  //         toValue: -0.5,  // Rotate slightly left
+  //         duration: 500,
+  //         useNativeDriver: true,
+  //       }),
+  //       Animated.timing(wiggleAnim, {
+  //         toValue: 0,  // Return to original position
+  //         duration: 500,
+  //         useNativeDriver: true,
+  //       }),
+  //     ]).start(async () => {
+  //       await loadDataAsync()
+  //       Animated.sequence([
+  //         Animated.timing(wiggleAnim, {
+  //           toValue: -0.5,  // Rotate slightly left
+  //           duration: 500,
+  //           useNativeDriver: true,
+  //         }),
+  //         Animated.timing(wiggleAnim, {
+  //           toValue: 0,  // Rotate slightly left
+  //           duration: 500,
+  //           useNativeDriver: true,
+  //         }),
+  //       ]).start()
+  //     });
+  //   });
+  // };
+
+  const rotate = wiggleAnim.interpolate({
+    inputRange: [-1, 1],
+    outputRange: ['-25deg', '25deg'],  // Small rotation range for wiggle
+  });
 
   return (
-    <View style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
       {isAppReady && children}
       {!isSplashAnimationComplete && (
         <Animated.View
@@ -235,31 +329,18 @@ function AnimatedSplashScreen({ children }) {
           style={[
             StyleSheet.absoluteFill,
             {
-              backgroundColor: Colors.PRIMARY_600,
-              opacity: animation,
-              display: "flex",
-              height: "100%",
-              width: "100%",
-              alignSelf: "center",
-              alignItems: "center",
+              backgroundColor: Colors.PRIMARY_50,
+              opacity: animation, // This controls the fade out
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 24
             },
           ]}
         >
-          <Animated.Image
-            style={{
-              width: "50%",
-              height: "50%",
-              resizeMode:  "contain",
-              transform: [
-                {
-                  scale: animation,
-                },
-              ],
-            }}
-            source={require('../../assets/dartahousewhite.png')}
-            onLoadEnd={onImageLoaded}
-            fadeDuration={30}
-          />
+          <Animated.Text style={{ transform: [{ rotate }], fontFamily: 'DMSans_700Bold', fontSize: 24 }}>
+            darta
+          </Animated.Text>
+          <TextElement style={{fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_950}}>the digital art advisor</TextElement>
         </Animated.View>
       )}
     </View>

@@ -92,22 +92,19 @@ importers:
         version: 1.18.2(react-native@0.72.6)
       '@react-native-firebase/analytics':
         specifier: ^18.6.1
-        version: 18.6.1(@react-native-firebase/app@18.6.1)
+        version: 18.7.1(@react-native-firebase/app@18.7.1)
       '@react-native-firebase/app':
-        specifier: ^18.6.1
-        version: 18.6.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
-      '@react-native-firebase/auth':
-        specifier: 18.6.1
-        version: 18.6.1(@react-native-firebase/app@18.6.1)(expo@49.0.11)
-      '@react-native-firebase/crashlytics':
-        specifier: ^18.6.1
-        version: 18.6.1(@react-native-firebase/app@18.6.1)(expo@49.0.11)
-      '@react-native-firebase/perf':
-        specifier: 18.6.1
-        version: 18.6.1(@react-native-firebase/app@18.6.1)(expo@49.0.11)
-      '@react-native-firebase/remote-config':
         specifier: ^18.7.1
-        version: 18.7.1(@react-native-firebase/analytics@18.6.1)(@react-native-firebase/app@18.6.1)
+        version: 18.7.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
+      '@react-native-firebase/auth':
+        specifier: 18.7.1
+        version: 18.7.1(@react-native-firebase/app@18.7.1)(expo@49.0.11)
+      '@react-native-firebase/crashlytics':
+        specifier: ^18.7.1
+        version: 18.7.1(@react-native-firebase/app@18.7.1)(expo@49.0.11)
+      '@react-native-firebase/perf':
+        specifier: 18.7.1
+        version: 18.7.1(@react-native-firebase/app@18.7.1)(expo@49.0.11)
       '@react-navigation/bottom-tabs':
         specifier: ^6.5.4
         version: 6.5.4(@react-navigation/native@6.1.8)(react-native-safe-area-context@4.6.3)(react-native-screens@3.22.0)(react-native@0.72.6)(react@18.2.0)
@@ -147,9 +144,6 @@ importers:
       expo-haptics:
         specifier: ~12.4.0
         version: 12.4.0(expo@49.0.11)
-      expo-image:
-        specifier: ~1.3.5
-        version: 1.3.5(expo@49.0.11)
       expo-image-picker:
         specifier: ~14.3.2
         version: 14.3.2(expo@49.0.11)
@@ -4724,16 +4718,16 @@ packages:
     resolution: {integrity: sha512-+zDZ20NUnSWghj7Ku5aFphMzuM9JulqCW+aPXT6IfIXFbb8tzYTTOSeRFOtuekJ99ibW2fUCSsjuKNlwDIbHFg==}
     dev: true
 
-  /@react-native-firebase/analytics@18.6.1(@react-native-firebase/app@18.6.1):
-    resolution: {integrity: sha512-ae43ud4N4m6jLfuR4b7XVFwARVW2WIa+rrZt5FrbnRYvh3Fje21fttK3UsMB40KgRaz0S1orV3gGLuSxqr8RRQ==}
+  /@react-native-firebase/analytics@18.7.1(@react-native-firebase/app@18.7.1):
+    resolution: {integrity: sha512-OAtbj7nT44CiQo6Tq6YJW7EGI4dgTbdnxeeGzDG26D6+icm/V7o5MyA1Zspv/WWIOXzLwibRhHASMfflC8pPGQ==}
     peerDependencies:
-      '@react-native-firebase/app': 18.6.1
+      '@react-native-firebase/app': 18.7.1
     dependencies:
-      '@react-native-firebase/app': 18.6.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
+      '@react-native-firebase/app': 18.7.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
     dev: false
 
-  /@react-native-firebase/app@18.6.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0):
-    resolution: {integrity: sha512-lqINQLLTCmBSeln/cSPfvuJNQuwsPY9n6QyxSRRCTjyZdEPI3EY2df7isOCp8BwuxqYmkR9YhTNw2yFI72th+w==}
+  /@react-native-firebase/app@18.7.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0):
+    resolution: {integrity: sha512-OcWfOUl47pIXcmD5lDn+b1hJktiU7DawXTqjxzDLfWpPzSQUys4OH9kV2ZEnFNKMuvgPELNtzq/H9+Bylc4PGA==}
     peerDependencies:
       expo: '>=47.0.0'
       react: '*'
@@ -4749,55 +4743,45 @@ packages:
       superstruct: 0.6.2
     dev: false
 
-  /@react-native-firebase/auth@18.6.1(@react-native-firebase/app@18.6.1)(expo@49.0.11):
-    resolution: {integrity: sha512-UkULLVtUTUvTKfCVmSAxhPPTyXAgchE9J8KGaSjMpMZnDdW0R4Cr+w4lElOFPfpFq1+i8bKjTl/8nK16QHv3dA==}
+  /@react-native-firebase/auth@18.7.1(@react-native-firebase/app@18.7.1)(expo@49.0.11):
+    resolution: {integrity: sha512-1Bs8JFq6ygtRX8St9ucyS61YQq+T0t2DMXYKIXH+ueX3giVTq5+cE4U/DfDNpAWzWb7fl4yVWROiEItkw4CGFA==}
     peerDependencies:
-      '@react-native-firebase/app': 18.6.1
+      '@react-native-firebase/app': 18.7.1
       expo: '>=47.0.0'
     peerDependenciesMeta:
       expo:
         optional: true
     dependencies:
-      '@react-native-firebase/app': 18.6.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
+      '@react-native-firebase/app': 18.7.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
       expo: 49.0.11(@babel/core@7.22.20)
       plist: 3.1.0
     dev: false
 
-  /@react-native-firebase/crashlytics@18.6.1(@react-native-firebase/app@18.6.1)(expo@49.0.11):
-    resolution: {integrity: sha512-mPP6RKwy0cCL4rYyanplwg2HGAswE4z4I9p0p3q8ZOuvD/F48IwVMebbE0f5aeEztlEBguL3KOeGXGUttw61+w==}
+  /@react-native-firebase/crashlytics@18.7.1(@react-native-firebase/app@18.7.1)(expo@49.0.11):
+    resolution: {integrity: sha512-fxLussdIR+MiAK5dMRds6XA5saYIJdDIPj0I5HbCVOOQQPi60vw98ROqVG7ZRWXaXSPCfnIp0RECNu7g6FhxUg==}
     peerDependencies:
-      '@react-native-firebase/app': 18.6.1
+      '@react-native-firebase/app': 18.7.1
       expo: '>=47.0.0'
     peerDependenciesMeta:
       expo:
         optional: true
     dependencies:
-      '@react-native-firebase/app': 18.6.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
+      '@react-native-firebase/app': 18.7.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
       expo: 49.0.11(@babel/core@7.22.20)
       stacktrace-js: 2.0.2
     dev: false
 
-  /@react-native-firebase/perf@18.6.1(@react-native-firebase/app@18.6.1)(expo@49.0.11):
-    resolution: {integrity: sha512-C0bmPJgYQhHtPqC3HBHGci4FYafwiAa4bjGMDN6kArKbG77/6L/DoYJUR1a57PXU3H0gdsScYnuuVZFGUntx1A==}
+  /@react-native-firebase/perf@18.7.1(@react-native-firebase/app@18.7.1)(expo@49.0.11):
+    resolution: {integrity: sha512-+fMNVw+wpJKz8l/Xphlu50LEjd3PTt+ACCwwr/s45ikllt0BVN9xjN4ww3iFXf8gE1Tm34B8IxZaQSZ9N2LvUQ==}
     peerDependencies:
-      '@react-native-firebase/app': 18.6.1
+      '@react-native-firebase/app': 18.7.1
       expo: '>=47.0.0'
     peerDependenciesMeta:
       expo:
         optional: true
     dependencies:
-      '@react-native-firebase/app': 18.6.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
+      '@react-native-firebase/app': 18.7.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
       expo: 49.0.11(@babel/core@7.22.20)
-    dev: false
-
-  /@react-native-firebase/remote-config@18.7.1(@react-native-firebase/analytics@18.6.1)(@react-native-firebase/app@18.6.1):
-    resolution: {integrity: sha512-7xn8jYsaNSnfOvqI2AVs9/VdgulYUD2OaoPZ7/sPJoar1kPYcFmKqiv4AjbrONYMdPoFC8jftap8kBTsvE2P2A==}
-    peerDependencies:
-      '@react-native-firebase/analytics': 18.7.1
-      '@react-native-firebase/app': 18.7.1
-    dependencies:
-      '@react-native-firebase/analytics': 18.6.1(@react-native-firebase/app@18.6.1)
-      '@react-native-firebase/app': 18.6.1(expo@49.0.11)(react-native@0.72.6)(react@18.2.0)
     dev: false
 
   /@react-native/assets-registry@0.72.0:
@@ -9467,14 +9451,6 @@ packages:
     dependencies:
       expo: 49.0.11(@babel/core@7.22.20)
       expo-image-loader: 4.3.0(expo@49.0.11)
-    dev: false
-
-  /expo-image@1.3.5(expo@49.0.11):
-    resolution: {integrity: sha512-yrIR2mnfIKbKcguoqWK3U5m3zvLPnonvSCabB2ErVGhws8zQs7ILYf+7T08j8U6eFcohjw0CoAFJ6RWNsX2EhA==}
-    peerDependencies:
-      expo: '*'
-    dependencies:
-      expo: 49.0.11(@babel/core@7.22.20)
     dev: false
 
   /expo-json-utils@0.7.1:

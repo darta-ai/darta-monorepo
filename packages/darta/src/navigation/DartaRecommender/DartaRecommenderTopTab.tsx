@@ -18,7 +18,7 @@ export function DartaRecommenderTopTab({route} : {route: any}) {
     <RecommenderStackTopTab.Navigator  screenOptions={{...tabBarScreenOptions}}>
         <RecommenderStackTopTab.Screen
           name={RecommenderRoutesEnum.recommenderDetails}
-          initialParams={{artOnDisplay: route.params.artOnDisplay}}
+          initialParams={{artOnDisplay: route.params.artOnDisplay, saveRoute: RecommenderRoutesEnum.recommenderLists}}
           component={ArtworkScreen}
           options={{ title: 'Artwork', ...headerOptions}}
         />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Marker, Callout } from 'react-native-maps';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 
 import FastImage from 'react-native-fast-image'
 import { TextElement } from '../Elements/TextElement';
@@ -15,6 +15,8 @@ import { ExploreMapRootEnum } from '../../typing/routes';
 import {Button } from 'react-native-paper';
 import { GoogleMapsPinIcon, MapPinCircleDotIcon} from '../../assets/SVGs';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
+import { Easing } from 'react-native-reanimated';
+import { GoogleMapsPinBlackIcon } from '../../assets/SVGs/GoogleMapsPinBlack';
 
 const customMarker = StyleSheet.create({
   galleryContainer:{
@@ -165,6 +167,12 @@ const CustomMarker = React.memo(({
     setArtistName(mapPin.exhibitionArtist?.value || "Group Show")
     }, [])
 
+  React.useEffect(() => {
+    if (hasUpcomingOpening){
+      handleWiggle()
+    }
+  }, [hasUpcomingOpening])
+
 
   const chooseRouteAndNavigate = () => {
     if (hasCurrentShow){
@@ -173,6 +181,66 @@ const CustomMarker = React.memo(({
       navigateToGalleryScreen()
     )
   }
+
+
+
+  const wiggleAnim = React.useRef(new Animated.Value(0)).current; 
+
+  React.useEffect(() => {
+    wiggleAnim.addListener(() => {})
+  }, [])
+
+  
+  const handleWiggle = () => {
+    const wiggleSequence = Animated.sequence([
+      Animated.timing(wiggleAnim, {
+        toValue: 0,  // Rotate slightly right
+        duration: 750,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: 0.25,  // Rotate slightly right
+        duration: 500,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: 0,  // Rotate slightly left
+        duration: 500,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: -0.25,  // Rotate slightly left
+        duration: 500,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: 0,  // Rotate slightly left
+        duration: 500,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: 0,  // Rotate slightly left
+        duration: 1000,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+    ]);
+  
+    // Continuous loop of wiggle
+    Animated.loop(wiggleSequence).start();
+  };
+
+  const rotate = wiggleAnim.interpolate({
+    inputRange: [-1, 1],
+    outputRange: ['-15deg', '15deg'], // Reduced angle for subtler effect
+  });
+
+
   const customMarkerDynamic = StyleSheet.create({
     container: {
       display: 'flex',
@@ -184,9 +252,11 @@ const CustomMarker = React.memo(({
       padding: 24,
       gap: 20
     },
+    wiggleFriend: {
+      transform: [{ rotate }]
+    } 
   })
 
-  
 
   return (
     <Marker
@@ -194,7 +264,10 @@ const CustomMarker = React.memo(({
       key={mapPin.exhibitionId}
       onTouchStart={() => setShowCallout(true)}
     >
-      {hasUpcomingOpening ? <MapPinCircleDotIcon />: <GoogleMapsPinIcon/> }
+      <Animated.View style={customMarkerDynamic.wiggleFriend}>
+      {hasUpcomingOpening ?  <GoogleMapsPinIcon/> : <GoogleMapsPinBlackIcon /> }
+        {/* <GoogleMapsPinIcon/> */}
+      </Animated.View>
       {showCallout && (
         <Callout style={customMarkerDynamic.container} 
         onTouchStart={() => setShowCallout(false)} 

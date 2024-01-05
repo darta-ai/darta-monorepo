@@ -36,11 +36,8 @@ export interface ListPreview {
     artworkPreviews: {
         [key: string]: PreviewArtwork;
     };
-    creator: string;
-    creatorName: string;
-    creatorProfilePicture: string;
-    isPrivate: boolean;
-    isCollaborative: boolean;
+    creatorId: string;
+    previewImage: PublicFields;
     createdAt: string;
 }
 export interface FullList extends List {

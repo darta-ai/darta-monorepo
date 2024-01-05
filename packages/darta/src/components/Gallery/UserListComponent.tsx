@@ -6,7 +6,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {globalTextStyles} from '../../styles/styles';
 import {TextElement} from '../Elements/_index';
 import * as SVGs from '../../assets/SVGs/index';
-import { ListPreview, PreviewArtwork } from '@darta-types/dist';
+import { ListPreview, PreviewArtwork, PrivateFields, PublicFields } from '@darta-types/dist';
 import FastImage from 'react-native-fast-image'
 
 import { widthPercentageToDP as wp} from 'react-native-responsive-screen';
@@ -27,7 +27,7 @@ export const userListComponentStyles = StyleSheet.create({
     gap: 4,
   },
   badgeContainer: {
-    width: '15%',
+    width: '25%',
     height: '100%',
     justifyContent: 'center',
     alignSelf: 'center',
@@ -38,10 +38,10 @@ export const userListComponentStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   textContainer: {
-    width: '75%',
+    width: '65%',
     height: '100%',
     justifyContent: 'center',
-    gap: 2
+    gap: 2,
   },
 });
 
@@ -61,18 +61,12 @@ const styles = StyleSheet.create({
   // You can add more styles if needed
 });
 
-const Icon = ({ artworkPreview }: { artworkPreview: { [key: string]: PreviewArtwork } }) => {
+const Icon = ({ artworkPreview }: { artworkPreview: PublicFields }) => {
 
   if (!artworkPreview) return null
 
-  const data = Object?.values(artworkPreview)[0]
-
-  if (!data || !data?.artworkImage?.value) return null
-
   return (
-    <View style={{height: 25, width: 25}}>
-    <FastImage source={{ uri: data.artworkImage.value ?? "" }} />
-  </View>
+      <FastImage source={{ uri: artworkPreview.value ?? "" }} style={{height: 50, width: 50}} resizeMode={FastImage.resizeMode.contain}/>
   )
 }
 
@@ -94,7 +88,7 @@ export const UserListComponent: React.FC<DartaIconButtonWithTextProps> = ({
     <TouchableOpacity style={userListComponentStyles.componentContainer} onPress={onPress}>
       <View style={userListComponentStyles.badgeContainer}>
           <Icon 
-            artworkPreview={listPreview.artworkPreviews}
+            artworkPreview={listPreview.previewImage}
           />
       </View>
       <View style={userListComponentStyles.textContainer}>

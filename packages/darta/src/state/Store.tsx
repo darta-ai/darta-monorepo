@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, {createContext, ReactNode} from 'react';
 
-import {Artwork, IGalleryProfileData, MapPinCities, ExhibitionMapPin, MobileUser, GalleryPreview, ListPreview, List, FullList} from '@darta-types'
+import {Artwork, MapPinCities, ExhibitionMapPin, ListPreview, FullList} from '@darta-types'
 
 export interface IUserArtworkRatings {
   [id: string]: {
@@ -52,20 +52,6 @@ export type PatUserSavedArtworkData = {
   };
 };
 
-
-interface IDartaData {
-  [id: string]: {
-    id: string;
-    fullDGallery: any;
-    numberOfRatedWorks: number;
-    artworkIds: string[];
-    numberOfArtworks: number;
-    userArtworkRatings: IUserArtworkRatings;
-    galleryIndex: number;
-    isLoaded: boolean;
-  };
-}
-
 // Define the state type
 export interface IState {
   isPortrait: boolean;
@@ -86,6 +72,7 @@ export interface IState {
 
   userListPreviews?: {[key: string]: ListPreview}
   userLists?: {[key: string]: FullList}
+  listId?: string;
 }
 
 export enum ETypes {
@@ -114,6 +101,7 @@ export enum ETypes {
   setUserListPreviews = 'SET_USER_LIST_PREVIEWS',
   setUserLists = 'SET_USER_LISTS',
   addArtworkToList = 'ADD_ARTWORK_TO_LIST',
+  deleteList = 'DELETE_LIST',
 }
 
 // Define the action type
@@ -222,6 +210,17 @@ const reducer = (state: IState, action: IAction): IState => {
           ...action.userListPreviews
         },
       };
+    case ETypes.deleteList:
+        if (!action?.listId){
+          return state;
+        }
+        const userLists = _.omit(state.userLists, action.listId)
+        const userListPreviews = _.omit(state.userListPreviews, action.listId)
+        return {
+          ...state,
+          userListPreviews,
+          userLists
+      };
     case ETypes.setUserLists:
           if (!action?.userLists){
             return state;
@@ -244,8 +243,8 @@ const reducer = (state: IState, action: IAction): IState => {
           [action.listId]: {
             ...state.userLists[action.listId],
             artwork: {
-              ...state.userLists[action.listId].artwork,
-              [action.artwork._id]: action.artwork
+              ...state.userLists[action.listId]?.artwork,
+              [action.artwork._id]: action?.artwork
             }
           }
         },

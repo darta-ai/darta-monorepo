@@ -41,18 +41,7 @@ export function DartaRecommenderNavigator() {
             name={RecommenderRoutesEnum.recommenderHome}
             component={DartaRecommenderViewFlatList}
             options={{...headerOptions, 
-              headerTitle: 'View',
-              // headerRight: () => (
-              //   <IconButton
-              //     icon={icons.screenRotation}    
-              //     iconColor={Colors.PRIMARY_950}
-              //     containerColor={Colors.PRIMARY_50}
-              //     style={viewOptionsStyles.viewOptionsButtonStyle}
-              //     accessibilityLabel="Flip Screen Orientation"
-              //     testID="flipScreenButton"
-              //     onPress={() => flipOrientation()}
-              //   />
-              // ),
+              headerTitle: 'View'
             }}
           />
           <RecommenderStack.Screen

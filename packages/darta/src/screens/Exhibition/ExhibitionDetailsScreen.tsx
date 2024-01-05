@@ -507,20 +507,22 @@ export function ExhibitionDetailsScreen({
                             />
                         </Surface>
                     </View>
-                    <View style={exhibitionDetailsStyles.subInformationContainer}>
-                        <TextElement style={globalTextStyles.subHeaderTitle}>
-                            {isGroupShow ? "Artists" : "Artist"}
-                        </TextElement>
-                        {isGroupShow ? (
-                        <TextElementMultiLine style={{...globalTextStyles.subHeaderInformation}}>
-                            {artistName ?? "Group Show"}
-                            </TextElementMultiLine>
-                        ) : (
-                            <TextElement style={globalTextStyles.subHeaderInformation}>
-                            {artistName ?? "Artist"}
+                    {artistName && (
+                        <View style={exhibitionDetailsStyles.subInformationContainer}>
+                            <TextElement style={globalTextStyles.subHeaderTitle}>
+                                {isGroupShow ? "Artists" : "Artist"}
                             </TextElement>
-                        )} 
-                    </View>
+                            {isGroupShow ? (
+                            <TextElementMultiLine style={{...globalTextStyles.subHeaderInformation}}>
+                                {artistName ?? "Group Show"}
+                                </TextElementMultiLine>
+                            ) : (
+                                <TextElement style={globalTextStyles.subHeaderInformation}>
+                                {artistName ?? "Artist"}
+                                </TextElement>
+                            )} 
+                        </View>
+                    )}
                     <View style={exhibitionDetailsStyles.subInformationContainer}>
                         <TextElement style={globalTextStyles.subHeaderTitle}>
                             On view from
