@@ -43,8 +43,6 @@ export function ExhibitionPreviewScreen({
   const [exhibitionPreviews, setExhibitionPreviews] = React.useState<ExhibitionPreview[]>([])
   const [errorHeader, setErrorHeader] = React.useState<string>("")
   const [errorText, setErrorText] = React.useState<string>("")
-
-  console.log({exhibitionPreviews})
   
   const sortPreviews = (exhibitionPreviews: ExhibitionPreview[]) => {
     return exhibitionPreviews.sort((a, b) => {

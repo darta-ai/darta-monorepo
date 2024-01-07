@@ -17,7 +17,7 @@ export function GalleryAndArtworkTopTabNavigator({route} : {route: any}) {
       <GalleryAndArtworkTopTab.Screen
           name={PreviousExhibitionRootEnum.artworkList}
           component={ArtworkScreen}
-          initialParams={{artOnDisplay: route.params?.artOnDisplay}}
+          initialParams={{artOnDisplay: route.params?.artOnDisplay, saveRoute: UserRoutesEnum.userAddToList}}
           options={{ title: "Artwork", ...headerOptions}}
         />
       <GalleryAndArtworkTopTab.Screen

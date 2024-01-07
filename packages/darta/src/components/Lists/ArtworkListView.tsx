@@ -142,16 +142,14 @@ export function ArtworkListView({
   const {userState, userDispatch} = React.useContext(UserStoreContext)
   
   const [isInquired, setIsInquired] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
   const [canInquire, setCanInquire] = React.useState(true);
 
   const [exhibitionStartDate, setExhibitionStartDate] = React.useState<string>();
   const [exhibitionEndDate, setExhibitionEndDate] = React.useState<string>(new Date().toLocaleDateString());
-  const [showSwipeActions, setShowSwipeActions] = React.useState(true);
+  const [showSwipeActions, setShowSwipeActions] = React.useState(false);
 
   React.useEffect(()=> {
     if (exhibition?.exhibitionDates?.exhibitionStartDate.value && exhibition?.exhibitionDates?.exhibitionEndDate.value) {
-      console.log(exhibition?.exhibitionDates?.exhibitionStartDate.value)
       setExhibitionStartDate(customLocalDateStringStart({date: new Date(exhibition?.exhibitionDates?.exhibitionStartDate.value), isUpperCase: false}))
       setExhibitionEndDate(customLocalDateStringEnd({date: new Date(exhibition?.exhibitionDates.exhibitionEndDate.value), isUpperCase: false}));
 
@@ -228,16 +226,10 @@ export function ArtworkListView({
   }
 
 
-  const renderRightActions = (_, dragX) => {
+  const renderRightActions = () => {
     if (!showSwipeActions) {
       return null;
     }
-  
-    const trans = dragX.interpolate({
-      inputRange: [-50, 0],  // Start from -100 (fully swiped to the right) to 0 (no swipe)
-      outputRange: [0, 0], // Corresponding translation: start off-screen and move to fully visible
-      extrapolate: 'clamp',   // Clamps the output to the specified range
-    });
     const styles = StyleSheet.create({
       container: {
         flexDirection: 'column',
@@ -246,7 +238,6 @@ export function ArtworkListView({
         width: wp('20%'),  // Adjust as needed
         height: '100%',
         backgroundColor: Colors.PRIMARY_400,
-        transform: [{ translateX: trans }],  // Ensure this moves as expected
       },
       buttonWidth: {
         width: '100%',  // Adjust as needed
@@ -260,7 +251,7 @@ export function ArtworkListView({
     });
 
     return (
-      <Animated.View style={styles.container}>
+      <View style={styles.container}>
         <TouchableOpacity style={styles.buttonWidth} onPress={handleDelete}>
             {loadingDelete ? (
               <ActivityIndicator size="small"/>
@@ -268,7 +259,7 @@ export function ArtworkListView({
               <Icon name="delete" solid={false}/>
             )}
         </TouchableOpacity>
-      </Animated.View>
+      </View>
     );
   };
 
@@ -324,12 +315,7 @@ export function ArtworkListView({
                   priority={FastImage.priority.normal}
                   style={SSTombstonePortrait.image}
                   resizeMode={FastImage.resizeMode.contain}
-                  onLoadStart={() => setIsLoading(true)}
-                  onLoadEnd={() => setIsLoading(false)}
                 />
-                {isLoading && (
-                  <ActivityIndicator size="small"/> 
-                )}
               </View>
             </ScrollView>
           </View>

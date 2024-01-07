@@ -17,6 +17,7 @@ export enum UserRoutesEnum {
     UserGallery = 'USER_GALLERY',
     userListFull = 'USER_LIST_FULL',
     individualArtwork= 'USER_INDIVIDUAL_ARTWORK',
+    userAddToList = 'USER_ADD_TO_LIST',
   }
   
   // TO-DO
@@ -67,6 +68,7 @@ export enum ExhibitionRootEnum {
   TopTab = 'EXHIBITION_TOP_TAB',
   qrRouter = 'QR_ROUTER',
   genericLoading= 'GENERIC_LOADING',
+  exhibitionListAdd = 'EXHIBITION_LIST_ADD',
 }
 
 
@@ -125,6 +127,7 @@ export enum ExploreMapRootEnum {
   exploreMapGallery = 'EXPLORE_MAP_GALLERY',
   explorePastNavigator = 'EXPLORE_PAST_NAVIGATOR', 
   individualArtwork = 'INDIVIDUAL_ARTWORK',
+  exploreMapListAdd = 'EXPLORE_MAP_LIST_ADD',
 }
 
 export type ExploreMapParamList = {

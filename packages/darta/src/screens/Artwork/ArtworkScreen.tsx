@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {Alert, View, Vibration} from 'react-native';
+import {Alert, View, Vibration, Linking} from 'react-native';
 import {ETypes, StoreContext} from '../../state/Store';
 import {TombstonePortrait} from '../../components/Tombstone/_index';
 import {NeedAccountDialog} from '../../components/Dialog/NeedAccountDialog';
@@ -10,6 +10,7 @@ import { getDartaUser } from '../../api/userRoutes';
 import analytics from '@react-native-firebase/analytics';
 import { GalleryStoreContext, UserETypes } from '../../state';
 import { UserStoreContext } from '../../state/UserStore';
+import { getArtworkEmailAndGalleryAPI } from '../../api/artworkRoutes';
 
 
 export function ArtworkScreen({route, navigation}: {route: any, navigation: any}) {
@@ -17,7 +18,6 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
   const [saveRoute, setSaveRoute] = React.useState<any>(null)
 
   React.useEffect(() => {
-
     if (route.params){
       setArtOnDisplay(route.params.artOnDisplay)
       setSaveRoute(route.params.saveRoute)
@@ -45,9 +45,6 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
   const [likeLoading, setLikeLoading] = React.useState(false);
 
   const likeArtwork = async ({artworkId} : {artworkId: string}) => {
-    if (auth().currentUser === null) {
-      return setDialogVisible(true)
-    }
     setLikeLoading(true)
     try {
       await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
@@ -90,6 +87,26 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
 
   const inquireArtwork = async ({artworkId} : {artworkId: string}) => {
     try {
+      const res = await getArtworkEmailAndGalleryAPI({artworkId})
+      console.log({res})
+      const {galleryEmail, galleryName} = res
+      if (!galleryEmail) return
+
+      const subject = `Inquiry: ${artOnDisplay.artworkTitle?.value} by ${artOnDisplay.artistName?.value}}`
+      
+      const body = `Hi ${galleryName},%0D%0A%0D%0A I saw ${artOnDisplay.artworkTitle?.value} by ${artOnDisplay.artistName?.value} on darta and I'm interested in learning more.`
+
+      const url = `mailto:${galleryEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+      Linking.canOpenURL(url)
+        .then((supported) => {
+          if (!supported) {
+            console.log(`Can't handle URL: ${url}`);
+          } else {
+            return Linking.openURL(url);
+          }
+        })
+        .catch((err) => console.error('An error occurred', err));
       await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE})
       userDispatch({
         type: UserETypes.setUserInquiredArtwork,
@@ -104,33 +121,27 @@ export function ArtworkScreen({route, navigation}: {route: any, navigation: any}
 
   const inquireAlert = async ({artworkId} : {artworkId: string}) =>
   {
-    if (auth().currentUser === null) {
-      // TO-DO WAIT FOR FIREBASE FIX
-      // return setDialogVisible(true)
-      // console.log(auth)
-    }
+    // if (auth().currentUser === null) {
+    //   // TO-DO WAIT FOR FIREBASE FIX
+    //   // return setDialogVisible(true)
+    //   // console.log(auth)
+    // }
     Vibration.vibrate(100)
     const user = await getDartaUser({uid: auth().currentUser?.uid ?? ''})
     const email = auth().currentUser?.email ?? user?.email;
-    const firstName = user?.legalFirstName;
-    const lastName = user?.legalLastName;
     const galleryName = galleryState.galleryData?.[artOnDisplay?.galleryId]?.galleryName?.value ?? "the gallery";
-    if (email && firstName && lastName){
-      Alert.alert(`Share your name and email with ${galleryName}?`, `We will email ${galleryName} and let them know you're interested`, [
-        {
-          text: 'Cancel',
-          onPress: () => {},
-          style: 'destructive',
-        },
-        {
-          text: `Yes`,
-          onPress: () => inquireArtwork({artworkId}),
-        },
-      ])
-    } else {
-      setDialogVisible(true)
-    }
-  };
+    Alert.alert(`Reach out to ${galleryName}?`, `darta will open your email app`, [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+        style: 'destructive',
+      },
+      {
+        text: `Yes`,
+        onPress: () => inquireArtwork({artworkId}),
+      },
+    ])
+};
 
   const inquireSuccessAlert = () => {
     Alert.alert(`We've let the gallery know`, `If they are interested in proceeding, they will reach out to you on the email you provided`, [

@@ -3,7 +3,8 @@ import * as Progress from 'react-native-progress';
 import FastImage from 'react-native-fast-image';
 import {FastImageProps, Priority} from 'react-native-fast-image'
 import { createImageProgress } from 'react-native-image-progress';
-import * as Colors from '@darta-styles'
+
+import { ActivityIndicator } from 'react-native';
 const Image = createImageProgress(FastImage);
 
 interface DartaImageComponentProps extends FastImageProps {
@@ -14,9 +15,7 @@ interface DartaImageComponentProps extends FastImageProps {
   
 export const DartaImageComponent: React.FC<DartaImageComponentProps> = ({style, uri, priority, ...props}) => {
     const renderIndicator = () => (
-        <Progress.CircleSnail
-            color={[Colors.PRIMARY_100, Colors.PRIMARY_200, Colors.PRIMARY_100]}
-        />
+        <ActivityIndicator size={"small"} />
     );
     return (
         <Image

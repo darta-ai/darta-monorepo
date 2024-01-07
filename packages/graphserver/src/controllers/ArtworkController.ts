@@ -270,6 +270,26 @@ export class ArtworkController {
     }
   }
 
+  // getArtworkEmailAndGallery
+
+  @httpGet('/readArtworkEmailAndGallery', verifyToken)
+  public async readArtworkEmailAndGallery(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    // eslint-disable-next-line camelcase
+    try {
+      const {artworkId} = req.query;
+      const inquiry = await this.artworkService.readArtworkEmailAndGallery({
+        // eslint-disable-next-line camelcase
+        artworkId: artworkId as string,
+      });
+      res.json(inquiry);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/listArtworkInquires', request: req?.body})
+      res.status(500).send(error.message);
+    }
+  }
 
   @httpPost('/swapArtworkOrder', verifyToken)
   public async swapArtworkOrder(

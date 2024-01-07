@@ -91,14 +91,9 @@ export function AddToListScreen({
     navigation?: any;
     route: any;
 }) {
-    let artworkId;
-    let artwork: Artwork | null = null;
-    if (route.params && route.params.artwork && route.params.artwork._id) {
-        artworkId = route.params.artwork._id;
-        artwork = route.params.artwork;
-    }
+
     const {state, dispatch} = React.useContext(StoreContext);
-    const {userDispatch} = React.useContext(UserStoreContext);
+    const {userState, userDispatch} = React.useContext(UserStoreContext);
     const [visible, setVisible] = React.useState<boolean>(false)
     const [saveToSaved, setSaveToSaved] = React.useState<boolean>(false)
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
@@ -109,6 +104,20 @@ export function AddToListScreen({
 
     const [pressedLists, setPressedLists] = React.useState<listArtworkIds>({})
 
+    const [isSaved, setIsSaved] = React.useState<boolean>(false)
+    const [artworkId, setArtworkId] = React.useState<string>()
+    const [artwork, setArtwork] = React.useState<Artwork | null>(null)
+
+
+    React.useEffect(() => {
+        if (route.params && route.params.artwork && route.params.artwork._id) {
+            setArtworkId(route.params.artwork._id)
+            setArtwork(route.params.artwork)
+        }
+        if (route.params && route.params.artwork._id &&  userState.userSavedArtwork && userState.userSavedArtwork[route.params.artwork._id]) {
+            setIsSaved(true)
+        }
+    }, [])
 
     const handlePress = ({listId} : {listId: string}) => {
         if (!artworkId) return
@@ -132,7 +141,7 @@ export function AddToListScreen({
         setIsLoading(true)
         const promises: Promise<void>[]= [];
 
-        if (saveToSaved) {
+        if (saveToSaved && artworkId) {
             await createUserArtworkRelationship({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE});
             userDispatch({
                 type: UserETypes.setUserSavedArtworkMulti,
@@ -146,8 +155,7 @@ export function AddToListScreen({
     
         try {
             const promises = Object.keys(pressedLists).map(listId => {
-                return addArtworkToList({ listId, artworkId }).then((res) => {
-                    console.log('added to list', res)
+                return addArtworkToList({ listId, artworkId: artworkId ?? "" }).then((res) => {
                     dispatch({
                         type: ETypes.setUserLists,
                         userLists: res
@@ -170,13 +178,15 @@ export function AddToListScreen({
                 onPress={() => setVisible(!visible)}>
                     <TextElement style={addToListStyles.newListText}>New List</TextElement>
                 </Button>
-                <ListSavedComponent 
-                headline="Saved"
-                subHeadline="Add to your saved list"
-                iconComponent={SVGs.SavedActiveIconLarge}
-                isAdding={true}
-                handlePress={handlePress}
-                />
+                {!isSaved && (
+                    <ListSavedComponent 
+                    headline="Saved"
+                    subHeadline="Add to your saved list"
+                    iconComponent={SVGs.SavedActiveIconLarge}
+                    isAdding={true}
+                    handlePress={handlePress}
+                    />
+                )}
                 {state.userListPreviews && Object.values(state.userListPreviews).sort((a, b) => {
                     return b?.createdAt > a?.createdAt ? 1 : -1;
                 }).map((listPreview: ListPreview ) => {
@@ -192,7 +202,7 @@ export function AddToListScreen({
                 })}
                 <NewListModal 
                 navigation={navigation}
-                artworkId={artworkId}
+                artworkId={artworkId as string}
                 visible={visible}
                 setVisible={setVisible}
                 />

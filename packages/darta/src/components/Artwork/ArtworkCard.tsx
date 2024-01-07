@@ -6,7 +6,6 @@ import {TextElement} from '../Elements/_index';
 import FastImage from 'react-native-fast-image';
 import { Surface } from 'react-native-paper';
 import { UIStoreContext, UiETypes } from '../../state';
-import { heightPercentageToDP } from 'react-native-responsive-screen';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 const SSArtworkSelectorCard = StyleSheet.create({
@@ -81,15 +80,14 @@ const ArtworkCard = ({
   artwork,
   navigation,
   navigateTo,
-  navigateToParams
+  navigateToParams,
 }: {
   artwork: Artwork;
   navigation: any,
   navigateTo: string,
-  navigateToParams: string
+  navigateToParams: string,
 }) => {
   const {uiDispatch} = React.useContext(UIStoreContext);
-  const [isLoading, setIsLoading] = React.useState(false);
 
   const navigateToTombstone = () => {
     uiDispatch({
@@ -98,7 +96,7 @@ const ArtworkCard = ({
     });
     navigation.navigate(navigateTo, {
       artOnDisplay: artwork,
-      navigateToParams: navigateToParams
+      navigateToParams
     });
   };
 
@@ -114,14 +112,7 @@ const ArtworkCard = ({
                   priority={FastImage.priority.normal}
                   style={SSArtworkSelectorCard.image}
                   resizeMode={FastImage.resizeMode.contain}
-                  onLoadStart={() => setIsLoading(true)}
-                  onLoadEnd={() => setIsLoading(false)}
                 />
-                  <View style={{height: heightPercentageToDP('5%')}}>
-                    {isLoading && (
-                      <ActivityIndicator size="small"/> 
-                    )}
-                  </View>
                 </View>
               </Surface>
             </TouchableOpacity>
@@ -145,15 +136,10 @@ const ArtworkCard = ({
 
 // Check the docs for React.memo for an explanation of this function
 export default React.memo(ArtworkCard, (prevProps, nextProps) => {
-  /*
-    This is an optional comparison function that you can provide to React.memo for custom comparison logic.
-    If you omit this function, it will do a shallow comparison of props by default.
-    If you need to compare deeply nested properties, you can do so here.
-  */
   return (
     prevProps.artwork === nextProps.artwork &&
     prevProps.navigation === nextProps.navigation &&
     prevProps.navigateTo === nextProps.navigateTo &&
-    prevProps.navigateToParams === nextProps.navigateToParams
+    prevProps.navigateToParams === nextProps.navigateToParams 
   );
 });

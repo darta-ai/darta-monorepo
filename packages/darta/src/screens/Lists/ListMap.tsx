@@ -28,6 +28,7 @@ const exploreMapStyles = StyleSheet.create({
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
+      alignContent: 'center',
   },
     textHeader:{
       color: Colors.PRIMARY_950,
@@ -234,8 +235,8 @@ export function ListMap({
   } else if (!showPins) {
     return(
       <View style={exploreMapStyles.textContainer}>
-        <TextElement style={exploreMapStyles.textHeader}>No artwork from list currently on display</TextElement>
-        <TextElement style={exploreMapStyles.text}>Add more artwork to the list to develop a custom map</TextElement>
+        <TextElement style={exploreMapStyles.textHeader}>No artwork from your list on display</TextElement>
+        <TextElement style={exploreMapStyles.text}>This map is for artwork that is currently up</TextElement>
       </View>
 
     )

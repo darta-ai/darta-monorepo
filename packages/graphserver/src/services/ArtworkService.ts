@@ -119,10 +119,35 @@ export class ArtworkService implements IArtworkService {
         });
          
         if (userIsInquiring){
-          await this.sendInquiryEmail({artworkId, userId})
+          // await this.sendInquiryEmail({artworkId, userId})
         }
     } catch (error: any) {
       return error.message;
+    }
+  }
+
+  public async readArtworkEmailAndGallery(
+    {artworkId} : 
+    {artworkId: string}): Promise<{galleryName: string | null, galleryEmail: string | null} | null>{
+
+    const artworkEdge = await this.edgeService.getEdgeWithTo({
+      edgeName: EdgeNames.FROMGalleryToArtwork,
+      to: artworkId,
+    })
+    if (!artworkEdge){
+      throw new Error('no artwork edge found at readArtworkEmailAndGallery')
+    }
+
+    const galleryId = artworkEdge._from
+
+    const gallery = await this.galleryService.readGalleryProfileFromGalleryId({galleryId})
+
+    if (!gallery){
+      return null
+    }
+    return {
+      galleryName: gallery.galleryName.value,
+      galleryEmail: gallery.primaryContact?.value!
     }
   }
 

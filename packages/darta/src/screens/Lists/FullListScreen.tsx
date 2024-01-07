@@ -251,7 +251,7 @@ export function FullListScreen({
                     />
             }>
                 <TextElement style={container.textHeader}>This list contains no artwork</TextElement>
-                <TextElement style={container.text}>Add more artwork to the list to develop a custom list</TextElement>
+                <TextElement style={container.text}>Add more artwork to get started</TextElement>
             </ScrollView>
         )
     } 

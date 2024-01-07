@@ -76,7 +76,6 @@ export function TombstonePortrait({
   inquireAlert: ({artworkId} : {artworkId: string}) => void,
 }) {
 
-  const {state, dispatch} = React.useContext(StoreContext);
   const {userState, userDispatch} = React.useContext(UserStoreContext);
 
   let inputHeight = artwork?.artworkDimensions?.heightIn?.value ?? "1"
@@ -232,7 +231,7 @@ export function TombstonePortrait({
       setCanInquire(false)
     }
     
-  }, [userState.userInquiredArtwork, userState.userSavedArtwork, userState.userLikedArtwork]);
+  }, [artwork, userState.userInquiredArtwork, userState.userSavedArtwork, userState.userLikedArtwork]);
 
   const removeSavedRating = async () => {
     userDispatch({

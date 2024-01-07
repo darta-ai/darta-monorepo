@@ -82,14 +82,11 @@ const addToListStyles = StyleSheet.create({
 
 export function ViewListsScreen({
     navigation,
-    route,
 }: {
     navigation?: any;
-    route: any;
 }) {
     const {state, dispatch} = React.useContext(StoreContext);
     const {uiDispatch} = React.useContext(UIStoreContext);
-    const {userDispatch} = React.useContext(UserStoreContext);
 
     const handlePress = ({listId} : {listId: string}) => {
         if(!state.userListPreviews) return;
@@ -152,10 +149,9 @@ export function ViewListsScreen({
             },
             {
                 text: "Delete",
+                style: "destructive",
                 onPress: async () => {
                     setLoadingDelete(true);
-
-                    console.log('here', {listId})
                     if (listId) {
                         await deleteListAPI({listId});
                         dispatch({
@@ -213,7 +209,7 @@ export function ViewListsScreen({
 
     return (
         <View style={addToListStyles.container}>
-            {state?.userListPreviews && (
+            {state?.userListPreviews && Object.values(state.userListPreviews).length > 0 && (
                 <RecyclerListView
                     layoutProvider={layoutProvider}
                     dataProvider={dataProvider}

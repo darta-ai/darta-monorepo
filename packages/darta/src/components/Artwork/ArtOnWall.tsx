@@ -16,13 +16,12 @@ import {
 } from 'react-native-responsive-screen';
 
 import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types'
-import {ETypes, StoreContext} from '../../state/Store';
+import {StoreContext} from '../../state/Store';
 import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
 import { Onboard } from '../Darta/Onboard';
 import { Surface } from 'react-native-paper';
 import * as Colors from '@darta-styles'
 import { LinearGradient } from 'expo-linear-gradient';
-import { SkeletonLoader } from '../Darta/SkeletonLoader';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
 
 const galleryStylesPortrait = StyleSheet.create({
@@ -81,7 +80,7 @@ export function ArtOnWall({
   toggleArtBackward: () => void;
   toggleArtTombstone: () => void;
 }) {
-  const {state, dispatch} = useContext(StoreContext);
+  const {state} = useContext(StoreContext);
   const {userState, userDispatch} = React.useContext(UserStoreContext);
 
   const [isPanActionEnabled, setIsPanActionEnabled] = useState(true);
@@ -426,7 +425,6 @@ export function ArtOnWall({
                                 
                               />
                             </Animated.View>
-                            {!isLoaded && (<SkeletonLoader height={galleryStylesPortraitDynamic.artwork.height} width={galleryStylesPortraitDynamic.artwork.width} />)}
                           </Animated.View>
                           </Surface>
                         </Pressable>

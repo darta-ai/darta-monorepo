@@ -84,8 +84,6 @@ export function ArtworkListComponent({
       dim.height = 240 + 36;
     }
   );
-
-  console.log({artworkData})
   
   if (artworkData.length === 0){
     return (

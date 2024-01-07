@@ -23,6 +23,8 @@ import { ViewListsScreen } from '../../screens/Lists/ViewLists';
 import { UIStoreContext } from '../../state';
 import { ListTopTab } from '../List/ListTopTab';
 import { IconButton } from 'react-native-paper';
+import { AddToListScreen } from '../../screens/Lists/AddToList';
+import { TextElement } from '../../components/Elements/TextElement';
 
 export const UserStack = createStackNavigator();
 
@@ -86,6 +88,7 @@ export function UserStackNavigator({route} : {route: any}) {
             ...headerOptions,
             headerTitle: 'Saved',
           }}
+          initialParams={{saveRoute: UserRoutesEnum.userAddToList}}
         />
         <UserStack.Screen
           name={UserRoutesEnum.userInquiredArtwork}
@@ -94,23 +97,29 @@ export function UserStackNavigator({route} : {route: any}) {
             ...headerOptions,
             headerTitle: 'Inquiries',
           }}
+          initialParams={{saveRoute: UserRoutesEnum.userAddToList}}
         />
         <UserStack.Screen 
           name={UserRoutesEnum.UserGalleryAndArtwork}
           component={GalleryAndArtworkTopTabNavigator}
           options={{...headerOptions, headerTitle: uiState.currentArtworkTombstoneHeader}}
-          initialParams={{navigateTo: UserRoutesEnum.SavedArtworkModal}}
+          initialParams={{navigateTo: UserRoutesEnum.SavedArtworkModal, saveRoute: UserRoutesEnum.userAddToList}}
         />
         <UserStack.Screen
           name={UserRoutesEnum.UserPastTopTabNavigator}
           component={PastExhibitionTopTabNavigator}
           options={{...headerOptions, headerTitle: uiState.previousExhibitionHeader ?? "" }}
-          initialParams={{navigateTo: UserRoutesEnum.SavedArtworkModal}}
+          initialParams={{navigateTo: UserRoutesEnum.SavedArtworkModal, saveRoute: UserRoutesEnum.userAddToList}}
           />
         <UserStack.Screen
           name={UserRoutesEnum.UserGallery}
           component={ExhibitionGalleryScreen}
-          initialParams={{galleryId: route.params?.artOnDisplay.galleryId, navigationRoute: UserRoutesEnum.UserPastTopTabNavigator, showPastExhibitions: true, navigateTo: UserRoutesEnum.SavedArtworkModal}}
+          initialParams={{galleryId: route.params?.artOnDisplay.galleryId, 
+            navigationRoute: UserRoutesEnum.UserPastTopTabNavigator, 
+            showPastExhibitions: true, 
+            navigateTo: UserRoutesEnum.SavedArtworkModal,
+            saveRoute: UserRoutesEnum.userAddToList
+          }}
           options={{...headerOptions, headerTitle: uiState?.galleryHeader ?? ""}}
           />
           <UserStack.Screen
@@ -144,6 +153,7 @@ export function UserStackNavigator({route} : {route: any}) {
           name={UserRoutesEnum.SavedArtworkModal}
           component={ArtworkScreen}
           options={{...headerOptions, headerTitle: uiState?.currentArtworkTombstoneHeader ?? ""}}
+          initialParams={{saveRoute: UserRoutesEnum.userAddToList}}
         />
         <UserStack.Screen
           name={UserRoutesEnum.UserListsScreen}
@@ -156,6 +166,20 @@ export function UserStackNavigator({route} : {route: any}) {
               backgroundColor: Colors.PRIMARY_950, 
               opacity: 0.9,
             }, 
+            transitionSpec: {
+              open: {
+                animation: 'timing',
+                config: {
+                  duration: 550, // Duration in milliseconds, adjust as needed
+                },
+              },
+              close: {
+                animation: 'timing',
+                config: {
+                  duration: 550, // Duration in milliseconds, adjust as needed
+                },
+              },
+            },
             headerBackImage: () => (
               <View style={backButtonStyles.backButton}>
                 <SVGs.BackButtonIconWhite />
@@ -163,6 +187,38 @@ export function UserStackNavigator({route} : {route: any}) {
           ), 
             headerTitle: "Lists"}}
         />
+        <UserStack.Screen
+            name={UserRoutesEnum.userAddToList}
+            component={AddToListScreen}
+            options={{ 
+              headerMode: 'float', 
+              cardStyle: {opacity: 1, margin:0, backgroundColor: 'transparent', width: '100%'}, 
+              headerTitle: 'Add to list',
+              headerTintColor: Colors.PRIMARY_50,
+              headerStyle: {
+                backgroundColor: Colors.PRIMARY_950, 
+                opacity: 0.9,
+              },
+              transitionSpec: {
+                open: {
+                  animation: 'timing',
+                  config: {
+                    duration: 550, // Duration in milliseconds, adjust as needed
+                  },
+                },
+                close: {
+                  animation: 'timing',
+                  config: {
+                    duration: 550, // Duration in milliseconds, adjust as needed
+                  },
+                },
+              },
+              headerBackImage: () => (
+                <View style={backButtonStyles.backButton}>
+                  <TextElement style={{color: Colors.PRIMARY_50}}>Cancel</TextElement>
+                </View>
+            ), 
+          }}/>
       </UserStack.Group>
     </UserStack.Navigator>
   );

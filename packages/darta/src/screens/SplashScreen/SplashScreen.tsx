@@ -27,6 +27,36 @@ SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
 });
 
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: Colors.PRIMARY_50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 24
+  },
+  dartaContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 4
+  },
+  header: {
+    fontFamily: 'DMSans_400Regular', 
+    fontSize: 24
+  },
+  artHeader: {
+    fontFamily: 'DMSans_700Bold', 
+    fontSize: 24,
+    fontWeight: 'bold'
+  },
+  subHeader: {
+    fontSize: 16, 
+    fontFamily: 'DMSans_400Regular', 
+    color: Colors.PRIMARY_950
+  }
+});
+
 function AnimatedSplashScreen({ children }) {
   const {dispatch} = React.useContext(StoreContext)
   const {galleryDispatch} = React.useContext(GalleryStoreContext)
@@ -175,29 +205,6 @@ function AnimatedSplashScreen({ children }) {
           artworkDataMulti: combinedArtwork
         });
       }
-      type ImageUrlObject = { uri: string };
-
-      const imageUrlsToPrefetch: ImageUrlObject[] = [];
-
-      const addImageUrlToPrefetch = (url: string | null | undefined) => {
-        if (!url) return;
-        imageUrlsToPrefetch.push({ uri: url });
-      };
-      
-      // for (let artworkValue of artworksToRate) {
-      //   addImageUrlToPrefetch(artworkValue?.artworkImage?.value);
-      // }
-      
-      for (let exhibitionValue of Object.values({...exhibitionPreviewsCurrent, ...exhibitionPreviewsForthcoming, ...exhibitionPreviewsCurrent})) {
-        if (exhibitionValue?.artworkPreviews) {
-          for (let art of Object.values(exhibitionValue?.artworkPreviews)) {
-            addImageUrlToPrefetch(art?.artworkImage?.value);
-          }
-        }
-      
-        addImageUrlToPrefetch(exhibitionValue?.exhibitionPrimaryImage?.value);
-        if (exhibitionValue?.galleryLogo?.value) addImageUrlToPrefetch(exhibitionValue?.galleryLogo?.value);
-      }
       
       // Need to figure out what takes the longest to load and prefetch those images. What takes so long? 
       // Then try to make that more efficient. 
@@ -228,97 +235,64 @@ function AnimatedSplashScreen({ children }) {
   }, []);
 
 
-  const wiggleAnim = React.useRef(new Animated.Value(0)).current; 
+  const dAnim = React.useRef(new Animated.Value(0)).current;
+  const a1Anim = React.useRef(new Animated.Value(0)).current;
+  const rAnim = React.useRef(new Animated.Value(0)).current;
+  const tAnim = React.useRef(new Animated.Value(0)).current;
+  const a2Anim = React.useRef(new Animated.Value(0)).current;
+
 
   React.useEffect(() => {
-    wiggleAnim.addListener(() => {})
+    dAnim.addListener(() => {})
+    a1Anim.addListener(() => {})
+    rAnim.addListener(() => {})
+    tAnim.addListener(() => {})
+    a2Anim.addListener(() => {})
   }, [])
 
-  useEffect(() => {
-    loadDataAsync(); // This function will load data and set 'isAppReady' to true
-    handleWiggle();
-  }, []);
-
-
-  const handleWiggle = () => {
-    const wiggleSequence = Animated.sequence([
-      Animated.timing(wiggleAnim, {
-        toValue: 0,  // Rotate slightly right
-        duration: 750,  // Quicker wiggle
-        easing: Easing.elastic(4),  // Bouncy effect
+  const sineWaveAnimation = (animatedValue, delay) => {
+    return Animated.sequence([
+      Animated.timing(animatedValue, {
+        toValue: 10, // Amplitude of the wave
+        duration: 500,
+        delay,
         useNativeDriver: true,
       }),
-      Animated.timing(wiggleAnim, {
-        toValue: 0.5,  // Rotate slightly right
-        duration: 750,  // Quicker wiggle
-        easing: Easing.elastic(4),  // Bouncy effect
+      Animated.timing(animatedValue, {
+        toValue: -10,
+        duration: 1000,
         useNativeDriver: true,
       }),
-      Animated.timing(wiggleAnim, {
-        toValue: 0,  // Rotate slightly left
-        duration: 750,  // Quicker wiggle
-        easing: Easing.elastic(4),  // Bouncy effect
-        useNativeDriver: true,
-      }),
-      Animated.timing(wiggleAnim, {
-        toValue: -0.5,  // Rotate slightly left
-        duration: 750,  // Quicker wiggle
-        easing: Easing.elastic(4),  // Bouncy effect
-        useNativeDriver: true,
-      }),
-      Animated.timing(wiggleAnim, {
-        toValue: 0,  // Rotate slightly left
-        duration: 750,  // Quicker wiggle
-        easing: Easing.elastic(4),  // Bouncy effect
+      Animated.timing(animatedValue, {
+        toValue: 0,
+        duration: 500,
         useNativeDriver: true,
       }),
     ]);
-  
-    // Continuous loop of wiggle
-    Animated.loop(wiggleSequence).start();
   };
-
-  // const handleWiggle = async () => {
-  //   // Start the first part of the wiggle animation
-  //   Animated.timing(wiggleAnim, {
-  //     toValue: 0.5,  // Rotate slightly right
-  //     duration: 500,
-  //     useNativeDriver: true,
-  //   }).start(async () => {
-      
-  //     Animated.sequence([
-  //       Animated.timing(wiggleAnim, {
-  //         toValue: -0.5,  // Rotate slightly left
-  //         duration: 500,
-  //         useNativeDriver: true,
-  //       }),
-  //       Animated.timing(wiggleAnim, {
-  //         toValue: 0,  // Return to original position
-  //         duration: 500,
-  //         useNativeDriver: true,
-  //       }),
-  //     ]).start(async () => {
-  //       await loadDataAsync()
-  //       Animated.sequence([
-  //         Animated.timing(wiggleAnim, {
-  //           toValue: -0.5,  // Rotate slightly left
-  //           duration: 500,
-  //           useNativeDriver: true,
-  //         }),
-  //         Animated.timing(wiggleAnim, {
-  //           toValue: 0,  // Rotate slightly left
-  //           duration: 500,
-  //           useNativeDriver: true,
-  //         }),
-  //       ]).start()
-  //     });
-  //   });
-  // };
-
-  const rotate = wiggleAnim.interpolate({
-    inputRange: [-1, 1],
-    outputRange: ['-25deg', '25deg'],  // Small rotation range for wiggle
-  });
+  
+  
+  
+  React.useEffect(() => {
+    async function fireLoad() {
+      await loadDataAsync();
+    }
+  
+    const cycleDuration = 3000; // Total duration for each letter's full cycle
+    const animations = [
+      sineWaveAnimation(dAnim, 0),
+      sineWaveAnimation(a1Anim, cycleDuration / 5 * 1),
+      sineWaveAnimation(rAnim, cycleDuration / 5 * 2),
+      sineWaveAnimation(tAnim, cycleDuration / 5 * 3),
+      sineWaveAnimation(a2Anim, cycleDuration / 5 * 4),
+    ];
+  
+    // Start all animations
+    animations.forEach((anim) => anim.start());
+    fireLoad(); 
+    return () => animations.forEach((anim) => anim.stop()); // Cleanup
+  }, []);
+  
 
   return (
       <View style={{ flex: 1 }}>
@@ -329,18 +303,29 @@ function AnimatedSplashScreen({ children }) {
           style={[
             StyleSheet.absoluteFill,
             {
-              backgroundColor: Colors.PRIMARY_50,
+              ...styles.container,
               opacity: animation, // This controls the fade out
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 24
             },
           ]}
         >
-          <Animated.Text style={{ transform: [{ rotate }], fontFamily: 'DMSans_700Bold', fontSize: 24 }}>
-            darta
-          </Animated.Text>
-          <TextElement style={{fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_950}}>the digital art advisor</TextElement>
+          <View style={styles.dartaContainer}>
+            <Animated.Text style={{ transform: [{ translateY: dAnim }], ...styles.header }}>
+              d
+            </Animated.Text>
+            <Animated.Text style={{ transform: [{ translateY: a1Anim }], ...styles.header }}>
+              a
+            </Animated.Text>
+            <Animated.Text style={{ transform: [{ translateY: rAnim }], ...styles.header}}>
+              r
+            </Animated.Text>
+            <Animated.Text style={{ transform: [{ translateY: tAnim }], ...styles.header }}>
+              t
+            </Animated.Text>
+            <Animated.Text style={{ transform: [{ translateY: a2Anim }], ...styles.header }}>
+              a
+            </Animated.Text>
+          </View>
+          <TextElement style={styles.subHeader}>the digital art advisor</TextElement>
         </Animated.View>
       )}
     </View>

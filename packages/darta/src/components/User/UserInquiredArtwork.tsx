@@ -107,11 +107,7 @@ export function UserInquiredArtwork({navigation}: {navigation: any}) {
           justifyContent: 'center', 
           alignItems: 'center' }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>  
-          <Image 
-            source={require('../../assets/dartahousewhite.png')}
-            style={dartaLogo.image}
-          />
+          <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_50} onRefresh={onRefresh} />}>  
           <TextElement style={{margin: 5, color: Colors.PRIMARY_50}}>{getStartedText}</TextElement>
         </ScrollView>
         )

@@ -1,13 +1,11 @@
 import * as Colors from '@darta-styles';
-import React, {useContext} from 'react';
+import React from 'react';
 
-import {ETypes, StoreContext, UIStoreContext} from '../../state';
-import {backButtonStyles, headerOptions, viewOptionsStyles} from '../../styles/styles';
+import { UIStoreContext} from '../../state';
+import {backButtonStyles, headerOptions} from '../../styles/styles';
 import {RecommenderRoutesEnum} from '../../typing/routes';
 import {View } from 'react-native';
 import { DartaRecommenderTopTab } from './DartaRecommenderTopTab';
-import { IconButton} from 'react-native-paper';
-import {icons} from '../../utils/constants';
 import { useNavigation } from '@react-navigation/native';
 import { useDeepLinking } from '../../components/LinkingAndNavigation/deepLinking';
 import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
@@ -53,6 +51,21 @@ export function DartaRecommenderNavigator() {
         <RecommenderStack.Group screenOptions={{
               presentation: 'transparentModal',
               cardStyle: {backgroundColor: 'transparent'},
+              cardStyleInterpolator: CardStyleInterpolators.forModalPresentationIOS,
+              transitionSpec: {
+                open: {
+                  animation: 'timing',
+                  config: {
+                    duration: 550, // Duration in milliseconds, adjust as needed
+                  },
+                },
+                close: {
+                  animation: 'timing',
+                  config: {
+                    duration: 550, // Duration in milliseconds, adjust as needed
+                  },
+                },
+              },
             }}>
             <RecommenderStack.Screen
               name={RecommenderRoutesEnum.recommenderLists}

@@ -75,3 +75,14 @@ export async function listUserArtworkAPIRelationships({
   }
 }
 
+
+export const getArtworkEmailAndGalleryAPI = async ({artworkId} : {artworkId: string}) => {
+  try {
+    const headers = await generateHeaders()
+    const {data} = await axios.get(`${URL}/readArtworkEmailAndGallery`, {params : {artworkId}, headers});
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'getArtworkEmailAndGallery'})
+    return error.message;
+  }
+}
