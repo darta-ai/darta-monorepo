@@ -5,7 +5,7 @@ import { generateHeaders } from './utls';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}lists`;
 
-export async function readListForUser({listId} : {listId: string}){
+export async function readListForUser({listId} : {listId: string}) : Promise<{[key:string] : FullList}>{
   try {
     const headers = await generateHeaders()
     const {data} = await axios.get(`${URL}/readList`, {params : {listId}, headers});
@@ -77,7 +77,7 @@ export async function addArtworkToList({listId, artworkId}: {listId : string, ar
 }
 
 
-export async function getFullList({listId}: {listId : string}): Promise<any> {
+export async function getFullList({listId}: {listId : string}): Promise<{[key: string] : FullList } | null> {
   try {
     const headers = await generateHeaders()
     const {data} = await axios.get(`${URL}/readList`, {params: {listId}, headers});

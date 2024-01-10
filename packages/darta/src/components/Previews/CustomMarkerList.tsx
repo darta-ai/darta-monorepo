@@ -15,6 +15,7 @@ import { ExploreMapRootEnum, UserRoutesEnum } from '../../typing/routes';
 import {Button } from 'react-native-paper';
 import { GoogleMapsPinIcon, MapPinCircleDotIcon} from '../../assets/SVGs';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
+import { GoogleMapsPinBlackIcon } from '../../assets/SVGs/GoogleMapsPinBlack';
 
 const customMarker = StyleSheet.create({
   galleryContainer:{
@@ -196,7 +197,7 @@ const CustomMarkerList = React.memo(({
       key={mapPin.exhibitionId}
       onTouchStart={() => setShowCallout(true)}
     >
-      {hasUpcomingOpening ? <MapPinCircleDotIcon />: <GoogleMapsPinIcon/> }
+      <GoogleMapsPinBlackIcon/>
       {showCallout && (
         <Callout style={customMarkerDynamic.container} 
         onTouchStart={() => setShowCallout(false)} 

@@ -139,7 +139,6 @@ export function AddToListScreen({
 
     const handleDone = async () => {
         setIsLoading(true)
-        const promises: Promise<void>[]= [];
 
         if (saveToSaved && artworkId) {
             await createUserArtworkRelationship({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE});
@@ -205,6 +204,7 @@ export function AddToListScreen({
                 artworkId={artworkId as string}
                 visible={visible}
                 setVisible={setVisible}
+                artwork={artwork}
                 />
             </ScrollView>
             <View style={addToListStyles.saveButtonContainer}>

@@ -404,60 +404,58 @@ export function ExhibitionDetailsScreen({
         }, 500)  }, []);
 
 
-    const [isCalendarFailure, setFailure] = React.useState<boolean>(false);
-    const [isCalendarSuccess, setSuccess] = React.useState<boolean>(false);
+    // const [isCalendarFailure, setFailure] = React.useState<boolean>(false);
 
-    const saveExhibitionToCalendar = async () => {
-        // add an event to the calendar using the Calendar api from expo
-        const { status } = await Calendar.requestCalendarPermissionsAsync();
-          if (status === 'granted') {
-            const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+    // const saveExhibitionToCalendar = async () => {
+    //     // add an event to the calendar using the Calendar api from expo
+    //     const { status } = await Calendar.requestCalendarPermissionsAsync();
+    //       if (status === 'granted') {
+    //         const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
 
-            const defaultCalendars = calendars.filter(
-                (each) => each.source.name === 'Default',
-              )
-            if (defaultCalendars.length === 0 || !defaultCalendars[0].id){
-                setFailure(true)
-                return
-            }
-            try{
-                await Calendar.createEventAsync(defaultCalendars[0].id, {
-                    title: `${currentExhibition?.exhibitionTitle?.value} at ${galleryName}`,
-                    startDate: receptionOpenFullDate as Date,
-                    endDate: receptionCloseFullDate as Date,
-                    location: currentExhibition?.exhibitionLocation?.locationString?.value!,
-                    notes: 'Reception added to calendar by darta'
-                  })
-                  setSuccess(true)
-            } catch(error){
-                setFailure(true)
-            }
-        }
-    }
+    //         const defaultCalendars = calendars.filter(
+    //             (each) => each.source.name === 'Default',
+    //           )
+    //         if (defaultCalendars.length === 0 || !defaultCalendars[0].id){
+    //             setFailure(true)
+    //             return
+    //         }
+    //         try{
+    //             await Calendar.createEventAsync(defaultCalendars[0].id, {
+    //                 title: `${currentExhibition?.exhibitionTitle?.value} at ${galleryName}`,
+    //                 startDate: receptionOpenFullDate as Date,
+    //                 endDate: receptionCloseFullDate as Date,
+    //                 location: currentExhibition?.exhibitionLocation?.locationString?.value!,
+    //                 notes: 'Reception added to calendar by darta'
+    //               })
+    //         } catch(error){
+    //             setFailure(true)
+    //         }
+    //     }
+    // }
 
-    const alertCalendar = () => {
-        if(receptionOpenFullDate <= new Date()) {
-            Alert.alert(`The ${currentExhibition?.exhibitionTitle.value} is in the past`, ``, [
-                {
-                    text: 'Cancel',
-                    onPress: () => {},
-                    style: 'destructive',
-                },
-            ])
-        } else {
-        Alert.alert(`Save the reception for ${currentExhibition?.exhibitionTitle.value} to your calendar?`, ``, [
-            {
-              text: 'Cancel',
-              onPress: () => {},
-              style: 'destructive',
-            },
-            {
-              text: `Yes`,
-              onPress: () => saveExhibitionToCalendar(),
-            },
-          ])
-        }
-    }
+    // const alertCalendar = () => {
+    //     if(receptionOpenFullDate <= new Date()) {
+    //         Alert.alert(`The ${currentExhibition?.exhibitionTitle.value} is in the past`, ``, [
+    //             {
+    //                 text: 'Cancel',
+    //                 onPress: () => {},
+    //                 style: 'destructive',
+    //             },
+    //         ])
+    //     } else {
+    //     Alert.alert(`Save the reception for ${currentExhibition?.exhibitionTitle.value} to your calendar?`, ``, [
+    //         {
+    //           text: 'Cancel',
+    //           onPress: () => {},
+    //           style: 'destructive',
+    //         },
+    //         {
+    //           text: `Yes`,
+    //           onPress: () => saveExhibitionToCalendar(),
+    //         },
+    //       ])
+    //     }
+    // }
 
     const openInMaps = (address: string) => {
         if (!address) return;
@@ -550,7 +548,7 @@ export function ExhibitionDetailsScreen({
                         <DartaIconButtonWithText 
                             text={`Reception: ${receptionDateString} ${receptionTimeString}`}
                             iconComponent={SVGs.CalendarIcon}
-                            onPress={() => alertCalendar()}
+                            onPress={() => () => {}}
                         />
                     </View>
                     )}

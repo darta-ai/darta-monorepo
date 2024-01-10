@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { ETypes, StoreContext, UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes } from '../../state';
 import * as Linking from 'expo-linking';
-import { ExhibitionRootEnum, UserRoutesEnum } from '../../typing/routes';
+import { ExhibitionRootEnum, ListEnum, RecommenderRoutesEnum, UserRoutesEnum } from '../../typing/routes';
 import { readExhibition, readMostRecentGalleryExhibitionForUser } from '../../api/exhibitionRoutes';
 import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
 import { createGalleryRelationshipAPI } from '../../utils/apiCalls';
 import { readListForUser } from '../../api/listRoutes';
+import { FullList } from '@darta-types/dist';
 
 
 export function useDeepLinking(navigation) {
@@ -88,13 +89,14 @@ async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: st
   }
 }
 
-async function fetchListById({listId} : {listId: string}){
+async function fetchListById({listId} : {listId: string}): Promise<FullList | void>{
   try {
     const list = await readListForUser({ listId })
     dispatch({
       type: ETypes.setUserLists,
       userLists: list,
     })
+    return Object.values(list)[0]
   } catch (error: any){
     console.log(error)
   }
@@ -141,13 +143,32 @@ async function fetchListById({listId} : {listId: string}){
       });
       }
     } else if (params && params.listId) {
-      await fetchListById({listId: params.listId.toString()})
-      navigation.navigate('Profile', {
-        screen: UserRoutesEnum.userListFull,
-        params: {
-          listId: params.listId.toString(),
-        }
-    });
+      try{
+        navigation.navigate('View', { screen: RecommenderRoutesEnum.recommenderGenericLoading });
+        const res = await fetchListById({listId: params.listId.toString()})
+        uiDispatch({
+          type: UiETypes.setListHeader,
+          currentExhibitionHeader: res?.listName ?? ""
+        })
+        navigation.navigate('View', {
+          screen:  RecommenderRoutesEnum.recommenderFullList,
+          params: {
+              screen: ListEnum.fullList,  
+              params: {
+                listId: params.listId.toString(),
+              }
+          }
+      });
+      }catch(error: any){
+        return
+      }
+   
+    //   navigation.navigate('View', {
+    //     screen: RecommenderRoutesEnum.recommenderFullList,
+    //     params: {
+    //         listId: params.listId.toString(),
+    //     }
+    // });
     } else {
         return
       } 

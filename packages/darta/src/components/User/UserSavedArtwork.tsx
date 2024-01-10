@@ -16,11 +16,10 @@ import { UserETypes, UserStoreContext } from '../../state/UserStore';
 export function UserSavedArtwork({navigation}: {navigation: any}) {
   const {userState, userDispatch} = React.useContext(UserStoreContext);
 
-  const errorMessageText = "when you save artwork, it will appear here"
 
 
   const [artworkData, setArtworkData] = React.useState<Artwork[] | null>(null)
-  const [getStartedText, setGetStartedText] = React.useState<string | null>(errorMessageText)
+  const [hasNoArtwork, setHasNoArtwork] = React.useState<boolean>(true)
 
   React.useEffect(() => {
     const savedArtwork = userState.userSavedArtwork;
@@ -42,11 +41,9 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
       FastImage.preload(imageUrlsToPrefetch)
       setArtworkData(data)
 
-      if (data.length !== 0){
-        setGetStartedText(null)
+      if (data.length > 0){
+        setHasNoArtwork(false)
       }
-    }else {
-      setGetStartedText(errorMessageText)
     }
 
   }, [userState.userSavedArtwork]);
@@ -77,34 +74,28 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
     }, 500)  }, []);
 
 
-
-  return (
-    <>
-    {getStartedText ? 
-    (
-      <ScrollView 
-      style={{
-        height: hp('40%'),
-        width: '100%',
-        backgroundColor: Colors.PRIMARY_600,
-      }}
-      contentContainerStyle={{ 
-        flexGrow: 1, 
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center', 
-        alignItems: 'center' }}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>  
-        <Image 
-          source={require('../../assets/dartahousewhite.png')}
-          style={dartaLogo.image}
-        />
-        <TextElement style={{margin: 5, color: Colors.PRIMARY_50}}>{getStartedText}</TextElement>
-      </ScrollView>
+    if (hasNoArtwork){
+      return(
+        <ScrollView 
+        style={{
+          height: hp('40%'),
+          width: '100%',
+          backgroundColor: Colors.PRIMARY_50,
+        }}
+        contentContainerStyle={{ 
+          flexGrow: 1, 
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center', 
+          alignItems: 'center' }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_950} onRefresh={onRefresh} />}>  
+            <TextElement style={dartaLogo.textHeader}>No artwork to show</TextElement>
+            <TextElement style={dartaLogo.text}>when you add artwork to your saves, it will appear here</TextElement>
+        </ScrollView>
       )
-      :
-      (
+    } else if (artworkData) {
+      return (
         <ArtworkList 
         refreshing={refreshing}
         onRefresh={onRefresh}
@@ -114,7 +105,5 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
         navigateToParams={UserRoutesEnum.UserPastTopTabNavigator}
       />
       )
-    }
-    </>
-  );
+  }
 }

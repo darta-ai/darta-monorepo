@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, StyleSheet, ActivityIndicator} from 'react-native';
+import { View, StyleSheet} from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import FastImage from 'react-native-fast-image'
 import {
@@ -51,11 +51,10 @@ const WIDTH = wp('90%');
 
 
 // Define the CustomItem component
-const CustomItemComponent = ({ item }) => {
+const CustomItemComponent = ({ item, index }) => {
   const image = item?.imageUrl ? { uri: item.imageUrl } : image404;
 
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-
+  const priority = index === 0 ? FastImage.priority.high : FastImage.priority.normal;
 
   return (
     <View style={{ flex: 1,  width: '100%'}} key={image}>
@@ -63,7 +62,7 @@ const CustomItemComponent = ({ item }) => {
           <DartaImageComponent
             uri = {item?.imageUrl ?? ""} 
             priority={FastImage.priority.normal}
-            source={{ ...image, priority: FastImage.priority.normal }}
+            source={{ ...image, priority}}
             style={carouselStyle.heroImage} 
             resizeMode={FastImage.resizeMode.contain}
           />
@@ -103,6 +102,10 @@ function ExhibitionCarouselComponent({ images }) {
     setCurrentIndex(index);
   };
 
+  console.log({images})
+
+  const multipleImages = images.length > 1;
+
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <Carousel
@@ -112,18 +115,20 @@ function ExhibitionCarouselComponent({ images }) {
         width={WIDTH}
         onSnapToItem={onSnapToItem}
         data={images}
+        enabled={multipleImages}
         panGestureHandlerProps={{
           activeOffsetX: [-10, 10],
         }}
         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         scrollAnimationDuration={100}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <CustomItem
             item={item}
+            index={index}
           />
         )}
       />
-      <PaginationDots currentIndex={currentIndex} itemCount={images.length} />
+      {multipleImages && (<PaginationDots currentIndex={currentIndex} itemCount={images.length} />)}
     </View>
   );
 }

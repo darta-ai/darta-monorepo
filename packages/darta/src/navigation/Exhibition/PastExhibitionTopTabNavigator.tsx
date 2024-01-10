@@ -20,7 +20,6 @@ export type PreviousExhibitionStackParamList = {
 
 export function PastExhibitionTopTabNavigator({route} : {route: any}) {
 
-  const {state} = useContext(StoreContext);
   const {exhibitionState} = useContext(ExhibitionStoreContext);
   let exhibitionId = "";
   if (route?.params?.exhibitionId){
@@ -32,6 +31,21 @@ export function PastExhibitionTopTabNavigator({route} : {route: any}) {
     pastExhibitionTitle = exhibitionState.exhibitionData[exhibitionId].exhibitionTitle.value!
   }
 
+  const [showArtwork , setShowArtwork] = React.useState<boolean>(false);
+  
+  React.useEffect(() => {
+    const exhibitionId = route.params.exhibitionId;
+    const exhibitionData = exhibitionState.exhibitionData;
+  
+    if (exhibitionData && exhibitionData[exhibitionId]) {
+      const artworks = exhibitionData[exhibitionId].artworks;
+      if (artworks && Object.keys(artworks).length > 0) {
+        setShowArtwork(true);
+      }
+    }
+  }, [exhibitionState.exhibitionData]);
+  
+
 
   return (
     <PreviousExhibitionStackTopTab.Navigator screenOptions={{...tabBarScreenOptions}}>
@@ -41,12 +55,14 @@ export function PastExhibitionTopTabNavigator({route} : {route: any}) {
           initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId}}
           options={{ title: 'Exhibition' }}
         />
-      <PreviousExhibitionStackTopTab.Screen
-          name={PreviousExhibitionRootEnum.artworkList}
-          component={ExhibitionArtworkScreen}
-          initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId, navigateTo: route.params?.navigateTo ?? ExhibitionRootEnum.individualArtwork }}
-          options={{ title: 'Artworks' }}
-        />
+        {showArtwork && (
+        <PreviousExhibitionStackTopTab.Screen
+            name={PreviousExhibitionRootEnum.artworkList}
+            component={ExhibitionArtworkScreen}
+            initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId, navigateTo: route.params?.navigateTo ?? ExhibitionRootEnum.individualArtwork }}
+            options={{ title: 'Artwork' }}
+          />
+        )}
     </PreviousExhibitionStackTopTab.Navigator>
   );
 }

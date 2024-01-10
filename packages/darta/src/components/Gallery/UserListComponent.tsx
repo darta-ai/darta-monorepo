@@ -83,6 +83,8 @@ export const UserListComponent: React.FC<DartaIconButtonWithTextProps> = ({
     handlePress({listId: listPreview._id})
   }
 
+  console.log({listPreview})
+
   return (
     <TouchableOpacity style={userListComponentStyles.componentContainer} onPress={onPress}>
       <View style={userListComponentStyles.badgeContainer}>

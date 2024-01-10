@@ -271,8 +271,6 @@ export class ExhibitionService implements IExhibitionService {
     };
   }
 
-
-
   public async getExhibitionPreviewById({
     exhibitionId,
   }: {
@@ -856,7 +854,7 @@ export class ExhibitionService implements IExhibitionService {
   
     try {
       const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit });
-      const exhibitionPreviews = (await edgeCursor.all()).filter((el) => el && Object?.values(el.artworkPreviews)?.length > 0);
+      const exhibitionPreviews = await edgeCursor.all()
 
       return exhibitionPreviews.reduce((acc, obj) =>{
         acc[obj.exhibitionId as string] = {...obj, artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2}), {})}

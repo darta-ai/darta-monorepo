@@ -125,6 +125,9 @@ export function UserStackNavigator({route} : {route: any}) {
           <UserStack.Screen
             name={UserRoutesEnum.userListFull}
             component={ListTopTab}
+            initialParams= {{
+              navigateToGalleryParams: UserRoutesEnum.UserGallery,
+            }}
             options={{
               headerTintColor: Colors.PRIMARY_50,
               headerStyle: {

@@ -8,6 +8,7 @@ import { TextElement, TextElementMultiLine } from '../Elements/TextElement';
 import {Portal, Modal, Button, Switch, TextInput, Snackbar} from 'react-native-paper'
 import { createArtworkListAPI } from '../../utils/apiCalls';
 import { FailureToast } from '../Toasts/FailureToast';
+import { Artwork } from '@darta-types/dist';
 
 const addToListStyles = StyleSheet.create({
     container: {
@@ -56,21 +57,25 @@ export function NewListModal({
     navigation,
     artworkId,
     visible,
-    setVisible
+    setVisible,
+    artwork,
 }: {
     navigation: any;
     artworkId: string;
-    visible: boolean,
+    visible: boolean;
+    artwork: Artwork | null
     setVisible: (visible: boolean) => void
 }) {
 
     const {dispatch} = React.useContext(StoreContext);
     const [listName, setListName] = React.useState<string>("")
-    const [isCollaborative, setIsCollaborative] = React.useState<boolean>(false)
-    const [isPrivate, setIsPrivate] = React.useState<boolean>(false)
+    // const [isCollaborative, setIsCollaborative] = React.useState<boolean>(false)
+    // const [isPrivate, setIsPrivate] = React.useState<boolean>(false)
     const [errorText, setErrorText] = React.useState<string>("")
     const [apiErrorText, setApiErrorText] = React.useState<string>("");
+    const [loading, setLoading] = React.useState<boolean>(false)
     const saveList = async () => {
+        setLoading(true)
         try{
             if(!listName) {
                 setErrorText("Please enter a list name")
@@ -80,13 +85,18 @@ export function NewListModal({
             }
             const data = await createArtworkListAPI({artworkId, newList:{
                 listName,
-                isCollaborative,
-                isPrivate,
+                isCollaborative: false,
+                isPrivate: false,
             }})
             if (data && data._id) {
+                const previewImage = artwork?.artworkImage ?? ""
                 dispatch({
                     type: ETypes.setUserListPreviews,
-                    userListPreviews: {[data._id]: data},
+                    userListPreviews: {[data._id]: {
+                        ...data,
+                        previewImage
+                    }
+                },
                 })
                 setVisible(!visible)
                 setListName("")
@@ -94,6 +104,7 @@ export function NewListModal({
             } else {
                 setApiErrorText("something went wrong please try again later")
             }
+            setLoading(false)
         } catch (e) {   
             setApiErrorText("something went wrong please try again later")
         }
@@ -131,7 +142,14 @@ export function NewListModal({
                         value={isPrivate} onValueChange={setIsPrivate} />
                     </View> */}
 
-                    <Button style={addToListStyles.createButton} onPress={saveList} mode={'outlined'}>
+                    <Button 
+                        style={addToListStyles.createButton} 
+                        buttonColor={Colors.PRIMARY_50} 
+                        onPress={saveList} 
+                        loading={loading} 
+                        labelStyle={{color: Colors.PRIMARY_50}}
+                        disabled={loading}
+                        mode={'outlined'}>
                         <TextElement style={addToListStyles.buttonText}>Create</TextElement>
                     </Button>
                     <View>

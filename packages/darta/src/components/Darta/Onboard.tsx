@@ -82,7 +82,6 @@ export const Onboard = () => {
             <View style={onboardStyles.overlay}>
                 <TextElement style={onboardStyles.headerTextElement}>Hi, welcome to darta!</TextElement>
                 <SVGs.HandsAndSparklesIcon />
-                <TextElement style={onboardStyles.bodyTextElement}>We've got a new look!</TextElement>
                 <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step + 1)}><TextElement style={onboardStyles.buttonTextColor}>Next</TextElement></Button>
             </View>
         )}
@@ -91,7 +90,7 @@ export const Onboard = () => {
                 <TextElement style={onboardStyles.headerTextElement}>Tap and swipe this screen</TextElement>
                 <SVGs.SwipeIcon />
                 <TextElement style={onboardStyles.bodyTextElement}>Swipe right and left to browse artwork</TextElement>
-                <TextElement style={onboardStyles.bodyTextElement}>Tap to artwork more details</TextElement>
+                <TextElement style={onboardStyles.bodyTextElement}>Tap artwork for more details</TextElement>
                 <View style={onboardStyles.buttonContainer}>
                     <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step - 1)}><TextElement style={onboardStyles.buttonTextColor}>Back</TextElement></Button>
                     <Button style={onboardStyles.buttonStyles} onPress={() => handleClose()}><TextElement style={onboardStyles.buttonTextColor}>Done</TextElement></Button>

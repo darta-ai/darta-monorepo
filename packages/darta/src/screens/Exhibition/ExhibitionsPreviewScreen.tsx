@@ -45,10 +45,17 @@ export function ExhibitionPreviewScreen({
   const [errorText, setErrorText] = React.useState<string>("")
   
   const sortPreviews = (exhibitionPreviews: ExhibitionPreview[]) => {
-    return exhibitionPreviews.sort((a, b) => {
-      if (!a.openingDate?.value || !b.openingDate?.value) return 0
-      return b.openingDate?.value >= a.openingDate?.value ? 1 : -1
-    })
+    if(route.params?.type === "Upcoming"){
+      return exhibitionPreviews.sort((a, b) => {
+        if (!a.openingDate?.value || !b.openingDate?.value) return 0
+        return b.openingDate?.value >= a.openingDate?.value ? -1 : 1
+      })
+    } else {  
+      return exhibitionPreviews.sort((a, b) => {
+        if (!a.openingDate?.value || !b.openingDate?.value) return 0
+        return b.openingDate?.value >= a.openingDate?.value ? 1 : -1
+      })
+    }
   }
 
   const determineExhibitionPreviews = () => {

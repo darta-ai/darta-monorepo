@@ -20,6 +20,7 @@ import {galleryInteractionStyles, globalTextStyles} from '../../styles/styles';
 import { createUser, deleteDartaUser, editDartaUserAccount, getDartaUser } from '../../api/userRoutes';
 import { firebaseDeleteUser } from '../../api/firebase';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 type FieldState = {
   isEditing?: boolean;
@@ -408,13 +409,11 @@ export function EditUserProfile({navigation} : {navigation: any}) {
           </TextElement>
           <View style={[SSSignedInUserSettings.textEditContainer]}>
             {formData.profilePicture.isEditing && tempImage.uri ? (
-              <FastImage
-                source={{
-                  uri: tempImage.uri,
-                }}
+              <DartaImageComponent
+                uri={tempImage.uri}
                 style={SSSignedInUserSettings.image}
                 resizeMode={FastImage.resizeMode.contain}
-
+                priority={FastImage.priority.normal}
               />
             ) : (
               <Image

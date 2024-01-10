@@ -97,7 +97,7 @@ export function ViewListsScreen({
                 listHeader: list[listId].listName
             })
         }
-        const listUrl = `https://darta.art/exhibition?listId=${listId}`
+        const listUrl = `https://darta.art/lists?listId=${listId}`
         uiDispatch({
             type: UiETypes.setListURL,
             listUrl
@@ -128,7 +128,7 @@ export function ViewListsScreen({
     const rowRenderer = (_, listPreview) => {
         return (
             <View key={listPreview?._id}>
-                <Swipeable renderRightActions={(dragX) => renderRightActions(_, dragX, listPreview?._id)}> 
+                <Swipeable friction={3} renderRightActions={(dragX) => renderRightActions(_, dragX, listPreview?._id)}> 
                     <UserListComponent 
                         listPreview={listPreview}
                         isAdding={false}
@@ -180,7 +180,7 @@ export function ViewListsScreen({
             justifyContent: 'center',
             width: wp('20%'),  // Adjust as needed
             height: '100%',
-            backgroundColor: Colors.PRIMARY_400,
+            // backgroundColor: Colors.PRIMARY_0,
             transform: [{ translateX: trans }],  // Ensure this moves as expected
           },
           buttonWidth: {
@@ -200,7 +200,7 @@ export function ViewListsScreen({
                 {loadingDelete ? (
                   <ActivityIndicator size="small"/>
                 ) : (
-                  <Icon name="delete" solid={false}/>
+                  <Icon name="delete" reverse raised  solid={false}/>
                 )}
             </TouchableOpacity>
           </Animated.View>

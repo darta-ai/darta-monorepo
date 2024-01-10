@@ -19,6 +19,7 @@ import { globalTextStyles } from '../../styles/styles';
 import { UserRoutesEnum } from '../../typing/routes';
 import FastImage from 'react-native-fast-image';
 import { UIStoreContext, UiETypes } from '../../state';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 
 
@@ -90,10 +91,11 @@ export function GalleryPreviewMini({
     >
       <View style={galleryPreviewMiniStyles.container}>
         <View style={galleryPreviewMiniStyles.imageContainer}> 
-          <FastImage
-            source={{uri: galleryLogo?.value ?? ""}}
+          <DartaImageComponent
+            uri={galleryLogo?.value ?? ""}
             style={galleryPreviewMiniStyles.image}
             resizeMode={FastImage.resizeMode.contain}
+            priority={FastImage.priority.normal}
           />
         </View>
         <View style={galleryPreviewMiniStyles.textContainer}>

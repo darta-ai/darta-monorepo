@@ -15,6 +15,7 @@ import * as Colors from '@darta-styles';
 import { customLocalDateStringEnd, customLocalDateStringStart } from '../../utils/functions';
 import FastImage from 'react-native-fast-image';
 import { Button, Surface } from 'react-native-paper';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 
 type ExhibitionPreviewMiniProps = {
@@ -129,10 +130,11 @@ const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
             {exhibitionTitle?.trim()}
           </TextElement>
           <Surface elevation={1} style={{...exhibitionPreview.heroImageContainer, marginTop: 24}}>
-            <FastImage 
-                source={{uri: exhibitionHeroImage}} 
+            <DartaImageComponent 
+                uri= {exhibitionHeroImage} 
                 style={exhibitionPreview.heroImage} 
                 resizeMode={FastImage.resizeMode.contain}
+                priority={FastImage.priority.high}
             />
           </Surface>
           <TextElement

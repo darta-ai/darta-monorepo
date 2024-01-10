@@ -47,7 +47,6 @@ export function ArtOnWallFlatList({
   const {uiDispatch} = React.useContext(UIStoreContext);
 
   const [backgroundContainerDimensionsPixels] = React.useState(galleryDimensionsPortrait) 
-  const [isLoading, setIsLoading] = React.useState(false);
 
   const [artDimensions, setArtDimensions] = React.useState<ArtDimensions>({
     artImageSize: null,
@@ -62,8 +61,14 @@ export function ArtOnWallFlatList({
       type: UiETypes.setTombstoneHeader,
       currentArtworkHeader: artOnDisplay?.artworkTitle?.value!,
     });
+    console.log('recommenderViewFlatList',{title: artOnDisplay?.artworkTitle?.value!})
     if (artOnDisplay){
-      navigation.navigate(RecommenderRoutesEnum.TopTabExhibition, {artOnDisplay, galleryId: artOnDisplay?.galleryId, exhibitionId: artOnDisplay?.exhibitionId});
+      navigation.navigate(RecommenderRoutesEnum.TopTabExhibition, {
+        artOnDisplay, 
+        galleryId: artOnDisplay?.galleryId, 
+        exhibitionId: artOnDisplay?.exhibitionId,
+        artworkTitle: artOnDisplay?.artworkTitle?.value!
+      });
     }
   };
 

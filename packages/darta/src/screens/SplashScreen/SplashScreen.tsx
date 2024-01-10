@@ -43,12 +43,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontFamily: 'DMSans_400Regular', 
-    fontSize: 24
-  },
-  artHeader: {
-    fontFamily: 'DMSans_700Bold', 
     fontSize: 24,
-    fontWeight: 'bold'
   },
   subHeader: {
     fontSize: 16, 
@@ -325,7 +320,7 @@ function AnimatedSplashScreen({ children }) {
               a
             </Animated.Text>
           </View>
-          <TextElement style={styles.subHeader}>the digital art advisor</TextElement>
+          <TextElement style={styles.subHeader}>digital art advisor</TextElement>
         </Animated.View>
       )}
     </View>

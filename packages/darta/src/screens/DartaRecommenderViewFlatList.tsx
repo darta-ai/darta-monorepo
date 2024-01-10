@@ -181,7 +181,7 @@ export function DartaRecommenderViewFlatList({
     if (visibleIndex !== currentIndex) {
       setCurrentIndex(visibleIndex);
       modifyDisplayRating({ index: visibleIndex });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
   };
 
@@ -216,7 +216,6 @@ export function DartaRecommenderViewFlatList({
         try {
             const artworkRatingIndex = index + 1;
             scrollViewRef.current?.scrollToIndex(artworkRatingIndex, true)
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
             setCurrentIndex(artworkRatingIndex)
         } catch (error) {
           scrollViewRef.current?.scrollToIndex(index + 2, true)
@@ -249,7 +248,6 @@ export function DartaRecommenderViewFlatList({
     if (index !== 0) {
       const artworkRatingIndex = index - 1;
       scrollViewRef.current?.scrollToIndex(artworkRatingIndex, true)
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
       setCurrentIndex(artworkRatingIndex)
     }
   }, [viewState.artworksToRate, currentIndex])
@@ -375,7 +373,6 @@ export function DartaRecommenderViewFlatList({
             type: UserETypes.setUserLikedArtwork,
             artworkId: artOnDisplay?._id!,
           })
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
           analytics().logEvent('like_artwork')
           break;
         case (USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE):

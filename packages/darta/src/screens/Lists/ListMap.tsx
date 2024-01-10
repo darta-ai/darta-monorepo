@@ -4,13 +4,11 @@ import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-nativ
 import * as Location from 'expo-location';
 
 import * as Colors from '@darta-styles';
-import { mapStylesJson } from '../../utils/mapStylesJson';
 import {StoreContext} from '../../state/Store';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
-import { ExhibitionDates, ExhibitionMapPin, Images, MapPinCities, PrivateFields, PublicFields, ReceptionDates } from '@darta-types';
-import CustomMarkerList from '../../components/Previews/CustomMarkerList';
+import { ExhibitionDates, ExhibitionMapPin, Images, PrivateFields, PublicFields, ReceptionDates } from '@darta-types';
 import { TextElement } from '../../components/Elements/TextElement';
-
+import { ListMapComponent } from '../../components/Lists/ListMapComponent';
+import { useFocusEffect } from '@react-navigation/native';
 
 const exploreMapStyles = StyleSheet.create({
     container: {
@@ -34,13 +32,13 @@ const exploreMapStyles = StyleSheet.create({
       color: Colors.PRIMARY_950,
       fontSize: 20,
       marginBottom: 24,
-      fontFamily: 'DMSans',
+      fontFamily: 'DMSans_400Regular',
     },
     text:{
       color: Colors.PRIMARY_950,
       fontSize: 14,
       marginBottom: 24,
-      fontFamily: 'DMSans',
+      fontFamily: 'DMSans_400Regular',
     },
     mapContainer: {
       height: hp('100%'),
@@ -64,28 +62,18 @@ export function ListMap({
     route: any;
 }) {
   const {state} = useContext(StoreContext);
-  const [mapRegion, setMapRegion] = React.useState<any>({
+  const initialMapRegion = React.useMemo(() => ({
     latitudeDelta: 0.01,
     longitudeDelta: 0.06,
     latitude: 40.719, 
     longitude: -73.990
-  })
-
-  React.useEffect(()=>{
-    setMapRegion({
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.06,
-      latitude: 40.719, 
-      longitude: -73.990
-    })
-    setMapRegion(mapRegion)
-  }, [])
+  }), []);
+  const [mapRegion, setMapRegion] = React.useState<any>(initialMapRegion)
+  const [showPins, setShowPins] = React.useState<boolean>(false)
 
   const [exhibitionPins, setExhibitionPins] = React.useState<{[key: string] :ExhibitionMapPin}>({})
 
-
-
-  React.useEffect(() => {
+  const calculateMapRegion = React.useCallback(() => {
     if (state.userLists && state.userLists[route.params.listId]){
       const list = state.userLists[route.params.listId]
       const listArtwork = list.artwork
@@ -94,7 +82,7 @@ export function ListMap({
       let minLng = Number.MAX_VALUE;
       let maxLng = -Number.MAX_VALUE;
 
-      const formattedListPins: ExhibitionMapPin[] = Object.values(listArtwork).map((artwork) => {
+      Object.values(listArtwork).forEach((artwork) => {
         const latitude = Number(artwork.exhibition?.exhibitionLocation?.coordinates?.latitude?.value);
         const longitude = Number(artwork.exhibition?.exhibitionLocation?.coordinates?.longitude?.value);
 
@@ -157,16 +145,68 @@ export function ListMap({
             longitude: -73.990
           })
         }
+    }
+  }, [state.userLists, route.params.listId]);
+
+
+  const setPinsAndUpdateState = React.useCallback(() => {
+    if (state.userLists && state.userLists[route.params.listId]){
+      const list = state.userLists[route.params.listId]
+      const listArtwork = list.artwork
+
+      const formattedListPins: ExhibitionMapPin[] = Object.values(listArtwork).map((artwork) => {
+        if (!artwork.exhibition?.exhibitionLocation?.coordinates?.latitude 
+          || !artwork.exhibition?.exhibitionLocation?.coordinates?.longitude || !artwork.exhibition?.isCurrentlyShowing) return {} as ExhibitionMapPin
+        return {
+          exhibitionId: artwork.exhibition?.exhibitionId as string,
+          galleryId: artwork.gallery?.galleryId as string,
+          artworkId: artwork.artwork?.artworkId as string,
+          exhibitionName: artwork.artwork?.artworkTitle as PublicFields,
+          exhibitionArtist: artwork.artwork?.artistName as PublicFields,
+          exhibitionLocation: {
+            isPrivate: false,
+            coordinates: {
+              latitude: {
+                value: artwork.exhibition?.exhibitionLocation?.coordinates?.latitude.value as string,
+              },
+              longitude: {
+                value: artwork.exhibition?.exhibitionLocation?.coordinates?.longitude.value as string,
+              }, 
+              googleMapsPlaceId: { value: ""}
+            }, 
+            locationString: artwork.exhibition?.exhibitionLocation?.locationString as PrivateFields,
+          },
+          exhibitionPrimaryImage: artwork.artwork?.artworkImage as Images,
+          galleryName: artwork.gallery?.galleryName as PublicFields,
+          galleryLogo: {} as Images,
+          exhibitionTitle: artwork.artwork?.artworkTitle as PublicFields,
+          exhibitionType: {value: "Solo Show"},
+          exhibitionDates: artwork.exhibition?.exhibitionDates as ExhibitionDates,
+          receptionDates: {} as ReceptionDates,
+        }
+      })
       const objectPins = formattedListPins.reduce((accumulator, artwork) => {
         // Use artworkId as a unique key for each artwork
         const key = artwork.exhibitionId;
+        if (!key) return accumulator;
     
         // Assign the artwork to its key in the accumulator
         accumulator[key] = artwork;
+
+        //confirm that there is a value 
+        if (artwork?.exhibitionLocation?.coordinates?.latitude.value && artwork.exhibitionLocation.coordinates.longitude.value){
+          return accumulator;
+        } 
     
-        return accumulator;
-    }, {} as {[key: string]: ExhibitionMapPin});
+        return {};
+      }, {} as {[key: string]: ExhibitionMapPin});
       setExhibitionPins(objectPins)
+      
+      if (formattedListPins && Object.values(formattedListPins).length > 0 ){
+        setShowPins(true)
+      }else{
+        setShowPins(false)
+      }
       
     }
     (async () => {
@@ -176,67 +216,44 @@ export function ListMap({
         return;
       }
     })();
-  }, [state.userLists]);
+  }, [state.userLists, route.params.listId, setShowPins])
 
-  const [showPins, setShowPins] = React.useState<boolean>(false)
+  React.useEffect(() => {
+    calculateMapRegion()
+    setPinsAndUpdateState()
+    setMapRegion(initialMapRegion);
+  }, [initialMapRegion, state.userLists, state.userLists?.[route.params.listId], calculateMapRegion, setPinsAndUpdateState]);
 
-  React.useEffect(()=> {
-    if (exhibitionPins && Object.values(exhibitionPins).length > 0 ){
-      setShowPins(true)
-    }else{
-      setShowPins(false)
-    }
-  },[exhibitionPins])
+  useFocusEffect(
+    
+    React.useCallback(() => {
+      calculateMapRegion()
+      setPinsAndUpdateState()
+      setMapRegion(initialMapRegion);
+    }, [state.userLists, state.userLists?.[route.params.listId], calculateMapRegion, setPinsAndUpdateState])
+  )
 
-  const handleMarkerPress = React.useCallback((event) => {
-    setMapRegion({
-      ...mapRegion,
-      ...event.nativeEvent.coordinate,
-    });
-  }, [mapRegion]);
-  
-  const handleRegionChangeComplete = React.useCallback((event) => {
-    setMapRegion(event);
-  }, []);
+    React.useEffect(()=> {
+      if (exhibitionPins && Object.values(exhibitionPins).length > 0 ){
+        setShowPins(true)
+      } else{
+        setShowPins(false)
+      }
+    },[exhibitionPins])
   
   if (showPins){
     return (
-      <View style={exploreMapStyles.container}>
-        <View style={exploreMapStyles.mapContainer}>
-          {mapRegion && showPins && (
-            <MapView  
-              provider={PROVIDER_GOOGLE}
-              style={ exploreMapStyles.mapView }
-              region={mapRegion} 
-              customMapStyle={mapStylesJson}
-              onMarkerPress={handleMarkerPress}
-              onRegionChangeComplete={handleRegionChangeComplete}
-              showsUserLocation={true}
-              >
-                {showPins && Object.values(exhibitionPins).map((pin: ExhibitionMapPin) => {
-                  if(pin?.exhibitionLocation?.coordinates?.latitude 
-                    && pin?.exhibitionLocation?.coordinates?.longitude){
-                      return (
-                      <View key={pin?.exhibitionTitle.value}>
-                        <CustomMarkerList 
-                          coordinate={{latitude: Number(pin.exhibitionLocation.coordinates.latitude.value), longitude: Number(pin.exhibitionLocation.coordinates.longitude.value)}}
-                          mapPin={pin}
-                          navigation={navigation}
-                        />
-                      </View>
-                    )
-                  } 
-                })}
-            </MapView>
-          )}
-        </View>
-      </View>
+      <ListMapComponent 
+        navigation={navigation}
+        showPins={showPins}
+        exhibitionPins={exhibitionPins}
+      />
     );
   } else if (!showPins) {
     return(
       <View style={exploreMapStyles.textContainer}>
-        <TextElement style={exploreMapStyles.textHeader}>No artwork from your list on display</TextElement>
-        <TextElement style={exploreMapStyles.text}>This map is for artwork that is currently up</TextElement>
+        <TextElement style={exploreMapStyles.textHeader}>No artwork currently on display</TextElement>
+        <TextElement style={exploreMapStyles.text}>Add artwork from current exhibitions to get started</TextElement>
       </View>
 
     )

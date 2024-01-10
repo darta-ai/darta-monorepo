@@ -141,8 +141,8 @@ export class ListController {
     @request() req: Request,
     @response() res: Response,
   ): Promise<void> {
-    const {user} = req as any;
     try {
+      const {user} = req as any;
       const results = await this.listService.listLists({
           uid: user.uid,
         });

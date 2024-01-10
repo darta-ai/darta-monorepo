@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {StyleSheet, Image, ScrollView, RefreshControl} from 'react-native';
+import {StyleSheet, ScrollView, RefreshControl} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { ActivityIndicator } from 'react-native-paper';
 import { ArtworkList } from '../../components/Artwork/ArtworkList';
@@ -10,7 +10,7 @@ import {TextElement} from '../../components/Elements/_index';
 import {
   ExhibitionRootEnum
 } from '../../typing/routes';
-import {ETypes, StoreContext} from '../../state/Store';
+import {StoreContext} from '../../state/Store';
 import { readExhibition } from '../../api/exhibitionRoutes';
 import {Artwork} from '@darta-types'
 import { RouteProp } from '@react-navigation/native';
@@ -50,12 +50,13 @@ type ExhibitionArtworkRouteProp = RouteProp<ExhibitionStackParamList, Exhibition
 
 
 export function ExhibitionArtworkScreen({
-  route, navigation
+  route, 
+  navigation
 }: {
   route?: ExhibitionArtworkRouteProp,
   navigation?: any
 }) {
-  const {state, dispatch} = useContext(StoreContext);
+  const {state} = useContext(StoreContext);
   const {exhibitionState, exhibitionDispatch} = React.useContext(ExhibitionStoreContext);
   const {uiState} = React.useContext(UIStoreContext);
 
@@ -65,7 +66,6 @@ export function ExhibitionArtworkScreen({
   const [isArtworkLoaded, setIsArtworkLoaded] = React.useState<boolean>(false);
 
   const [artworkData, setArtworkData] = React.useState<Artwork[] | null>(null)
-  const [evenArtwork, setEvensArtwork] = React.useState<Artwork[] | null>(null)
 
   const setArtworksFromExhibitionId = async ({exhibitionId}: {exhibitionId: string}) => {
       let artwork: {[key: string] : Artwork} = {}
@@ -91,38 +91,6 @@ export function ExhibitionArtworkScreen({
   } else {
     setErrorText("hey something went wrong, please refresh and try again")
   }
-}
-
-async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork} | null> {
-  if (!route?.params?.exhibitionId) return null;
-  try {
-      const { exhibitionId} = route.params
-      const exhibition = await readExhibition({ exhibitionId })
-
-      const artworkPromises = (Object.values(exhibition.artworks) as Artwork[]).map((artwork: Artwork) => {
-        if (artwork.artworkImage.value){
-          return Image.prefetch(artwork.artworkImage.value)
-        }
-      })
-      Promise.all(artworkPromises)
-      
-      exhibitionDispatch({
-          type: ExhibitionETypes.saveExhibition,
-          exhibitionData: exhibition,
-      })
-      dispatch({
-          type: ETypes.setQRCodeExhibitionId,
-          qRCodeExhibitionId: exhibition.exhibitionId,
-        })
-      // dispatch({
-      //     type: ETypes.setFullyLoadedExhibitions,
-      //     fullyLoadedExhibitions: {[exhibition._id] : true},
-      // })
-      return exhibition.artworks
-  } catch (error: any){
-      console.log(error)
-  }
-  return null
 }
 
 
@@ -177,6 +145,7 @@ async function fetchArtworkByExhibitionById(): Promise<{[key: string] : Artwork}
           navigation={navigation}
           navigateTo={route?.params.navigateTo ?? ExhibitionRootEnum.individualArtwork}
           navigateToParams={ExhibitionRootEnum.TopTab}
+          route={route}
         />
       )}
     </>

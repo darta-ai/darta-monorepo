@@ -97,6 +97,7 @@ export function ExhibitionHomeTopTabNavigator({route} : {route: any}) {
             name={ExhibitionPreviewEnum.forthcoming}
             component={ExhibitionPreviewScreen}
             options={{ title: 'Upcoming' }}
+            initialParams={{type: "Upcoming"}}
           />
         </ExhibitionHomeTopTab.Group>
     </ExhibitionHomeTopTab.Navigator>

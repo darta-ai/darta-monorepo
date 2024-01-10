@@ -4,7 +4,7 @@ import { TextElement } from '../Elements/TextElement';
 import {StyleSheet} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as Colors from '@darta-styles'
-import { EmailIcon } from '../../assets/SVGs';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const styles = StyleSheet.create({
   button: {
@@ -13,6 +13,18 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: 'Roboto-Regular',
+  }, 
+  textElement: {
+    marginLeft: 12, 
+    fontSize: 16, 
+    // fontSize: hp('2%'),
+    color: Colors.PRIMARY_950,
+    fontFamily: 'DMSans_400Regular',
+  },
+  touchableOpacity: {
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'flex-start'
   }
 });
 
@@ -32,10 +44,10 @@ export const DartaIconButtonWithText: React.FC<DartaIconButtonWithTextProps> = (
   iconComponent: Icon
 }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start'}}>
+    <TouchableOpacity onPress={onPress} style={styles.touchableOpacity}>
       {Icon && <Icon />} 
       {iconName && <MaterialCommunityIcons name={iconName} size={18} color={Colors.PRIMARY_950} />}
-      <TextElement style={{marginLeft: 12, fontSize: 16, color: Colors.PRIMARY_900}}>{text}</TextElement>
+      <TextElement style={styles.textElement}>{text}</TextElement>
     </TouchableOpacity>
   );
 };

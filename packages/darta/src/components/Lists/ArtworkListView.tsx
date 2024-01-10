@@ -21,6 +21,7 @@ import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCi
 import { Swipeable } from 'react-native-gesture-handler';
 import { Icon } from 'react-native-elements';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
+import { UserRoutesEnum } from '../../typing/routes';
 
 export const currencyConverter = {
   USD: '$',
@@ -37,6 +38,11 @@ type ButtonGeneratorProps = {
 
 
 const SSTombstonePortrait = StyleSheet.create({
+  mainContainer: {
+    height: hp("80%"), 
+    // borderWidth: 1, 
+    backgroundColor: Colors.PRIMARY_50
+  },
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -63,7 +69,7 @@ const SSTombstonePortrait = StyleSheet.create({
     justifyContent: 'space-around',
     alignSelf: 'flex-start',
     alignItems: 'flex-start',
-    gap: 12,
+    gap: hp('1%'),
   },
   textRow: {
     display: 'flex',
@@ -78,23 +84,29 @@ const SSTombstonePortrait = StyleSheet.create({
     width: '100%',
     alignItems: 'flex-end',
   },
-  artTitle: {fontSize: 16, fontFamily: 'DMSans_400Regular_Italic', color: Colors.PRIMARY_950},
-  artYear: {fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_950},
-  artPrice: {fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_950},
-  artDimensions: {fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_400},
-  artMedium: {
-    fontSize: 16,
-    fontFamily: 'DMSans_400Regular',
-    color: Colors.PRIMARY_400,
-  },
   inquireButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 24,
+    marginTop: hp('3%'),
     padding: 8,
     gap: 8,
+    alignSelf: 'flex-end',
   },
+  subHeaderTitle:{
+    ...globalTextStyles.subHeaderTitle,
+    // fontSize: hp('2%'),
+  },
+  sectionHeaderTitle:{
+    ...globalTextStyles.sectionHeaderTitle,
+    // fontSize: hp('3%')
+  },
+  artworkTitle:{
+    ...globalTextStyles.sectionHeaderTitle,
+    // fontSize: hp('2.3%'),
+    fontSize: 20,
+    marginBottom: hp('2.3%')
+  }
 });
 
 
@@ -109,8 +121,8 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({displayText, iconCompo
       borderRadius: 19,
       paddingTop: 8, 
       paddingBottom: 8, 
-      paddingLeft: 16,
-      paddingRight: 16,
+      paddingLeft: hp('1%'),
+      paddingRight: hp('1%'),
       gap: 8,
     }
   })
@@ -131,12 +143,16 @@ export function ArtworkListView({
   exhibition,
   inquireAlert,
   onDelete,
+  navigation,
+  navigateToGalleryParams
 }: {
   artwork: Artwork,
   gallery: GalleryForList,
   exhibition: ExhibitionForList,
   inquireAlert: ({artwork, gallery, exhibition} : {artwork: Artwork, gallery: GalleryForList, exhibition: ExhibitionForList}) => void,
   onDelete: ({artworkId} : {artworkId: string}) => Promise<boolean>,
+  navigation: any,
+  navigateToGalleryParams: string
 }) {
 
   const {userState, userDispatch} = React.useContext(UserStoreContext)
@@ -237,11 +253,11 @@ export function ArtworkListView({
         justifyContent: 'center',
         width: wp('20%'),  // Adjust as needed
         height: '100%',
-        backgroundColor: Colors.PRIMARY_400,
+        // backgroundColor: Colors.PRIMARY_400,
       },
       buttonWidth: {
-        width: '100%',  // Adjust as needed
-        height: '100%',
+        width: wp('20%'), // Adjust as needed
+        height: '20%',
         alignItems: 'center',
         justifyContent: 'center',
       },
@@ -256,7 +272,7 @@ export function ArtworkListView({
             {loadingDelete ? (
               <ActivityIndicator size="small"/>
             ) : (
-              <Icon name="delete" solid={false}/>
+              <Icon reverse raised name="delete" solid={true}/>
             )}
         </TouchableOpacity>
       </View>
@@ -283,63 +299,68 @@ export function ArtworkListView({
     .catch((err) => console.error('Error opening maps app:', err));
   };  
 
+  const navigateToGallery = () => {
+    if (!gallery?.galleryId && navigateToGalleryParams) return;
+    navigation.navigate(navigateToGalleryParams, {galleryId: gallery.galleryId})
+  }
 
   return (
-  <View style={{height: hp("90%")}}>
-    <Swipeable renderRightActions={renderRightActions}>
+        <View style={SSTombstonePortrait.mainContainer}>
           <View style={SSTombstonePortrait.container}>
             <View style={SSTombstonePortrait.textContainer}>
               <View>
                 <TextElement
-                  style={globalTextStyles.sectionHeaderTitle}>
+                  style={SSTombstonePortrait.sectionHeaderTitle}>
                   {artwork?.artistName?.value}
                 </TextElement>
               </View>
               <View>
                 <TextElement
-                  style={{...globalTextStyles.sectionHeaderTitle, fontSize: 18, marginBottom: 24}}
+                  style={SSTombstonePortrait.artworkTitle}
                   numberOfLines={5}>
                   {artwork?.artworkTitle?.value}          
                 </TextElement>
               </View>
-          </View>
-            <ScrollView
-              scrollEventThrottle={7}
-              maximumZoomScale={6}
-              minimumZoomScale={1}
-              scrollToOverflowEnabled={false}
-              centerContent>
-              <View style={SSTombstonePortrait.imageContainer}>
-                <DartaImageComponent
-                  uri= {artwork?.artworkImage?.value!}
-                  priority={FastImage.priority.normal}
-                  style={SSTombstonePortrait.image}
-                  resizeMode={FastImage.resizeMode.contain}
-                />
-              </View>
-            </ScrollView>
+            </View>
+          <Swipeable renderRightActions={renderRightActions} friction={3}>
+              <ScrollView
+                scrollEventThrottle={7}
+                maximumZoomScale={6}
+                minimumZoomScale={1}
+                scrollToOverflowEnabled={false}
+                centerContent>
+                <View style={SSTombstonePortrait.imageContainer}>
+                  <DartaImageComponent
+                    uri= {artwork?.artworkImage?.value!}
+                    priority={FastImage.priority.normal}
+                    style={SSTombstonePortrait.image}
+                    resizeMode={FastImage.resizeMode.contain}
+                  />
+                </View>
+              </ScrollView>
+            </Swipeable>
           </View>
           <View>
-          <View style={SSTombstonePortrait.textContainer}>
+          <View style={{...SSTombstonePortrait.textContainer, marginTop: 12}}>
               <View>
-                <TextElement style={globalTextStyles.subHeaderTitle}>
+                <TextElement style={SSTombstonePortrait.subHeaderTitle}>
                   Exhibition
                 </TextElement>
                 <TextElement
-                  style={globalTextStyles.sectionHeaderTitle}>
+                  style={SSTombstonePortrait.sectionHeaderTitle}>
                   {exhibition?.exhibitionTitle?.value }
                 </TextElement>
               </View>
-              <View>
-                <TextElement style={globalTextStyles.subHeaderTitle}>
+              <TouchableOpacity onPress={navigateToGallery}>
+                <TextElement style={SSTombstonePortrait.subHeaderTitle}>
                   Gallery
                 </TextElement>
                 <TextElement
-                  style={{...globalTextStyles.sectionHeaderTitle, fontSize: 18}}
+                  style={{...SSTombstonePortrait.artworkTitle, marginBottom: hp('1%')}}
                   numberOfLines={5}>
                   {gallery?.galleryName?.value}          
                 </TextElement>
-              </View>
+              </TouchableOpacity>
               <DartaIconButtonWithText 
               text={`${simplifyAddressMailing(exhibition?.exhibitionLocationString?.value)} ${simplifyAddressCity(exhibition?.exhibitionLocationString?.value)}` as string}
               iconComponent={SVGs.BlackPinIcon}
@@ -350,7 +371,7 @@ export function ArtworkListView({
               iconComponent={SVGs.CalendarBasicIcon}
               onPress={() => {}}
             />
-            </View>
+          </View>
           </View>
             <View style={SSTombstonePortrait.inquireButton}>
               <Animated.View style={{opacity: opacityInquiredButton, flex: 1}}>
@@ -374,7 +395,12 @@ export function ArtworkListView({
               )} 
               </Animated.View>
             </View>
-        </Swipeable>
+        {/* </Swipeable> */}
       </View>
   );
 }
+
+
+export const ArtworkListMemo = React.memo(ArtworkListView, (prevProps, nextProps) => {
+  return prevProps.artwork._id === nextProps.artwork._id;
+});

@@ -145,8 +145,13 @@ export enum RecommenderRoutesEnum {
   recommenderGallery = 'RECOMMENDER_GALLERY',
   recommenderExhibition= 'RECOMMENDER_EXHIBITION',
   TopTabExhibition = 'RECOMMENDER_TOP_TAB_EXHIBITION',
+  TopTabPreviousExhibition = 'RECOMMENDER_TOP_TAB_PREVIOUS_EXHIBITION',
   recommenderLists = 'RECOMMENDER_LISTS',
   recommenderNewList = 'RECOMMENDER_NEW_LIST',
+  recommenderFullList = 'RECOMMENDER_FULL_LIST',
+  recommenderGenericLoading = 'RECOMMENDER_GENERIC_LOADING',
+  recommenderArtworkList = 'RECOMMENDER_ARTWORK_LIST',
+  recommenderIndividualArtwork = 'RECOMMENDER_INDIVIDUAL_ARTWORK',
 }
 
 export type RecommenderParamList = {

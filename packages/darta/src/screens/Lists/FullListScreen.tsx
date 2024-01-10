@@ -7,7 +7,7 @@ import { ETypes, StoreContext } from '../../state/Store';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 import { Artwork, ArtworkListInformation, ExhibitionForList, FullList, GalleryForList } from '@darta-types/dist';
 import { getFullList, removeArtworkFromList } from '../../api/listRoutes';
-import { ArtworkListView } from '../../components/Lists/ArtworkListView';
+import { ArtworkListMemo } from '../../components/Lists/ArtworkListView';
 import { UserETypes, UserStoreContext } from '../../state';
 import analytics from '@react-native-firebase/analytics';
 import { TextElement } from '../../components/Elements/TextElement';
@@ -28,13 +28,13 @@ const container = StyleSheet.create({
         color: Colors.PRIMARY_950,
         fontSize: 20,
         marginBottom: 24,
-        fontFamily: 'DMSans',
+        fontFamily: 'DMSans_400Regular',
       },
       text:{
         color: Colors.PRIMARY_950,
         fontSize: 14,
         marginBottom: 24,
-        fontFamily: 'DMSans',
+        fontFamily: 'DMSans_400Regular',
       },
 })
 
@@ -47,69 +47,69 @@ export function FullListScreen({
 }) {
 
     const {state, dispatch} = React.useContext(StoreContext);
-    const {userState, userDispatch} = React.useContext(UserStoreContext);
+    const {userDispatch} = React.useContext(UserStoreContext);
     const [fullList, setFullList] = React.useState<FullList | null>(null);
     const [fullArtwork, setFullArtwork] = React.useState<{[key: string] : ArtworkListInformation} | null>(null);
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
     const [isError, setIsError] = React.useState<boolean>(false);
     const [noArtwork, setNoArtwork] = React.useState<boolean>(false);
     const [isRefreshing, setRefreshing] = React.useState<boolean>(false);
+    const [dataProvider, setDataProvider] = React.useState(
+        new DataProvider((r1, r2) => r1 !== r2)
+    );
+    const [layoutProvider] = React.useState(
+        new LayoutProvider(
+            () => 1, 
+            (_, dim) => {
+                dim.width = wp('100%');
+                dim.height = hp('85%');
+            }
+        )
+    );
+
+    const setListData = React.useCallback(async () => {
+        if (!route.params?.listId){
+            // if there is not, throw an error
+            setIsError(true)
+            setIsLoading(false)
+            return
+        } else if (state.userLists && state.userLists[route.params.listId]){
+            // if there is, check to see if it is in the state
+            setFullList(state.userLists[route.params.listId])
+            if (state.userLists[route.params.listId].artwork){
+                setFullArtwork(state.userLists[route.params.listId].artwork)
+                setIsLoading(false)
+            }else {
+                setNoArtwork(true)
+            }
+        } else {
+            // if it is not in the state, fetch it from the API
+            try{
+                const fullList = await getFullList({listId: route.params.listId})
+                if (!fullList) throw new Error('No list found')
+                dispatch({
+                    type: ETypes.setUserLists,
+                    userLists: fullList
+                })
+                setFullList(Object.values(fullList)[0])
+                setFullArtwork(Object.values(fullList)[0].artwork)
+                setIsLoading(false)
+            } catch (error){
+                setIsError(true)
+            }
+        }
+    }, [route.params.listId, state.userLists])
 
 
-    const getListData = async ({listId} : {listId: string}): Promise<{[key: string] : FullList  }> => {
-        return await getFullList({listId})
-    }
 
     React.useEffect(()=>{
         // first check to see if there is a list ID on the params
 
-        const setListData = async () => {
-            if (!route.params?.listId){
-                // if there is not, throw an error
-                setIsError(true)
-                setIsLoading(false)
-                return
-            } else if (state.userLists && state.userLists[route.params.listId]){
-                // if there is, check to see if it is in the state
-                setFullList(state.userLists[route.params.listId])
-                if (state.userLists[route.params.listId].artwork){
-                    setFullArtwork(state.userLists[route.params.listId].artwork)
-                    setIsLoading(false)
-                }else {
-                    setNoArtwork(true)
-                }
-            } else {
-                // if it is not in the state, fetch it from the API
-                try{
-                    const fullList = await getListData({listId: route.params.listId})
-                    dispatch({
-                        type: ETypes.setUserLists,
-                        userLists: fullList
-                    })
-                    setFullList(Object.values(fullList)[0])
-                    setFullArtwork(Object.values(fullList)[0].artwork)
-                    setIsLoading(false)
-                } catch (error){
-                    setIsError(true)
-                }
-            }
-        }
         setIsLoading(true)
 
         setListData()
-    }, [state.userLists])
+    }, [state.userLists, dataProvider])
 
-    const [dataProvider, setDataProvider] = React.useState(
-        new DataProvider((r1, r2) => r1 !== r2)
-    );
-
-    const layoutProvider = new LayoutProvider(
-        () => 1, 
-        (_, dim) => {
-            dim.width = wp('100%');
-            dim.height = hp('90%');
-        }
-    );
 
     React.useEffect(() => {
         if (fullArtwork) {
@@ -123,14 +123,15 @@ export function FullListScreen({
                 }
                 else return 0
             })
-            if (sortedArtworks.length === 0) setNoArtwork(true)
-            else {
+            if (sortedArtworks.length === 0) {
+                setNoArtwork(true)
+            } else {
                 setDataProvider(dataProvider.cloneWithRows(sortedArtworks));
             }
         }
     }, [fullArtwork]);
 
-    const handleDelete = async ({artworkId} : {artworkId: string}): Promise<boolean> => {
+    const handleDelete = React.useCallback(async ({artworkId} : {artworkId: string}): Promise<boolean> => {
         if (!artworkId || !fullList?._id) return false
         // delete the artwork from the list
         const res = await removeArtworkFromList({listId: fullList._id, artworkId})
@@ -145,11 +146,12 @@ export function FullListScreen({
             return true
         }
         return false
-    }
+    }, [fullList])
 
     const refreshControl = React.useCallback(async () => {
         setRefreshing(true)
-        const fullList = await getListData({listId: route.params.listId})
+        const fullList = await getFullList({listId: route.params.listId})
+        if (!fullList) return
         dispatch({
             type: ETypes.setUserLists,
             userLists: fullList
@@ -160,7 +162,7 @@ export function FullListScreen({
     }, [route.params.listId])
 
 
-  const inquireArtwork = React.useCallback(async ({artwork, gallery, exhibition} : {artwork: Artwork, gallery: GalleryForList, exhibition: ExhibitionForList}) => {
+  const inquireArtwork = React.useCallback(async ({artwork, gallery} : {artwork: Artwork, gallery: GalleryForList}) => {
 
     try {
         const artworkId = artwork?._id
@@ -178,9 +180,10 @@ export function FullListScreen({
 
         const subject = `Inquiry about ${artwork.artworkTitle?.value} at ${gallery.galleryName?.value}`
         
-        const body = `Hi ${gallery.galleryName?.value},%0D%0A%0D%0A I saw ${artwork.artworkTitle?.value} by ${artwork.artistName?.value} on darta and I'm interested in learning more. %0D%0A%0D%0A Best,%0D%0A%0D%0A${userState.user?.legalFirstName}`
+        const body = `Hi ${gallery.galleryName?.value}, I saw ${artwork.artworkTitle?.value} by ${artwork.artistName?.value} on darta and I am interested in learning more.`
 
         const url = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  
       
         Linking.canOpenURL(url)
           .then((supported) => {
@@ -196,7 +199,7 @@ export function FullListScreen({
     } 
     }, [])
 
-    const inquireAlert = ({artwork, gallery, exhibition} : {artwork: Artwork, gallery: GalleryForList, exhibition: ExhibitionForList}) => {
+    const inquireAlert = React.useCallback(({artwork, gallery, exhibition} : {artwork: Artwork, gallery: GalleryForList, exhibition: ExhibitionForList}) => {
 
         const galleryName = gallery?.galleryName?.value || "the gallery"
 
@@ -208,24 +211,27 @@ export function FullListScreen({
             },
             {
               text: `Yes`,
-              onPress: () => inquireArtwork({artwork, gallery, exhibition}),
+              onPress: () => inquireArtwork({artwork, gallery}),
             },
           ])
-    }
+    }, [])
 
-    const rowRenderer = (_, artwork) => {
+    const rowRenderer = React.useCallback((_, artwork) => {
         return (
-            <View style={{flex: 1, margin: 24 }}>
-                <ArtworkListView 
+            <View style={{flex: 1, margin: 24}}>
+                <ArtworkListMemo 
                     artwork={artwork.artwork}
                     exhibition={artwork.exhibition}
                     gallery={artwork.gallery}
                     inquireAlert={inquireAlert}
                     onDelete={handleDelete}
+                    navigation={navigation}
+                    navigateToGalleryParams={route?.params?.navigateToGalleryParams}
                 />
             </View>
         );
-    };
+    }, [fullArtwork])
+
     if (isError){
         return(
             <View style={container.textContainer}>
@@ -258,24 +264,25 @@ export function FullListScreen({
     else if (fullArtwork && Object.values(fullArtwork).length !== 0){
         return (
             <RecyclerListView
-            style={{ flex: 1 }}
+            style={{ flex: 1, backgroundColor: Colors.PRIMARY_50 }}
             dataProvider={dataProvider}
             layoutProvider={layoutProvider}
             rowRenderer={rowRenderer}
             scrollViewProps={{
                 decelerationRate: "fast",
-                snapToInterval: hp('90%'),
+                // snapToInterval: hp('90%'),
                 scrollEnabled: true,
                 disableIntervalMomentum: true,
-                pagingEnabled: true,
+                // pagingEnabled: true,
+                isScrollEnabled: true,
                 refreshControl:  
                     <RefreshControl 
                         refreshing={isRefreshing} 
                         onRefresh={refreshControl}
                         tintColor={Colors.PRIMARY_600}
                     />
-            }}
-        />
+                }}
+            />
         )
     }
 }

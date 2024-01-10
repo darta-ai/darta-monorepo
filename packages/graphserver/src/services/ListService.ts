@@ -26,7 +26,7 @@ export class ListService implements IListService {
   ) {}
 
 
-  public async createList({newList, artworkId, uid} : {newList: List, artworkId: string, uid: string}) : Promise<FullList> {
+  public async createList({newList, artworkId, uid} : {newList: List, artworkId: string, uid: string}) : Promise<ListPreview> {
 
     const fullUserId = this.userService.generateDartaUserId({uid});
     const fullArtworkId = this.artworkService.generateArtworkId({artworkId});
@@ -69,9 +69,7 @@ export class ListService implements IListService {
       throw new Error('!! no artwork !!');
     }
     // TO-DO: fix return statement 
-    return {
-      ...list as FullList
-    }
+    return this.getListPreview({listId: list._id});
   }
 
   // TO-DO: add check for isCreator

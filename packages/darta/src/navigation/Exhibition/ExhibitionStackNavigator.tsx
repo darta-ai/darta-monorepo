@@ -87,9 +87,9 @@ export function ExhibitionStackNavigator() {
             />
           <ExhibitionStack.Screen
             name={ExhibitionRootEnum.individualArtwork}
-            component={ArtworkScreen}
+            component={ArtworkScreen} 
             options={{...headerOptions, headerTitle: uiState.currentArtworkTombstoneHeader ? uiState.currentArtworkTombstoneHeader.slice(0, 30) : ""}}
-            initialParams={{saveRoute: ExhibitionRootEnum.exhibitionListAdd}}
+            initialParams={{saveRoute: ExhibitionRootEnum.exhibitionListAdd, addPaddingTop: true}}
           />
           <ExhibitionStack.Screen
           name={ExhibitionRootEnum.showGallery}
