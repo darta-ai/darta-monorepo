@@ -47,6 +47,12 @@ export function DartaRecommenderTopTab({route} : {route: any}) {
           initialParams={{exhibitionId: route.params.exhibitionId, galleryId: route.params.galleryId}}
           options={{ title: 'Exhibition' }}
         />
+        <RecommenderStackTopTab.Screen
+          name={RecommenderRoutesEnum.recommenderGallery}
+          component={ExhibitionGalleryScreen}
+          initialParams={{galleryId: route.params.galleryId, showPastExhibitions: true, navigationRoute: RecommenderRoutesEnum.TopTabPreviousExhibition}}
+          options={{ title: 'Gallery' }}
+        />
         {showArtwork && (
         <RecommenderStackTopTab.Screen
             name={RecommenderRoutesEnum.recommenderArtworkList}
@@ -60,12 +66,6 @@ export function DartaRecommenderTopTab({route} : {route: any}) {
             options={{ title: 'Checklist' }}
         />
         )}
-        <RecommenderStackTopTab.Screen
-          name={RecommenderRoutesEnum.recommenderGallery}
-          component={ExhibitionGalleryScreen}
-          initialParams={{galleryId: route.params.galleryId, showPastExhibitions: true, navigationRoute: RecommenderRoutesEnum.TopTabPreviousExhibition}}
-          options={{ title: 'Gallery' }}
-        />
     </RecommenderStackTopTab.Navigator>
   );
 }

@@ -69,7 +69,7 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
             name={ExploreMapRootEnum.individualArtwork}
             component={ArtworkScreen}
             options={{...headerOptions, headerTitle: uiState.currentArtworkTombstoneHeader ?? ""}}
-            initialParams={{saveRoute: ExploreMapRootEnum.exploreMapListAdd}}
+            initialParams={{saveRoute: ExploreMapRootEnum.exploreMapListAdd, addPaddingTop: true}}
           />
         <ExploreMapStack.Group screenOptions={{
             presentation: 'transparentModal',

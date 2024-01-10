@@ -58,7 +58,7 @@ export function DartaRecommenderNavigator() {
             name={RecommenderRoutesEnum.recommenderIndividualArtwork}
             component={ArtworkScreen}
             options={{...headerOptions, headerTitle: uiState.currentArtworkTombstoneHeader ?? ""}}
-            initialParams={{saveRoute: RecommenderRoutesEnum.recommenderLists}}
+            initialParams={{saveRoute: RecommenderRoutesEnum.recommenderLists, addPaddingTop: true}}
           />
           <RecommenderStack.Screen
             name={RecommenderRoutesEnum.TopTabPreviousExhibition}
@@ -85,31 +85,6 @@ export function DartaRecommenderNavigator() {
                 },
               },
             }}>
-            <RecommenderStack.Screen
-            name={RecommenderRoutesEnum.recommenderGenericLoading}
-            component={GenericLoadingScreen}
-            options={{...headerOptions, 
-            headerLeft: () => ( 
-              <View style={backButtonStyles.backButton}>
-                <HeaderBackButton 
-                  backImage={() => <BackButtonIcon />}
-                  labelVisible={false}
-                  onPress={() => {
-                    navigation.dispatch(
-                      CommonActions.reset({
-                        index: 0, // sets the active route index
-                        routes: [
-                          { name: RecommenderRoutesEnum.recommenderHome}, // the only route in the stack after reset
-                        ],
-                      })
-                    );
-                  }}
-                  tintColor={Colors.PRIMARY_800}
-                />
-              </View>
-            )
-            }}
-          />
             <RecommenderStack.Screen
               name={RecommenderRoutesEnum.recommenderLists}
               component={AddToListScreen}

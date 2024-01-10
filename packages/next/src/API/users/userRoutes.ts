@@ -24,7 +24,7 @@ export async function createGalleryUser({
       {headers: {authorization: `Bearer ${idToken}`}},
     );
     return response;
-  } catch (error) {
-    throw new Error('Unable to create profile');
+  } catch (error: any) {
+    throw new Error('Unable to create profile', error.message);
   }
 }

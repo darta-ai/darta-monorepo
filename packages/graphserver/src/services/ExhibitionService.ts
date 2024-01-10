@@ -35,6 +35,7 @@ import {
 } from './interfaces';
 
 const BUCKET_NAME = 'exhibitions';
+const COMPRESSED_BUCKET_NAME = 'exhibitions-compressed';
 
 @injectable()
 export class ExhibitionService implements IExhibitionService {
@@ -338,15 +339,27 @@ export class ExhibitionService implements IExhibitionService {
 
     let bucketName = exhibitionPrimaryImage?.bucketName ?? null;
     let value = exhibitionPrimaryImage?.value ?? null;
+    let minifiedValue = exhibitionPrimaryImage?.compressedImage?.value ?? null;
+    let minifiedBucketName = exhibitionPrimaryImage?.compressedImage?.bucketName ?? null;
     if (exhibitionPrimaryImage?.fileData) {
       try {
         const artworkImageResults =
-          await this.imageController.processUploadImage({
-            fileBuffer: exhibitionPrimaryImage?.fileData,
-            fileName,
-            bucketName: BUCKET_NAME,
-          });
+        await this.imageController.processUploadImage({
+          fileBuffer: exhibitionPrimaryImage?.fileData,
+          fileName,
+          bucketName: BUCKET_NAME,
+        });
         ({bucketName, value} = artworkImageResults);
+        const compressedImage = await this.imageController.compressImage({fileBuffer: exhibitionPrimaryImage.fileData})
+        const minifiedImageResults =
+        await this.imageController.processUploadImage({
+          fileBuffer: compressedImage,
+          fileName,
+          bucketName: COMPRESSED_BUCKET_NAME,
+        });
+      ({bucketName: minifiedBucketName, value: minifiedValue} = minifiedImageResults);
+
+      console.log({value, minifiedValue})
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('error uploading image:', error);
@@ -365,6 +378,11 @@ export class ExhibitionService implements IExhibitionService {
         bucketName,
         value,
         fileName,
+        compressedImage: {
+          bucketName: minifiedBucketName,
+          value: minifiedValue,
+          fileName
+        }
       },
       updatedAt: new Date(),
     };

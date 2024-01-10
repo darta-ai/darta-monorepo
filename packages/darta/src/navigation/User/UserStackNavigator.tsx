@@ -156,7 +156,7 @@ export function UserStackNavigator({route} : {route: any}) {
           name={UserRoutesEnum.SavedArtworkModal}
           component={ArtworkScreen}
           options={{...headerOptions, headerTitle: uiState?.currentArtworkTombstoneHeader ?? ""}}
-          initialParams={{saveRoute: UserRoutesEnum.userAddToList}}
+          initialParams={{saveRoute: UserRoutesEnum.userAddToList, addPaddingTop: true}}
         />
         <UserStack.Screen
           name={UserRoutesEnum.UserListsScreen}

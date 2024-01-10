@@ -144,7 +144,7 @@ async function fetchListById({listId} : {listId: string}): Promise<FullList | vo
       }
     } else if (params && params.listId) {
       try{
-        navigation.navigate('View', { screen: RecommenderRoutesEnum.recommenderGenericLoading });
+        // navigation.navigate('View', { screen: RecommenderRoutesEnum.recommenderGenericLoading });
         const res = await fetchListById({listId: params.listId.toString()})
         uiDispatch({
           type: UiETypes.setListHeader,

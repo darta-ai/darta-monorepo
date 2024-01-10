@@ -19,6 +19,7 @@ export interface IImageService {
     bucketName: string;
     fileName: string;
   }): Promise<any>;
+  compressImage({fileBuffer}: {fileBuffer: any}): Promise<any>
   deleteImage({
     bucketName,
     fileName,

@@ -326,6 +326,9 @@ importers:
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.13
+      sharp:
+        specifier: ^0.32.6
+        version: 0.32.6
       typescript:
         specifier: ^5.1.6
         version: 5.1.6

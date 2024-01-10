@@ -6,6 +6,11 @@ export interface Images {
   fileData?: string | null | ArrayBuffer;
   fileName?: string | null;
   bucketName?: string | null;
+  compressedImage?: { 
+    fileName: string | null, 
+    bucketName: string | null,
+    value: string | null 
+  };
 }
 export interface PrivateFields {
   value: string | null;
