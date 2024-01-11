@@ -339,8 +339,8 @@ export class ExhibitionService implements IExhibitionService {
 
     let bucketName = exhibitionPrimaryImage?.bucketName ?? null;
     let value = exhibitionPrimaryImage?.value ?? null;
-    let minifiedValue = exhibitionPrimaryImage?.compressedImage?.value ?? null;
-    let minifiedBucketName = exhibitionPrimaryImage?.compressedImage?.bucketName ?? null;
+    // let minifiedValue = exhibitionPrimaryImage?.compressedImage?.value ?? null;
+    // let minifiedBucketName = exhibitionPrimaryImage?.compressedImage?.bucketName ?? null;
     if (exhibitionPrimaryImage?.fileData) {
       try {
         const artworkImageResults =
@@ -350,16 +350,15 @@ export class ExhibitionService implements IExhibitionService {
           bucketName: BUCKET_NAME,
         });
         ({bucketName, value} = artworkImageResults);
-        const compressedImage = await this.imageController.compressImage({fileBuffer: exhibitionPrimaryImage.fileData})
-        const minifiedImageResults =
-        await this.imageController.processUploadImage({
-          fileBuffer: compressedImage,
-          fileName,
-          bucketName: COMPRESSED_BUCKET_NAME,
-        });
-      ({bucketName: minifiedBucketName, value: minifiedValue} = minifiedImageResults);
+        // const compressedImage = await this.imageController.compressImage({fileBuffer: exhibitionPrimaryImage.fileData})
+        // const minifiedImageResults =
+        // await this.imageController.processUploadImage({
+        //   fileBuffer: compressedImage,
+        //   fileName,
+        //   bucketName: COMPRESSED_BUCKET_NAME,
+        // });
+      // ({bucketName: minifiedBucketName, value: minifiedValue} = minifiedImageResults);
 
-      console.log({value, minifiedValue})
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('error uploading image:', error);
@@ -377,12 +376,7 @@ export class ExhibitionService implements IExhibitionService {
       exhibitionPrimaryImage: {
         bucketName,
         value,
-        fileName,
-        compressedImage: {
-          bucketName: minifiedBucketName,
-          value: minifiedValue,
-          fileName
-        }
+        fileName
       },
       updatedAt: new Date(),
     };
@@ -1091,9 +1085,20 @@ export class ExhibitionService implements IExhibitionService {
 
       const edgeCursor = await this.db.query(findCollections, { locality, currentDate: isoString });
       const exhibitionsAndPreviews: ExhibitionMapPin[] = await edgeCursor.all()
+      
+      // remove duplicate galleries
+      exhibitionsAndPreviews.sort((a, b) => {
+        if (!a.exhibitionDates.exhibitionEndDate.value || !b.exhibitionDates.exhibitionEndDate.value) return 0
+        if (a.exhibitionDates.exhibitionEndDate.value > b.exhibitionDates.exhibitionEndDate.value) return 1 
+        return -1
+      })
+
       const exhibitionMapPin: {[key: string]: ExhibitionMapPin} = {};
       exhibitionsAndPreviews.forEach((exhibitionAndPreview) => {
-        exhibitionMapPin[exhibitionAndPreview.exhibitionId] = exhibitionAndPreview
+        if (!exhibitionMapPin[exhibitionAndPreview.galleryId]){
+          exhibitionMapPin[exhibitionAndPreview.galleryId] = exhibitionAndPreview
+        } 
+        // exhibitionMapPin[exhibitionAndPreview.exhibitionId] = exhibitionAndPreview
       })
 
       return {...exhibitionMapPin}
