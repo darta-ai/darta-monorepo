@@ -5,8 +5,6 @@ import {
   CardContent,
   Container,
   Grid,
-  List,
-  ListItem,
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
@@ -72,6 +70,7 @@ const aboutStyles = {
     fontSize: '1.3rem',
     '@media (min-width: 800px)': {},
     cursor: 'default',
+    fontWeight: 'bold',
   },
   typographyH3: {
     fontFamily: 'Nunito Sans',
@@ -108,56 +107,95 @@ export default function About() {
         maxWidth="md"
         sx={aboutStyles.container}
         data-testid="about-container">
-        <Box data-testid="beliefs-box">
+        <Box data-testid="beliefs-box" sx={{display: 'flex', flexDirection: 'column', gap: 3}}>
           <Typography
             variant="h2"
             sx={aboutStyles.typographyTitle}
             data-testid="beliefs-title">
-            Our Beliefs
+            Guiding Principles 
           </Typography>
-          <List sx={{listStyleType: 'disc', pl: 3}} data-testid="beliefs-list">
             {aboutData?.DartaBelief1 && (
               <Box data-testid="belief-box-1" key="belief-box-1">
-                <ListItem
-                  sx={{display: 'list-item'}}
-                  data-testid="belief-item-1">
                   <Typography
                     sx={aboutStyles.typography}
                     data-testid="belief-text-1">
                     {aboutData.DartaBelief1}
                   </Typography>
-                </ListItem>
+                  <Typography>
+                    {aboutData.DartaBelief1SubHeadline}
+                  </Typography>
               </Box>
             )}
             {aboutData?.DartaBelief2 && (
               <Box data-testid="belief-box-2" key="belief-box-2">
-                <ListItem
-                  sx={{display: 'list-item'}}
-                  data-testid="belief-item-2">
-                  <Typography
-                    sx={aboutStyles.typography}
-                    data-testid="belief-text-2">
-                    {aboutData.DartaBelief2}
+                <Typography
+                  sx={aboutStyles.typography}
+                  data-testid="belief-text-2">
+                  {aboutData.DartaBelief2}
+                </Typography>
+                <Typography>
+                    {aboutData.DartaBelief2SubHeadline}
                   </Typography>
-                </ListItem>
               </Box>
             )}
             {aboutData?.DartaBelief3 && (
               <Box data-testid="belief-box-3" key="belief-box-3">
-                <ListItem
-                  sx={{display: 'list-item'}}
-                  data-testid="belief-item-3">
                   <Typography
                     sx={aboutStyles.typography}
                     data-testid="belief-text-3">
                     {aboutData.DartaBelief3}
                   </Typography>
-                </ListItem>
+                  <Typography>
+                    {aboutData.DartaBelief3SubHeadline}
+                  </Typography>
               </Box>
             )}
-          </List>
         </Box>
-        <Box data-testid="who-we-are-box">
+        <Box data-testid="beliefs-box" sx={{display: 'flex', flexDirection: 'column', gap: 3, marginTop: 8}}>
+          <Typography
+            variant="h2"
+            sx={aboutStyles.typographyTitle}
+            data-testid="beliefs-title">
+            About us
+          </Typography>
+            {aboutData?.aboutDarta1 && (
+              <Box data-testid="belief-box-1" key="belief-box-1">
+                  <Typography
+                    sx={aboutStyles.typography}
+                    data-testid="belief-text-1">
+                    {aboutData.aboutDarta1}
+                  </Typography>
+                  <Typography>
+                    {aboutData.aboutDarta1SubHeadline}
+                  </Typography>
+              </Box>
+            )}
+            {aboutData?.aboutDarta2 && (
+              <Box data-testid="belief-box-2" key="belief-box-2">
+                <Typography
+                  sx={aboutStyles.typography}
+                  data-testid="belief-text-2">
+                  {aboutData.aboutDarta2}
+                </Typography>
+                <Typography>
+                    {aboutData.aboutDarta2SubHeadline}
+                  </Typography>
+              </Box>
+            )}
+            {aboutData?.aboutDarta3 && (
+              <Box data-testid="belief-box-3" key="belief-box-3">
+                  <Typography
+                    sx={aboutStyles.typography}
+                    data-testid="belief-text-3">
+                    {aboutData.aboutDarta3}
+                  </Typography>
+                  <Typography>
+                    {aboutData.aboutDarta3SubHeadline}
+                  </Typography>
+              </Box>
+            )}
+        </Box>
+        <Box data-testid="who-we-are-box" sx={{ marginTop: 8}}>
           <Typography
             variant="h2"
             sx={aboutStyles.typographyTitle}

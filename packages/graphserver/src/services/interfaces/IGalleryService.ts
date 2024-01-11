@@ -1,4 +1,4 @@
-import {IGalleryProfileData} from '@darta-types';
+import {GalleryForList, IGalleryProfileData} from '@darta-types';
 
 import {Gallery} from '../../models/GalleryModel';
 import {Node} from '../../models/models';
@@ -22,6 +22,7 @@ export interface IGalleryService {
   }: {
     galleryId: string;
   }): Promise<Gallery | null>;
+  readGalleryForList({artworkId} : {artworkId: string}): Promise<GalleryForList>;
   editGalleryProfile({
     user,
     data,

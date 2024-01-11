@@ -12,8 +12,9 @@ export {
   IExhibitionService,
   IGalleryService,
   IImageService,
-  INodeService,
+  IListService,  INodeService,
   IRecommenderService, 
   IUserService} from './interfaces';
+export {ListService} from './ListService';
 export {RecommenderService} from './RecommenderService';
 export {UserService} from './UserService';

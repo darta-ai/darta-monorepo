@@ -1,7 +1,6 @@
 import React from 'react';
 
 import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
-import {ETypes, StoreContext} from '../../state/Store';
 import { ArtworkList } from '../Artwork/ArtworkList';
 import { TextElement } from '../Elements/TextElement';
 import { Image } from 'react-native';
@@ -12,28 +11,28 @@ import * as Colors from '@darta-styles';
 import { UserRoutesEnum } from '../../typing/routes';
 import { dartaLogo } from './UserInquiredArtwork';
 import FastImage from 'react-native-fast-image';
+import { UserETypes, UserStoreContext } from '../../state/UserStore';
 
 export function UserSavedArtwork({navigation}: {navigation: any}) {
-  const {state, dispatch} = React.useContext(StoreContext);
+  const {userState, userDispatch} = React.useContext(UserStoreContext);
 
-  const errorMessageText = "when you save artwork, it will appear here"
 
 
   const [artworkData, setArtworkData] = React.useState<Artwork[] | null>(null)
-  const [getStartedText, setGetStartedText] = React.useState<string | null>(errorMessageText)
+  const [hasNoArtwork, setHasNoArtwork] = React.useState<boolean>(true)
 
   React.useEffect(() => {
-    const savedArtwork = state.userSavedArtwork;
+    const savedArtwork = userState.userSavedArtwork;
     if (savedArtwork){
       type ImageUrlObject = { uri: string };
       const imageUrlsToPrefetch: ImageUrlObject[] = [];
       const data: Artwork[] = [];
       Object.keys(savedArtwork as any)
       .filter(key => savedArtwork[key])
-      .filter((artworkId) => state.artworkData && state.artworkData[artworkId])
+      .filter((artworkId) => userState.artworkData && userState.artworkData[artworkId])
       .forEach((artwork: any) => {
-        if (!state.artworkData) return
-        const fullArtwork = state?.artworkData[artwork]
+        if (!userState.artworkData) return
+        const fullArtwork = userState?.artworkData[artwork]
         if (fullArtwork.artworkImage?.value){
           imageUrlsToPrefetch.push({uri: fullArtwork.artworkImage.value})
         }
@@ -42,14 +41,12 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
       FastImage.preload(imageUrlsToPrefetch)
       setArtworkData(data)
 
-      if (data.length !== 0){
-        setGetStartedText(null)
+      if (data.length > 0){
+        setHasNoArtwork(false)
       }
-    }else {
-      setGetStartedText(errorMessageText)
     }
 
-  }, [state.userSavedArtwork]);
+  }, [userState.userSavedArtwork]);
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -61,12 +58,12 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
       if (savedArtwork && Object.values(savedArtwork).length > 0){
         savedArtworkIds = Object.values(savedArtwork).reduce((acc, el) => ({...acc, [el?._id as string] : true}), {})
       }
-      dispatch({
-        type: ETypes.setUserSavedArtworkMulti,
+      userDispatch({
+        type: UserETypes.setUserSavedArtworkMulti,
         artworkIds: savedArtworkIds
       })
-      dispatch({
-        type: ETypes.saveArtworkMulti,
+      userDispatch({
+        type: UserETypes.saveArtworkMulti,
         artworkDataMulti: savedArtwork
       })
     } catch {
@@ -77,34 +74,28 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
     }, 500)  }, []);
 
 
-
-  return (
-    <>
-    {getStartedText ? 
-    (
-      <ScrollView 
-      style={{
-        height: hp('40%'),
-        width: '100%',
-        backgroundColor: Colors.PRIMARY_600,
-      }}
-      contentContainerStyle={{ 
-        flexGrow: 1, 
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center', 
-        alignItems: 'center' }}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>  
-        <Image 
-          source={require('../../assets/dartahousewhite.png')}
-          style={dartaLogo.image}
-        />
-        <TextElement style={{margin: 5, color: Colors.PRIMARY_50}}>{getStartedText}</TextElement>
-      </ScrollView>
+    if (hasNoArtwork){
+      return(
+        <ScrollView 
+        style={{
+          height: hp('40%'),
+          width: '100%',
+          backgroundColor: Colors.PRIMARY_50,
+        }}
+        contentContainerStyle={{ 
+          flexGrow: 1, 
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center', 
+          alignItems: 'center' }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_950} onRefresh={onRefresh} />}>  
+            <TextElement style={dartaLogo.textHeader}>No artwork to show</TextElement>
+            <TextElement style={dartaLogo.text}>when you add artwork to your saves, it will appear here</TextElement>
+        </ScrollView>
       )
-      :
-      (
+    } else if (artworkData) {
+      return (
         <ArtworkList 
         refreshing={refreshing}
         onRefresh={onRefresh}
@@ -114,7 +105,5 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
         navigateToParams={UserRoutesEnum.UserPastTopTabNavigator}
       />
       )
-    }
-    </>
-  );
+  }
 }

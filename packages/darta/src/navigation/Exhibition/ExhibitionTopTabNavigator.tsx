@@ -4,6 +4,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import {ExhibitionRootEnum, ExploreMapRootEnum} from '../../typing/routes';
 import {ExhibitionGalleryScreen, ExhibitionDetailsScreen, ExhibitionArtworkScreen} from '../../screens/Exhibition'
 import { tabBarScreenOptions } from '../../theme/themeConstants';
+import { ExhibitionStoreContext } from '../../state';
 
 export const ExhibitionStackTopTab = createMaterialTopTabNavigator();
 export type ExhibitionStackParamList = {
@@ -28,6 +29,23 @@ export type ExhibitionStackParamList = {
 };
 
 export function ExhibitionTopTabNavigator({route} : {route: any}) {  
+  const {exhibitionState} = React.useContext(ExhibitionStoreContext);
+  
+  const [showArtwork , setShowArtwork] = React.useState<boolean>(false);
+  
+  React.useEffect(() => {
+    const exhibitionId = route.params.exhibitionId;
+    const exhibitionData = exhibitionState.exhibitionData;
+  
+    if (exhibitionData && exhibitionData[exhibitionId]) {
+      const artworks = exhibitionData[exhibitionId].artworks;
+      if (artworks && Object.keys(artworks).length > 0) {
+        setShowArtwork(true);
+      }
+    }
+  }, [exhibitionState.exhibitionData]);
+  
+  
   return (
     <ExhibitionStackTopTab.Navigator screenOptions={{...tabBarScreenOptions}}>
       <ExhibitionStackTopTab.Group>
@@ -37,12 +55,14 @@ export function ExhibitionTopTabNavigator({route} : {route: any}) {
             initialParams={{exhibitionId: route.params.exhibitionId, galleryId: route.params.galleryId, internalAppRoute: route.params.internalAppRoute, locationId: route.params?.locationId}}
             options={{ title: 'Exhibition' }}
           />
-          <ExhibitionStackTopTab.Screen
-            name={ExhibitionRootEnum.artworkList}
-            component={ExhibitionArtworkScreen}
-            initialParams={{exhibitionId: route.params.exhibitionId, galleryId: route.params.galleryId, navigateTo: route.params.navigateTo}}
-            options={{ title: 'Artwork' }}
-          />
+          {showArtwork && (
+            <ExhibitionStackTopTab.Screen
+              name={ExhibitionRootEnum.artworkList}
+              component={ExhibitionArtworkScreen}
+              initialParams={{exhibitionId: route.params.exhibitionId, galleryId: route.params.galleryId, navigateTo: route.params.navigateTo}}
+              options={{ title: 'Artwork' }}
+            />
+          )}
           <ExhibitionStackTopTab.Screen
             name={ExhibitionRootEnum.exhibitionGallery}
             component={ExhibitionGalleryScreen}

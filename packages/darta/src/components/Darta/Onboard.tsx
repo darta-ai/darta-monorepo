@@ -60,7 +60,7 @@ const onboardStyles = StyleSheet.create({
 
 
 export const Onboard = () => {
-    const [step, setStep] = React.useState<number>(8)
+    const [step, setStep] = React.useState<number>(4)
 
     const handleClose = async () => {
         setStep(step => step + 1)
@@ -82,89 +82,18 @@ export const Onboard = () => {
             <View style={onboardStyles.overlay}>
                 <TextElement style={onboardStyles.headerTextElement}>Hi, welcome to darta!</TextElement>
                 <SVGs.HandsAndSparklesIcon />
-                <TextElement style={onboardStyles.bodyTextElement}>We've got a new look!</TextElement>
                 <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step + 1)}><TextElement style={onboardStyles.buttonTextColor}>Next</TextElement></Button>
             </View>
         )}
         {step === 1 && (
             <View style={onboardStyles.overlay}>
-                <TextElement style={onboardStyles.headerTextElement}>You can swipe on this screen</TextElement>
+                <TextElement style={onboardStyles.headerTextElement}>Tap and swipe this screen</TextElement>
                 <SVGs.SwipeIcon />
                 <TextElement style={onboardStyles.bodyTextElement}>Swipe right and left to browse artwork</TextElement>
+                <TextElement style={onboardStyles.bodyTextElement}>Tap artwork for more details</TextElement>
                 <View style={onboardStyles.buttonContainer}>
                     <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step - 1)}><TextElement style={onboardStyles.buttonTextColor}>Back</TextElement></Button>
-                    <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step + 1)}><TextElement style={onboardStyles.buttonTextColor}>Next</TextElement></Button>
-                </View>
-            </View>
-        )}
-        {step === 2 && (
-            <View style={onboardStyles.overlay}>
-                <TextElement style={onboardStyles.headerTextElement}>Tap directly on the artwork</TextElement>
-                <SVGs.HandPressIcon />
-                <TextElement style={onboardStyles.bodyTextElement}>Learn about the artwork, exhibition, and gallery</TextElement>
-                <View style={onboardStyles.buttonContainer}>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step - 1)}><TextElement style={onboardStyles.buttonTextColor}>Back</TextElement></Button>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step + 1)}><TextElement style={onboardStyles.buttonTextColor}>Next</TextElement></Button>
-                </View>
-            </View>
-        )}
-        {step === 3 && (
-            <View style={onboardStyles.overlay}>
-                <TextElement style={onboardStyles.headerTextElement}>Double tap to zoom (or pinch)</TextElement>
-                <View style={{display: 'flex', flexDirection: 'row'}}><SVGs.HandPressIcon /><SVGs.HandPressIcon /></View>
-                <TextElement style={onboardStyles.bodyTextElement}>Just don't tap the art</TextElement>
-                <View style={onboardStyles.buttonContainer}>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step - 1)}><TextElement style={onboardStyles.buttonTextColor}>Back</TextElement></Button>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step + 1)}><TextElement style={onboardStyles.buttonTextColor}>Next</TextElement></Button>
-                </View>
-            </View>
-        )}
-        {step === 4 && (
-            <View style={onboardStyles.overlay}>
-                <TextElement style={onboardStyles.headerTextElement}>Like what you like</TextElement>
-                <View style={{transform: [{rotate: '180deg'}]}}><SVGs.ThumbsDownIntroSizeIcon /></View>
-                <TextElement style={onboardStyles.bodyTextElement}>This helps us understand your tastes</TextElement>
-                <View style={onboardStyles.buttonContainer}>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step - 1)}><TextElement style={onboardStyles.buttonTextColor}>Back</TextElement></Button>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step + 1)}><TextElement style={onboardStyles.buttonTextColor}>Next</TextElement></Button>
-                </View>
-            </View>
-        )}
-        {step === 5 && (
-            <View style={onboardStyles.overlay}>
-                <TextElement style={onboardStyles.headerTextElement}>Dislike what you don't</TextElement>
-                <View><SVGs.ThumbsDownIntroSizeIcon /></View>
-                <TextElement style={onboardStyles.bodyTextElement}>Taste is subjective, after all</TextElement>
-                <View style={onboardStyles.buttonContainer}>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step - 1)}><TextElement style={onboardStyles.buttonTextColor}>Back</TextElement></Button>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step + 1)}><TextElement style={onboardStyles.buttonTextColor}>Next</TextElement></Button>
-                </View>
-            </View>
-        )}
-        {step === 6 && (
-            <View style={onboardStyles.overlay}>
-                <TextElement style={onboardStyles.headerTextElement}>See something you love? </TextElement>
-                <SVGs.BookmarkIcon />
-                <TextElement style={onboardStyles.bodyTextElement}>Save it for later. You'll find it on your profile tab</TextElement>
-                <View style={onboardStyles.buttonContainer}>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step - 1)}><TextElement style={onboardStyles.buttonTextColor}>Back</TextElement></Button>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step + 1)}><TextElement style={onboardStyles.buttonTextColor}>Next</TextElement></Button>
-                </View>
-            </View>
-        )}
-        {step === 7 && (
-            <View style={onboardStyles.overlay}>
-                <TextElement style={onboardStyles.headerTextElement}>View in landscape</TextElement>
-                <IconButton
-                    icon={icons.screenRotation}    
-                    iconColor={Colors.PRIMARY_950}
-                    containerColor={Colors.PRIMARY_50}
-                    size={20}
-                />
-                <TextElement style={onboardStyles.bodyTextElement}>Rotate with a press of a button (upper right)</TextElement>
-                <View style={onboardStyles.buttonContainer}>
-                <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step - 1)}><TextElement style={onboardStyles.buttonTextColor}>Back</TextElement></Button>
-                <Button style={onboardStyles.buttonStyles} onPress={() => handleClose()}><TextElement style={onboardStyles.buttonTextColor}>Done</TextElement></Button>
+                    <Button style={onboardStyles.buttonStyles} onPress={() => handleClose()}><TextElement style={onboardStyles.buttonTextColor}>Done</TextElement></Button>
                 </View>
             </View>
         )}

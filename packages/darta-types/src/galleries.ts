@@ -6,6 +6,11 @@ export interface Images {
   fileData?: string | null | ArrayBuffer;
   fileName?: string | null;
   bucketName?: string | null;
+  compressedImage?: { 
+    fileName: string | null, 
+    bucketName: string | null,
+    value: string | null 
+  };
 }
 export interface PrivateFields {
   value: string | null;
@@ -85,6 +90,14 @@ interface GalleryFields extends GalleryBase {
   galleryExhibitions?: ExhibitionObject;
   galleryInternalEmail?: PublicFields;
 }
+
+export interface SupplementalGalleryInformationForLists {
+  galleryName: PublicFields;
+  galleryLogo: Images;
+  galleryId: string;
+  exhibitionLocationString: IBusinessLocationData;
+}
+
 export interface IGalleryProfileData
   extends GalleryFields,
     GalleryAddressFields {}
@@ -263,10 +276,32 @@ export type ExhibitionMapPin = {
   exhibitionType: {
     value: 'Group Show' | 'Solo Show';
   };
-  artworks?: {
-    [key: string]: Artwork;
-  };
   _id?: string;
+}
+
+export type GalleryForList = {
+  galleryName: PublicFields | null;
+  galleryLogo: Images | null;
+  galleryId: string | null;
+  primaryContact: PrivateFields | null;
+}
+
+export type ExhibitionForList = {
+  exhibitionLocationString: PublicFields | null;
+  exhibitionLocation: IOpeningLocationData | null;
+  exhibitionDates: ExhibitionDates | null;
+  exhibitionTitle: PublicFields | null;
+  exhibitionId: string | null;
+  isCurrentlyShowing: boolean;
+}
+
+export interface ArtworkAndGalleryForList {
+  artwork: Artwork | null;
+  gallery: GalleryForList;
+}
+
+export interface ArtworkListInformation extends ArtworkAndGalleryForList  {
+  exhibition: ExhibitionForList | null;
 }
 
 export type GalleryPreview = {

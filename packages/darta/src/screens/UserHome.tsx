@@ -25,10 +25,10 @@ import { TextElement } from '../components/Elements/TextElement';
 import { globalTextStyles } from '../styles/styles';
 import { DartaIconButtonWithText } from '../components/Darta/DartaIconButtonWithText';
 import * as SVGs from '../assets/SVGs';
+import { UserETypes, UserStoreContext } from '../state/UserStore';
+import { GalleryETypes, GalleryStoreContext } from '../state';
 
 
-const HEADER_MAX_HEIGHT = 100;
-const HEADER_MIN_HEIGHT = hp('10%');
 const HEADER_MAX_WIDTH = 100;
 const HEADER_MIN_WIDTH = wp('15%');
 // const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
@@ -60,7 +60,9 @@ export const userHomeStyles = StyleSheet.create({
 
 
 export function UserHome({navigation}: {navigation: any}) {
-  const {dispatch} = React.useContext(StoreContext);
+  const {userDispatch} = React.useContext(UserStoreContext)
+  const {galleryDispatch} = React.useContext(GalleryStoreContext)
+
   const scrollY = useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
@@ -97,11 +99,11 @@ export function UserHome({navigation}: {navigation: any}) {
         listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 100 }),
       ])
 
-      const processArtworkData = (data: any, dispatchType: ETypes) => {
+      const processArtworkData = (data: any, dispatchType: UserETypes) => {
         if (data && Object.values(data).length > 0) {
           let artworkIds: { [key: string]: boolean } = {};
           artworkIds = Object.values(data).reduce((acc: any, el: any) => ({ ...acc, [el?._id]: true }), {}) as { [key: string]: boolean };
-          dispatch({
+          userDispatch({
             type: dispatchType,
             artworkIds
           });
@@ -109,17 +111,17 @@ export function UserHome({navigation}: {navigation: any}) {
         return data;
       };
 
-      processArtworkData(savedArtwork, ETypes.setUserSavedArtworkMulti);
-      processArtworkData(inquiredArtwork, ETypes.setUserInquiredArtworkMulti);
+      processArtworkData(savedArtwork, UserETypes.setUserSavedArtworkMulti);
+      processArtworkData(inquiredArtwork, UserETypes.setUserInquiredArtworkMulti);
 
       if (galleryFollows?.length) {
         const galleryPreviews: {[key: string] : GalleryPreview} = galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: el }), {})
-        dispatch({
-          type: ETypes.setGalleryPreviewMulti,
+        galleryDispatch({
+          type: GalleryETypes.setGalleryPreviewMulti,
           galleryPreviews
         });
-        dispatch({
-          type: ETypes.setUserFollowGalleriesMulti,
+        userDispatch({
+          type: UserETypes.setUserFollowGalleriesMulti,
           galleryFollowIds: galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: true }), {})
         });
       }
@@ -173,7 +175,6 @@ export function UserHome({navigation}: {navigation: any}) {
       <View style={userHomeStyles.userHomeContainer}>
         <View>
           <UserProfile
-            navigation={navigation}
             imageWidthInterpolate={imageWidthInterpolate}
             imageHeightInterpolate={imageWidthInterpolate}
           />

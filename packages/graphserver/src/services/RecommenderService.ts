@@ -103,10 +103,15 @@ export class RecommenderService implements IRecommenderService {
     `
 
     try {
-      const cursor = await this.db.query(ArtworkQuery, {userId, limit: endNumber, count});
-      const artworks: any = await cursor.all();
+      let cursor = await this.db.query(ArtworkQuery, {userId, limit: endNumber, count});
+      let artworks: any = await cursor.all();
        // Shuffle and organize artworks here
-       const groupedArtworks = this.groupArtworksByExhibition(artworks);
+       let groupedArtworks = this.groupArtworksByExhibition(artworks);
+       if (Object.keys(groupedArtworks).length === 0) {
+        cursor = await this.db.query(ArtworkQuery, {userId, limit: endNumber, count});
+        artworks = await cursor.all();
+        groupedArtworks = this.groupArtworksByExhibition(artworks);
+       }
        Object.keys(groupedArtworks).forEach(exhibitionId => {
          groupedArtworks[exhibitionId] = this.shuffleArray(groupedArtworks[exhibitionId]);
        });

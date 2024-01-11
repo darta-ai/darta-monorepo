@@ -176,25 +176,25 @@ export class ArtworkController {
     }
   }
 
-  // OPEN Endpoint
-  @httpGet('/readArtworkAndGallery')
-  public async readArtworkAndGallery(
-    @request() req: Request,
-    @response() res: Response,
-  ): Promise<void> {
-    const {artworkId} = req.body;
-    try {
-      const results = await this.artworkService.readArtworkAndGallery(
-        artworkId,
-      );
-      // removing anything that isPrivate
-      await filterOutPrivateRecordsSingleObject(results);
-      res.json(results);
-    } catch (error: any) {
-      standardConsoleLog({message: error?.message, data: 'artwork/readArtworkAndGallery', request: req?.body})
-      res.status(500).send(error.message);
-    }
-  }
+  // // OPEN Endpoint
+  // @httpGet('/readArtworkAndGallery')
+  // public async readArtworkAndGallery(
+  //   @request() req: Request,
+  //   @response() res: Response,
+  // ): Promise<void> {
+  //   const {artworkId} = req.body;
+  //   try {
+  //     const results = await this.artworkService.readArtworkAndGallery(
+  //       artworkId,
+  //     );
+  //     // removing anything that isPrivate
+  //     await filterOutPrivateRecordsSingleObject(results);
+  //     res.json(results);
+  //   } catch (error: any) {
+  //     standardConsoleLog({message: error?.message, data: 'artwork/readArtworkAndGallery', request: req?.body})
+  //     res.status(500).send(error.message);
+  //   }
+  // }
 
   @httpPost('/edit', verifyToken)
   public async editArtwork(
@@ -270,6 +270,26 @@ export class ArtworkController {
     }
   }
 
+  // getArtworkEmailAndGallery
+
+  @httpGet('/readArtworkEmailAndGallery', verifyToken)
+  public async readArtworkEmailAndGallery(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    // eslint-disable-next-line camelcase
+    try {
+      const {artworkId} = req.query;
+      const inquiry = await this.artworkService.readArtworkEmailAndGallery({
+        // eslint-disable-next-line camelcase
+        artworkId: artworkId as string,
+      });
+      res.json(inquiry);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/listArtworkInquires', request: req?.body})
+      res.status(500).send(error.message);
+    }
+  }
 
   @httpPost('/swapArtworkOrder', verifyToken)
   public async swapArtworkOrder(

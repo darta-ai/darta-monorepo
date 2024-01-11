@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Marker, Callout } from 'react-native-maps';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 
 import FastImage from 'react-native-fast-image'
 import { TextElement } from '../Elements/TextElement';
@@ -10,15 +10,18 @@ import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCi
 
 import * as Colors from '@darta-styles';
 import { ExhibitionMapPin } from '@darta-types';
-import { ETypes, StoreContext } from '../../state/Store';
+import { ExhibitionStoreContext, StoreContext, UIStoreContext, UiETypes } from '../../state';
 import { ExploreMapRootEnum } from '../../typing/routes';
 import {Button } from 'react-native-paper';
-import { GoogleMapsPinIcon } from '../../assets/SVGs';
+import { GoogleMapsPinIcon, MapPinCircleDotIcon} from '../../assets/SVGs';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
+import { Easing } from 'react-native-reanimated';
+import { GoogleMapsPinBlackIcon } from '../../assets/SVGs/GoogleMapsPinBlack';
 
 const customMarker = StyleSheet.create({
   galleryContainer:{
       width: '100%',
-      height: 50,
+      height: 40,
       display:'flex',
       flexDirection: "row",
       alignItems: 'flex-start',
@@ -93,17 +96,19 @@ const CustomMarker = React.memo(({
   navigation: any
 }) => {
 
-  const {state, dispatch} = React.useContext(StoreContext);
+  const {exhibitionState} = React.useContext(ExhibitionStoreContext);
+  const {uiDispatch} = React.useContext(UIStoreContext);
+
   const [showCallout, setShowCallout] = useState(true);
 
   const navigateToExhibitionScreens = async () => {
     if (!mapPin.exhibitionId || !mapPin.galleryId){
       return
     }
-    if (state.exhibitionData && state.exhibitionData[mapPin.exhibitionId]){
-      const exhibition = state.exhibitionData[mapPin.exhibitionId]
-      dispatch({
-        type: ETypes.setCurrentHeader,
+    if (exhibitionState.exhibitionData && exhibitionState.exhibitionData[mapPin.exhibitionId]){
+      const exhibition = exhibitionState.exhibitionData[mapPin.exhibitionId]
+      uiDispatch({
+        type: UiETypes.setCurrentHeader,
         currentExhibitionHeader: exhibition.exhibitionTitle.value!,
       })
     }
@@ -127,7 +132,6 @@ const CustomMarker = React.memo(({
   const [line2, setLine2] = React.useState<string>("")
   const [exhibitionTitle, setExhibitionTitle] = React.useState<string>("")
   const [artistName, setArtistName] = React.useState<string>("")
-  const [pinColor, setPinColor] = React.useState<string>(Colors.PRIMARY_800)
   const [buttonText, setButtonText] = React.useState<string>("View Gallery")
 
 
@@ -139,11 +143,10 @@ const CustomMarker = React.memo(({
     }
 
 
-    if (mapPin.receptionDates?.receptionStartTime.value && mapPin.receptionDates?.receptionEndTime.value) {
-      const endDateOpening = new Date(mapPin.receptionDates.receptionEndTime.value);
-      setHasUpcomingOpening(endDateOpening >= new Date());
-      setPinColor(endDateOpening >= new Date() ? Colors.ADOBE_500 : Colors.PRIMARY_800)
-
+    if (mapPin.receptionDates?.receptionStartTime?.value && mapPin.receptionDates?.receptionEndTime.value) {
+      const receptionEndDate = new Date(mapPin.receptionDates?.receptionEndTime?.value);
+      const isOpeningUpcoming = (receptionEndDate >= new Date());
+      setHasUpcomingOpening(isOpeningUpcoming);
     }
     if (mapPin.exhibitionDates?.exhibitionDuration && mapPin.exhibitionDates.exhibitionDuration?.value === "Ongoing/Indefinite"){
       setHasCurrentOpening(true)
@@ -164,6 +167,12 @@ const CustomMarker = React.memo(({
     setArtistName(mapPin.exhibitionArtist?.value || "Group Show")
     }, [])
 
+  React.useEffect(() => {
+    if (hasUpcomingOpening){
+      handleWiggle()
+    }
+  }, [hasUpcomingOpening])
+
 
   const chooseRouteAndNavigate = () => {
     if (hasCurrentShow){
@@ -172,29 +181,93 @@ const CustomMarker = React.memo(({
       navigateToGalleryScreen()
     )
   }
+
+
+
+  const wiggleAnim = React.useRef(new Animated.Value(0)).current; 
+
+  React.useEffect(() => {
+    wiggleAnim.addListener(() => {})
+  }, [])
+
+  
+  const handleWiggle = () => {
+    const wiggleSequence = Animated.sequence([
+      Animated.timing(wiggleAnim, {
+        toValue: 0,  // Rotate slightly right
+        duration: 750,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: 0.25,  // Rotate slightly right
+        duration: 500,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: 0,  // Rotate slightly left
+        duration: 500,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: -0.25,  // Rotate slightly left
+        duration: 500,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: 0,  // Rotate slightly left
+        duration: 500,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+      Animated.timing(wiggleAnim, {
+        toValue: 0,  // Rotate slightly left
+        duration: 1000,  // Quicker wiggle
+        easing: Easing.elastic(4),  // Bouncy effect
+        useNativeDriver: true,
+      }),
+    ]);
+  
+    // Continuous loop of wiggle
+    Animated.loop(wiggleSequence).start();
+  };
+
+  const rotate = wiggleAnim.interpolate({
+    inputRange: [-1, 1],
+    outputRange: ['-15deg', '15deg'], // Reduced angle for subtler effect
+  });
+
+
   const customMarkerDynamic = StyleSheet.create({
     container: {
       display: 'flex',
       flexDirection: 'column',
-      height: hasCurrentShow ? 281 : 158,
+      height: hasCurrentShow ? 250 : 158,
       width: 315,
       justifyContent: 'flex-start',
       alignItems: 'center',
-      padding: 24,
+      padding: 18,
       gap: 20
     },
+    wiggleFriend: {
+      transform: [{ rotate }]
+    } 
   })
 
-  
 
   return (
     <Marker
       coordinate={coordinate}
       key={mapPin.exhibitionId}
       onTouchStart={() => setShowCallout(true)}
-      pinColor={pinColor}
     >
-      <GoogleMapsPinIcon /> 
+      <Animated.View style={customMarkerDynamic.wiggleFriend}>
+      {hasUpcomingOpening ?  <GoogleMapsPinIcon/> : <GoogleMapsPinBlackIcon /> }
+        {/* <GoogleMapsPinIcon/> */}
+      </Animated.View>
       {showCallout && (
         <Callout style={customMarkerDynamic.container} 
         onTouchStart={() => setShowCallout(false)} 
@@ -208,8 +281,9 @@ const CustomMarker = React.memo(({
             {hasCurrentShow && (
             <View style={customMarker.exhibitionContainer}>
                 <View style={customMarker.heroImageContainer} >
-                  <FastImage 
-                  source={{uri: mapPin?.exhibitionPrimaryImage?.value || ""}} 
+                  <DartaImageComponent 
+                  uri={mapPin?.exhibitionPrimaryImage?.value || ""}
+                  priority={FastImage.priority.normal}
                   style={customMarker.heroImage} 
                   resizeMode={FastImage.resizeMode.contain}
                   />

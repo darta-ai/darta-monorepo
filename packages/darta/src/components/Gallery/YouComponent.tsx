@@ -2,10 +2,6 @@ import * as Colors from '@darta-styles';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
 
 import {globalTextStyles} from '../../styles/styles';
 import {TextElement} from '../Elements/_index';

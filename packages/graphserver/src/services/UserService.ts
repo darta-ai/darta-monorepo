@@ -3,6 +3,7 @@ import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 
 import {CollectionNames, EdgeNames} from '../config/collections';
+import { ENV } from '../config/config';
 import { ImageController } from '../controllers';
 import {Node} from '../models/models';
 import {
@@ -212,9 +213,47 @@ export class UserService implements IUserService {
         collectionName: CollectionNames.DartaUsers,
         id,
       });
-      if (results) {
-        return results;
+      let userProfilePicture;
+
+      if(results.profilePicture){
+        (userProfilePicture = results.profilePicture)
       }
+      
+      let url;
+      let shouldRegenerate;
+      if (userProfilePicture?.value) {
+        shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: userProfilePicture.value})
+      }
+
+      if (shouldRegenerate && ENV === 'production' && userProfilePicture?.bucketName && userProfilePicture?.fileName) {
+        try {
+          url = await this.imageController.processGetFile({
+            bucketName: userProfilePicture?.bucketName,
+            fileName: userProfilePicture?.fileName,
+          });
+          await this.refreshUserProfileImage({uid: results?._id, url})
+        } catch (error: any) {
+          // eslint-disable-next-line no-console
+          console.log(error);
+          url = '';
+        }
+      } else {
+        url = userProfilePicture?.value;
+      }
+
+      if(results){
+        return {
+          profilePicture: {
+            value: url,
+          },
+          userName: results.userName,
+          legalFirstName: results.legalFirstName,
+          legalLastName: results.legalLastName,
+          email: results.email,
+          uid: results._id,
+        }
+      }
+
     } catch (error: any) {
       throw new Error(`Unable to read darta user ${error?.message}`);
     }
@@ -434,6 +473,30 @@ export class UserService implements IUserService {
       return exhibitionPrimaryImage;
     } catch (error: any) {
       throw new Error(error?.message);
+    }
+  }
+
+  async refreshUserProfileImage({
+    uid,
+    url,
+  }: {
+    uid: string;
+    url: string;
+  }): Promise<void> {
+    const userId = this.generateDartaUserId({uid});
+
+    try {
+      await this.nodeService.upsertNodeById({
+        collectionName: CollectionNames.DartaUsers,
+        id: userId,
+        data: {
+          profilePicture: {
+            value: url
+          },
+        },
+      });
+    } catch (error) {
+      throw new Error('unable refresh gallery profile logo');
     }
   }
 

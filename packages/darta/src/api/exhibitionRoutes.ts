@@ -1,6 +1,7 @@
 import {Exhibition, ExhibitionPreview} from '@darta-types';
 import axios from 'axios';
 import auth from '@react-native-firebase/auth';
+import { generateHeaders } from './utls';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}exhibition`;
 
@@ -10,13 +11,13 @@ export async function readExhibition({
   exhibitionId: string;
 }): Promise<Exhibition | any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
+    const headers = await generateHeaders();
 
     const {data} = await axios.get(`${URL}/readForUser`, {
       params: {
         exhibitionId
     }, 
-    headers: {authorization: `Bearer ${idToken}`}
+    headers
   });
     return data;
   } catch (error:any) {
@@ -27,11 +28,11 @@ export async function readExhibition({
 
 export async function readMostRecentGalleryExhibitionForUser({locationId} : {locationId: string}): Promise<Exhibition | any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
+    const headers = await generateHeaders();
     const {data} = await axios.get(`${URL}/readMostRecentGalleryExhibitionForUser`, {
       params: {
         locationId
-  }, headers: {authorization: `Bearer ${idToken}`}
+  }, headers
   });
     return data;
   } catch (error:any) {
@@ -49,12 +50,13 @@ export async function listAllExhibitionsPreviewsForUser({
 }: {
   limit: number;
 }): Promise<{[key: string] : ExhibitionPreview}> {
+  const headers = await generateHeaders();
   try {
     const idToken = await auth().currentUser?.getIdToken();
     const {data} = await axios.get(`${URL}/listAllExhibitionsPreviewsForUser`, {
       params: {
         limit
-    }, headers: {authorization: `Bearer ${idToken}`}
+    }, headers
   });
     return data;
   } catch (error:any) {
@@ -68,11 +70,11 @@ export async function listExhibitionPreviewsCurrent({
   limit: number;
 }): Promise<{[key: string] : ExhibitionPreview}> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
+    const headers = await generateHeaders();
     const {data} = await axios.get(`${URL}/listExhibitionsPreviewsCurrentForUserByLimit`, {
       params: {
         limit
-    }, headers: {authorization: `Bearer ${idToken}`}
+    }, headers
   });
     return data;
   } catch (error:any) {
@@ -87,11 +89,11 @@ export async function listExhibitionPreviewsCurrent({
     limit: number;
   }): Promise<{[key: string] : ExhibitionPreview}> {
     try {
-      const idToken = await auth().currentUser?.getIdToken();
+      const headers = await generateHeaders();
       const {data} = await axios.get(`${URL}/listExhibitionsPreviewsForthcomingForUserByLimit`, {
         params: {
           limit
-      }, headers: {authorization: `Bearer ${idToken}`}
+      }, headers
     });
       return data;
     } catch (error:any) {
@@ -106,13 +108,13 @@ export async function listExhibitionPreviewUserFollowing({
   limit: number;
 }): Promise<{[key: string] : ExhibitionPreview}> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
+    const headers = await generateHeaders();
     if(auth().currentUser === null) throw new Error('User is not logged in')
     const uid = auth().currentUser?.uid
     const {data} = await axios.get(`${URL}/listExhibitionsPreviewsUserFollowingForUserByLimit`, {
       params: {
         limit, uid
-    }, headers: {authorization: `Bearer ${idToken}`}
+    }, headers
   });
     return data;
   } catch (error:any) {

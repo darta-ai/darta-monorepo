@@ -7,8 +7,8 @@ import {
 } from 'react-native-responsive-screen';
 import * as Colors from '@darta-styles'
 import { TextElement } from '../Elements/TextElement';
-import { ETypes, StoreContext } from '../../state/Store';
 import { editDartaUserAccountAPI } from '../../utils/apiCalls';
+import { UserETypes, UserStoreContext } from '../../state';
 
 
 export const SignUp = ({
@@ -19,13 +19,13 @@ export const SignUp = ({
 
   const hideDialog = () => setDialogVisible(false)
 
-  const {state, dispatch} = React.useContext(StoreContext);
+  const {userState, userDispatch} = React.useContext(UserStoreContext);
 
   const theme = useTheme()
   const { colors } = theme;
-  const [email, setEmail] = React.useState<string>(state.user?.email ?? "")
-  const [firstName, setFirstName] = React.useState<string>(state.user?.legalFirstName ?? "")
-  const [lastName, setLastName] = React.useState<string>(state.user?.legalLastName ?? "")
+  const [email, setEmail] = React.useState<string>(userState.user?.email ?? "")
+  const [firstName, setFirstName] = React.useState<string>(userState.user?.legalFirstName ?? "")
+  const [lastName, setLastName] = React.useState<string>(userState.user?.legalLastName ?? "")
   const [error, setError] = React.useState<string>("")
   const [loading, setLoading] = React.useState<boolean>(false)
 
@@ -43,8 +43,8 @@ export const SignUp = ({
       setLoading(true)
       const res = await editDartaUserAccountAPI({data : { email, legalFirstName: firstName, legalLastName: lastName }});
       if (res){
-        dispatch({
-          type: ETypes.setUser,
+        userDispatch({
+          type: UserETypes.setUser,
           userData: res
         })            
       }

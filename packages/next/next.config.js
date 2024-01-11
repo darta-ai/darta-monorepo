@@ -36,6 +36,16 @@ module.exports = {
         ],
         destination: '/',
         permanent: true,
+      },{
+        source: '/lists',
+        has: [
+          {
+            type: 'query',
+            key: 'listId',
+          },
+        ],
+        destination: '/',
+        permanent: true,
       },
     ]
   },  

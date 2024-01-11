@@ -7,6 +7,7 @@ import { ExhibitionPreviewScreen } from '../../screens/Exhibition/ExhibitionsPre
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as StoreReview from 'expo-store-review';
+import { ExhibitionStoreContext } from '../../state';
 
 export const ExhibitionHomeTopTab = createMaterialTopTabNavigator();
 export type ExhibitionStackParamList = {
@@ -30,6 +31,16 @@ export type ExhibitionStackParamList = {
 };
 
 export function ExhibitionHomeTopTabNavigator({route} : {route: any}) {
+
+    const {exhibitionState} = React.useContext(ExhibitionStoreContext);
+
+    const [showFollowingExhibitionPreviews, setShowFollowing] = React.useState<boolean>(false)
+
+    React.useEffect(() => {
+      if (exhibitionState.userFollowsExhibitionPreviews && Object.keys(exhibitionState.userFollowsExhibitionPreviews).length > 0) {
+        setShowFollowing(true)
+      }
+    },[])
         
     const requestReview = async () => {
         try {
@@ -74,15 +85,19 @@ export function ExhibitionHomeTopTabNavigator({route} : {route: any}) {
             component={ExhibitionPreviewScreen}
             options={{ title: 'Open now' }}
           />
-          <ExhibitionHomeTopTab.Screen
+          {showFollowingExhibitionPreviews && (
+            <ExhibitionHomeTopTab.Screen
             name={ExhibitionPreviewEnum.following}
             component={ExhibitionPreviewScreen}
             options={{ title: 'Following' }}
           />
+          )}
+
           <ExhibitionHomeTopTab.Screen
             name={ExhibitionPreviewEnum.forthcoming}
             component={ExhibitionPreviewScreen}
             options={{ title: 'Upcoming' }}
+            initialParams={{type: "Upcoming"}}
           />
         </ExhibitionHomeTopTab.Group>
     </ExhibitionHomeTopTab.Navigator>

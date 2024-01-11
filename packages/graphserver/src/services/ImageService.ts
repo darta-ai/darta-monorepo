@@ -1,5 +1,6 @@
 import {inject, injectable} from 'inversify';
 import {Client} from 'minio';
+import sharp from 'sharp';
 
 import {IImageService} from './interfaces/IImageService';
 
@@ -33,9 +34,26 @@ export class ImageService implements IImageService {
       };
     } catch (err: any) {
       // eslint-disable-next-line no-console
-      console.log(err);
       throw new Error(err.message);
     }
+  }
+
+
+  // eslint-disable-next-line class-methods-use-this
+  public async compressImage({fileBuffer}: {fileBuffer: any}): Promise<any> {
+    try{
+      return sharp(fileBuffer)
+      .resize({ 
+          width: 800, 
+          height: 600, 
+          fit: sharp.fit.inside // or sharp.fit.cover to fill the area, cropping if necessary
+      })
+      .toBuffer();
+    } catch(error: any){
+      console.log(error);
+      throw new Error(error.message);
+    }
+ 
   }
 
   private checkBucketExists(bucketName: string): Promise<boolean> {

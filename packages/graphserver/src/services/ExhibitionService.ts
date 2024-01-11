@@ -3,6 +3,7 @@
 import {
   Artwork, 
   Exhibition, 
+  ExhibitionForList, 
   ExhibitionMapPin, 
   ExhibitionObject, 
   ExhibitionPreview, 
@@ -34,6 +35,7 @@ import {
 } from './interfaces';
 
 const BUCKET_NAME = 'exhibitions';
+const COMPRESSED_BUCKET_NAME = 'exhibitions-compressed';
 
 @injectable()
 export class ExhibitionService implements IExhibitionService {
@@ -46,7 +48,6 @@ export class ExhibitionService implements IExhibitionService {
     @inject('INodeService') private readonly nodeService: INodeService,
     @inject('IGalleryService') private readonly galleryService: IGalleryService,
     @inject('IUserService') private readonly userService: IUserService
-    
     ) {}
 
   public async createExhibition({
@@ -136,6 +137,40 @@ export class ExhibitionService implements IExhibitionService {
   } catch (error: any){
     throw new Error(error.message)
   }
+  }
+
+  public async readExhibitionForList({artworkId}: {artworkId: string}): Promise<ExhibitionForList>{
+    try{
+      const fullArtworkId = this.artworkService.generateArtworkId({artworkId})
+      const artworkEdge = await this.edgeService.getEdgeWithTo({
+        edgeName: EdgeNames.FROMCollectionTOArtwork,
+        to: fullArtworkId
+      })
+
+      if (!artworkEdge){
+        throw new Error('unable to find artwork edge')
+      }
+      const exhibitionId = artworkEdge._from
+      const exhibition = await this.getExhibitionById({exhibitionId})
+
+      let isCurrentlyShowing = false;
+      if (exhibition?.exhibitionDates?.exhibitionStartDate?.value && exhibition?.exhibitionDates?.exhibitionEndDate?.value){
+        isCurrentlyShowing = exhibition?.exhibitionDates?.exhibitionStartDate?.value <= new Date().toISOString() 
+        && exhibition?.exhibitionDates?.exhibitionEndDate?.value >= new Date().toISOString()
+      }
+
+      return {
+        exhibitionLocationString: exhibition?.exhibitionLocation?.locationString ?? null,
+        exhibitionDates: exhibition?.exhibitionDates ?? null,
+        exhibitionTitle: exhibition?.exhibitionTitle ?? null,
+        exhibitionId: exhibition?.exhibitionId ?? null,
+        exhibitionLocation: exhibition?.exhibitionLocation ?? null,
+        isCurrentlyShowing
+      }
+
+    } catch (e: any){
+      throw new Error(e.message)
+    }
   }
 
   public async readMostRecentGalleryExhibitionForUser(
@@ -237,8 +272,6 @@ export class ExhibitionService implements IExhibitionService {
     };
   }
 
-
-
   public async getExhibitionPreviewById({
     exhibitionId,
   }: {
@@ -306,15 +339,27 @@ export class ExhibitionService implements IExhibitionService {
 
     let bucketName = exhibitionPrimaryImage?.bucketName ?? null;
     let value = exhibitionPrimaryImage?.value ?? null;
+    let minifiedValue = exhibitionPrimaryImage?.compressedImage?.value ?? null;
+    let minifiedBucketName = exhibitionPrimaryImage?.compressedImage?.bucketName ?? null;
     if (exhibitionPrimaryImage?.fileData) {
       try {
         const artworkImageResults =
-          await this.imageController.processUploadImage({
-            fileBuffer: exhibitionPrimaryImage?.fileData,
-            fileName,
-            bucketName: BUCKET_NAME,
-          });
+        await this.imageController.processUploadImage({
+          fileBuffer: exhibitionPrimaryImage?.fileData,
+          fileName,
+          bucketName: BUCKET_NAME,
+        });
         ({bucketName, value} = artworkImageResults);
+        const compressedImage = await this.imageController.compressImage({fileBuffer: exhibitionPrimaryImage.fileData})
+        const minifiedImageResults =
+        await this.imageController.processUploadImage({
+          fileBuffer: compressedImage,
+          fileName,
+          bucketName: COMPRESSED_BUCKET_NAME,
+        });
+      ({bucketName: minifiedBucketName, value: minifiedValue} = minifiedImageResults);
+
+      console.log({value, minifiedValue})
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('error uploading image:', error);
@@ -333,6 +378,11 @@ export class ExhibitionService implements IExhibitionService {
         bucketName,
         value,
         fileName,
+        compressedImage: {
+          bucketName: minifiedBucketName,
+          value: minifiedValue,
+          fileName
+        }
       },
       updatedAt: new Date(),
     };
@@ -358,8 +408,8 @@ export class ExhibitionService implements IExhibitionService {
 
     let cityName = ""
 
-    if(exhibitionLocation?.city?.value){
-      cityName = exhibitionLocation.city.value
+    if(exhibitionLocation?.locality?.value){
+      cityName = exhibitionLocation.locality.value
     }
 
     if (cityName) {
@@ -418,7 +468,8 @@ export class ExhibitionService implements IExhibitionService {
   public async publishExhibition({
     exhibitionId, 
     galleryId, 
-    isPublished} : {
+    isPublished
+    } : {
       exhibitionId: string, 
       galleryId: string, 
       isPublished: boolean}): Promise<Exhibition | void>{
@@ -821,7 +872,7 @@ export class ExhibitionService implements IExhibitionService {
   
     try {
       const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit });
-      const exhibitionPreviews = (await edgeCursor.all()).filter((el) => el && Object?.values(el.artworkPreviews)?.length > 0);
+      const exhibitionPreviews = await edgeCursor.all()
 
       return exhibitionPreviews.reduce((acc, obj) =>{
         acc[obj.exhibitionId as string] = {...obj, artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2}), {})}
@@ -886,7 +937,7 @@ export class ExhibitionService implements IExhibitionService {
   
     try {
       const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit });
-      const exhibitionPreviews = (await edgeCursor.all()).filter((el) => el && Object?.values(el.artworkPreviews)?.length > 0);
+      const exhibitionPreviews = await edgeCursor.all()
 
       return exhibitionPreviews.reduce((acc, obj) =>{
         acc[obj.exhibitionId as string] = {...obj, artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2}), {})}
@@ -961,7 +1012,7 @@ export class ExhibitionService implements IExhibitionService {
   
     try {
       const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit, userId});
-      const exhibitionPreviews = (await edgeCursor.all()).filter((el) => el && Object?.values(el.artworkPreviews)?.length > 0);
+      const exhibitionPreviews = (await edgeCursor.all());
       return exhibitionPreviews.reduce((acc, obj) =>{
         acc[obj.exhibitionId as string] = {...obj, artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2}), {})}
         return acc}, {})
@@ -976,7 +1027,7 @@ export class ExhibitionService implements IExhibitionService {
     if (!cityName) {
       throw new Error('cityName is required');
     }
-    const newYorkLocalities = ['New York', 'Brooklyn']
+    const newYorkLocalities = ['New York', 'Brooklyn', 'Manhattan']
     if (cityName === "New York"){
       try{
         const exhibitionMapPin: {[key: string]: ExhibitionMapPin} = {};
@@ -1030,7 +1081,15 @@ export class ExhibitionService implements IExhibitionService {
             }
     `;
     try{
-      const edgeCursor = await this.db.query(findCollections, { locality, currentDate: new Date().toISOString() });
+      const currentDate = new Date();
+
+      // Add 7 days
+      currentDate.setDate(currentDate.getDate() + 7);
+
+      // Convert to ISO string format
+      const isoString = currentDate.toISOString();
+
+      const edgeCursor = await this.db.query(findCollections, { locality, currentDate: isoString });
       const exhibitionsAndPreviews: ExhibitionMapPin[] = await edgeCursor.all()
       const exhibitionMapPin: {[key: string]: ExhibitionMapPin} = {};
       exhibitionsAndPreviews.forEach((exhibitionAndPreview) => {

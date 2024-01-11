@@ -14,7 +14,6 @@ import {
 import { ActivityIndicator } from 'react-native-paper';
 
 import { Text } from 'react-native-paper'
-import {ETypes, StoreContext} from '../../state/Store';
 import { BusinessHours, Exhibition, IGalleryProfileData } from '@darta-types';
 import { formatUSPhoneNumber, modifyHoursOfOperation, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
@@ -25,6 +24,10 @@ import {readExhibition} from '../../api/exhibitionRoutes';
 import { mapStylesJson } from '../../utils/mapStylesJson';
 import { DartaIconButtonWithText } from '../../components/Darta/DartaIconButtonWithText';
 import * as SVGs from '../../assets/SVGs';
+import { UIStoreContext, UiETypes, GalleryStoreContext, ETypes, StoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes } from '../../state';
+import { UserETypes, UserStoreContext } from '../../state/UserStore';
+import { DartaImageComponent } from '../../components/Images/DartaImageComponent';
+
 
 const galleryDetailsStyles = StyleSheet.create({
   container: {
@@ -57,6 +60,8 @@ const galleryDetailsStyles = StyleSheet.create({
   galleryLogoContainer: {
     display:'flex', 
     flexDirection:'column',
+    justifyContent: 'flex-start',
+    alignContent: 'flex-start',
     height: 100,
   },
   heroImage: {
@@ -189,7 +194,11 @@ export function ExhibitionGalleryScreen({
   route?: ExhibitionGalleryRouteProp;
   navigation?: any;
 }) {
-  const {state, dispatch} = useContext(StoreContext);
+  const {state} = React.useContext(StoreContext);
+  const {uiDispatch} = React.useContext(UIStoreContext);
+  const {userState,userDispatch} = React.useContext(UserStoreContext);
+  const {exhibitionState, exhibitionDispatch} = React.useContext(ExhibitionStoreContext);
+  const {galleryState, galleryDispatch} = React.useContext(GalleryStoreContext)
   const [galleryId, setGalleryId] = React.useState<string>("")
   const [errorText, setErrorText] = React.useState<string>("");
   const [isGalleryLoaded, setIsGalleryLoaded] = React.useState<boolean>(false);
@@ -206,14 +215,13 @@ export function ExhibitionGalleryScreen({
 
   const [galleryName, setGalleryName] = React.useState<string>("")
 
-  const [hoursOfOperation, setHoursOfOperation] = React.useState<BusinessHours>({} as BusinessHours);
   const [hoursOfOperationArray, setHoursOfOperationArray] = React.useState<{day: string, open: string, close: string}[]>([]);
   
   const [previousExhibitions, setPreviousExhibitions] = React.useState<Exhibition[]>([])
   const [upcomingExhibitions, setUpComingExhibitions] = React.useState<Exhibition[]>([])
 
 
-  const setGalleryData = ({inputGallery}: {inputGallery: IGalleryProfileData}) => {
+  const setGalleryData = React.useCallback(({inputGallery}: {inputGallery: IGalleryProfileData}) => {
     if (inputGallery?.galleryLocation0?.coordinates) {
       setMapRegion({
           ...mapRegion, 
@@ -245,7 +253,6 @@ export function ExhibitionGalleryScreen({
 
   const daysOrder = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   if (inputGallery.galleryLocation0?.businessHours?.hoursOfOperation){
-    setHoursOfOperation(inputGallery.galleryLocation0.businessHours.hoursOfOperation)
     const hoursArr = Object.entries(inputGallery.galleryLocation0.businessHours.hoursOfOperation).map(([day, hours]) => ({
       day: day,
       open: modifyHoursOfOperation(hours.open.value),
@@ -275,25 +282,25 @@ export function ExhibitionGalleryScreen({
     setPreviousExhibitions(previous)
   }
     setIsGalleryLoaded(true)
-  }
+  }, [galleryState.galleryData])
 
 
 
   React.useEffect(() => {
     const setState = async () => {
-      if (route?.params?.galleryId && state.galleryData && state.galleryData[route.params.galleryId]){
-        const gal = state.galleryData[route.params.galleryId]
+      if (route?.params?.galleryId && galleryState.galleryData && galleryState.galleryData[route.params.galleryId]){
+        const gal = galleryState.galleryData[route.params.galleryId]
         setGalleryId(route.params.galleryId);
         setGalleryData({inputGallery: gal})
         setGallery(gal)
-        dispatch({
-          type: ETypes.setGalleryHeader,
+        uiDispatch({
+          type: UiETypes.setGalleryHeader,
           galleryHeader: gal.galleryName.value ?? "",
         })
-      } else if (state.qrCodeGalleryId && state.galleryData){
+      } else if (state.qrCodeGalleryId && galleryState.galleryData){
         setGalleryId(state.qrCodeGalleryId);
-        setGalleryData({inputGallery: state.galleryData[state.qrCodeGalleryId]})
-        setGallery(state.galleryData[state.qrCodeGalleryId])
+        setGalleryData({inputGallery: galleryState.galleryData[state.qrCodeGalleryId]})
+        setGallery(galleryState.galleryData[state.qrCodeGalleryId])
       } else if (route?.params?.galleryId && !route.params?.exhibitionId) { 
         let galleryData: IGalleryProfileData = {} as IGalleryProfileData
         try{
@@ -308,12 +315,12 @@ export function ExhibitionGalleryScreen({
           setGalleryId(galleryData._id);
           setGalleryData({inputGallery: galleryData})
           setGallery(galleryData)
-          dispatch({
-            type: ETypes.saveGallery,
+          galleryDispatch({
+            type: GalleryETypes.saveGallery,
             galleryData: galleryData,
           })
-          dispatch({
-            type: ETypes.setGalleryHeader,
+          uiDispatch({
+            type: UiETypes.setGalleryHeader,
             galleryHeader: galleryData.galleryName.value ?? "",
           })
         }
@@ -323,7 +330,7 @@ export function ExhibitionGalleryScreen({
     }
 
     setState()
-  }, [state.galleryData, galleryId, state.qrCodeGalleryId])
+  }, [galleryState.galleryData, galleryId, state.qrCodeGalleryId])
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -332,9 +339,9 @@ export function ExhibitionGalleryScreen({
     try{
         const newGallery = await readGallery({galleryId});
         setGalleryData({inputGallery: newGallery})
-        dispatch({
-            type: ETypes.saveGallery,
-            exhibitionData: newGallery,
+        galleryDispatch({
+            type: GalleryETypes.saveGallery,
+            galleryData: newGallery,
         })
         setGallery(newGallery)
     } catch {
@@ -348,16 +355,17 @@ export function ExhibitionGalleryScreen({
   const followGallery = async () => {
     try{
       await createGalleryRelationshipAPI({galleryId})
-      dispatch({
-        type: ETypes.setUserFollowGalleries,
+      userDispatch({
+        type: UserETypes.setUserFollowGalleries,
         galleryId,
       })
       setFollowsGallery(true)
-      dispatch({
-        type: ETypes.setUserFollowGalleries,
+      userDispatch({
+        type: UserETypes.setUserFollowGalleries,
         galleryId,
       })
-    } catch {
+    } catch(e) {
+      console.log('error', e)
       throw new Error("Something went wrong, please try again")
     }
   }
@@ -365,8 +373,8 @@ export function ExhibitionGalleryScreen({
   const unFollowGallery = async () => { 
     try{
       await deleteGalleryRelationshipAPI({galleryId})
-      dispatch({
-        type: ETypes.removeUserFollowGalleries,
+      userDispatch({
+        type: UserETypes.removeUserFollowGalleries,
         galleryId,
       })
       setFollowsGallery(false)
@@ -374,6 +382,10 @@ export function ExhibitionGalleryScreen({
       throw new Error("Something went wrong, please try again")
     }
   }
+
+  React.useEffect(()=>{
+
+  }, [galleryState.galleryData, galleryId])
 
   const [followsGallery, setFollowsGallery] = React.useState<boolean>(false)
   const [isSetOneVisible, setIsSetOneVisible] = React.useState(true);
@@ -411,12 +423,12 @@ export function ExhibitionGalleryScreen({
   };
 
   React.useEffect(() =>{
-    if (state.userGalleryFollowed && state.userGalleryFollowed[galleryId]){
+    if (userState.userGalleryFollowed && userState.userGalleryFollowed[galleryId]){
       setFollowsGallery(true)
     } else {
       setFollowsGallery(false)
     }
-  }, [galleryId])
+  }, [galleryId, userState.userGalleryFollowed])
 
   React.useEffect(() => {
     toggleButtons()
@@ -427,20 +439,20 @@ export function ExhibitionGalleryScreen({
     if (!exhibitionId) return
     let exhibitionTitle: string = ""
 
-    if (state.exhibitionData && state.exhibitionData[exhibitionId]){
+    if (exhibitionState.exhibitionData && exhibitionState.exhibitionData[exhibitionId]){
       const results = await readExhibition({exhibitionId});
       exhibitionTitle = results.exhibitionTitle?.value as string
       await Promise.resolve(() => {
-        dispatch({
-          type: ETypes.setPreviousExhibitionHeader,
+        uiDispatch({
+          type: UiETypes.setPreviousExhibitionHeader,
           previousExhibitionHeader: exhibitionTitle,
         })
-        dispatch({
-          type: ETypes.setUserExhibitionHeader,
+        uiDispatch({
+          type: UiETypes.setUserExhibitionHeader,
           userExhibitionHeader: exhibitionTitle,
         })
-        dispatch({
-          type: ETypes.saveExhibition,
+        exhibitionDispatch({
+          type: ExhibitionETypes.saveExhibition,
           exhibitionData: results,
         })
       })
@@ -551,8 +563,9 @@ export function ExhibitionGalleryScreen({
           </View>
           {gallery?.galleryLogo?.value && (
             <View style={galleryDetailsStyles.galleryLogoContainer}>
-              <FastImage 
-              source={{uri: gallery?.galleryLogo?.value ?? ""}}
+              <DartaImageComponent 
+              uri={gallery?.galleryLogo?.value ?? ""}
+              priority={FastImage.priority.normal}
               style={galleryDetailsStyles.heroImage}
               resizeMode={FastImage.resizeMode.contain}
               />

@@ -1,4 +1,4 @@
-import {Artwork, Dimensions, IGalleryProfileData, Images} from '@darta-types';
+import {Artwork, Dimensions, IGalleryProfileData, Images, PreviewArtwork} from '@darta-types';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 import _ from 'lodash';
@@ -16,7 +16,6 @@ import {
   INodeService,
   IUserService} from './interfaces';
 import { DynamicTemplateData } from './interfaces/IAdminService';
-import {ArtworkAndGallery} from './interfaces/IArtworkService';
 
 const BUCKET_NAME = 'artwork';
 
@@ -120,10 +119,35 @@ export class ArtworkService implements IArtworkService {
         });
          
         if (userIsInquiring){
-          await this.sendInquiryEmail({artworkId, userId})
+          // await this.sendInquiryEmail({artworkId, userId})
         }
     } catch (error: any) {
       return error.message;
+    }
+  }
+
+  public async readArtworkEmailAndGallery(
+    {artworkId} : 
+    {artworkId: string}): Promise<{galleryName: string | null, galleryEmail: string | null} | null>{
+
+    const artworkEdge = await this.edgeService.getEdgeWithTo({
+      edgeName: EdgeNames.FROMGalleryToArtwork,
+      to: artworkId,
+    })
+    if (!artworkEdge){
+      throw new Error('no artwork edge found at readArtworkEmailAndGallery')
+    }
+
+    const galleryId = artworkEdge._from
+
+    const gallery = await this.galleryService.readGalleryProfileFromGalleryId({galleryId})
+
+    if (!gallery){
+      return null
+    }
+    return {
+      galleryName: gallery.galleryName.value,
+      galleryEmail: gallery.primaryContact?.value!
     }
   }
 
@@ -134,32 +158,36 @@ export class ArtworkService implements IArtworkService {
     return artwork;
   }
 
-  public async readArtworkAndGallery(
+  public async readArtworkPreview({artworkId}: {artworkId: string}): Promise<PreviewArtwork | null> {
+    // TO-DO: build out?
+    const artwork = await this.getArtworkById(artworkId);
+
+    if (!artwork || !artwork._id) throw new Error('no artwork found at readArtworkPreview')
+
+    return {
+      _id: artwork._id,
+      artworkTitle: artwork.artworkTitle,
+      artworkImage: {value: artwork.artworkImage?.value},
+      artistName: artwork.artistName,
+      addedAt: new Date().toISOString()
+    };
+  }
+
+  public async readArtworkForList(
     artworkId: string,
-  ): Promise<ArtworkAndGallery> {
+  ): Promise<Artwork> {
     // TO-DO: build out?
     try {
       const artwork = await this.getArtworkById(artworkId);
 
-      // ############## get gallery ##############
-  
-      let galleryEdge: Edge;
-      let gallery = null;
-  
-      if (artwork?._id) {
-        galleryEdge = await this.edgeService.getEdgeWithTo({
-          edgeName: EdgeNames.FROMGalleryToArtwork,
-          to: artwork._id,
-        });
-        gallery = await this.galleryService.readGalleryProfileFromGalleryId({
-          galleryId: galleryEdge._from,
-        });
+      if (!artwork){
+        throw new Error('no artwork found at readArtworkAndGalleryForList')
       }
-      return {artwork, gallery};
+  
+      return artwork
     } catch (error){
       throw new Error('error reading artwork and gallery at readArtworkAndGallery')
     }
-
   }
 
   public async editArtwork({

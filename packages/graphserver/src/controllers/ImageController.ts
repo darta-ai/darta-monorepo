@@ -45,6 +45,10 @@ export class ImageController {
     
   }
 
+  public async compressImage({fileBuffer}: {fileBuffer: any}): Promise<any> {
+    return this.imageService.compressImage({fileBuffer});
+  }
+
   @httpPost('/uploadImage', upload.single('galleryLogo'))
   public async uploadImage(
     @request() req: Request,

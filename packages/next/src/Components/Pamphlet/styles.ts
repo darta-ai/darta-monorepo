@@ -5,7 +5,7 @@ import {PRIMARY_DARK_GREY} from '../../../styles';
 export const splashStyles = {
   container: {
     minWidth: '100vw',
-    backgroundColor: Colors.PRIMARY_500,
+    backgroundColor: '#8d8582',
     height: '150vh',
     display: 'flex',
     marginTop: '3%',
@@ -21,6 +21,13 @@ export const splashStyles = {
       alignItems: 'center',
     },
   },
+  circularProgress: {
+    height: '5%', 
+    width: '100%', 
+    padding: '1%', 
+    display: 'flex', 
+    justifyContent: 'flex-end',
+  },
   textContainer: {
     display: 'flex',
     flexDirection: 'column',
@@ -28,13 +35,14 @@ export const splashStyles = {
     alignItems: 'space-around',
     alignSelf: 'center',
     minWidth: '60%',
-    height: '80vh',
+    height: '100%',
     '@media (min-width:1280px)': {
       alignItems: 'flex-start',
     },
   },
   typographyTitleContainer: {
     minHeight: '25%',
+    width: '60%',
     '@media (min-width:1280px)': {
       height: '25%',
     },
@@ -71,15 +79,17 @@ export const splashStyles = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
+    width: '100%',
     '@media (min-width:1280px)': {
       height: '40%',
+      width: '60%',
     },
   },
   typography: {
     color: Colors.PRIMARY_100,
-    width: '100%',
     fontFamily: 'Avenir Next',
     cursor: 'default',
+    width: '60%',
     fontSize: '1rem',
     '@media (min-width:1280px)': {
       fontSize: '1.25rem',

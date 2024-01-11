@@ -11,10 +11,13 @@ export enum UserRoutesEnum {
     userSavedArtwork = 'USER_SAVED_ARTWORK',
     userInquiredArtwork = 'USER_INQUIRED_ARTWORK',
     SavedArtworkModal = 'TOMBSTONE',
+    UserListsScreen = 'USER_LISTS_SCREEN',
     UserGalleryAndArtwork = 'USER_GALLERY_AND_ARTWORK',
     UserPastTopTabNavigator = 'USER_PAST_TOP_TAB_NAVIGATOR',
     UserGallery = 'USER_GALLERY',
+    userListFull = 'USER_LIST_FULL',
     individualArtwork= 'USER_INDIVIDUAL_ARTWORK',
+    userAddToList = 'USER_ADD_TO_LIST',
   }
   
   // TO-DO
@@ -65,6 +68,7 @@ export enum ExhibitionRootEnum {
   TopTab = 'EXHIBITION_TOP_TAB',
   qrRouter = 'QR_ROUTER',
   genericLoading= 'GENERIC_LOADING',
+  exhibitionListAdd = 'EXHIBITION_LIST_ADD',
 }
 
 
@@ -73,6 +77,12 @@ export enum ExhibitionPreviewEnum {
   forthcoming = 'EXHIBITION_PREVIEW_FORTHCOMING',
   following = 'EXHIBITION_PREVIEW_FOLLOWING',
 }
+
+export enum ListEnum {
+  fullList = 'FULL_LIST',
+  fullMap = 'FULL_MAP',
+}
+
 
 
 export type ExhibitionNavigatorParamList = {
@@ -117,6 +127,7 @@ export enum ExploreMapRootEnum {
   exploreMapGallery = 'EXPLORE_MAP_GALLERY',
   explorePastNavigator = 'EXPLORE_PAST_NAVIGATOR', 
   individualArtwork = 'INDIVIDUAL_ARTWORK',
+  exploreMapListAdd = 'EXPLORE_MAP_LIST_ADD',
 }
 
 export type ExploreMapParamList = {
@@ -134,6 +145,13 @@ export enum RecommenderRoutesEnum {
   recommenderGallery = 'RECOMMENDER_GALLERY',
   recommenderExhibition= 'RECOMMENDER_EXHIBITION',
   TopTabExhibition = 'RECOMMENDER_TOP_TAB_EXHIBITION',
+  TopTabPreviousExhibition = 'RECOMMENDER_TOP_TAB_PREVIOUS_EXHIBITION',
+  recommenderLists = 'RECOMMENDER_LISTS',
+  recommenderNewList = 'RECOMMENDER_NEW_LIST',
+  recommenderFullList = 'RECOMMENDER_FULL_LIST',
+  recommenderGenericLoading = 'RECOMMENDER_GENERIC_LOADING',
+  recommenderArtworkList = 'RECOMMENDER_ARTWORK_LIST',
+  recommenderIndividualArtwork = 'RECOMMENDER_INDIVIDUAL_ARTWORK',
 }
 
 export type RecommenderParamList = {

@@ -16,9 +16,11 @@ import {TextElement} from '../Elements/_index';
 import { Images, PublicFields } from '@darta-types';
 import * as Colors from '@darta-styles'
 import { globalTextStyles } from '../../styles/styles';
-import { ETypes, StoreContext } from '../../state/Store';
 import { UserRoutesEnum } from '../../typing/routes';
 import FastImage from 'react-native-fast-image';
+import { UIStoreContext, UiETypes } from '../../state';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
+
 
 
 
@@ -34,11 +36,12 @@ export function GalleryPreviewMini({
   navigation: any
 }) {
 
-  const {dispatch} = React.useContext(StoreContext)
+  const {uiDispatch} = React.useContext(UIStoreContext);
+
 
   const showGallery = () => {
-    dispatch({
-      type: ETypes.setGalleryHeader,
+    uiDispatch({
+      type: UiETypes.setGalleryHeader,
       galleryHeader: galleryName?.value ?? ""
     })
     navigation.navigate(UserRoutesEnum.UserGallery, {galleryId: galleryId})
@@ -88,10 +91,11 @@ export function GalleryPreviewMini({
     >
       <View style={galleryPreviewMiniStyles.container}>
         <View style={galleryPreviewMiniStyles.imageContainer}> 
-          <FastImage
-            source={{uri: galleryLogo?.value ?? ""}}
+          <DartaImageComponent
+            uri={galleryLogo?.value ?? ""}
             style={galleryPreviewMiniStyles.image}
             resizeMode={FastImage.resizeMode.contain}
+            priority={FastImage.priority.normal}
           />
         </View>
         <View style={galleryPreviewMiniStyles.textContainer}>

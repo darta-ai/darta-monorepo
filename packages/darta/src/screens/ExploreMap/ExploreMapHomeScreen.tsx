@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet, ScrollView, RefreshControl} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import * as Location from 'expo-location';
 
@@ -14,7 +14,7 @@ import { listExhibitionPinsByCity } from "../../api/locationRoutes";
 
 const exploreMapStyles = StyleSheet.create({
     container: {
-        height: '95%',
+        height: '100%',
         width: wp('100%'),
         backgroundColor: Colors.PRIMARY_100,
         flexDirection: 'column',
@@ -50,7 +50,7 @@ export function ExploreMapHomeScreen({
 }: {
     navigation?: any;
 }) {
-  const {state, dispatch} = useContext(StoreContext);
+  const {state} = useContext(StoreContext);
   const [currentLocation] = React.useState<MapPinCities>(MapPinCities.newYork)
   const [mapRegion, setMapRegion] = React.useState({
     latitudeDelta: 0.01,
@@ -74,20 +74,6 @@ export function ExploreMapHomeScreen({
     })();
   }, [state.mapPins])
 
-  const [refreshing, setRefreshing] = React.useState(false);
-  const onRefresh = React.useCallback(async () => {
-    setRefreshing(true);
-    try{
-      const exhibitionMapPins = await listExhibitionPinsByCity({cityName: currentLocation})
-      dispatch({type: ETypes.saveExhibitionMapPins, mapPins: exhibitionMapPins, mapPinCity: currentLocation})
-    } catch {
-
-    }
-  setTimeout(() => {
-      setRefreshing(false);
-  }, 500)  }, []);
-
-
   const handleMarkerPress = React.useCallback((event) => {
     setMapRegion({
       ...mapRegion,
@@ -101,38 +87,36 @@ export function ExploreMapHomeScreen({
   
 
   return (
-    <ScrollView refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>
-        <View style={exploreMapStyles.container}>
-          <View style={exploreMapStyles.mapContainer}>
-            {Object.values(mapRegion).length > 0 && ( 
-            <MapView  
-              provider={PROVIDER_GOOGLE}
-              style={ exploreMapStyles.mapView }
-              region={mapRegion} 
-              customMapStyle={mapStylesJson}
-              onMarkerPress={handleMarkerPress}
-              onRegionChangeComplete={handleRegionChangeComplete}
-              showsUserLocation={true}
-              >
-                {exhibitionPins && Object.values(exhibitionPins).length > 0 
-                && Object.values(exhibitionPins).map((pin: ExhibitionMapPin) => {
-                  if(pin?.exhibitionLocation?.coordinates?.latitude 
-                    && pin?.exhibitionLocation?.coordinates?.longitude){
-                      return (
-                      <View key={pin?.exhibitionId}>
-                        <CustomMarker 
-                          coordinate={{latitude: Number(pin.exhibitionLocation.coordinates.latitude.value), longitude: Number(pin.exhibitionLocation.coordinates.longitude.value)}}
-                          mapPin={pin}
-                          navigation={navigation}
-                        />
-                      </View>
-                    )
-                  } 
-                })}
-              </MapView>
-            )}
-          </View>
-        </View>
-    </ScrollView>
+    <View style={exploreMapStyles.container}>
+      <View style={exploreMapStyles.mapContainer}>
+        {Object.values(mapRegion).length > 0 && ( 
+        <MapView  
+          provider={PROVIDER_GOOGLE}
+          style={ exploreMapStyles.mapView }
+          region={mapRegion} 
+          customMapStyle={mapStylesJson}
+          onMarkerPress={handleMarkerPress}
+          onRegionChangeComplete={handleRegionChangeComplete}
+          showsUserLocation={true}
+          >
+            {exhibitionPins && Object.values(exhibitionPins).length > 0 
+            && Object.values(exhibitionPins).map((pin: ExhibitionMapPin) => {
+              if(pin?.exhibitionLocation?.coordinates?.latitude 
+                && pin?.exhibitionLocation?.coordinates?.longitude){
+                  return (
+                  <View key={pin?.exhibitionId}>
+                    <CustomMarker 
+                      coordinate={{latitude: Number(pin.exhibitionLocation.coordinates.latitude.value), longitude: Number(pin.exhibitionLocation.coordinates.longitude.value)}}
+                      mapPin={pin}
+                      navigation={navigation}
+                    />
+                  </View>
+                )
+              } 
+            })}
+          </MapView>
+        )}
+      </View>
+    </View>
   );
 }

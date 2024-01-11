@@ -1,12 +1,15 @@
 import React from 'react';
-import {View, StyleSheet, FlatList, RefreshControl} from 'react-native';
+import {View, StyleSheet, RefreshControl} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 import * as Colors from '@darta-styles';
 import {Artwork} from '@darta-types'
 import ArtworkCard from '../../components/Artwork/ArtworkCard'
+import { TextElement } from '../Elements/TextElement';
+import { UIStoreContext, UiETypes } from '../../state';
 
 
 const artworkDetailsStyles = StyleSheet.create({
@@ -44,14 +47,17 @@ export function ArtworkListComponent({
     navigation,
     navigateTo,
     navigateToParams,
+    route
 }: {
     refreshing: boolean,
     onRefresh: () => void,
     artworkData: Artwork[],
     navigation: any
     navigateTo: string
-    navigateToParams: string
+    navigateToParams: string,
+    route?: any
 }) {
+  const {uiDispatch} = React.useContext(UIStoreContext);
 
   const renderItem = React.useCallback((_, data) => {
     return (
@@ -65,18 +71,26 @@ export function ArtworkListComponent({
   }, [navigation, navigateTo, navigateToParams]);
   
 
-  // const renderItemCallback = React.useCallback(
-  //   renderItem(navigation, navigateTo, navigateToParams),
-  //   [navigation, navigateTo, navigateToParams]
-  // );
-  
-  const dataProvider = new DataProvider((r1, r2) => {
+  let dataProvider = new DataProvider((r1, r2) => {
     return r1 !== r2;
   }).cloneWithRows([...artworkData]);
 
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (route?.params?.artworkTitle){
+        uiDispatch({
+          type: UiETypes.setTombstoneHeader,
+          currentArtworkHeader: route.params.artworkTitle,
+        })
+    }
+    }, [route?.params])
+  )
+  
+
   const layoutProvider = new LayoutProvider(
     index => {
-      return 'NORMAL'; // If you have multiple types of items, you can differentiate here using the index
+      return 'FULL_WIDTH'; // If you have multiple types of items, you can differentiate here using the index
     },
     (_, dim) => {
       dim.width = wp('50%') - 24;
@@ -84,7 +98,17 @@ export function ArtworkListComponent({
     }
   );
   
-
+  if (!artworkData){
+    return (
+    <View style= {{backgroundColor: Colors.PRIMARY_50, alignItems: 'center', justifyContent: 'center', gap: 24, height: '100%'}}>
+        <TextElement style={{ fontFamily: 'DMSans_700Bold', fontSize: 24 }}>
+          Preview unavailable 
+        </TextElement>
+        <TextElement style={{fontSize: 16, fontFamily: 'DMSans_400Regular', color: Colors.PRIMARY_950}}>Please check back soon</TextElement>
+      </View>
+  )
+  }
+  else if (artworkData.length !== 0){
   return (
     <>
       <View style={artworkDetailsStyles.container}>
@@ -114,9 +138,10 @@ export function ArtworkListComponent({
       </View>
     </>
   );
+            }
 }
 
-export const ArtworkList =  React.memo(ArtworkListComponent, (prevProps, nextProps) => {
+export const ArtworkList = React.memo(ArtworkListComponent, (prevProps, nextProps) => {
   // Implement a comparison function if necessary
   return (
     prevProps.refreshing === nextProps.refreshing &&
@@ -126,4 +151,4 @@ export const ArtworkList =  React.memo(ArtworkListComponent, (prevProps, nextPro
     prevProps.navigateTo === nextProps.navigateTo &&
     prevProps.navigateToParams === nextProps.navigateToParams
   );
-});
+})

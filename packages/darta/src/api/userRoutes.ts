@@ -3,6 +3,7 @@ import { Exhibition, GalleryPreview, Images, USER_ARTWORK_EDGE_RELATIONSHIP } fr
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}users`;
 import auth from '@react-native-firebase/auth';
+import { generateHeaders } from './utls';
 
 export async function createUser({
     uid,
@@ -10,8 +11,8 @@ export async function createUser({
     uid: string;
 }): Promise<any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
-    const {data} = await axios.post(`${URL}/createNewDartaUser`, {uid}, {headers: {authorization: `Bearer ${idToken}`}});
+    const headers = await generateHeaders();
+    const {data} = await axios.post(`${URL}/createNewDartaUser`, {uid}, {headers});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'createUser'})
@@ -28,8 +29,8 @@ export async function createUserArtworkEdge({
   action: USER_ARTWORK_EDGE_RELATIONSHIP
 }): Promise<any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
-    const {data} = await axios.post(`${URL}/createUserArtworkEdge`, {uid, action}, {headers: {authorization: `Bearer ${idToken}`}});
+    const headers = await generateHeaders();
+    const {data} = await axios.post(`${URL}/createUserArtworkEdge`, {uid, action}, {headers});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'createUserArtworkEdge'})
@@ -46,11 +47,11 @@ export async function createDartaUserFollowGallery({
   uid: string;
 }): Promise<Exhibition | void> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
+    const headers = await generateHeaders();
     const {data} = await axios.post(`${URL}/createDartaUserFollowGallery`, {
       uid,
       galleryId,
-  }, {headers: {authorization: `Bearer ${idToken}`}});
+  }, {headers});
     return data;
   } catch (error:any) {
     throw new Error(error)
@@ -65,11 +66,11 @@ export async function createUserVisitedGallery({
   uid: string;
 }): Promise<Exhibition | void> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
+    const headers = await generateHeaders();
     const {data} = await axios.post(`${URL}/createUserVisitedGallery`, {
       uid,
       galleryId,
-  }, {headers: {authorization: `Bearer ${idToken}`}});
+  }, {headers});
     return data;
   } catch (error:any) {
     throw new Error(error)
@@ -78,13 +79,13 @@ export async function createUserVisitedGallery({
 
 export async function getDartaUser({uid} : {uid: string}): Promise<any> {
 try {
-  const idToken = await auth().currentUser?.getIdToken();
-  const {data} = await axios.get(`${URL}/getDartaUser`, {params: {uid}, headers: {authorization: `Bearer ${idToken}`}});
+  const headers = await generateHeaders();
+  const {data} = await axios.get(`${URL}/getDartaUser`, {params: {uid}, headers});
   return data;
 } catch (error:any) {
   console.log({error})
   console.log({error: error, message: error.message, where: 'getDartaUser'})
-  return {};
+  return null;
 }
 }
 
@@ -105,12 +106,13 @@ export async function editDartaUserAccount({
   uid?: string;
 }): Promise<any> {
   try {
+    const headers = await generateHeaders();
     const {data} = await axios.post(`${URL}/editDartaUser`, {profilePicture,
       userName,
       legalFirstName,
       legalLastName,
       email,
-      uid});
+      uid}, {headers});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message})
@@ -124,11 +126,12 @@ export async function listDartaUserFollowsGallery({
 }: {
   uid: string;
 }): Promise<GalleryPreview | any> {
+  const headers = await generateHeaders();
   try {
     const {data} = await axios.get(`${URL}/listDartaUserFollowsGallery`, {
       params: {
         uid
-  }});
+  }, headers});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'listDartaUserFollowsGallery'})
@@ -141,8 +144,9 @@ export async function deleteDartaUser({
 }: {
   uid: string;
 }): Promise<any> {
+  const headers = await generateHeaders();
   try {
-    const {data} = await axios.post(`${URL}/deleteDartaUser`, {uid});
+    const {data} = await axios.post(`${URL}/deleteDartaUser`, {uid}, {headers});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message})
@@ -158,10 +162,11 @@ export async function deleteDartaUserFollowGallery({
   uid: string;
 }): Promise<Exhibition | any> {
   try {
+    const headers = await generateHeaders();
     const {data} = await axios.post(`${URL}/deleteDartaUserFollowGallery`, {
       galleryId,
       uid
-  });
+  }, {headers});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'deleteDartaUserFollowGallery'})

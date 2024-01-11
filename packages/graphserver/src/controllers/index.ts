@@ -3,6 +3,7 @@ export {ArtworkController} from './ArtworkController';
 export {ExhibitionController} from './ExhibitionController';
 export {GalleryController} from './GalleryController';
 export {ImageController} from './ImageController';
+export {ListController} from './ListController';
 export {LocationController} from './LocationController'
 export {RecommenderController} from './RecommenderController';
 export {UserController} from './UserController';

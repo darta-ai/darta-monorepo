@@ -73,7 +73,6 @@ export const aboutData = {
   // DartaCoreValue3:
   //   `This isn't about simply aggregating artworks based on popularity, it's about delivering a curated, individualized journey through the art world. 
   //   Darta's mission is to make the process of discovering and collecting art as enjoyable and rewarding as owning the artwork itself.`,
-  DartaBelief3: 'emerging artists deserve a platform that rewards merit.',
   Person2: 'Pat Kirts',
   Person2Email: 'kirts@darta.art',
   // Headline: 'Meet Darta',
@@ -96,11 +95,23 @@ export const aboutData = {
   //   `Art speaks to each of us in unique ways. However, the vast expanse of the art world can be overwhelming. 
   //   That's where Darta steps in. Our platform leverages advanced machine learning algorithms to create a personalized, immersive, and engaging art discovery experience.`,
   DartaBelief1:
-    'our homes are an extension of ourselves. Our homes should have art that reflects our tastes.',
-  DartaBelief2: 'local galleries deserve a national audience.',
-  // Person2Responsibilities: 'ML, Backend Dev',
+    `Art is not Ecommerce. Art is an in-person experience.`,
+  DartaBelief1SubHeadline:
+    `Find something that sparks your interest on darta, and go see it in person.`,
+  DartaBelief2: 'The story behind the art is just as important.',
+  DartaBelief2SubHeadline:
+  `Reach out directly to the gallery. Follow them to get to know their program.`,
+  DartaBelief3: 'Art is social.',
+  DartaBelief3SubHeadline:
+  `Create a list of your favorite artwork and share it. 
+  Send exhibitions to your friends and visit together.`,
   Person3: "Huli Curry",
-  
+  aboutDarta3: "We are not VC funded.",
+  aboutDarta3SubHeadline: "VC would want us to take a percentage of every sale. We don't want to do that, so we self fund.",
+  aboutDarta1: "We measure our success by the relationships we create.",
+  aboutDarta1SubHeadline: "When more gallerists meet new and interesting collectors, that's when we feel like we've been up to something.",
+  aboutDarta2: "We want to make the art world more approachable.",
+  aboutDarta2SubHeadline: "Disrupt is a hot word in the tech world. We're not here to disrupt anything but the idea that art is only for the elite.",
 };
 
 export const welcomeBackData = {

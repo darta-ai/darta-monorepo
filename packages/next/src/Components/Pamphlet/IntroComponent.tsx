@@ -13,35 +13,28 @@ export type dataType = {
   explainer2: string;
 }
 
-export function IntroComponent({data, source} : {data: dataType, source: string }) {
+export function IntroComponent({data} : {data: dataType }) {
   return (
-    <Box sx={splashStyles.container}>
-        <Box sx={splashStyles.textContainer}>
-          <Box sx={splashStyles.typographyTitleContainer}>
-            <Typography sx={splashStyles.typographyTitle}>
-              {data.headline}
-            </Typography>
-          </Box>
-          <br />
-          <Box sx={splashStyles.subheaderContainer}>
-            <Typography sx={splashStyles.subheader}>
-              {data.explainer1}
-            </Typography>
-          </Box>
-          <br />
-          <Typography variant="subtitle1" sx={splashStyles.typography}>
-            {data.explainer2}
+    <Box sx={{margin: '5%', marginTop: '10%'}}>
+        <Box sx={splashStyles.typographyTitleContainer}>
+          <Typography sx={splashStyles.typographyTitle}>
+            {data.headline}
           </Typography>
-          <br />
-          <Box style={splashStyles.downloadFromAppStoreContainer}>
-            <DownloadFromAppStore />
-          </Box>
         </Box>
-      <Box sx={splashStyles.phonePreviewContainer}>
-        <video style={{height: '100%', minWidth: '100%'}} autoPlay loop muted playsInline>
-            <source src={source} type="video/mp4" />
-        </video>
+        <br />
+        <Box sx={splashStyles.subheaderContainer}>
+          <Typography sx={splashStyles.subheader}>
+            {data.explainer1}
+          </Typography>
+        </Box>
+        <br />
+        <Typography variant="subtitle1" sx={splashStyles.typography}>
+          {data.explainer2}
+        </Typography>
+        <br />
+        <Box style={splashStyles.downloadFromAppStoreContainer}>
+          <DownloadFromAppStore />
+        </Box>
       </Box>
-    </Box>
   );
 }

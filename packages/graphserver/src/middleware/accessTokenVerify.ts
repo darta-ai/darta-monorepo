@@ -10,6 +10,7 @@ export const verifyToken = async (
   const idToken = req.headers.authorization?.split('Bearer ')[1];
   if (idToken) {
     try {
+      // !!!!! FIX !!!!!!
       const decodedToken = await auth.verifyIdToken(idToken);
       (req as any).user = decodedToken;
       next();

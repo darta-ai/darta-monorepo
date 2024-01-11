@@ -17,11 +17,10 @@ import * as Colors from '@darta-styles';
 import {TextElement} from '../Elements/_index';
 import {buttonSizes, icons} from '../../utils/constants';
 import {galleryInteractionStyles, globalTextStyles} from '../../styles/styles';
-import {ETypes, StoreContext} from '../../state/Store';
 import { createUser, deleteDartaUser, editDartaUserAccount, getDartaUser } from '../../api/userRoutes';
-import { DeleteAccountDialog } from '../Dialog/DeleteAccountDialog';
-import { UserRoutesEnum } from '../../typing/routes';
 import { firebaseDeleteUser } from '../../api/firebase';
+import { UserETypes, UserStoreContext } from '../../state/UserStore';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 type FieldState = {
   isEditing?: boolean;
@@ -88,7 +87,7 @@ export const SSSignedInUserSettings = StyleSheet.create({
 });
 
 export function EditUserProfile({navigation} : {navigation: any}) {
-  const {state, dispatch} = useContext(StoreContext);
+  const {userState, userDispatch} = React.useContext(UserStoreContext);
 
   const [showOnlyOne, setShowOnlyOne] = useState(false);
 
@@ -133,11 +132,11 @@ export function EditUserProfile({navigation} : {navigation: any}) {
   });
   const {handleSubmit, control, getValues, setValue} = useForm({
     defaultValues: {
-      profilePicture: state.user?.profilePicture?.value,
-      userName: state.user?.userName,
-      legalFirstName: state.user?.legalFirstName,
-      legalLastName: state.user?.legalLastName,
-      email: state.user?.email as string | null,
+      profilePicture: userState.user?.profilePicture?.value,
+      userName: userState.user?.userName,
+      legalFirstName: userState.user?.legalFirstName,
+      legalLastName: userState.user?.legalLastName,
+      email: userState.user?.email as string | null,
     },
   });
 
@@ -154,8 +153,8 @@ export function EditUserProfile({navigation} : {navigation: any}) {
       const user = auth().currentUser;
       if (user && user.email) {
         setValue('email', user.email);
-      } else if (state.user?.email) {
-        setValue('email', state.user?.email);
+      } else if (userState.user?.email) {
+        setValue('email', userState.user?.email);
       }
     }
 
@@ -261,10 +260,10 @@ export function EditUserProfile({navigation} : {navigation: any}) {
      if (formData.userName.isEditing && uid) {
       try{
         const results = await editDartaUserAccount({userName: value.userName, uid})
-        dispatch({
-          type: ETypes.setUser,
+        userDispatch({
+          type: UserETypes.setUser,
           userData: {
-            ...state.user,
+            ...userState.user,
             userName: results.userName
           }
        })
@@ -275,13 +274,13 @@ export function EditUserProfile({navigation} : {navigation: any}) {
     else if (formData.legalFirstName.isEditing && uid) {
       try{
         const results = await editDartaUserAccount({legalFirstName: value.legalFirstName, uid})
-        dispatch({
-            type: ETypes.setUser,
+        userDispatch({
+            type: UserETypes.setUser,
             userData: {
-              ...state.user,
+              ...userState.user,
               legalFirstName: results.legalFirstName
             }
-       })
+        })
       } catch(error){
         console.log(error)
       }
@@ -289,12 +288,12 @@ export function EditUserProfile({navigation} : {navigation: any}) {
    else if (formData.legalLastName.isEditing && uid) {
     try{
       const results = await editDartaUserAccount({legalLastName: value.legalLastName, uid})
-      dispatch({
-          type: ETypes.setUser,
-          userData: {
-            ...state.user,
-            legalLastName: results.legalLastName
-          }
+      userDispatch({
+        type: UserETypes.setUser,
+        userData: {
+          ...userState.user,
+          legalLastName: results.legalLastName
+        }
       })
     } catch(error){
       console.log(error)
@@ -306,10 +305,10 @@ export function EditUserProfile({navigation} : {navigation: any}) {
           fileData: tempBuffer
         }, uid})
         if (results?.profilePicture?.value) {
-          dispatch({
-            type: ETypes.setUser,
+          userDispatch({
+            type: UserETypes.setUser,
             userData: {
-              ...state.user,
+              ...userState.user,
               profilePicture: {
                 value: results.profilePicture.value
               }
@@ -326,13 +325,13 @@ export function EditUserProfile({navigation} : {navigation: any}) {
     else if (formData.email.isEditing && uid && value.email) {
       try{
         const results = await editDartaUserAccount({email: value.email, uid})
-        dispatch({
-          type: ETypes.setUser,
+        userDispatch({
+          type: UserETypes.setUser,
           userData: {
-            ...state.user,
+            ...userState.user,
             email: results.email
           }
-      })
+        })
       } catch(error){
         console.log(error)
       }
@@ -340,9 +339,6 @@ export function EditUserProfile({navigation} : {navigation: any}) {
       resetUi();
       setLoading(false)
     };
-
-    const [dialogVisible, setDialogVisible] = useState<boolean>(false)
-
       
   const deleteAccount = async () => {
     setLoading(true)
@@ -385,10 +381,10 @@ export function EditUserProfile({navigation} : {navigation: any}) {
           const uid = auth().currentUser?.uid
           if (!uid) return
           const user = await getDartaUser({uid});
-          dispatch({
-            type: ETypes.setUser,
+          userDispatch({
+            type: UserETypes.setUser,
             userData: user
-          });
+          })
       } catch {
           setRefreshing(false);
       }
@@ -413,18 +409,16 @@ export function EditUserProfile({navigation} : {navigation: any}) {
           </TextElement>
           <View style={[SSSignedInUserSettings.textEditContainer]}>
             {formData.profilePicture.isEditing && tempImage.uri ? (
-              <FastImage
-                source={{
-                  uri: tempImage.uri,
-                }}
+              <DartaImageComponent
+                uri={tempImage.uri}
                 style={SSSignedInUserSettings.image}
                 resizeMode={FastImage.resizeMode.contain}
-
+                priority={FastImage.priority.normal}
               />
             ) : (
               <Image
                 source={{
-                  uri: state.user?.profilePicture?.value!,
+                  uri: userState.user?.profilePicture?.value!,
                 }}
                 style={SSSignedInUserSettings.image}
               />
@@ -493,7 +487,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
                 />
               ) : (
                 <TextElement style={SSSignedInUserSettings.text}>
-                  {state.user?.userName}
+                  {userState.user?.userName}
                 </TextElement>
               )}
             </View>
@@ -553,7 +547,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
                 />
               ) : (
                 <TextElement style={SSSignedInUserSettings.text}>
-                  {state.user?.legalFirstName}
+                  {userState.user?.legalFirstName}
                 </TextElement>
               )}
             </View>
@@ -613,7 +607,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
                 />
               ) : (
                 <TextElement style={SSSignedInUserSettings.text}>
-                  {state.user?.legalLastName}
+                  {userState.user?.legalLastName}
                 </TextElement>
               )}
             </View>

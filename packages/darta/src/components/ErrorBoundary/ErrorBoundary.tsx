@@ -21,9 +21,12 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    analytics().logEvent('crash', { error, errorInfo });
-    crashlytics().recordError(error);
-    crashlytics().log(error.message);
+    const isDev = process.env.EXPO_PUBLIC_ENVIRONMENT === "development";
+    if (!isDev) {
+      analytics().logEvent('crash', { error, errorInfo });
+      crashlytics().recordError(error);
+      crashlytics().log(error.message);
+    }
   }
 
   render() {

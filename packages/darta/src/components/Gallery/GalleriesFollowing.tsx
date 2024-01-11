@@ -4,13 +4,16 @@ import {StyleSheet, View} from 'react-native';
 import { StoreContext } from '../../state/Store';
 import { GalleryPreview } from '@darta-types';
 import { GalleryPreviewMini } from '../Previews/GalleryPreviewMini';
+import { UserStoreContext } from '../../state/UserStore';
+import { GalleryStoreContext } from '../../state';
 
 export function GalleriesFollowing({
   navigation,
 }: {
   navigation: any;
 }) {
-  const {state} = React.useContext(StoreContext);
+  const {userState} = React.useContext(UserStoreContext);
+  const {galleryState} = React.useContext(GalleryStoreContext);
 
   const GalleriesFollowingStyles = StyleSheet.create({
     container: {
@@ -24,8 +27,9 @@ export function GalleriesFollowing({
   const [galleriesFollowing, setGalleriesFollowing] = React.useState<GalleryPreview[]>([] as any);
 
   React.useEffect(() => {
-    if (state.userGalleryFollowed && state.galleryPreviews) {
-      const {userGalleryFollowed, galleryPreviews} = state;
+    if (userState.userGalleryFollowed && galleryState.galleryPreviews) {
+      const {userGalleryFollowed } = userState;
+      const {galleryPreviews} = galleryState;
       const result: GalleryPreview[] = [];
 
       for (const key in userGalleryFollowed) {
@@ -34,7 +38,6 @@ export function GalleriesFollowing({
         }
       }
       result.sort((a, b) => {
-        // Assuming galleryName is a string
         if (!a.galleryName.value || !b.galleryName.value) return 0;
         if (a.galleryName.value < b.galleryName.value) return -1;
         if (a.galleryName.value > b.galleryName.value) return 1;
@@ -42,7 +45,7 @@ export function GalleriesFollowing({
       });
       setGalleriesFollowing(result)
     }
-  },[state.userGalleryFollowed,state.galleryPreviews])
+  },[userState.userGalleryFollowed, galleryState.galleryPreviews])
 
   return (
     <View

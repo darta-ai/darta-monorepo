@@ -2,7 +2,6 @@ import * as React from 'react';
 import { View } from 'react-native';
 import { Dialog, Portal } from 'react-native-paper';
 import * as Colors from '@darta-styles'
-import { SignIn } from '../Auth/SignIn';
 import { SignUp } from '../Auth/SignUp';
 
 

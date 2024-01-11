@@ -6,6 +6,7 @@ import {StoreContext} from '../../state/Store';
 import {ExhibitionRootEnum, PreviousExhibitionRootEnum} from '../../typing/routes';
 import {ExhibitionDetailsScreen, ExhibitionArtworkScreen} from '../../screens/Exhibition'
 import { tabBarScreenOptions } from '../../theme/themeConstants';
+import { ExhibitionStoreContext } from '../../state';
 
 export const PreviousExhibitionStackTopTab = createMaterialTopTabNavigator();
 export type PreviousExhibitionStackParamList = {
@@ -19,16 +20,31 @@ export type PreviousExhibitionStackParamList = {
 
 export function PastExhibitionTopTabNavigator({route} : {route: any}) {
 
-  const {state} = useContext(StoreContext);
+  const {exhibitionState} = useContext(ExhibitionStoreContext);
   let exhibitionId = "";
   if (route?.params?.exhibitionId){
     exhibitionId = route.params.exhibitionId;
   }
 
   let pastExhibitionTitle = 'past exhibition'
-  if (exhibitionId && state.exhibitionData && state.exhibitionData[exhibitionId] && state.exhibitionData[exhibitionId].exhibitionTitle){
-    pastExhibitionTitle = state.exhibitionData[exhibitionId].exhibitionTitle.value!
+  if (exhibitionId && exhibitionState.exhibitionData && exhibitionState.exhibitionData[exhibitionId] && exhibitionState.exhibitionData[exhibitionId].exhibitionTitle){
+    pastExhibitionTitle = exhibitionState.exhibitionData[exhibitionId].exhibitionTitle.value!
   }
+
+  const [showArtwork , setShowArtwork] = React.useState<boolean>(false);
+  
+  React.useEffect(() => {
+    const exhibitionId = route.params.exhibitionId;
+    const exhibitionData = exhibitionState.exhibitionData;
+  
+    if (exhibitionData && exhibitionData[exhibitionId]) {
+      const artworks = exhibitionData[exhibitionId].artworks;
+      if (artworks && Object.keys(artworks).length > 0) {
+        setShowArtwork(true);
+      }
+    }
+  }, [exhibitionState.exhibitionData]);
+  
 
 
   return (
@@ -39,12 +55,14 @@ export function PastExhibitionTopTabNavigator({route} : {route: any}) {
           initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId}}
           options={{ title: 'Exhibition' }}
         />
-      <PreviousExhibitionStackTopTab.Screen
-          name={PreviousExhibitionRootEnum.artworkList}
-          component={ExhibitionArtworkScreen}
-          initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId, navigateTo: route.params?.navigateTo ?? ExhibitionRootEnum.individualArtwork }}
-          options={{ title: 'Artworks' }}
-        />
+        {showArtwork && (
+        <PreviousExhibitionStackTopTab.Screen
+            name={PreviousExhibitionRootEnum.artworkList}
+            component={ExhibitionArtworkScreen}
+            initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId, navigateTo: route.params?.navigateTo ?? ExhibitionRootEnum.individualArtwork }}
+            options={{ title: 'Artwork' }}
+          />
+        )}
     </PreviousExhibitionStackTopTab.Navigator>
   );
 }

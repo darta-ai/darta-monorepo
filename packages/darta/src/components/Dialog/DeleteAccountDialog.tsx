@@ -39,7 +39,6 @@ export const DeleteAccountDialog = ({
     setLoading(true)
     try {      
       const uid = auth().currentUser?.uid
-      await firebaseDeleteUser({password});
       if (uid) {
         await deleteDartaUser({ uid });
         await createUser({uid})

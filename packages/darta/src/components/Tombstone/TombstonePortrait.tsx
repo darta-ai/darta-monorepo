@@ -16,6 +16,8 @@ import {globalTextStyles} from '../../styles/styles';
 import { ETypes, StoreContext } from '../../state/Store';
 import { deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
 import * as SVGs from '../../assets/SVGs/index';
+import { UserETypes, UserStoreContext } from '../../state/UserStore';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 export const currencyConverter = {
   USD: '$',
@@ -74,7 +76,7 @@ export function TombstonePortrait({
   inquireAlert: ({artworkId} : {artworkId: string}) => void,
 }) {
 
-  const {state, dispatch} = React.useContext(StoreContext);
+  const {userState, userDispatch} = React.useContext(UserStoreContext);
 
   let inputHeight = artwork?.artworkDimensions?.heightIn?.value ?? "1"
   let inputWidth = artwork?.artworkDimensions?.widthIn?.value ?? "1"
@@ -125,7 +127,7 @@ export function TombstonePortrait({
       alignSelf: 'center',
       justifyContent: 'center',
       width: '100%',
-      height: hp('45%'),
+      height: hp('40%'),
     },
     image: {
       height: '100%',
@@ -178,6 +180,7 @@ export function TombstonePortrait({
   const [isSaved, setIsSaved] = React.useState(false);
   const [isInquired, setIsInquired] = React.useState(false);
   const [isLiked, setIsLiked] = React.useState(false);
+  const [canInquire, setCanInquire] = React.useState(true);
   const opacityLikedButton = React.useRef(new Animated.Value(1)).current; 
   const opacitySavedButton = React.useRef(new Animated.Value(1)).current; 
   const opacityInquiredButton = React.useRef(new Animated.Value(1)).current; 
@@ -214,21 +217,25 @@ export function TombstonePortrait({
 
   React.useEffect(() => {
     const artworkId = artwork?._id!;
-    if (state.userInquiredArtwork?.[artworkId]){
+    if (userState.userInquiredArtwork?.[artworkId]){
       setIsInquired(true)
     }
-    if (state.userSavedArtwork?.[artworkId]){
+    if (userState.userSavedArtwork?.[artworkId]){
       setIsSaved(true)
     }
-    if (state.userLikedArtwork?.[artworkId]){
+    if (userState.userLikedArtwork?.[artworkId]){
       setIsLiked(true)
     }
+
+    if(artwork?.canInquire?.value === "No"){
+      setCanInquire(false)
+    }
     
-  }, [state.userInquiredArtwork, state.userSavedArtwork, state.userLikedArtwork]);
+  }, [artwork, userState.userInquiredArtwork, userState.userSavedArtwork, userState.userLikedArtwork]);
 
   const removeSavedRating = async () => {
-    dispatch({
-      type: ETypes.removeUserSavedArtwork,
+    userDispatch({
+      type: UserETypes.removeUserSavedArtwork,
       artworkId: artwork._id!,
     })
     setIsSaved(false)
@@ -236,8 +243,8 @@ export function TombstonePortrait({
   }
 
   const removeInquiredRating = async () => {
-    dispatch({
-      type: ETypes.removeUserInquiredArtwork,
+    userDispatch({
+      type: UserETypes.removeUserInquiredArtwork,
       artworkId: artwork._id!,
     })
     setIsInquired(false)
@@ -245,8 +252,8 @@ export function TombstonePortrait({
   }
 
   const removeLikeRating = async () => {
-    dispatch({
-      type: ETypes.removeUserLikedArtwork,
+    userDispatch({
+      type: UserETypes.removeUserLikedArtwork,
       artworkId: artwork._id!,
     })
     setIsLiked(false)
@@ -263,8 +270,9 @@ export function TombstonePortrait({
             scrollToOverflowEnabled={false}
             centerContent>
             <View style={SSTombstonePortrait.imageContainer}>
-              <FastImage
-                source={{uri: artwork?.artworkImage?.value!}}
+              <DartaImageComponent
+                uri={artwork?.artworkImage?.value!}
+                priority={FastImage.priority.normal}
                 style={SSTombstonePortrait.image}
                 resizeMode={FastImage.resizeMode.contain}
               />
@@ -296,25 +304,28 @@ export function TombstonePortrait({
           </View>
         </View>
           <View style={SSTombstonePortrait.inquireButton}>
-            <Animated.View style={{opacity: opacityInquiredButton, flex: 1}}>
-              {isInquired ? ( 
-              <ButtonGenerator 
-                displayText="Inquired"
-                iconComponent={SVGs.EmailWhiteFillIcon}
-                onPress={() => toggleButtons({buttonRef: opacityInquiredButton, callback: () => removeInquiredRating()})}
-                textColor={Colors.PRIMARY_50}
-                buttonColor={Colors.PRIMARY_950}
-              />
-            ) : (
-              <ButtonGenerator 
+            {canInquire && (
+              <Animated.View style={{opacity: opacityInquiredButton, flex: 1}}>
+                {isInquired && ( 
+                <ButtonGenerator 
+                  displayText="Inquired"
+                  iconComponent={SVGs.EmailWhiteFillIcon}
+                  onPress={() => toggleButtons({buttonRef: opacityInquiredButton, callback: () => removeInquiredRating()})}
+                  textColor={Colors.PRIMARY_50}
+                  buttonColor={Colors.PRIMARY_950}
+                />
+              )} 
+              {!isInquired && canInquire && (
+                <ButtonGenerator 
                 displayText="Inquire"
                 iconComponent={SVGs.EmailIcon}
                 onPress={() => toggleButtons({buttonRef: opacityInquiredButton, callback: () => inquireAlert({artworkId: artwork._id!})})}
                 textColor={Colors.PRIMARY_950}
                 buttonColor={"#B0B0B019"}
               />
+              )} 
+              </Animated.View>
             )}
-            </Animated.View>
             <Animated.View style={{opacity: opacitySavedButton, flex: 1}}>
               {isSaved ? ( 
               <ButtonGenerator 

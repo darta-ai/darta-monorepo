@@ -19,11 +19,13 @@ import {
 import {
   RecommenderRoutesEnum,
 } from '../typing/routes';
-import {ETypes, StoreContext} from '../state/Store';
 import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI, listArtworksToRateStatelessRandomSamplingAPI } from '../utils/apiCalls';
 import { TextElement } from '../components/Elements/TextElement';
 import * as SVGs from '../assets/SVGs';
 import analytics from '@react-native-firebase/analytics';
+import { UIStoreContext, UiETypes, ETypes, StoreContext, ViewStoreContext, ViewETypes } from '../state';
+import { UserETypes, UserStoreContext } from '../state/UserStore';
+
 
 const SSDartaGalleryView = StyleSheet.create({
   interactionButtonsContainer: {
@@ -81,7 +83,11 @@ export function DartaRecommenderView({
 }: {
   navigation: any;
 }) {
-  const {state, dispatch} = React.useContext(StoreContext);
+  const {state} = React.useContext(StoreContext);
+  const {viewState, viewDispatch} = React.useContext(ViewStoreContext);
+  const {userState, userDispatch} = React.useContext(UserStoreContext);
+  const {uiDispatch} = React.useContext(UIStoreContext);
+
   const [artOnDisplay, setArtOnDisplay] = React.useState<Artwork | undefined>();
   const [currentZoomScale, setCurrentZoomScale] = React.useState<number>(1);
   const fadeAnimNav = React.useRef(new Animated.Value(0)).current;
@@ -124,33 +130,34 @@ export function DartaRecommenderView({
   };
 
   const toggleArtForward = async () => {
-    const currentIndex = state.artworkRatingIndex ?? 0;
+    const currentIndex = viewState.artworkRatingIndex ?? 0;
 
-    if (state.artworksToRate && state.artworksToRate[currentIndex + 1]) {
-        const artwork = state.artworksToRate[currentIndex + 1];
-        const nextArtwork = state.artworksToRate[currentIndex + 2];
+    if (viewState.artworksToRate && viewState.artworksToRate[currentIndex + 1]) {
+        const artwork = viewState.artworksToRate[currentIndex + 1];
+        const nextArtwork = viewState.artworksToRate[currentIndex + 2];
 
         fadeOutAndIn(async () => {
-            try {
-                // FastImage.preload([{uri : artwork.artworkImage?.value!}])
-                dispatch({
-                    type: ETypes.setRatingIndex,
-                    artworkRatingIndex: currentIndex + 1,
-                });
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
-                setArtOnDisplay(artwork)
-            } catch (error) {
-                dispatch({
-                    type: ETypes.setRatingIndex,
-                    artworkRatingIndex: currentIndex + 2,
-                });
-                Haptics.NotificationFeedbackType.Error
-                setArtOnDisplay(nextArtwork)
-            }
+          try {
+            const artworkRatingIndex = currentIndex + 1;
+              // FastImage.preload([{uri : artwork.artworkImage?.value!}])
+              viewDispatch({
+                type: ViewETypes.setRatingIndex,
+                artworkRatingIndex,
+              });
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+              setArtOnDisplay(artwork)
+          } catch (error) {
+            viewDispatch({
+                type: ViewETypes.setRatingIndex,
+                artworkRatingIndex: currentIndex + 2,
+              });
+              Haptics.NotificationFeedbackType.Error
+              setArtOnDisplay(nextArtwork)
+          }
         });
-    } else if (state.artworksToRate) {
-        const numberOfArtworks = Object.values(state.artworksToRate).length;
-        const artworkIds = findArtworkIds({artworks: Object.values(state.artworksToRate)})
+    } else if (viewState.artworksToRate) {
+        const numberOfArtworks = Object.values(viewState.artworksToRate).length;
+        const artworkIds = findArtworkIds({artworks: Object.values(viewState.artworksToRate)})
         try{
           const artworksToRate = await listArtworksToRateStatelessRandomSamplingAPI({
             startNumber: numberOfArtworks,
@@ -160,15 +167,15 @@ export function DartaRecommenderView({
 
         const artwork = artworksToRate[currentIndex + 1];
         if (artworksToRate && Object.keys(artworksToRate).length > 0) {
-            dispatch({
-                type: ETypes.setArtworksToRate,
-                artworksToRate,
-            });
-            dispatch({
-                type: ETypes.setRatingIndex,
-                artworkRatingIndex: currentIndex + 1,
-            });
-            setArtOnDisplay(artwork)
+          viewDispatch({
+            type: ViewETypes.setArtworksToRate,
+            artworksToRate,
+          });
+          viewDispatch({
+            type: ViewETypes.setRatingIndex,
+            artworkRatingIndex: currentIndex + 1,
+          });
+          setArtOnDisplay(artwork)
         } else {
             onToggleSnackBar();
         }
@@ -180,33 +187,33 @@ export function DartaRecommenderView({
 
 
   const toggleArtBackward = async () => {
-    const currentIndex = state.artworkRatingIndex ?? 0;
+    const currentIndex = viewState.artworkRatingIndex ?? 0;
     if (!currentIndex) {
       return 
-    } else if (state.artworksToRate && state.artworksToRate[currentIndex - 1]) {
-      const artwork = state.artworksToRate[currentIndex - 1];
+    } else if (viewState.artworksToRate && viewState.artworksToRate[currentIndex - 1]) {
+      const artwork = viewState.artworksToRate[currentIndex - 1];
       fadeOutAndIn(async () => {
         try{ 
-        dispatch({
-          type: ETypes.setRatingIndex,
-          artworkRatingIndex: currentIndex - 1,
-        });
+          viewDispatch({
+            type: ViewETypes.setRatingIndex,
+            artworkRatingIndex: currentIndex - 1,
+          });
         setArtOnDisplay(artwork)
       } catch(error){
-        if (state.artworksToRate && state.artworksToRate[currentIndex - 2]){
-          dispatch({
-            type: ETypes.setRatingIndex,
+        if (viewState.artworksToRate && viewState.artworksToRate[currentIndex - 2]){
+          viewDispatch({
+            type: ViewETypes.setRatingIndex,
             artworkRatingIndex: currentIndex - 2,
           });
-          setArtOnDisplay(state.artworksToRate[currentIndex - 2])
+          setArtOnDisplay(viewState.artworksToRate[currentIndex - 2])
         } else {
           onToggleSnackBar()
         }
       }
       });
     } else {
-      dispatch({
-        type: ETypes.setRatingIndex,
+      viewDispatch({
+        type: ViewETypes.setRatingIndex,
         artworkRatingIndex: currentIndex - 1,
       });
     }
@@ -215,12 +222,12 @@ export function DartaRecommenderView({
 
   const toggleArtTombstone = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
-    dispatch({
-      type: ETypes.setTombstoneHeader,
+    uiDispatch({
+      type: UiETypes.setTombstoneHeader,
       currentArtworkHeader: artOnDisplay?.artworkTitle?.value!,
     });
     if (artOnDisplay){
-      navigation.navigate(RecommenderRoutesEnum.TopTabExhibition, {artOnDisplay, galleryId: artOnDisplay?.galleryId, exhibitionId: artOnDisplay?.exhibitionId});
+      navigation.navigate(RecommenderRoutesEnum.TopTabExhibition, {artOnDisplay, galleryId: artOnDisplay?.galleryId, exhibitionId: artOnDisplay?.exhibitionId, artworkTitle: artOnDisplay?.artworkTitle?.value!});
     }
   };
 
@@ -232,16 +239,16 @@ export function DartaRecommenderView({
       await createArtworkRelationshipAPI({artworkId: artOnDisplay?.artworkId!, action: rating})
       switch(rating){
         case (USER_ARTWORK_EDGE_RELATIONSHIP.LIKE):
-          dispatch({
-            type: ETypes.setUserLikedArtwork,
+          userDispatch({
+            type: UserETypes.setUserLikedArtwork,
             artworkId: artOnDisplay?._id!,
           })
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
           analytics().logEvent('like_artwork')
           break;
         case (USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE):
-          dispatch({
-            type: ETypes.setUserDislikedArtwork,
+          userDispatch({
+            type: UserETypes.setUserDislikedArtwork,
             artworkId: artOnDisplay?._id!,
           })
           analytics().logEvent('dislike_artwork')
@@ -251,16 +258,16 @@ export function DartaRecommenderView({
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
           break;
         case (USER_ARTWORK_EDGE_RELATIONSHIP.SAVE):
-          dispatch({
-            type: ETypes.setUserSavedArtwork,
+          userDispatch({
+            type: UserETypes.setUserSavedArtwork,
             artworkId: artOnDisplay?._id!,
           })
           analytics().logEvent('save_artwork')
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
           break;
         case (USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE):
-          dispatch({
-            type: ETypes.setUserInquiredArtwork,
+          userDispatch({
+            type: UserETypes.setUserInquiredArtwork,
             artworkId: artOnDisplay?._id!,
           })
           analytics().logEvent('inquire_artwork')
@@ -336,15 +343,17 @@ export function DartaRecommenderView({
 
   React.useEffect(() => {
     modifyDisplayRating()
-  }, [artOnDisplay, state.userLikedArtwork, state.userDislikedArtwork, state.userSavedArtwork])
+  }, [artOnDisplay, userState.userLikedArtwork, userState.userDislikedArtwork, userState.userSavedArtwork])
 
-  const handleArtworkRating = async (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => {
+  const handleArtworkRating = React.useCallback(async (rating: USER_ARTWORK_EDGE_RELATIONSHIP) => {
+    const currentIndexOfArtwork = viewState.artworkRatingIndex ?? 0;
+    const artOnDisplay = viewState.artworksToRate?.[currentIndexOfArtwork]
     if (!artOnDisplay) return rating
 
     const artworkOnDisplayId = artOnDisplay?._id;
-    const likedArtworks = state?.userLikedArtwork;
-    const dislikedArtworks = state?.userDislikedArtwork;
-    const savedArtworks = state?.userSavedArtwork;
+    const likedArtworks = userState?.userLikedArtwork;
+    const dislikedArtworks = userState?.userDislikedArtwork;
+    const savedArtworks = userState?.userSavedArtwork;
     const userLiked = likedArtworks?.[artworkOnDisplayId!] || false
     const userSaved = savedArtworks?.[artworkOnDisplayId!] || false
     const userDisliked = dislikedArtworks?.[artworkOnDisplayId!] || false
@@ -352,21 +361,21 @@ export function DartaRecommenderView({
 
     if (userLiked && rating === USER_ARTWORK_EDGE_RELATIONSHIP.LIKE){
       await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
-      dispatch({
-        type: ETypes.removeUserLikedArtwork,
+      userDispatch({
+        type: UserETypes.removeUserLikedArtwork,
         artworkId: artOnDisplay._id,
       })
       return USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED
     } else if (userSaved && rating === USER_ARTWORK_EDGE_RELATIONSHIP.SAVE){
       await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
-      dispatch({
-        type: ETypes.removeUserSavedArtwork,
+      userDispatch({
+        type: UserETypes.removeUserSavedArtwork,
         artworkId: artOnDisplay._id,
       })
       return USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED
     } else if (userDisliked && rating === USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE){
-      dispatch({
-        type: ETypes.removeUserDislikedArtwork,
+      userDispatch({
+        type: UserETypes.removeUserDislikedArtwork,
         artworkId: artOnDisplay._id,
       })
       await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE})
@@ -374,20 +383,20 @@ export function DartaRecommenderView({
     } else if (userRated){
       if (userLiked){
         await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
-        dispatch({
-          type: ETypes.removeUserLikedArtwork,
+        userDispatch({
+          type: UserETypes.removeUserLikedArtwork,
           artworkId: artOnDisplay._id,
         })
       } else if (userSaved){
         await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
-        dispatch({
-          type: ETypes.removeUserSavedArtwork,
+        userDispatch({
+          type: UserETypes.removeUserSavedArtwork,
           artworkId: artOnDisplay._id,
         })
       } else if (userDisliked){
         await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE})
-        dispatch({
-          type: ETypes.removeUserDislikedArtwork,
+        userDispatch({
+          type: UserETypes.removeUserDislikedArtwork,
           artworkId: artOnDisplay._id,
         })
       }
@@ -395,13 +404,14 @@ export function DartaRecommenderView({
     } else {
       return rating
     }
-  }
+  }, [viewState.artworkRatingIndex, viewState.artworksToRate, userState?.userLikedArtwork, userState?.userDislikedArtwork, userState?.userSavedArtwork, /* other dependencies */]);
+
 
   const modifyDisplayRating = () => {
     const artworkOnDisplayId = artOnDisplay?._id;
-    const likedArtworks = state?.userLikedArtwork;
-    const dislikedArtworks = state?.userDislikedArtwork;
-    const savedArtworks = state?.userSavedArtwork;
+    const likedArtworks = userState?.userLikedArtwork;
+    const dislikedArtworks = userState?.userDislikedArtwork;
+    const savedArtworks = userState?.userSavedArtwork;
     
     const userLiked = likedArtworks?.[artworkOnDisplayId!] || false
     const userSaved = savedArtworks?.[artworkOnDisplayId!] || false
@@ -424,8 +434,8 @@ export function DartaRecommenderView({
   const thumbsDownAnim = React.useRef(new Animated.Value(1)).current; 
 
   React.useEffect(() => {
-    if (state.artworksToRate && state.artworksToRate[0]){
-      setArtOnDisplay(state.artworksToRate[0])
+    if (viewState.artworksToRate && viewState.artworksToRate[0]){
+      setArtOnDisplay(viewState.artworksToRate[0])
     }
     fadeAnimNav.addListener(() => {})
     fadeAnimRating.addListener(() => {})
@@ -445,6 +455,9 @@ export function DartaRecommenderView({
       useNativeDriver: true,
     }).start(async () => {
       // Network call in the middle of the wiggle
+
+      navigation.navigate(RecommenderRoutesEnum.recommenderLists, {artwork: artOnDisplay})
+
       await rateArtwork(await handleArtworkRating(USER_ARTWORK_EDGE_RELATIONSHIP.SAVE));
   
       // Complete the wiggle animation
@@ -461,7 +474,7 @@ export function DartaRecommenderView({
         }),
       ]).start(async () => {
         if(!currentArtRating[RatingEnum.save]) {
-          await toggleArtForward()
+          // await toggleArtForward()
         }
         Animated.sequence([
           Animated.timing(wiggleAnim, {

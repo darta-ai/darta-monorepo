@@ -3,6 +3,7 @@
 import {
   GalleryAddressFields,
   GalleryBase,
+  GalleryForList,
   IGalleryProfileData,
   Images,
 } from '@darta-types';
@@ -82,6 +83,36 @@ export class GalleryService implements IGalleryService {
       const galleryId = await this.getGalleryIdFromUID({uid});
       const gallery = await this.readGalleryProfileFromGalleryId({galleryId});
       return gallery;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
+
+  public async readGalleryForList({artworkId} : {artworkId: string}): Promise<GalleryForList>{
+    try {
+      const galleryEdge = await this.edgeService.getEdgeWithTo({
+        edgeName: EdgeNames.FROMGalleryToArtwork,
+        to: artworkId,
+      });
+
+      if (!galleryEdge) {
+        throw new Error('no gallery edge found')
+      }
+
+      const galleryId = galleryEdge._from;
+
+      const gallery = await this.readGalleryProfileFromGalleryId({galleryId});
+
+      if (!gallery) {
+        throw new Error('no gallery found')
+      }
+
+      return {
+        galleryLogo: gallery?.galleryLogo ?? null,
+        galleryName: gallery?.galleryName ?? null,
+        galleryId,
+        primaryContact: gallery?.primaryContact ?? null,
+      }
     } catch (error: any) {
       throw new Error(error.message);
     }
@@ -214,7 +245,7 @@ export class GalleryService implements IGalleryService {
         if (gallery[key as keyof Gallery]) {
           const cityValue =
             gallery[key as keyof GalleryAddressFields] &&
-            gallery[key as keyof GalleryAddressFields]?.city?.value;
+            gallery[key as keyof GalleryAddressFields]?.locality?.value;
           if (cityValue) {
             // Check if city exists and upsert it
             const upsertCityQuery = `

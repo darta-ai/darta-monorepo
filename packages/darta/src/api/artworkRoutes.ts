@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
 import auth from '@react-native-firebase/auth';
+import { generateHeaders } from './utls';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}artwork`;
 
 export async function readArtworkForUser({artworkId} : {artworkId: string}){
   try {
-    const idToken = await auth().currentUser?.getIdToken();
-    const {data} = await axios.get(`${URL}/readArtworkForUser`, {params : {artworkId}, headers: {authorization: `Bearer ${idToken}`}});
+    const headers = await generateHeaders()
+    const {data} = await axios.get(`${URL}/readArtworkForUser`, {params : {artworkId}, headers});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'readArtworkForUser'})
@@ -20,13 +21,14 @@ export async function createUserArtworkRelationship({
   action,
   artworkId
 }: {
-  uid: string;
+  uid?: string;
   action: USER_ARTWORK_EDGE_RELATIONSHIP;
   artworkId: string;
 }): Promise<any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
-    const {data} = await axios.post(`${URL}/createUserArtworkRelationship`, {uid, action, artworkId}, {headers: {authorization: `Bearer ${idToken}`}});
+    const headers = await generateHeaders()
+    const uid = auth().currentUser?.uid;
+    const {data} = await axios.post(`${URL}/createUserArtworkRelationship`, {uid, action, artworkId}, {headers});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'createUserArtworkRelationship'})
@@ -45,8 +47,8 @@ export async function deleteUserArtworkRelationship({
   artworkId: string;
 }): Promise<any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
-    const {data} = await axios.post(`${URL}/deleteUserArtworkRelationship`, {uid, action, artworkId}, {headers: {authorization: `Bearer ${idToken}`}});
+    const headers = await generateHeaders()
+    const {data} = await axios.post(`${URL}/deleteUserArtworkRelationship`, {uid, action, artworkId}, {headers});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'deleteUserArtworkRelationship'})
@@ -64,8 +66,8 @@ export async function listUserArtworkAPIRelationships({
   limit: number;
 }): Promise<any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
-    const {data} = await axios.get(`${URL}/listUserArtworkRelationships`, {params : {uid, action, limit}, headers: {authorization: `Bearer ${idToken}`}});
+    const headers = await generateHeaders()
+    const {data} = await axios.get(`${URL}/listUserArtworkRelationships`, {params : {uid, action, limit}, headers});
     return data;
   } catch (error:any) {
     console.log({error: error, message: error.message, where: 'listUserArtworkRelationships'})
@@ -73,3 +75,14 @@ export async function listUserArtworkAPIRelationships({
   }
 }
 
+
+export const getArtworkEmailAndGalleryAPI = async ({artworkId} : {artworkId: string}) => {
+  try {
+    const headers = await generateHeaders()
+    const {data} = await axios.get(`${URL}/readArtworkEmailAndGallery`, {params : {artworkId}, headers});
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'getArtworkEmailAndGallery'})
+    return error.message;
+  }
+}

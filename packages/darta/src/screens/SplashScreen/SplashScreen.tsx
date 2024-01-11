@@ -6,9 +6,10 @@ import {
   Animated,
   StyleSheet,
   View,
+  Easing,
 } from "react-native";
 import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
-import { ETypes, StoreContext } from "../../state/Store";
+import { ETypes, StoreContext, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes, ViewStoreContext, ViewETypes} from "../../state";
 import { Artwork, GalleryPreview, MapPinCities, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types";
 import { listExhibitionPinsByCity } from "../../api/locationRoutes";
 import { getDartaUser } from "../../api/userRoutes";
@@ -16,13 +17,47 @@ import { getUserUid } from "../../utils/functions";
 import { listArtworksToRateAPI, listGalleryRelationshipsAPI, listUserArtworkAPI } from "../../utils/apiCalls";
 import FastImage from "react-native-fast-image";
 import analytics from '@react-native-firebase/analytics';
+import { listUserLists } from "../../api/listRoutes";
+import {  } from "../../state";
+import { UserETypes, UserStoreContext } from "../../state/UserStore";
+import { TextElement } from "../../components/Elements/TextElement";
+import { heightPercentageToDP } from "react-native-responsive-screen";
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
 });
 
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: Colors.PRIMARY_50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 24
+  },
+  dartaContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 4
+  },
+  header: {
+    fontFamily: 'DMSans_400Regular', 
+    fontSize: 24,
+  },
+  subHeader: {
+    fontSize: 16, 
+    fontFamily: 'DMSans_400Regular', 
+    color: Colors.PRIMARY_950
+  }
+});
+
 function AnimatedSplashScreen({ children }) {
-  const {state, dispatch} = React.useContext(StoreContext)
+  const {dispatch} = React.useContext(StoreContext)
+  const {galleryDispatch} = React.useContext(GalleryStoreContext)
+  const {exhibitionDispatch} = React.useContext(ExhibitionStoreContext)
+  const {viewDispatch} = React.useContext(ViewStoreContext)
+  const {userDispatch} = React.useContext(UserStoreContext)
   const animation = useMemo(() => new Animated.Value(1), []);
   const [isAppReady, setAppReady] = useState(false);
   const [isSplashAnimationComplete, setAnimationComplete] = useState(false);
@@ -31,14 +66,14 @@ function AnimatedSplashScreen({ children }) {
     if (isAppReady) {
       Animated.timing(animation, {
         toValue: 0,
-        duration: 2000,
+        duration: 3000,
         useNativeDriver: true,
       }).start(() => setAnimationComplete(true));
     }
   }, [isAppReady]);
  
 
-  const onImageLoaded = useCallback(async () => {
+  const loadDataAsync = useCallback(async () => {
     try {
       const uid = await getUserUid();
   
@@ -52,7 +87,8 @@ function AnimatedSplashScreen({ children }) {
         likedArtwork,
         savedArtwork,
         inquiredArtwork,
-        artworksToRate
+        artworksToRate, 
+        userListPreviews
       ] = await Promise.all([
         // user
         uid ? getDartaUser({uid}) : null,
@@ -69,33 +105,50 @@ function AnimatedSplashScreen({ children }) {
         // likedArtwork
         listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 10 }),
         // savedArtwork
-        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 10 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 40 }),
         // inquiredArtwork
-        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 40 }),
         // artworksToRate
-        listArtworksToRateAPI({startNumber: 0, endNumber: 20})
+        listArtworksToRateAPI({startNumber: 0, endNumber: 20}),
+        // userLists
+        listUserLists()
       ]);
 
       // User Profile
       if (user) {
-        dispatch({
-          type: ETypes.setUser,
+        userDispatch({
+          type: UserETypes.setUser,
           userData: user
         });
       }
 
+      // User Lists
+      if (userListPreviews) {
+        dispatch({
+          type: ETypes.setUserListPreviews,
+          userListPreviews
+        });
+      }
+
+      let artworksToRateUrls: {uri : string}[] =  []
       // Artworks To Rate Screen
       if(artworksToRate){
-        dispatch({
-          type: ETypes.setArtworksToRate,
+        viewDispatch({
+          type: ViewETypes.setArtworksToRate,
           artworksToRate
         })
+        for(let art of Object.values(artworksToRate)){
+          if(art?.artworkImage?.value){
+            artworksToRateUrls.push({uri: art?.artworkImage?.value})
+          }
+        }
+        FastImage.preload(artworksToRateUrls)
       }
 
       // Exhibition Preview Screen 
-      dispatch({type: ETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
-      dispatch({type: ETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
-      dispatch({type: ETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
+      exhibitionDispatch({type: ExhibitionETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
+      exhibitionDispatch({type: ExhibitionETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
+      exhibitionDispatch({type: ExhibitionETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
 
 
 
@@ -113,22 +166,22 @@ function AnimatedSplashScreen({ children }) {
       // Gallery Follows Screen
       if (galleryFollows?.length) {
         const galleryPreviews: {[key: string] : GalleryPreview} = galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: el }), {})
-        dispatch({
-          type: ETypes.setGalleryPreviewMulti,
+        galleryDispatch({
+          type: GalleryETypes.setGalleryPreviewMulti,
           galleryPreviews
         });
-        dispatch({
-          type: ETypes.setUserFollowGalleriesMulti,
+        userDispatch({
+          type: UserETypes.setUserFollowGalleriesMulti,
           galleryFollowIds: galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: true }), {})
         });
       }
 
   
-      const processArtworkData = (data: any, dispatchType: ETypes) => {
+      const processArtworkData = (data: any, dispatchType: UserETypes) => {
         if (data && Object.values(data).length > 0) {
           let artworkIds: { [key: string]: boolean } = {};
           artworkIds = Object.values(data).reduce((acc: any, el: any) => ({ ...acc, [el?._id]: true }), {}) as { [key: string]: boolean };
-          dispatch({
+          userDispatch({
             type: dispatchType,
             artworkIds
           });
@@ -136,56 +189,108 @@ function AnimatedSplashScreen({ children }) {
         return data;
       };
 
-      const likedArtworkData = processArtworkData(likedArtwork, ETypes.setUserLikedArtworkMulti);
-      const savedArtworkData = processArtworkData(savedArtwork, ETypes.setUserSavedArtworkMulti);
-      const inquiredArtworkData = processArtworkData(inquiredArtwork, ETypes.setUserInquiredArtworkMulti);
+      const likedArtworkData = processArtworkData(likedArtwork, UserETypes.setUserLikedArtworkMulti);
+      const savedArtworkData = processArtworkData(savedArtwork, UserETypes.setUserSavedArtworkMulti);
+      const inquiredArtworkData = processArtworkData(inquiredArtwork, UserETypes.setUserInquiredArtworkMulti);
   
       const combinedArtwork: {[key: string] : Artwork} = { ...likedArtworkData, ...savedArtworkData, ...inquiredArtworkData };
       if (combinedArtwork && Object.values(combinedArtwork).length > 0) {
-        dispatch({
-          type: ETypes.saveArtworkMulti,
+        userDispatch({
+          type: UserETypes.saveArtworkMulti,
           artworkDataMulti: combinedArtwork
         });
       }
-      type ImageUrlObject = { uri: string };
+      
+      // Need to figure out what takes the longest to load and prefetch those images. What takes so long? 
+      // Then try to make that more efficient. 
+      // Cache images is key. 
+      // DO some research - is it cacheing the images by default. 
+      // Preload the ones that they're going to see first. 
+      // FastImage.preload(imageUrlsToPrefetch);
 
-      const imageUrlsToPrefetch: ImageUrlObject[] = [];
+      // Colors only when it animates. 
 
-      const addImageUrlToPrefetch = (url: string | null | undefined) => {
-        if (!url) return;
-        imageUrlsToPrefetch.push({ uri: url });
-      };
-      
-      for (let artworkValue of Object.values(combinedArtwork)) {
-        addImageUrlToPrefetch(artworkValue?.artworkImage?.value);
-      }
-      
-      for (let exhibitionValue of Object.values({...exhibitionPreviewsCurrent, ...exhibitionPreviewsForthcoming, ...exhibitionPreviewsCurrent})) {
-        if (exhibitionValue?.artworkPreviews) {
-          for (let art of Object.values(exhibitionValue?.artworkPreviews)) {
-            addImageUrlToPrefetch(art?.artworkImage?.value);
-          }
-        }
-      
-        addImageUrlToPrefetch(exhibitionValue?.exhibitionPrimaryImage?.value);
-        if (exhibitionValue?.galleryLogo?.value) addImageUrlToPrefetch(exhibitionValue?.galleryLogo?.value);
-      }
-      
-      FastImage.preload(imageUrlsToPrefetch);
+      // Not leaving the app. Directions?
+
+      // Need to make new groups on the screen. 
+
+      // Need to look into pre-rendering components for the view screen to quickly move between all of them. 
+
+      // Need to give the user option to turn off scaling
+
+      // Too minimalist? No title on the image. Need to add the title of the image. 
       
       await SplashScreen.hideAsync();
-
+      setAppReady(true)
     } catch (e) {
       console.log(e);
     } finally {
       setAppReady(true);
     }
   }, []);
+
+
+  const dAnim = React.useRef(new Animated.Value(0)).current;
+  const a1Anim = React.useRef(new Animated.Value(0)).current;
+  const rAnim = React.useRef(new Animated.Value(0)).current;
+  const tAnim = React.useRef(new Animated.Value(0)).current;
+  const a2Anim = React.useRef(new Animated.Value(0)).current;
+
+
+  React.useEffect(() => {
+    dAnim.addListener(() => {})
+    a1Anim.addListener(() => {})
+    rAnim.addListener(() => {})
+    tAnim.addListener(() => {})
+    a2Anim.addListener(() => {})
+  }, [])
+
+  const sineWaveAnimation = (animatedValue, delay) => {
+    return Animated.sequence([
+      Animated.timing(animatedValue, {
+        toValue: 10, // Amplitude of the wave
+        duration: 500,
+        delay,
+        useNativeDriver: true,
+      }),
+      Animated.timing(animatedValue, {
+        toValue: -10,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(animatedValue, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]);
+  };
+  
+  
+  
+  React.useEffect(() => {
+    async function fireLoad() {
+      await loadDataAsync();
+    }
+  
+    const cycleDuration = 3000; // Total duration for each letter's full cycle
+    const animations = [
+      sineWaveAnimation(dAnim, 0),
+      sineWaveAnimation(a1Anim, cycleDuration / 5 * 1),
+      sineWaveAnimation(rAnim, cycleDuration / 5 * 2),
+      sineWaveAnimation(tAnim, cycleDuration / 5 * 3),
+      sineWaveAnimation(a2Anim, cycleDuration / 5 * 4),
+    ];
+  
+    // Start all animations
+    animations.forEach((anim) => anim.start());
+    fireLoad(); 
+    return () => animations.forEach((anim) => anim.stop()); // Cleanup
+  }, []);
   
 
-
   return (
-    <View style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
       {isAppReady && children}
       {!isSplashAnimationComplete && (
         <Animated.View
@@ -193,31 +298,29 @@ function AnimatedSplashScreen({ children }) {
           style={[
             StyleSheet.absoluteFill,
             {
-              backgroundColor: Colors.PRIMARY_600,
-              opacity: animation,
-              display: "flex",
-              height: "100%",
-              width: "100%",
-              alignSelf: "center",
-              alignItems: "center",
+              ...styles.container,
+              opacity: animation, // This controls the fade out
             },
           ]}
         >
-          <Animated.Image
-            style={{
-              width: "50%",
-              height: "50%",
-              resizeMode:  "contain",
-              transform: [
-                {
-                  scale: animation,
-                },
-              ],
-            }}
-            source={require('../../assets/dartahousewhite.png')}
-            onLoadEnd={onImageLoaded}
-            fadeDuration={30}
-          />
+          <View style={styles.dartaContainer}>
+            <Animated.Text style={{ transform: [{ translateY: dAnim }], ...styles.header }}>
+              d
+            </Animated.Text>
+            <Animated.Text style={{ transform: [{ translateY: a1Anim }], ...styles.header }}>
+              a
+            </Animated.Text>
+            <Animated.Text style={{ transform: [{ translateY: rAnim }], ...styles.header}}>
+              r
+            </Animated.Text>
+            <Animated.Text style={{ transform: [{ translateY: tAnim }], ...styles.header }}>
+              t
+            </Animated.Text>
+            <Animated.Text style={{ transform: [{ translateY: a2Anim }], ...styles.header }}>
+              a
+            </Animated.Text>
+          </View>
+          <TextElement style={styles.subHeader}>digital art advisor</TextElement>
         </Animated.View>
       )}
     </View>

@@ -16,6 +16,7 @@ import * as Colors from '@darta-styles';
 import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 import { ExhibitionCarousel } from '../../components/Exhibitions/ExhibitionCarousel';
 import { Button } from 'react-native-paper';
+// import { NadaLogo } from '../../assets/SVGs';
 
 const exhibitionPreviewStyle = StyleSheet.create({
   container: {
@@ -142,16 +143,16 @@ const ExhibitionPreviewCard = ({
           </View>
             <View style={exhibitionPreviewStyle.touchableContainer}>
               <Pressable onPress={() => onPressGallery({galleryId: exhibitionPreview.galleryId})}>
-                  <TextElement style={exhibitionPreviewStyle.galleryText}>{exhibitionPreview?.galleryName.value?.trim()}</TextElement>
+                  <TextElement style={exhibitionPreviewStyle.galleryText}>{exhibitionPreview?.galleryName?.value?.trim()}</TextElement>
                 </Pressable>
                 <View>
                   <TextElement
                     style={exhibitionPreviewStyle.addressText}>
-                    {simplifyAddressMailing(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString.value)}
+                    {simplifyAddressMailing(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString?.value)}
                   </TextElement>
                   <TextElement
                     style={exhibitionPreviewStyle.addressText}>
-                    {simplifyAddressCity(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString.value)}
+                    {simplifyAddressCity(exhibitionPreview?.exhibitionLocation?.exhibitionLocationString?.value)}
                   </TextElement>
                 </View>
             </View>
