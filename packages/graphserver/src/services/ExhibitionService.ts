@@ -35,7 +35,7 @@ import {
 } from './interfaces';
 
 const BUCKET_NAME = 'exhibitions';
-const COMPRESSED_BUCKET_NAME = 'exhibitions-compressed';
+// const COMPRESSED_BUCKET_NAME = 'exhibitions-compressed';
 
 @injectable()
 export class ExhibitionService implements IExhibitionService {
@@ -1094,10 +1094,21 @@ export class ExhibitionService implements IExhibitionService {
       })
 
       const exhibitionMapPin: {[key: string]: ExhibitionMapPin} = {};
-      exhibitionsAndPreviews.forEach((exhibitionAndPreview) => {
-        if (!exhibitionMapPin[exhibitionAndPreview.galleryId]){
-          exhibitionMapPin[exhibitionAndPreview.galleryId] = exhibitionAndPreview
-        } 
+      exhibitionsAndPreviews.forEach((exhibitionAndPreview : ExhibitionMapPin) => {
+        const locationId = exhibitionAndPreview.exhibitionLocation.googleMapsPlaceId?.value
+        if (!locationId) return  
+        if (!exhibitionMapPin[locationId]){
+          exhibitionMapPin[locationId] = exhibitionAndPreview
+        } else if (
+          exhibitionAndPreview?.exhibitionDates?.exhibitionEndDate?.value && 
+          exhibitionAndPreview.exhibitionDates.exhibitionEndDate.value !== null &&
+          exhibitionMapPin[locationId]?.exhibitionDates?.exhibitionEndDate?.value &&
+          exhibitionMapPin[locationId].exhibitionDates.exhibitionEndDate?.value != null &&
+          exhibitionMapPin[locationId].exhibitionDates.exhibitionEndDate.value! < 
+          exhibitionAndPreview.exhibitionDates.exhibitionEndDate.value
+      ) {
+          exhibitionMapPin[locationId] = exhibitionAndPreview;
+      }
         // exhibitionMapPin[exhibitionAndPreview.exhibitionId] = exhibitionAndPreview
       })
 
