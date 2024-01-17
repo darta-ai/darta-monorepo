@@ -54,7 +54,7 @@ export function ExploreMapHomeScreen({
   const [currentLocation] = React.useState<MapPinCities>(MapPinCities.newYork)
   const [mapRegion, setMapRegion] = React.useState({
     latitudeDelta: 0.01,
-    longitudeDelta: 0.06,
+    longitudeDelta: 0.09,
     latitude: 40.709, 
     longitude: -73.990
   })

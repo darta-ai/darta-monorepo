@@ -1089,14 +1089,22 @@ export class ExhibitionService implements IExhibitionService {
       // remove duplicate galleries
       exhibitionsAndPreviews.sort((a, b) => {
         if (!a.exhibitionDates.exhibitionEndDate.value || !b.exhibitionDates.exhibitionEndDate.value) return 0
-        if (a.exhibitionDates.exhibitionEndDate.value > b.exhibitionDates.exhibitionEndDate.value) return 1 
+        if (a.exhibitionDates.exhibitionEndDate.value < b.exhibitionDates.exhibitionEndDate.value) return 1 
         return -1
       })
+
+      // console.log({exhibitionsAndPreviews})
 
       const exhibitionMapPin: {[key: string]: ExhibitionMapPin} = {};
       exhibitionsAndPreviews.forEach((exhibitionAndPreview : ExhibitionMapPin) => {
         const locationId = exhibitionAndPreview.exhibitionLocation.googleMapsPlaceId?.value
         if (!locationId) return  
+        // console.log({locationId,
+        //   exhibitionPreviewEndDate: exhibitionAndPreview?.exhibitionDates?.exhibitionEndDate?.value,
+        //   exhibitionMapPin: exhibitionMapPin[locationId]?.exhibitionDates,
+        //   exhibitonHash: exhibitionAndPreview
+        //   // boolean: exhibitionMapPin[locationId].exhibitionDates?.exhibitionEndDate?.value! > exhibitionAndPreview?.exhibitionDates?.exhibitionEndDate?.value!
+        // })
         if (!exhibitionMapPin[locationId]){
           exhibitionMapPin[locationId] = exhibitionAndPreview
         } else if (
@@ -1104,9 +1112,10 @@ export class ExhibitionService implements IExhibitionService {
           exhibitionAndPreview.exhibitionDates.exhibitionEndDate.value !== null &&
           exhibitionMapPin[locationId]?.exhibitionDates?.exhibitionEndDate?.value &&
           exhibitionMapPin[locationId].exhibitionDates.exhibitionEndDate?.value != null &&
-          exhibitionMapPin[locationId].exhibitionDates.exhibitionEndDate.value! < 
+          exhibitionMapPin[locationId].exhibitionDates.exhibitionEndDate.value! > 
           exhibitionAndPreview.exhibitionDates.exhibitionEndDate.value
       ) {
+        //  console.log('!!! swapping this ', exhibitionAndPreview.exhibitionTitle, 'from ',  exhibitionMapPin[locationId].exhibitionTitle)
           exhibitionMapPin[locationId] = exhibitionAndPreview;
       }
         // exhibitionMapPin[exhibitionAndPreview.exhibitionId] = exhibitionAndPreview

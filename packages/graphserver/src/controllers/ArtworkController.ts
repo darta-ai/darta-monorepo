@@ -438,7 +438,28 @@ export class ArtworkController {
 
 
   @httpGet('/listUserArtworkRelationships')
-  public async listUserLikedArtwork(
+  public async listUserArtworkRelationship(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const {uid, limit, action} = req.query;
+      if (!uid || !limit || !action) {
+        res.status(500).send('missing uid or limit or action');
+        return;
+      }
+      const galleryArtwork = await this.artworkService.listUserRelationshipArtworkByLimit({
+        uid: uid.toString(), limit: Number(limit), action: action.toString(),
+      });
+      res.json(galleryArtwork);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'artwork/listUserArtworkRelationships', request: req?.query})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpGet('/listUserLikeDislike')
+  public async listUserLikedDislikedArtwork(
     @request() req: Request,
     @response() res: Response,
   ): Promise<void> {
