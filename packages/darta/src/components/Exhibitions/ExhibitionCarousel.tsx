@@ -102,8 +102,6 @@ function ExhibitionCarouselComponent({ images }) {
     setCurrentIndex(index);
   };
 
-  console.log({images})
-
   const multipleImages = images.length > 1;
 
   return (

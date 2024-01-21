@@ -137,6 +137,7 @@ const CustomMarker = React.memo(({
 
   React.useEffect(() => {
     let hasOpening = false;
+    console.log({exhibitionEndDate: mapPin.exhibitionDates?.exhibitionEndDate?.value, exhibitionTitle: mapPin.exhibitionTitle?.value, hasOpening})
     if (mapPin.exhibitionDates?.exhibitionStartDate.value && mapPin.exhibitionDates?.exhibitionEndDate.value) {
       setStartDate(customLocalDateStringStart({date : new Date(mapPin.exhibitionDates.exhibitionStartDate.value), isUpperCase: false}))
       setEndDate(customLocalDateStringEnd({date : new Date(mapPin.exhibitionDates.exhibitionEndDate.value), isUpperCase: false}))

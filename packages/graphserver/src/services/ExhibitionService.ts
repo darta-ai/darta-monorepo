@@ -1050,15 +1050,21 @@ export class ExhibitionService implements IExhibitionService {
         FILTER city.value == @locality
         FOR exhibition IN 1..1 INBOUND city ${EdgeNames.FROMExhibitionTOCity}
             FILTER exhibition.published == true AND exhibition.exhibitionDates.exhibitionStartDate.value <= @currentDate
+            LET googleMapsPlaceId = (
+                FOR e IN [exhibition]
+                LET placeId = e.exhibitionLocation ? e.exhibitionLocation.googleMapsPlaceId : null
+                RETURN placeId ? placeId.value : null
+            )[0]
             LET gallery = FIRST(
                 FOR gallery IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
                     RETURN gallery
             )
-            SORT gallery._key, exhibition.exhibitionDates.exhibitionStartDate DESC
-            COLLECT galleryId = gallery._id INTO groupByGallery = {exhibition, gallery}
-            LET mostRecentExhibition = FIRST(groupByGallery)
+            SORT googleMapsPlaceId, exhibition.exhibitionDates.exhibitionStartDate DESC
+            COLLECT locationId = googleMapsPlaceId INTO groupByLocation = {exhibition, gallery}
+            LET mostRecentExhibition = FIRST(groupByLocation)
             RETURN {
-                galleryId: galleryId,
+                locationId: locationId,
+                galleryId: mostRecentExhibition.gallery._id,
                 galleryName: mostRecentExhibition.gallery.galleryName,
                 galleryLogo: mostRecentExhibition.gallery.galleryLogo,
                 // Most recent exhibition information
@@ -1072,7 +1078,7 @@ export class ExhibitionService implements IExhibitionService {
                 _id: mostRecentExhibition.exhibition._id,
                 currentDate: @currentDate, 
                 start: mostRecentExhibition.exhibition.exhibitionDates.exhibitionEndDate.value
-            }
+            }    
     `;
     try{
       const currentDate = new Date();
@@ -1093,18 +1099,11 @@ export class ExhibitionService implements IExhibitionService {
         return -1
       })
 
-      // console.log({exhibitionsAndPreviews})
 
       const exhibitionMapPin: {[key: string]: ExhibitionMapPin} = {};
       exhibitionsAndPreviews.forEach((exhibitionAndPreview : ExhibitionMapPin) => {
         const locationId = exhibitionAndPreview.exhibitionLocation.googleMapsPlaceId?.value
-        if (!locationId) return  
-        // console.log({locationId,
-        //   exhibitionPreviewEndDate: exhibitionAndPreview?.exhibitionDates?.exhibitionEndDate?.value,
-        //   exhibitionMapPin: exhibitionMapPin[locationId]?.exhibitionDates,
-        //   exhibitonHash: exhibitionAndPreview
-        //   // boolean: exhibitionMapPin[locationId].exhibitionDates?.exhibitionEndDate?.value! > exhibitionAndPreview?.exhibitionDates?.exhibitionEndDate?.value!
-        // })
+        if (!locationId) return  // skip if no location
         if (!exhibitionMapPin[locationId]){
           exhibitionMapPin[locationId] = exhibitionAndPreview
         } else if (

@@ -305,7 +305,6 @@ export class UserService implements IUserService {
   }): Promise<any> {
     if (!uid) return false;
     // const fullUserId = this.generateDartaUserId({uid});
-    // console.log({fullUserId})
     
     // ##### profile picture #####
 
