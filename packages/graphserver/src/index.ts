@@ -7,6 +7,11 @@ import http from 'http';
 import {InversifyExpressServer} from 'inversify-express-utils';
 
 import {container} from './config/container';
+import { ArtworkService } from './services';
+
+const cron = require('node-cron');
+
+const artworkService = container.get('IArtworkService') as ArtworkService
 
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -52,6 +57,16 @@ app.get('/pong', (req: Request, res: Response) => {
 
 app.get('/version', (req: Request, res: Response) => {
   res.send(version);
+});
+
+// cron job to update artwork every 24 hours 
+cron.schedule('0 0 * * *', async () => {
+  try{
+    await artworkService.readAllArtworks()
+    console.log(`cron job ran at${  new Date()}`)
+  } catch (e) {
+    console.log(e)
+  }
 });
 
 httpServer.listen(port, () => {

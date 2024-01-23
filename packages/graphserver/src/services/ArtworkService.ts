@@ -190,6 +190,31 @@ export class ArtworkService implements IArtworkService {
     }
   }
 
+    public async readAllArtworks(): Promise<Artwork[] | null> {
+    // TO-DO: build out?
+    const getArtworksQuery = `
+      WITH ${CollectionNames.Artwork}
+      FOR artwork IN ${CollectionNames.Artwork}
+      RETURN {_id: artwork._id}
+    `;
+
+    try {
+      const edgeCursor = await this.db.query(getArtworksQuery);
+      const artworks = await edgeCursor.all();
+
+      const promises: Promise<any>[] = []
+
+      artworks.forEach((element) => {
+        promises.push(this.getArtworkById(element._id))
+      })
+
+      await Promise.all(promises)
+      return null;
+    } catch (error) {
+      throw new Error('error getting artworks');
+    }
+  }
+
   public async editArtwork({
     artwork,
   }: {
