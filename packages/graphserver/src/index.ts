@@ -60,12 +60,16 @@ app.get('/version', (req: Request, res: Response) => {
 });
 
 // cron job to update artwork every 24 hours 
-cron.schedule('0 0 * * *', async () => {
+cron.schedule('0 3 * * *', async () => {
   try{
+    const start = new Date()
     await artworkService.readAllArtworks()
-    console.log(`cron job ran at${  new Date()}`)
+    const end = new Date()
+    // eslint-disable-next-line no-console
+    console.log(`cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
   } catch (e) {
-    console.log(e)
+    // eslint-disable-next-line no-console
+    console.log('error running cronjob', e)
   }
 });
 

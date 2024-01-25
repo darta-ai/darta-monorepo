@@ -52,19 +52,18 @@ export function ExploreMapHomeScreen({
 }) {
   const {state} = useContext(StoreContext);
   const [currentLocation] = React.useState<MapPinCities>(MapPinCities.newYork)
-  const [mapRegion, setMapRegion] = React.useState({
+  const [mapRegion] = React.useState({
     latitudeDelta: 0.01,
     longitudeDelta: 0.09,
     latitude: 40.709, 
     longitude: -73.990
   })
 
-  const [exhibitionPins, setExhibitionPins] = React.useState<{[key: string] :ExhibitionMapPin}>({})
+  const mapRef = React.useRef<MapView>(null);
+
+  const [exhibitionPins] = React.useState<{[key: string] :ExhibitionMapPin}>(state.mapPins && state.mapPins?.[currentLocation] ?state.mapPins?.[currentLocation] : {})
 
   React.useEffect(() => {
-    if (state.mapPins && state.mapPins?.[currentLocation]){
-      setExhibitionPins(state.mapPins?.[currentLocation])
-    }
     (async () => {
       
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -74,29 +73,33 @@ export function ExploreMapHomeScreen({
     })();
   }, [state.mapPins])
 
+  
   const handleMarkerPress = React.useCallback((event) => {
-    setMapRegion({
+    const newRegion = {
       ...mapRegion,
       ...event.nativeEvent.coordinate,
-    });
+      latitudeDelta: 0.01,  // You might need to adjust these deltas
+      longitudeDelta: 0.01,
+    };
+
+    const transitionSpeed = mapRegion.latitudeDelta >= 0.01 ? 500 : 250;
+  
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(newRegion, transitionSpeed); // 1000 is the duration of the animation in milliseconds
+    }
   }, [mapRegion]);
-  
-  const handleRegionChangeComplete = React.useCallback((event) => {
-    setMapRegion(event);
-  }, []);
-  
 
   return (
     <View style={exploreMapStyles.container}>
       <View style={exploreMapStyles.mapContainer}>
         {Object.values(mapRegion).length > 0 && ( 
         <MapView  
+          ref={mapRef}
           provider={PROVIDER_GOOGLE}
           style={ exploreMapStyles.mapView }
           region={mapRegion} 
           customMapStyle={mapStylesJson}
           onMarkerPress={handleMarkerPress}
-          onRegionChangeComplete={handleRegionChangeComplete}
           showsUserLocation={true}
           >
             {exhibitionPins && Object.values(exhibitionPins).length > 0 

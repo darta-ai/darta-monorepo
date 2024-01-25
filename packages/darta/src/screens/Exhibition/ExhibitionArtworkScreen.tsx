@@ -17,6 +17,7 @@ import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
 import FastImage from 'react-native-fast-image';
 import { ExhibitionETypes, ExhibitionStoreContext, UIStoreContext } from '../../state';
+import { dartaLogo } from '../../components/User/UserInquiredArtwork';
 
 
 const artworkDetailsStyles = StyleSheet.create({
@@ -62,8 +63,8 @@ export function ExhibitionArtworkScreen({
 
 
   const [exhibitionId, setExhibitionId] = React.useState<string>("")
-  const [errorText, setErrorText] = React.useState<string>("");
   const [isArtworkLoaded, setIsArtworkLoaded] = React.useState<boolean>(false);
+  const [hasNoArtwork, setHasNoArtwork] = React.useState<boolean>(true);
 
   const [artworkData, setArtworkData] = React.useState<Artwork[] | null>(null)
 
@@ -86,11 +87,13 @@ export function ExhibitionArtworkScreen({
         })
         FastImage.preload(imageUrlsToPrefetch)
         setArtworkData(data)
+        if (data.length > 0){
+          setHasNoArtwork(false)
+        }
         setIsArtworkLoaded(true)
-        setErrorText("")
-  } else {
-    setErrorText("hey something went wrong, please refresh and try again")
-  }
+    } else {
+      setHasNoArtwork(true)
+    }
 }
 
 
@@ -102,7 +105,7 @@ export function ExhibitionArtworkScreen({
       setExhibitionId(state.qrCodeExhibitionId);
       setArtworksFromExhibitionId({exhibitionId: state.qrCodeExhibitionId})
     } else {
-      setErrorText('something went wrong, please refresh and try again')
+      setHasNoArtwork(true)
     }
 
   }, [exhibitionState.exhibitionData, uiState.currentExhibitionHeader, state.qrCodeExhibitionId])
@@ -125,19 +128,49 @@ export function ExhibitionArtworkScreen({
       setRefreshing(false);
     }, 500)  }, []);
 
-
-
-  return (
-    <>
-      {!isArtworkLoaded ? ( 
-          <ScrollView style={artworkDetailsStyles.spinnerContainer} contentContainerStyle={{alignItems: 'center', justifyContent: 'center'}} refreshControl={
-            <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>      
-                <ActivityIndicator animating={true} size={35} color={Colors.PRIMARY_800} />
-                <TextElement>{errorText}</TextElement>
-            </ScrollView>
-        )
-        : 
-        (
+    if (!isArtworkLoaded && !hasNoArtwork){
+      //loading screen 
+      return (
+        <ScrollView 
+        style={{
+          height: hp('40%'),
+          width: '100%',
+          backgroundColor: Colors.PRIMARY_50,
+        }}
+        contentContainerStyle={{ 
+          flexGrow: 1, 
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center', 
+          alignItems: 'center' }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_950} onRefresh={onRefresh} />}>  
+            <TextElement style={dartaLogo.textHeader}>Loading...</TextElement>
+            <ActivityIndicator animating={true} color={Colors.PRIMARY_950} />
+        </ScrollView>
+      )
+    }
+    else if (hasNoArtwork){
+      return(
+        <ScrollView 
+        style={{
+          height: hp('40%'),
+          width: '100%',
+          backgroundColor: Colors.PRIMARY_50,
+        }}
+        contentContainerStyle={{ 
+          flexGrow: 1, 
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center', 
+          alignItems: 'center' }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_950} onRefresh={onRefresh} />}>  
+            <TextElement style={dartaLogo.text}>Full checklist unavailable</TextElement>
+        </ScrollView>
+      )
+    } else if (isArtworkLoaded) {
+      return (
           <ArtworkList 
           refreshing={refreshing}
           onRefresh={onRefresh}
@@ -147,7 +180,6 @@ export function ExhibitionArtworkScreen({
           navigateToParams={ExhibitionRootEnum.TopTab}
           route={route}
         />
-      )}
-    </>
-  );
+      )
+    }
 }

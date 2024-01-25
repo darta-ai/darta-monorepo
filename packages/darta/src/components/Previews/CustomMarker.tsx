@@ -263,7 +263,7 @@ const CustomMarker = React.memo(({
     <Marker
       coordinate={coordinate}
       key={mapPin.exhibitionId}
-      onTouchStart={() => setShowCallout(true)}
+      onTouchEnd={() => setShowCallout(true)}
     >
       <Animated.View style={customMarkerDynamic.wiggleFriend}>
       {hasUpcomingOpening ?  <GoogleMapsPinIcon/> : <GoogleMapsPinBlackIcon /> }
