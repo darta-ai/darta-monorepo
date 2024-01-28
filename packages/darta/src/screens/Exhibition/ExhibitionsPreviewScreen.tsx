@@ -51,7 +51,6 @@ export function ExhibitionPreviewScreen({
       })
     } else {  
       return exhibitionPreviews.sort((a, b) => {
-        console.log(a.openingDate?.value, b.openingDate?.value)
         if (!a.openingDate?.value || !b.openingDate?.value) return 0
         return b.openingDate?.value >= a.openingDate?.value ? 1 : -1
       })
@@ -72,7 +71,7 @@ export function ExhibitionPreviewScreen({
         return exhibitionState.currentExhibitionPreviews
       case ExhibitionPreviewEnum.forthcoming:
         setErrorHeader('No exhibitions to show')
-        setErrorText('When future exhibitions are available you will see them here.')
+        setErrorText('When upcoming exhibitions are available you will see them here.')
         return exhibitionState.forthcomingExhibitionPreviews
       default:
         return exhibitionState.exhibitionPreviews

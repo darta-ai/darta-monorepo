@@ -5,10 +5,13 @@ import { ListEnum } from '../../typing/routes';
 import { tabBarScreenOptions } from '../../theme/themeConstants';
 import { FullListScreen } from '../../screens/Lists/FullListScreen';
 import { ListMap } from '../../screens/Lists/ListMap';
+import { StoreContext } from '../../state';
 
 export const ListTopTabNavigation = createMaterialTopTabNavigator();
 
 export function ListTopTab({route} : {route: any}) {
+
+  const {state} = React.useContext(StoreContext);
 
   return (
     <ListTopTabNavigation.Navigator screenOptions={{...tabBarScreenOptions}}>
@@ -25,7 +28,7 @@ export function ListTopTab({route} : {route: any}) {
           <ListTopTabNavigation.Screen
             name={ListEnum.fullMap}
             component={ListMap}
-            options={{ title: 'Map' }}
+            options={{ title: 'On Display' }}
             initialParams={{listId: route.params?.listId }}
           />
         </ListTopTabNavigation.Group>

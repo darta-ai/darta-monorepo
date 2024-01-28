@@ -5,7 +5,6 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {Artwork} from '@darta-types';
 import {TextElement} from '../Elements/_index';
@@ -41,7 +40,6 @@ export function TombstoneLandscape({
 
   return (
     <>
-      <SafeAreaView>
         <View
           style={{
             display: 'flex',
@@ -79,7 +77,6 @@ export function TombstoneLandscape({
             </View>
           </ScrollView>
         </View>
-      </SafeAreaView>
       <ScrollView scrollEventThrottle={7}>
         <View
           style={{

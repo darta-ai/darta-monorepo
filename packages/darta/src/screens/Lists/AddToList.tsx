@@ -13,7 +13,6 @@ import { NewListModal } from '../../components/Lists/NewListModal';
 import { addArtworkToList } from '../../api/listRoutes';
 import { createUserArtworkRelationship } from '../../api/artworkRoutes';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
-import { Swipeable } from 'react-native-gesture-handler';
 
 const addToListStyles = StyleSheet.create({
     container: {

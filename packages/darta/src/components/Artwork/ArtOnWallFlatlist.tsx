@@ -61,7 +61,6 @@ export function ArtOnWallFlatList({
       type: UiETypes.setTombstoneHeader,
       currentArtworkHeader: artOnDisplay?.artworkTitle?.value!,
     });
-    console.log('recommenderViewFlatList',{title: artOnDisplay?.artworkTitle?.value!})
     if (artOnDisplay){
       navigation.navigate(RecommenderRoutesEnum.TopTabExhibition, {
         artOnDisplay, 

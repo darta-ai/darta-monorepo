@@ -21,7 +21,7 @@ import { GoogleMapsPinBlackIcon } from '../../assets/SVGs/GoogleMapsPinBlack';
 const customMarker = StyleSheet.create({
   galleryContainer:{
       width: '100%',
-      height: 40,
+      height: 50,
       display:'flex',
       flexDirection: "row",
       alignItems: 'flex-start',
@@ -62,6 +62,7 @@ const customMarker = StyleSheet.create({
     flexDirection: "column",
     alignContent: "center",
     justifyContent: "center",
+    gap: 12,
   }, 
   buttonStyles: {
     width: 265,
@@ -137,7 +138,6 @@ const CustomMarker = React.memo(({
 
   React.useEffect(() => {
     let hasOpening = false;
-    console.log({exhibitionEndDate: mapPin.exhibitionDates?.exhibitionEndDate?.value, exhibitionTitle: mapPin.exhibitionTitle?.value, hasOpening})
     if (mapPin.exhibitionDates?.exhibitionStartDate.value && mapPin.exhibitionDates?.exhibitionEndDate.value) {
       setStartDate(customLocalDateStringStart({date : new Date(mapPin.exhibitionDates.exhibitionStartDate.value), isUpperCase: false}))
       setEndDate(customLocalDateStringEnd({date : new Date(mapPin.exhibitionDates.exhibitionEndDate.value), isUpperCase: false}))
@@ -246,7 +246,7 @@ const CustomMarker = React.memo(({
     container: {
       display: 'flex',
       flexDirection: 'column',
-      height: hasCurrentShow ? 250 : 158,
+      height: hasCurrentShow ? 260 : 158,
       width: 315,
       justifyContent: 'flex-start',
       alignItems: 'center',

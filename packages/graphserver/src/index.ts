@@ -7,11 +7,12 @@ import http from 'http';
 import {InversifyExpressServer} from 'inversify-express-utils';
 
 import {container} from './config/container';
-import { ArtworkService } from './services';
+import { ArtworkService, ExhibitionService } from './services';
 
 const cron = require('node-cron');
 
 const artworkService = container.get('IArtworkService') as ArtworkService
+const exhibitionService = container.get('IExhibitionService') as ExhibitionService
 
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -66,7 +67,19 @@ cron.schedule('0 3 * * *', async () => {
     await artworkService.readAllArtworks()
     const end = new Date()
     // eslint-disable-next-line no-console
-    console.log(`cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
+    console.log(`artwork cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('error running cronjob', e)
+  }
+});
+cron.schedule('0 4 * * *', async () => {
+  try{
+    const start = new Date()
+    await exhibitionService.readAllExhibitions()
+    const end = new Date()
+    // eslint-disable-next-line no-console
+    console.log(`exhibition cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log('error running cronjob', e)

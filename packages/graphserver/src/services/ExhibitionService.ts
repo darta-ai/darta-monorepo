@@ -1144,6 +1144,30 @@ export class ExhibitionService implements IExhibitionService {
     }
   }
 
+  public async readAllExhibitions(): Promise<void>{
+    const getExhibitionsQuery = `
+    WITH ${CollectionNames.Exhibitions}
+    FOR exhibitions IN ${CollectionNames.Exhibitions}
+    RETURN {_id: exhibition._id}
+  `;
+
+  try {
+    const edgeCursor = await this.db.query(getExhibitionsQuery);
+    const artworks = await edgeCursor.all();
+
+    const promises: Promise<any>[] = []
+
+    artworks.forEach((element) => {
+      promises.push(this.getExhibitionById(element._id))
+    })
+
+    await Promise.all(promises)
+  } catch (error) {
+    throw new Error('error getting artworks');
+  }
+
+  }
+
   public async listAllExhibitionArtworks({
     exhibitionId,
   }: {

@@ -73,7 +73,6 @@
     "react-native-view-shot": "3.7.0",
     "react-native-web": "^0.19.9",
     "react-native-webview": "13.2.2",
-    "reassure": "^0.10.2",
     "recyclerlistview": "^4.2.0"
   },
   "devDependencies": {
