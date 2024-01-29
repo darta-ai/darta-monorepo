@@ -1,6 +1,5 @@
-import _ from 'lodash';
-import React, {createContext, ReactNode, useReducer} from 'react';
-import {Artwork, Exhibition, ExhibitionPreview, IGalleryProfileData, MapPinCities, ExhibitionMapPin, MobileUser, GalleryPreview, ListPreview, List, FullList} from '@darta-types'
+import React, {createContext} from 'react';
+import {Exhibition, ExhibitionPreview} from '@darta-types'
 
 
 // Define the state type

@@ -73,32 +73,25 @@ export class RecommenderService implements IRecommenderService {
     FOR key IN notViewedByUserArtworkKeys
       FOR art IN ${CollectionNames.Artwork}
         FILTER art._key == key
-        LET artist = (
+        LET artistName = (
           FOR v, e IN 1..1 OUTBOUND art ${EdgeNames.FROMArtworkTOArtist}
-          RETURN v
+          RETURN v.value
         )[0]
-        LET medium = (
-          FOR v, e IN 1..1 OUTBOUND art ${EdgeNames.FROMArtworkToMedium}
-          RETURN v
-        )[0]
-      
-        LET gallery = (
+        LET galleryId = (
           FOR v, e IN 1..1 INBOUND art ${EdgeNames.FROMGalleryToArtwork}
-          RETURN v
+          RETURN v._id
         )[0]
-
-        LET exhibition = (
+        LET exhibitionId = (
           FOR v, e IN 1..1 INBOUND art ${EdgeNames.FROMCollectionTOArtwork}
-          RETURN v
+          RETURN v._id
         )[0]
       
         LIMIT @limit, @count
         RETURN {
           artwork: art,
-          medium: medium.value,
-          artistName: artist.value,
-          galleryId: gallery._id,
-          exhibitionId: exhibition._id
+          artistName,
+          galleryId,
+          exhibitionId,
         }
     `
 

@@ -38,6 +38,7 @@ export interface IExhibitionService {
     locationData: IBusinessLocationData;
     artworkId: string;
   }): Promise<boolean>;
+  readAllExhibitions(): Promise<void>
   publishExhibition({exhibitionId, 
     galleryId, isPublished} : {exhibitionId: string, 
       galleryId: string, isPublished: boolean}): Promise<Exhibition | void>;

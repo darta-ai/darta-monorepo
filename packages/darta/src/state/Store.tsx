@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, {createContext, ReactNode} from 'react';
 
-import {Artwork, MapPinCities, ExhibitionMapPin, ListPreview, FullList} from '@darta-types'
+import {Artwork, MapPinCities, ExhibitionMapPin, ListPreview, FullList, PublicFields, PrivateFields, Images, ExhibitionDates, ReceptionDates, MapRegion} from '@darta-types'
 
 export interface IUserArtworkRatings {
   [id: string]: {
@@ -225,13 +225,107 @@ const reducer = (state: IState, action: IAction): IState => {
           if (!action?.userLists){
             return state;
           }
-        return {
-          ...state,
-          userLists: {
-            ...state.userLists,
-            ...action.userLists
-          },
-        };
+          const listArtwork = Object.values(action.userLists)[0].artwork
+          let minLat = Number.MAX_VALUE;
+          let maxLat = -Number.MAX_VALUE;
+          let minLng = Number.MAX_VALUE;
+          let maxLng = -Number.MAX_VALUE;
+          const formattedListPins: ExhibitionMapPin[] = Object.values(listArtwork).map((artwork) => {
+            if (!artwork.exhibition?.exhibitionLocation?.coordinates?.latitude 
+              || !artwork.exhibition?.exhibitionLocation?.coordinates?.longitude || !artwork.exhibition?.isCurrentlyShowing) return {} as ExhibitionMapPin
+              const latitude = Number(artwork.exhibition?.exhibitionLocation?.coordinates?.latitude?.value);
+              const longitude = Number(artwork.exhibition?.exhibitionLocation?.coordinates?.longitude?.value);
+      
+              if(latitude && longitude){
+                // Update min and max values
+                minLat = Math.min(minLat, latitude);
+                maxLat = Math.max(maxLat, latitude);
+                minLng = Math.min(minLng, longitude);
+                maxLng = Math.max(maxLng, longitude);
+              }
+
+            return {
+              exhibitionId: artwork.exhibition?.exhibitionId as string,
+              galleryId: artwork.gallery?.galleryId as string,
+              artworkId: artwork.artwork?.artworkId as string,
+              exhibitionName: artwork.artwork?.artworkTitle as PublicFields,
+              exhibitionArtist: artwork.artwork?.artistName as PublicFields,
+              exhibitionLocation: {
+                isPrivate: false,
+                coordinates: {
+                  latitude: {
+                    value: artwork.exhibition?.exhibitionLocation?.coordinates?.latitude.value as string,
+                  },
+                  longitude: {
+                    value: artwork.exhibition?.exhibitionLocation?.coordinates?.longitude.value as string,
+                  }, 
+                  googleMapsPlaceId: { value: ""}
+                }, 
+                locationString: artwork.exhibition?.exhibitionLocation?.locationString as PrivateFields,
+              },
+              exhibitionPrimaryImage: artwork.artwork?.artworkImage as Images,
+              galleryName: artwork.gallery?.galleryName as PublicFields,
+              galleryLogo: {} as Images,
+              exhibitionTitle: artwork.artwork?.artworkTitle as PublicFields,
+              exhibitionType: {value: "Solo Show" as "Solo Show" | "Group Show"},
+              exhibitionDates: artwork.exhibition?.exhibitionDates as ExhibitionDates,
+              receptionDates: {} as ReceptionDates,
+            }
+          }).filter((el) => el.exhibitionId)
+
+
+          let mapRegion: MapRegion = {} as MapRegion  
+
+          const centerLat = (minLat + maxLat) / 2;
+          const centerLng = (minLng + maxLng) / 2;
+          const latitudeDelta = maxLat - minLat + 0.04; // Added padding
+          const longitudeDelta = maxLng - minLng + 0.04; // Added padding
+
+
+          if (centerLat && centerLng && latitudeDelta && longitudeDelta){
+            mapRegion = {
+              latitude: centerLat,
+              longitude: centerLng,
+              latitudeDelta,
+              longitudeDelta
+            };
+          } else {
+            mapRegion = {
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.06,
+              latitude: 40.719, 
+              longitude: -73.990
+            }
+          }
+
+          // const objectPins = formattedListPins.reduce((accumulator, artwork) => {
+    //     // Use artworkId as a unique key for each artwork
+    //     const key = artwork.exhibitionId;
+    //     if (!key) return accumulator;
+    
+    //     // Assign the artwork to its key in the accumulator
+    //     accumulator[key] = artwork;
+
+    //     //confirm that there is a value 
+    //     if (artwork?.exhibitionLocation?.coordinates?.latitude.value && artwork.exhibitionLocation.coordinates.longitude.value){
+    //       return accumulator;
+    //     } 
+    
+    //     return {};
+    //   }, {} as {[key: string]: ExhibitionMapPin});
+
+
+          const id = Object.keys(action.userLists)[0]
+          action.userLists[id].mapRegion = mapRegion
+          action.userLists[id].listPins = formattedListPins
+
+          return {
+            ...state,
+            userLists: {
+              ...state.userLists,
+              ...action.userLists,
+            },
+          };
     case ETypes.addArtworkToList:
       if (!action?.artwork || !action?.artwork._id || !action?.listId || !state.userLists){
         return state;

@@ -1,4 +1,4 @@
-import { ArtworkListInformation, PublicFields } from "./galleries";
+import { ArtworkListInformation, ExhibitionMapPin, PublicFields } from "./galleries";
 
 export interface List {
     _id: string;
@@ -45,9 +45,18 @@ export interface ListPreview {
     createdAt: string;
 }
 
+export interface MapRegion {
+    latitude: number;
+    longitude: number;
+    latitudeDelta: number;
+    longitudeDelta: number;
+}
+
 
 export interface FullList extends List {
     artwork: {
         [key: string]: ArtworkListInformation;
     };
+    listPins?: ExhibitionMapPin[];
+    mapRegion?: MapRegion
 }

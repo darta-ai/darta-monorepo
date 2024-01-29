@@ -16,6 +16,9 @@
       "eas": {
         "projectId": "ecf0bc96-428f-4776-9cfb-a92a47e0d6ce"
       }
+    },
+    "ios": {
+      "bundleIdentifier": "com.tjwetmore.dartamonorepo"
     }
   }
 }

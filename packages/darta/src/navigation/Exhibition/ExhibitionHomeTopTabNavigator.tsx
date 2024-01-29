@@ -35,10 +35,14 @@ export function ExhibitionHomeTopTabNavigator({route} : {route: any}) {
     const {exhibitionState} = React.useContext(ExhibitionStoreContext);
 
     const [showFollowingExhibitionPreviews, setShowFollowing] = React.useState<boolean>(false)
+    const [showUpcomingExhibitionPreviews, setShowUpcoming] = React.useState<boolean>(false)
 
     React.useEffect(() => {
       if (exhibitionState.userFollowsExhibitionPreviews && Object.keys(exhibitionState.userFollowsExhibitionPreviews).length > 0) {
         setShowFollowing(true)
+      }
+      if (exhibitionState.forthcomingExhibitionPreviews && Object.keys(exhibitionState.forthcomingExhibitionPreviews).length > 0){
+        setShowUpcoming(true)
       }
     },[])
         
@@ -92,13 +96,14 @@ export function ExhibitionHomeTopTabNavigator({route} : {route: any}) {
             options={{ title: 'Following' }}
           />
           )}
-
-          <ExhibitionHomeTopTab.Screen
-            name={ExhibitionPreviewEnum.forthcoming}
-            component={ExhibitionPreviewScreen}
-            options={{ title: 'Upcoming' }}
-            initialParams={{type: "Upcoming"}}
-          />
+          {showUpcomingExhibitionPreviews && (
+            <ExhibitionHomeTopTab.Screen
+              name={ExhibitionPreviewEnum.forthcoming}
+              component={ExhibitionPreviewScreen}
+              options={{ title: 'Upcoming' }}
+              initialParams={{type: "Upcoming"}}
+            />
+          )}
         </ExhibitionHomeTopTab.Group>
     </ExhibitionHomeTopTab.Navigator>
   );

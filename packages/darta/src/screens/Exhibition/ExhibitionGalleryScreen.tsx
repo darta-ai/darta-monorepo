@@ -14,7 +14,7 @@ import {
 import { ActivityIndicator } from 'react-native-paper';
 
 import { Text } from 'react-native-paper'
-import { BusinessHours, Exhibition, IGalleryProfileData } from '@darta-types';
+import { BusinessHours, Exhibition, IBusinessLocationData, IGalleryProfileData } from '@darta-types';
 import { formatUSPhoneNumber, modifyHoursOfOperation, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { RouteProp } from '@react-navigation/native';
@@ -27,6 +27,7 @@ import * as SVGs from '../../assets/SVGs';
 import { UIStoreContext, UiETypes, GalleryStoreContext, ETypes, StoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes } from '../../state';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
 import { DartaImageComponent } from '../../components/Images/DartaImageComponent';
+import GalleryLocation from '../../components/Gallery/GalleryLocation';
 
 
 const galleryDetailsStyles = StyleSheet.create({
@@ -210,12 +211,10 @@ export function ExhibitionGalleryScreen({
     latitude: 0, 
     longitude: 0,
   })
-  const [mapMarkers, setMapMarkers] = React.useState<any[]>([]); 
-  const [galleryAddresses, setGalleryAddresses] = React.useState<string[]>([])
 
   const [galleryName, setGalleryName] = React.useState<string>("")
 
-  const [hoursOfOperationArray, setHoursOfOperationArray] = React.useState<{day: string, open: string, close: string}[]>([]);
+  const [galleryLocations, setGalleryLocations] = React.useState<IBusinessLocationData[]>([])
   
   const [previousExhibitions, setPreviousExhibitions] = React.useState<Exhibition[]>([])
   const [upcomingExhibitions, setUpComingExhibitions] = React.useState<Exhibition[]>([])
@@ -228,40 +227,40 @@ export function ExhibitionGalleryScreen({
           latitude: inputGallery.galleryLocation0?.coordinates.latitude.value! as unknown as number,
           longitude: inputGallery.galleryLocation0?.coordinates.longitude.value! as unknown as number,
       })
-      const mapMarkers: any[] = [];
-      const galleryAddresses: string[] = []
+      // const mapMarkers: any[] = [];
+      // const galleryAddresses: string[] = []
 
-      Object.keys(inputGallery).forEach((key: string) => {
-        if (inputGallery[key].coordinates){
-          mapMarkers.push({
-            latitude: inputGallery[key]?.coordinates?.latitude.value! as unknown as number,
-            longitude: inputGallery[key]?.coordinates?.longitude.value! as unknown as number,
-            title: inputGallery[key]?.locationString?.value! as string,
-            description: inputGallery[key]?.locationString?.value! as string,
-            })
-          }
-        if (inputGallery[key].locationString){
-          galleryAddresses.push(inputGallery[key]?.locationString?.value! as string)
-        }
-        })
-        setMapMarkers(mapMarkers)
-        setGalleryAddresses(galleryAddresses)
+      // Object.keys(inputGallery).forEach((key: string) => {
+      //   if (inputGallery[key].coordinates){
+      //     mapMarkers.push({
+      //       latitude: inputGallery[key]?.coordinates?.latitude.value! as unknown as number,
+      //       longitude: inputGallery[key]?.coordinates?.longitude.value! as unknown as number,
+      //       title: inputGallery[key]?.locationString?.value! as string,
+      //       description: inputGallery[key]?.locationString?.value! as string,
+      //       })
+      //     }
+      //   if (inputGallery[key].locationString){
+      //     galleryAddresses.push(inputGallery[key]?.locationString?.value! as string)
+      //   }
+      //   })
+        // setMapMarkers(mapMarkers)
+        // setGalleryAddresses(galleryAddresses)
     }
     if (inputGallery?.galleryName && inputGallery.galleryName.value){
       setGalleryName(inputGallery.galleryName.value)
     }
 
-  const daysOrder = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  if (inputGallery.galleryLocation0?.businessHours?.hoursOfOperation){
-    const hoursArr = Object.entries(inputGallery.galleryLocation0.businessHours.hoursOfOperation).map(([day, hours]) => ({
-      day: day,
-      open: modifyHoursOfOperation(hours.open.value),
-      close: modifyHoursOfOperation(hours.close.value)
-    })).sort((a, b) => {
-      return daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day);
-    });
-    setHoursOfOperationArray(hoursArr)
-  }
+
+
+  const locations: IBusinessLocationData[] = [
+    inputGallery.galleryLocation0,
+    inputGallery.galleryLocation1,
+    inputGallery.galleryLocation2,
+    inputGallery.galleryLocation3,
+    inputGallery.galleryLocation4,
+  ].filter((location): location is IBusinessLocationData => location !== undefined) as IBusinessLocationData[];
+  
+  setGalleryLocations(locations);
 
   if (inputGallery?.galleryExhibitions){
     const strippedExhibitionId = route?.params?.exhibitionId?.replace("Exhibitions/", "")
@@ -631,70 +630,20 @@ export function ExhibitionGalleryScreen({
           </View>
         </View>
         <View style={galleryDetailsStyles.contactContainer}>
-        <View >
           <TextElement style={globalTextStyles.sectionHeaderTitle}>
-                Location
+                Location{galleryLocations.length > 1 && "s"}
             </TextElement>
-          </View>
-        <View style={galleryDetailsStyles.locationContainer}>
-            {galleryAddresses.map((address) => {
-              const city = simplifyAddressCity(address)
-              const mailing = simplifyAddressMailing(address)
-              return (
-              <View key={address}>
-                <DartaIconButtonWithText 
-                text={`${mailing} ${city}`}
-                iconComponent={SVGs.BlackPinIcon}
-                onPress={() => openInMaps(address)}
-                />
-              </View>
-              )
-            })}
-        </View>
-        <View style={galleryDetailsStyles.mapContainer}>
-          <MapView  
-            provider={PROVIDER_GOOGLE}
-            style={galleryDetailsStyles.map}
-            region={mapRegion} 
-            scrollEnabled={false}
-            customMapStyle={mapStylesJson}
-            >
-              {mapMarkers && Object.values(mapMarkers).length > 0 && Object.values(mapMarkers).map((marker: any) => (
-                  <Marker
-                  key={marker.description}
-                  coordinate={{latitude: marker.latitude, longitude: marker.longitude}}
-                  description={marker.title ?? "Gallery"}
-                  >
-                    <SVGs.GoogleMapsPinIcon />
-                  </Marker>
-              ))}
-            </MapView>
-          </View>
-         </View>
-        <View style={galleryDetailsStyles.contactContainer}>
-          <View>
-            <TextElement style={globalTextStyles.sectionHeaderTitle}>Hours</TextElement>
-          </View>
-          {hoursOfOperationArray.length > 0 && (
-        <View style={galleryDetailsStyles.hoursContainer}>
-          {hoursOfOperationArray.map((day, index) => (
-            <View key={`${day.day}-${day.open}-${day.close}-${index}`}>
-            {day.open !== "Closed" ?
-            (
-            <View style={galleryDetailsStyles.hoursRow}>
-              <TextElement style={galleryDetailsStyles.dayOpen}>{day.day}</TextElement>
-              <TextElement style={galleryDetailsStyles.hoursOpen}>{day.open} - {day.close}</TextElement>
-            </View>
-            ) : (
-            <View style={galleryDetailsStyles.hoursRow}>
-              <TextElement style={galleryDetailsStyles.dayClosed}>{day.day}</TextElement>
-              <TextElement style={galleryDetailsStyles.hoursClosed}>Closed</TextElement>
-            </View>
-              )}
-            </View>
-          ))}
-        </View>
-        )}
+          {galleryLocations.map((location, index) => {
+            return(
+              <GalleryLocation
+              galleryLocationData={location}
+              key={`${index}-${location.locationString?.value}`}
+              galleryName={galleryName}
+              openInMaps={openInMaps}
+              />
+            )
+          }
+          )}
         </View>
         {upcomingExhibitions.length > 0 && (
          <View style={galleryDetailsStyles.contactContainer}>
@@ -713,6 +662,7 @@ export function ExhibitionGalleryScreen({
                     exhibitionArtist={previousExhibition.exhibitionArtist?.value === "" ? "Group Show" : previousExhibition.exhibitionArtist?.value as string}
                     exhibitionDates={previousExhibition?.exhibitionDates}
                     galleryLogoLink={gallery.galleryLogo?.value as string}
+                    exhibitionLocation={previousExhibition.exhibitionLocation?.locationString?.value as string}
                     onPress={handleExhibitionPress}
                   />
                 </View>
@@ -738,6 +688,7 @@ export function ExhibitionGalleryScreen({
                       exhibitionArtist={previousExhibition.exhibitionArtist?.value === "" ? "Group Show" : previousExhibition.exhibitionArtist?.value as string}
                       exhibitionDates={previousExhibition?.exhibitionDates}
                       galleryLogoLink={gallery.galleryLogo?.value as string}
+                      exhibitionLocation={previousExhibition.exhibitionLocation?.locationString?.value as string}
                       onPress={handleExhibitionPress}
                     />
                   </View>

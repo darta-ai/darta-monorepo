@@ -124,7 +124,6 @@ const CustomMarkerList = React.memo(({
 
   const [startDate, setStartDate] = React.useState<string>()
   const [endDate, setEndDate] = React.useState<string>()
-  const [hasUpcomingOpening, setHasUpcomingOpening] = React.useState<boolean>(false)
   const [hasCurrentShow, setHasCurrentOpening] = React.useState<boolean>(false)
 
 
@@ -142,12 +141,6 @@ const CustomMarkerList = React.memo(({
       setEndDate(customLocalDateStringEnd({date : new Date(mapPin.exhibitionDates.exhibitionEndDate.value), isUpperCase: false}))
     }
 
-
-    if (mapPin.receptionDates?.receptionStartTime?.value && mapPin.receptionDates?.receptionEndTime.value) {
-      const receptionEndDate = new Date(mapPin.receptionDates?.receptionEndTime?.value);
-      const isOpeningUpcoming = (receptionEndDate >= new Date());
-      setHasUpcomingOpening(isOpeningUpcoming);
-    }
     if (mapPin.exhibitionDates?.exhibitionDuration && mapPin.exhibitionDates.exhibitionDuration?.value === "Ongoing/Indefinite"){
       setHasCurrentOpening(true)
       setButtonText("View Exhibition")
@@ -180,14 +173,15 @@ const CustomMarkerList = React.memo(({
     container: {
       display: 'flex',
       flexDirection: 'column',
-      height: hasCurrentShow ? 281 : 158,
+      height: hasCurrentShow ? 260 : 158,
       width: 315,
       justifyContent: 'flex-start',
       alignItems: 'center',
-      padding: 24,
+      padding: 18,
       gap: 20
-    },
+    }
   })
+
 
   
 

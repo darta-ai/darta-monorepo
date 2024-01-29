@@ -1,12 +1,12 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React from 'react';
-import { RefreshControl, ScrollView, Image, View} from 'react-native';
+import { RefreshControl, ScrollView, View} from 'react-native';
 import {
   ExhibitionNavigatorParamList,
   ExhibitionPreviewEnum,
   ExhibitionRootEnum
 } from '../../typing/routes';
-import { ETypes, StoreContext, UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes} from '../../state';
+import { UIStoreContext, UiETypes, GalleryStoreContext, ExhibitionStoreContext, ExhibitionETypes} from '../../state';
 import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
 
 import {
@@ -19,9 +19,8 @@ import { ExhibitionPreview } from '@darta-types'
 import ExhibitionPreviewCard from '../../components/Previews/ExhibitionPreviewCard';
 import * as Colors from '@darta-styles';
 import { TextElement } from '../../components/Elements/TextElement';
-import { dartaLogo } from '../../components/User/UserInquiredArtwork';
 import { ActivityIndicator } from 'react-native-paper';
-import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
+import { RecyclerListView, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
 
 
 type ExhibitionHomeScreenNavigationProp = StackNavigationProp<
@@ -72,7 +71,7 @@ export function ExhibitionPreviewScreen({
         return exhibitionState.currentExhibitionPreviews
       case ExhibitionPreviewEnum.forthcoming:
         setErrorHeader('No exhibitions to show')
-        setErrorText('When future exhibitions are available you will see them here.')
+        setErrorText('When upcoming exhibitions are available you will see them here.')
         return exhibitionState.forthcomingExhibitionPreviews
       default:
         return exhibitionState.exhibitionPreviews
@@ -106,15 +105,18 @@ export function ExhibitionPreviewScreen({
     }
     return []
   }
+
+  const [dataProvider, setDataProvider] = React.useState(new DataProvider((r1, r2) => r1 !== r2).cloneWithRows([]));
   
   React.useEffect(()=> {
     const previews = setExhibitionPreviewsState()
     setExhibitionPreviews(previews)
+    setDataProvider(dataProvider.cloneWithRows(previews))
   }, [exhibitionState.userFollowsExhibitionPreviews, exhibitionState.forthcomingExhibitionPreviews, exhibitionState.currentExhibitionPreviews])
 
   const [refreshing, setRefreshing] = React.useState(false);
   const [bottomLoad, setBottomLoad] = React.useState(false);
-
+  // const [dataProvider, setDataProvider] = React.useState(new DataProvider((r1, r2) => r1 !== r2).cloneWithRows([]));
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
@@ -220,7 +222,7 @@ export function ExhibitionPreviewScreen({
 
   const renderItem = React.useCallback((_, data) => {
     return (
-      <View key={data?.exhibitionId}>
+      <View key={data?.exhibitionId} ref={data?.exhibitionId}>
         <ExhibitionPreviewCard 
         exhibitionPreview={data}
         onPressExhibition={loadExhibition}
@@ -228,7 +230,7 @@ export function ExhibitionPreviewScreen({
       />
     </View>
     );
-  }, [loadExhibition, loadGallery]);
+  }, [loadExhibition, loadGallery, ]);
 
 
   const layoutProvider = new LayoutProvider(
@@ -280,7 +282,7 @@ export function ExhibitionPreviewScreen({
         <View style={{flex: 1, backgroundColor: Colors.PRIMARY_50}}>
           <RecyclerListView 
           ref={(ref) => { this.flatListRef = ref }}
-          dataProvider={new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(exhibitionPreviews)}
+          dataProvider={dataProvider}
           layoutProvider={layoutProvider}
           rowRenderer={renderItem}
           scrollViewProps={{

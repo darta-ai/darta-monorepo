@@ -21,7 +21,7 @@ import { GoogleMapsPinBlackIcon } from '../../assets/SVGs/GoogleMapsPinBlack';
 const customMarker = StyleSheet.create({
   galleryContainer:{
       width: '100%',
-      height: 40,
+      height: 50,
       display:'flex',
       flexDirection: "row",
       alignItems: 'flex-start',
@@ -62,6 +62,7 @@ const customMarker = StyleSheet.create({
     flexDirection: "column",
     alignContent: "center",
     justifyContent: "center",
+    gap: 12,
   }, 
   buttonStyles: {
     width: 265,
@@ -245,7 +246,7 @@ const CustomMarker = React.memo(({
     container: {
       display: 'flex',
       flexDirection: 'column',
-      height: hasCurrentShow ? 250 : 158,
+      height: hasCurrentShow ? 260 : 158,
       width: 315,
       justifyContent: 'flex-start',
       alignItems: 'center',
@@ -262,7 +263,7 @@ const CustomMarker = React.memo(({
     <Marker
       coordinate={coordinate}
       key={mapPin.exhibitionId}
-      onTouchStart={() => setShowCallout(true)}
+      onTouchEnd={() => setShowCallout(true)}
     >
       <Animated.View style={customMarkerDynamic.wiggleFriend}>
       {hasUpcomingOpening ?  <GoogleMapsPinIcon/> : <GoogleMapsPinBlackIcon /> }

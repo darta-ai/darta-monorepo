@@ -1050,15 +1050,21 @@ export class ExhibitionService implements IExhibitionService {
         FILTER city.value == @locality
         FOR exhibition IN 1..1 INBOUND city ${EdgeNames.FROMExhibitionTOCity}
             FILTER exhibition.published == true AND exhibition.exhibitionDates.exhibitionStartDate.value <= @currentDate
+            LET googleMapsPlaceId = (
+                FOR e IN [exhibition]
+                LET placeId = e.exhibitionLocation ? e.exhibitionLocation.googleMapsPlaceId : null
+                RETURN placeId ? placeId.value : null
+            )[0]
             LET gallery = FIRST(
                 FOR gallery IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
                     RETURN gallery
             )
-            SORT gallery._key, exhibition.exhibitionDates.exhibitionStartDate DESC
-            COLLECT galleryId = gallery._id INTO groupByGallery = {exhibition, gallery}
-            LET mostRecentExhibition = FIRST(groupByGallery)
+            SORT googleMapsPlaceId, exhibition.exhibitionDates.exhibitionStartDate DESC
+            COLLECT locationId = googleMapsPlaceId INTO groupByLocation = {exhibition, gallery}
+            LET mostRecentExhibition = FIRST(groupByLocation)
             RETURN {
-                galleryId: galleryId,
+                locationId: locationId,
+                galleryId: mostRecentExhibition.gallery._id,
                 galleryName: mostRecentExhibition.gallery.galleryName,
                 galleryLogo: mostRecentExhibition.gallery.galleryLogo,
                 // Most recent exhibition information
@@ -1072,7 +1078,7 @@ export class ExhibitionService implements IExhibitionService {
                 _id: mostRecentExhibition.exhibition._id,
                 currentDate: @currentDate, 
                 start: mostRecentExhibition.exhibition.exhibitionDates.exhibitionEndDate.value
-            }
+            }    
     `;
     try{
       const currentDate = new Date();
@@ -1089,14 +1095,15 @@ export class ExhibitionService implements IExhibitionService {
       // remove duplicate galleries
       exhibitionsAndPreviews.sort((a, b) => {
         if (!a.exhibitionDates.exhibitionEndDate.value || !b.exhibitionDates.exhibitionEndDate.value) return 0
-        if (a.exhibitionDates.exhibitionEndDate.value > b.exhibitionDates.exhibitionEndDate.value) return 1 
+        if (a.exhibitionDates.exhibitionEndDate.value < b.exhibitionDates.exhibitionEndDate.value) return 1 
         return -1
       })
+
 
       const exhibitionMapPin: {[key: string]: ExhibitionMapPin} = {};
       exhibitionsAndPreviews.forEach((exhibitionAndPreview : ExhibitionMapPin) => {
         const locationId = exhibitionAndPreview.exhibitionLocation.googleMapsPlaceId?.value
-        if (!locationId) return  
+        if (!locationId) return  // skip if no location
         if (!exhibitionMapPin[locationId]){
           exhibitionMapPin[locationId] = exhibitionAndPreview
         } else if (
@@ -1104,9 +1111,10 @@ export class ExhibitionService implements IExhibitionService {
           exhibitionAndPreview.exhibitionDates.exhibitionEndDate.value !== null &&
           exhibitionMapPin[locationId]?.exhibitionDates?.exhibitionEndDate?.value &&
           exhibitionMapPin[locationId].exhibitionDates.exhibitionEndDate?.value != null &&
-          exhibitionMapPin[locationId].exhibitionDates.exhibitionEndDate.value! < 
+          exhibitionMapPin[locationId].exhibitionDates.exhibitionEndDate.value! > 
           exhibitionAndPreview.exhibitionDates.exhibitionEndDate.value
       ) {
+        //  console.log('!!! swapping this ', exhibitionAndPreview.exhibitionTitle, 'from ',  exhibitionMapPin[locationId].exhibitionTitle)
           exhibitionMapPin[locationId] = exhibitionAndPreview;
       }
         // exhibitionMapPin[exhibitionAndPreview.exhibitionId] = exhibitionAndPreview
@@ -1134,6 +1142,30 @@ export class ExhibitionService implements IExhibitionService {
     } catch (error: any) {
       throw new Error(error.message);
     }
+  }
+
+  public async readAllExhibitions(): Promise<void>{
+    const getExhibitionsQuery = `
+    WITH ${CollectionNames.Exhibitions}
+    FOR exhibitions IN ${CollectionNames.Exhibitions}
+    RETURN {_id: exhibition._id}
+  `;
+
+  try {
+    const edgeCursor = await this.db.query(getExhibitionsQuery);
+    const artworks = await edgeCursor.all();
+
+    const promises: Promise<any>[] = []
+
+    artworks.forEach((element) => {
+      promises.push(this.getExhibitionById(element._id))
+    })
+
+    await Promise.all(promises)
+  } catch (error) {
+    throw new Error('error getting artworks');
+  }
+
   }
 
   public async listAllExhibitionArtworks({

@@ -34,6 +34,7 @@ type DartaIconButtonWithTextProps = {
   onPress: () => void;
   iconName?: string;
   iconComponent?: React.ElementType; // Use a more descriptive prop name
+  fontSize?: number;
 };
 
 // Define the component with proper type annotations
@@ -41,13 +42,14 @@ export const DartaIconButtonWithText: React.FC<DartaIconButtonWithTextProps> = (
   text,
   iconName,
   onPress,
-  iconComponent: Icon
+  iconComponent: Icon,
+  fontSize = 16
 }) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.touchableOpacity}>
       {Icon && <Icon />} 
       {iconName && <MaterialCommunityIcons name={iconName} size={18} color={Colors.PRIMARY_950} />}
-      <TextElement style={styles.textElement}>{text}</TextElement>
+      <TextElement style={{...styles.textElement, fontSize}}>{text}</TextElement>
     </TouchableOpacity>
   );
 };

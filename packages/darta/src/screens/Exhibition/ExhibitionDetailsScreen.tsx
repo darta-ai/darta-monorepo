@@ -25,6 +25,7 @@ import { TextElementMultiLine } from '../../components/Elements/TextElement';
 import { DartaIconButtonWithText } from '../../components/Darta/DartaIconButtonWithText';
 import * as SVGs from '../../assets/SVGs';
 import { DartaImageComponent } from '../../components/Images/DartaImageComponent';
+import GalleryLocation from '../../components/Gallery/GalleryLocation';
 
 const exhibitionDetailsStyles = StyleSheet.create({
     container: {
@@ -536,15 +537,8 @@ export function ExhibitionDetailsScreen({
                             Location
                         </TextElement>
                     </View>
-                    <View style={{marginBottom: 24}}>
-                        <DartaIconButtonWithText 
-                        text={exhibitionLocation}
-                        iconComponent={SVGs.BlackPinIcon}
-                        onPress={() => openInMaps(currentExhibition?.exhibitionLocation?.locationString?.value!)} 
-                        />
-                    </View>
                     {hasReception && receptionOpenFullDate >= new Date() && (
-                    <View style={{marginBottom: 24}}>
+                    <View style={{marginBottom: 12}}>
                         <DartaIconButtonWithText 
                             text={`Reception: ${receptionDateString} ${receptionTimeString}`}
                             iconComponent={SVGs.CalendarIcon}
@@ -552,6 +546,20 @@ export function ExhibitionDetailsScreen({
                         />
                     </View>
                     )}
+                        <GalleryLocation
+                            galleryLocationData={currentExhibition?.exhibitionLocation!}
+                            key={currentExhibition?.exhibitionLocation.googleMapsPlaceId?.value!}
+                            galleryName={galleryName}
+                            openInMaps={openInMaps}
+                        />
+                    {/* <View style={{marginBottom: 24}}>
+                        <DartaIconButtonWithText 
+                        text={exhibitionLocation}
+                        iconComponent={SVGs.BlackPinIcon}
+                        onPress={() => openInMaps(currentExhibition?.exhibitionLocation?.locationString?.value!)} 
+                        />
+                    </View> */}
+                    {/* 
                     <View style={{height: hp('30%'), width: wp('90%')}}>
                         <MapView  
                         customMapStyle={mapStylesJson}
@@ -569,7 +577,7 @@ export function ExhibitionDetailsScreen({
                                 <SVGs.GoogleMapsPinIcon />
                             </Marker>
                         </MapView>
-                    </View>
+                    </View> */}
                 </View>
                 <View style={{...exhibitionDetailsStyles.informationContainer}}>
                     <View style={{marginBottom: 24}}>
