@@ -1,13 +1,17 @@
 import {Request, Response} from 'express';
 import {inject} from 'inversify';
-import {controller, httpPost, request, response} from 'inversify-express-utils';
+import {controller, httpGet, httpPost, request, response} from 'inversify-express-utils';
 
+import { verifyUserIsAdmin } from '../middleware/adminTokenVerify';
 import {verifyAdmin} from '../middleware/adminVerify';
-import {IAdminService} from '../services/interfaces';
+import {IAdminService, IExhibitionService} from '../services/interfaces';
 
 @controller('/admin')
 export class AdminController {
-  constructor(@inject('IAdminService') private service: IAdminService) {}
+  constructor(
+    @inject('IAdminService') private service: IAdminService,
+    @inject('IExhibitionService') private exhibitionService: IExhibitionService,
+    ) {}
 
   @httpPost('/validateCollections', verifyAdmin)
   public async validateCollection(
@@ -21,6 +25,19 @@ export class AdminController {
       if (!res.headersSent) {  
         res.status(500).send('unable to validate collections'); 
       }
+    }
+  }
+
+  @httpGet('/getCurrentExhibitions', verifyAdmin, verifyUserIsAdmin)
+  public async getCurrentExhibitions(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const results = await this.exhibitionService.listAllExhibitionsForAdmin();
+      res.status(200).send(results);
+    } catch (error: any) {
+      res.status(500).send(error.message);
     }
   }
 

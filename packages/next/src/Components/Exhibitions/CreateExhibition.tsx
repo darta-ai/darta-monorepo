@@ -8,10 +8,10 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import { category, stylesAndMovements, visualQualities } from '../../../data/autofillValues';
+import { category } from '../../../data/autofillValues';
 import {exhibitionPressReleaseToolTip} from '../../common/ToolTips/toolTips';
 import {createArtworkStyles} from '../Artwork/styles';
-import { DartaAutoCompleteMulti } from '../FormComponents/DartaAutoCompleteMulti';
+// import { DartaAutoCompleteMulti } from '../FormComponents/DartaAutoCompleteMulti';
 import {
   DartaDatePicker,
   DartaDateTimePicker,
@@ -645,7 +645,7 @@ export function CreateExhibition({
           inputAdornmentString="Category"
           />
       </Box>
-      <Box key="artworkStyleTags" sx={createArtworkStyles.multiLineContainer}>
+      {/* <Box key="artworkStyleTags" sx={createArtworkStyles.multiLineContainer}>
           <DartaAutoCompleteMulti
             fieldName="artworkStyleTags"
             data={newExhibition?.artworkStyleTags}
@@ -660,8 +660,8 @@ export function CreateExhibition({
             inputAdornmentString="Style"
             inputOptions={stylesAndMovements as any}
           />
-        </Box>
-        <Box key="artworkVisualTags" sx={createArtworkStyles.multiLineContainer}>
+        </Box> */}
+        {/* <Box key="artworkVisualTags" sx={createArtworkStyles.multiLineContainer}>
           <DartaAutoCompleteMulti
             fieldName="artworkVisualTags"
             data={newExhibition?.artworkVisualTags}
@@ -676,7 +676,7 @@ export function CreateExhibition({
             inputAdornmentString="Visual Tags"
             inputOptions={visualQualities as any}
           />
-        </Box>
+        </Box> */}
       </Box>
       <Box sx={createArtworkStyles.locationContainer}>
       <Box key="exhibitionPressRelease" sx={createArtworkStyles.multiLineContainer}>
@@ -709,7 +709,7 @@ export function CreateExhibition({
           inputAdornmentValue={null}
         />
       </Box>
-      <Box key="videoLink" sx={createArtworkStyles.multiLineContainer}>
+      {/* <Box key="videoLink" sx={createArtworkStyles.multiLineContainer}>
         <DartaTextInput
           fieldName="videoLink"
           data={newExhibition.videoLink?.value}
@@ -723,8 +723,8 @@ export function CreateExhibition({
           allowPrivate={false}
           inputAdornmentValue={null}
         />
-      </Box>
-      <Box key="pressLink" sx={createArtworkStyles.multiLineContainer}>
+      </Box> */}
+      {/* <Box key="pressLink" sx={createArtworkStyles.multiLineContainer}>
         <DartaTextInput
           fieldName="pressLink"
           data={newExhibition.pressLink?.value}
@@ -738,7 +738,7 @@ export function CreateExhibition({
           allowPrivate={false}
           inputAdornmentValue={null}
         />
-      </Box>
+      </Box> */}
     </Box>
         <Box sx={createArtworkStyles.inputTextContainer}>
           <Box sx={createArtworkStyles.saveButtonContainer}>

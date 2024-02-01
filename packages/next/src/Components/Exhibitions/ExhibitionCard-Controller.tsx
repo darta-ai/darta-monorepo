@@ -635,13 +635,13 @@ export function ExhibitionCard({
             </Typography>
           </Divider>
         </Box>
-        <Box>
+        {/* <Box>
           <ArtworkHeader
             artworkLoading={artworkLoading}
             addNewArtwork={addNewArtwork}
             // handleBatchUpload={handleBatchUpload}
           />
-        </Box>
+        </Box> */}
         {showArtworks && exhibition?.artworks && (
           <ExhibitionArtworkList
             artworks={exhibition?.artworks}
@@ -654,6 +654,11 @@ export function ExhibitionCard({
           />
           )}
 
+          <ArtworkHeader
+            artworkLoading={artworkLoading}
+            addNewArtwork={addNewArtwork}
+            // handleBatchUpload={handleBatchUpload}
+          />
       </Collapse>
       <DartaErrorAlert
         errorAlertOpen={errorAlertOpen}

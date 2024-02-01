@@ -15,7 +15,7 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {category, stylesAndMovements, visualQualities} from '../../../data/autofillValues';
+import {category} from '../../../data/autofillValues';
 import { mediums } from '../../../data/medium';
 import {
   createArtworkDimensionsToolTip,
@@ -25,7 +25,7 @@ import {
   convertCentimetersToInches,
   convertInchesToCentimeters,
 } from '../../common/utils/unitConverter';
-import { DartaAutoCompleteMulti } from '../FormComponents/DartaAutoCompleteMulti';
+// import { DartaAutoCompleteMulti } from '../FormComponents/DartaAutoCompleteMulti';
 import {
   DartaAutoComplete,
   DartaDropdown,
@@ -694,6 +694,39 @@ export function CreateArtwork({
             inputOptions={mediums}
           />
         </Box>
+        {/* <Box key="edition" sx={createArtworkStyles.multiLineContainer}>
+          <DartaRadioButtonsGroup
+            options={['Original', 'Edition']}
+            setHigherLevelState={setIsEdition}
+            errors={errors}
+            fieldName="editionStatus"
+            helperTextString={errors.editionStatus?.value?.message}
+            control={control}
+            required
+            toolTips={createArtworkToolTips}
+            inputAdornmentString="Is Edition?"
+            value={
+              getValues('editionStatus.value') ? getValues('editionStatus.value') : 'Original'
+            }
+          />
+        </Box>
+        {isArtworkEdition && ( 
+          <Box key="edition" sx={createArtworkStyles.multiLineContainer}>
+            <DartaDropdown
+              options={Array.from(Array(19).keys()).map((i) => i + 2)}
+              fieldName="editionSize"
+              register={register}
+              helperTextString={errors.editionSize?.value?.message}
+              control={control}
+              required={isArtworkEdition}
+              toolTips={createArtworkToolTips}
+              inputAdornmentString="Edition Size"
+            />
+          </Box>
+        )} */}
+      </Box>
+      <Box sx={createArtworkStyles.keyInformationContainer}>
+        <Typography variant="h6" sx={{alignSelf: 'center'}}>Edition</Typography>
         <Box key="edition" sx={createArtworkStyles.multiLineContainer}>
           <DartaRadioButtonsGroup
             options={['Original', 'Edition']}
@@ -724,10 +757,8 @@ export function CreateArtwork({
             />
           </Box>
         )}
-      </Box>
-      <Box sx={createArtworkStyles.keyInformationContainer}>
-        <Typography variant="h6" sx={{alignSelf: 'center'}}>Tags</Typography>
-        <Box key="tags" sx={createArtworkStyles.multiLineContainer}>
+        
+        {/* <Box key="tags" sx={createArtworkStyles.multiLineContainer}>
           <DartaAutoCompleteMulti
             fieldName="artworkStyleTags"
             data={newArtwork?.artworkStyleTags}
@@ -758,11 +789,11 @@ export function CreateArtwork({
                 inputAdornmentString="Visual"
                 inputOptions={visualQualities as any}
               />
-            </Box>
+            </Box> */}
 
         </Box>
       </Box>
-        <Box key="Description" sx={createArtworkStyles.multiLineContainer}>
+        {/* <Box key="Description" sx={createArtworkStyles.multiLineContainer}>
           <DartaTextInput
             fieldName="artworkDescription"
             data={newArtwork?.artworkDescription?.value}
@@ -776,7 +807,7 @@ export function CreateArtwork({
             allowPrivate={false}
             inputAdornmentValue={null}
           />
-        </Box> 
+        </Box>  */}
 
       <Box key="saveContainer" sx={createArtworkStyles.inputText} />
         <Box sx={createArtworkStyles.saveButtonContainer}>

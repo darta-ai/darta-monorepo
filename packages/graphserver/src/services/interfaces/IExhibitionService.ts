@@ -1,4 +1,4 @@
-import {Artwork, Exhibition, ExhibitionForList, ExhibitionObject, ExhibitionPreview, IBusinessLocationData, IGalleryProfileData,MapPinCities} from '@darta-types';
+import {Artwork, Exhibition, ExhibitionForList, ExhibitionObject, ExhibitionPreview, ExhibitionPreviewAdmin, IBusinessLocationData, IGalleryProfileData,MapPinCities} from '@darta-types';
 
 export interface IExhibitionService {
   createExhibition({
@@ -136,4 +136,7 @@ export interface IExhibitionService {
   listExhibitionsPreviewsCurrentForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: ExhibitionPreview} | void>
   listExhibitionsPreviewsForthcomingForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: ExhibitionPreview} | void>
   listExhibitionsPreviewsUserFollowingForUserByLimit({limit, uid}: {limit: number, uid: string}): Promise<{[key: string]: ExhibitionPreview} | void>
+
+
+  listAllExhibitionsForAdmin(): Promise<ExhibitionPreviewAdmin[] | void>;
 }

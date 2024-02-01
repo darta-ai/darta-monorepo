@@ -129,7 +129,7 @@ export type ArtworkPreview = {
   }
 }
 
-export type ExhibitionPreview = {
+export interface ExhibitionPreview {
   artworkPreviews: ArtworkPreview;
   exhibitionId: string;
   galleryId: string;
@@ -149,6 +149,10 @@ export type ExhibitionPreview = {
   };
   exhibitionDates: ExhibitionDates;
   receptionDates: ReceptionDates;
+}
+
+export type ExhibitionPreviewAdmin = Omit<ExhibitionPreview, 'artworkPreviews'> & {
+  galleryLocation: IOpeningLocationData;
 }
 
 export type Artwork = {
