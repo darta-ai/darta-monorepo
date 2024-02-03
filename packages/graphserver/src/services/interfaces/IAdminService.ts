@@ -1,3 +1,5 @@
+import { ExhibitionPreviewAdmin } from "@darta-types/dist"
+
 export type DynamicTemplateData = {
   artworkTitle: string
   artistName: string
@@ -16,4 +18,6 @@ export interface IAdminService {
     {to, from, dynamicTemplateData}  : 
     {to: string, from: string, dynamicTemplateData: DynamicTemplateData})
     : Promise<string>;
+  
+  listAllExhibitionsForAdmin(): Promise<ExhibitionPreviewAdmin[]>;
 }

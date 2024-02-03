@@ -15,9 +15,9 @@ export const verifyToken = async (
       (req as any).user = decodedToken;
       next();
     } catch (error) {
-      res.status(403).send('Unauthorized');
+      res.status(403).send('Unauthorized guy');
     }
   } else {
-    res.status(403).send('Unauthorized');
+    res.status(403).send('Unauthorized my guy');
   }
 };

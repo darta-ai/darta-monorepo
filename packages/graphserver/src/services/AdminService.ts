@@ -1,3 +1,4 @@
+import { ExhibitionPreviewAdmin } from '@darta-types/dist';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 import {Client} from 'minio';
@@ -135,6 +136,71 @@ export class AdminService implements IAdminService {
       } else {
         throw err;
       }
+    }
+  }
+
+  public async listAllExhibitionsForAdmin(): Promise<ExhibitionPreviewAdmin[]> {
+    try {
+
+      const getExhibitionPreviewQuery = `
+      WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}
+      LET exhibitions = (
+        FOR exhibition IN ${CollectionNames.Exhibitions}
+        SORT exhibition.exhibitionDates.exhibitionStartDate.value DESC
+        RETURN exhibition
+      )
+      
+      FOR exhibition IN exhibitions
+          LET gallery = (
+              FOR g, edge IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
+                  RETURN g
+          )[0]
+          LET artworks = (
+              FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
+              SORT artworkEdge.exhibitionOrder ASC
+              LIMIT 2
+              RETURN {
+                  [artwork._id]: {
+                      _id: artwork._id,
+                      artworkImage: artwork.artworkImage,
+                      artworkTitle: artwork.artworkTitle
+                  }
+              }
+          )
+          
+      RETURN {
+          exhibitionId: exhibition._id,
+          isPublished: exhibition.isPublished,
+          hasArtwork: LENGTH(artworks) > 0,
+          galleryId: gallery._id,
+          exhibitionDuration: exhibition.exhibitionDates,
+          openingDate: {value: exhibition.exhibitionDates.exhibitionStartDate.value},
+          closingDate: {value: exhibition.exhibitionDates.exhibitionEndDate.value},
+          galleryName: gallery.galleryName,
+          galleryWebsite: gallery.galleryWebsite,
+          exhibitionTitle: exhibition.exhibitionTitle,
+          exhibitionArtist: exhibition.exhibitionArtist,
+          exhibitionLocation: {
+              exhibitionLocationString: exhibition.exhibitionLocation.locationString,
+              coordinates: exhibition.exhibitionLocation.coordinates
+          },
+          receptionDates: exhibition.receptionDates
+      }
+      `
+      const cursor = await this.db.query(getExhibitionPreviewQuery);
+      const results = await cursor.all();
+      
+      // filter out duplicate exhibitions by location 
+      const filteredResults = results.filter((exhibition, index, self) => 
+        index === self.findIndex((t) => (
+          t.exhibitionLocation.exhibitionLocationString.value === exhibition.exhibitionLocation.exhibitionLocationString.value
+        ))
+      )
+
+
+      return filteredResults;
+    } catch (error: any) {
+      throw new Error(`failed to list all exhibitions: ${error.message}`);
     }
   }
 }

@@ -151,8 +151,11 @@ export interface ExhibitionPreview {
   receptionDates: ReceptionDates;
 }
 
-export type ExhibitionPreviewAdmin = Omit<ExhibitionPreview, 'artworkPreviews'> & {
-  galleryLocation: IOpeningLocationData;
+export type ExhibitionPreviewAdmin = Omit<ExhibitionPreview, 'artworkPreviews' | 'exhibitionLogo' | 'exhibitionLogo' | 'exhibitionPrimaryImage' | 'exhibitionDates'> & {
+  galleryWebsite: PublicFields;
+  hasArtwork: boolean;
+  openingDate: PublicFields;
+  closingDate: PublicFields;
 }
 
 export type Artwork = {

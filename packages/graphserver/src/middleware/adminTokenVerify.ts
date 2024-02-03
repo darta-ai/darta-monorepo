@@ -2,8 +2,13 @@ import {NextFunction, Request, Response} from 'express';
 
 require('dotenv').config();
 
+
+interface UserRequest extends Request {
+  user: { user_id: string; role?: string };
+}
+
 export const verifyUserIsAdmin = async (
-  req: Request,
+  req: UserRequest,
   res: Response,
   next: NextFunction,
 ) => {
@@ -11,8 +16,11 @@ export const verifyUserIsAdmin = async (
   if (idToken) {
     try {
       // !!!!! FIX !!!!!!
-      console.log('idToken', idToken, 'user', req);
-      next()
+      if (req.user.user_id === process.env.ADMIN_UUID) {
+        next()
+      } else {
+        res.status(403).send('Unauthorized');
+      }
     } catch (error) {
       res.status(403).send('Unauthorized');
     }
