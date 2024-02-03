@@ -50,7 +50,6 @@ export class ImageService implements IImageService {
       })
       .toBuffer();
     } catch(error: any){
-      console.log(error);
       throw new Error(error.message);
     }
  

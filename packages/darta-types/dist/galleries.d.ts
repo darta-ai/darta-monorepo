@@ -144,7 +144,7 @@ export interface ExhibitionPreview {
     exhibitionDates: ExhibitionDates;
     receptionDates: ReceptionDates;
 }
-export type ExhibitionPreviewAdmin = Omit<ExhibitionPreview, 'artworkPreviews' | 'exhibitionLogo' | 'exhibitionLogo' | 'exhibitionPrimaryImage' | 'exhibitionDates'> & {
+export type ExhibitionPreviewAdmin = Omit<ExhibitionPreview, 'artworkPreviews' | 'exhibitionLogo' | 'exhibitionLogo' | 'exhibitionPrimaryImage' | 'exhibitionDates' | 'exhibitionArtist'> & {
     galleryWebsite: PublicFields;
     hasArtwork: boolean;
     openingDate: PublicFields;

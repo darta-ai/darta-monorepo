@@ -1,12 +1,11 @@
 import { ExhibitionPreviewAdmin } from '@darta-types';
 import {Box} from '@mui/material';
-import { NextPageContext } from 'next'
 import { useRouter } from 'next/router';
-import EnhancedTable from 'packages/next/src/Components/Admin/ExhibitionTable';
 import React from 'react';
 
 import { listAllExhibitionsForAdmin } from '../../src/API/admin/adminRoutes';
 import authRequired from '../../src/common/AuthRequired/AuthRequired';
+import EnhancedTable from '../../src/Components/Admin/ExhibitionTable';
 
 export enum EGalleryDisplay {
   Profile = 'PROFILE',
@@ -34,9 +33,9 @@ function AdminProfile() {
       const fetchData = async () => {
         const res = await listAllExhibitionsForAdmin()
         if (!res) {
-          router.push('/')
+          return router.push('/')
         }
-        setExhibitions(res)
+        return setExhibitions(res)
       }
       fetchData()
     } catch (error) {

@@ -234,7 +234,6 @@ export class UserService implements IUserService {
           await this.refreshUserProfileImage({uid: results?._id, url})
         } catch (error: any) {
           // eslint-disable-next-line no-console
-          console.log(error);
           url = '';
         }
       } else {

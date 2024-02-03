@@ -179,7 +179,6 @@ export class AdminService implements IAdminService {
           galleryName: gallery.galleryName,
           galleryWebsite: gallery.galleryWebsite,
           exhibitionTitle: exhibition.exhibitionTitle,
-          exhibitionArtist: exhibition.exhibitionArtist,
           exhibitionLocation: {
               exhibitionLocationString: exhibition.exhibitionLocation.locationString,
               coordinates: exhibition.exhibitionLocation.coordinates

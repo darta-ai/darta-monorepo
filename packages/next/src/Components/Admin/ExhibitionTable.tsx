@@ -1,4 +1,5 @@
 import { ExhibitionPreviewAdmin } from '@darta-types';
+import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { alpha } from '@mui/material/styles';
@@ -12,7 +13,7 @@ import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { visuallyHidden } from '@mui/utils';
+import { useRouter } from 'next/router';
 import * as React from 'react';
 
 interface Data {
@@ -146,6 +147,11 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
   {
+    id: 'id',
+    disablePadding: true,
+    label: 'Action',
+  },
+  {
     id: 'location',
     disablePadding: true,
     label: 'Location',
@@ -212,11 +218,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </Box>
-              ) : null}
             </TableSortLabel>
           </TableCell>
         ))}
@@ -394,6 +395,15 @@ export default function EnhancedTable({exhibitions} : {exhibitions: ExhibitionPr
   };
 
 
+  const router = useRouter();
+  const navigateToExhibition = (galleryId: string) => {
+    router.push({
+      pathname: '/Admin/AddExhibition',
+      query: { galleryId },
+    });
+  }
+
+
   
   return (
     <Box sx={{ width: '100%' }}>
@@ -423,6 +433,15 @@ export default function EnhancedTable({exhibitions} : {exhibitions: ExhibitionPr
                     key={row.exhibitionId}
                     sx={{ cursor: 'pointer' }}
                   >
+                    <TableCell
+                      component="th"
+                      id={labelId}
+                      scope="row"
+                      padding="none"
+                      align="center"
+                     >
+                      <Button onClick={() => navigateToExhibition(row.galleryId)} variant="contained" color="primary">Add</Button>
+                      </TableCell>
                     <TableCell
                       component="th"
                       id={labelId}
