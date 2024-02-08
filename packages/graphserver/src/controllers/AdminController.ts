@@ -41,6 +41,75 @@ export class AdminController {
     }
   }
 
+  @httpGet('/getGalleryForAdmin', verifyToken, verifyUserIsAdmin)
+  public async getGalleryForAdmin(
+    @request() req: Request,
+    @response() res: Response,
+    ): Promise<void> {
+      try {
+      if (!req.query.galleryId) {
+        throw new Error('galleryId is required');
+      }
+      const results = await this.adminService.getGalleryForAdmin({galleryId: req.query.galleryId.toString()});
+      res.status(200).send(results);
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
+
+
+  @httpPost('/createExhibitionForAdmin', verifyToken, verifyUserIsAdmin)
+  public async createExhibitionForAdmin(
+    @request() req: Request,
+    @response() res: Response,
+    ): Promise<void> {
+      try {
+      if (!req.body.galleryId) {
+        throw new Error('galleryId is required');
+      }
+      const {user} = req as any;
+      const results = await this.adminService.createExhibitionForAdmin({galleryId: req.body.galleryId, userId: user.user_id});
+      res.status(200).send(results);
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
+
+
+  @httpPost('/updateExhibitionForAdmin', verifyToken, verifyUserIsAdmin)
+  public async updateExhibitionForAdmin(
+    @request() req: Request,
+    @response() res: Response,
+    ): Promise<void> {
+      try {
+      if (!req.body.galleryId || !req.body.exhibition) {
+        throw new Error('galleryId or exhibition is required');
+      }
+      const results = await this.adminService.editExhibitionForAdmin({exhibition: req.body.exhibition, galleryId: req.body.galleryId});
+      res.status(200).send(results);
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpGet('/listGalleryExhibitionsForAdmin', verifyToken, verifyUserIsAdmin)
+  public async listGalleryExhibitionsForAdmin(
+    @request() req: Request,
+    @response() res: Response,
+    ): Promise<void> {
+      try {
+      if (!req.query.galleryId) {
+        throw new Error('galleryId is required');
+      }
+      const results = await this.adminService.listGalleryExhibitionsForAdmin({galleryId: req.query.galleryId.toString()});
+      res.status(200).send(results);
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
+
+
+
   @httpPost('/addApprovedGallery', verifyAdmin)
   public async galleryApproval(
     @request() req: Request,

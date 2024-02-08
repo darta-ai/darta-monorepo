@@ -9,13 +9,13 @@ import {newArtworkShell, standardConsoleLog} from '../config/templates';
 import {ImageController} from '../controllers/ImageController';
 import {ArtworkNode, Edge, Node} from '../models/models';
 import {
-  IAdminService,
   IArtworkService,
   IEdgeService,
   IGalleryService,
   INodeService,
   IUserService} from './interfaces';
 import { DynamicTemplateData } from './interfaces/IAdminService';
+import { IEmailService } from './interfaces/IEmailService';
 
 const BUCKET_NAME = 'artwork';
 
@@ -29,7 +29,7 @@ export class ArtworkService implements IArtworkService {
     @inject('INodeService') private readonly nodeService: INodeService,
     @inject('IGalleryService') private readonly galleryService: IGalleryService,
     @inject('IUserService') private readonly userService: IUserService,
-    @inject('IAdminService') private readonly adminService: IAdminService,
+    @inject('IEmailService') private readonly emailService: IEmailService,
   ) {}
 
   public async createArtwork({
@@ -971,7 +971,7 @@ export class ArtworkService implements IArtworkService {
         galleryName: gallery.galleryName.value,
       }
     try{
-      await this.adminService.sgSendEmailInquireTemplate({
+      await this.emailService.sgSendEmailInquireTemplate({
         to: gallery?.galleryInternalEmail?.value, 
         from: 'tj@darta.art',
         dynamicTemplateData

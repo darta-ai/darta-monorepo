@@ -1161,9 +1161,9 @@ export class ExhibitionService implements IExhibitionService {
       promises.push(this.getExhibitionById(element._id))
     })
 
-    await Promise.all(promises)
-  } catch (error) {
-    throw new Error('error getting artworks');
+    await Promise.allSettled(promises)
+  } catch (error: any) {
+    throw new Error(`error getting exhibition ${error.message}`);
   }
 
   }

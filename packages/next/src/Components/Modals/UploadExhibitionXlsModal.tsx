@@ -1,153 +1,20 @@
+
+
 import * as Colors from '@darta-styles';
-import {Artwork} from '@darta-types';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import {Exhibition} from '@darta-types';
 import {
   Box,
   Button,
   CircularProgress,
   Fade,
   LinearProgress,
-  MobileStepper,
   Modal,
-  Paper,
   Typography,
 } from '@mui/material';
-import Image from 'next/image';
 import React from 'react';
 import * as XLSX from 'xlsx';
 
-import {parseExcelArtworkData} from '../../common/nextFunctions';
-
-const excelPNG = require(`../../../public/static/images/excelExample.png`);
-// const artLogicPNG = require(`../../../public/static/images/artLogicInstructions.png`);
-
-const tutorialSteps = [
-  {
-    label:
-      'Create an excel with "Artist", "Title", "Year", "Medium", "Dimensions", "Main image URL" as COLUMN HEADERS. "Display price ex tax" is optional.',
-    callToActionText: '',
-    callToActionLink: '',
-    imgPath: excelPNG,
-    alt: 'Excel example template.',
-  },
-  // Add more steps as needed
-];
-
-const instructionsCarouselStyles = {
-  root: {
-    flexGrow: 1,
-    height: '50vh',
-    width: '80vw',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    '@media (min-width: 800px)': {
-      width: '50vw',
-    },
-  },
-  header: {
-    display: 'flex',
-    my: 2,
-    alignItems: 'flex-start',
-    backgroundColor: Colors.PRIMARY_100,
-  },
-  img: {
-    overflow: 'hidden',
-    display: 'block',
-    width: '100%',
-    height: '100%',
-  },
-  typographyMain: {
-    fontSize: '1rem',
-    '@media (min-width: 800px)': {
-      fontSize: '1.2rem',
-    },
-  },
-  callToAction: {
-    fontWeight: 'bold',
-    fontSize: '1rem',
-    '@media (min-width: 800px)': {
-      fontSize: '1.2rem',
-    },
-  },
-  buttonSize: {
-    fontSize: '1rem',
-    width: '60vw',
-    height: '5vh',
-    '@media (min-width: 800px)': {
-      width: '50vw',
-    },
-  },
-};
-
-function InstructionsCarousel() {
-  const [activeStep, setActiveStep] = React.useState(0);
-  const maxSteps = tutorialSteps.length;
-
-  const handleNext = () => {
-    setActiveStep(prevActiveStep => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep(prevActiveStep => prevActiveStep - 1);
-  };
-
-  return (
-    <Box sx={instructionsCarouselStyles.root}>
-      <Paper square elevation={1} sx={instructionsCarouselStyles.header}>
-        <Typography sx={instructionsCarouselStyles.callToAction}>
-          {tutorialSteps[activeStep].label}
-        </Typography>
-      </Paper>
-      <Image
-        style={{...instructionsCarouselStyles.img}}
-        src={tutorialSteps[activeStep].imgPath}
-        width={300}
-        height={300}
-        alt={tutorialSteps[activeStep].alt}
-      />
-      {tutorialSteps[activeStep]?.callToActionText && (
-        <Typography sx={instructionsCarouselStyles.callToAction}>
-          <a
-            target="_blank"
-            href={tutorialSteps[activeStep].callToActionLink}
-            rel="noreferrer">
-            {tutorialSteps[activeStep].callToActionText}
-          </a>
-        </Typography>
-      )}
-      <MobileStepper
-        steps={maxSteps}
-        position="static"
-        variant="dots"
-        activeStep={activeStep}
-        nextButton={
-          <Button
-            size="small"
-            onClick={handleNext}
-            disabled={activeStep === maxSteps - 1}
-            color="secondary"
-            variant="contained">
-            Next
-            <KeyboardArrowRightIcon />
-          </Button>
-        }
-        backButton={
-          <Button
-            size="small"
-            onClick={handleBack}
-            disabled={activeStep === 0}
-            color="secondary"
-            variant="contained">
-            <KeyboardArrowLeftIcon />
-            Back
-          </Button>
-        }
-      />
-    </Box>
-  );
-}
+import {parseExcelExhibitionData} from '../../common/nextFunctions';
 
 const uploadArtworkImages = {
   modal: {
@@ -166,13 +33,11 @@ const uploadArtworkImages = {
 };
 
 interface UploadArtworksXlsModalProps {
-  exhibitionId: string;
-  handleBatchUpload: ({artworks, exhibitionId}: {artworks: {[key: string]: Artwork}, exhibitionId: string}) => void;
+  setExhibition: (exhibition: Exhibition) => void;
 }
 
-export function UploadArtworksXlsModal({
-  exhibitionId,
-  handleBatchUpload,
+export function UploadExhibitionXlsModal({
+  setExhibition,
 }: UploadArtworksXlsModalProps) {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -214,10 +79,10 @@ export function UploadArtworksXlsModal({
         });
         return rowData;
       });
-      const results = parseExcelArtworkData(rows);
+      const results = parseExcelExhibitionData(rows);
 
       if (results) {
-        handleBatchUpload({artworks: results, exhibitionId});
+        setExhibition(results);
       }
 
       setLoading(false);
@@ -237,14 +102,10 @@ export function UploadArtworksXlsModal({
         sx={{
           color: Colors.PRIMARY_800,
           alignSelf: 'center',
-          width: '30vw',
-          '@media (min-width: 1080px)': {
-            width: '20vw',
-          },
         }}
         >
         <Typography sx={{fontWeight: 'bold', fontSize: '0.8rem'}}>
-          Upload Artwork From .xls File
+          Upload Exhibition From .xls File
         </Typography>
       </Button>
       <Modal
@@ -256,8 +117,7 @@ export function UploadArtworksXlsModal({
         closeAfterTransition>
         <Fade in={open}>
           <Box sx={uploadArtworkImages.paper}>
-            <Typography variant="h4">Instructions</Typography>
-            <InstructionsCarousel />
+            <Typography variant="h4">Upload</Typography>
             <Box
               component="span"
               m={1}
@@ -273,7 +133,7 @@ export function UploadArtworksXlsModal({
               ) : (
                 <>
                   <input
-                    accept=".xlsx,.xls"
+                    accept=".xlsx,.xls,.numbers"
                     style={{display: 'none'}}
                     id="contained-button-file"
                     type="file"

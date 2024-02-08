@@ -1,18 +1,19 @@
-import { ExhibitionPreviewAdmin } from '@darta-types/dist';
+import { Artwork, Exhibition, ExhibitionPreviewAdmin } from '@darta-types/dist';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 import {Client} from 'minio';
 
 import {CollectionNames, EdgeNames} from '../config/collections';
-import { SENDGRID_INQUIRE_TEMPLATE_ID, sgMail } from '../config/config';
-import {IAdminService} from './interfaces';
-import { DynamicTemplateData } from './interfaces/IAdminService';
+import { Gallery } from '../models/GalleryModel'
+import {IAdminService, IArtworkService, IExhibitionService} from './interfaces';
 
 @injectable()
 export class AdminService implements IAdminService {
   constructor(
     @inject('Database') private readonly db: Database,
     @inject('MinioClient') private readonly minio: Client,
+    @inject('IExhibitionService') private readonly exhibitionService: IExhibitionService,
+    @inject('IArtworkService') private readonly artworkService: IArtworkService,
   ) {}
 
   public async validateAndCreateCollectionsAndEdges(): Promise<void> {
@@ -65,53 +66,6 @@ export class AdminService implements IAdminService {
   }
 
 
-
-  // eslint-disable-next-line class-methods-use-this
-  public async sgSendEmailInquireTemplate({to, from, dynamicTemplateData} 
-    : 
-    {to: string, from: string, dynamicTemplateData: DynamicTemplateData}
-    ): Promise<string>{
-    try {
-      const msg = {
-          to,
-          from: from || 'tj@darta.art',
-          templateId: SENDGRID_INQUIRE_TEMPLATE_ID,
-          content: [
-            {
-              type: 'text/html',
-              value: 'text',
-            },
-          ] as any,
-          dynamicTemplateData,
-      }
-
-      await sgMail.send(msg);
-      return 'sent'
-  } catch (error: any) {
-      throw new Error(`failed to send email: ${error?.message}`)
-  }
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  public async sgSendEmail({to, from, subject, text, html} 
-    : 
-    {to: string, from: string, subject: string, text: string, html?: string}
-    ): Promise<string>{
-    try {
-      const msg = {
-          to,
-          from: from || 'tj@darta.art',
-          subject,
-          text,
-          html,
-      };
-
-      await sgMail.send(msg);
-      return 'sent'
-  } catch (error: any) {
-      throw new Error(`failed to send email: ${error?.message}`)
-  }
-  }
 
   private async ensureCollectionExists(collectionName: string) {
     try {
@@ -201,5 +155,53 @@ export class AdminService implements IAdminService {
     } catch (error: any) {
       throw new Error(`failed to list all exhibitions: ${error.message}`);
     }
+  }
+
+  public async getGalleryForAdmin({galleryId} : {galleryId: string}): Promise<Gallery | null>{
+    const galleryQuery = `
+    WITH ${CollectionNames.Galleries}
+    FOR gallery IN ${CollectionNames.Galleries}
+    FILTER gallery._id == @galleryId
+    RETURN gallery
+  `;
+
+    let gallery;
+
+    // get gallery
+    try {
+      const cursor = await this.db.query(galleryQuery, {galleryId});
+      gallery = await cursor.next(); // Get the first result
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+
+    const results = {
+      ...gallery,
+    };
+    // await this.reSaveGalleryImageByGalleryId({id: results.galleryId})
+    return results
+  }
+
+
+  public async createExhibitionForAdmin({galleryId, userId}: { galleryId: string; userId: string }): Promise<Exhibition | void>{
+    return this.exhibitionService.createExhibition({galleryId, userId});
+  }
+
+  public async editExhibitionForAdmin({ exhibition, galleryId }: {exhibition: Exhibition, galleryId: string }): Promise<Exhibition | void>{
+    return this.exhibitionService.editExhibition({exhibition, galleryId});
+  }
+
+  public async publishExhibitionForAdmin({ exhibitionId, galleryId, isPublished }: 
+    { exhibitionId: string; galleryId: string; isPublished: boolean; }): Promise<void | Exhibition> {
+    return this.exhibitionService.publishExhibition({exhibitionId, galleryId, isPublished});
+  }
+
+  public async createArtworkForAdmin({ galleryId, exhibitionOrder, exhibitionId }: 
+    { galleryId: string; exhibitionOrder?: number | null; exhibitionId?: string | null}): Promise<Artwork>{
+    return this.artworkService.createArtwork({galleryId, exhibitionOrder, exhibitionId});
+    }
+    
+    public async listGalleryExhibitionsForAdmin({galleryId }: { galleryId: string }): Promise<Exhibition[] | void>{
+    return this.exhibitionService.listExhibitionForGallery({galleryId});
   }
 }

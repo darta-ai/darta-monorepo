@@ -1,4 +1,4 @@
-import {Artwork, Dimensions} from '@darta-types';
+import {Artwork, Dimensions, Exhibition} from '@darta-types';
 
 function fractionToDecimal(str: string) {
   if (!str) return null;
@@ -231,4 +231,46 @@ export const parseExcelArtworkData = (
     };
   });
   return artworkObject;
+};
+
+
+export const parseExcelExhibitionData = (
+  data: any[],
+): Exhibition | null => {
+  if (!data) {
+    return null;
+  }
+  const exhibitionObject: Exhibition = {} as Exhibition;
+  data.forEach(item => {
+    // const newId = crypto.randomUUID();
+    const exhibitionStartDate = new Date(item?.exhibitionStartDate);
+    const exhibitionEndDate = new Date(item?.exhibitionEndDate);
+    const exhibitionStartDateString = exhibitionStartDate ? exhibitionStartDate?.toISOString() : "";
+    const exhibitionEndDateString = exhibitionEndDate ? exhibitionEndDate?.toISOString() : "";
+    const hasReception = item?.receptionStartTime && item?.receptionEndTime ? 'Yes' : 'No';
+    const receptionStart = item?.receptionStartTime !== undefined ? new Date(item?.receptionStartTime).toISOString() : "";
+    const receptionEnd = item?.receptionEndTime !== undefined ? new Date(item?.receptionEndTime).toISOString() : "";
+    exhibitionObject.exhibitionArtist = {value: item?.exhibitionArtist};
+    exhibitionObject.exhibitionDates = {
+      exhibitionStartDate: {
+        value: exhibitionStartDateString,
+        isOngoing: false
+      },
+      exhibitionEndDate: {
+        value: exhibitionEndDateString,
+        isOngoing: false
+      },
+      exhibitionDuration: {value: 'Temporary'},
+    };
+    exhibitionObject.receptionDates = {
+      hasReception: {value: hasReception},
+      receptionStartTime: {value: receptionStart},
+      receptionEndTime: {value: receptionEnd},
+    }
+    exhibitionObject.exhibitionType = {value: item?.exhibitionType};
+    exhibitionObject.exhibitionTitle = {value: item?.exhibitionTitle};
+    exhibitionObject.exhibitionPressRelease = {value: item?.exhibitionPressRelease};
+    exhibitionObject.exhibitionArtistStatement = {value: item?.exhibitionArtistStatement};
+  });
+  return exhibitionObject;
 };

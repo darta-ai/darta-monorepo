@@ -2,7 +2,7 @@
 import * as Colors from '@darta-styles'
 import {Artwork, Exhibition} from '@darta-types';
 import Block from '@mui/icons-material/Block';
-import QrCodeIcon from '@mui/icons-material/QrCode';
+// import QrCodeIcon from '@mui/icons-material/QrCode';
 import SendIcon from '@mui/icons-material/Send';
 import {
   Box,
@@ -37,7 +37,7 @@ import {
 } from '../../API/exhibitions/exhibitionRotes';
 import {ArtworkHeader} from '../Artwork';
 import {DartaErrorAlert} from '../Modals';
-import { PreviewQRDialogue } from '../Modals/PreviewQRDialogue';
+// import { PreviewQRDialogue } from '../Modals/PreviewQRDialogue';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
 import {ExhibitionArtworkList} from './ExhibitionArtworkList';
 import {CreateExhibition} from './index';
@@ -49,13 +49,15 @@ export function ExhibitionCard({
   galleryLocations,
   exhibitionId,
   galleryName,
-  isLatestExhibition
+  isLatestExhibition,
+  higherLevelSaveExhibition,
 }: {
   exhibition: Exhibition;
   galleryLocations: string[];
   exhibitionId: string;
   galleryName: string;
   isLatestExhibition: boolean;
+  higherLevelSaveExhibition?: ({ exhibition }: { exhibition: Exhibition; }) => Promise<void>;
 }) {
   const [editExhibition, setEditExhibition] = React.useState<boolean>(false);
   const [isEditingExhibition, setIsEditingExhibition] =
@@ -63,7 +65,7 @@ export function ExhibitionCard({
   const {state, dispatch} = useAppState();
   const [artworks, setArtworks] = React.useState<any>(exhibition.artworks);
   const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
-  const [qrCodeOpen, setQrCodeOpen] = React.useState<boolean>(false);
+  // const [qrCodeOpen, setQrCodeOpen] = React.useState<boolean>(false);
 
   const [artworkLoading, setArtworkLoading] = React.useState<boolean>(false);
   const [isSwappingLoading, setIsSwappingLoading] =
@@ -140,7 +142,11 @@ export function ExhibitionCard({
 
   const saveExhibition = async (updatedExhibition: Exhibition) => {
     setIsEditingExhibition(true);
-    await setExhibitionStateAndDB(updatedExhibition)
+    if (higherLevelSaveExhibition){
+      await higherLevelSaveExhibition({exhibition: updatedExhibition});
+    } else {
+      await setExhibitionStateAndDB(updatedExhibition)
+    }
     setEditExhibition(!editExhibition);
     setIsEditingExhibition(false);
   };
@@ -524,7 +530,7 @@ export function ExhibitionCard({
               flexDirection: 'column',
             },
           }}>
-            <Button
+            {/* <Button
               variant="contained"
               className="exhibition-publish-button"
               disabled={publishSpinner}
@@ -536,7 +542,7 @@ export function ExhibitionCard({
                 <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_500}}>
                     Preview
                   </Typography>
-              </Button>
+              </Button> */}
             {exhibition.published ? (
               <Button
               variant="contained"
@@ -664,12 +670,16 @@ export function ExhibitionCard({
         errorAlertOpen={errorAlertOpen}
         setErrorAlertOpen={setErrorAlertOpen}
       />
-      <PreviewQRDialogue 
+      {/* <PreviewQRDialogue 
         exhibitionId={exhibition._id!}
         galleryId={state.galleryProfile._id!}
         open={qrCodeOpen}
         handleClose={() => {setQrCodeOpen(false)}}
-      />
+      /> */}
     </Card>
   );
 }
+
+ExhibitionCard.defaultProps = {
+  higherLevelSaveExhibition: undefined,
+};

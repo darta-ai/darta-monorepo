@@ -16,7 +16,8 @@ import {ImageController} from '../controllers/ImageController';
 import { filterOutPrivateRecordsMultiObject } from '../middleware';
 import {City, Gallery} from '../models/GalleryModel';
 import {Node} from '../models/models';
-import {IAdminService,IEdgeService, IGalleryService, INodeService} from './interfaces';
+import {IEdgeService, IGalleryService, INodeService} from './interfaces';
+import { IEmailService } from './interfaces/IEmailService';
 
 
 const BUCKET_NAME = 'logo';
@@ -28,7 +29,7 @@ export class GalleryService implements IGalleryService {
     @inject('Database') private readonly db: Database,
     @inject('IEdgeService') private readonly edgeService: IEdgeService,
     @inject('INodeService') private readonly nodeService: INodeService,
-    @inject('IAdminService') private readonly adminService: IAdminService,
+    @inject('IEmailService') private readonly emailService: IEmailService,
   ) {}
 
   public async createGalleryProfile({
@@ -57,7 +58,7 @@ export class GalleryService implements IGalleryService {
         email: userEmail,
       });
       try{
-        await this.adminService.sgSendEmail({
+        await this.emailService.sgSendEmail({
           to: 'tj@darta.art',
           from: '',
           subject: 'New Gallery Signup',

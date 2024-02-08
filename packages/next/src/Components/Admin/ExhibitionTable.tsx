@@ -440,7 +440,7 @@ export default function EnhancedTable({exhibitions} : {exhibitions: ExhibitionPr
                       padding="none"
                       align="center"
                      >
-                      <Button onClick={() => navigateToExhibition(row.galleryId)} variant="contained" color="primary">Add</Button>
+                      <Button onClick={() => navigateToExhibition(row.galleryId)} variant="contained" color="primary">View</Button>
                       </TableCell>
                     <TableCell
                       component="th"

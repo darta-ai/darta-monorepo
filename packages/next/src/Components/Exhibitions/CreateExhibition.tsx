@@ -258,7 +258,7 @@ export function CreateExhibition({
   };
 
   const [tempImage, setTempImage] = React.useState<string | null>(
-    newExhibition.exhibitionPrimaryImage?.value || null,
+    newExhibition?.exhibitionPrimaryImage?.value || null,
   );
 
   const handleDrop = (acceptedFiles: any) => {
@@ -472,7 +472,7 @@ export function CreateExhibition({
         <Box key="exhibitionTitle" sx={createArtworkStyles.multiLineContainer}>
             <DartaTextInput
               fieldName="exhibitionTitle"
-              data={newExhibition.exhibitionTitle?.value as any}
+              data={newExhibition?.exhibitionTitle?.value as any}
               register={register}
               control={control}
               errors={errors}
