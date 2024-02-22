@@ -9,9 +9,29 @@ export interface ImageNeeds {
   bucketName: string;
 }
 
+export interface ImageData {
+  etag: string;
+  fileName: string;
+}
+
+export type ImageSize = "largeImage" | "mediumImage" | "smallImage";
+
+export type ImageDataArray = {
+  [K in ImageSize] :  ImageData
+}
+
 export interface IImageService {
   // eslint-disable-next-line no-empty-pattern
   uploadImage({}: ImageNeeds): Promise<any>;
+  resizeAndUploadImages({
+    bucketName,
+    fileName,
+    fileBuffer,
+  }: {
+    bucketName: string;
+    fileName: string;
+    fileBuffer: any;
+  }): Promise<ImageData[]> 
   fetchImage({
     bucketName,
     fileName,

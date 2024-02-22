@@ -1,9 +1,4 @@
-interface Images {
-    value?: string | null;
-    fileData?: string | null | ArrayBuffer;
-    fileName?: string | null;
-    bucketName?: string | null;
-}
+import {Images} from './galleries';
 
 export type MobileUser =  {
     profilePicture?: Images;

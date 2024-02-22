@@ -1,4 +1,4 @@
-export const category: string[] = [
+export const category: (string | null)[] = [
     'Painting', 
     'Print', 
     'Sculpture', 
@@ -9,7 +9,7 @@ export const category: string[] = [
     'Work on Paper', 
     'Installation', 
     'Other',
-    '',
+    null
   ]
 
 export const stylesAndMovements = [

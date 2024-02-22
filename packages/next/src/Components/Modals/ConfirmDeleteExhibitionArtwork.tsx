@@ -67,8 +67,8 @@ export function ConfirmDeleteExhibitionArtwork({
               variant="contained"
               style={{backgroundColor: PRIMARY_200}}
               data-testid="confirm-delete-artwork-button"
-              onClick={() => {
-                handleDelete();
+              onClick={async () => {
+                await handleDelete();
               }}
               autoFocus>
               <Typography sx={{fontWeight: 'bold'}}>

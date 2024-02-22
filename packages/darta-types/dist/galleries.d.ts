@@ -6,10 +6,15 @@ export interface Images {
     fileData?: string | null | ArrayBuffer;
     fileName?: string | null;
     bucketName?: string | null;
-    compressedImage?: {
-        fileName: string | null;
-        bucketName: string | null;
-        value: string | null;
+    mediumImage?: {
+        fileName?: string | null;
+        bucketName?: string | null;
+        value?: string | null;
+    };
+    smallImage?: {
+        fileName?: string | null;
+        bucketName?: string | null;
+        value?: string | null;
     };
 }
 export interface PrivateFields {
@@ -173,6 +178,7 @@ export type Artwork = {
     exhibitionId: string | null;
     galleryId?: string;
     _id?: string;
+    _key?: string;
     artworkStyleTags?: string[];
     artworkVisualTags?: string[];
     editionStatus?: {

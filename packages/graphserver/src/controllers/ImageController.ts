@@ -9,7 +9,14 @@ import {
 } from 'inversify-express-utils';
 
 import {upload} from '../middleware/upload';
-import {IImageService} from '../services/interfaces/IImageService';
+import {IImageService } from '../services/interfaces/IImageService';
+
+export interface ProcessUploadImageResults {
+  size: "largeImage" | "mediumImage" | "smallImage";
+  fileName: string;
+  bucketName: string;
+  value: string;
+} 
 
 @controller('/image')
 export class ImageController {
@@ -23,25 +30,34 @@ export class ImageController {
     fileBuffer: ArrayBuffer | string;
     fileName: string;
     bucketName: string;
-  }) {
+  }): Promise<ProcessUploadImageResults[]> {
     if (fileBuffer && fileName) {
-      const metadata = await this.imageService.uploadImage({
-        fileBuffer,
-        fileName,
-        bucketName,
-      });
-      const url = await this.processGetFile({
-        fileName: metadata.fileName,
-        bucketName,
-      });
-      return {
-        success: true,
-        fileName: metadata.fileName,
-        bucketName,
-        value: url,
-      };
-    } 
-      throw new Error('Did not receive a fileBuffer or fileName');
+      try{
+        const images = await this.imageService.resizeAndUploadImages({
+          fileBuffer,
+          fileName,
+          bucketName,
+        });
+        const promises = images.map(async (data) => {
+          const shortFileName = Object.values(data)[0].fileName
+          const url = await this.processGetFile({
+            fileName: shortFileName,
+            bucketName,
+          });
+          return {
+            size: Object.keys(data)[0],
+            fileName: shortFileName,
+            bucketName,
+            value: url,
+          };
+        })
+        return await Promise.all(promises) as any
+      } catch(error: any){
+        throw new Error(error.message);
+      }
+    } else {
+        throw new Error('Did not receive a fileBuffer or fileName');
+      }
     
   }
 
@@ -83,7 +99,7 @@ export class ImageController {
   }: {
     fileName: string;
     bucketName: string;
-  }) {
+  }): Promise<string> {
     try {
       const url = await this.imageService.getPresignedUrl({
         fileName,

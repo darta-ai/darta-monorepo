@@ -193,15 +193,87 @@ export class AdminService implements IAdminService {
 
   public async publishExhibitionForAdmin({ exhibitionId, galleryId, isPublished }: 
     { exhibitionId: string; galleryId: string; isPublished: boolean; }): Promise<void | Exhibition> {
-    return this.exhibitionService.publishExhibition({exhibitionId, galleryId, isPublished});
+    return await this.exhibitionService.publishExhibition({exhibitionId, galleryId, isPublished});
   }
 
   public async createArtworkForAdmin({ galleryId, exhibitionOrder, exhibitionId }: 
-    { galleryId: string; exhibitionOrder?: number | null; exhibitionId?: string | null}): Promise<Artwork>{
-    return this.artworkService.createArtwork({galleryId, exhibitionOrder, exhibitionId});
-    }
-    
-    public async listGalleryExhibitionsForAdmin({galleryId }: { galleryId: string }): Promise<Exhibition[] | void>{
-    return this.exhibitionService.listExhibitionForGallery({galleryId});
+    { galleryId: string; exhibitionId: string; exhibitionOrder?: number | null }): Promise<Artwork>{
+      try{
+        let order;
+        if (!exhibitionOrder){
+          const exhibition = await this.exhibitionService.readExhibitionForGallery({exhibitionId})
+          if (exhibition && exhibition.artworks && exhibition.artworks.length){
+            // eslint-disable-next-line no-unsafe-optional-chaining
+            order = Number(exhibition.artworks?.length) + 1;
+          }
+        }
+        return this.artworkService.createArtwork({galleryId, exhibitionOrder: exhibitionOrder || order, exhibitionId});
+      } catch(error: any){
+        throw new Error(error.message);
+      }
   }
+
+  createExhibitionToArtworkEdgeWithExhibitionOrder({exhibitionId, artworkId}:
+    {exhibitionId: string; artworkId: string }): Promise<string>{
+    return this.exhibitionService.createExhibitionToArtworkEdgeWithExhibitionOrder({exhibitionId, artworkId});
+    }
+  
+  public async editArtworkForAdmin({artwork}: {artwork: Artwork}): Promise<Artwork | null>{
+    try{
+      if (!artwork._id){
+        throw new Error('Artwork ID is required');
+      }
+      const res = await this.artworkService.editArtwork({artwork});
+      if (!res){
+        throw new Error('Unable to edit artwork');
+      } else {
+        return res;
+      }
+
+    } catch (error: any){
+      throw new Error(error.message);
+    }
+  }
+    
+  public async listGalleryExhibitionsForAdmin({galleryId }: { galleryId: string }): Promise<Exhibition[] | void>{
+    try{
+      return this.exhibitionService.listExhibitionForGallery({galleryId});
+    } catch (error: any){
+      throw new Error(error.message);
+    }
+  }
+
+  public async reOrderExhibitionArtworkForAdmin({artworkId, exhibitionId, desiredIndex, currentIndex}:
+    {artworkId: string; exhibitionId: string; desiredIndex: number; currentIndex: number}): Promise<void>{
+      await this.exhibitionService.reOrderExhibitionArtwork({artworkId, exhibitionId, desiredIndex, currentIndex});
+       
+    }
+  
+  public async listAllExhibitionArtworksForAdmin({exhibitionId}: {exhibitionId: string}): Promise<Artwork[] | null>{
+    try{
+      return this.exhibitionService.listAllExhibitionArtworks({exhibitionId});
+    } catch (error: any){
+      throw new Error(error.message);
+    }
+  }
+
+  public async deleteExhibitionArtworkForAdmin({ artworkId, exhibitionId }: {artworkId: string, exhibitionId: string}): Promise<Exhibition | void>{
+    try{
+      await this.artworkService.deleteArtwork({artworkId});
+      await this.exhibitionService.reOrderExhibitionToArtworkEdgesAfterDelete({exhibitionId});
+      return await this.exhibitionService.readExhibitionForGallery({exhibitionId});
+    } catch (error: any){
+    throw new Error(error.message);
+    }
+  }
+  
+  public async deleteExhibitionForAdmin({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}): Promise<void>{
+    try{
+      await this.exhibitionService.deleteExhibition({exhibitionId, galleryId});
+      
+    } catch (error: any){
+      throw new Error(error.message);
+    }
+  }
+  
 }

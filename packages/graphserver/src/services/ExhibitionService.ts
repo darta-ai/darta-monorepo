@@ -253,19 +253,55 @@ export class ExhibitionService implements IExhibitionService {
     if (exhibition?.exhibitionPrimaryImage?.value) {
       shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: exhibition?.exhibitionPrimaryImage.value})
     }
+    let exhibitionImageValueLarge = exhibition.exhibitionPrimaryImage?.value;
+    let exhibitionImageValueMedium = exhibition.exhibitionPrimaryImage?.mediumImage?.value ?? null
+    let exhibitionImageValueSmall = exhibition.exhibitionPrimaryImage?.smallImage?.value ?? null
+
     if (shouldRegenerate && ENV === 'production' && exhibition?.exhibitionPrimaryImage?.fileName && exhibition?.exhibitionPrimaryImage?.bucketName) {
       const {fileName, bucketName} = exhibition.exhibitionPrimaryImage;
-      imageValue = await this.imageController.processGetFile({
+      exhibitionImageValueLarge = await this.imageController.processGetFile({
         fileName,
         bucketName,
       });
-      this.refreshExhibitionHeroImage({exhibitionId, url: imageValue})
+      if (exhibition?.exhibitionPrimaryImage?.mediumImage?.fileName && exhibition?.exhibitionPrimaryImage?.mediumImage?.bucketName) {
+        const {fileName, bucketName} = exhibition.exhibitionPrimaryImage.mediumImage;
+        exhibitionImageValueMedium = await this.imageController.processGetFile({
+          fileName,
+          bucketName,
+        });
+      }
+      if (exhibition?.exhibitionPrimaryImage?.smallImage?.fileName && exhibition?.exhibitionPrimaryImage?.smallImage?.bucketName) {
+        const {fileName, bucketName} = exhibition.exhibitionPrimaryImage.smallImage;
+        exhibitionImageValueSmall = await this.imageController.processGetFile({
+          fileName,
+          bucketName,
+        });
+      }
+      if (ENV === 'production'){
+        await this.refreshExhibitionHeroImage({exhibitionId, 
+          mainUrl: exhibitionImageValueLarge, 
+          mediumUrl: exhibitionImageValueMedium, 
+          smallUrl: exhibitionImageValueSmall
+        })
+      }
       exhibition.exhibitionPrimaryImage.value = imageValue;
     } else {
       imageValue = exhibition?.exhibitionPrimaryImage?.value
     }
+
     return {
       ...exhibition,
+      exhibitionPrimaryImage: {
+        bucketName : exhibition?.exhibitionPrimaryImage?.bucketName,
+        value: exhibitionImageValueLarge,
+        fileName: exhibition?.exhibitionPrimaryImage?.fileName,
+        mediumImage: {
+          value: exhibitionImageValueMedium
+        },
+        smallImage: {
+          value: exhibitionImageValueSmall
+        }
+      },
       artworks: {
         ...exhibitionArtworks,
       },
@@ -337,10 +373,11 @@ export class ExhibitionService implements IExhibitionService {
       fileName = exhibitionImage.exhibitionPrimaryImage.fileName;
     }
 
-    let bucketName = exhibitionPrimaryImage?.bucketName ?? null;
-    let value = exhibitionPrimaryImage?.value ?? null;
-    // let minifiedValue = exhibitionPrimaryImage?.compressedImage?.value ?? null;
-    // let minifiedBucketName = exhibitionPrimaryImage?.compressedImage?.bucketName ?? null;
+
+    let largeImage = exhibitionPrimaryImage
+    let mediumImage = exhibitionPrimaryImage?.mediumImage
+    let smallImage = exhibitionPrimaryImage?.smallImage
+
     if (exhibitionPrimaryImage?.fileData) {
       try {
         const artworkImageResults =
@@ -349,15 +386,12 @@ export class ExhibitionService implements IExhibitionService {
           fileName,
           bucketName: BUCKET_NAME,
         });
-        ({bucketName, value} = artworkImageResults);
-        // const compressedImage = await this.imageController.compressImage({fileBuffer: exhibitionPrimaryImage.fileData})
-        // const minifiedImageResults =
-        // await this.imageController.processUploadImage({
-        //   fileBuffer: compressedImage,
-        //   fileName,
-        //   bucketName: COMPRESSED_BUCKET_NAME,
-        // });
-      // ({bucketName: minifiedBucketName, value: minifiedValue} = minifiedImageResults);
+
+        for (const result of artworkImageResults) {
+          if (result.size === 'largeImage') largeImage = result;
+          else if (result.size === 'mediumImage') mediumImage = result;
+          else if (result.size === 'smallImage') smallImage = result;
+        }
 
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -374,9 +408,19 @@ export class ExhibitionService implements IExhibitionService {
       ...remainingExhibitionProps,
       exhibitionLocation: {...exhibitionLocation},
       exhibitionPrimaryImage: {
-        bucketName,
-        value,
-        fileName
+        bucketName: largeImage?.bucketName,
+        value: largeImage?.value,
+        fileName: largeImage?.fileName,
+        mediumImage: {
+          bucketName: mediumImage?.bucketName,
+          value: mediumImage?.value,
+          fileName: mediumImage?.fileName,
+        },
+        smallImage: {
+          bucketName: mediumImage?.bucketName,
+          value: smallImage?.value,
+          fileName: smallImage?.fileName,
+        },
       },
       updatedAt: new Date(),
     };
@@ -461,19 +505,18 @@ export class ExhibitionService implements IExhibitionService {
   // eslint-disable-next-line consistent-return
   public async publishExhibition({
     exhibitionId, 
-    galleryId, 
     isPublished
     } : {
       exhibitionId: string, 
-      galleryId: string, 
       isPublished: boolean}): Promise<Exhibition | void>{
     try{
 
       const exId = this.generateExhibitionId({exhibitionId})
-      const verifyGalleryOwnsExhibition = await this.verifyGalleryOwnsExhibition({exhibitionId, galleryId})
-      if (!verifyGalleryOwnsExhibition){
-        throw new Error('unable to verify gallery owns exhibition')
-      }
+      // const verifyGalleryOwnsExhibition = await this.verifyGalleryOwnsExhibition({exhibitionId, galleryId})
+      // if (!verifyGalleryOwnsExhibition){
+      //   throw new Error('unable to verify gallery owns exhibition')
+      // }
+
       const exhibition = await this.getExhibitionById({exhibitionId: exId})
       if (!exhibition){
         throw new Error('unable to find exhibition')
@@ -485,22 +528,26 @@ export class ExhibitionService implements IExhibitionService {
       //                              adjust the artwork 
     
       let artworkResults = artworks
+
       if (artworks){
         const promises: Promise<any>[] = []
 
         Object.values(artworks).forEach((artwork: Artwork) => {
           promises.push(this.artworkService.editArtwork({artwork: {...artwork, published: isPublished}}))
         })
-        const res = await Promise.all(promises)
-        artworkResults = res.reduce((acc, obj) => ({...acc, [obj._id]: obj}), {})
+        try{
+          const res = await Promise.all(promises)
+          artworkResults = res.reduce((acc, obj) => ({...acc, [obj._id]: obj}), {})
+        } catch(error: any){
+          throw new Error(`error publishing artworks: ${error.message}`)
+        }
       }
 
-      const savedExhibition = await this.nodeService.upsertNodeByKey({
+      const savedExhibition = await this.nodeService.upsertNodeById({
         collectionName: CollectionNames.Exhibitions,
-        key: exhibitionId,
+        id: exId,
         data: {...remainingExhibitionProps, published: isPublished}
       });
-
 
       if (exhibition){
         return {
@@ -508,7 +555,7 @@ export class ExhibitionService implements IExhibitionService {
           artworks: {
             ...artworkResults
           }
-        }
+        } as Exhibition
       }
     } catch (error: any){
       throw new Error(`error publishing exhibition: ${error.message}`)
@@ -517,11 +564,15 @@ export class ExhibitionService implements IExhibitionService {
 
   public async refreshExhibitionHeroImage({
     exhibitionId,
-    url,
+    mainUrl,
+    mediumUrl,
+    smallUrl
   }: {
     exhibitionId: string;
-    url: string;
-  }): Promise<void> {
+    mainUrl: string;
+    mediumUrl: string | null;
+    smallUrl: string | null;
+  }): Promise<void>  {
     const exhibitId = this.generateExhibitionId({exhibitionId});
 
     try {
@@ -530,7 +581,13 @@ export class ExhibitionService implements IExhibitionService {
         id: exhibitId,
         data: {
           exhibitionPrimaryImage: {
-            value: url
+            value: mainUrl,
+            mediumImage: {
+              value: mediumUrl
+            },
+            smallImage: {
+              value: smallUrl
+            }
           },
         },
       });
@@ -632,7 +689,8 @@ export class ExhibitionService implements IExhibitionService {
     // Wait for all promises to complete
     let results;
     try {
-      results = await Promise.all(promises);
+      results = await Promise.allSettled(promises);
+      results.filter((result: any) => result.status !== 'rejected');
     } catch (error: any) {
       throw new Error(`unable to delete a node: ${error.message}`);
     }
@@ -1555,7 +1613,7 @@ export class ExhibitionService implements IExhibitionService {
       });
       const desiredLocation = artworkEdges.filter((edge: Edge) => edge.exhibitionOrder === desiredIndex);
       const currentLocation = artworkEdges.filter((edge: Edge) => edge.exhibitionOrder === currentIndex);
-      if (currentLocation[0]._to !== fullArtworkId) {
+      if (currentLocation[0]?._to !== fullArtworkId) {
         return this.reOrderExhibitionToArtworkEdgesAfterDelete({exhibitionId})
       }
       const promises = [

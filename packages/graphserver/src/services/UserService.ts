@@ -219,31 +219,55 @@ export class UserService implements IUserService {
         (userProfilePicture = results.profilePicture)
       }
       
-      let url;
       let shouldRegenerate;
       if (userProfilePicture?.value) {
         shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: userProfilePicture.value})
       }
 
+      let profilePictureLarge = userProfilePicture.value;
+      let profilePictureMedium = userProfilePicture?.mediumImage.value;
+      let profilePictureSmall = userProfilePicture?.smallImage.value;
+
       if (shouldRegenerate && ENV === 'production' && userProfilePicture?.bucketName && userProfilePicture?.fileName) {
         try {
-          url = await this.imageController.processGetFile({
+          profilePictureLarge = await this.imageController.processGetFile({
             bucketName: userProfilePicture?.bucketName,
             fileName: userProfilePicture?.fileName,
           });
-          await this.refreshUserProfileImage({uid: results?._id, url})
+          if (profilePictureMedium) {
+            profilePictureMedium = await this.imageController.processGetFile({
+              bucketName: userProfilePicture?.mediumImage.bucketName,
+              fileName: userProfilePicture?.mediumImage.fileName,
+            });
+          }
+          if (profilePictureSmall) {
+            profilePictureSmall = await this.imageController.processGetFile({
+              bucketName: userProfilePicture?.smallImage.bucketName,
+              fileName: userProfilePicture?.smallImage.fileName,
+            });
+          }
+          await this.refreshUserProfileImage({uid: results?._id, 
+            mainUrl: profilePictureLarge,
+            mediumUrl: profilePictureMedium,
+            smallUrl: profilePictureSmall})
         } catch (error: any) {
           // eslint-disable-next-line no-console
-          url = '';
+          profilePictureLarge = '';
         }
       } else {
-        url = userProfilePicture?.value;
+        profilePictureLarge = userProfilePicture?.value;
       }
 
       if(results){
         return {
           profilePicture: {
-            value: url,
+            value: profilePictureLarge,
+            mediumImage: {
+              value: profilePictureMedium,
+            },
+            smallImage: {
+              value: profilePictureSmall,
+            }
           },
           userName: results.userName,
           legalFirstName: results.legalFirstName,
@@ -317,7 +341,6 @@ export class UserService implements IUserService {
       profilePic = await this.getUserProfilePicture({uid});
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.log({error})
     }
     
     let fileName: string = crypto.randomUUID();
@@ -325,8 +348,12 @@ export class UserService implements IUserService {
       fileName = profilePicture.fileName;
     }
 
-    let bucketName = profilePic?.bucketName ?? BUCKET_NAME;
-    let value = profilePic?.value ?? null;
+    const bucketName = profilePic?.bucketName ?? BUCKET_NAME;
+    const value = profilePic?.value ?? null;
+
+
+    let mediumImage = profilePic
+    let {smallImage} = profilePic
 
     if (profilePicture?.fileData && typeof profilePicture?.fileData === 'string') {
       try {
@@ -336,7 +363,12 @@ export class UserService implements IUserService {
             fileName,
             bucketName,
           });
-        ({bucketName, value} = artworkImageResults);
+          for (const result of artworkImageResults) {
+            if (result.size === 'mediumImage') mediumImage = result;
+            else if (result.size === 'smallImage') smallImage = result;
+          }
+          // HERE
+        // ({bucketName, value} = artworkImageResults);
       } catch (error) {
         throw new Error('error uploading image');
       }
@@ -352,11 +384,21 @@ export class UserService implements IUserService {
         legalFirstName,
         legalLastName,
         profilePicture: {
-          fileName,
-          bucketName,
-          value,
+          fileName: mediumImage?.fileName ?? fileName,
+          bucketName: mediumImage?.bucketName ?? bucketName,
+          value: mediumImage?.value ?? value,
+          mediumImage: {
+            fileName: mediumImage?.fileName,
+            bucketName: mediumImage?.bucketName,
+            value: mediumImage?.value,
+          },
+          smallImage: {
+            fileName: smallImage?.fileName,
+            bucketName: smallImage?.bucketName,
+            value: smallImage?.value,
+          },
+          }
         }
-      },
     });
     return results
   }
@@ -476,10 +518,14 @@ export class UserService implements IUserService {
 
   async refreshUserProfileImage({
     uid,
-    url,
+    mainUrl,
+    mediumUrl,
+    smallUrl
   }: {
     uid: string;
-    url: string;
+    mainUrl: string;
+    mediumUrl: string | null;
+    smallUrl: string | null;
   }): Promise<void> {
     const userId = this.generateDartaUserId({uid});
 
@@ -489,7 +535,13 @@ export class UserService implements IUserService {
         id: userId,
         data: {
           profilePicture: {
-            value: url
+            value: mainUrl,
+            mediumImage: {
+              value: mediumUrl,
+            },
+            smallImage: {
+              value: smallUrl,
+            },
           },
         },
       });

@@ -1,25 +1,27 @@
 import {Artwork, Dimensions, Exhibition} from '@darta-types';
 
-function fractionToDecimal(str: string) {
-  if (!str) return null;
-  if (!str.includes('/')) return str;
-  const parts = str.split(' ');
+import { convertInchesToCentimeters } from './utils/unitConverter';
 
-  let i = 0;
-  while (parts[i] === '') {
-    i+=1;
-  }
-  const wholeNumber = parts[i];
-  const fraction = parts[i + 1];
+// function fractionToDecimal(str: string) {
+//   if (!str) return null;
+//   if (!str.includes('/')) return str;
+//   const parts = str.split(' ');
 
-  if (fraction) {
-    const [numerator, denominator] = fraction.split('/');
-    const decimal = parseInt(numerator, 10) / parseInt(denominator, 10);
-    return (parseFloat(wholeNumber) + decimal).toString();
-  } 
-    return wholeNumber;
+//   let i = 0;
+//   while (parts[i] === '') {
+//     i+=1;
+//   }
+//   const wholeNumber = parts[i];
+//   const fraction = parts[i + 1];
+
+//   if (fraction) {
+//     const [numerator, denominator] = fraction.split('/');
+//     const decimal = parseInt(numerator, 10) / parseInt(denominator, 10);
+//     return (parseFloat(wholeNumber) + decimal).toString();
+//   } 
+//     return wholeNumber;
   
-}
+// }
 
 type AddressComponents = {
   long_name: string;
@@ -37,20 +39,18 @@ const findSubLocality = (addressComponents: AddressComponents[]) => addressCompo
 
 export const createDimensionsString = ({
   depthIn,
-  depthCm,
-  widthIn,
   heightIn,
-  widthCm,
-  heightCm,
+  widthIn,
+
 }: {
   depthIn: string;
-  depthCm: string;
-  widthIn: string;
   heightIn: string;
-  widthCm: string;
-  heightCm: string;
+  widthIn: string;
 }) => {
-  if (Number(depthIn) && Number(depthCm)) {
+  const heightCm = convertInchesToCentimeters(heightIn);
+  const widthCm = convertInchesToCentimeters(widthIn);
+  const depthCm = convertInchesToCentimeters(depthIn);
+  if (Number(depthIn)) {
     return `${heightIn} x ${widthIn} x ${depthIn}in; ${heightCm} x ${widthCm} x ${depthCm}cm`;
   } 
     return `${heightIn} x ${widthIn}in; ${heightCm} x ${widthCm}cm`;
@@ -131,106 +131,72 @@ export const googleMapsParser = (data: any) => {
   return addressObj;
 };
 
-type ReturnArtworkObject = {
-  [key: string]: Artwork;
-};
+const parseDimensions = (item: any): Dimensions => {
 
-const parseDimensions = (dimensions: string): Dimensions => {
-  const removedSlashR = dimensions.replace(/\r/g, '');
-  const slicedArray = removedSlashR.split(';');
-  const inches = slicedArray[0].replace('in', '');
-  const cms = slicedArray[1].replace('cm', '');
-  const slicedInches = inches.split('x');
-  const slicedCm = cms.split('x');
-  const heightIn = fractionToDecimal(slicedInches[0])!;
-  const widthIn = fractionToDecimal(slicedInches[1])!;
-  const depthIn = fractionToDecimal(slicedInches[2])!;
-  const heightCm = fractionToDecimal(slicedCm[0])!;
-  const widthCm = fractionToDecimal(slicedCm[1])!;
-  const depthCm = fractionToDecimal(slicedCm[2])!;
+  const heightIn = item?.heightIn ? item?.heightIn : "0"
+  const widthIn = item?.widthIn ? item?.widthIn : "0"
+  const depthIn = item?.depthIn ? item?.depthIn : "0"
 
   const stringPayload = {
     depthIn,
-    depthCm,
     widthIn,
     heightIn,
-    widthCm,
-    heightCm,
   };
 
   const text = createDimensionsString(stringPayload);
-
-  if (slicedInches && slicedCm) {
-    return {
-      heightIn: {value: heightIn},
-      widthIn: {value: widthIn},
-      depthIn: {value: depthIn ?? 0},
-      displayUnit: {value: 'in'},
-      text: {value: text},
-      heightCm: {value: heightCm},
-      widthCm: {value: widthCm},
-      depthCm: {value: depthCm ?? 0},
-    };
-  } if (slicedInches) {
-    return {
-      heightIn: {value: heightIn},
-      widthIn: {value: widthIn},
-      depthIn: {value: depthIn ?? 0},
-      displayUnit: {value: 'in'},
-      text: {value: text},
-      heightCm: {value: ''},
-      widthCm: {value: ''},
-      depthCm: {value: ''},
-    };
-  } if (slicedCm) {
-    return {
-      heightIn: {value: ''},
-      widthIn: {value: ''},
-      displayUnit: {value: 'cm'},
-      text: {value: text},
-      heightCm: {value: heightCm},
-      widthCm: {value: widthCm},
-      depthCm: {value: depthCm ?? 0},
-    };
-  } 
-    return {
-      heightIn: {value: ''},
-      widthIn: {value: ''},
-      displayUnit: {value: 'in'},
-      text: {value: ''},
-      heightCm: {value: ''},
-      widthCm: {value: ''},
-    };
-  
+  return { 
+    heightIn: {
+      value: heightIn
+    }, 
+    widthIn: {
+      value: widthIn
+    },
+    depthIn: {
+      value: depthIn
+    },
+    text : {
+      value: text
+    },
+    heightCm: {
+      value: convertInchesToCentimeters(heightIn)
+    },
+    widthCm: {
+      value: convertInchesToCentimeters(widthIn)
+    },
+    depthCm: {
+      value: convertInchesToCentimeters(depthIn)
+    },
+    displayUnit: {
+      value: 'in'
+    }
+  };
 };
 
-export const parseExcelArtworkData = (
-  data: any[],
-): ReturnArtworkObject | null => {
-  if (!data) {
+export const parseExcelArtworkData = ({rows, exhibitionId} : {
+  rows: any[],
+  exhibitionId: string,
+}): Artwork[] | null => {
+  if (!rows) {
     return null;
   }
-  const artworkObject: ReturnArtworkObject = {};
-  data.forEach(item => {
-    const newId = crypto.randomUUID();
-    artworkObject[newId] = {
-      artworkId: newId,
-      exhibitionId: null,
-      artworkImage: {value: item['Main image URL (large)']},
-      artworkTitle: {value: item?.Title},
-      artistName: {value: item?.Artist},
-      artworkMedium: {value: item?.Medium},
-      canInquire: {value: 'Yes'},
-      artworkDimensions: parseDimensions(item?.Dimensions),
+
+  return rows.map(item => ({
+      exhibitionId,
+      artworkTitle: {value: item?.artworkTitle},
+      artworkImage: {value: ''},
+      artistName: {value: item?.artistName},
+      canInquire: {value: item?.canInquire},
+      artworkDimensions: parseDimensions(item),
       artworkPrice: {value: item?.Price, isPrivate: false},
-      artworkCurrency: {value: 'USD'},
-      artworkCreatedYear: {value: item?.Year},
+      artworkCurrency: {value: item.artworkCurrency},
+      artworkCreatedYear: {value: item?.artworkCreatedYear},
+      artworkCategory: {value: item?.artworkCategory},
+      artworkMedium: {value: item?.artworkMedium},
+      editionStatus: {value: item?.editionStatus},
+      editionNumber: {value: item?.editionNumber},
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      artworkCategory: {value: null},
-    };
-  });
-  return artworkObject;
+    }));
 };
 
 

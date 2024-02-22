@@ -208,10 +208,10 @@ export class ArtworkService implements IArtworkService {
         promises.push(this.getArtworkById(element._id))
       })
 
-      await Promise.all(promises)
+      await Promise.allSettled(promises)
       return null;
-    } catch (error) {
-      throw new Error('error getting artworks');
+    } catch (error: any) {
+      throw new Error(`error getting artworks: ${error.message}`);
     }
   }
 
@@ -238,10 +238,12 @@ export class ArtworkService implements IArtworkService {
       ...remainingArtworkProps
     } = artwork;
 
-    const artworkKey = `${CollectionNames.Artwork}/${artworkId}`;
+    const artworkKey = this.generateArtworkId({artworkId});
+
 
     // Save the Artwork Image
     const currentArtworkImage = await this.getArtworkImage({key: artworkId});
+
 
     // Don't overwrite an image
     let fileName: string = crypto.randomUUID();
@@ -249,8 +251,11 @@ export class ArtworkService implements IArtworkService {
       fileName = currentArtworkImage.artworkImage.fileName;
     }
 
-    let bucketName = artworkImage?.bucketName ?? null;
-    let value = artworkImage?.value ?? null;
+    // const value = artworkImage?.value ?? null;
+
+    let largeImage = currentArtworkImage;
+    let mediumImage = currentArtworkImage?.mediumImage;
+    let smallImage= currentArtworkImage?.smallImage;
 
     if (artworkImage?.fileData) {
       try {
@@ -260,7 +265,14 @@ export class ArtworkService implements IArtworkService {
             fileName,
             bucketName: BUCKET_NAME,
           });
-        ({bucketName, value} = artworkImageResults);
+          // console.log({artworkImageResults})
+          // ({bucketName, value} = artworkImageResults);
+          
+          for (const result of artworkImageResults) {
+            if (result.size === 'largeImage') largeImage = result;
+            else if (result.size === 'mediumImage') mediumImage = result;
+            else if (result.size === 'smallImage') smallImage = result;
+          }
       } catch (error: any) {
         throw new Error(`error uploading image at editArtwork: ${error?.message}`);
       }
@@ -276,9 +288,19 @@ export class ArtworkService implements IArtworkService {
       value: artwork?.slug?.value,
       updatedAt: new Date(),
       artworkImage: {
-        bucketName,
-        value,
-        fileName,
+        bucketName: largeImage?.bucketName,
+        value: largeImage?.value,
+        fileName: largeImage?.fileName,
+        mediumImage: {
+          bucketName: mediumImage?.bucketName,
+          value: mediumImage?.value,
+          fileName: mediumImage?.fileName
+        },
+        smallImage: {
+          bucketName: smallImage?.bucketName,
+          value: smallImage?.value,
+          fileName: smallImage?.fileName
+        }
       },
     };
 
@@ -801,7 +823,12 @@ export class ArtworkService implements IArtworkService {
       : `${CollectionNames.Artwork}/${artworkId}`;
 
     const artworkQuery = `
-    WITH ${CollectionNames.Artwork}, ${CollectionNames.ArtworkArtists}, ${CollectionNames.ArtworkMediums}, ${CollectionNames.ArtworkCategories}, ${CollectionNames.ArtworkStyleTags}, ${CollectionNames.ArtworkVisualTags}
+    WITH ${CollectionNames.Artwork}, 
+    ${CollectionNames.ArtworkArtists}, 
+    ${CollectionNames.ArtworkMediums}, 
+    ${CollectionNames.ArtworkCategories}, 
+    ${CollectionNames.ArtworkStyleTags}, 
+    ${CollectionNames.ArtworkVisualTags}
     FOR artwork IN ${CollectionNames.Artwork}
       FILTER artwork._id == @artworkId
       LET artist = (
@@ -873,16 +900,35 @@ export class ArtworkService implements IArtworkService {
     if (artworkImage?.value) {
       shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: artworkImage.value})
     }
-    let artworkImageValue = artworkImage.value;
+    let artworkImageValueLarge = artworkImage.value ?? null
+    let artworkImageValueMedium = artworkImage.mediumImage?.value ?? null
+    let artworkImageValueSmall = artworkImage.smallImage?.value ?? null
 
     if(shouldRegenerate && artworkImage?.bucketName && artworkImage?.fileName){
       try {
-        artworkImageValue = await this.imageController.processGetFile({
+        artworkImageValueLarge = await this.imageController.processGetFile({
           fileName: artworkImage.fileName,
           bucketName: artworkImage.bucketName,
         });
-        if (artworkImageValue && ENV === 'production'){
-          await this.refreshArtworkImage({artworkId, url: artworkImageValue})
+        if (artworkImage.mediumImage?.fileName && artworkImage.mediumImage?.bucketName){
+          artworkImageValueMedium = await this.imageController.processGetFile({
+            fileName: artworkImage.mediumImage?.fileName,
+            bucketName: artworkImage.mediumImage?.bucketName,
+          });
+        }
+        if (artworkImage.smallImage?.fileName && artworkImage.smallImage?.bucketName){
+          artworkImageValueSmall = await this.imageController.processGetFile({
+            fileName: artworkImage.smallImage?.fileName,
+            bucketName: artworkImage.smallImage?.bucketName,
+          });
+        }
+        if (ENV === 'production'){
+          await this.refreshArtworkImage({
+            artworkId, 
+            mainUrl: artworkImageValueLarge, 
+            mediumUrl: artworkImageValueMedium, 
+            smallUrl: artworkImageValueSmall
+          })
         }
       } catch (error) {
         throw new Error('error getting artwork image');
@@ -893,7 +939,15 @@ export class ArtworkService implements IArtworkService {
       ...artwork,
       artworkImage: {
         ...artworkImage,
-        value: artworkImageValue,
+        value: artworkImageValueLarge,
+        mediumImage: {
+          ...artworkImage.mediumImage,
+          value: artworkImageValueMedium
+        },
+        smallImage: {
+          ...artworkImage.smallImage,
+          value: artworkImageValueSmall
+        }
       },
     };
   }
@@ -1060,10 +1114,14 @@ export class ArtworkService implements IArtworkService {
 
   public async refreshArtworkImage({
     artworkId,
-    url,
+    mainUrl,
+    mediumUrl,
+    smallUrl
   }: {
     artworkId: string;
-    url: string;
+    mainUrl: string;
+    mediumUrl: string | null;
+    smallUrl: string | null;
   }): Promise<void> {
     const exhibitId = this.generateArtworkId({artworkId});
 
@@ -1073,7 +1131,13 @@ export class ArtworkService implements IArtworkService {
         id: exhibitId,
         data: {
           artworkImage: {
-            value: url
+            value: mainUrl,
+            mediumImage: {
+              value: mediumUrl
+            },
+            smallImage: {
+              value: smallUrl
+            }
           },
         },
       });

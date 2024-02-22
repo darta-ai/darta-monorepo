@@ -2,7 +2,13 @@ import {inject, injectable} from 'inversify';
 import {Client} from 'minio';
 import sharp from 'sharp';
 
-import {IImageService} from './interfaces/IImageService';
+import {IImageService, ImageData} from './interfaces/IImageService';
+
+const sizes = [
+  { name: 'largeImage', width: 1024, height: 1024 },
+  { name: 'mediumImage', width: 512, height: 512 },
+  { name: 'smallImage', width: 256, height: 256 }
+];
 
 @injectable()
 export class ImageService implements IImageService {
@@ -54,6 +60,83 @@ export class ImageService implements IImageService {
     }
  
   }
+
+  // Updated method to handle multiple sizes
+public async resizeAndUploadImages({
+  bucketName,
+  fileName,
+  fileBuffer,
+}: {
+  bucketName: string;
+  fileName: string;
+  fileBuffer: any;
+}): Promise<ImageData[]> {
+  try {
+    const resizedImages = await Promise.all(
+      sizes.map(async (size) => {
+        try{
+
+          const matches = fileBuffer.match(/^data:(image\/[A-z]*);base64,/);
+          if (!matches) {
+            return Promise.reject(new Error('Invalid base64 format'));
+          }
+      
+          const mimeType = matches[1];
+          const base64String = fileBuffer.replace(matches[0], '');
+
+          // Convert the base64 string to a Buffer
+          const imageBuffer = Buffer.from(base64String, 'base64');
+
+
+          const resizedBuffer = await sharp(imageBuffer)
+          .resize({
+            width: size.width,
+            height: size.height,
+            fit: 'contain',
+          })
+          .toBuffer()
+          .catch((error: any) => {
+            throw new Error(error.message);
+          });
+
+
+        const resizedFileName = `${size.name}-${fileName}`;
+        const res: {
+          etag: string,
+          versionId: string | null
+        } = await new Promise((resolve, reject) => {
+          const metadata = {
+            'Content-type': mimeType,
+            CacheControl: 'no-cache',
+          };
+    
+          this.minio.putObject(
+            bucketName,
+            resizedFileName,
+            resizedBuffer,
+            600,
+            metadata,
+            (err, etag) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(etag);
+              }
+            },
+          );
+        });
+        return { [size.name] : {etag: res?.etag, fileName: resizedFileName}}
+      } catch(error: any){
+        throw new Error(error.message);
+      }
+    })
+    );
+    return resizedImages as any;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
 
   private checkBucketExists(bucketName: string): Promise<boolean> {
     return new Promise((resolve, reject) => {

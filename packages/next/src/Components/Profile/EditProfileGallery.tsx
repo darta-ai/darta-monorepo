@@ -195,7 +195,6 @@ export function EditProfileGallery({
     reader.readAsDataURL(file); // Read the file content as Data URL.
 
     setTempImage(previewURL);
-    // NEED API CALL TO UPLOAD IMAGE TO DATABASE
     setEditImage(!editImage);
   };
 

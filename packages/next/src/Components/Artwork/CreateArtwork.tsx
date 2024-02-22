@@ -1,5 +1,5 @@
 import * as Colors from '@darta-styles'
-import {Artwork} from '@darta-types';
+import {Artwork, Exhibition} from '@darta-types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
@@ -159,6 +159,7 @@ const createArtworkSchema = yup
 
 export function CreateArtwork({
   newArtwork,
+  exhibitionProps,
   cancelAction,
   handleSave,
   handleDelete,
@@ -169,12 +170,13 @@ export function CreateArtwork({
   handleDeleteArtworkFromDarta,
 }: {
   newArtwork: Artwork;
+  exhibitionProps?: Exhibition | null;
   cancelAction: (arg0: boolean) => void;
   handleSave: (savedArtwork: Artwork) => void;
   saveSpinner: boolean;
   deleteSpinner: boolean;
   croppingModalOpen?: boolean;
-  handleDelete?: (arg0: string) => void;
+  handleDelete?: (arg0: string) => Promise<void>;
   setCroppingModalOpen?: (arg0: boolean) => void;
   handleDeleteArtworkFromDarta?: ({
     exhibitionId,
@@ -369,7 +371,7 @@ export function CreateArtwork({
 
   React.useEffect(() => {
     if (exhibitionId) {
-      const exhibition = state.galleryExhibitions?.[exhibitionId];
+      const exhibition = state.galleryExhibitions?.[exhibitionId] || exhibitionProps;
       const artworkId = newArtwork?.artworkId;
 
       if (exhibition?.artworks && artworkId) {
@@ -390,6 +392,7 @@ export function CreateArtwork({
     }
   }, []);
   const isInExhibition = isInExhibitionRef.current;
+
   return (
     <Box mb={2} sx={profileStyles.container}>
       <Box sx={createArtworkStyles.backButton}>
@@ -694,36 +697,6 @@ export function CreateArtwork({
             inputOptions={mediums}
           />
         </Box>
-        {/* <Box key="edition" sx={createArtworkStyles.multiLineContainer}>
-          <DartaRadioButtonsGroup
-            options={['Original', 'Edition']}
-            setHigherLevelState={setIsEdition}
-            errors={errors}
-            fieldName="editionStatus"
-            helperTextString={errors.editionStatus?.value?.message}
-            control={control}
-            required
-            toolTips={createArtworkToolTips}
-            inputAdornmentString="Is Edition?"
-            value={
-              getValues('editionStatus.value') ? getValues('editionStatus.value') : 'Original'
-            }
-          />
-        </Box>
-        {isArtworkEdition && ( 
-          <Box key="edition" sx={createArtworkStyles.multiLineContainer}>
-            <DartaDropdown
-              options={Array.from(Array(19).keys()).map((i) => i + 2)}
-              fieldName="editionSize"
-              register={register}
-              helperTextString={errors.editionSize?.value?.message}
-              control={control}
-              required={isArtworkEdition}
-              toolTips={createArtworkToolTips}
-              inputAdornmentString="Edition Size"
-            />
-          </Box>
-        )} */}
       </Box>
       <Box sx={createArtworkStyles.keyInformationContainer}>
         <Typography variant="h6" sx={{alignSelf: 'center'}}>Edition</Typography>
@@ -883,6 +856,7 @@ export function CreateArtwork({
 
 CreateArtwork.defaultProps = {
   croppingModalOpen: false,
+  exhibitionProps: null,
   setCroppingModalOpen: () => {},
   handleDeleteArtworkFromDarta: () => {},
   handleDelete: () => {},

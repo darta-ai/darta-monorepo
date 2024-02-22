@@ -177,8 +177,8 @@ export class ExhibitionController {
     @response() res: Response,
   ): Promise<void> {
     const {user} = req as any;
-    const {exhibitionId} = req.body;
     try {
+      const {exhibitionId} = req.body;
       const galleryId = await this.galleryService.getGalleryIdFromUID({
         uid: user.user_id,
       });
@@ -209,6 +209,14 @@ export class ExhibitionController {
       const galleryId = await this.galleryService.getGalleryIdFromUID({
         uid: user.user_id,
       });
+      const isVerified =
+        await this.exhibitionService.verifyGalleryOwnsExhibition({
+          exhibitionId,
+          galleryId,
+        });
+      if (!isVerified) {
+        throw new Error('unable to verify exhibition is owned by gallery');
+      }
       const results = await this.exhibitionService.publishExhibition({
         exhibitionId,
         galleryId,
@@ -224,7 +232,6 @@ export class ExhibitionController {
       res.status(500).send(error.message);
     }
   }
-
 
   @httpPost('/deleteExhibitionAndArtwork', verifyToken)
   public async deleteExhibitionAndArtwork(

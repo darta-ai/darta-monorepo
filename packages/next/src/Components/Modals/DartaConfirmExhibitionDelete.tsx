@@ -35,12 +35,12 @@ export function DartaConfirmExhibitionDelete({
     handleClose();
   };
 
-  const deleteArtworks = async () => {
-    setSpinner(true);
-    await handleDelete({exhibitionId: id, deleteArtworks: true});
-    setSpinner(false);
-    handleClose();
-  };
+  // const deleteArtworks = async () => {
+  //   setSpinner(true);
+  //   await handleDelete({exhibitionId: id, deleteArtworks: true});
+  //   setSpinner(false);
+  //   handleClose();
+  // };
   return (
     <Dialog
       open={open}
@@ -80,16 +80,6 @@ export function DartaConfirmExhibitionDelete({
               autoFocus>
               <Typography sx={{fontWeight: 'bold'}}>
                 Delete Exhibition
-              </Typography>
-            </Button>
-            <Button
-              variant="contained"
-              style={{backgroundColor: PRIMARY_400}}
-              data-testid="confirm-delete-artwork-button"
-              onClick={() => deleteArtworks()}
-              autoFocus>
-              <Typography sx={{fontWeight: 'bold'}}>
-                Delete Exhibition and Artwork
               </Typography>
             </Button>
             <Button variant="contained" color="secondary" onClick={handleClose}>

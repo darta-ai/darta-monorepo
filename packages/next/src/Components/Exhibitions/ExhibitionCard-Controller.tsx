@@ -30,7 +30,6 @@ import {
 } from '../../API/artworks/artworkRoutes';
 import {
   deleteExhibitionAndArtworkAPI,
-  deleteExhibitionOnlyAPI,
   editExhibitionAPI,
   publishExhibitionAPI,
   reOrderExhibitionArtworkAPI,
@@ -51,6 +50,12 @@ export function ExhibitionCard({
   galleryName,
   isLatestExhibition,
   higherLevelSaveExhibition,
+  higherLevelSaveArtwork,
+  higherLevelCreateArtwork,
+  higherLevelReOrderArtwork,
+  higherLevelDeleteArtwork,
+  higherLevelDeleteExhibition,
+  higherLevelPublishExhibition,
 }: {
   exhibition: Exhibition;
   galleryLocations: string[];
@@ -58,6 +63,13 @@ export function ExhibitionCard({
   galleryName: string;
   isLatestExhibition: boolean;
   higherLevelSaveExhibition?: ({ exhibition }: { exhibition: Exhibition; }) => Promise<void>;
+  higherLevelSaveArtwork?: ({ artwork }: { artwork: Artwork; }) => Promise<void>;
+  higherLevelCreateArtwork?: ({ exhibitionId }: { exhibitionId: string; }) => Promise<void>;
+  higherLevelReOrderArtwork?: (
+    { artworkId, exhibitionId, direction }: { artworkId: string; exhibitionId: string, direction: 'up' | 'down'; }) => Promise<void>;
+  higherLevelDeleteArtwork?: ({ artworkId, exhibitionId }: { artworkId: string; exhibitionId: string; }) => Promise<void>;
+  higherLevelDeleteExhibition?: ({ exhibitionId }: { exhibitionId: string; }) => Promise<void>;
+  higherLevelPublishExhibition?: ({ exhibitionId, isPublished }: { exhibitionId: string; isPublished: boolean; }) => Promise<void>;
 }) {
   const [editExhibition, setEditExhibition] = React.useState<boolean>(false);
   const [isEditingExhibition, setIsEditingExhibition] =
@@ -84,6 +96,11 @@ export function ExhibitionCard({
 
   const publishExhibition = async (updatedExhibition: Exhibition, isPublished: boolean) => {
     setPublishSpinner(true);
+    if (higherLevelPublishExhibition){
+      await higherLevelPublishExhibition({exhibitionId, isPublished});
+      setPublishSpinner(false);
+      return;
+    }
     try {
       const results = await publishExhibitionAPI({exhibitionId: updatedExhibition.exhibitionId!, isPublished});
       dispatch({
@@ -152,6 +169,10 @@ export function ExhibitionCard({
   };
 
   const addNewArtwork = async () => {
+    if (higherLevelCreateArtwork){
+      await higherLevelCreateArtwork({exhibitionId});
+      return;
+    } 
     setArtworkLoading(true);
     const exhibitionOrder = Object?.keys(artworks)?.length;
 
@@ -172,6 +193,7 @@ export function ExhibitionCard({
     } catch (error) {
       setErrorAlertOpen(true);
     }
+    
     setArtworkLoading(false);
   };
 
@@ -249,11 +271,15 @@ export function ExhibitionCard({
     artworkId: string;
   }): Promise<boolean> => {
     try {
+      if (higherLevelDeleteArtwork){
+        await higherLevelDeleteArtwork({artworkId, exhibitionId});
+        return Promise.resolve(true);
+      }
       const results = await deleteExhibitionArtwork({exhibitionId, artworkId});
       dispatch({
         type: GalleryReducerActions.SAVE_EXHIBITION,
         payload: results,
-        exhibitionId,
+        exhibitionId : results.exhibitionId,
       });
       dispatch({
         type: GalleryReducerActions.DELETE_ARTWORK,
@@ -318,12 +344,13 @@ export function ExhibitionCard({
 
   const deleteExhibition = async ({
     exhibitionId,
-    deleteArtworks = false,
   }: {
     exhibitionId: string;
-    deleteArtworks?: boolean;
   }): Promise<boolean> => {
-    if (deleteArtworks) {
+    if (higherLevelDeleteExhibition){
+      await higherLevelDeleteExhibition({exhibitionId});
+      return Promise.resolve(true);
+    }
       try {
         await deleteExhibitionAndArtworkAPI({exhibitionId});
         dispatch({
@@ -335,21 +362,8 @@ export function ExhibitionCard({
         setErrorAlertOpen(true);
         // TO-DO: error handling
       }
-    } else {
-      try {
-        await deleteExhibitionOnlyAPI({exhibitionId});
-        dispatch({
-          type: GalleryReducerActions.DELETE_EXHIBITION,
-          exhibitionId,
-        });
-        return Promise.resolve(true);
-      } catch (error) {
-        setErrorAlertOpen(true);
-        // TO-DO: error handling
-      }
+      return Promise.resolve(false);
     }
-    return Promise.resolve(false);
-  };
 
   const swapExhibitionOrder = async ({
     artworkId,
@@ -359,8 +373,13 @@ export function ExhibitionCard({
     direction: 'up' | 'down';
   }) => {
     setIsSwappingLoading(true);
+    if(higherLevelReOrderArtwork){
+      await higherLevelReOrderArtwork({artworkId, exhibitionId, direction});
+      setIsSwappingLoading(false);
+      return;
+    }
     const tempArtworks = _.cloneDeep(
-      state.galleryExhibitions[exhibitionId].artworks,
+      exhibition?.artworks as {[key: string]: Artwork},
     );
     if (!tempArtworks) return;
     if (!tempArtworks[artworkId]) return;
@@ -657,6 +676,8 @@ export function ExhibitionCard({
             saveSpinner={saveSpinner}
             deleteSpinner={deleteSpinner}
             handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
+            higherLevelSaveArtwork={higherLevelSaveArtwork}
+            exhibitionProps={exhibition}
           />
           )}
 
@@ -682,4 +703,10 @@ export function ExhibitionCard({
 
 ExhibitionCard.defaultProps = {
   higherLevelSaveExhibition: undefined,
+  higherLevelSaveArtwork: undefined,
+  higherLevelCreateArtwork: undefined,
+  higherLevelReOrderArtwork: undefined,
+  higherLevelDeleteArtwork: undefined,
+  higherLevelDeleteExhibition: undefined,
+  higherLevelPublishExhibition: undefined,
 };

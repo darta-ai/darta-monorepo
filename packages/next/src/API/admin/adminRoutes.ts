@@ -1,4 +1,4 @@
-import { Exhibition, ExhibitionPreviewAdmin, GalleryBase} from '@darta-types';
+import { Artwork, Exhibition, ExhibitionPreviewAdmin, GalleryBase} from '@darta-types';
 import axios from 'axios';
 
 import {auth} from '../../ThirdPartyAPIs/firebaseApp';
@@ -63,7 +63,7 @@ export async function getGalleryForAdmin({galleryId} : {galleryId: string}): Pro
   }
 }
 
-export async function createExhibitionForAdmin({galleryId} : {galleryId: string}): Promise<GalleryBase | null> {
+export async function createExhibitionForAdmin({galleryId} : {galleryId: string}): Promise<Exhibition | null> {
   try {
     const idToken = await auth.currentUser?.getIdToken();
     const response = await axios.post(
@@ -78,3 +78,121 @@ export async function createExhibitionForAdmin({galleryId} : {galleryId: string}
   }
 }
 
+export async function createExhibitionArtworkForAdmin(
+  {galleryId, exhibitionId} : 
+  {galleryId: string; exhibitionId: string}): Promise<Artwork | null> {
+  try {
+    const idToken = await auth.currentUser?.getIdToken();
+    const response = await axios.post(
+      `${URL}/createExhibitionArtworkForAdmin`,
+      {galleryId, exhibitionId},
+      {headers : {authorization: `Bearer ${idToken}`},
+    });
+    return response.data.artwork;
+  }
+  catch (error: any) {
+    // throw new Error(error.message);  
+    return null
+  } 
+}
+
+export async function editExhibitionArtworkForAdmin({artwork} : {artwork: Artwork}): Promise<Artwork | null> {
+  try {
+    const idToken = await auth.currentUser?.getIdToken();
+    const response = await axios.post(
+      `${URL}/editExhibitionArtworkForAdmin`,
+      {artwork},
+      {headers : {authorization: `Bearer ${idToken}`},
+    });
+    return response.data;
+  }
+  catch (error: any) {
+    // console.log('error editing exhibitionArtwork', {error})
+    // throw new Error(error.message);  
+    return null
+  } 
+}
+
+
+
+
+export async function reOrderExhibitionArtworkForAdmin({
+  exhibitionId,
+  artworkId,
+  desiredIndex,
+  currentIndex,
+}: {
+  exhibitionId: string;
+  artworkId: string;
+  desiredIndex: number;
+  currentIndex: number;
+}): Promise<{[key: string] : Artwork}> {
+  try {
+    const idToken = await auth.currentUser?.getIdToken();
+    const response = await axios.post(
+      `${URL}/reOrderExhibitionArtwork`,
+      {
+        exhibitionId,
+        artworkId,
+        desiredIndex,
+        currentIndex,
+      },
+      {headers : {authorization: `Bearer ${idToken}`},
+    });
+    return response.data;
+  }
+  catch (error: any) {
+    // console.log('error reordering exhibition Artwork', {error})
+    // throw new Error(error.message);  
+    return {}
+  } 
+}
+
+
+export async function deleteExhibitionArtworkForAdmin({exhibitionId, artworkId} : {exhibitionId: string; artworkId: string}): Promise<Exhibition> {
+  try {
+    const idToken = await auth.currentUser?.getIdToken();
+    const response = await axios.post(
+      `${URL}/deleteExhibitionArtworkForAdmin`,
+      {
+        exhibitionId,
+        artworkId,
+      },
+      {headers : {authorization: `Bearer ${idToken}`},
+    });
+    return response.data;
+  }
+  catch (error: any) {
+    return {} as Exhibition
+  } 
+}
+
+export async function deleteExhibitionForAdmin({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}): Promise<void>{
+  try {
+    const idToken = await auth.currentUser?.getIdToken();
+    await axios.post(
+      `${URL}/deleteExhibitionForAdmin`,
+      {exhibitionId, galleryId},
+      {headers : {authorization: `Bearer ${idToken}`}},
+    );
+  }
+  catch (error: any) {
+    // throw new Error(error.message);  
+  } 
+}
+
+export async function publishExhibitionForAdmin(
+  {exhibitionId, galleryId, isPublished} : {exhibitionId: string, galleryId: string, isPublished: boolean}): Promise<Exhibition>{
+  try {
+    const idToken = await auth.currentUser?.getIdToken();
+    const res = await axios.post(
+      `${URL}/publishExhibitionForAdmin`,
+      {exhibitionId, galleryId, isPublished},
+      {headers : {authorization: `Bearer ${idToken}`}},
+    );
+    return res.data;
+  }
+  catch (error: any) {
+    throw new Error(error.message);  
+  } 
+}
