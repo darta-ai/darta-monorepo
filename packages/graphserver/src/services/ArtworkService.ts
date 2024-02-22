@@ -265,8 +265,6 @@ export class ArtworkService implements IArtworkService {
             fileName,
             bucketName: BUCKET_NAME,
           });
-          // console.log({artworkImageResults})
-          // ({bucketName, value} = artworkImageResults);
           
           for (const result of artworkImageResults) {
             if (result.size === 'largeImage') largeImage = result;
@@ -899,6 +897,22 @@ export class ArtworkService implements IArtworkService {
     let shouldRegenerate;
     if (artworkImage?.value) {
       shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: artworkImage.value})
+      if (shouldRegenerate){
+        standardConsoleLog({request: 'ArtworkService', data: 'getArtworkById', message: 'should regenerate url'})
+      }
+      if (artworkImage.mediumImage?.value) {
+        shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: artworkImage.mediumImage.value})
+        if (shouldRegenerate){
+          standardConsoleLog({request: 'ArtworkService', data: 'getArtworkById', message: 'should regenerate medium url'})
+        }
+      }
+      if (artworkImage.smallImage?.value) {
+        shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: artworkImage.smallImage.value})
+        if (shouldRegenerate){
+          standardConsoleLog({request: 'ArtworkService', data: 'getArtworkById', message: 'should regenerate small url'})
+        }
+      }
+      
     }
     let artworkImageValueLarge = artworkImage.value ?? null
     let artworkImageValueMedium = artworkImage.mediumImage?.value ?? null
