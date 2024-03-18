@@ -122,3 +122,25 @@ export async function listExhibitionPreviewUserFollowing({
     return {};
   }
 }
+
+export const setUserViewedExhibition = async ({exhibitionId}: {exhibitionId: string}): Promise<boolean> => {
+  try {
+    const headers = await generateHeaders();
+    const {data} = await axios.post(`${URL}/userViewedExhibition`, { exhibitionId }, {headers});
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'setUserViewedExhibition'})
+    return false;
+  }
+}
+
+export const getUnViewedExhibitionsForUser = async (): Promise<{[key: string] : string[]} | void> => {
+  try {
+    const headers = await generateHeaders();
+    const {data} = await axios.get(`${URL}/getUnViewedExhibitionsForUser`, {headers});
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'getUnViewedExhibitionsForUser'})
+    return;
+  }
+}

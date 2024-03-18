@@ -10,6 +10,19 @@ export type MobileUser =  {
     localStorageUid?: string;
 }
 
+
+export type FirebaseUser = {
+  provider_id: string,
+  iss: string,
+  aud: string,
+  auth_time: number,
+  user_id: string,
+  sub: string,
+  iat: number,
+  exp: number,
+  firebase: { [key: string] : string },
+  uid: string,
+}
 type GalleryInquiryStats =
   | 'inquired'
   | 'gallery_responded'

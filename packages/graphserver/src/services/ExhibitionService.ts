@@ -18,6 +18,7 @@ import _ from 'lodash';
 
 import {CollectionNames, EdgeNames} from '../config/collections';
 import { ENV } from '../config/config';
+import { FOURTEEN_DAYS_AGO } from '../config/constants';
 import {newExhibitionShell} from '../config/templates';
 import {ImageController} from '../controllers/ImageController';
 import {
@@ -253,7 +254,7 @@ export class ExhibitionService implements IExhibitionService {
     if (exhibition?.exhibitionPrimaryImage?.value) {
       shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: exhibition?.exhibitionPrimaryImage.value})
     }
-    let exhibitionImageValueLarge = exhibition.exhibitionPrimaryImage?.value;
+    let exhibitionImageValueLarge = exhibition.exhibitionPrimaryImage?.value ?? null;
     let exhibitionImageValueMedium = exhibition.exhibitionPrimaryImage?.mediumImage?.value ?? null
     let exhibitionImageValueSmall = exhibition.exhibitionPrimaryImage?.smallImage?.value ?? null
 
@@ -314,7 +315,6 @@ export class ExhibitionService implements IExhibitionService {
     exhibitionId: string;
   }): Promise<Exhibition | void> {
     const fullExhibitionId = this.generateExhibitionId({exhibitionId});
-
     const exhibitionQuery = `
       LET exhibition = DOCUMENT(@fullExhibitionId)
       RETURN {
@@ -325,7 +325,7 @@ export class ExhibitionService implements IExhibitionService {
         exhibitionId: exhibition.exhibitionId,
         exhibitionDates: exhibition.exhibitionDates,
         createdAt: exhibition.createdAt,
-        _id: exhibition._id
+        _id: exhibition._id,
       }      
       `;
 
@@ -849,9 +849,7 @@ export class ExhibitionService implements IExhibitionService {
             exhibitionLocationString: exhibition.exhibitionLocation.locationString,
             coordinates: exhibition.exhibitionLocation.coordinates
         },
-        exhibitionPrimaryImage: {
-            value: exhibition.exhibitionPrimaryImage.value
-        },
+        exhibitionPrimaryImage: exhibition.exhibitionPrimaryImage,
         receptionDates: exhibition.receptionDates
     }
     `
@@ -869,7 +867,8 @@ export class ExhibitionService implements IExhibitionService {
     }
   }
 
-  public async listExhibitionsPreviewsCurrentForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: ExhibitionPreview} | void> {
+  public async listExhibitionsPreviewsCurrentForUserByLimit({limit, uid}: {limit: number, uid: string})
+  : Promise<{[key: string]: ExhibitionPreview} | void> {
     const getExhibitionPreviewQuery = `
     WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}
     LET exhibitions = (
@@ -925,9 +924,25 @@ export class ExhibitionService implements IExhibitionService {
     try {
       const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit });
       const exhibitionPreviews = await edgeCursor.all()
-
+      
+      let seenResults: {[key: string]: boolean} = {}
+      if (uid){
+        const previewsPromises: any = []
+        exhibitionPreviews.forEach((exhibition: any) => {
+          previewsPromises.push(this.getUserViewedExhibition({exhibitionId: exhibition.exhibitionId, uid}))
+        });
+        const results = await Promise.allSettled(previewsPromises);
+          results.forEach((result) => {
+              if (result.status === 'fulfilled') {
+                  seenResults = { ...seenResults, ...result.value };
+              }
+          });
+      }
+      
       return exhibitionPreviews.reduce((acc, obj) =>{
-        acc[obj.exhibitionId as string] = {...obj, artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2}), {})}
+        acc[obj.exhibitionId as string] = {...obj, 
+          userViewed: seenResults?.[obj?.exhibitionId] ?? true, 
+          artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2 }), {})}
         return acc}, {})
   
     } catch (error: any) {
@@ -935,7 +950,8 @@ export class ExhibitionService implements IExhibitionService {
     }
   }
 
-  public async listExhibitionsPreviewsForthcomingForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: ExhibitionPreview} | void> {
+  public async listExhibitionsPreviewsForthcomingForUserByLimit({limit, uid}: {limit: number, uid: string})
+  : Promise<{[key: string]: ExhibitionPreview} | void> {
  
     const getExhibitionPreviewQuery = `
     WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}
@@ -991,9 +1007,30 @@ export class ExhibitionService implements IExhibitionService {
       const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit });
       const exhibitionPreviews = await edgeCursor.all()
 
-      return exhibitionPreviews.reduce((acc, obj) =>{
-        acc[obj.exhibitionId as string] = {...obj, artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2}), {})}
-        return acc}, {})
+      let seenResults: {[key: string]: boolean} = {}
+      if (uid){
+        const previewsPromises: any = []
+        exhibitionPreviews.forEach((exhibition: any) => {
+          previewsPromises.push(this.getUserViewedExhibition({exhibitionId: exhibition.exhibitionId, uid}))
+        });
+        const results = await Promise.allSettled(previewsPromises);
+        results.forEach((result) => {
+            if (result.status === 'fulfilled') {
+                seenResults = { ...seenResults, ...result.value };
+            }
+        });
+      }
+
+      return exhibitionPreviews.reduce((acc, obj) => 
+      {
+        const userViewed = (seenResults?.[obj?.exhibitionId] || new Date(obj?.openingDate.value).toISOString() < FOURTEEN_DAYS_AGO ) ?? true
+        acc[obj.exhibitionId as string] = {
+          ...obj, 
+          userViewed, 
+          artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2 }), {})}
+        return acc 
+      }, {})
+
   
     } catch (error: any) {
       throw new Error(error.message);
@@ -1065,10 +1102,31 @@ export class ExhibitionService implements IExhibitionService {
     try {
       const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit, userId});
       const exhibitionPreviews = (await edgeCursor.all());
-      return exhibitionPreviews.reduce((acc, obj) =>{
-        acc[obj.exhibitionId as string] = {...obj, artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2}), {})}
-        return acc}, {})
 
+
+      let seenResults: {[key: string]: boolean} = {}
+      if (uid){
+        const previewsPromises: any = []
+        exhibitionPreviews.forEach((exhibition: any) => {
+          previewsPromises.push(this.getUserViewedExhibition({exhibitionId: exhibition.exhibitionId, uid}))
+        });
+        const results = await Promise.allSettled(previewsPromises);
+          results.forEach((result) => {
+              if (result.status === 'fulfilled') {
+                  seenResults = { ...seenResults, ...result.value };
+              }
+          });
+      }
+
+      return exhibitionPreviews.reduce((acc, obj) => 
+      {
+        const userViewed = (seenResults?.[obj?.exhibitionId] || new Date(obj?.openingDate.value).toISOString() < FOURTEEN_DAYS_AGO ) ?? true
+        acc[obj.exhibitionId as string] = {
+          ...obj, 
+          userViewed, 
+          artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2 }), {})}
+        return acc 
+      }, {})
 
     } catch (error: any) {
       throw new Error(error.message);
@@ -1172,12 +1230,9 @@ export class ExhibitionService implements IExhibitionService {
           exhibitionMapPin[locationId].exhibitionDates.exhibitionEndDate.value! > 
           exhibitionAndPreview.exhibitionDates.exhibitionEndDate.value
       ) {
-        //  console.log('!!! swapping this ', exhibitionAndPreview.exhibitionTitle, 'from ',  exhibitionMapPin[locationId].exhibitionTitle)
           exhibitionMapPin[locationId] = exhibitionAndPreview;
       }
-        // exhibitionMapPin[exhibitionAndPreview.exhibitionId] = exhibitionAndPreview
       })
-
       return {...exhibitionMapPin}
     } catch(error: any){
       throw new Error(error.message)
@@ -1205,7 +1260,7 @@ export class ExhibitionService implements IExhibitionService {
   public async readAllExhibitions(): Promise<void>{
     const getExhibitionsQuery = `
     WITH ${CollectionNames.Exhibitions}
-    FOR exhibitions IN ${CollectionNames.Exhibitions}
+    FOR exhibition IN ${CollectionNames.Exhibitions}
     RETURN {_id: exhibition._id}
   `;
 
@@ -1534,6 +1589,7 @@ export class ExhibitionService implements IExhibitionService {
     return true;
   }
 
+
   // TO-DO
   // eslint-disable-next-line class-methods-use-this
   public async deleteArtworkToLocationEdge(): Promise<boolean> {
@@ -1646,6 +1702,114 @@ export class ExhibitionService implements IExhibitionService {
       throw new Error(
         `error reordering artwork: ${error.message}`,
       );
+    }
+  }
+
+  public async setViewedExhibition({
+    exhibitionId,
+    uid,
+  }: {
+    exhibitionId: string;
+    uid: string;
+  }): Promise<boolean> {
+    const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+    const fullUserId = this.userService.generateDartaUserId({uid});
+
+    try {
+      await this.edgeService.upsertEdge({
+        edgeName: EdgeNames.FROMDartaUserTOExhibitionVIEWED,
+        from: fullUserId,
+        to: fullExhibitionId,
+        data: {
+          value: 'VIEWED',
+        },
+      });
+      return true;
+    } catch (error: any) {
+      throw new Error(
+        `error user viewing exhibition: ${error.message}`,
+      );
+    }
+  }
+
+  public async getUserViewedExhibition({
+    exhibitionId,
+    uid,
+  }: {
+    exhibitionId: string;
+    uid: string;
+  }): Promise<{[key: string]: boolean}> {
+    const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+    const fullUserId = this.userService.generateDartaUserId({uid});
+
+    try {
+      const results = await this.edgeService.getEdge({
+        edgeName: EdgeNames.FROMDartaUserTOExhibitionVIEWED,
+        from: fullUserId,
+        to: fullExhibitionId,
+      });
+      if (results) {
+        return {[fullExhibitionId]: true};
+      }
+    } catch (error: any) {
+      throw new Error(
+        `error user viewing exhibition: ${error.message}`,
+      );
+    }
+
+    return {[fullExhibitionId]: false};;
+  }
+
+  public async getUnViewedExhibitionsForUser({uid} : {uid: string}): Promise<{[key: string] : Array<string>} | void>{
+    const getExhibitionPreviewQuery = `
+    WITH ${CollectionNames.Galleries}, ${CollectionNames.Exhibitions}, ${CollectionNames.Artwork}, 
+    ${CollectionNames.DartaUsers}, ${EdgeNames.FROMGalleryTOExhibition}, ${EdgeNames.FROMDartaUserTOGalleryVIEWED}, 
+    ${EdgeNames.FROMDartaUserTOGalleryFOLLOWS}
+      FOR user IN ${CollectionNames.DartaUsers}
+          FILTER user._id == @userId
+          LET followedGalleries = (
+              FOR gallery IN 1..1 OUTBOUND user ${EdgeNames.FROMDartaUserTOGalleryFOLLOWS}
+              RETURN gallery._id
+          )
+          LET galleryExhibitions = (
+              FOR galleryId IN followedGalleries
+                  LET unviewedExhibitions = (
+                      FOR exhibition IN ${CollectionNames.Exhibitions}
+                      FOR v, e IN 1..1 OUTBOUND DOCUMENT(${CollectionNames.Galleries}, galleryId) ${EdgeNames.FROMGalleryTOExhibition}
+                            FILTER DATE_ISO8601(exhibition.exhibitionDates.exhibitionStartDate.value) >= DATE_ISO8601(@cutoff)
+                              FILTER e._to == exhibition._id
+                              LET viewed = (
+                                  FOR userView IN 1..1 OUTBOUND exhibition._id ${EdgeNames.FROMDartaUserTOGalleryVIEWED}
+                                  FILTER userView._to == user._id
+                                  RETURN 1
+                              )
+                              FILTER LENGTH(viewed) == 0
+                              RETURN {
+                                exhibitionId: exhibition._id,
+                                exhibitionStartDate: exhibition.exhibitionDates.exhibitionStartDate.value
+                              }
+                  )
+                  FILTER LENGTH(unviewedExhibitions) > 0
+                  RETURN { [galleryId]: unviewedExhibitions }
+          )
+      RETURN FLATTEN(galleryExhibitions)
+    `
+    const fullUserId = this.userService.generateDartaUserId({uid})
+    try {
+      const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { userId: fullUserId, cutoff: FOURTEEN_DAYS_AGO });
+      const exhibitionPreviews = await edgeCursor.next()
+      const results = exhibitionPreviews.reduce((acc: any, obj: any) => {
+        const galleryId = Object.keys(obj)[0]
+        const values: any = Object.values(obj)[0]
+        const startDate = values[0]?.exhibitionStartDate
+        if (startDate >= FOURTEEN_DAYS_AGO && values?.[0]?.exhibitionId) {
+          acc[galleryId] = values[0].exhibitionId
+        }
+        return acc
+      }, {})
+      return results
+    } catch (error: any) {
+      throw new Error(error.message);
     }
   }
 

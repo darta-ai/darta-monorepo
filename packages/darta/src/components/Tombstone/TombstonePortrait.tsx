@@ -271,10 +271,11 @@ export function TombstonePortrait({
             centerContent>
             <View style={SSTombstonePortrait.imageContainer}>
               <DartaImageComponent
-                uri={artwork?.artworkImage?.value!}
+                uri={artwork?.artworkImage}
                 priority={FastImage.priority.normal}
                 style={SSTombstonePortrait.image}
                 resizeMode={FastImage.resizeMode.contain}
+                size={"largeImage"}
               />
             </View>
           </ScrollView>

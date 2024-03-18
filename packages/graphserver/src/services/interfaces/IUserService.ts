@@ -80,4 +80,5 @@ export interface IUserService {
   listDartaUserFollowsGallery({uid} : {uid: string}): Promise<GalleryPreview[]>
   generateGalleryUserId({uid}: {uid: string}): string
   generateDartaUserId({uid}: {uid: string}): string
+  readAllUsers(): Promise<void>
 }

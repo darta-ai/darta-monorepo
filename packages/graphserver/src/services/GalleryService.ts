@@ -153,9 +153,9 @@ export class GalleryService implements IGalleryService {
       shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: galleryLogo.value})
     }
 
-    let galleryLogoValueLarge = galleryLogo.value;
-    let galleryLogoValueMedium = galleryLogo.mediumImage?.value ?? null
-    let galleryLogoValueSmall = galleryLogo.smallImage?.value ?? null
+    let galleryLogoValueLarge = galleryLogo?.value ?? null;
+    let galleryLogoValueMedium = galleryLogo?.mediumImage?.value ?? null;
+    let galleryLogoValueSmall = galleryLogo?.smallImage?.value ?? null;
 
     if (shouldRegenerate && ENV === 'production' && galleryLogo?.bucketName && galleryLogo?.fileName) {
       try {

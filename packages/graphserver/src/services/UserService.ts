@@ -132,7 +132,8 @@ export class UserService implements IUserService {
         collectionName: CollectionNames.DartaUsers,
         key: uid,
         data: {
-          value: uid
+          value: uid,
+          createdAt: new Date().toISOString(),
         },
       });
       return true;
@@ -190,6 +191,28 @@ export class UserService implements IUserService {
   }
 
 
+  public async readAllUsers(): Promise<void>{
+    const query = `
+      WITH ${CollectionNames.DartaUsers}
+      FOR user IN ${CollectionNames.DartaUsers}
+      RETURN {
+        userId: user._id,
+      }`
+
+    try {
+      const cursor = await this.db.query(query);
+      const users = await cursor.all();
+      const promises = [];
+      for (const user of users) {
+        promises.push(this.readDartaUser({uid: user.userId}));
+      }
+      await Promise.allSettled(promises);
+    }
+    catch (error: any) {
+      throw new Error(`Unable to read all users ${error?.message}`);
+    }
+  }
+
   public async readGalleryEdgeRelationship({
     uid,
   }: {
@@ -224,9 +247,9 @@ export class UserService implements IUserService {
         shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: userProfilePicture.value})
       }
 
-      let profilePictureLarge = userProfilePicture.value;
-      let profilePictureMedium = userProfilePicture?.mediumImage.value;
-      let profilePictureSmall = userProfilePicture?.smallImage.value;
+      let profilePictureLarge = userProfilePicture?.value;
+      let profilePictureMedium = userProfilePicture?.mediumImage?.value;
+      let profilePictureSmall = userProfilePicture?.smallImage?.value;
 
       if (shouldRegenerate && ENV === 'production' && userProfilePicture?.bucketName && userProfilePicture?.fileName) {
         try {
@@ -353,7 +376,8 @@ export class UserService implements IUserService {
 
 
     let mediumImage = profilePic
-    let {smallImage} = profilePic
+    // eslint-disable-next-line prefer-destructuring
+    let smallImage = profilePic?.smallImage
 
     if (profilePicture?.fileData && typeof profilePicture?.fileData === 'string') {
       try {

@@ -16,12 +16,12 @@ import { UIStoreContext } from '../../state';
 import { TextElement } from '../../components/Elements/TextElement';
 import * as Colors from '@darta-styles'
 import { AddToListScreen } from '../../screens/Lists/AddToList';
+import { BottomSheetNavigation } from '../../screens/ExploreMap/BottomSheetNavigation';
 
 
 export const ExploreMapStack = createStackNavigator();
 
 export function ExploreMapStackNavigator({route} : {route: any}) {
-  const {state} = useContext(StoreContext);
   const {uiState} = useContext(UIStoreContext);
   const navigation = useNavigation();
   return (
@@ -70,6 +70,17 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
             component={ArtworkScreen}
             options={{...headerOptions, headerTitle: uiState.currentArtworkTombstoneHeader ?? ""}}
             initialParams={{saveRoute: ExploreMapRootEnum.exploreMapListAdd, addPaddingTop: true}}
+          />
+        <ExploreMapStack.Screen
+            name={ExploreMapRootEnum.bottomSheetOptions}
+            component={BottomSheetNavigation}
+            options={{...headerOptions, 
+              headerShown: false,
+              presentation: 'transparentModal',
+              headerMode: 'screen', 
+              headerTitle: 'Options',
+              cardStyle: {backgroundColor: 'transparent'},
+            }}
           />
         <ExploreMapStack.Group screenOptions={{
             presentation: 'transparentModal',

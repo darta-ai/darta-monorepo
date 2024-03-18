@@ -283,7 +283,8 @@ const CustomMarker = React.memo(({
             <View style={customMarker.exhibitionContainer}>
                 <View style={customMarker.heroImageContainer} >
                   <DartaImageComponent 
-                  uri={mapPin?.exhibitionPrimaryImage?.value || ""}
+                  uri={mapPin?.exhibitionPrimaryImage || ""}
+                  size={"smallImage"}
                   priority={FastImage.priority.normal}
                   style={customMarker.heroImage} 
                   resizeMode={FastImage.resizeMode.contain}

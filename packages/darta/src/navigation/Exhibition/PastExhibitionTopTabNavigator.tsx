@@ -60,7 +60,7 @@ export function PastExhibitionTopTabNavigator({route} : {route: any}) {
             name={PreviousExhibitionRootEnum.artworkList}
             component={ExhibitionArtworkScreen}
             initialParams={{exhibitionId: route?.params?.exhibitionId, galleryId: route?.params?.galleryId, navigateTo: route.params?.navigateTo ?? ExhibitionRootEnum.individualArtwork }}
-            options={{ title: 'Artwork' }}
+            options={{ title: 'Checklist' }}
           />
         )}
     </PreviousExhibitionStackTopTab.Navigator>

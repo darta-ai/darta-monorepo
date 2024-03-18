@@ -8,9 +8,10 @@ import {
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import * as SVGs from '../../assets/SVGs';
 
 import {TextElement} from '../Elements/_index';
-import {ExhibitionDates} from '@darta-types';
+import {ExhibitionDates, Images} from '@darta-types';
 import * as Colors from '@darta-styles';
 import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 import FastImage from 'react-native-fast-image';
@@ -19,7 +20,7 @@ import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 
 type ExhibitionPreviewMiniProps = {
-  exhibitionHeroImage: string,
+  exhibitionHeroImage: Images,
   exhibitionId: string,
   exhibitionTitle: string,
   exhibitionGallery: string, 
@@ -27,6 +28,7 @@ type ExhibitionPreviewMiniProps = {
   galleryLogoLink: string,
   exhibitionArtist: string,
   exhibitionLocation: string,
+  userUnviewed: boolean,
   onPress: ({ exhibitionId }: { exhibitionId: string }) => void
 };
 
@@ -37,6 +39,12 @@ const exhibitionPreview = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-around',
     alignItems: 'flex-start',
+  },
+  bellContainer: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    zIndex: 2,
   },
   heroImageContainer: {
     height: 262,
@@ -110,6 +118,7 @@ const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
     exhibitionDates,
     exhibitionArtist,
     exhibitionLocation,
+    userUnviewed,
     onPress
 }) => {
 
@@ -132,6 +141,11 @@ const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
   return (
       <View
         style={exhibitionPreview.container}>
+          {userUnviewed &&
+          <View style={exhibitionPreview.bellContainer}>
+            <SVGs.NewBell />
+          </View>
+          }
           <TextElement
             style={exhibitionPreview.exhibitionTitle}>
             {exhibitionArtist?.trim() ?? "Group Show"}
@@ -146,6 +160,7 @@ const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
                 style={exhibitionPreview.heroImage} 
                 resizeMode={FastImage.resizeMode.contain}
                 priority={FastImage.priority.high}
+                size={"smallImage"}
             />
           </Surface>
           <TextElement

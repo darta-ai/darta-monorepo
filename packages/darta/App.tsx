@@ -1,6 +1,5 @@
 /* eslint-disable react/no-unstable-nested-components */
 import 'react-native-gesture-handler';
-import 'react-native-get-random-values';
 
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -142,6 +141,7 @@ function App() {
       [ExhibitionRootEnum.exhibitionGallery]: true,
       [ExhibitionRootEnum.artworkList]: true,
       [ExploreMapRootEnum.exploreMapGallery]: true, 
+      [ExploreMapRootEnum.bottomSheetOptions]: true,
       [UserRoutesEnum.home]: true,
       [UserRoutesEnum.userSavedArtwork]: true,
       [UserRoutesEnum.userInquiredArtwork]: true,
@@ -178,6 +178,26 @@ function App() {
                   labeled={true} // This ensures labels are shown
                   >
                     <RootStack.Screen
+                        name="Visit"
+                        component={ExploreMapStackNavigator}
+                        options={{
+                          tabBarLabel: "Visit",
+                          tabBarIcon: ({ focused }) => (
+                            focused ? <SVGs.VisitFocusedIcon /> : <SVGs.VisitUnfocusedIcon />
+                          )
+                        }}
+                      />
+                      <RootStack.Screen
+                      name="exhibitions"
+                      component={ExhibitionStackNavigator}
+                      options={{
+                        tabBarLabel: "Exhibitions",
+                        tabBarIcon: ({ focused }) => (
+                          focused ? <SVGs.PaletteFocusedIcon /> : <SVGs.PaletteUnfocusedIcon />
+                        )
+                      }}
+                    />
+                    <RootStack.Screen
                       name="View"
                       component={DartaRecommenderNavigator}
                       options={{
@@ -188,26 +208,6 @@ function App() {
                         )},
                       }}
                     />
-                    <RootStack.Screen
-                      name="exhibitions"
-                      component={ExhibitionStackNavigator}
-                      options={{
-                        tabBarLabel: "Exhibitions",
-                        tabBarIcon: ({ focused }) => (
-                          focused ? <SVGs.PaletteFocusedIcon /> : <SVGs.PaletteUnfocusedIcon />
-                        )
-                      }}
-                    />
-                      <RootStack.Screen
-                        name="Visit"
-                        component={ExploreMapStackNavigator}
-                        options={{
-                          tabBarLabel: "Visit",
-                          tabBarIcon: ({ focused }) => (
-                            focused ? <SVGs.VisitFocusedIcon /> : <SVGs.VisitUnfocusedIcon />
-                          )
-                        }}
-                      />
                     <RootStack.Screen
                       name="Profile"
                       component={UserStackNavigator}

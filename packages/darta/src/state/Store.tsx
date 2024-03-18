@@ -57,8 +57,14 @@ export interface IState {
   isPortrait: boolean;
 
   mapPins?: {
-    [city in MapPinCities]: {[key: string] : ExhibitionMapPin}
+    [city in MapPinCities]: Array<ExhibitionMapPin>
   }
+
+  mapPinsSaved?: {
+    [city in MapPinCities]: Array<ExhibitionMapPin>
+  }
+
+  isViewingSaved: boolean;
 
   qrCodeExhibitionId?: string;
   qrCodeGalleryId?: string;
@@ -102,41 +108,21 @@ export enum ETypes {
   setUserLists = 'SET_USER_LISTS',
   addArtworkToList = 'ADD_ARTWORK_TO_LIST',
   deleteList = 'DELETE_LIST',
+  isViewingSaved = 'IS_VIEWING_SAVED',
 }
 
 // Define the action type
 interface IAction {
   type: ETypes;
 
-  // For RATE
-  rating?: string;
-
-  // for INDEX
-  currentIndex?: number;
-  artworkOnDisplayId?: string;
-
-  // for LOAD
-  loadedDGallery?: Artwork[];
-
   // for title
   galleryTitle?: string;
-
-  // for tombstone
-  tombstoneTitle?: string;
-
-  // for userSettings
-  userSettings?: PatUserData;
-
-  // for saving artwork
-  artOnDisplay?: Artwork;
-  saveWork?: boolean;
-
   
   // see here after
-
-
   mapPins?: {[key: string] : ExhibitionMapPin}
   mapPinCity?: MapPinCities
+  isViewingSaved?: boolean;
+  userGalleryFollowed?: {[key: string] : boolean};
 
   qRCodeExhibitionId?: string;
   qrCodeGalleryId?: string;
@@ -154,32 +140,54 @@ interface IAction {
 const initialState: IState = {
   isPortrait: true,
   mapPins: {} as any,
+  isViewingSaved: false,
 };
 
 // Define the reducer function
 const reducer = (state: IState, action: IAction): IState => {
-  const {
-    type,
-    galleryTitle = 'darta',
-  } = action;
+  const { type } = action;
 
   switch (type) {
     case ETypes.setPortrait:
       return {...state, isPortrait: !state.isPortrait};
       // SET_CURRENT_EXHIBITION
     case ETypes.saveExhibitionMapPins:
-        if (!action.mapPins && !action.mapPinCity) {
+        if (!action.mapPins || !action.mapPinCity || !action?.userGalleryFollowed) {
           return state;
         }
+        const allPins : ExhibitionMapPin[] = Object.values(action.mapPins).sort((a, b) => {
+            if (a.exhibitionDates?.exhibitionStartDate?.value && b.exhibitionDates?.exhibitionStartDate?.value) {
+              return new Date(a.exhibitionDates.exhibitionStartDate.value).getTime() - new Date(b.exhibitionDates.exhibitionStartDate.value).getTime();
+            } else {
+              return 0;
+            }
+          }) 
+
+        const userFollowsPins: ExhibitionMapPin[] = allPins.filter((pin: ExhibitionMapPin) => {
+          const galleryId = pin?.galleryId;
+          return action?.userGalleryFollowed?.[galleryId] && pin?.exhibitionLocation?.coordinates?.latitude && pin?.exhibitionLocation?.coordinates?.longitude
+        })
+      
         return {
           ...state,
           mapPins: {
             ...state.mapPins,
-            [action.mapPinCity as string]: {
-              ...action.mapPins,
-            },
+            [action.mapPinCity as MapPinCities]: [...allPins]
           },
+          mapPinsSaved: {
+            ...state.mapPinsSaved,
+            [action.mapPinCity as MapPinCities]: [...userFollowsPins]
+          }
         };
+    case ETypes.isViewingSaved:
+      if (action.isViewingSaved === undefined) {
+        return state;
+      }
+      return {
+        ...state,
+        isViewingSaved: action.isViewingSaved,
+      };
+      
     case ETypes.setQRCodeExhibitionId:
     if (!action.qRCodeExhibitionId) {
       return state;

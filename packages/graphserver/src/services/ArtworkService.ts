@@ -914,9 +914,9 @@ export class ArtworkService implements IArtworkService {
       }
       
     }
-    let artworkImageValueLarge = artworkImage.value ?? null
-    let artworkImageValueMedium = artworkImage.mediumImage?.value ?? null
-    let artworkImageValueSmall = artworkImage.smallImage?.value ?? null
+    let artworkImageValueLarge = artworkImage?.value ?? null
+    let artworkImageValueMedium = artworkImage?.mediumImage?.value ?? null
+    let artworkImageValueSmall = artworkImage?.smallImage?.value ?? null
 
     if(shouldRegenerate && artworkImage?.bucketName && artworkImage?.fileName){
       try {

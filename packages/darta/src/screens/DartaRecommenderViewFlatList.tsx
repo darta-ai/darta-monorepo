@@ -287,11 +287,10 @@ export function DartaRecommenderViewFlatList({
     return (
     <View key={item._id} style={{flex: 1}}>
       <ArtOnWallMemo
-        artImage={item?.artworkImage?.value!}
+        artImage={item?.artworkImage}
         artOnDisplay={item!}
         artworkDimensions={item?.artworkDimensions}
         navigation={navigation}
-        wallHeight={86}
       />
     </View>
   )}, [backgroundContainerDimensionsPixels, viewState.artworksToRate, longestPainting])
@@ -714,7 +713,7 @@ const saveWiggle = React.useCallback(async () => {
     },
     (type, dim) => {
         dim.width = wp('100%');
-        dim.height = hp('100%')
+        dim.height = hp('80%')
     })
   }, []);
 

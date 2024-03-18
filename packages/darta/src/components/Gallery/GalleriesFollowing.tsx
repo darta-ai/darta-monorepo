@@ -35,6 +35,8 @@ export function GalleriesFollowing({
       for (const key in userGalleryFollowed) {
         if (userGalleryFollowed[key] === true && galleryPreviews[key]) {
           result.push(galleryPreviews[key]);
+        } else if (userGalleryFollowed[key] === true && !galleryPreviews[key]){
+          
         }
       }
       result.sort((a, b) => {

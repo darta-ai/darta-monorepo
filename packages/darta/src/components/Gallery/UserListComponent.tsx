@@ -17,17 +17,16 @@ export const userListComponentStyles = StyleSheet.create({
     flexDirection: 'row',
     alignContent: 'center',
     alignSelf: 'center',
-    backgroundColor: Colors.PRIMARY_100,
+    backgroundColor: Colors.PRIMARY_50,
     justifyContent: 'center',
-    borderWidth: 1,
     borderColor: Colors.PRIMARY_900,
     height: 78,
-    width: wp('90%'),
+    width: wp('85%'),
     padding: 16,
     gap: 4,
   },
   badgeContainer: {
-    width: '25%',
+    width: '20%',
     height: '100%',
     justifyContent: 'center',
     alignSelf: 'center',
@@ -38,7 +37,7 @@ export const userListComponentStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   textContainer: {
-    width: '65%',
+    width: '70%',
     height: '100%',
     justifyContent: 'center',
     gap: 2,
@@ -83,6 +82,7 @@ export const UserListComponent: React.FC<DartaIconButtonWithTextProps> = ({
     handlePress({listId: listPreview._id})
   }
 
+  console.log({listPreview})
   return (
     <TouchableOpacity style={userListComponentStyles.componentContainer} onPress={onPress}>
       <View style={userListComponentStyles.badgeContainer}>
@@ -94,6 +94,10 @@ export const UserListComponent: React.FC<DartaIconButtonWithTextProps> = ({
         <TextElement
           style={globalTextStyles.boldTitleText}>
           {listPreview?.listName}
+        </TextElement>
+        <TextElement
+          style={globalTextStyles.baseText}>
+          List by {listPreview?.creatorName ?? "You"}
         </TextElement>
       </View>
       <View style={userListComponentStyles.forwardButtonContainer}>

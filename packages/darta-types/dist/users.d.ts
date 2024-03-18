@@ -8,6 +8,20 @@ export type MobileUser = {
     uid?: string;
     localStorageUid?: string;
 };
+export type FirebaseUser = {
+    provider_id: string;
+    iss: string;
+    aud: string;
+    auth_time: number;
+    user_id: string;
+    sub: string;
+    iat: number;
+    exp: number;
+    firebase: {
+        [key: string]: string;
+    };
+    uid: string;
+};
 type GalleryInquiryStats = 'inquired' | 'gallery_responded' | 'negotiation' | 'accepted' | 'payment_received' | 'artwork_sent' | 'closed' | 'gallery_declined' | 'gallery_archived';
 export type InquiryArtworkData = {
     edge_id: string;

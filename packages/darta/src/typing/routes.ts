@@ -128,6 +128,7 @@ export enum ExploreMapRootEnum {
   explorePastNavigator = 'EXPLORE_PAST_NAVIGATOR', 
   individualArtwork = 'INDIVIDUAL_ARTWORK',
   exploreMapListAdd = 'EXPLORE_MAP_LIST_ADD',
+  bottomSheetOptions = 'BOTTOM_SHEET_OPTIONS',
 }
 
 export type ExploreMapParamList = {

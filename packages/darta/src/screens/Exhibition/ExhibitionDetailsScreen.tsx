@@ -14,12 +14,9 @@ import {
 } from '../../typing/routes';
 import {Exhibition, IGalleryProfileData} from '@darta-types'
 import {globalTextStyles} from '../../styles/styles'
-import * as Calendar from 'expo-calendar';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
-import { readExhibition } from '../../api/exhibitionRoutes';
-import { mapStylesJson } from '../../utils/mapStylesJson';
+import { readExhibition, setUserViewedExhibition } from '../../api/exhibitionRoutes';
 import { readGallery } from '../../api/galleryRoutes';
 import { TextElementMultiLine } from '../../components/Elements/TextElement';
 import { DartaIconButtonWithText } from '../../components/Darta/DartaIconButtonWithText';
@@ -147,10 +144,9 @@ export function ExhibitionDetailsScreen({
   const {uiDispatch} = React.useContext(UIStoreContext);
   const {galleryState, galleryDispatch} = React.useContext(GalleryStoreContext);
   const [exhibitionId, setExhibitionId] = React.useState<string>("")
+  const [galleryId, setGalleryId] = React.useState<string | undefined>("")
   const [errorText, setErrorText] = React.useState<string>("");
   const [isGalleryLoaded, setIsGalleryLoaded] = React.useState<boolean>(false);
-  const [vimeoURL, setVimeoURL] = React.useState<string>("");
-
 
   const [currentExhibition, setCurrentExhibition] = React.useState<Exhibition | null>(null);
 
@@ -162,11 +158,9 @@ export function ExhibitionDetailsScreen({
   const [isReceptionMultipleDays, setIsReceptionMultipleDays ] = React.useState<boolean>(false)
   const [hasReception, setHasReception ] = React.useState<boolean>(false)
   const [receptionOpenFullDate, setReceptionOpenFullDate ] = React.useState<Date>(new Date())
-  const [receptionCloseFullDate, setReceptionCloseFullDate ] = React.useState<Date>(new Date())
 
   const [receptionDateString, setReceptionDateString] = React.useState<string>("")
   const [receptionTimeString, setReceptionTimeString] = React.useState<string>("")
-  const [exhibitionLocation, setExhibitionLocation] = React.useState<string>("")
   
   const [mapRegion, setMapRegion] = React.useState<any>({
     latitudeDelta: 0.01,
@@ -180,17 +174,6 @@ export function ExhibitionDetailsScreen({
   const [artistName, setArtistName] = React.useState<string>("")
 
   const setExhibitionData = ({currentExhibition, currentGallery} : {currentExhibition: Exhibition, currentGallery: IGalleryProfileData}) => {
-
-    if (currentExhibition?.videoLink?.value){
-        const url = currentExhibition.videoLink.value
-        if (url.includes('https://player.vimeo.com/video/')){
-            setVimeoURL(url)
-            return
-        }
-        const vimeoId = url.split('/').pop()
-        const vimeoUrl = `https://player.vimeo.com/video/${vimeoId}`
-        setVimeoURL(vimeoUrl)
-    }
 
     if (currentExhibition._id){
         setExhibitionId(currentExhibition._id)
@@ -208,11 +191,6 @@ export function ExhibitionDetailsScreen({
         setArtistName(currentExhibition?.exhibitionArtist?.value ?? "")
     }
 
-    if(currentExhibition?.exhibitionLocation?.locationString?.value){
-        const city = simplifyAddressCity(currentExhibition?.exhibitionLocation?.locationString?.value)
-        const mailing = simplifyAddressMailing(currentExhibition?.exhibitionLocation?.locationString?.value)
-        setExhibitionLocation(`${mailing} ${city}`)
-    }
     if (currentExhibition?.exhibitionDates 
         && currentExhibition.exhibitionDates?.exhibitionStartDate 
         && currentExhibition.exhibitionDates?.exhibitionEndDate
@@ -238,10 +216,8 @@ export function ExhibitionDetailsScreen({
             setReceptionOpeningDay(receptionStartDay)
             setReceptionCloseDay(receptionEndDay)
             setIsReceptionMultipleDays(receptionCloseDay !== receptionOpeningDay);
-            const receptionInPast = new Date(currentExhibition.receptionDates.receptionEndTime.value) > new Date()
             setHasReception(currentExhibition.receptionDates.hasReception.value === "Yes");
             setReceptionOpenFullDate(new Date(currentExhibition.receptionDates.receptionStartTime.value));
-            setReceptionCloseFullDate(new Date(currentExhibition.receptionDates.receptionEndTime.value));
 
             if(isReceptionMultipleDays){
                 setReceptionDateString(`${receptionStartDay} - ${receptionEndDay}`)
@@ -317,8 +293,24 @@ export function ExhibitionDetailsScreen({
         })
     }
 
+ const setViewedInDB = async ({exhibitionId} : {exhibitionId: string}): Promise<void> => {
+    if (exhibitionId){
+            if (exhibitionState?.userViewedExhibition && !exhibitionState.userViewedExhibition[exhibitionId]){         
+                const setSuccessfully = await setUserViewedExhibition({exhibitionId})
+                if (setSuccessfully){
+                    exhibitionDispatch({
+                        type: ExhibitionETypes.setUserViewedExhibition,
+                        userViewedExhibitionId: exhibitionId,
+                        galleryId,
+                    })
+                }
+            }
+        }
+    }
+
   React.useEffect(() => {
-    function handleExhibitionData() {
+    
+    async function handleExhibitionData() {
         let galleryId = ""
         let exhibitionId = ""
         if (route?.params?.exhibitionId){
@@ -326,7 +318,9 @@ export function ExhibitionDetailsScreen({
           }
         if (route?.params?.galleryId){
             galleryId = route.params.galleryId
+            setGalleryId(galleryId)
         }
+
         // If already loaded
         if (exhibitionId && 
             galleryId && 
@@ -339,6 +333,7 @@ export function ExhibitionDetailsScreen({
                 setCurrentExhibition(exhibition);
                 setExhibitionData({currentExhibition: exhibition, currentGallery: gallery})
                 setIsGalleryLoaded(true);
+                setViewedInDB({exhibitionId})
             }   
             else if (route?.params?.galleryId && exhibitionState?.exhibitionData && exhibitionState.exhibitionData[exhibitionId] 
                 && galleryState.galleryData 
@@ -348,8 +343,10 @@ export function ExhibitionDetailsScreen({
                     setCurrentExhibition(exhibition);
                     setExhibitionData({currentExhibition: exhibitionState.exhibitionData[exhibitionId], currentGallery: galleryState.galleryData[route?.params?.galleryId]})
                     setIsGalleryLoaded(true);
+                    setViewedInDB({exhibitionId})
             } else if (exhibitionId && galleryId){
                 setExhibitionDataInState()
+                setViewedInDB({exhibitionId})
             } else {
                 setErrorText('something went wrong, please refresh and try again')
             }
@@ -388,10 +385,6 @@ export function ExhibitionDetailsScreen({
             type: ExhibitionETypes.saveExhibition,
             exhibitionData: newExhibition,
         })
-        // dispatch({
-        //     type: ETypes.setFullyLoadedExhibitions,
-        //     fullyLoadedExhibitions: {[newExhibition.exhibitionId] : true},
-        // })
         uiDispatch({
             type: UiETypes.setCurrentHeader,
             currentExhibitionHeader: newExhibition.exhibitionTitle.value!,
@@ -499,10 +492,11 @@ export function ExhibitionDetailsScreen({
                     <View style={exhibitionDetailsStyles.heroImageContainer}>
                         <Surface elevation={2} style={{backgroundColor: 'transparent'}}>
                             <DartaImageComponent 
-                            uri={currentExhibition?.exhibitionPrimaryImage?.value! ?? ""}
+                            uri={currentExhibition?.exhibitionPrimaryImage ?? null}
                             priority={FastImage.priority.normal}
                             style={exhibitionDetailsStyles.heroImage}
                             resizeMode={FastImage.resizeMode.contain}
+                            size={"largeImage"}
                             />
                         </Surface>
                     </View>

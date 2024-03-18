@@ -40,9 +40,9 @@ export function customLocalDateString(date: Date) {
 }
 
 export function customLocalDateStringStart({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-  const monthName = isUpperCase ? months[date.getMonth()].toUpperCase() : months[date.getMonth()]
+  const monthName = isUpperCase ? months[date.getMonth()] : months[date.getMonth()]
 
   const dayOfMonth = date.getDate();
 
@@ -50,19 +50,17 @@ export function customLocalDateStringStart({date, isUpperCase} : {date: Date, is
 }
 
 export function customLocalDateStringEnd({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-  const monthName = isUpperCase ? months[date.getMonth()].toUpperCase() : months[date.getMonth()]
+  const monthName = isUpperCase ? months[date.getMonth()] : months[date.getMonth()]
   const dayOfMonth = date.getDate();
   const year = date.getFullYear();
 
-  return `${monthName} ${dayOfMonth} ${year}`;
+  return `${monthName} ${dayOfMonth}, ${year}`;
 }
 
 export function customDateString(date: Date) {
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   const monthName = months[date.getMonth()];
   const dayOfMonth = date.getDate();

@@ -195,7 +195,6 @@ export function FullListScreen({
           })
           .catch((err) => console.error('An error occurred', err));
     } catch(error){
-        console.log(error)
     } 
     }, [])
 

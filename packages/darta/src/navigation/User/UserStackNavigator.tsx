@@ -161,34 +161,7 @@ export function UserStackNavigator({route} : {route: any}) {
         <UserStack.Screen
           name={UserRoutesEnum.UserListsScreen}
           component={ViewListsScreen}
-          options={{
-            headerMode: 'float', 
-            cardStyle: {opacity: 1, margin:0, backgroundColor: 'transparent', width: '100%'}, 
-            headerTintColor: Colors.PRIMARY_50,
-            headerStyle: {
-              backgroundColor: Colors.PRIMARY_950, 
-              opacity: 0.9,
-            }, 
-            transitionSpec: {
-              open: {
-                animation: 'timing',
-                config: {
-                  duration: 550, // Duration in milliseconds, adjust as needed
-                },
-              },
-              close: {
-                animation: 'timing',
-                config: {
-                  duration: 550, // Duration in milliseconds, adjust as needed
-                },
-              },
-            },
-            headerBackImage: () => (
-              <View style={backButtonStyles.backButton}>
-                <SVGs.BackButtonIconWhite />
-              </View>
-          ), 
-            headerTitle: "Lists"}}
+          options={{...headerOptions, headerTitle: "Your Lists"}}
         />
         <UserStack.Screen
             name={UserRoutesEnum.userAddToList}

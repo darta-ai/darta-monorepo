@@ -8,7 +8,6 @@ import {
   UserRoutesEnum,
   UserRouteStackParamList,
 } from '../../typing/routes';
-import {StoreContext} from '../../state/Store'
 import {globalTextStyles} from '../../styles/styles';
 import { UserStoreContext } from '../../state/UserStore';
 

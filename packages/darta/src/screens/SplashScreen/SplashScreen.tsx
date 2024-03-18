@@ -6,7 +6,6 @@ import {
   Animated,
   StyleSheet,
   View,
-  Easing,
 } from "react-native";
 import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
 import { ETypes, StoreContext, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes, ViewStoreContext, ViewETypes} from "../../state";
@@ -18,10 +17,10 @@ import { listArtworksToRateAPI, listGalleryRelationshipsAPI, listUserArtworkAPI 
 import FastImage from "react-native-fast-image";
 import analytics from '@react-native-firebase/analytics';
 import { listUserLists } from "../../api/listRoutes";
-import {  } from "../../state";
+import { getUnViewedExhibitionsForUser } from '../../api/exhibitionRoutes';
 import { UserETypes, UserStoreContext } from "../../state/UserStore";
 import { TextElement } from "../../components/Elements/TextElement";
-import { heightPercentageToDP } from "react-native-responsive-screen";
+
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -88,7 +87,8 @@ function AnimatedSplashScreen({ children }) {
         savedArtwork,
         inquiredArtwork,
         artworksToRate, 
-        userListPreviews
+        userListPreviews,
+        unViewedExhibitionsByGallery
       ] = await Promise.all([
         // user
         uid ? getDartaUser({uid}) : null,
@@ -111,7 +111,9 @@ function AnimatedSplashScreen({ children }) {
         // artworksToRate
         listArtworksToRateAPI({startNumber: 0, endNumber: 20}),
         // userLists
-        listUserLists()
+        listUserLists(),
+        // getUnViewedExhibitionsCountForUser()
+        getUnViewedExhibitionsForUser()
       ]);
 
       // User Profile
@@ -154,10 +156,18 @@ function AnimatedSplashScreen({ children }) {
 
       // Map Screen 
       if (exhibitionMapPins) {
+        const userGalleryFollowed = galleryFollows?.reduce((acc, el) => {
+          if (el?._id) {
+            acc[el._id] = true; // Set the value to true, or some other logic if needed
+          }
+          return acc;
+        }, {});
+        console.log({userGalleryFollowed})
         dispatch({
           type: ETypes.saveExhibitionMapPins,
           mapPins: exhibitionMapPins,
-          mapPinCity: MapPinCities.newYork
+          mapPinCity: MapPinCities.newYork,
+          userGalleryFollowed,
         });
       }
 
@@ -199,6 +209,14 @@ function AnimatedSplashScreen({ children }) {
           type: UserETypes.saveArtworkMulti,
           artworkDataMulti: combinedArtwork
         });
+      }
+
+      // Unviewed Exhibitions
+      if(unViewedExhibitionsByGallery){
+        exhibitionDispatch({
+          type: ExhibitionETypes.setUnViewedExhibitionsByGallery,
+          unViewedExhibitionsByGallery: unViewedExhibitionsByGallery
+        })
       }
       
       // Need to figure out what takes the longest to load and prefetch those images. What takes so long? 

@@ -5,11 +5,20 @@ import * as Location from 'expo-location';
 
 import * as Colors from '@darta-styles';
 import { mapStylesJson } from '../../utils/mapStylesJson';
-import {ETypes, StoreContext} from '../../state/Store';
+import {StoreContext} from '../../state/Store';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import { ExhibitionMapPin, MapPinCities } from '@darta-types';
 import CustomMarker from '../../components/Previews/CustomMarker';
-import { listExhibitionPinsByCity } from "../../api/locationRoutes";
+import * as SVGs from '../../assets/SVGs';
+import { TextElement } from '../../components/Elements/TextElement';
+import {
+  BottomSheetModal,
+  BottomSheetView,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
+import { Divider } from 'react-native-paper';
+import { IconButtonElement } from '../../components/Elements/IconButtonElement';
+import { ExploreMapRootEnum } from '../../typing/routes';
 
 
 const exploreMapStyles = StyleSheet.create({
@@ -20,6 +29,12 @@ const exploreMapStyles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    switchContainer:{
+      position: 'absolute',
+      top: hp('80%'), // Place it at the top
+      right: 0, // Align it to the right
+      zIndex: 1,
     },
     mapContainer: {
       backgroundColor: 'black',
@@ -40,8 +55,15 @@ const exploreMapStyles = StyleSheet.create({
     }, 
   mapView: {
     alignSelf: 'stretch', 
-    height: '100%' 
-  }
+    height: '90%' 
+  },
+  bottomSheetContainer: {
+    zIndex: 2,
+  },
+  bottomSheetContentContainer: {
+    zIndex: 2,
+    alignItems: 'center',
+  },
 })
 
 
@@ -51,6 +73,7 @@ export function ExploreMapHomeScreen({
     navigation?: any;
 }) {
   const {state} = useContext(StoreContext);
+  
   const [currentLocation] = React.useState<MapPinCities>(MapPinCities.newYork)
   const [mapRegion] = React.useState({
     latitudeDelta: 0.01,
@@ -61,8 +84,6 @@ export function ExploreMapHomeScreen({
 
   const mapRef = React.useRef<MapView>(null);
 
-  const [exhibitionPins] = React.useState<{[key: string] :ExhibitionMapPin}>(state.mapPins && state.mapPins?.[currentLocation] ?state.mapPins?.[currentLocation] : {})
-
   React.useEffect(() => {
     (async () => {
       
@@ -71,8 +92,9 @@ export function ExploreMapHomeScreen({
         return;
       }
     })();
-  }, [state.mapPins])
 
+  }, [state.mapPins])
+  
   
   const handleMarkerPress = React.useCallback((event) => {
     const newRegion = {
@@ -89,34 +111,55 @@ export function ExploreMapHomeScreen({
     }
   }, [mapRegion]);
 
+
+  const handleModalToggle = React.useCallback(() => {
+    navigation.navigate(ExploreMapRootEnum.bottomSheetOptions as never)
+  }, [])
+
+
+  const MappedPins = React.memo(({ pins } : { pins?: ExhibitionMapPin[] }) => (
+    pins && pins.map((pin) => (
+      pin?.exhibitionLocation?.coordinates?.latitude && pin?.exhibitionLocation?.coordinates?.longitude && (
+        <View key={pin?.exhibitionId}>
+          <CustomMarker 
+            coordinate={{
+              latitude: Number(pin.exhibitionLocation.coordinates.latitude.value),
+              longitude: Number(pin.exhibitionLocation.coordinates.longitude.value)
+            }}
+            mapPin={pin}
+            navigation={navigation}
+          />
+        </View>
+      )
+    ))
+  ));
+
+
+  
   return (
     <View style={exploreMapStyles.container}>
       <View style={exploreMapStyles.mapContainer}>
+        <View style={exploreMapStyles.switchContainer}>
+          <IconButtonElement 
+            inUse={true}
+            IconInUse={<SVGs.LayersIcon />}
+            IconNotInUse={<SVGs.LayersIcon />}
+            onPress={handleModalToggle}
+          />
+        </View>
         {Object.values(mapRegion).length > 0 && ( 
-        <MapView  
-          ref={mapRef}
-          provider={PROVIDER_GOOGLE}
-          style={ exploreMapStyles.mapView }
-          region={mapRegion} 
-          customMapStyle={mapStylesJson}
-          onMarkerPress={handleMarkerPress}
-          showsUserLocation={true}
-          >
-            {exhibitionPins && Object.values(exhibitionPins).length > 0 
-            && Object.values(exhibitionPins).map((pin: ExhibitionMapPin) => {
-              if(pin?.exhibitionLocation?.coordinates?.latitude 
-                && pin?.exhibitionLocation?.coordinates?.longitude){
-                  return (
-                  <View key={pin?.exhibitionId}>
-                    <CustomMarker 
-                      coordinate={{latitude: Number(pin.exhibitionLocation.coordinates.latitude.value), longitude: Number(pin.exhibitionLocation.coordinates.longitude.value)}}
-                      mapPin={pin}
-                      navigation={navigation}
-                    />
-                  </View>
-                )
-              } 
-            })}
+          <MapView  
+            ref={mapRef}
+            provider={PROVIDER_GOOGLE}
+            style={ exploreMapStyles.mapView }
+            region={mapRegion} 
+            customMapStyle={mapStylesJson}
+            onMarkerPress={handleMarkerPress}
+            showsUserLocation={true}
+            >
+              <MappedPins pins={state.isViewingSaved ? state.mapPinsSaved?.[currentLocation] : state.mapPins?.[currentLocation]} />
+            {/* {showSaved && userFollowsPins.length > 0 && <MappedPins pins={userFollowsPins} />}
+            {!showSaved && allPins.length > 0 && <MappedPins pins={allPins} />} */}
           </MapView>
         )}
       </View>

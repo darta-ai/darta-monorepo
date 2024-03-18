@@ -54,7 +54,7 @@ const initialUIState: UiState = {
   currentArtworkTombstoneHeader: undefined,
   userExhibitionHeader: undefined,
   listHeader: undefined,
-  listUrl: undefined  
+  listUrl: undefined,
 };
 
 // Define the reducer function

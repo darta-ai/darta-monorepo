@@ -148,6 +148,7 @@ export interface ExhibitionPreview {
     };
     exhibitionDates: ExhibitionDates;
     receptionDates: ReceptionDates;
+    userViewed?: boolean;
 }
 export type ExhibitionPreviewAdmin = Omit<ExhibitionPreview, 'artworkPreviews' | 'exhibitionLogo' | 'exhibitionLogo' | 'exhibitionPrimaryImage' | 'exhibitionDates' | 'exhibitionArtist'> & {
     galleryWebsite: PublicFields;
@@ -240,6 +241,7 @@ export type Exhibition = {
     artworkCategory: PublicFields;
     videoLink?: PublicFields;
     pressLink?: PublicFields;
+    userViewed?: boolean;
 };
 export type ExhibitionObject = {
     [key: string]: Exhibition;

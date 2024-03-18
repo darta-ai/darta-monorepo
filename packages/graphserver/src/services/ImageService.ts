@@ -5,9 +5,9 @@ import sharp from 'sharp';
 import {IImageService, ImageData} from './interfaces/IImageService';
 
 const sizes = [
-  { name: 'largeImage', width: 1024, height: 1024 },
-  { name: 'mediumImage', width: 512, height: 512 },
-  { name: 'smallImage', width: 256, height: 256 }
+  { name: 'largeImage', height: 1024 },
+  { name: 'mediumImage', height: 512 },
+  { name: 'smallImage', height: 256 }
 ];
 
 @injectable()
@@ -52,7 +52,7 @@ export class ImageService implements IImageService {
       .resize({ 
           width: 800, 
           height: 600, 
-          fit: sharp.fit.inside // or sharp.fit.cover to fill the area, cropping if necessary
+          fit: sharp.fit.contain // or sharp.fit.cover to fill the area, cropping if necessary
       })
       .toBuffer();
     } catch(error: any){
@@ -87,12 +87,10 @@ public async resizeAndUploadImages({
           // Convert the base64 string to a Buffer
           const imageBuffer = Buffer.from(base64String, 'base64');
 
-
           const resizedBuffer = await sharp(imageBuffer)
           .resize({
-            width: size.width,
             height: size.height,
-            fit: 'contain',
+            fit: sharp.fit.contain,
           })
           .toBuffer()
           .catch((error: any) => {

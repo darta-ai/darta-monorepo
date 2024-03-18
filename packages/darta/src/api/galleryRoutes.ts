@@ -49,7 +49,6 @@ export async function listDartaUserFollowsGallery({
   uid: string;
 }): Promise<GalleryPreview | any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
     const headers = await generateHeaders();
 
     const {data} = await axios.get(`${URL}/listDartaUserFollowsGallery`, {

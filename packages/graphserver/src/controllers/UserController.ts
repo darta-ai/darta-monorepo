@@ -26,13 +26,13 @@ export class UserController {
         userEmail: user.email,
       });
       if (!verifyGallery) {
-        const isValidated = await this.galleryService.verifyQualifyingGallery(
-          user.email,
-        );
+        // const isValidated = await this.galleryService.verifyQualifyingGallery(
+        //   user.email,
+        // );
         const {_id, ...gallery} =
           await this.galleryService.createGalleryProfile({
             galleryName,
-            isValidated,
+            isValidated: false,
             signUpWebsite,
             userEmail: user.email,
           });
@@ -43,7 +43,7 @@ export class UserController {
           phoneNumber,
           gallery: galleryName,
           relationship: 'ADMIN',
-          validated: isValidated,
+          validated: false,
         });
         res.status(200).send(gallery);
           

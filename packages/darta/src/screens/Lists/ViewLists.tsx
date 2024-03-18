@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, Animated, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
+import { View, StyleSheet, Animated, TouchableOpacity, ActivityIndicator, Alert, ScrollView, RefreshControl } from 'react-native'
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import * as Colors from '@darta-styles';
 import { ETypes, StoreContext } from '../../state/Store';
@@ -9,14 +9,28 @@ import { UserRoutesEnum } from '../../typing/routes';
 import { UIStoreContext, UiETypes, UserStoreContext } from '../../state';
 import { Icon } from 'react-native-elements';
 import { Swipeable } from 'react-native-gesture-handler';
-import { deleteListAPI } from '../../api/listRoutes';
+import { deleteListAPI, listUserLists } from '../../api/listRoutes';
+import { TextElement } from '../../components/Elements/TextElement';
+import { dartaLogo } from '../../components/User/UserInquiredArtwork';
+import * as SVGs from '../../assets/SVGs'
 
 const addToListStyles = StyleSheet.create({
     container: {
         height: '100%',
         width: '100%',
         padding: 24,
-        backgroundColor: Colors.PRIMARY_950,
+        backgroundColor: Colors.PRIMARY_50,
+        opacity: 0.9,
+    },
+    defaultContainer: {
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 24,
+        backgroundColor: Colors.PRIMARY_50,
         opacity: 0.9,
     },
     contentContainer: {
@@ -200,22 +214,65 @@ export function ViewListsScreen({
                 {loadingDelete ? (
                   <ActivityIndicator size="small"/>
                 ) : (
-                  <Icon name="delete" reverse raised  solid={false}/>
+                  <Icon name="delete" reverse raised solid={false}/>
                 )}
             </TouchableOpacity>
           </Animated.View>
         );
       };
 
+    const [refreshing, setRefreshing] = React.useState(false);
+    
+    const onRefresh = React.useCallback(async () => {
+        setRefreshing(true);
+        try{
+            const lists = await listUserLists();
+            dispatch({
+                type: ETypes.setUserListPreviews,
+                userListPreviews: lists,
+            })
+        } catch {
+            setRefreshing(false);
+        }
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 500)
+    }, [])
+
     return (
+        <ScrollView 
+        style={{
+        height: hp('40%'),
+        width: '100%',
+        backgroundColor: Colors.PRIMARY_50,
+        }}
+        contentContainerStyle={{ 
+        flexGrow: 1, 
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center', 
+        alignItems: 'center' }}
+        refreshControl={
+        <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_950} onRefresh={onRefresh} />
+        }>  
         <View style={addToListStyles.container}>
-            {state?.userListPreviews && Object.values(state.userListPreviews).length > 0 && (
+            {state?.userListPreviews && Object.values(state.userListPreviews).length > 0 ? (
                 <RecyclerListView
                     layoutProvider={layoutProvider}
                     dataProvider={dataProvider}
                     rowRenderer={rowRenderer}
                 />
+            ) : (
+                <View style={addToListStyles.defaultContainer}>
+                    <TextElement style={dartaLogo.text}>Your lists are unavailable</TextElement>
+                    <View style={{height: '10%', display: 'flex', flexDirection: 'row'}}>
+                        <TextElement style={dartaLogo.text}>Create a list by pressing</TextElement>
+                        <SVGs.SavedIcon />
+                        <TextElement style={dartaLogo.text}>on an artwork</TextElement>
+                    </View>
+                </View>
             )}
         </View>
+        </ScrollView>
     );
 }

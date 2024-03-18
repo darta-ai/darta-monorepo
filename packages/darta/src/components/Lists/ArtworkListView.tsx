@@ -21,7 +21,6 @@ import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCi
 import { Swipeable } from 'react-native-gesture-handler';
 import { Icon } from 'react-native-elements';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
-import { UserRoutesEnum } from '../../typing/routes';
 
 export const currencyConverter = {
   USD: '$',
@@ -331,7 +330,8 @@ export function ArtworkListView({
                 centerContent>
                 <View style={SSTombstonePortrait.imageContainer}>
                   <DartaImageComponent
-                    uri= {artwork?.artworkImage?.value!}
+                    uri= {artwork?.artworkImage}
+                    size={"largeImage"}
                     priority={FastImage.priority.normal}
                     style={SSTombstonePortrait.image}
                     resizeMode={FastImage.resizeMode.contain}

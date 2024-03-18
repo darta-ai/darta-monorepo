@@ -206,10 +206,11 @@ const CustomMarkerList = React.memo(({
             <View style={customMarker.exhibitionContainer}>
                 <View style={customMarker.heroImageContainer} >
                   <DartaImageComponent 
-                  uri= {mapPin?.exhibitionPrimaryImage?.value || ""}
+                  uri= {mapPin?.exhibitionPrimaryImage || ""}
                   priority={FastImage.priority.normal}
                   style={customMarker.heroImage} 
                   resizeMode={FastImage.resizeMode.contain}
+                  size={"smallImage"}
                   />
                 </View>
               <View style={customMarker.textContainer}>

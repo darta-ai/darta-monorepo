@@ -1,6 +1,5 @@
 import React, {useCallback, useContext, useRef, useState} from 'react';
 import {
-  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Animated,
