@@ -178,7 +178,7 @@ followContainer: {
   pressableStyle: {
     width: 130,
     height: 38,
-    backgroundColor: Colors.PRIMARY_100,
+    backgroundColor: Colors.PRIMARY_950,
     borderRadius: 20,
     display: 'flex',
     flexDirection: 'row',
@@ -636,12 +636,12 @@ export function ExhibitionGalleryScreen({
             <View style={galleryDetailsStyles.followContainer}>
             {!followsGallery && (
             <Animated.View style={{opacity: opacitySetOne, transform: [{ translateX: translateX }] }}>
-                <Pressable style={{...galleryDetailsStyles.pressableStyle, backgroundColor: Colors.PRIMARY_950}} onPress={() => followGallery()}>
+                <Pressable style={{...galleryDetailsStyles.pressableStyle, backgroundColor: Colors.PRIMARY_50, borderColor: Colors.PRIMARY_500, borderWidth: 1}} onPress={() => followGallery()}>
                   <View style={{width: 30}}>
-                    <SVGs.HeartEmpty />
+                    <SVGs.HeartFill />
                   </View>
                   <View style={{width: 80}}>
-                    <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_50}}>Follow</TextElement>
+                    <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_950}}>Follow</TextElement>
                   </View>
                 </Pressable>
             </Animated.View>
@@ -650,10 +650,10 @@ export function ExhibitionGalleryScreen({
             <Animated.View style={{opacity: opacitySetTwo, transform: [{ translateX: Animated.subtract(100, translateX) }]}}>
               <Pressable style={galleryDetailsStyles.pressableStyle} onPress={() => unFollowGallery()}>
                 <View style={{width: 30}}>
-                  <SVGs.HeartFill />
+                  <SVGs.HeartEmpty />
                 </View>
                 <View style={{width: 80}}>
-                  <TextElement style={globalTextStyles.boldTitleText}>Following</TextElement>
+                  <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_50}}>Following</TextElement>
                 </View>
               </Pressable>
             </Animated.View>

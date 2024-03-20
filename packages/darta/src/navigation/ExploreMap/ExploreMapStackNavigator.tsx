@@ -1,15 +1,14 @@
 import {PRIMARY_800} from '@darta-styles';
 import React, {useContext} from 'react';
 
-import {StoreContext} from '../../state/Store';
-import {backButtonStyles, headerOptions, modalHeaderOptions} from '../../styles/styles';
+import {backButtonStyles, headerOptions} from '../../styles/styles';
 import { ExploreMapRootEnum} from '../../typing/routes';
 import { ExploreMapHomeScreen } from '../../screens/ExploreMap/ExploreMapHomeScreen';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { ExhibitionTopTabNavigator } from '../Exhibition/ExhibitionTopTabNavigator';
 import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
 import { ArtworkScreen } from '../../screens/Artwork/ArtworkScreen';
-import { Pressable, StyleSheet, View} from 'react-native';  
+import { Pressable, View} from 'react-native';  
 import { useNavigation } from '@react-navigation/native';
 import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 import { UIStoreContext } from '../../state';

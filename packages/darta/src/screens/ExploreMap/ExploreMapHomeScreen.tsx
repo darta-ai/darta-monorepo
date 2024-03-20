@@ -1,22 +1,15 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Alert} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import * as Location from 'expo-location';
 
 import * as Colors from '@darta-styles';
 import { mapStylesJson } from '../../utils/mapStylesJson';
 import {StoreContext} from '../../state/Store';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, { LatLng, PROVIDER_GOOGLE, Polyline} from 'react-native-maps';
 import { ExhibitionMapPin, MapPinCities } from '@darta-types';
 import CustomMarker from '../../components/Previews/CustomMarker';
 import * as SVGs from '../../assets/SVGs';
-import { TextElement } from '../../components/Elements/TextElement';
-import {
-  BottomSheetModal,
-  BottomSheetView,
-  BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
-import { Divider } from 'react-native-paper';
 import { IconButtonElement } from '../../components/Elements/IconButtonElement';
 import { ExploreMapRootEnum } from '../../typing/routes';
 
@@ -95,7 +88,6 @@ export function ExploreMapHomeScreen({
 
   }, [state.mapPins])
   
-  
   const handleMarkerPress = React.useCallback((event) => {
     const newRegion = {
       ...mapRegion,
@@ -112,7 +104,9 @@ export function ExploreMapHomeScreen({
   }, [mapRegion]);
 
 
-  const handleModalToggle = React.useCallback(() => {
+  const handleModalToggle = React.useCallback(async () => {
+    // const routeCoordinates = await fetchRouteWithWaypoints(state.isViewingSaved ? state.mapPinsSaved?.[currentLocation] : state.mapPins?.[currentLocation])
+    // setRoutePolyline(routeCoordinates)
     navigation.navigate(ExploreMapRootEnum.bottomSheetOptions as never)
   }, [])
 
@@ -134,8 +128,12 @@ export function ExploreMapHomeScreen({
     ))
   ));
 
+  React.useEffect(() => {
+    if (state.isViewingSaved && !state.mapPinsSaved) {
+      Alert.alert('No galleries to show', `Follow some galleries by tapping the heart icon on the gallery's page.`)
+    }
+  }, [state.isViewingSaved])
 
-  
   return (
     <View style={exploreMapStyles.container}>
       <View style={exploreMapStyles.mapContainer}>
@@ -158,8 +156,13 @@ export function ExploreMapHomeScreen({
             showsUserLocation={true}
             >
               <MappedPins pins={state.isViewingSaved ? state.mapPinsSaved?.[currentLocation] : state.mapPins?.[currentLocation]} />
-            {/* {showSaved && userFollowsPins.length > 0 && <MappedPins pins={userFollowsPins} />}
-            {!showSaved && allPins.length > 0 && <MappedPins pins={allPins} />} */}
+              {state.isViewingWalkingRoute && state.walkingRoute?.length && (
+                <Polyline
+                  coordinates={state.walkingRoute as unknown as LatLng[]}
+                  strokeWidth={2}
+                  strokeColor={Colors.PRIMARY_950} // Customizable
+                />
+              )}
           </MapView>
         )}
       </View>

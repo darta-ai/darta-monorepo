@@ -11,9 +11,11 @@ import { TextElement } from './TextElement';
 
 const styles = StyleSheet.create({
     container: {
-        width: 60,
+        width: 65,
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     switchContainerActive:{
       margin: 5, // Add some margin if needed to avoid it sticking to the very edge
@@ -30,7 +32,7 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       width: 50,
       borderColor: Colors.PRIMARY_50, // Customize as needed
-      backgroundColor: Colors.PRIMARY_900,
+      backgroundColor: Colors.PRIMARY_950,
     },
 });
 
@@ -49,7 +51,7 @@ export const IconButtonElement: React.FC<{
             onPress={onPress}>
             {inUse ? IconInUse : IconNotInUse}
         </TouchableOpacity>
-        <TextElement >{text}</TextElement>
+        <TextElement style={{fontFamily: inUse ? "DMSans_400Regular" : "DMSans_500Medium"}}>{text}</TextElement>
       </View>
     );
 };

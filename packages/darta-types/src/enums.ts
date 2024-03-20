@@ -2,6 +2,13 @@ export enum MapPinCities {
   newYork = "New York",
 }
 
+export declare enum CurrentlyViewingMapView {
+  all = 'all',
+  savedGalleries = 'savedGalleries',
+  newOpenings = 'newOpenings',
+  walkingRoute = 'walkingRoute',
+}
+
 export enum USER_ARTWORK_EDGE_RELATIONSHIP {
   LIKE = "LIKE",
   DISLIKE = "DISLIKE",

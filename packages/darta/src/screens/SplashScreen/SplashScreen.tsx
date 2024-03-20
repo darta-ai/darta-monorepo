@@ -162,7 +162,6 @@ function AnimatedSplashScreen({ children }) {
           }
           return acc;
         }, {});
-        console.log({userGalleryFollowed})
         dispatch({
           type: ETypes.saveExhibitionMapPins,
           mapPins: exhibitionMapPins,

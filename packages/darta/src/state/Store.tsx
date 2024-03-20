@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import React, {createContext, ReactNode} from 'react';
 
-import {Artwork, MapPinCities, ExhibitionMapPin, ListPreview, FullList, PublicFields, PrivateFields, Images, ExhibitionDates, ReceptionDates, MapRegion} from '@darta-types'
+import {Artwork, CurrentlyViewingMapView, MapPinCities, ExhibitionMapPin, ListPreview, FullList, PublicFields, PrivateFields, Images, ExhibitionDates, ReceptionDates, MapRegion} from '@darta-types'
+
 
 export interface IUserArtworkRatings {
   [id: string]: {
@@ -57,14 +58,18 @@ export interface IState {
   isPortrait: boolean;
 
   mapPins?: {
-    [city in MapPinCities]: Array<ExhibitionMapPin>
+    [city in MapPinCities]: {
+      [key in CurrentlyViewingMapView] : Array<ExhibitionMapPin>
+    }
+  }
+  walkingRoute? : {
+    [city in MapPinCities] : {
+      [key in CurrentlyViewingMapView] : Array<ExhibitionMapPin>
+    }
   }
 
-  mapPinsSaved?: {
-    [city in MapPinCities]: Array<ExhibitionMapPin>
-  }
-
-  isViewingSaved: boolean;
+  currentlyViewingMapView: CurrentlyViewingMapView;
+  currentlyViewingCity: MapPinCities;
 
   qrCodeExhibitionId?: string;
   qrCodeGalleryId?: string;
@@ -108,7 +113,8 @@ export enum ETypes {
   setUserLists = 'SET_USER_LISTS',
   addArtworkToList = 'ADD_ARTWORK_TO_LIST',
   deleteList = 'DELETE_LIST',
-  isViewingSaved = 'IS_VIEWING_SAVED',
+  setWalkingRoute = 'SET_WALKING_ROUTE',
+  setCurrentViewingMapView = 'SET_CURRENT_VIEWING_MAP_VIEW',
 }
 
 // Define the action type
@@ -123,6 +129,10 @@ interface IAction {
   mapPinCity?: MapPinCities
   isViewingSaved?: boolean;
   userGalleryFollowed?: {[key: string] : boolean};
+
+  isViewingWalkingRoute?: boolean;
+  walkingRoute?: Array<ExhibitionMapPin>;
+  currentlyViewingMapView?: CurrentlyViewingMapView;
 
   qRCodeExhibitionId?: string;
   qrCodeGalleryId?: string;
@@ -140,7 +150,8 @@ interface IAction {
 const initialState: IState = {
   isPortrait: true,
   mapPins: {} as any,
-  isViewingSaved: false,
+  currentlyViewingMapView: CurrentlyViewingMapView.all,
+  currentlyViewingCity: MapPinCities.newYork,
 };
 
 // Define the reducer function
@@ -167,27 +178,34 @@ const reducer = (state: IState, action: IAction): IState => {
           const galleryId = pin?.galleryId;
           return action?.userGalleryFollowed?.[galleryId] && pin?.exhibitionLocation?.coordinates?.latitude && pin?.exhibitionLocation?.coordinates?.longitude
         })
+
+        const sevenDaysInPast = new Date(); 
+        sevenDaysInPast.setDate(sevenDaysInPast.getDate() + 7);
+        const newOpeningsPins: ExhibitionMapPin[] = allPins.filter((pin: ExhibitionMapPin) => {
+          return (pin?.exhibitionDates?.exhibitionStartDate?.value && sevenDaysInPast > new Date(pin.exhibitionDates.exhibitionStartDate.value)) && pin?.exhibitionLocation?.coordinates?.latitude && pin?.exhibitionLocation?.coordinates?.longitude
+        })
       
         return {
           ...state,
           mapPins: {
             ...state.mapPins,
-            [action.mapPinCity as MapPinCities]: [...allPins]
+              [action.mapPinCity]: {
+                [CurrentlyViewingMapView.all]: allPins,
+                [CurrentlyViewingMapView.savedGalleries]: userFollowsPins,
+                [CurrentlyViewingMapView.newOpenings]: newOpeningsPins,
+                [CurrentlyViewingMapView.walkingRoute]: [] as ExhibitionMapPin[]
+              }
           },
-          mapPinsSaved: {
-            ...state.mapPinsSaved,
-            [action.mapPinCity as MapPinCities]: [...userFollowsPins]
-          }
         };
-    case ETypes.isViewingSaved:
-      if (action.isViewingSaved === undefined) {
+    case ETypes.setCurrentViewingMapView: {
+      if (!action.currentlyViewingMapView) {
         return state;
       }
       return {
         ...state,
-        isViewingSaved: action.isViewingSaved,
+        currentlyViewingMapView: action.currentlyViewingMapView,
       };
-      
+    }
     case ETypes.setQRCodeExhibitionId:
     if (!action.qRCodeExhibitionId) {
       return state;

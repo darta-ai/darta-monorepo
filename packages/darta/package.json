@@ -20,6 +20,7 @@
     "@expo/html-elements": "^0.5.1",
     "@expo/webpack-config": "^19.0.0",
     "@gorhom/bottom-sheet": "^4",
+    "@mapbox/polyline": "^1.2.1",
     "@mdi/js": "^7.2.96",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-firebase/analytics": "^18.6.1",
