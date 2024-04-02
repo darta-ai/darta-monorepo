@@ -277,7 +277,7 @@ export function DartaRecommenderViewFlatList({
             });
       }
     } catch (error){
-      console.log(error)
+      console.log('####', error)
     }
   }, [viewState.artworksToRate])
 

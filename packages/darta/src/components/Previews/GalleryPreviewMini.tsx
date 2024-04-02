@@ -36,16 +36,6 @@ export function GalleryPreviewMini({
 }) {
 
   const {uiDispatch} = React.useContext(UIStoreContext);
-  const {exhibitionState} = React.useContext(ExhibitionStoreContext);
-
-  const [unViewedExhibitionsCount, setUnViewedExhibitionsCount] = React.useState<Array<string>>([])
-
-  React.useEffect(() => {
-    if (exhibitionState.unViewedExhibitionsByGallery && exhibitionState.unViewedExhibitionsByGallery[galleryId]){
-      setUnViewedExhibitionsCount(exhibitionState.unViewedExhibitionsByGallery[galleryId])
-    }
-  },[exhibitionState.unViewedExhibitionsByGallery])
-
 
   const showGallery = () => {
     uiDispatch({
@@ -123,9 +113,6 @@ export function GalleryPreviewMini({
           <View style={galleryPreviewMiniStyles.textContainer}>
             <TextElement style={globalTextStyles.boldTitleText}>{galleryName.value}</TextElement>
           </View>
-        </View>
-        <View style={galleryPreviewMiniStyles.badgeContainer}>
-          {unViewedExhibitionsCount.length > 0 && <SVGs.NewBell />}
         </View>
       </View>
     </TouchableOpacity>

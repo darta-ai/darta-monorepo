@@ -1,14 +1,12 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import * as SVGs from '../../assets/SVGs/index';
 import * as Colors from '@darta-styles';
 import { ETypes, StoreContext } from '../../state/Store';
-import { TextElement, TextElementMultiLine } from '../Elements/TextElement';
-import {Portal, Modal, Button, Switch, TextInput, Snackbar} from 'react-native-paper'
+import { TextElement } from '../Elements/TextElement';
+import { Portal, Modal, Button, TextInput } from 'react-native-paper'
 import { createArtworkListAPI } from '../../utils/apiCalls';
-import { FailureToast } from '../Toasts/FailureToast';
-import { Artwork } from '@darta-types/dist';
+import { Artwork } from '@darta-types';
 
 const addToListStyles = StyleSheet.create({
     container: {

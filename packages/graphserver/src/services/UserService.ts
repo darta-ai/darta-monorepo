@@ -238,7 +238,7 @@ export class UserService implements IUserService {
       });
       let userProfilePicture;
 
-      if(results.profilePicture){
+      if(results?.profilePicture){
         (userProfilePicture = results.profilePicture)
       }
       

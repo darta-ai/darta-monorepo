@@ -21,7 +21,6 @@ export interface ExhibitionState {
     [key: string]: ExhibitionPreview
   },
   userViewedExhibition: {[key: string] : boolean}
-  unViewedExhibitionsByGallery: {[key: string] : Array<string>}
 }
 
 export enum ExhibitionETypes {
@@ -35,9 +34,6 @@ export enum ExhibitionETypes {
   setUserViewedExhibition = 'SET_USER_VIEWED_EXHIBITION',
 
   removeUserFollowsExhibitionPreviews = 'REMOVE_USER_FOLLOWS_EXHIBITION_PREVIEWS',
-
-  setUnViewedExhibitionsByGallery = 'SET_UNVIEWED_EXHIBITIONS_BY_GALLERY',
-
 }
 
 // Define the action type
@@ -49,7 +45,6 @@ interface ExhibitionIAction {
   userViewedExhibitionId?: string
 
   removeUserFollowsExhibitionPreviewsByGalleryId?: string
-  unViewedExhibitionsByGallery?: {[key: string] : Array<string>}
   galleryId?: string
 }
 
@@ -57,7 +52,6 @@ interface ExhibitionIAction {
 const initialExhibitionState: ExhibitionState = {
   exhibitionData : {},
   userViewedExhibition: {},
-  unViewedExhibitionsByGallery: {}
 };
 
 // Define the reducer function
@@ -135,35 +129,13 @@ const exhibitionReducer = (state: ExhibitionState, action: ExhibitionIAction): E
       if (!action?.userViewedExhibitionId){
         return state;
       }
-      if (action.galleryId){
-        const tempUnViewedExhibitionsByGallery = state.unViewedExhibitionsByGallery[action.galleryId]
-        console.log({tempUnViewedExhibitionsByGallery})
-        if (tempUnViewedExhibitionsByGallery){
-          const index = tempUnViewedExhibitionsByGallery.indexOf(action.userViewedExhibitionId)
-          if (index > -1){
-            tempUnViewedExhibitionsByGallery.splice(index, 1)
-          }
-        }
-        return {
-          ...state,
-          userViewedExhibition: {
-            ...state.userViewedExhibition,
-            [action.userViewedExhibitionId]: true,
-          },
-          unViewedExhibitionsByGallery: {
-            ...state.unViewedExhibitionsByGallery,
-            [action.galleryId]: tempUnViewedExhibitionsByGallery
-          }
-        };
-      } else {
-        return {
-          ...state,
-          userViewedExhibition: {
-            ...state.userViewedExhibition,
-            [action.userViewedExhibitionId]: true,
-          },
-        };
-      }
+      return {
+        ...state,
+        userViewedExhibition: {
+          ...state.userViewedExhibition,
+          [action.userViewedExhibitionId]: true,
+        },
+      };
     case ExhibitionETypes.removeUserFollowsExhibitionPreviews: 
       if (!action?.removeUserFollowsExhibitionPreviewsByGalleryId){
         return state;
@@ -177,15 +149,6 @@ const exhibitionReducer = (state: ExhibitionState, action: ExhibitionIAction): E
       return {
         ...state,
         userFollowsExhibitionPreviews: deepCloneState
-      }
-
-    case ExhibitionETypes.setUnViewedExhibitionsByGallery:
-      if (!action?.unViewedExhibitionsByGallery){
-        return state;
-      }
-      return {
-        ...state,
-        unViewedExhibitionsByGallery: action.unViewedExhibitionsByGallery
       }
     default:
       return state;

@@ -43,18 +43,21 @@ export function ExhibitionPreviewScreen({
   const [errorHeader, setErrorHeader] = React.useState<string>("")
   const [errorText, setErrorText] = React.useState<string>("")
   
-  const sortPreviews = (exhibitionPreviews: ExhibitionPreview[]) => {
+  const sortPreviews = (newPreviews: ExhibitionPreview[]) => {
     if(route.params?.type === "Upcoming"){
-      return exhibitionPreviews.sort((a, b) => {
+      return newPreviews.sort((a, b) => {
         if (!a.openingDate?.value || !b.openingDate?.value) return 0
         return b.openingDate?.value >= a.openingDate?.value ? -1 : 1
       })
-    } else {  
-      return exhibitionPreviews.sort((a, b) => {
-        if (!a.openingDate?.value || !b.openingDate?.value) return 0
-        return b.openingDate?.value >= a.openingDate?.value ? 1 : -1
-      })
     }
+    const previous = exhibitionPreviews;
+    const previousIds = previous.reduce((acc, el) => ({...acc, [el?.exhibitionId] : true} ), {});
+    let current: ExhibitionPreview[] = [];
+    current = newPreviews.filter(el => !previousIds[el.exhibitionId]).sort((a, b) => {
+        if (!a.openingDate?.value || !b.openingDate?.value) return 0
+        return new Date(b.openingDate?.value).toISOString() >= new Date(a.openingDate?.value).toISOString() ? -1 : 1
+      })
+    return [...previous, ...current]
   }
 
   const determineExhibitionPreviews = () => {

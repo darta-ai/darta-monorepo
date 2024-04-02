@@ -724,9 +724,7 @@ export function ExhibitionGalleryScreen({
             <TextElement style={globalTextStyles.sectionHeaderTitle}>Upcoming Exhibitions</TextElement>
           </View>
           <View>
-            {upcomingExhibitions.map((previousExhibition : Exhibition, index : number) => {
-              const userUnviewed = exhibitionState.unViewedExhibitionsByGallery[galleryId].includes(previousExhibition._id!)
-              return (
+            {upcomingExhibitions.map((previousExhibition : Exhibition, index : number) => (
                 <View key={`${index}-${previousExhibition.exhibitionId}`} style={galleryDetailsStyles.exhibitionPreviewContainer}>
                   <ExhibitionPreviewMini 
                     exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage}
@@ -737,12 +735,11 @@ export function ExhibitionGalleryScreen({
                     exhibitionDates={previousExhibition?.exhibitionDates}
                     galleryLogoLink={gallery.galleryLogo?.value as string}
                     exhibitionLocation={previousExhibition.exhibitionLocation?.locationString?.value as string}
-                    userUnviewed={userUnviewed}
                     onPress={handleExhibitionPress}
                   />
                 </View>
               )
-            })}
+            )}
             </View>
           </View>
             )}
@@ -752,9 +749,7 @@ export function ExhibitionGalleryScreen({
             <TextElement style={globalTextStyles.sectionHeaderTitle}>Exhibitions</TextElement>
             </View>
           <View>
-            {previousExhibitions.map((previousExhibition : Exhibition, index : number) => {
-                const userUnviewed = exhibitionState.unViewedExhibitionsByGallery[galleryId]?.includes(previousExhibition._id!)
-                return (
+            {previousExhibitions.map((previousExhibition : Exhibition, index : number) => (
                   <View key={`${index}-${previousExhibition.exhibitionId}`} style={galleryDetailsStyles.exhibitionPreviewContainer}>
                     <ExhibitionPreviewMini 
                       exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage}
@@ -765,12 +760,11 @@ export function ExhibitionGalleryScreen({
                       exhibitionDates={previousExhibition?.exhibitionDates}
                       galleryLogoLink={gallery.galleryLogo?.value as string}
                       exhibitionLocation={previousExhibition.exhibitionLocation?.locationString?.value as string}
-                      userUnviewed={userUnviewed}
                       onPress={handleExhibitionPress}
                     />
                   </View>
                 )
-              })}
+              )}
             </View>
           </View>
             )}

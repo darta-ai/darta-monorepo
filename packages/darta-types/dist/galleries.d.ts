@@ -267,6 +267,7 @@ type GalleryDisplayValues = {
 export type GalleryDropdownDisplay = GalleryDisplayValues[];
 export type ExhibitionMapPin = {
     exhibitionId: string;
+    locationId: string;
     galleryId: string;
     galleryName: PublicFields;
     galleryLogo: Images;

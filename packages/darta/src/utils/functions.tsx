@@ -3,6 +3,7 @@ import {Image} from 'react-native';
 import {buttonSizes} from './constants';
 import {createUser} from '../api/userRoutes'
 import auth from '@react-native-firebase/auth';
+import { BusinessHours, IBusinessHours } from '@darta-types/dist';
 
  
 export const getUserUid = async () => {
@@ -130,6 +131,24 @@ export function modifyHoursOfOperation(time: string | undefined | null): string 
       return '';
   }
   return time.toLowerCase().replace('closed', 'Closed').replace('open', 'Open').replace(':00', '').replace(" ", '');
+}
+
+export function getStoreHours(hoursObject: BusinessHours | undefined) {
+  if (!hoursObject) {
+      return;
+  }
+  const currentDayIndex = new Date().getDay();
+  const weekdayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const currentDayName = weekdayNames[currentDayIndex];
+  const closingTime = hoursObject[currentDayName]?.close.value;
+
+  if (closingTime === 'Closed') {
+      return 'Closed';
+  } else if (closingTime) {
+    return `Open until ${closingTime}`;
+  } else {
+    return 
+  }
 }
 
 

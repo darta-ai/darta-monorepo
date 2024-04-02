@@ -28,7 +28,6 @@ type ExhibitionPreviewMiniProps = {
   galleryLogoLink: string,
   exhibitionArtist: string,
   exhibitionLocation: string,
-  userUnviewed: boolean,
   onPress: ({ exhibitionId }: { exhibitionId: string }) => void
 };
 
@@ -118,7 +117,6 @@ const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
     exhibitionDates,
     exhibitionArtist,
     exhibitionLocation,
-    userUnviewed,
     onPress
 }) => {
 
@@ -141,11 +139,6 @@ const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
   return (
       <View
         style={exhibitionPreview.container}>
-          {userUnviewed &&
-          <View style={exhibitionPreview.bellContainer}>
-            <SVGs.NewBell />
-          </View>
-          }
           <TextElement
             style={exhibitionPreview.exhibitionTitle}>
             {exhibitionArtist?.trim() ?? "Group Show"}

@@ -1,6 +1,5 @@
 import React from 'react';
 import * as Colors from '@darta-styles';
-import * as SVGs from '../../assets/SVGs';
 import { TouchableOpacity, StyleSheet, View } from 'react-native';
 import { TextElement } from './TextElement';
 
@@ -11,7 +10,8 @@ import { TextElement } from './TextElement';
 
 const styles = StyleSheet.create({
     container: {
-        width: 65,
+        width: 58,
+        height: 58,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -20,19 +20,20 @@ const styles = StyleSheet.create({
     switchContainerActive:{
       margin: 5, // Add some margin if needed to avoid it sticking to the very edge
       padding: 10,
-      borderRadius: 10,
+      borderRadius: 44,
       borderWidth: 1,
       width: 50,
-      borderColor: Colors.PRIMARY_300, // Customize as needed
+      borderColor: Colors.PRIMARY_950, // Customize as needed
+      backgroundColor: Colors.PRIMARY_50,
     },
     switchContainerInactive:{
-      margin: 5, // Add some margin if needed to avoid it sticking to the very edge
+      margin: 5,
       padding: 10,
-      borderRadius: 10,
+      borderRadius: 44,
       borderWidth: 1,
       width: 50,
       borderColor: Colors.PRIMARY_50, // Customize as needed
-      backgroundColor: Colors.PRIMARY_950,
+      backgroundColor: Colors.PRIMARY_900,
     },
 });
 
@@ -44,6 +45,22 @@ export const IconButtonElement: React.FC<{
     onPress: () => void;
     text?: string;
 }> = ({ inUse, IconInUse, IconNotInUse, onPress, text }) => {
+
+  const interactiveStyles = StyleSheet.create({
+    textContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: 50,
+    },
+    textElement: {
+      fontFamily: inUse ? "DMSans_400Regular" : "DMSans_500Medium",
+      fontSize: 12,
+      alignContent: 'center',
+      color: inUse ? Colors.PRIMARY_900 : Colors.PRIMARY_950,
+    },
+  });
     return (
         <View style={styles.container}>
             <TouchableOpacity
@@ -51,7 +68,9 @@ export const IconButtonElement: React.FC<{
             onPress={onPress}>
             {inUse ? IconInUse : IconNotInUse}
         </TouchableOpacity>
-        <TextElement style={{fontFamily: inUse ? "DMSans_400Regular" : "DMSans_500Medium"}}>{text}</TextElement>
+        <View style={interactiveStyles.textContainer}>
+          <TextElement style={interactiveStyles.textElement}>{text}</TextElement>
+        </View>
       </View>
     );
 };

@@ -83,7 +83,7 @@ export function ArtworkListComponent({
   }, [navigation, navigateTo, navigateToParams]);
   
 
-  const [dataProvider, setDataProvider] = React.useState(new DataProvider((r1, r2) => r1 !== r2).cloneWithRows([...artworkData]));
+  const dataProvider = new DataProvider((r1, r2) => r1 !== r2).cloneWithRows([...artworkData]);
 
 
   useFocusEffect(
@@ -105,7 +105,7 @@ export function ArtworkListComponent({
     },
     (_, dim) => {
       dim.width = wp('50%') - 24;
-      dim.height = 300 + 50;
+      dim.height = 240 + 24;
     }
   );
 

@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {Alert, View, Vibration, Linking, StyleSheet} from 'react-native';
 import {TombstonePortrait} from '../../components/Tombstone/_index';
 import {NeedAccountDialog} from '../../components/Dialog/NeedAccountDialog';
-import { USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
+import { USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
 import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
 import auth from '@react-native-firebase/auth';
 import { getDartaUser } from '../../api/userRoutes';
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
       analytics().logEvent('inquire_artwork', {artworkId})
       inquireSuccessAlert()
     } catch(error){
-      console.log(error)
+      // console.log(error)
     } 
   }
 

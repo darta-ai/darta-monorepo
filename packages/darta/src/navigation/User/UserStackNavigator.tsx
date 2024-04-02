@@ -36,7 +36,7 @@ export const viewOptionsStyles = StyleSheet.create({
     width: 24,
     marginRight: 24,
     borderRadius: 0,
-    color: Colors.PRIMARY_50,
+    color: Colors.PRIMARY_950,
   },
 });
 
@@ -129,22 +129,21 @@ export function UserStackNavigator({route} : {route: any}) {
               navigateToGalleryParams: UserRoutesEnum.UserGallery,
             }}
             options={{
-              headerTintColor: Colors.PRIMARY_50,
+              headerTintColor: Colors.PRIMARY_950,
               headerStyle: {
-                backgroundColor: Colors.PRIMARY_950, 
-                opacity: 0.9,
+                backgroundColor: Colors.PRIMARY_50, 
               }, 
               headerRight: () => (
                 <IconButton 
                   icon={"export-variant"}
-                  iconColor={Colors.PRIMARY_50}
+                  iconColor={Colors.PRIMARY_950}
                   style={viewOptionsStyles.viewOptionsButtonStyle}
                   onPress={() => shareList()}
                 />
               ),
               headerBackImage: () => (
                 <View style={backButtonStyles.backButton}>
-                  <SVGs.BackButtonIconWhite />
+                  <SVGs.BackButtonIcon />
                 </View>
             ), 
             headerTitle: uiState.listHeader ?? ""}}

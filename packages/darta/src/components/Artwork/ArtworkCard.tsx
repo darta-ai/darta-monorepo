@@ -4,8 +4,7 @@ import * as Colors from '@darta-styles';
 import {Artwork} from '@darta-types'
 import {TextElement} from '../Elements/_index';
 import FastImage from 'react-native-fast-image';
-import { Button, Surface } from 'react-native-paper';
-import { UIStoreContext, UiETypes } from '../../state';
+import { Surface } from 'react-native-paper';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 const SSArtworkSelectorCard = StyleSheet.create({
@@ -15,7 +14,7 @@ const SSArtworkSelectorCard = StyleSheet.create({
     alignContent: 'center',
     alignSelf: 'center',
     width: 150,
-    height: 300,
+    height: 240,
     marginBottom: 36,
   },
   loadingImageContainer: {
@@ -73,24 +72,6 @@ const SSArtworkSelectorCard = StyleSheet.create({
     lineHeight: 20,
     color: Colors.PRIMARY_900,
   },
-  buttonStyles: {
-    width: 75,
-    marginTop: 12,
-    height: 40,
-    backgroundColor: Colors.PRIMARY_950,
-    alignSelf: "center",
-    borderColor: Colors.PRIMARY_950,
-  },
-  buttonTextColor: {
-    color: Colors.PRIMARY_50,
-    fontSize: 14,
-    fontFamily: "DMSans_700Bold",
-  }, 
-  buttonContentStyle: {
-    justifyContent: "center",
-    alignItems: "center",
-    // margin: 1, // Or any other desired padding
-  },
 });
 
 const ArtworkCard = ({
@@ -106,7 +87,7 @@ const ArtworkCard = ({
       <View style={SSArtworkSelectorCard.container}>
         <View style={SSArtworkSelectorCard.imageContainer}>
             <Surface style={{backgroundColor: "transparent"}}>
-              <View style={SSArtworkSelectorCard.loadingImageContainer}>
+              <TouchableOpacity style={SSArtworkSelectorCard.loadingImageContainer} onPress={() => navigateToTombstone(artwork)}>
                 <DartaImageComponent
                   uri = {artwork.artworkImage ?? null}
                   priority={FastImage.priority.normal}
@@ -114,7 +95,7 @@ const ArtworkCard = ({
                   resizeMode={FastImage.resizeMode.contain}
                   size={"smallImage"}
                 />
-                </View>
+                </TouchableOpacity>
               </Surface>
           </View>
         <View style={SSArtworkSelectorCard.textContainer}>
@@ -128,14 +109,6 @@ const ArtworkCard = ({
             {artwork?.artworkCreatedYear?.value && artwork?.artworkCreatedYear?.value?.trim()}
           </TextElement>
         </View>
-      <Button 
-        style={SSArtworkSelectorCard.buttonStyles}
-        buttonColor="transparent"
-        contentStyle={SSArtworkSelectorCard.buttonContentStyle}
-        onPress={() => navigateToTombstone(artwork)}
-        >
-          <TextElement style={SSArtworkSelectorCard.buttonTextColor}>View</TextElement>
-      </Button>
       </View>
     </View>
   );

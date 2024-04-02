@@ -90,11 +90,13 @@ const customMarker = StyleSheet.create({
 const CustomMarker = React.memo(({ 
   coordinate, 
   mapPin, 
-  navigation
+  navigation,
+  isOpeningUpcoming
 } : {
   coordinate: any, 
   mapPin: ExhibitionMapPin, 
-  navigation: any
+  navigation: any,
+  isOpeningUpcoming: boolean
 }) => {
 
   const {exhibitionState} = React.useContext(ExhibitionStoreContext);
@@ -125,7 +127,7 @@ const CustomMarker = React.memo(({
 
   const [startDate, setStartDate] = React.useState<string>()
   const [endDate, setEndDate] = React.useState<string>()
-  const [hasUpcomingOpening, setHasUpcomingOpening] = React.useState<boolean>(false)
+  const [hasUpcomingOpening, setHasUpcomingOpening] = React.useState<boolean>(isOpeningUpcoming)
   const [hasCurrentShow, setHasCurrentOpening] = React.useState<boolean>(false)
 
 
@@ -191,6 +193,7 @@ const CustomMarker = React.memo(({
     wiggleAnim.addListener(() => {})
   }, [])
 
+  wiggleAnim.removeAllListeners()
   
   const handleWiggle = () => {
     const wiggleSequence = Animated.sequence([
@@ -272,7 +275,7 @@ const CustomMarker = React.memo(({
       {showCallout && (
         <Callout style={customMarkerDynamic.container} 
         onTouchStart={() => setShowCallout(false)} 
-        onPress={() => {chooseRouteAndNavigate()}}>
+        onPress={chooseRouteAndNavigate}>
             <View style={customMarker.galleryContainer} >
                 <View style={customMarker.galleryNameContainer}>
                   <TextElement style={customMarker.subheaderInformation}>{line1}</TextElement>

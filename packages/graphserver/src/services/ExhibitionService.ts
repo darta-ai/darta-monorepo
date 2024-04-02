@@ -19,7 +19,7 @@ import _ from 'lodash';
 import {CollectionNames, EdgeNames} from '../config/collections';
 import { ENV } from '../config/config';
 import { FOURTEEN_DAYS_AGO } from '../config/constants';
-import {newExhibitionShell} from '../config/templates';
+import {newExhibitionShell, standardConsoleLog} from '../config/templates';
 import {ImageController} from '../controllers/ImageController';
 import {
   filterOutPrivateRecordsMultiObject,
@@ -221,20 +221,21 @@ export class ExhibitionService implements IExhibitionService {
   }
 
   public async getExhibitionById({
-    exhibitionId,
+    exhibitionId
   }: {
     exhibitionId: string;
   }): Promise<Exhibition | void> {
-    const fullExhibitionId = this.generateExhibitionId({exhibitionId});
-
-    const exhibitionQuery = `
-      LET exhibition = DOCUMENT(@fullExhibitionId)
-      RETURN exhibition      
-      `;
-
-    // LOL terrible as
     let exhibition: Exhibition = {} as Exhibition;
     try {
+      const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+  
+      const exhibitionQuery = `
+        LET exhibition = DOCUMENT(@fullExhibitionId)
+        RETURN exhibition      
+        `;
+  
+      // LOL terrible as
+     
       const cursor = await this.db.query(exhibitionQuery, {fullExhibitionId});
       exhibition = await cursor.next();
     } catch (error: any) {
@@ -284,6 +285,8 @@ export class ExhibitionService implements IExhibitionService {
           mediumUrl: exhibitionImageValueMedium, 
           smallUrl: exhibitionImageValueSmall
         })
+        standardConsoleLog({request: 'ExhibitionService', data: 'getExhibitionId', message: 'should regenerate imageUrl'})
+
       }
       exhibition.exhibitionPrimaryImage.value = imageValue;
     } else {
@@ -1271,7 +1274,8 @@ export class ExhibitionService implements IExhibitionService {
     const promises: Promise<any>[] = []
 
     artworks.forEach((element) => {
-      promises.push(this.getExhibitionById(element._id))
+      if (!element._id) return
+      promises.push(this.getExhibitionById({exhibitionId: element._id}))
     })
 
     await Promise.allSettled(promises)

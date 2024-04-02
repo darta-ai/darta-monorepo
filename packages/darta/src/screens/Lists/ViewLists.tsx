@@ -264,7 +264,7 @@ export function ViewListsScreen({
                 />
             ) : (
                 <View style={addToListStyles.defaultContainer}>
-                    <TextElement style={dartaLogo.text}>Your lists are unavailable</TextElement>
+                    <TextElement style={dartaLogo.text}>No lists found!</TextElement>
                     <View style={{height: '10%', display: 'flex', flexDirection: 'row'}}>
                         <TextElement style={dartaLogo.text}>Create a list by pressing</TextElement>
                         <SVGs.SavedIcon />

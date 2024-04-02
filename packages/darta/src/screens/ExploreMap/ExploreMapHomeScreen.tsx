@@ -1,73 +1,85 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import {View, StyleSheet, Alert} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import * as Location from 'expo-location';
 
 import * as Colors from '@darta-styles';
-import { mapStylesJson } from '../../utils/mapStylesJson';
-import {StoreContext} from '../../state/Store';
-import MapView, { LatLng, PROVIDER_GOOGLE, Polyline} from 'react-native-maps';
-import { ExhibitionMapPin, MapPinCities } from '@darta-types';
-import CustomMarker from '../../components/Previews/CustomMarker';
+import { StoreContext, currentlyViewingMapView } from '../../state/Store';
+import MapView, { LatLng, PROVIDER_GOOGLE, Polyline } from 'react-native-maps';
+import { MapPinCities } from '@darta-types';
 import * as SVGs from '../../assets/SVGs';
 import { IconButtonElement } from '../../components/Elements/IconButtonElement';
 import { ExploreMapRootEnum } from '../../typing/routes';
+import { FilterBanner } from '../../components/Maps/FilterBanner';
+import { mapStylesJson } from '../../utils/mapStylesJson';
+import { MappedPins } from '../../components/Maps/MapPins';
 
 
 const exploreMapStyles = StyleSheet.create({
-    container: {
-        height: '100%',
-        width: wp('100%'),
-        backgroundColor: Colors.PRIMARY_100,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    switchContainer:{
-      position: 'absolute',
-      top: hp('80%'), // Place it at the top
-      right: 0, // Align it to the right
-      zIndex: 1,
-    },
-    mapContainer: {
-      backgroundColor: 'black',
-      height: hp('100%'),
+  container: {
+      height: '100%',
       width: wp('100%'),
-      display: 'flex',
+      backgroundColor: Colors.PRIMARY_100,
+      flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
   },
-    buttonContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      alignItems: 'center',
-      width: wp('100%'),
-      margin: hp('1%'),
-      height: hp('5%'),
-    }, 
-  mapView: {
-    alignSelf: 'stretch', 
-    height: '90%' 
+  switchContainer:{
+    position: 'absolute',
+    top: hp('15%'), // Place it at the top
+    left: 0, // Align it to the right
+    zIndex: 1,
   },
-  bottomSheetContainer: {
-    zIndex: 2,
+  layersContainer:{
+    position: 'absolute',
+    bottom: hp('10%'), 
+    right: 0, 
+    marginRight: 16,
+    marginBottom: 16,
+    shadowColor: Colors.PRIMARY_950,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    blurRadius: 4,
+    zIndex: 1,
+    gap: 6,
   },
-  bottomSheetContentContainer: {
-    zIndex: 2,
+  mapContainer: {
+    backgroundColor: 'black',
+    height: hp('100%'),
+    width: wp('100%'),
+    display: 'flex',
+    justifyContent: 'center',
     alignItems: 'center',
-  },
-})
-
+},
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    width: wp('100%'),
+    margin: hp('1%'),
+    height: hp('5%'),
+  }, 
+mapView: {
+  alignSelf: 'stretch', 
+  height: '90%' 
+},
+bottomSheetContainer: {
+  zIndex: 2,
+},
+bottomSheetContentContainer: {
+  zIndex: 2,
+  alignItems: 'center',
+},
+});
 
 export function ExploreMapHomeScreen({
     navigation,
 }: {
     navigation?: any;
 }) {
-  const {state} = useContext(StoreContext);
-  
-  const [currentLocation] = React.useState<MapPinCities>(MapPinCities.newYork)
+
+  const {state} = React.useContext(StoreContext);
   const [mapRegion] = React.useState({
     latitudeDelta: 0.01,
     longitudeDelta: 0.09,
@@ -89,9 +101,11 @@ export function ExploreMapHomeScreen({
   }, [state.mapPins])
   
   const handleMarkerPress = React.useCallback((event) => {
+    let { latitude, longitude } = event.nativeEvent.coordinate;
     const newRegion = {
       ...mapRegion,
-      ...event.nativeEvent.coordinate,
+      latitude: Number(latitude) + 0.0025,
+      longitude: Number(longitude),
       latitudeDelta: 0.01,  // You might need to adjust these deltas
       longitudeDelta: 0.01,
     };
@@ -101,71 +115,95 @@ export function ExploreMapHomeScreen({
     if (mapRef.current) {
       mapRef.current.animateToRegion(newRegion, transitionSpeed); // 1000 is the duration of the animation in milliseconds
     }
-  }, [mapRegion]);
+  }, []);
 
+  const handleZoomToUserLocation = async () => {
+    const hasLocationPermission = await Location.requestForegroundPermissionsAsync();
+    if (hasLocationPermission.status === 'granted') {
+      const userLocation = await Location.getCurrentPositionAsync()
+      const newRegion = {
+        ...mapRegion,
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude,
+        latitudeDelta: 0.01,  // You might need to adjust these deltas
+        longitudeDelta: 0.01,
+      };
+      if (mapRef.current) {
+        mapRef.current.animateToRegion(newRegion, 500); // 1000 is the duration of the animation in milliseconds
+      }
+    }
+  }
 
-  const handleModalToggle = React.useCallback(async () => {
-    // const routeCoordinates = await fetchRouteWithWaypoints(state.isViewingSaved ? state.mapPinsSaved?.[currentLocation] : state.mapPins?.[currentLocation])
-    // setRoutePolyline(routeCoordinates)
-    navigation.navigate(ExploreMapRootEnum.bottomSheetOptions as never)
-  }, [])
-
-
-  const MappedPins = React.memo(({ pins } : { pins?: ExhibitionMapPin[] }) => (
-    pins && pins.map((pin) => (
-      pin?.exhibitionLocation?.coordinates?.latitude && pin?.exhibitionLocation?.coordinates?.longitude && (
-        <View key={pin?.exhibitionId}>
-          <CustomMarker 
-            coordinate={{
-              latitude: Number(pin.exhibitionLocation.coordinates.latitude.value),
-              longitude: Number(pin.exhibitionLocation.coordinates.longitude.value)
-            }}
-            mapPin={pin}
-            navigation={navigation}
-          />
-        </View>
-      )
-    ))
-  ));
+  const handleModalToggle = async () => {
+    navigation.navigate(ExploreMapRootEnum.bottomSheetOptions, {mapRegion})
+  }
 
   React.useEffect(() => {
-    if (state.isViewingSaved && !state.mapPinsSaved) {
+    if (state.currentlyViewingMapView?.[currentlyViewingMapView?.walkingRoute] && !state.mapPins?.[MapPinCities?.newYork][currentlyViewingMapView?.walkingRoute].length) {
       Alert.alert('No galleries to show', `Follow some galleries by tapping the heart icon on the gallery's page.`)
     }
-  }, [state.isViewingSaved])
+  }, state.currentlyViewingMapView?.[currentlyViewingMapView?.walkingRoute])
+
+  const memoizedMapPins = React.useMemo(() => {
+    let res;
+    if (state.isViewingWalkingRoute){
+      res =  state?.customViews?.[state.currentlyViewingCity]?.customMapPins
+    } else {
+      res =  state.mapPinIds?.[state.currentlyViewingCity]?.[state.currentlyViewingMapView]?.map((locationId) => {
+          if (state.allMapPins?.[locationId]) {
+          return state.allMapPins[locationId];
+          }
+      });
+    }
+    console.log(res?.length)
+    return res
+  }, [state?.currentlyViewingCity, state?.currentlyViewingMapView, state?.isViewingWalkingRoute]);
 
   return (
-    <View style={exploreMapStyles.container}>
-      <View style={exploreMapStyles.mapContainer}>
-        <View style={exploreMapStyles.switchContainer}>
-          <IconButtonElement 
-            inUse={true}
-            IconInUse={<SVGs.LayersIcon />}
-            IconNotInUse={<SVGs.LayersIcon />}
-            onPress={handleModalToggle}
-          />
+    <>
+      <View style={exploreMapStyles.container}>
+        <View style={exploreMapStyles.mapContainer}>
+          <View style={exploreMapStyles.switchContainer}>
+            <FilterBanner />
+          </View>
+          <View style={exploreMapStyles.layersContainer}>
+            <IconButtonElement 
+              inUse={true}
+              IconInUse={<SVGs.LocationBlack />}
+              IconNotInUse={<SVGs.LocationWhite />}
+              onPress={handleZoomToUserLocation}
+            />
+            <IconButtonElement 
+              inUse={false}
+              IconInUse={<SVGs.FigureWalkingLogoBlack />}
+              IconNotInUse={<SVGs.FigureWalkingLogoWhite />}
+              onPress={handleModalToggle}
+            />
+          </View>
+          {Object.values(mapRegion).length > 0 && ( 
+            <MapView  
+              ref={mapRef}
+              provider={PROVIDER_GOOGLE}
+              style={ exploreMapStyles.mapView }
+              region={mapRegion} 
+              customMapStyle={mapStylesJson}
+              onMarkerPress={handleMarkerPress}
+              showsUserLocation={true}
+              >
+                <MappedPins pins={memoizedMapPins} navigation={navigation} />
+                {state.isViewingWalkingRoute && (
+                  <Polyline
+                    coordinates={state?.customViews?.[state.currentlyViewingCity]?.walkingRoute as unknown as LatLng[]}
+                    strokeWidth={2}
+                    strokeColor={Colors.PRIMARY_950}
+                    lineDashPattern={[2, 2]}
+                    miterLimit={10}
+                  />
+                )}
+            </MapView>
+          )}
         </View>
-        {Object.values(mapRegion).length > 0 && ( 
-          <MapView  
-            ref={mapRef}
-            provider={PROVIDER_GOOGLE}
-            style={ exploreMapStyles.mapView }
-            region={mapRegion} 
-            customMapStyle={mapStylesJson}
-            onMarkerPress={handleMarkerPress}
-            showsUserLocation={true}
-            >
-              <MappedPins pins={state.isViewingSaved ? state.mapPinsSaved?.[currentLocation] : state.mapPins?.[currentLocation]} />
-              {state.isViewingWalkingRoute && state.walkingRoute?.length && (
-                <Polyline
-                  coordinates={state.walkingRoute as unknown as LatLng[]}
-                  strokeWidth={2}
-                  strokeColor={Colors.PRIMARY_950} // Customizable
-                />
-              )}
-          </MapView>
-        )}
       </View>
-    </View>
+    </>
   );
 }

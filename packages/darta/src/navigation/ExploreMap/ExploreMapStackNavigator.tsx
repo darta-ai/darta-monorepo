@@ -15,7 +15,7 @@ import { UIStoreContext } from '../../state';
 import { TextElement } from '../../components/Elements/TextElement';
 import * as Colors from '@darta-styles'
 import { AddToListScreen } from '../../screens/Lists/AddToList';
-import { BottomSheetNavigation } from '../../screens/ExploreMap/BottomSheetNavigation';
+import { PlanARoute } from '../../screens/ExploreMap/PlanARoute';
 
 
 export const ExploreMapStack = createStackNavigator();
@@ -72,13 +72,10 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
           />
         <ExploreMapStack.Screen
             name={ExploreMapRootEnum.bottomSheetOptions}
-            component={BottomSheetNavigation}
+            component={PlanARoute}
             options={{...headerOptions, 
-              headerShown: false,
-              presentation: 'transparentModal',
               headerMode: 'screen', 
-              headerTitle: 'Options',
-              cardStyle: {backgroundColor: 'transparent'},
+              headerTitle: 'Plan A Route',
             }}
           />
         <ExploreMapStack.Group screenOptions={{

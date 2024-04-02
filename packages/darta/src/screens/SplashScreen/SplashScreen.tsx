@@ -88,7 +88,6 @@ function AnimatedSplashScreen({ children }) {
         inquiredArtwork,
         artworksToRate, 
         userListPreviews,
-        unViewedExhibitionsByGallery
       ] = await Promise.all([
         // user
         uid ? getDartaUser({uid}) : null,
@@ -113,7 +112,6 @@ function AnimatedSplashScreen({ children }) {
         // userLists
         listUserLists(),
         // getUnViewedExhibitionsCountForUser()
-        getUnViewedExhibitionsForUser()
       ]);
 
       // User Profile
@@ -209,14 +207,6 @@ function AnimatedSplashScreen({ children }) {
           artworkDataMulti: combinedArtwork
         });
       }
-
-      // Unviewed Exhibitions
-      if(unViewedExhibitionsByGallery){
-        exhibitionDispatch({
-          type: ExhibitionETypes.setUnViewedExhibitionsByGallery,
-          unViewedExhibitionsByGallery: unViewedExhibitionsByGallery
-        })
-      }
       
       // Need to figure out what takes the longest to load and prefetch those images. What takes so long? 
       // Then try to make that more efficient. 
@@ -240,7 +230,7 @@ function AnimatedSplashScreen({ children }) {
       await SplashScreen.hideAsync();
       setAppReady(true)
     } catch (e) {
-      console.log(e);
+      console.log('!!!', e);
     } finally {
       setAppReady(true);
     }

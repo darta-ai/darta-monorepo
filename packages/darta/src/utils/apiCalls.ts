@@ -1,4 +1,4 @@
-import { Artwork, GalleryPreview, Images, MobileUser, NewList, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types/dist";
+import { Artwork, GalleryPreview, Images, MobileUser, NewList, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types";
 import { createUserArtworkRelationship, deleteUserArtworkRelationship, listUserArtworkAPIRelationships } from "../api/artworkRoutes";
 import { createDartaUserFollowGallery, createUserVisitedGallery, deleteDartaUserFollowGallery, editDartaUserAccount, listDartaUserFollowsGallery } from "../api/userRoutes";
 import {listArtworksToRate, listArtworksToRateStatelessRandomSampling} from "../api/recommenderRoutes";
