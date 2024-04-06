@@ -84,6 +84,11 @@ export function ExhibitionHomeTopTabNavigator({route} : {route: any}) {
   return (
     <ExhibitionHomeTopTab.Navigator screenOptions={{...tabBarScreenOptions}}>
       <ExhibitionHomeTopTab.Group>
+      <ExhibitionHomeTopTab.Screen
+            name={ExhibitionPreviewEnum.onView}
+            component={ExhibitionPreviewScreen}
+            options={{ title: 'Open now' }}
+          />
         {showFollowingExhibitionPreviews && (
             <ExhibitionHomeTopTab.Screen
             name={ExhibitionPreviewEnum.following}
@@ -91,11 +96,6 @@ export function ExhibitionHomeTopTabNavigator({route} : {route: any}) {
             options={{ title: 'Following' }}
           />
           )}
-          <ExhibitionHomeTopTab.Screen
-            name={ExhibitionPreviewEnum.onView}
-            component={ExhibitionPreviewScreen}
-            options={{ title: 'Open now' }}
-          />
           {showUpcomingExhibitionPreviews && (
             <ExhibitionHomeTopTab.Screen
               name={ExhibitionPreviewEnum.forthcoming}

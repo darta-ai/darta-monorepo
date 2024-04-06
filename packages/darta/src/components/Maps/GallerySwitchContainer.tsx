@@ -2,6 +2,7 @@ import { ExhibitionMapPin } from '@darta-types/dist';
 import * as React from 'react';
 import { FlatList, View } from 'react-native';
 import GallerySwitchComponent from './GallerySwitchComponent';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 
 
 
@@ -12,7 +13,7 @@ export const GallerySwitchContainer = ({ mapPins, activeArrayLength } : {mapPins
     });
 
     return (
-        <View style={{ height: 375, width: '100%'}}>
+        <View style={{ height: heightPercentageToDP('35%'), width: '100%'}}>
             <FlatList
                 data={sortedMapPins}
                 renderItem={({ item }) => <GallerySwitchComponent galleryData={item} activeArrayLength={activeArrayLength}/>}

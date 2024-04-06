@@ -38,7 +38,7 @@ export function ArtHapIntro(){
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
-          console.log(`Can't handle URL: ${url}`);
+        //   console.log(`Can't handle URL: ${url}`);
         } else {
           return Linking.openURL(url);
         }

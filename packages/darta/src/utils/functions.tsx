@@ -3,7 +3,7 @@ import {Image} from 'react-native';
 import {buttonSizes} from './constants';
 import {createUser} from '../api/userRoutes'
 import auth from '@react-native-firebase/auth';
-import { BusinessHours, IBusinessHours } from '@darta-types/dist';
+import { BusinessHours, ExhibitionMapPin, IBusinessHours } from '@darta-types/dist';
 
  
 export const getUserUid = async () => {
@@ -52,6 +52,27 @@ export function customLocalDateStringStart({date, isUpperCase} : {date: Date, is
 
 export function customLocalDateStringEnd({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+  const monthName = isUpperCase ? months[date.getMonth()] : months[date.getMonth()]
+  const dayOfMonth = date.getDate();
+  const year = date.getFullYear();
+
+  return `${monthName} ${dayOfMonth}, ${year}`;
+}
+
+
+export function customLocalDateStringStartShort({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const monthName = isUpperCase ? months[date.getMonth()] : months[date.getMonth()]
+
+  const dayOfMonth = date.getDate();
+
+  return `${monthName} ${dayOfMonth}`;
+}
+
+export function customLocalDateStringEndShort({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   const monthName = isUpperCase ? months[date.getMonth()] : months[date.getMonth()]
   const dayOfMonth = date.getDate();
@@ -143,7 +164,7 @@ export function getStoreHours(hoursObject: BusinessHours | undefined) {
   const closingTime = hoursObject[currentDayName]?.close.value;
 
   if (closingTime === 'Closed') {
-      return 'Closed';
+      return 'Closed today';
   } else if (closingTime) {
     return `Open until ${closingTime}`;
   } else {
@@ -172,3 +193,14 @@ export function formatUSPhoneNumber(number: number | string) {
   }
   return null;
 }
+
+// utils/mapUtils.js
+export const calculateZoomLevel = (minLat, maxLat, minLong, maxLong) => {
+  const latDelta = Math.abs(maxLat - minLat);
+  const longDelta = Math.abs(maxLong - minLong);
+
+  // Simplified zoom level calculation (customize as needed)
+  const zoomLevel = Math.log2(360 / Math.max(latDelta, longDelta));
+  return zoomLevel;
+};
+

@@ -2,7 +2,7 @@ import React from 'react';
 import Svg, { Rect, Defs, Pattern, Use, Image } from 'react-native-svg';
 export const NadaLogo = () => {
   return (
-      <Svg width="25" height="25" viewBox="0 0 50 50" fill="none">
+      <Svg width="25" height="25" viewBox="0 0 35 35" fill="none">
         <Rect y="0.500031" width="35.1944" height="35" fill="url(#pattern0)"/>
         <Defs>
           <Pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">

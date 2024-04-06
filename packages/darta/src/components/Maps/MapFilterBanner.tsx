@@ -5,6 +5,7 @@ import * as SVGs from '../../assets/SVGs';
 import { ETypes, StoreContext } from '../../state';
 import { currentlyViewingMapView } from '../../state/Store';
 import { FilterBannerButton } from '../Elements/FilterBannerButton';
+import { ExploreMapRootEnum } from '../../typing/routes';
 
 
 const screenHeight = Dimensions.get('window').height;
@@ -13,8 +14,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     margin: 12,
-    // height: screenHeight * 0.2,
-    // backgroundColor: Colors.PRIMARY_950,
     justifyContent: 'flex-end',
   },
   blackTab: {
@@ -41,11 +40,13 @@ const styles = StyleSheet.create({
   }
 });
 
-export const FilterBanner = () => {
+export const FilterBanner = ({ navigation } : {navigation : any}) => {
   const { state, dispatch } = React.useContext(StoreContext);
 
   const handleShowRoute = () => {
-    if (state.isViewingWalkingRoute === true) {
+    if (state.mapPinIds?.[state.currentlyViewingCity]?.walkingRoute.length === 0){
+      navigation.navigate(ExploreMapRootEnum.bottomSheetOptions)
+    } else if (state.currentlyViewingMapView === currentlyViewingMapView.walkingRoute) {
       dispatch({
         type: ETypes.setIsViewingWalkingRoute,
         isViewingWalkingRoute: false,
@@ -58,6 +59,10 @@ export const FilterBanner = () => {
       dispatch({
         type: ETypes.setIsViewingWalkingRoute,
         isViewingWalkingRoute: true,
+      })
+      dispatch({
+        type: ETypes.setCurrentViewingMapView,
+        currentlyViewingMapView: currentlyViewingMapView.walkingRoute
       })
     }
     // if (state.isViewingWalkingRoute) {
@@ -154,35 +159,37 @@ export const FilterBanner = () => {
         showsHorizontalScrollIndicator={false} 
         contentContainerStyle={styles.optionsContainer}
       >
-        {
           <FilterBannerButton 
-            inUse={state.isViewingWalkingRoute === true}
+            inUse={state.currentlyViewingMapView === currentlyViewingMapView.walkingRoute}
             IconInUse={<SVGs.FigureWalkingLogoWhite20 />}
             IconNotInUse={<SVGs.FigureWalkingLogoBlack20 />}
             onPress={handleShowRoute}
             text={"Your Route"}
           />
-        }
-        <FilterBannerButton 
-          inUse={(state.currentlyViewingMapView === currentlyViewingMapView.savedGalleries)}
-          IconInUse={<SVGs.HeartEmpty20 />}
-          IconNotInUse={<SVGs.HeartFill20 />}
-          onPress={handleShowSaved}
-          text={"Following"}
-        />
+          {state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView.savedGalleries]?.length > 0 && ( 
+            <FilterBannerButton 
+              inUse={(state.currentlyViewingMapView === currentlyViewingMapView.savedGalleries)}
+              IconInUse={<SVGs.HeartEmpty20 />}
+              IconNotInUse={<SVGs.HeartFill20 />}
+              onPress={handleShowSaved}
+              text={"Following"}
+            />
+         )}
+         {state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView.openingTonight]?.length > 0 && ( 
         <FilterBannerButton 
             inUse={(state.currentlyViewingMapView === currentlyViewingMapView.openingTonight)}
             IconInUse={<SVGs.DoorsOpenWhite />}
             IconNotInUse={<SVGs.DoorsOpenBlack />}
             onPress={handleShowOpeningTonight}
-            text={"Opening Tonight"}
+            text={"Reception Tonight"}
           />
+         )}
         <FilterBannerButton 
           inUse={(state.currentlyViewingMapView === currentlyViewingMapView.newOpenings)}
           IconInUse={<SVGs.NewBellWhite20 />}
           IconNotInUse={<SVGs.NewBellBlack20 />}
           onPress={handleShowNew}
-          text={"Opened This Week"}
+          text={"Opened Last Week"}
         />
         <FilterBannerButton 
           inUse={(state.currentlyViewingMapView === currentlyViewingMapView.newClosing)}

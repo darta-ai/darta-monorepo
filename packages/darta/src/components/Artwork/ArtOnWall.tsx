@@ -115,7 +115,7 @@ export function ArtOnWall({
             try{
               await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE})
             } catch {
-              console.log("error removing disliked artwork")
+              // console.log("error removing disliked artwork")
             }
             rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED);
             break;
@@ -134,7 +134,7 @@ export function ArtOnWall({
             try{
               await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
             } catch {
-              console.log("error removing disliked artwork")
+              // console.log("error removing disliked artwork")
             }
             rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.LIKE);
             break;
@@ -146,7 +146,7 @@ export function ArtOnWall({
             try{
               await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
             } catch {
-              console.log("error removing disliked artwork")
+              // console.log("error removing disliked artwork")
             }
             rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.UNRATED);
             break;
@@ -160,7 +160,7 @@ export function ArtOnWall({
             try{
               await deleteArtworkRelationshipAPI({artworkId: artOnDisplay._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE})
             } catch {
-              console.log("error removing disliked artwork")
+              // console.log("error removing disliked artwork")
             }
             rateArtwork(USER_ARTWORK_EDGE_RELATIONSHIP.DISLIKE);
             break;

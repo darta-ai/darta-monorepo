@@ -56,7 +56,16 @@ const styles = StyleSheet.create({
   }
 });
 
-export const PlanARoute = ({navigation, route}) => {
+const routeNames = {
+  all: "All New York Galleries",
+  savedGalleries: "Galleries You Follow",
+  newOpenings: "Newly Opened Exhibitions",
+  newClosing: "Exhibitions Closing Soon",
+  walkingRoute: "Your Route",
+  openingTonight: "Exhibitions Opening Tonight",
+}
+
+export const PlanARoute = ({route, navigation}) => {
   const { state, dispatch } = React.useContext(StoreContext);
   const [loadingRoute, setLoadingRoute] = React.useState(false);
 
@@ -65,7 +74,7 @@ export const PlanARoute = ({navigation, route}) => {
         if (state.allMapPins?.[locationId] && state.mapPinStatus?.[state.currentlyViewingCity]?.[state.currentlyViewingMapView][locationId]) {
           return state.allMapPins[locationId];
         }
-      }).filter((pin) => pin);
+      }).filter((pin: any) => pin);
   }, [state.mapPins, state.currentlyViewingCity, state.currentlyViewingMapView, state.mapPinStatus?.[state.currentlyViewingCity]?.[state.currentlyViewingMapView]]);
 
   const allMapPinsPlanARoute = React.useMemo(() => {
@@ -104,7 +113,8 @@ export const PlanARoute = ({navigation, route}) => {
     if (!pins) {
       return;
     }
-    setLoadingRoute(true)
+    setLoadingRoute(true);
+    const locationIds = pins.map((waypoint) => waypoint?.locationId)
     const waypoints =  pins.map((pin) => {
       if(pin?.exhibitionLocation?.coordinates?.latitude && pin?.exhibitionLocation?.coordinates?.longitude){
         return {
@@ -128,7 +138,6 @@ export const PlanARoute = ({navigation, route}) => {
       }
       const destination = waypoints[waypoints.length - 1] ? `${waypoints[waypoints.length - 1]?.latitude},${waypoints[waypoints.length - 1]?.longitude}` : '';
       const waypointsString = waypoints.map(coord => `${coord?.latitude},${coord?.longitude}`).join('|');
-      console.log({waypointsString})
 
       const response = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&waypoints=optimize:true|${waypointsString}&mode=walking&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS}`);
       const json = await response.json();
@@ -141,23 +150,21 @@ export const PlanARoute = ({navigation, route}) => {
           longitude: point[1],
         }));
         
-        console.log({routeCoordinates})
         dispatch({
           type: ETypes.setWalkingRoute,
           walkingRoute: routeCoordinates,
-          customMapPins: pins
+          customMapLocationIds: locationIds
         })
         dispatch({
           type: ETypes.setIsViewingWalkingRoute,
           isViewingWalkingRoute: true
         })
-        console.log('!!!', routeCoordinates.length)
         navigation.goBack()
       } else {
         throw new Error('Failed to fetch optimized route');
       }
     } catch (error) {
-      return null;
+      errorGeneratingRoute();
     }
     setLoadingRoute(false)
   }, []);
@@ -187,6 +194,11 @@ export const PlanARoute = ({navigation, route}) => {
     )
   } 
 
+  const errorGeneratingRoute = () => {
+    Alert.alert('Error', 'Failed to generate route. Please try again.')
+  }
+    
+
   React.useEffect(() => {
     setMapPinsState(memoizedMapPinsPlanARoute)
   }, [state.mapPinStatus?.[state.currentlyViewingCity]?.[state.currentlyViewingMapView]])
@@ -194,13 +206,14 @@ export const PlanARoute = ({navigation, route}) => {
   return (
     <View style={styles.container}>
         <View style={styles.bottomSheet}>
-          <View style={{height: 200}}>
+          <View style={{height: hp('25%')}}>
             <DartaMapComponent 
               navigation={navigation}
               mapPins={mapPinsState}
             />
           </View>
-          <View style={{marginTop: 12}}>
+          <View style={{marginTop: 12, gap: 3}}>
+            <TextElement style={{fontFamily: 'DMSans_700Bold', fontSize: 24}}>{routeNames[state.currentlyViewingMapView]}</TextElement>
             <TextElement style={{fontFamily: 'DMSans_400Regular'}}>{`Select up to ${10 - mapPinsState.length} more Galleries`}</TextElement>
             <Divider style={{marginBottom: 12}} />
             <View>
@@ -214,6 +227,7 @@ export const PlanARoute = ({navigation, route}) => {
             style={styles.buttonStyles}
             contentStyle={styles.buttonContentStyle}
             loading={loadingRoute}
+            disabled={loadingRoute}
             >
               <TextElement style={styles.buttonTextColor}>Generate Route</TextElement>
             </Button>

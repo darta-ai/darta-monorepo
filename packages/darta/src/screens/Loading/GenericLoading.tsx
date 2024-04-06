@@ -53,6 +53,13 @@ export function GenericLoadingScreen() {
     a2Anim.addListener(() => {})
   }, [])
 
+  dAnim.removeAllListeners();
+  a1Anim.removeAllListeners();
+  rAnim.removeAllListeners();
+  tAnim.removeAllListeners();
+  a2Anim.removeAllListeners();
+
+
   const sineWaveAnimation = (animatedValue, delay) => {
     return Animated.sequence([
       Animated.timing(animatedValue, {

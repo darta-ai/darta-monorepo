@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
       })
       
     } catch(error){
-      console.log(error)
+      // console.log(error)
     } finally {
       setLikeLoading(false)
     }
@@ -83,24 +83,7 @@ const styles = StyleSheet.create({
     if (auth().currentUser === null) {
       return setDialogVisible(true)
     }
-    // setSaveLoading(true)
     navigation.navigate(saveRoute, {artwork: artOnDisplay})
-    try {
-      // await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
-      // userDispatch({
-      //   type: UserETypes.setUserSavedArtworkMulti,
-      //   artworkIds: {[artworkId]: true},
-      // })
-      // userDispatch({
-      //   type: UserETypes.saveArtworkMulti,
-      //   artworkDataMulti: {[artworkId]: artOnDisplay},
-      // })
-      // analytics().logEvent('save_artwork_modal', {artworkId})
-    } catch(error){
-      console.log(error)
-    } finally {
-      // setSaveLoading(false)
-    }
   }
 
   const inquireArtwork = async ({artworkId} : {artworkId: string}) => {

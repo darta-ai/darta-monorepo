@@ -96,7 +96,7 @@ export interface IState {
 
   mapPinIds?: {
     [city in MapPinCities]: {
-      [key in keyof CurrentlyViewingMapView] : Array<{[key: string] : boolean}>
+      walkingRoute : Array<string>
     }
   }
 
@@ -108,7 +108,6 @@ export interface IState {
 
   customViews? : {
     [city in MapPinCities]?: {
-      customMapPins : Array<ExhibitionMapPin>
       walkingRoute : string
     }
   }
@@ -119,6 +118,7 @@ export interface IState {
     }
   }
 
+  isViewingWalkingRoute: boolean;
   currentlyViewingMapView: string;
   currentlyViewingCity: MapPinCities;
 
@@ -132,7 +132,6 @@ export interface IState {
   fullyLoadedGalleries?: {[key: string] : boolean}
   fullyLoadedExhibitions?: {[key: string] : boolean}
 
-  isViewingWalkingRoute?: boolean;
   userAgreedToNavigationTerms: boolean;
 
   userListPreviews?: {[key: string]: ListPreview}
@@ -169,8 +168,8 @@ export enum ETypes {
   deleteList = 'DELETE_LIST',
   setWalkingRoute = 'SET_WALKING_ROUTE',
   setCurrentViewingMapView = 'SET_CURRENT_VIEWING_MAP_VIEW',
-  setIsViewingWalkingRoute = 'SET_IS_VIEWING_WALKING_ROUTE',
   setCustomMapPinViews = 'SET_CUSTOM_MAP_PIN_VIEWS',
+  setIsViewingWalkingRoute = 'SET_IS_VIEWING_WALKING_ROUTE',
 
   setUserAgreedToNavigationTerms = 'SET_USER_AGREED_TO_NAVIGATION_TERMS',
   setPinStatus = 'SET_PIN_STATUS',
@@ -206,7 +205,7 @@ interface IAction {
   listId?: string;
 
   userAgreedToNavigationTerms?: boolean;
-  customMapPins?: Array<ExhibitionMapPin>;
+  customMapLocationIds?: Array<string>;
   exhibitionId?: string;
   locationId?: string;
   pinStatus?: boolean;
@@ -219,6 +218,7 @@ const initialState: IState = {
   currentlyViewingMapView: currentlyViewingMapView.all,
   currentlyViewingCity: MapPinCities.newYork,
   userAgreedToNavigationTerms: false,
+  isViewingWalkingRoute: false,
 };
 
 // Define the reducer function
@@ -279,10 +279,10 @@ const reducer = (state: IState, action: IAction): IState => {
         });
 
         const openingTonightPins: ExhibitionMapPin[] = allPins.filter((pin: ExhibitionMapPin) => {
-          if (!pin?.exhibitionDates?.exhibitionStartDate?.value) {
+          if (!pin.receptionDates?.receptionStartTime?.value) {
             return false;
           }
-          const startDate = new Date(pin.exhibitionDates.exhibitionStartDate.value);
+          const startDate = new Date(pin.receptionDates.receptionStartTime.value);
           const today = new Date();
         
           // Compare only the date part by setting the time to midnight
@@ -298,10 +298,6 @@ const reducer = (state: IState, action: IAction): IState => {
             ...state.allMapPins,
             ...action.mapPins
           },
-          mapPins: {
-            ...state.mapPins,
-            [action.mapPinCity]: allPins
-          },
           mapPinIds: {
             ...state.mapPinIds,
             [action.mapPinCity]: {
@@ -310,24 +306,41 @@ const reducer = (state: IState, action: IAction): IState => {
               [currentlyViewingMapView?.newOpenings]: newOpeningsPins.map(pin => pin?.locationId),
               [currentlyViewingMapView?.walkingRoute]: [],
               [currentlyViewingMapView?.openingTonight]: openingTonightPins.map(pin => pin?.locationId),
-              [currentlyViewingMapView?.newClosing]: newClosingPins.map(pin => pin?.locationId)
+              [currentlyViewingMapView?.newClosing]: newClosingPins.map(pin => pin?.locationId),
+              [currentlyViewingMapView?.customView]: []
+            } as {
+              all: Array<string>;
+              savedGalleries: Array<string>;
+              newOpenings: Array<string>;
+              newClosing: Array<string>;
+              walkingRoute: Array<string>;
+              openingTonight: Array<string>;
+              customView: Array<string>;
             }
           },
           mapPinStatus: {
             ...state.mapPinStatus,
             [action.mapPinCity]: {
-              [currentlyViewingMapView?.all]: allPins.reduce((acc, el) => ({ ...acc, [el?.locationId]: false }), {}),
-              [currentlyViewingMapView?.savedGalleries]: userFollowsPins.reduce((acc, el) => ({ ...acc, [el?.locationId]: false }), {}),
-              [currentlyViewingMapView?.newOpenings]: newOpeningsPins.reduce((acc, el) => ({ ...acc, [el?.locationId]: false }), {}),
-              [currentlyViewingMapView?.walkingRoute]: {},
-              [currentlyViewingMapView?.openingTonight]: openingTonightPins.reduce((acc, el) => ({ ...acc, [el?.locationId]: false }), {}),
-              [currentlyViewingMapView?.newClosing]: newClosingPins.reduce((acc, el) => ({ ...acc, [el?.locationId]: false }), {})
-            }
+              all: allPins.reduce((acc, el) => ({ ...acc, [el.locationId]: false }), {}),
+              savedGalleries: userFollowsPins.reduce((acc, el) => ({ ...acc, [el.locationId]: false }), {}),
+              newOpenings: newOpeningsPins.reduce((acc, el) => ({ ...acc, [el.locationId]: false }), {}),
+              newClosing: newClosingPins.reduce((acc, el) => ({ ...acc, [el.locationId]: false }), {}),
+              walkingRoute: {} as { [key: string]: boolean },
+              openingTonight: openingTonightPins.reduce((acc, el) => ({ ...acc, [el.locationId]: false }), {}),
+              customView: {}, // Ensure this matches the expected structure
+            } as {
+              all: { [key: string]: boolean };
+              savedGalleries: { [key: string]: boolean };
+              newOpenings: { [key: string]: boolean };
+              newClosing: { [key: string]: boolean };
+              walkingRoute: { [key: string]: boolean };
+              openingTonight: { [key: string]: boolean };
+              customView: {};
+            },
           }
         };
     case ETypes.setWalkingRoute:
-      console.log('!!!', {walkingRoute: action.walkingRoute, mapPins: action.customMapPins})
-      if (!action.walkingRoute || !action.customMapPins || !state.currentlyViewingCity) {
+      if (!action.walkingRoute || !action.customMapLocationIds || !state.currentlyViewingCity) {
         return state;
       }
       
@@ -336,10 +349,17 @@ const reducer = (state: IState, action: IAction): IState => {
         customViews: {
           ...state.customViews,
           [state.currentlyViewingCity]: {
-            customMapPins: action.customMapPins,
             walkingRoute: action.walkingRoute
           }
         },
+        mapPinIds: {
+          ...state.mapPinIds,
+          [state.currentlyViewingCity]: {
+            ...state.mapPinIds?.[state.currentlyViewingCity],
+            walkingRoute: action.customMapLocationIds
+          }
+        },
+        currentlyViewingMapView: currentlyViewingMapView.walkingRoute
       };
     case ETypes.setPinStatus: {
       if (!action.locationId || action.pinStatus === undefined){
@@ -354,19 +374,14 @@ const reducer = (state: IState, action: IAction): IState => {
             [state.currentlyViewingMapView]: {
               ...state.mapPinStatus?.[state.currentlyViewingCity][state.currentlyViewingMapView],
               [action.locationId]: action.pinStatus
+            },
+            walkingRoute: {
+              ...state.mapPinStatus?.[state.currentlyViewingCity].walkingRoute,
+              [action.locationId]: action.pinStatus
             }
           }
         }
       }
-    }
-    case ETypes.setIsViewingWalkingRoute: {
-      if (action.isViewingWalkingRoute === undefined) {
-        return state;
-      }
-      return {
-        ...state,
-        isViewingWalkingRoute: action.isViewingWalkingRoute,
-      };
     }
     case ETypes.setUserAgreedToNavigationTerms: {
       if (action.userAgreedToNavigationTerms === undefined) {
@@ -384,6 +399,15 @@ const reducer = (state: IState, action: IAction): IState => {
       return {
         ...state,
         currentlyViewingMapView: action.currentlyViewingMapView,
+      };
+    }
+    case ETypes.setIsViewingWalkingRoute: {
+      if (action.isViewingWalkingRoute === undefined) {
+        return state;
+      }
+      return {
+        ...state,
+        isViewingWalkingRoute: action.isViewingWalkingRoute,
       };
     }
     case ETypes.setQRCodeExhibitionId:

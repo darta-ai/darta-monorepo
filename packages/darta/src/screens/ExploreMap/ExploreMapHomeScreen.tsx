@@ -6,11 +6,11 @@ import * as Location from 'expo-location';
 import * as Colors from '@darta-styles';
 import { StoreContext, currentlyViewingMapView } from '../../state/Store';
 import MapView, { LatLng, PROVIDER_GOOGLE, Polyline } from 'react-native-maps';
-import { MapPinCities } from '@darta-types';
+import { MapPinCities, MapRegion } from '@darta-types';
 import * as SVGs from '../../assets/SVGs';
 import { IconButtonElement } from '../../components/Elements/IconButtonElement';
 import { ExploreMapRootEnum } from '../../typing/routes';
-import { FilterBanner } from '../../components/Maps/FilterBanner';
+import { FilterBanner } from '../../components/Maps/MapFilterBanner';
 import { mapStylesJson } from '../../utils/mapStylesJson';
 import { MappedPins } from '../../components/Maps/MapPins';
 
@@ -26,7 +26,7 @@ const exploreMapStyles = StyleSheet.create({
   },
   switchContainer:{
     position: 'absolute',
-    top: hp('15%'), // Place it at the top
+    top: hp('12.5%'), // Place it at the top
     left: 0, // Align it to the right
     zIndex: 1,
   },
@@ -117,22 +117,22 @@ export function ExploreMapHomeScreen({
     }
   }, []);
 
-  const handleZoomToUserLocation = async () => {
+  const handleZoomToUserLocation = React.useCallback( async () => {
     const hasLocationPermission = await Location.requestForegroundPermissionsAsync();
     if (hasLocationPermission.status === 'granted') {
       const userLocation = await Location.getCurrentPositionAsync()
-      const newRegion = {
-        ...mapRegion,
-        latitude: userLocation.coords.latitude,
-        longitude: userLocation.coords.longitude,
-        latitudeDelta: 0.01,  // You might need to adjust these deltas
-        longitudeDelta: 0.01,
-      };
-      if (mapRef.current) {
-        mapRef.current.animateToRegion(newRegion, 500); // 1000 is the duration of the animation in milliseconds
+        const newRegion = {
+          ...mapRegion,
+          latitude: userLocation.coords.latitude,
+          longitude: userLocation.coords.longitude,
+          latitudeDelta: 0.01,  // You might need to adjust these deltas
+          longitudeDelta: 0.01,
+        };
+        if (mapRef.current) {
+          mapRef.current.animateToRegion(newRegion, 500); // 1000 is the duration of the animation in milliseconds
+        }
       }
-    }
-  }
+  })
 
   const handleModalToggle = async () => {
     navigation.navigate(ExploreMapRootEnum.bottomSheetOptions, {mapRegion})
@@ -145,26 +145,19 @@ export function ExploreMapHomeScreen({
   }, state.currentlyViewingMapView?.[currentlyViewingMapView?.walkingRoute])
 
   const memoizedMapPins = React.useMemo(() => {
-    let res;
-    if (state.isViewingWalkingRoute){
-      res =  state?.customViews?.[state.currentlyViewingCity]?.customMapPins
-    } else {
-      res =  state.mapPinIds?.[state.currentlyViewingCity]?.[state.currentlyViewingMapView]?.map((locationId) => {
+    return state.mapPinIds?.[state.currentlyViewingCity]?.[state.currentlyViewingMapView]?.map((locationId) => {
           if (state.allMapPins?.[locationId]) {
           return state.allMapPins[locationId];
           }
       });
-    }
-    console.log(res?.length)
-    return res
-  }, [state?.currentlyViewingCity, state?.currentlyViewingMapView, state?.isViewingWalkingRoute]);
+  }, [state?.currentlyViewingCity, state?.currentlyViewingMapView]);
 
   return (
     <>
       <View style={exploreMapStyles.container}>
         <View style={exploreMapStyles.mapContainer}>
           <View style={exploreMapStyles.switchContainer}>
-            <FilterBanner />
+            <FilterBanner navigation={navigation} />
           </View>
           <View style={exploreMapStyles.layersContainer}>
             <IconButtonElement 
@@ -190,8 +183,8 @@ export function ExploreMapHomeScreen({
               onMarkerPress={handleMarkerPress}
               showsUserLocation={true}
               >
-                <MappedPins pins={memoizedMapPins} navigation={navigation} />
-                {state.isViewingWalkingRoute && (
+                <MappedPins pins={memoizedMapPins} navigation={navigation} city={state.currentlyViewingCity} view={state.currentlyViewingMapView} isCalloutEnabled={true}/>
+                {state.currentlyViewingMapView === currentlyViewingMapView.walkingRoute &&  (
                   <Polyline
                     coordinates={state?.customViews?.[state.currentlyViewingCity]?.walkingRoute as unknown as LatLng[]}
                     strokeWidth={2}

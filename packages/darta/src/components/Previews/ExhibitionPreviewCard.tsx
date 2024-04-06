@@ -30,11 +30,12 @@ const exhibitionPreviewStyle = StyleSheet.create({
     borderColor: Colors.PRIMARY_400,
     backgroundColor: Colors.PRIMARY_50,
     padding: 24,
-    height: 590,
+    height: 580,
     gap: 16,
   },
   topInformationContainer: {
     width: '100%',
+    gap: 2,
   },
   headlineContainer: {   
     width: '100%',
@@ -54,7 +55,7 @@ const exhibitionPreviewStyle = StyleSheet.create({
     justifyContent: 'center',
   },
   imagePreviewContainer: {
-    height: "55%",
+    height: 280,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -62,6 +63,8 @@ const exhibitionPreviewStyle = StyleSheet.create({
   touchableContainer: {
     width: '100%',
     textAlign: 'left',
+    gap: 2,
+    marginTop: 8,
   },
   buttonStyles: {
     width: wp('90%'),
@@ -87,7 +90,7 @@ const exhibitionPreviewStyle = StyleSheet.create({
     fontFamily:"DMSans_700Bold",  
     marginTop: 4, 
     color: Colors.PRIMARY_950, 
-    fontSize: 17
+    fontSize: 18
   }, 
   datesText: {
     marginBottom: 8, 

@@ -422,7 +422,7 @@ export function ExhibitionGalleryScreen({
 
       setFollowsGallery(true)
     } catch(e) {
-      console.log('error', e)
+      // console.log('error', e)
       throw new Error("Something went wrong, please try again")
     }
   }
@@ -460,6 +460,10 @@ export function ExhibitionGalleryScreen({
     opacitySetTwo.addListener(() => {})
     translateX.addListener(() => {})
   }, [])
+
+  opacitySetOne.removeAllListeners();
+  opacitySetTwo.removeAllListeners();
+  translateX.removeAllListeners();
 
   const toggleButtons = () => {
     Animated.parallel([
@@ -546,7 +550,7 @@ export function ExhibitionGalleryScreen({
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
-          console.log(`Can't handle URL: ${url}`);
+          // console.log(`Can't handle URL: ${url}`);
         } else {
           return Linking.openURL(url);
         }
@@ -563,7 +567,7 @@ export function ExhibitionGalleryScreen({
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
-          console.log(`Can't handle URL: ${url}`);
+          // console.log(`Can't handle URL: ${url}`);
         } else {
           return Linking.openURL(url);
         }
@@ -577,7 +581,7 @@ export function ExhibitionGalleryScreen({
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
-          console.log(`Can't handle URL: ${url}`);
+          // console.log(`Can't handle URL: ${url}`);
         } else {
           return Linking.openURL(url);
         }

@@ -1,10 +1,10 @@
 import React from 'react';
-import CustomMarker from '../Previews/CustomMarker';
 import { View } from 'react-native';
 import { ExhibitionMapPin } from '@darta-types/dist';
+import CustomMarkerMini from '../Previews/CustomMarkerMini';
 
-export const MappedPins = React.memo(
-    ({ pins, navigation, city, view}: { pins?: ExhibitionMapPin[], navigation: any, city: string, view: string }) => (
+export const MiniMappedPins = React.memo(
+    ({ pins, navigation, city, view }: { pins?: ExhibitionMapPin[], navigation: any, city: string, view: string }) => (
       <>
         {pins && pins.map((pin) => {
           let isOpeningUpcoming = false;
@@ -15,7 +15,7 @@ export const MappedPins = React.memo(
           return (
             pin?.exhibitionLocation?.coordinates?.latitude && pin?.exhibitionLocation?.coordinates?.longitude && (
               <View key={`${pin.exhibitionLocation.coordinates.latitude.value}-${pin.exhibitionLocation.coordinates.longitude.value}-${city}-${view}`}>
-                <CustomMarker
+                <CustomMarkerMini
                   coordinate={{
                     latitude: Number(pin.exhibitionLocation.coordinates.latitude.value),
                     longitude: Number(pin.exhibitionLocation.coordinates.longitude.value)

@@ -25,8 +25,7 @@ export async function listArtworksToRate({
   }, headers});
     return data;
   } catch (error:any) {
-    console.log(error.message)
-    console.log({error: error, message: error.message, where: 'listArtworksToRate'})
+    // console.log({error: error, message: error.message, where: 'listArtworksToRate'})
     return {};
   }
 }
@@ -53,8 +52,7 @@ export async function listArtworksToRateStatelessRandomSampling({
   }, headers});
     return data;
   } catch (error:any) {
-    console.log(error.message)
-    console.log({error: error, message: error.message, where: 'getRecommendationsRandomSampling'})
+    // console.log({error: error, message: error.message, where: 'getRecommendationsRandomSampling'})
     return {};
   }
 }

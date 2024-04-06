@@ -191,6 +191,10 @@ export function TombstonePortrait({
     opacityInquiredButton.addListener(() => {})
   }, [])
 
+  opacityLikedButton.removeAllListeners();
+  opacitySavedButton.removeAllListeners();
+  opacityInquiredButton.removeAllListeners();
+
   const toggleButtons = ({buttonRef, callback} : {buttonRef: any, callback?: () => void}) => {
     // Animate Out
     Animated.parallel([

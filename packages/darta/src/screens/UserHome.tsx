@@ -68,7 +68,7 @@ export const userHomeStyles = StyleSheet.create({
 
 
 export function UserHome({navigation}: {navigation: any}) {
-  const {userState, userDispatch} = React.useContext(UserStoreContext)
+  const { userDispatch } = React.useContext(UserStoreContext)
   const {galleryDispatch} = React.useContext(GalleryStoreContext)
 
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -156,7 +156,7 @@ export function UserHome({navigation}: {navigation: any}) {
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
-          console.log(`Can't handle URL: ${url}`);
+          // console.log(`Can't handle URL: ${url}`);
         } else {
           return Linking.openURL(url);
         }
@@ -171,7 +171,7 @@ export function UserHome({navigation}: {navigation: any}) {
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
-          console.log(`Can't handle URL: ${url}`);
+          // console.log(`Can't handle URL: ${url}`);
         } else {
           return Linking.openURL(url);
         }

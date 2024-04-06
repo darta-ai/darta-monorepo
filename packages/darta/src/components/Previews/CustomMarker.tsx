@@ -6,7 +6,7 @@ import FastImage from 'react-native-fast-image'
 import { TextElement } from '../Elements/TextElement';
 import { globalTextStyles } from '../../styles/styles';
 
-import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
+import { customLocalDateStringEnd, customLocalDateStringEndShort, customLocalDateStringStart, customLocalDateStringStartShort, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 
 import * as Colors from '@darta-styles';
 import { ExhibitionMapPin } from '@darta-types';
@@ -62,7 +62,7 @@ const customMarker = StyleSheet.create({
     flexDirection: "column",
     alignContent: "center",
     justifyContent: "center",
-    gap: 12,
+    gap: 4,
   }, 
   buttonStyles: {
     width: 265,
@@ -91,12 +91,12 @@ const CustomMarker = React.memo(({
   coordinate, 
   mapPin, 
   navigation,
-  isOpeningUpcoming
+  isOpeningUpcoming,
 } : {
   coordinate: any, 
   mapPin: ExhibitionMapPin, 
   navigation: any,
-  isOpeningUpcoming: boolean
+  isOpeningUpcoming: boolean,
 }) => {
 
   const {exhibitionState} = React.useContext(ExhibitionStoreContext);
@@ -141,8 +141,8 @@ const CustomMarker = React.memo(({
   React.useEffect(() => {
     let hasOpening = false;
     if (mapPin.exhibitionDates?.exhibitionStartDate.value && mapPin.exhibitionDates?.exhibitionEndDate.value) {
-      setStartDate(customLocalDateStringStart({date : new Date(mapPin.exhibitionDates.exhibitionStartDate.value), isUpperCase: false}))
-      setEndDate(customLocalDateStringEnd({date : new Date(mapPin.exhibitionDates.exhibitionEndDate.value), isUpperCase: false}))
+      setStartDate(customLocalDateStringStartShort({date : new Date(mapPin.exhibitionDates.exhibitionStartDate.value), isUpperCase: false}))
+      setEndDate(customLocalDateStringEndShort({date : new Date(mapPin.exhibitionDates.exhibitionEndDate.value), isUpperCase: false}))
     }
 
 
@@ -261,16 +261,13 @@ const CustomMarker = React.memo(({
     } 
   })
 
-
   return (
     <Marker
       coordinate={coordinate}
-      key={mapPin.exhibitionId}
       onTouchEnd={() => setShowCallout(true)}
     >
       <Animated.View style={customMarkerDynamic.wiggleFriend}>
       {hasUpcomingOpening ?  <GoogleMapsPinIcon/> : <GoogleMapsPinBlackIcon /> }
-        {/* <GoogleMapsPinIcon/> */}
       </Animated.View>
       {showCallout && (
         <Callout style={customMarkerDynamic.container} 

@@ -172,6 +172,10 @@ export function DartaRecommenderViewFlatList({
     thumbsDownAnim.addListener(() => {})
   }, [])
 
+  wiggleAnim.removeAllListeners();
+  thumbsUpAnim.removeAllListeners();
+  thumbsDownAnim.removeAllListeners();
+
   const itemWidth = wp('100%'); // Assuming each item has a fixed height
   
   const handleScroll = (rawEvent: ScrollEvent, offsetX: number, offsetY: number) => {
@@ -277,7 +281,7 @@ export function DartaRecommenderViewFlatList({
             });
       }
     } catch (error){
-      console.log('####', error)
+      // console.log('####', error)
     }
   }, [viewState.artworksToRate])
 

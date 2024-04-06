@@ -47,7 +47,7 @@ export function useDeepLinking(navigation) {
             galleryId: gallery._id
         }
     } catch (error: any){
-        console.log(error)
+        // console.log(error)
     }
 }
 
@@ -85,7 +85,7 @@ async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: st
           galleryId: gallery._id
       }
   } catch (error: any){
-      console.log(error)
+      // console.log(error)
   }
 }
 
@@ -98,7 +98,7 @@ async function fetchListById({listId} : {listId: string}): Promise<FullList | vo
     })
     return Object.values(list)[0]
   } catch (error: any){
-    console.log(error)
+    // console.log(error)
   }
 }
 
