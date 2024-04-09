@@ -2,9 +2,9 @@ import React from 'react';
 import { View } from 'react-native';
 import { ExhibitionMapPin } from '@darta-types/dist';
 import CustomMarkerMini from '../Previews/CustomMarkerMini';
+import _ from 'lodash';
 
-export const MiniMappedPins = React.memo(
-    ({ pins, navigation, city, view }: { pins?: ExhibitionMapPin[], navigation: any, city: string, view: string }) => (
+export const MiniMappedPins = ({ pins, navigation, city, view }: { pins?: ExhibitionMapPin[], navigation: any, city: string, view: string }) => (
       <>
         {pins && pins.map((pin) => {
           let isOpeningUpcoming = false;
@@ -29,8 +29,4 @@ export const MiniMappedPins = React.memo(
           );
         })}
       </>
-    ),
-    (prevProps, nextProps) => {
-      return JSON.stringify(prevProps.pins) === JSON.stringify(nextProps.pins);
-    }
-  );
+    );

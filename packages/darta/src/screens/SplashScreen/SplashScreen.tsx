@@ -17,9 +17,10 @@ import { listArtworksToRateAPI, listGalleryRelationshipsAPI, listUserArtworkAPI 
 import FastImage from "react-native-fast-image";
 import analytics from '@react-native-firebase/analytics';
 import { listUserLists } from "../../api/listRoutes";
-import { getUnViewedExhibitionsForUser } from '../../api/exhibitionRoutes';
 import { UserETypes, UserStoreContext } from "../../state/UserStore";
 import { TextElement } from "../../components/Elements/TextElement";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SAVED_ROUTE_SETTINGS } from "../../utils/constants";
 
 
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -88,6 +89,7 @@ function AnimatedSplashScreen({ children }) {
         inquiredArtwork,
         artworksToRate, 
         userListPreviews,
+        savedRoute
       ] = await Promise.all([
         // user
         uid ? getDartaUser({uid}) : null,
@@ -102,7 +104,7 @@ function AnimatedSplashScreen({ children }) {
         // exhibitionMapPins
         listExhibitionPinsByCity({ cityName: MapPinCities.newYork }),
         // likedArtwork
-        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 10 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 1 }),
         // savedArtwork
         listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 40 }),
         // inquiredArtwork
@@ -112,6 +114,7 @@ function AnimatedSplashScreen({ children }) {
         // userLists
         listUserLists(),
         // getUnViewedExhibitionsCountForUser()
+        AsyncStorage.getItem(SAVED_ROUTE_SETTINGS)
       ]);
 
       // User Profile
@@ -208,25 +211,16 @@ function AnimatedSplashScreen({ children }) {
         });
       }
       
-      // Need to figure out what takes the longest to load and prefetch those images. What takes so long? 
-      // Then try to make that more efficient. 
-      // Cache images is key. 
-      // DO some research - is it cacheing the images by default. 
-      // Preload the ones that they're going to see first. 
-      // FastImage.preload(imageUrlsToPrefetch);
+      if (savedRoute) {
+        const data = JSON.parse(savedRoute)
+        dispatch({
+          type: ETypes.setWalkingRoute,
+          walkingRoute: data?.routeCoordinates,
+          customMapLocationIds: data?.locationIds,
+          setWalkingRouteRender: false
+        })
+      }
 
-      // Colors only when it animates. 
-
-      // Not leaving the app. Directions?
-
-      // Need to make new groups on the screen. 
-
-      // Need to look into pre-rendering components for the view screen to quickly move between all of them. 
-
-      // Need to give the user option to turn off scaling
-
-      // Too minimalist? No title on the image. Need to add the title of the image. 
-      
       await SplashScreen.hideAsync();
       setAppReady(true)
     } catch (e) {

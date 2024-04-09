@@ -18,7 +18,7 @@ import _ from 'lodash';
 
 import {CollectionNames, EdgeNames} from '../config/collections';
 import { ENV } from '../config/config';
-import { FOURTEEN_DAYS_AGO } from '../config/constants';
+import { SEVEN_DAYS_AGO } from '../config/constants';
 import {newExhibitionShell, standardConsoleLog} from '../config/templates';
 import {ImageController} from '../controllers/ImageController';
 import {
@@ -1026,7 +1026,7 @@ export class ExhibitionService implements IExhibitionService {
 
       return exhibitionPreviews.reduce((acc, obj) => 
       {
-        const userViewed = (seenResults?.[obj?.exhibitionId] || new Date(obj?.openingDate.value).toISOString() < FOURTEEN_DAYS_AGO ) ?? true
+        const userViewed = (seenResults?.[obj?.exhibitionId] || new Date(obj?.openingDate.value).toISOString() < SEVEN_DAYS_AGO ) ?? true
         acc[obj.exhibitionId as string] = {
           ...obj, 
           userViewed, 
@@ -1123,7 +1123,7 @@ export class ExhibitionService implements IExhibitionService {
 
       return exhibitionPreviews.reduce((acc, obj) => 
       {
-        const userViewed = (seenResults?.[obj?.exhibitionId] || new Date(obj?.openingDate.value).toISOString() < FOURTEEN_DAYS_AGO ) ?? true
+        const userViewed = (seenResults?.[obj?.exhibitionId] || new Date(obj?.openingDate.value).toISOString() < SEVEN_DAYS_AGO ) ?? true
         acc[obj.exhibitionId as string] = {
           ...obj, 
           userViewed, 
@@ -1800,13 +1800,13 @@ export class ExhibitionService implements IExhibitionService {
     `
     const fullUserId = this.userService.generateDartaUserId({uid})
     try {
-      const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { userId: fullUserId, cutoff: FOURTEEN_DAYS_AGO });
+      const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { userId: fullUserId, cutoff: SEVEN_DAYS_AGO });
       const exhibitionPreviews = await edgeCursor.next()
       const results = exhibitionPreviews.reduce((acc: any, obj: any) => {
         const galleryId = Object.keys(obj)[0]
         const values: any = Object.values(obj)[0]
         const startDate = values[0]?.exhibitionStartDate
-        if (startDate >= FOURTEEN_DAYS_AGO && values?.[0]?.exhibitionId) {
+        if (startDate >= SEVEN_DAYS_AGO && values?.[0]?.exhibitionId) {
           acc[galleryId] = values[0].exhibitionId
         }
         return acc

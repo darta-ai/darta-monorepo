@@ -297,6 +297,7 @@ export class UserService implements IUserService {
           legalLastName: results.legalLastName,
           email: results.email,
           uid: results._id,
+          routeGenerationCount: results?.routeGenerationCount,
         }
       }
 
@@ -573,5 +574,76 @@ export class UserService implements IUserService {
       throw new Error('unable refresh gallery profile logo');
     }
   }
+  
+  async incrementRouteGeneratedCount({uid}: {uid: string}): Promise<number> {
+    const fullUserId = this.generateDartaUserId({uid});
 
+    try {
+      const user = await this.nodeService.getNodeById({
+        collectionName: CollectionNames.DartaUsers,
+        id: fullUserId,
+      });
+
+      if (user) {
+        await this.nodeService.upsertNodeById({
+          collectionName: CollectionNames.DartaUsers,
+          id: fullUserId,
+          data: {
+            routeGenerationCount : {
+              routeGeneratedCountWeekly: 
+                user?.routeGenerationCount?.routeGeneratedCountWeekly  ? user.routeGenerationCount.routeGeneratedCountWeekly + 1 : 1,
+              totalGeneratedCount: user?.routeGenerationCount?.totalGeneratedCount ? user.totalGeneratedCount + 1 : 1,
+            }
+          },
+        });
+        return user.routeGenerationCount.routeGeneratedCountWeekly + 1;
+      } 
+        throw new Error('user not found');
+      
+    } catch (error) {
+      throw new Error('unable to increment route generated count');
+    }
+  }
+
+
+  public async resetAllUsersRouteGenerationCount(): Promise<void> {
+    const query = `
+    WITH ${CollectionNames.DartaUsers}
+    FOR user IN ${CollectionNames.DartaUsers}
+    RETURN {
+      userId: user._id,
+    }`
+
+    try {
+      const cursor = await this.db.query(query);
+      const users = await cursor.all();
+      const promises = [];
+      for (const user of users) {
+        promises.push(this.resetRouteGeneratedCount({uid: user.userId}));
+      }
+      await Promise.allSettled(promises);
+    }
+    catch (error: any) {
+      throw new Error(`Unable to reset all users route generation count ${error?.message}`);
+    }
+  }
+
+
+  private async resetRouteGeneratedCount({uid}: {uid: string}): Promise<void> {
+    const fullUserId = this.generateDartaUserId({uid});
+
+    try {
+      await this.nodeService.upsertNodeById({
+        collectionName: CollectionNames.DartaUsers,
+        id: fullUserId,
+        data: {
+          routeGenerationCount : {
+            routeGeneratedCountWeekly: 0
+          }
+        },
+      });
+    } catch (error) {
+      throw new Error('unable to reset route generated count');
+    }
+  }
 }

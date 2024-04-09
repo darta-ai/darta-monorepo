@@ -6,7 +6,7 @@ import * as Location from 'expo-location';
 import * as Colors from '@darta-styles';
 import { StoreContext, currentlyViewingMapView } from '../../state/Store';
 import MapView, { LatLng, PROVIDER_GOOGLE, Polyline } from 'react-native-maps';
-import { MapPinCities, MapRegion } from '@darta-types';
+import { MapPinCities } from '@darta-types';
 import * as SVGs from '../../assets/SVGs';
 import { IconButtonElement } from '../../components/Elements/IconButtonElement';
 import { ExploreMapRootEnum } from '../../typing/routes';
@@ -91,7 +91,6 @@ export function ExploreMapHomeScreen({
 
   React.useEffect(() => {
     (async () => {
-      
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         return;
@@ -117,23 +116,6 @@ export function ExploreMapHomeScreen({
     }
   }, []);
 
-  const handleZoomToUserLocation = React.useCallback( async () => {
-    const hasLocationPermission = await Location.requestForegroundPermissionsAsync();
-    if (hasLocationPermission.status === 'granted') {
-      const userLocation = await Location.getCurrentPositionAsync()
-        const newRegion = {
-          ...mapRegion,
-          latitude: userLocation.coords.latitude,
-          longitude: userLocation.coords.longitude,
-          latitudeDelta: 0.01,  // You might need to adjust these deltas
-          longitudeDelta: 0.01,
-        };
-        if (mapRef.current) {
-          mapRef.current.animateToRegion(newRegion, 500); // 1000 is the duration of the animation in milliseconds
-        }
-      }
-  })
-
   const handleModalToggle = async () => {
     navigation.navigate(ExploreMapRootEnum.bottomSheetOptions, {mapRegion})
   }
@@ -150,7 +132,7 @@ export function ExploreMapHomeScreen({
           return state.allMapPins[locationId];
           }
       });
-  }, [state?.currentlyViewingCity, state?.currentlyViewingMapView]);
+  }, [state?.currentlyViewingCity, state?.currentlyViewingMapView, state.mapPinIds]);
 
   return (
     <>
@@ -160,12 +142,6 @@ export function ExploreMapHomeScreen({
             <FilterBanner navigation={navigation} />
           </View>
           <View style={exploreMapStyles.layersContainer}>
-            <IconButtonElement 
-              inUse={true}
-              IconInUse={<SVGs.LocationBlack />}
-              IconNotInUse={<SVGs.LocationWhite />}
-              onPress={handleZoomToUserLocation}
-            />
             <IconButtonElement 
               inUse={false}
               IconInUse={<SVGs.FigureWalkingLogoBlack />}
@@ -183,7 +159,7 @@ export function ExploreMapHomeScreen({
               onMarkerPress={handleMarkerPress}
               showsUserLocation={true}
               >
-                <MappedPins pins={memoizedMapPins} navigation={navigation} city={state.currentlyViewingCity} view={state.currentlyViewingMapView} isCalloutEnabled={true}/>
+                <MappedPins pins={memoizedMapPins} navigation={navigation} city={state.currentlyViewingCity} view={state.currentlyViewingMapView}/>
                 {state.currentlyViewingMapView === currentlyViewingMapView.walkingRoute &&  (
                   <Polyline
                     coordinates={state?.customViews?.[state.currentlyViewingCity]?.walkingRoute as unknown as LatLng[]}

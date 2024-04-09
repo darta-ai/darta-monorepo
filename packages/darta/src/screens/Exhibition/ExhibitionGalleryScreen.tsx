@@ -22,7 +22,7 @@ import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/gall
 import {readExhibition} from '../../api/exhibitionRoutes';
 import { DartaIconButtonWithText } from '../../components/Darta/DartaIconButtonWithText';
 import * as SVGs from '../../assets/SVGs';
-import { UIStoreContext, UiETypes, GalleryStoreContext,StoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes } from '../../state';
+import { UIStoreContext, UiETypes, GalleryStoreContext,StoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes, ETypes } from '../../state';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
 import { DartaImageComponent } from '../../components/Images/DartaImageComponent';
 import GalleryLocation from '../../components/Gallery/GalleryLocation';
@@ -206,11 +206,12 @@ export function ExhibitionGalleryScreen({
   route?: ExhibitionGalleryRouteProp;
   navigation?: any;
 }) {
-  const {state} = React.useContext(StoreContext);
+  const {state, dispatch} = React.useContext(StoreContext);
   const {uiDispatch} = React.useContext(UIStoreContext);
   const {userState,userDispatch} = React.useContext(UserStoreContext);
   const {exhibitionState, exhibitionDispatch} = React.useContext(ExhibitionStoreContext);
   const {galleryState, galleryDispatch} = React.useContext(GalleryStoreContext)
+
   const [galleryId, setGalleryId] = React.useState<string>("")
   const [isGalleryLoaded, setIsGalleryLoaded] = React.useState<boolean>(false);
   const [gallery, setGallery] = React.useState<IGalleryProfileData>({} as IGalleryProfileData)
@@ -418,6 +419,10 @@ export function ExhibitionGalleryScreen({
           type: UserETypes.setUserFollowGalleriesMulti,
           galleryFollowIds: {[galleryId]: true}
         });
+        dispatch({
+          type: ETypes.addLocationIdToSavedPins,
+          locationId: gallery?.galleryLocation0?.googleMapsPlaceId?.value as string,
+        })
       }
 
       setFollowsGallery(true)
@@ -437,6 +442,10 @@ export function ExhibitionGalleryScreen({
       exhibitionDispatch({
         type: ExhibitionETypes.removeUserFollowsExhibitionPreviews,
         removeUserFollowsExhibitionPreviewsByGalleryId: galleryId
+      })
+      dispatch({
+        type: ETypes.removeLocationIdToSavedPins,
+        locationId: gallery?.galleryLocation0?.googleMapsPlaceId?.value as string,
       })
       setFollowsGallery(false)
     } catch {

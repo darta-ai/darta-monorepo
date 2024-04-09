@@ -8,6 +8,9 @@ export type MobileUser =  {
     email?: string;
     uid?: string;
     localStorageUid?: string;
+    routeGenerationCount?: {
+      routeGeneratedCountWeekly: number;
+    }
 }
 
 

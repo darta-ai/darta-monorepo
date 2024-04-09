@@ -1,15 +1,14 @@
 import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
-import {Button, IconButton} from 'react-native-paper'
+import { View, StyleSheet } from 'react-native'
+import { Button } from 'react-native-paper'
 import * as Colors from '@darta-styles'
 import {
     heightPercentageToDP as hp,
     widthPercentageToDP as wp,
   } from 'react-native-responsive-screen';
 import { TextElement } from '../Elements/TextElement';
-import { Icon } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { HAS_ONBOARD_DARTA_PART_2, icons } from '../../utils/constants';
+import { HAS_ONBOARD_DARTA_PART_2 } from '../../utils/constants';
 import * as SVGs from '../../assets/SVGs';
 
 const onboardStyles = StyleSheet.create({

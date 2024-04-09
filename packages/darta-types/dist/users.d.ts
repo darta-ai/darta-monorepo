@@ -7,6 +7,9 @@ export type MobileUser = {
     email?: string;
     uid?: string;
     localStorageUid?: string;
+    routeGenerationCount?: {
+        routeGeneratedCountWeekly: number;
+    };
 };
 export type FirebaseUser = {
     provider_id: string;

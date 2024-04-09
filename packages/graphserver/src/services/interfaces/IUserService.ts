@@ -81,4 +81,6 @@ export interface IUserService {
   generateGalleryUserId({uid}: {uid: string}): string
   generateDartaUserId({uid}: {uid: string}): string
   readAllUsers(): Promise<void>
+  resetAllUsersRouteGenerationCount(): Promise<void>
+  incrementRouteGeneratedCount({uid}: {uid: string}): Promise<number>
 }

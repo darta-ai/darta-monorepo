@@ -14,14 +14,14 @@ import { Easing } from 'react-native-reanimated';
 import { GoogleMapsPinBlackIcon } from '../../assets/SVGs/GoogleMapsPinBlack';
 
 const customMarker = StyleSheet.create({
-  galleryContainer:{
-      width: '100%',
-      height: '100%',
-      display:'flex',
-      flexDirection: "row",
-      alignItems: 'flex-start',
-      justifyContent: 'flex-start',
-      gap: 12
+  galleryContainer: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: "row",
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    gap: 12
   },
   galleryNameContainer: {
     display: 'flex',
@@ -33,61 +33,57 @@ const customMarker = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'DMSans_700Bold',
   }
-})
+});
 
-
-const CustomMarkerMini = React.memo(({ 
-  coordinate, 
-  mapPin, 
+const CustomMarkerMini = React.memo(({
+  coordinate,
+  mapPin,
   navigation,
   isOpeningUpcoming,
-} : {
-  coordinate: any, 
-  mapPin: ExhibitionMapPin, 
+}: {
+  coordinate: any,
+  mapPin: ExhibitionMapPin,
   navigation: any,
   isOpeningUpcoming: boolean,
 }) => {
-
-  const {exhibitionState} = React.useContext(ExhibitionStoreContext);
-  const {uiDispatch} = React.useContext(UIStoreContext);
+  const { exhibitionState } = React.useContext(ExhibitionStoreContext);
+  const { uiDispatch } = React.useContext(UIStoreContext);
 
   const [showCallout, setShowCallout] = useState(true);
 
   const navigateToExhibitionScreens = async () => {
-    if (!mapPin.exhibitionId || !mapPin.galleryId){
-      return
+    if (!mapPin.exhibitionId || !mapPin.galleryId) {
+      return;
     }
-    if (exhibitionState.exhibitionData && exhibitionState.exhibitionData[mapPin.exhibitionId]){
-      const exhibition = exhibitionState.exhibitionData[mapPin.exhibitionId]
+    if (exhibitionState.exhibitionData && exhibitionState.exhibitionData[mapPin.exhibitionId]) {
+      const exhibition = exhibitionState.exhibitionData[mapPin.exhibitionId];
       uiDispatch({
         type: UiETypes.setCurrentHeader,
         currentExhibitionHeader: exhibition.exhibitionTitle.value!,
-      })
+      });
     }
-    navigation.navigate(ExploreMapRootEnum.TopTabExhibition, {galleryId: mapPin.galleryId, exhibitionId: mapPin._id, internalAppRoute: true});
-  }
+    navigation.navigate(ExploreMapRootEnum.TopTabExhibition, { galleryId: mapPin.galleryId, exhibitionId: mapPin._id, internalAppRoute: true });
+  };
 
   const navigateToGalleryScreen = async () => {
-    if (!mapPin.galleryId){
-      return
+    if (!mapPin.galleryId) {
+      return;
     }
-    navigation.navigate(ExploreMapRootEnum.exploreMapGallery, {galleryId: mapPin.galleryId});
-  }
+    navigation.navigate(ExploreMapRootEnum.exploreMapGallery, { galleryId: mapPin.galleryId });
+  };
 
-  const [hasUpcomingOpening, setHasUpcomingOpening] = React.useState<boolean>(isOpeningUpcoming)
-  const [hasCurrentShow, setHasCurrentOpening] = React.useState<boolean>(false)
+  const [hasUpcomingOpening, setHasUpcomingOpening] = React.useState<boolean>(isOpeningUpcoming);
+  const [hasCurrentShow, setHasCurrentOpening] = React.useState<boolean>(false);
 
   const simplifiedAddress = React.useMemo(
-    () =>  `${simplifyAddress(mapPin?.exhibitionLocation?.locationString?.value)}`,
+    () => `${simplifyAddress(mapPin?.exhibitionLocation?.locationString?.value)}`,
     [mapPin?.exhibitionLocation?.locationString?.value]
   );
-  
+
   const storeHours = React.useMemo(
     () => getStoreHours(mapPin?.exhibitionLocation?.businessHours?.hoursOfOperation),
     [mapPin?.exhibitionLocation?.businessHours?.hoursOfOperation]
-    );
-
-
+  );
 
   React.useEffect(() => {
     let hasOpening = false;
@@ -96,81 +92,60 @@ const CustomMarkerMini = React.memo(({
       const isOpeningUpcoming = (receptionEndDate >= new Date());
       setHasUpcomingOpening(isOpeningUpcoming);
     }
-    
-    }, [])
+  }, []);
 
   React.useEffect(() => {
-    if (hasUpcomingOpening){
-      handleWiggle()
+    if (hasUpcomingOpening) {
+      handleWiggle();
     }
-  }, [hasUpcomingOpening])
-
+  }, [hasUpcomingOpening]);
 
   const chooseRouteAndNavigate = () => {
-    if (hasCurrentShow){
-      navigateToExhibitionScreens()
-    } else (
-      navigateToGalleryScreen()
-    )
-  }
+    if (hasCurrentShow) {
+      navigateToExhibitionScreens();
+    } else {
+      navigateToGalleryScreen();
+    }
+  };
 
-  const wiggleAnim = React.useRef(new Animated.Value(0)).current; 
+  const wiggleAnim = React.useRef(new Animated.Value(0)).current;
 
-  React.useEffect(() => {
-    wiggleAnim.addListener(() => {})
-  }, [])
-
-  wiggleAnim.removeAllListeners()
-  
   const handleWiggle = () => {
     const wiggleSequence = Animated.sequence([
       Animated.timing(wiggleAnim, {
-        toValue: 0,  // Rotate slightly right
-        duration: 750,  // Quicker wiggle
-        easing: Easing.elastic(4),  // Bouncy effect
+        toValue: 0.25,
+        duration: 500,
+        easing: Easing.elastic(4),
         useNativeDriver: true,
       }),
       Animated.timing(wiggleAnim, {
-        toValue: 0.25,  // Rotate slightly right
-        duration: 500,  // Quicker wiggle
-        easing: Easing.elastic(4),  // Bouncy effect
+        toValue: 0,
+        duration: 500,
+        easing: Easing.elastic(4),
         useNativeDriver: true,
       }),
       Animated.timing(wiggleAnim, {
-        toValue: 0,  // Rotate slightly left
-        duration: 500,  // Quicker wiggle
-        easing: Easing.elastic(4),  // Bouncy effect
+        toValue: -0.25,
+        duration: 500,
+        easing: Easing.elastic(4),
         useNativeDriver: true,
       }),
       Animated.timing(wiggleAnim, {
-        toValue: -0.25,  // Rotate slightly left
-        duration: 500,  // Quicker wiggle
-        easing: Easing.elastic(4),  // Bouncy effect
-        useNativeDriver: true,
-      }),
-      Animated.timing(wiggleAnim, {
-        toValue: 0,  // Rotate slightly left
-        duration: 500,  // Quicker wiggle
-        easing: Easing.elastic(4),  // Bouncy effect
-        useNativeDriver: true,
-      }),
-      Animated.timing(wiggleAnim, {
-        toValue: 0,  // Rotate slightly left
-        duration: 1000,  // Quicker wiggle
-        easing: Easing.elastic(4),  // Bouncy effect
+        toValue: 0,
+        duration: 500,
+        easing: Easing.elastic(4),
         useNativeDriver: true,
       }),
     ]);
-  
-    // Continuous loop of wiggle
-    Animated.loop(wiggleSequence).start();
+
+    // Start the animation sequence
+    wiggleSequence.start();
   };
 
   const rotate = wiggleAnim.interpolate({
     inputRange: [-1, 1],
-    outputRange: ['-15deg', '15deg'], // Reduced angle for subtler effect
+    outputRange: ['-15deg', '15deg'],
   });
-
 
   const customMarkerDynamic = StyleSheet.create({
     container: {
@@ -185,8 +160,8 @@ const CustomMarkerMini = React.memo(({
     },
     wiggleFriend: {
       transform: [{ rotate }]
-    } 
-  })
+    }
+  });
 
   return (
     <Marker
@@ -194,29 +169,30 @@ const CustomMarkerMini = React.memo(({
       onTouchEnd={() => setShowCallout(true)}
     >
       <Animated.View style={customMarkerDynamic.wiggleFriend}>
-      {hasUpcomingOpening ?  <GoogleMapsPinIcon/> : <GoogleMapsPinBlackIcon /> }
+        {hasUpcomingOpening ? <GoogleMapsPinIcon /> : <GoogleMapsPinBlackIcon />}
       </Animated.View>
       {showCallout && (
-        <Callout style={customMarkerDynamic.container} 
-        onTouchStart={() => setShowCallout(false)} 
-        onPress={chooseRouteAndNavigate}>
-            <TextElementMultiLine style={customMarker.subheaderInformation}>{mapPin.galleryName?.value}</TextElementMultiLine>
-            <TextElement style={{ fontSize: 12 }}>
+        <Callout
+          style={customMarkerDynamic.container}
+          onTouchStart={() => setShowCallout(false)}
+          onPress={chooseRouteAndNavigate}
+        >
+          <TextElementMultiLine style={customMarker.subheaderInformation}>{mapPin.galleryName?.value}</TextElementMultiLine>
+          <TextElement style={{ fontSize: 12 }}>
             {simplifiedAddress}
-            </TextElement>
-            <TextElement
-              style={{
-                fontSize: 12,
-                fontFamily: 'DMSans_700Bold',
-              }}
-              >
-              {storeHours}
+          </TextElement>
+          <TextElement
+            style={{
+              fontSize: 12,
+              fontFamily: 'DMSans_700Bold',
+            }}
+          >
+            {storeHours}
           </TextElement>
         </Callout>
-       
       )}
     </Marker>
   );
-})
+});
 
 export default CustomMarkerMini;

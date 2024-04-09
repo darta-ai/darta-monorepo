@@ -56,8 +56,8 @@ export const getZoomLevel = (
     const [mapRegion] = React.useState<null | MapRegion>({
         latitudeDelta: 0.01,
         longitudeDelta: 0.09,
-        latitude: 40.709, 
-        longitude: -73.990
+        latitude: 40.72, 
+        longitude: -73.999
       });
 
     const prevMapPinsRef = React.useRef<ExhibitionMapPin[]>();

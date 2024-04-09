@@ -283,6 +283,9 @@ export function TombstonePortrait({
               />
             </View>
           </ScrollView>
+          <View style={{marginTop: 10, alignItems: 'flex-end'}}>
+              <TextElement style={{color: Colors.PRIMARY_400, fontSize: 10, fontFamily: 'DMSans_400Regular'}}>Image courtesy of the artist</TextElement>
+          </View>
         </View>
       <ScrollView scrollEventThrottle={7}>
         <View style={SSTombstonePortrait.textContainer}>
@@ -371,6 +374,7 @@ export function TombstonePortrait({
             </Animated.View>
           </View>
       </ScrollView>
+      
     </View>
   );
 }

@@ -37,5 +37,6 @@ export interface IGalleryService {
   getGalleryLogo({id}: {id: string}): Promise<any>;
   generateGalleryUserId({galleryId}: {galleryId: string}): string;
   generateGalleryId({galleryId}: {galleryId: string}): string;
+  readAllGalleries(): Promise<void>;
   getGalleryByExhibitionId({exhibitionId}: {exhibitionId: string}): Promise<Gallery | null>;
 }

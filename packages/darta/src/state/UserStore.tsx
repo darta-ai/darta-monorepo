@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, {createContext, ReactNode, useReducer} from 'react';
+import React, { createContext } from 'react';
 import {Artwork, MobileUser } from '@darta-types'
 
 
@@ -41,6 +41,8 @@ export enum UserETypes {
 
   saveArtwork = 'SAVE_ARTWORK',
   saveArtworkMulti = 'SAVE_ARTWORK_MULTI',
+
+  setRoutesGenerated = 'SET_ROUTES_GENERATED',
 }
 
 // Define the action type
@@ -52,7 +54,8 @@ interface UserIAction {
   galleryId?: string;
   galleryFollowIds?: {[key: string] : boolean};
   artworkData?: Artwork;
-  artworkDataMulti?: {[key: string]: Artwork } | void 
+  artworkDataMulti?: {[key: string]: Artwork } | void ;
+  artworkGeneratedCount?: number;
 }
 
 // Define the initial state
@@ -254,6 +257,19 @@ const userReducer = (state: UserState, action: UserIAction): UserState => {
         ...action.artworkDataMulti
       }
     }
+    case UserETypes.setRoutesGenerated:
+      if(!action.artworkGeneratedCount){
+        return state
+      }
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          routeGenerationCount: {
+            routeGeneratedCountWeekly: action.artworkGeneratedCount
+          }
+        }
+      }
     default:
       return state;
   }

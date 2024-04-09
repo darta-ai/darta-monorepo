@@ -65,12 +65,6 @@ export const FilterBanner = ({ navigation } : {navigation : any}) => {
         currentlyViewingMapView: currentlyViewingMapView.walkingRoute
       })
     }
-    // if (state.isViewingWalkingRoute) {
-    //   dispatch({
-    //     type: ETypes.setIsViewingWalkingRoute,
-    //     isViewingWalkingRoute: false
-    //   })
-    // }
   } 
 
   const handleShowSaved = () => {

@@ -533,6 +533,25 @@ export class GalleryService implements IGalleryService {
     return null
   }
 
+  public async readAllGalleries(): Promise<void>{ 
+    const query = `
+    FOR gallery IN ${CollectionNames.Galleries}
+    RETURN {_id: gallery._id}
+  `;
+  
+    const cursor = await this.db.query(query);
+    const galleries = await cursor.all();
+
+    const promises: Promise<any>[] = []
+
+    galleries.forEach((gallery) => {
+      if (!gallery?._id) return
+      promises.push(this.readGalleryProfileFromGalleryId({galleryId: gallery._id}))
+    })
+
+    await Promise.allSettled(promises)
+    }
+
   // eslint-disable-next-line class-methods-use-this
   public generateGalleryUserId({galleryId}: {galleryId: string}): string {
     return galleryId.includes(CollectionNames.GalleryUsers)

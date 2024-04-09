@@ -185,51 +185,43 @@ const CustomMarker = React.memo(({
     )
   }
 
-
-
   const wiggleAnim = React.useRef(new Animated.Value(0)).current; 
-
-  React.useEffect(() => {
-    wiggleAnim.addListener(() => {})
-  }, [])
-
-  wiggleAnim.removeAllListeners()
   
   const handleWiggle = () => {
     const wiggleSequence = Animated.sequence([
       Animated.timing(wiggleAnim, {
-        toValue: 0,  // Rotate slightly right
-        duration: 750,  // Quicker wiggle
+        toValue: 0,  
+        duration: 750,  
         easing: Easing.elastic(4),  // Bouncy effect
         useNativeDriver: true,
       }),
       Animated.timing(wiggleAnim, {
         toValue: 0.25,  // Rotate slightly right
-        duration: 500,  // Quicker wiggle
+        duration: 500,  
         easing: Easing.elastic(4),  // Bouncy effect
         useNativeDriver: true,
       }),
       Animated.timing(wiggleAnim, {
         toValue: 0,  // Rotate slightly left
-        duration: 500,  // Quicker wiggle
+        duration: 500,  
         easing: Easing.elastic(4),  // Bouncy effect
         useNativeDriver: true,
       }),
       Animated.timing(wiggleAnim, {
         toValue: -0.25,  // Rotate slightly left
-        duration: 500,  // Quicker wiggle
+        duration: 500,  
         easing: Easing.elastic(4),  // Bouncy effect
         useNativeDriver: true,
       }),
       Animated.timing(wiggleAnim, {
         toValue: 0,  // Rotate slightly left
-        duration: 500,  // Quicker wiggle
+        duration: 500,  
         easing: Easing.elastic(4),  // Bouncy effect
         useNativeDriver: true,
       }),
       Animated.timing(wiggleAnim, {
         toValue: 0,  // Rotate slightly left
-        duration: 1000,  // Quicker wiggle
+        duration: 1000,  
         easing: Easing.elastic(4),  // Bouncy effect
         useNativeDriver: true,
       }),

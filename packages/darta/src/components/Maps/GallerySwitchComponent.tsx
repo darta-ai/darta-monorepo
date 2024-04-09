@@ -2,13 +2,12 @@ import { ExhibitionMapPin } from '@darta-types/dist';
 import * as React from 'react';
 import { Switch } from 'react-native-paper';
 import { StyleSheet, View } from 'react-native';
-import { DartaImageComponent } from '../Images/DartaImageComponent';
-import FastImage from 'react-native-fast-image';
 import { TextElement, TextElementMultiLine } from '../Elements/TextElement';
 import * as Colors from '@darta-styles';
 import { ETypes, StoreContext } from '../../state';
 import { getStoreHours, simplifyAddressMailing } from '../../utils/functions';
 import { widthPercentageToDP } from 'react-native-responsive-screen';
+import _ from 'lodash';
 
 const styles = StyleSheet.create({
   container: {
@@ -38,14 +37,29 @@ const styles = StyleSheet.create({
   },
 });
 
-const GallerySwitchComponent = ({ galleryData, activeArrayLength }: { galleryData: ExhibitionMapPin, activeArrayLength: number }) => {
+const GallerySwitchComponent = ({ 
+    galleryData, 
+    activeArrayLength,
+    addLocationIdToMapPins,
+    removeLocationIdFromMapPins
+   }: { 
+    galleryData: ExhibitionMapPin, 
+    activeArrayLength: number,
+    addLocationIdToMapPins: (locationId: string) => void,
+    removeLocationIdFromMapPins: (locationId: string) => void
+  }) => {
     const { state, dispatch } = React.useContext(StoreContext);
     const [isSwitchOn, setIsSwitchOn] = React.useState<boolean>(
       state?.mapPinStatus?.[state.currentlyViewingCity]?.[state.currentlyViewingMapView][galleryData?.locationId] ?? false
     );
 
     const onToggleSwitch = () => {
-      if (activeArrayLength !== 10) {
+      if (activeArrayLength <= 10) {
+        if (isSwitchOn) {
+          removeLocationIdFromMapPins(galleryData?.locationId)
+        } else {
+          addLocationIdToMapPins(galleryData?.locationId);
+        }
         setIsSwitchOn(!isSwitchOn);
         dispatch({
           type: ETypes.setPinStatus,
@@ -53,6 +67,7 @@ const GallerySwitchComponent = ({ galleryData, activeArrayLength }: { galleryDat
           pinStatus: !isSwitchOn,
         });
       } else {
+        removeLocationIdFromMapPins(galleryData?.locationId);
         setIsSwitchOn(false);
         dispatch({
           type: ETypes.setPinStatus,
@@ -77,6 +92,7 @@ const GallerySwitchComponent = ({ galleryData, activeArrayLength }: { galleryDat
     [galleryData?.exhibitionLocation?.businessHours?.hoursOfOperation]
     );
 
+    const fontSize = isExhibitionCurrent ? 10 : 12;
     return (
       <View style={styles.container}>
         <View style={{ width: widthPercentageToDP('25%'), display: 'flex', flexDirection: 'column', gap: 8}}>
@@ -85,20 +101,22 @@ const GallerySwitchComponent = ({ galleryData, activeArrayLength }: { galleryDat
           </TextElementMultiLine>
         </View>
         <View style={styles.textContainer}>
-          <TextElement style={{ color: isSwitchOn ? 'black' : 'grey' }}>
-            {isExhibitionCurrent ? galleryData?.exhibitionArtist?.value ? galleryData?.exhibitionArtist?.value.trim() : 'Group Show' : ''}
-          </TextElement>
           {isExhibitionCurrent && (
-          <TextElement style={{ fontSize: 12, color: isSwitchOn ? Colors.PRIMARY_950 : Colors.PRIMARY_600 }}>
-            {galleryData?.exhibitionTitle?.value?.trim()}
-          </TextElement>
-          )}
-          <TextElement style={{ fontSize: 10, color: isSwitchOn ? Colors.PRIMARY_950 : Colors.PRIMARY_600 }}>
+            <>
+            <TextElement style={{ color: isSwitchOn ? 'black' : 'grey' }}>
+              {isExhibitionCurrent ? galleryData?.exhibitionArtist?.value ? galleryData?.exhibitionArtist?.value.trim() : 'Group Show' : ''}
+            </TextElement>
+            <TextElement style={{ fontSize: 12, color: isSwitchOn ? Colors.PRIMARY_950 : Colors.PRIMARY_600 }}>
+              {galleryData?.exhibitionTitle?.value?.trim()}
+            </TextElement>
+            </>
+        )}
+          <TextElement style={{ fontSize, color: isSwitchOn ? Colors.PRIMARY_950 : Colors.PRIMARY_600 }}>
             {simplifiedAddress}
           </TextElement>
           <TextElement
             style={{
-              fontSize: 10,
+              fontSize: fontSize,
               fontFamily: 'DMSans_700Bold',
               color: isSwitchOn ? Colors.PRIMARY_950 : Colors.PRIMARY_600,
             }}
@@ -118,16 +136,13 @@ const GallerySwitchComponent = ({ galleryData, activeArrayLength }: { galleryDat
 
 const areEqual = (prevProps, nextProps) => {
     return (
-      prevProps.galleryData.exhibitionId === nextProps.galleryData.exhibitionId &&
-      prevProps.galleryData.galleryLogo === nextProps.galleryData.galleryLogo &&
-      prevProps.galleryData.exhibitionArtist?.value === nextProps.galleryData.exhibitionArtist?.value &&
-      prevProps.galleryData.exhibitionTitle?.value === nextProps.galleryData.exhibitionTitle?.value &&
-      prevProps.galleryData.exhibitionLocation?.locationString?.value === nextProps.galleryData.exhibitionLocation?.locationString?.value &&
-      prevProps.galleryData.exhibitionLocation?.businessHours?.hoursOfOperation === nextProps.galleryData.exhibitionLocation?.businessHours?.hoursOfOperation &&
-      prevProps.activeArrayLength === nextProps.activeArrayLength
+      _.isEqual(prevProps.galleryData, nextProps.galleryData) &&
+      _.isEqual(prevProps.activeArrayLength, nextProps.activeArrayLength) &&
+      _.isEqual(prevProps.addLocationIdToMapPins, nextProps.addLocationIdToMapPins) &&
+      _.isEqual(prevProps.removeLocationIdFromMapPins, nextProps.removeLocationIdFromMapPins)
     );
   };
   
-  const MemoizedGallerySwitchComponent = React.memo(GallerySwitchComponent, areEqual);
-  
-  export default MemoizedGallerySwitchComponent;
+const MemoizedGallerySwitchComponent = React.memo(GallerySwitchComponent, areEqual);
+
+export default MemoizedGallerySwitchComponent;

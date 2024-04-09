@@ -80,8 +80,6 @@ export interface IState {
 
   allMapPins?: {[key: string] : ExhibitionMapPin}
 
-  customMapPinViews?: {[key: string] : any}
-
   mapPins?: {
     [city in MapPinCities]: {
       [key in keyof CurrentlyViewingMapView] : Array<ExhibitionMapPin>
@@ -108,7 +106,8 @@ export interface IState {
 
   customViews? : {
     [city in MapPinCities]?: {
-      walkingRoute : string
+      walkingRoute : string,
+      mapPins?: Array<ExhibitionMapPin>,
     }
   }
 
@@ -168,12 +167,13 @@ export enum ETypes {
   deleteList = 'DELETE_LIST',
   setWalkingRoute = 'SET_WALKING_ROUTE',
   setCurrentViewingMapView = 'SET_CURRENT_VIEWING_MAP_VIEW',
-  setCustomMapPinViews = 'SET_CUSTOM_MAP_PIN_VIEWS',
   setIsViewingWalkingRoute = 'SET_IS_VIEWING_WALKING_ROUTE',
 
   setUserAgreedToNavigationTerms = 'SET_USER_AGREED_TO_NAVIGATION_TERMS',
   setPinStatus = 'SET_PIN_STATUS',
   setAllMapPins = 'SET_ALL_MAP_PINS',
+  addLocationIdToSavedPins = 'ADD_LOCATION_ID_TO_SAVED_PINS',
+  removeLocationIdToSavedPins = 'REMOVE_LOCATION_ID_FROM_MAP_PINS',
 }
 
 // Define the action type
@@ -209,6 +209,8 @@ interface IAction {
   exhibitionId?: string;
   locationId?: string;
   pinStatus?: boolean;
+  setWalkingRouteRender?: boolean;
+  addLocationIdToSavedPins?: string;
 }
 
 // Define the initial state
@@ -340,7 +342,7 @@ const reducer = (state: IState, action: IAction): IState => {
           }
         };
     case ETypes.setWalkingRoute:
-      if (!action.walkingRoute || !action.customMapLocationIds || !state.currentlyViewingCity) {
+      if (!action.walkingRoute || !action.customMapLocationIds || action.setWalkingRouteRender === undefined || !state.currentlyViewingCity) {
         return state;
       }
       
@@ -359,7 +361,7 @@ const reducer = (state: IState, action: IAction): IState => {
             walkingRoute: action.customMapLocationIds
           }
         },
-        currentlyViewingMapView: currentlyViewingMapView.walkingRoute
+        currentlyViewingMapView: action.setWalkingRouteRender ? currentlyViewingMapView.walkingRoute : state.currentlyViewingMapView
       };
     case ETypes.setPinStatus: {
       if (!action.locationId || action.pinStatus === undefined){
@@ -381,6 +383,36 @@ const reducer = (state: IState, action: IAction): IState => {
             }
           }
         }
+      }
+    }
+    case ETypes.addLocationIdToSavedPins:{
+      if (!action.locationId){
+        return state;
+      }
+      return {
+        ...state,
+        mapPinIds: {
+          ...state.mapPinIds,
+          [state.currentlyViewingCity]: {
+            ...state.mapPinIds?.[state.currentlyViewingCity],
+            [currentlyViewingMapView?.savedGalleries]: [...state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView?.savedGalleries], action.locationId]
+          } 
+        },
+      }
+    }
+    case ETypes.removeLocationIdToSavedPins:{
+      if (!action.locationId){
+        return state;
+      }
+      return {
+        ...state,
+        mapPinIds: {
+          ...state.mapPinIds,
+          [state.currentlyViewingCity]: {
+            ...state.mapPinIds?.[state.currentlyViewingCity],
+            [currentlyViewingMapView?.savedGalleries]: state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView?.savedGalleries].filter((el) => el !== action.locationId)
+          } 
+        },
       }
     }
     case ETypes.setUserAgreedToNavigationTerms: {
@@ -591,16 +623,5 @@ const StoreContext = createContext<{
 interface StoreProviderProps {
   children: ReactNode;
 }
-
-// function StoreProvider({children}: StoreProviderProps) {
-//   const [state, dispatch] = useReducer(reducer, initialState);
-
-//   return (
-//     // eslint-disable-next-line react/jsx-no-constructed-context-values
-//     <StoreContext.Provider value={{state, dispatch}}>
-//       {children}
-//     </StoreContext.Provider>
-//   );
-// }
 
 export {StoreContext, reducer, initialState};
