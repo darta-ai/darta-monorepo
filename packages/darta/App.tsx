@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
 import 'react-native-gesture-handler';
 
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
@@ -137,6 +136,7 @@ function App() {
       [UserRoutesEnum.UserPastTopTabNavigator]: true,
       [UserRoutesEnum.UserGallery]: true,
       [ExhibitionRootEnum.genericLoading]: true,
+      [ExploreMapRootEnum.exploreRouterFullList]: true,
     }
     setIsTabVisible(showTabBarRoutes[route]);
   };
@@ -162,17 +162,18 @@ function App() {
                   activeColor={Colors.PRIMARY_950}
                   inactiveColor={Colors.PRIMARY_300}
                   backBehavior={'order'}
-                  barStyle={{ backgroundColor: Colors.PRIMARY_50, paddingBottom: 0, height: heightPercentageToDP('12.5%'), display: isTabVisible ? 'flex' : 'none'}}
+                  barStyle={{ backgroundColor: Colors.PRIMARY_50, paddingBottom: 0, height: isTabVisible ? heightPercentageToDP('12.5%') : heightPercentageToDP('0%'), display: isTabVisible ? 'flex' : 'none'}}
                   labeled={true} 
                   >
                     <RootStack.Screen
-                      name="Visit"
-                      component={ExploreMapStackNavigator}
+                      name="View"
+                      component={DartaRecommenderNavigator}
                       options={{
-                        tabBarLabel: "Visit",
-                        tabBarIcon: ({ focused }) => (
-                          focused ? <SVGs.VisitFocusedIcon /> : <SVGs.VisitUnfocusedIcon />
-                        )
+                        tabBarLabel: "View",
+                        tabBarIcon: ({ focused }) => {
+                          return (
+                          focused ? <SVGs.ViewFocusedIcon /> : <SVGs.ViewUnfocusedIcon />
+                        )},
                       }}
                     />
                     <RootStack.Screen
@@ -186,14 +187,13 @@ function App() {
                       }}
                     />
                     <RootStack.Screen
-                      name="View"
-                      component={DartaRecommenderNavigator}
+                      name="Visit"
+                      component={ExploreMapStackNavigator}
                       options={{
-                        tabBarLabel: "View",
-                        tabBarIcon: ({ focused }) => {
-                          return (
-                          focused ? <SVGs.ViewFocusedIcon /> : <SVGs.ViewUnfocusedIcon />
-                        )},
+                        tabBarLabel: "Visit",
+                        tabBarIcon: ({ focused }) => (
+                          focused ? <SVGs.VisitFocusedIcon /> : <SVGs.VisitUnfocusedIcon />
+                        )
                       }}
                     />
                     <RootStack.Screen

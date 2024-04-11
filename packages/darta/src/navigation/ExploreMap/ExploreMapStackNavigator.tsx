@@ -2,27 +2,45 @@ import {PRIMARY_800} from '@darta-styles';
 import React, {useContext} from 'react';
 
 import {backButtonStyles, headerOptions} from '../../styles/styles';
-import { ExploreMapRootEnum} from '../../typing/routes';
+import { ExhibitionRootEnum, ExploreMapRootEnum, RecommenderRoutesEnum} from '../../typing/routes';
 import { ExploreMapHomeScreen } from '../../screens/ExploreMap/ExploreMapHomeScreen';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { ExhibitionTopTabNavigator } from '../Exhibition/ExhibitionTopTabNavigator';
 import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
 import { ArtworkScreen } from '../../screens/Artwork/ArtworkScreen';
 import { Pressable, View} from 'react-native';  
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 import { UIStoreContext } from '../../state';
 import { TextElement } from '../../components/Elements/TextElement';
 import * as Colors from '@darta-styles'
 import { AddToListScreen } from '../../screens/Lists/AddToList';
 import { PlanARoute } from '../../screens/ExploreMap/PlanARoute';
-
+import { GenericLoadingScreen } from '../../screens/Loading/GenericLoading';
+import { HeaderBackButton } from '@react-navigation/elements';
+import { IconButton } from 'react-native-paper';
+import { viewOptionsStyles } from '../User/UserStackNavigator';
+import Share from 'react-native-share'
+import { ListTopTab } from '../List/ListTopTab';
+import * as SVGs from '../../assets/SVGs';
 
 export const ExploreMapStack = createStackNavigator();
 
 export function ExploreMapStackNavigator({route} : {route: any}) {
   const {uiState} = useContext(UIStoreContext);
   const navigation = useNavigation();
+  const shareExhibition = async () => {
+    if (!uiState.exhibitionShareDetails) return;
+    try {
+      await Share.open({
+        url: uiState.exhibitionShareDetails.shareURL ?? "",
+        // message: state.exhibitionShareDetails.shareURLMessage ?? "",
+      });
+    } catch (error) {
+
+    }
+  }
+
   return (
     <ExploreMapStack.Navigator screenOptions={{
       headerTintColor: PRIMARY_800,
@@ -97,6 +115,79 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
               },
             },
           }}>
+          {/* <ExploreMapStack.Screen
+            name={ExploreMapRootEnum.genericLoadingExploreMap}
+            component={GenericLoadingScreen}
+            options={{...headerOptions, 
+            headerLeft: () => ( 
+              <View style={backButtonStyles.backButton}>
+                <HeaderBackButton 
+                  backImage={() => <BackButtonIcon />}
+                  labelVisible={false}
+                  onPress={() => {
+                    navigation.dispatch(
+                      CommonActions.reset({
+                        index: 0, // sets the active route index
+                        routes: [
+                          { name: ExploreMapRootEnum.exploreMapHome}, // the only route in the stack after reset
+                        ],
+                      })
+                    );
+                  }}
+                  tintColor={PRIMARY_800}
+                />
+              </View>
+            )
+            }}
+          /> */}
+          {/* <ExploreMapStack.Screen
+            name={ExploreMapRootEnum.qrRouterExploreMap}
+            component={ExhibitionTopTabNavigator}
+            options={{...headerOptions, headerTitle: uiState.currentExhibitionHeader ?? "", 
+            headerRight: () => (
+              <IconButton 
+                icon={"export-variant"}
+                iconColor={Colors.PRIMARY_950}
+                style={viewOptionsStyles.viewOptionsButtonStyle}
+                onPress={() => shareExhibition()}
+              />
+            ),
+            headerLeft: () => ( 
+              <Pressable
+              style={backButtonStyles.backButton}
+              onPress={() => {
+                navigation.dispatch(
+                  CommonActions.reset({
+                    index: 0, // sets the active route index
+                    routes: [
+                      { name: ExhibitionRootEnum.exhibitionHome }, // the only route in the stack after reset
+                    ],
+                  })
+                );
+              }}>
+                <BackButtonIcon />
+              </Pressable>
+            )
+            }}
+          /> */}
+          {/* <ExploreMapStack.Screen
+              name={ExploreMapRootEnum.exploreRouterFullList}
+              component={ListTopTab}
+              initialParams= {{
+                navigateToGalleryParams: ExploreMapRootEnum.exploreMapGallery,
+              }}
+              options={{
+                headerTintColor: Colors.PRIMARY_950,
+                headerStyle: {
+                  backgroundColor: Colors.PRIMARY_50, 
+                }, 
+                headerBackImage: () => (
+                  <View style={backButtonStyles.backButton}>
+                    <SVGs.BackButtonIcon />
+                  </View>
+              ), 
+              headerTitle: uiState.listHeader ?? ""}}
+            /> */}
           <ExploreMapStack.Screen
             name={ExploreMapRootEnum.exploreMapListAdd}
             component={AddToListScreen}

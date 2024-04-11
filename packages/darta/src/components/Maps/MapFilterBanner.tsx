@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import { View, StyleSheet, Dimensions, ScrollView, Alert } from 'react-native';
 import * as Colors from '@darta-styles';
 import * as SVGs from '../../assets/SVGs';
 import { ETypes, StoreContext } from '../../state';
@@ -68,7 +68,9 @@ export const FilterBanner = ({ navigation } : {navigation : any}) => {
   } 
 
   const handleShowSaved = () => {
-    if (state.currentlyViewingMapView === currentlyViewingMapView.savedGalleries) {
+    if (state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView.savedGalleries].length === 0){
+      Alert.alert("You are not following any galleries yet.", "Follow more galleries by pressing the heart on the gallery's page.")
+    } else if (state.currentlyViewingMapView === currentlyViewingMapView.savedGalleries) {
       dispatch({
         type: ETypes.setCurrentViewingMapView,
         currentlyViewingMapView: currentlyViewingMapView.all
@@ -160,7 +162,6 @@ export const FilterBanner = ({ navigation } : {navigation : any}) => {
             onPress={handleShowRoute}
             text={"Your Route"}
           />
-          {state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView.savedGalleries]?.length > 0 && ( 
             <FilterBannerButton 
               inUse={(state.currentlyViewingMapView === currentlyViewingMapView.savedGalleries)}
               IconInUse={<SVGs.HeartEmpty20 />}
@@ -168,7 +169,6 @@ export const FilterBanner = ({ navigation } : {navigation : any}) => {
               onPress={handleShowSaved}
               text={"Following"}
             />
-         )}
          {state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView.openingTonight]?.length > 0 && ( 
         <FilterBannerButton 
             inUse={(state.currentlyViewingMapView === currentlyViewingMapView.openingTonight)}

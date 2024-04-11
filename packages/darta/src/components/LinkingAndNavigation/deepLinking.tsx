@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ETypes, StoreContext, UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes } from '../../state';
 import * as Linking from 'expo-linking';
-import { ExhibitionRootEnum, ListEnum, RecommenderRoutesEnum, UserRoutesEnum } from '../../typing/routes';
+import { ExhibitionRootEnum, ExploreMapRootEnum, ListEnum, RecommenderRoutesEnum, UserRoutesEnum } from '../../typing/routes';
 import { readExhibition, readMostRecentGalleryExhibitionForUser } from '../../api/exhibitionRoutes';
 import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
 import { createGalleryRelationshipAPI } from '../../utils/apiCalls';
@@ -102,78 +102,75 @@ async function fetchListById({listId} : {listId: string}): Promise<FullList | vo
   }
 }
 
-  const handleDeepLink = async (event) => {
-    const params = Linking.parse(event.url).queryParams;
+const handleDeepLink = async (event) => {
+  const params = Linking.parse(event.url).queryParams;
 
-    if (params && params.locationId) {
-      navigation.navigate('exhibitions', { screen: ExhibitionRootEnum.genericLoading });
-      try{
-        const res = await fetchMostRecentExhibitionData({locationId: params.locationId.toString()})
-        if (res){
-          const {exhibitionId, galleryId} = res
-            navigation.navigate('exhibitions', {
-              screen: ExhibitionRootEnum.qrRouter,
-              params: {
-                  screen: ExhibitionRootEnum.exhibitionDetails,  
-                  params: {
-                    exhibitionId,
-                    galleryId
-                  }
-              }
-          });
-          await createGalleryRelationshipAPI({galleryId})
-        }
-      } catch(error: any){
-        return
-      }
-    } else if (params && params.exhibitionId && params.galleryId) {
-      navigation.navigate('exhibitions', { screen: ExhibitionRootEnum.genericLoading});
-      const res = await fetchExhibitionById({exhibitionId: params.exhibitionId.toString(), galleryId: params.galleryId.toString()})
-      if (res){
-        const {exhibitionId, galleryId} = res
+  if (params && params.locationId) {
+    navigation.navigate('exhibitions', { screen: ExhibitionRootEnum.genericLoading });
+    try {
+      const res = await fetchMostRecentExhibitionData({locationId: params.locationId.toString()});
+      if (res) {
+        const {exhibitionId, galleryId} = res;
         navigation.navigate('exhibitions', {
           screen: ExhibitionRootEnum.qrRouter,
           params: {
-              screen: ExhibitionRootEnum.exhibitionDetails,  
-              params: {
-                exhibitionId,
-                galleryId,
-              }
+            screen: ExhibitionRootEnum.exhibitionDetails,  
+            params: {
+              exhibitionId,
+              galleryId
+            }
           }
-      });
+        });
+        await createGalleryRelationshipAPI({galleryId});
       }
-    } else if (params && params.listId) {
-      try{
-        // navigation.navigate('View', { screen: RecommenderRoutesEnum.recommenderGenericLoading });
-        const res = await fetchListById({listId: params.listId.toString()})
-        uiDispatch({
-          type: UiETypes.setListHeader,
-          currentExhibitionHeader: res?.listName ?? ""
-        })
-        navigation.navigate('View', {
-          screen:  RecommenderRoutesEnum.recommenderFullList,
+    } catch(error) {
+      return;
+      // Handle error
+    }
+  } else if (params && params.exhibitionId && params.galleryId) {
+    navigation.navigate('exhibitions', { screen: ExhibitionRootEnum.genericLoading });
+    try {
+      const res = await fetchExhibitionById({exhibitionId: params.exhibitionId.toString(), galleryId: params.galleryId.toString()});
+      if (res) {
+        const {exhibitionId, galleryId} = res;
+        navigation.navigate('exhibitions', {
+          screen: ExhibitionRootEnum.qrRouter,
           params: {
-              screen: ListEnum.fullList,  
-              params: {
-                listId: params.listId.toString(),
-              }
+            screen: ExhibitionRootEnum.exhibitionDetails,  
+            params: {
+              exhibitionId,
+              galleryId,
+            }
           }
-      });
-      }catch(error: any){
-        return
+        });
       }
-   
-    //   navigation.navigate('View', {
-    //     screen: RecommenderRoutesEnum.recommenderFullList,
-    //     params: {
-    //         listId: params.listId.toString(),
-    //     }
-    // });
-    } else {
-        return
-      } 
-  };
-
+    } catch(error) {
+      // Handle error
+    }
+  } else if (params && params.listId) {
+    try {
+      const res = await fetchListById({listId: params.listId.toString()});
+      uiDispatch({
+        type: UiETypes.setListHeader,
+        currentExhibitionHeader: res?.listName ?? ""
+      });
+      navigation.navigate('Visit', {
+        screen: RecommenderRoutesEnum.recommenderFullList,
+        params: {
+          screen: ListEnum.fullList,  
+          params: {
+            listId: params.listId.toString(),
+          }
+        }
+      });
+    } catch(error) {
+      return;
+      // Handle error
+    }
+  } else {
+    // Handle invalid deep link
+  }
+};
   // state to track if initialURL has been processed
   const [urlsProcessed, setUrlsProcessed] = useState<string[]>([]);
 

@@ -1,10 +1,9 @@
 import React from 'react';
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import {ExhibitionRootEnum, ExploreMapRootEnum} from '../../typing/routes';
+import {ExhibitionRootEnum} from '../../typing/routes';
 import {ExhibitionGalleryScreen, ExhibitionDetailsScreen, ExhibitionArtworkScreen} from '../../screens/Exhibition'
 import { tabBarScreenOptions } from '../../theme/themeConstants';
-import { ExhibitionStoreContext } from '../../state';
 
 export const ExhibitionStackTopTab = createMaterialTopTabNavigator();
 export type ExhibitionStackParamList = {

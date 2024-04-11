@@ -73,7 +73,6 @@ export function GalleriesFollowing({
         )}
         {galleriesFollowing.length === 0 && (
           <View>
-              <TextElement style={dartaLogo.text}>You are not following any galleries</TextElement>
               <View style={{flexDirection: 'row'}}>
                   <TextElement style={dartaLogo.text}>Follow a gallery by pressing </TextElement>
                   <SVGs.HeartFillSmall />

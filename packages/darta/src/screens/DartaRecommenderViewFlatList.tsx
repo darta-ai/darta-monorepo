@@ -154,8 +154,6 @@ export function DartaRecommenderViewFlatList({
 
   const onDismissSnackBarError = () => setVisibleError(false);
 
-
-
   const [longestPainting, setLongestPainting] = React.useState<number>(0)
 
   const [currentIndex, setCurrentIndex] = React.useState<number>(0);

@@ -19,8 +19,8 @@ import { ExhibitionPreview } from '@darta-types'
 import ExhibitionPreviewCard from '../../components/Previews/ExhibitionPreviewCard';
 import * as Colors from '@darta-styles';
 import { TextElement } from '../../components/Elements/TextElement';
-import { ActivityIndicator, Badge } from 'react-native-paper';
-import { RecyclerListView, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
+import { ActivityIndicator } from 'react-native-paper';
+import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
 
 
 type ExhibitionHomeScreenNavigationProp = StackNavigationProp<
@@ -225,7 +225,7 @@ export function ExhibitionPreviewScreen({
   
   const renderItem = React.useCallback((_, data) => {
     return (
-      <View key={data?.exhibitionId} ref={data?.exhibitionId}>
+      <View key={data?.exhibitionId} >
         <ExhibitionPreviewCard 
         exhibitionPreview={data}
         onPressExhibition={loadExhibition}
@@ -243,7 +243,7 @@ export function ExhibitionPreviewScreen({
     },
     (_, dim) => {
       dim.width = wp('100%');
-      dim.height = 600;
+      dim.height = 610;
     }
   );
 

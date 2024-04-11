@@ -4,7 +4,7 @@ export interface INodeService {
   upsertNodeByKey({
     collectionName,
     key,
-    data = {},
+    data,
   }: {
     collectionName: string;
     data: any;
@@ -13,7 +13,7 @@ export interface INodeService {
   upsertNodeById({
     collectionName,
     id,
-    data = {},
+    data,
   }: {
     collectionName: string;
     data: any;
@@ -43,7 +43,7 @@ export interface INodeService {
   updateNode({
     collectionName,
     key,
-    data = {},
+    data,
   }: {
     collectionName: string;
     key: string;

@@ -257,7 +257,7 @@ export class UserController {
         throw new Error('Missing required fields');
       };
       if (user.uid === 'GL1yalS1PQQjbOUu9dnpT7nKAEy1') {
-        res.status(200).send('no increment for this user');
+        res.status(200).send(0);
       } else {
         const results = await this.userService.incrementRouteGeneratedCount({
           uid: user.uid as string

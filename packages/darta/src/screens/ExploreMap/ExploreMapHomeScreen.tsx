@@ -39,7 +39,7 @@ const exploreMapStyles = StyleSheet.create({
     shadowColor: Colors.PRIMARY_950,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
-    blurRadius: 4,
+
     zIndex: 1,
     gap: 6,
   },

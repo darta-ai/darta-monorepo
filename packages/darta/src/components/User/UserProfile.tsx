@@ -37,7 +37,7 @@ export function UserProfile({
 
 
   const [userProfilePic, setUserProfilePic] = React.useState<ImageURISource>('' as any);
-  const [userName, setUserName] = React.useState<string>('');
+  const [userName, setUserName] = React.useState<string>(userState?.user?.userName ? userState?.user?.userName : "");
   const [fullName, setFullName] = React.useState<string>('');
 
   React.useEffect(() => {
@@ -53,8 +53,6 @@ export function UserProfile({
     
     setUserProfilePic(imageSource);
     
-    const name = userState?.user?.userName ? userState?.user?.userName : "darta user"
-    setUserName(name)
     const firstName = userState?.user?.legalFirstName ? userState?.user?.legalFirstName : ""
     const lastName = userState?.user?.legalLastName ? userState?.user?.legalLastName : ""
     setFullName(`${firstName} ${lastName}`)

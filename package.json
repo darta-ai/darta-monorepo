@@ -7,7 +7,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "ts:check": "tsc",
-    "clean": "rm -rf ./packages/mobile/node_modules rm -rf ./packages/darta/node_modules rm -rf ./packages/next/node_modules rm -rf ./packages/graphserver/node_modules rm -rf ./node_modules rm-rf pnpm-lock.yaml"
+    "clean": "rm -rf ./packages/darta/node_modules rm -rf ./packages/next/node_modules rm -rf ./packages/graphserver/node_modules rm -rf ./node_modules rm-rf pnpm-lock.yaml"
   },
   "pnpm": {
     "overrides": {

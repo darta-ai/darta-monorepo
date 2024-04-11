@@ -121,7 +121,7 @@ cron.schedule('0 0 * * 3', async () => {
     await userService.resetAllUsersRouteGenerationCount()
     const end = new Date()
     // eslint-disable-next-line no-console
-    console.log(`user cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
+    console.log(`reset all user route generation cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log('error running cronjob', e)

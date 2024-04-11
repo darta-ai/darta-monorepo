@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert, SafeAreaView } from 'react-native';
 import { Button } from 'react-native-paper';
 import * as Colors from '@darta-styles';
 import { TextElement } from '../../components/Elements/TextElement';
@@ -15,6 +15,7 @@ import _ from 'lodash';
 import { incrementUserGeneratedRoute } from '../../api/userRoutes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SAVED_ROUTE_SETTINGS } from '../../utils/constants';
+import analytics from '@react-native-firebase/analytics';
 
 const styles = StyleSheet.create({
   container: {
@@ -69,7 +70,7 @@ const routeNames = {
   openingTonight: "Exhibitions Opening Tonight",
 }
 
-export const PlanARoute = ({route, navigation}) => {
+export const PlanARoute = ({navigation}) => {
   const { state, dispatch } = React.useContext(StoreContext);
   const { userState, userDispatch } = React.useContext(UserStoreContext);
   const [loadingRoute, setLoadingRoute] = React.useState(false);
@@ -115,8 +116,9 @@ export const PlanARoute = ({route, navigation}) => {
     if (!pins) {
       return;
     }
-    if (userState.user?.routeGenerationCount?.routeGeneratedCountWeekly && userState.user.routeGenerationCount.routeGeneratedCountWeekly >= 10) {
-      Alert.alert('Route Limit Reached', 'You have reached your weekly limit of 10 routes. Please try again after next Wednesday.')
+    const startTime = Date.now();
+    if (userState.user?.routeGenerationCount?.routeGeneratedCountWeekly && userState.user.routeGenerationCount.routeGeneratedCountWeekly >= 6) {
+      Alert.alert('Route Limit Reached', 'You have reached your weekly limit of 6 routes. Please try again after next Wednesday.')
       return;
     }
     setLoadingRoute(true);
@@ -148,9 +150,8 @@ export const PlanARoute = ({route, navigation}) => {
       const destination = waypoints[waypoints.length - 1] ? `${waypoints[waypoints.length - 1]?.latitude},${waypoints[waypoints.length - 1]?.longitude}` : '';
       const waypointsString = waypoints.map(coord => `${coord?.latitude},${coord?.longitude}`).join('|');
 
-      const response = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&waypoints=optimize:true|${waypointsString}&mode=walking&fields=routes(overview_polyline)&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS}`);
+      const response = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&waypoints=optimize:true|${waypointsString}&mode=walking&fields=routes.overview_polyline.points&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS}`);
       const json = await response.json();
-    
       if (json.status === 'OK') {
         const optimizedRoute = json.routes[0].overview_polyline.points;
         const decodedPoints = polyline.decode(optimizedRoute);
@@ -158,6 +159,12 @@ export const PlanARoute = ({route, navigation}) => {
           latitude: point[0],
           longitude: point[1],
         }));
+
+        const endTime = Date.now();
+        const duration = endTime - startTime; 
+        analytics().logEvent('route_generation_success', {
+          duration,
+        });
         
         dispatch({
           type: ETypes.setWalkingRoute,
@@ -172,9 +179,11 @@ export const PlanARoute = ({route, navigation}) => {
 
         navigation.goBack()
 
-        const artworkGeneratedCount = await incrementUserGeneratedRoute();
+
 
         AsyncStorage.setItem(SAVED_ROUTE_SETTINGS, JSON.stringify({routeCoordinates, locationIds, generatedDate: new Date().toISOString()}));
+
+        const artworkGeneratedCount = await incrementUserGeneratedRoute();
 
         userDispatch({
           type: UserETypes.setRoutesGenerated,
@@ -185,6 +194,7 @@ export const PlanARoute = ({route, navigation}) => {
       }
     } catch (error) {
       errorGeneratingRoute();
+      analytics().logEvent('route_generation_failure');
     }
     setLoadingRoute(false)
   }, []);
@@ -262,7 +272,8 @@ export const PlanARoute = ({route, navigation}) => {
               <TextElement style={styles.buttonTextColor}>Generate Route</TextElement>
             </Button>
             <View style={{margin: 10}}>
-              <TextElement style={{fontSize: 10}}>Limit 10 routes a week per account, resetting on Wednesdays</TextElement>
+              <TextElement style={{fontSize: 10}}>Limit 6 routes a week per account, resetting on Wednesdays</TextElement>
+              <TextElement style={{fontSize: 10}}>You have generated {userState.user?.routeGenerationCount?.routeGeneratedCountWeekly} this week</TextElement>
             </View>
           </View>
         </View>

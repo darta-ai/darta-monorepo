@@ -11,7 +11,7 @@ import {UserSettings} from '../../components/User/UserSettings';
 import {backButtonStyles, headerOptions} from '../../styles/styles';
 import {UserRoutesEnum} from '../../typing/routes';
 import { View, StyleSheet } from 'react-native';  
-import Share from 'react-native-share'
+// import Share from 'react-native-share'
 
 
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
@@ -22,7 +22,7 @@ import * as SVGs from '../../assets/SVGs';
 import { ViewListsScreen } from '../../screens/Lists/ViewLists';
 import { UIStoreContext } from '../../state';
 import { ListTopTab } from '../List/ListTopTab';
-import { IconButton } from 'react-native-paper';
+// import { IconButton } from 'react-native-paper';
 import { AddToListScreen } from '../../screens/Lists/AddToList';
 import { TextElement } from '../../components/Elements/TextElement';
 
@@ -44,18 +44,18 @@ export const viewOptionsStyles = StyleSheet.create({
 export function UserStackNavigator({route} : {route: any}) {
   const {uiState} = React.useContext(UIStoreContext);
 
-  const shareList = async () => {
-    if (!uiState.listUrl) return;
-    try {
-      await Share.open({
-        url: uiState.listUrl
-        // message: state.exhibitionShareDetails.shareURLMessage ?? "",
-      });
-    } catch (error) {
+  // const shareList = async () => {
+  //   if (!uiState.listUrl) return;
+  //   try {
+  //     await Share.open({
+  //       url: uiState.listUrl
+  //       // message: state.exhibitionShareDetails.shareURLMessage ?? "",
+  //     });
+  //   } catch (error) {
 
-    }
+  //   }
+  // }
 
-  }
   return (
     <UserStack.Navigator screenOptions={{
       headerTintColor: PRIMARY_950,
@@ -133,14 +133,6 @@ export function UserStackNavigator({route} : {route: any}) {
               headerStyle: {
                 backgroundColor: Colors.PRIMARY_50, 
               }, 
-              headerRight: () => (
-                <IconButton 
-                  icon={"export-variant"}
-                  iconColor={Colors.PRIMARY_950}
-                  style={viewOptionsStyles.viewOptionsButtonStyle}
-                  onPress={() => shareList()}
-                />
-              ),
               headerBackImage: () => (
                 <View style={backButtonStyles.backButton}>
                   <SVGs.BackButtonIcon />
