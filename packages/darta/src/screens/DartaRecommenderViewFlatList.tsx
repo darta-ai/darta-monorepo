@@ -154,8 +154,6 @@ export function DartaRecommenderViewFlatList({
 
   const onDismissSnackBarError = () => setVisibleError(false);
 
-
-
   const [longestPainting, setLongestPainting] = React.useState<number>(0)
 
   const [currentIndex, setCurrentIndex] = React.useState<number>(0);
@@ -171,6 +169,10 @@ export function DartaRecommenderViewFlatList({
     thumbsUpAnim.addListener(() => {})
     thumbsDownAnim.addListener(() => {})
   }, [])
+
+  wiggleAnim.removeAllListeners();
+  thumbsUpAnim.removeAllListeners();
+  thumbsDownAnim.removeAllListeners();
 
   const itemWidth = wp('100%'); // Assuming each item has a fixed height
   
@@ -277,7 +279,7 @@ export function DartaRecommenderViewFlatList({
             });
       }
     } catch (error){
-      console.log(error)
+      // console.log('####', error)
     }
   }, [viewState.artworksToRate])
 
@@ -287,11 +289,10 @@ export function DartaRecommenderViewFlatList({
     return (
     <View key={item._id} style={{flex: 1}}>
       <ArtOnWallMemo
-        artImage={item?.artworkImage?.value!}
+        artImage={item?.artworkImage}
         artOnDisplay={item!}
         artworkDimensions={item?.artworkDimensions}
         navigation={navigation}
-        wallHeight={86}
       />
     </View>
   )}, [backgroundContainerDimensionsPixels, viewState.artworksToRate, longestPainting])
@@ -714,7 +715,7 @@ const saveWiggle = React.useCallback(async () => {
     },
     (type, dim) => {
         dim.width = wp('100%');
-        dim.height = hp('100%')
+        dim.height = hp('80%')
     })
   }, []);
 

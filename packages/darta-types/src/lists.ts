@@ -43,6 +43,7 @@ export interface ListPreview {
     creatorId: string;
     previewImage: PublicFields;
     createdAt: string;
+    creatorName: string;
 }
 
 export interface MapRegion {

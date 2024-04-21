@@ -1,11 +1,10 @@
 import React from 'react';
-import {ActivityIndicator, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import * as Colors from '@darta-styles';
 import {Artwork} from '@darta-types'
 import {TextElement} from '../Elements/_index';
 import FastImage from 'react-native-fast-image';
 import { Surface } from 'react-native-paper';
-import { UIStoreContext, UiETypes } from '../../state';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 const SSArtworkSelectorCard = StyleSheet.create({
@@ -16,7 +15,6 @@ const SSArtworkSelectorCard = StyleSheet.create({
     alignSelf: 'center',
     width: 150,
     height: 240,
-
     marginBottom: 36,
   },
   loadingImageContainer: {
@@ -78,58 +76,40 @@ const SSArtworkSelectorCard = StyleSheet.create({
 
 const ArtworkCard = ({
   artwork,
-  navigation,
-  navigateTo,
-  navigateToParams,
+  navigateToTombstone,
 }: {
   artwork: Artwork;
-  navigation: any,
-  navigateTo: string,
-  navigateToParams: string,
+  navigateToTombstone: (artwork: Artwork) => void
 }) => {
-  const {uiDispatch} = React.useContext(UIStoreContext);
-
-  const navigateToTombstone = () => {
-    uiDispatch({
-      type: UiETypes.setTombstoneHeader,
-      currentArtworkHeader: artwork?.artworkTitle?.value ?? "",
-    });
-    navigation.navigate(navigateTo, {
-      artOnDisplay: artwork,
-      navigateToParams
-    });
-  };
 
   return (
     <View key={artwork?._id}>
       <View style={SSArtworkSelectorCard.container}>
         <View style={SSArtworkSelectorCard.imageContainer}>
-          <TouchableOpacity onPress={() => navigateToTombstone()}>
             <Surface style={{backgroundColor: "transparent"}}>
-              <View style={SSArtworkSelectorCard.loadingImageContainer}>
+              <TouchableOpacity style={SSArtworkSelectorCard.loadingImageContainer} onPress={() => navigateToTombstone(artwork)}>
                 <DartaImageComponent
-                  uri = {artwork.artworkImage?.value ?? ""}
+                  uri = {artwork.artworkImage ?? null}
                   priority={FastImage.priority.normal}
                   style={SSArtworkSelectorCard.image}
                   resizeMode={FastImage.resizeMode.contain}
+                  size={"smallImage"}
                 />
-                </View>
+                </TouchableOpacity>
               </Surface>
-            </TouchableOpacity>
           </View>
         <View style={SSArtworkSelectorCard.textContainer}>
           <TextElement style={SSArtworkSelectorCard.imageArtistText}>
-            {artwork?.artistName?.value?.trim()}
+            {artwork?.artistName?.value && artwork?.artistName?.value?.trim()}
           </TextElement>
           <TextElement style={SSArtworkSelectorCard.imageTitle}>
-            {artwork?.artworkTitle?.value?.trim()}
+            {artwork?.artworkTitle?.value && artwork?.artworkTitle?.value?.trim()}
           </TextElement>
           <TextElement style={SSArtworkSelectorCard.imagePrice}>
-            {artwork?.artworkCreatedYear?.value?.trim()}
+            {artwork?.artworkCreatedYear?.value && artwork?.artworkCreatedYear?.value?.trim()}
           </TextElement>
         </View>
       </View>
-    
     </View>
   );
 }
@@ -138,8 +118,6 @@ const ArtworkCard = ({
 export default React.memo(ArtworkCard, (prevProps, nextProps) => {
   return (
     prevProps.artwork === nextProps.artwork &&
-    prevProps.navigation === nextProps.navigation &&
-    prevProps.navigateTo === nextProps.navigateTo &&
-    prevProps.navigateToParams === nextProps.navigateToParams 
+    prevProps.navigateToTombstone === nextProps.navigateToTombstone
   );
 });

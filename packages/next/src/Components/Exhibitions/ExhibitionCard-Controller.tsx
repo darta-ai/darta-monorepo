@@ -2,7 +2,7 @@
 import * as Colors from '@darta-styles'
 import {Artwork, Exhibition} from '@darta-types';
 import Block from '@mui/icons-material/Block';
-import QrCodeIcon from '@mui/icons-material/QrCode';
+// import QrCodeIcon from '@mui/icons-material/QrCode';
 import SendIcon from '@mui/icons-material/Send';
 import {
   Box,
@@ -30,14 +30,13 @@ import {
 } from '../../API/artworks/artworkRoutes';
 import {
   deleteExhibitionAndArtworkAPI,
-  deleteExhibitionOnlyAPI,
   editExhibitionAPI,
   publishExhibitionAPI,
   reOrderExhibitionArtworkAPI,
 } from '../../API/exhibitions/exhibitionRotes';
 import {ArtworkHeader} from '../Artwork';
 import {DartaErrorAlert} from '../Modals';
-import { PreviewQRDialogue } from '../Modals/PreviewQRDialogue';
+// import { PreviewQRDialogue } from '../Modals/PreviewQRDialogue';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
 import {ExhibitionArtworkList} from './ExhibitionArtworkList';
 import {CreateExhibition} from './index';
@@ -49,13 +48,28 @@ export function ExhibitionCard({
   galleryLocations,
   exhibitionId,
   galleryName,
-  isLatestExhibition
+  isLatestExhibition,
+  higherLevelSaveExhibition,
+  higherLevelSaveArtwork,
+  higherLevelCreateArtwork,
+  higherLevelReOrderArtwork,
+  higherLevelDeleteArtwork,
+  higherLevelDeleteExhibition,
+  higherLevelPublishExhibition,
 }: {
   exhibition: Exhibition;
   galleryLocations: string[];
   exhibitionId: string;
   galleryName: string;
   isLatestExhibition: boolean;
+  higherLevelSaveExhibition?: ({ exhibition }: { exhibition: Exhibition; }) => Promise<void>;
+  higherLevelSaveArtwork?: ({ artwork }: { artwork: Artwork; }) => Promise<void>;
+  higherLevelCreateArtwork?: ({ exhibitionId }: { exhibitionId: string; }) => Promise<void>;
+  higherLevelReOrderArtwork?: (
+    { artworkId, exhibitionId, direction }: { artworkId: string; exhibitionId: string, direction: 'up' | 'down'; }) => Promise<void>;
+  higherLevelDeleteArtwork?: ({ artworkId, exhibitionId }: { artworkId: string; exhibitionId: string; }) => Promise<void>;
+  higherLevelDeleteExhibition?: ({ exhibitionId }: { exhibitionId: string; }) => Promise<void>;
+  higherLevelPublishExhibition?: ({ exhibitionId, isPublished }: { exhibitionId: string; isPublished: boolean; }) => Promise<void>;
 }) {
   const [editExhibition, setEditExhibition] = React.useState<boolean>(false);
   const [isEditingExhibition, setIsEditingExhibition] =
@@ -63,7 +77,7 @@ export function ExhibitionCard({
   const {state, dispatch} = useAppState();
   const [artworks, setArtworks] = React.useState<any>(exhibition.artworks);
   const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
-  const [qrCodeOpen, setQrCodeOpen] = React.useState<boolean>(false);
+  // const [qrCodeOpen, setQrCodeOpen] = React.useState<boolean>(false);
 
   const [artworkLoading, setArtworkLoading] = React.useState<boolean>(false);
   const [isSwappingLoading, setIsSwappingLoading] =
@@ -82,6 +96,11 @@ export function ExhibitionCard({
 
   const publishExhibition = async (updatedExhibition: Exhibition, isPublished: boolean) => {
     setPublishSpinner(true);
+    if (higherLevelPublishExhibition){
+      await higherLevelPublishExhibition({exhibitionId, isPublished});
+      setPublishSpinner(false);
+      return;
+    }
     try {
       const results = await publishExhibitionAPI({exhibitionId: updatedExhibition.exhibitionId!, isPublished});
       dispatch({
@@ -140,12 +159,20 @@ export function ExhibitionCard({
 
   const saveExhibition = async (updatedExhibition: Exhibition) => {
     setIsEditingExhibition(true);
-    await setExhibitionStateAndDB(updatedExhibition)
+    if (higherLevelSaveExhibition){
+      await higherLevelSaveExhibition({exhibition: updatedExhibition});
+    } else {
+      await setExhibitionStateAndDB(updatedExhibition)
+    }
     setEditExhibition(!editExhibition);
     setIsEditingExhibition(false);
   };
 
   const addNewArtwork = async () => {
+    if (higherLevelCreateArtwork){
+      await higherLevelCreateArtwork({exhibitionId});
+      return;
+    } 
     setArtworkLoading(true);
     const exhibitionOrder = Object?.keys(artworks)?.length;
 
@@ -166,6 +193,7 @@ export function ExhibitionCard({
     } catch (error) {
       setErrorAlertOpen(true);
     }
+    
     setArtworkLoading(false);
   };
 
@@ -243,11 +271,15 @@ export function ExhibitionCard({
     artworkId: string;
   }): Promise<boolean> => {
     try {
+      if (higherLevelDeleteArtwork){
+        await higherLevelDeleteArtwork({artworkId, exhibitionId});
+        return Promise.resolve(true);
+      }
       const results = await deleteExhibitionArtwork({exhibitionId, artworkId});
       dispatch({
         type: GalleryReducerActions.SAVE_EXHIBITION,
         payload: results,
-        exhibitionId,
+        exhibitionId : results.exhibitionId,
       });
       dispatch({
         type: GalleryReducerActions.DELETE_ARTWORK,
@@ -312,12 +344,13 @@ export function ExhibitionCard({
 
   const deleteExhibition = async ({
     exhibitionId,
-    deleteArtworks = false,
   }: {
     exhibitionId: string;
-    deleteArtworks?: boolean;
   }): Promise<boolean> => {
-    if (deleteArtworks) {
+    if (higherLevelDeleteExhibition){
+      await higherLevelDeleteExhibition({exhibitionId});
+      return Promise.resolve(true);
+    }
       try {
         await deleteExhibitionAndArtworkAPI({exhibitionId});
         dispatch({
@@ -329,21 +362,8 @@ export function ExhibitionCard({
         setErrorAlertOpen(true);
         // TO-DO: error handling
       }
-    } else {
-      try {
-        await deleteExhibitionOnlyAPI({exhibitionId});
-        dispatch({
-          type: GalleryReducerActions.DELETE_EXHIBITION,
-          exhibitionId,
-        });
-        return Promise.resolve(true);
-      } catch (error) {
-        setErrorAlertOpen(true);
-        // TO-DO: error handling
-      }
+      return Promise.resolve(false);
     }
-    return Promise.resolve(false);
-  };
 
   const swapExhibitionOrder = async ({
     artworkId,
@@ -353,8 +373,13 @@ export function ExhibitionCard({
     direction: 'up' | 'down';
   }) => {
     setIsSwappingLoading(true);
+    if(higherLevelReOrderArtwork){
+      await higherLevelReOrderArtwork({artworkId, exhibitionId, direction});
+      setIsSwappingLoading(false);
+      return;
+    }
     const tempArtworks = _.cloneDeep(
-      state.galleryExhibitions[exhibitionId].artworks,
+      exhibition?.artworks as {[key: string]: Artwork},
     );
     if (!tempArtworks) return;
     if (!tempArtworks[artworkId]) return;
@@ -524,7 +549,7 @@ export function ExhibitionCard({
               flexDirection: 'column',
             },
           }}>
-            <Button
+            {/* <Button
               variant="contained"
               className="exhibition-publish-button"
               disabled={publishSpinner}
@@ -536,7 +561,7 @@ export function ExhibitionCard({
                 <Typography sx={{fontWeight: 'bold', color: Colors.PRIMARY_500}}>
                     Preview
                   </Typography>
-              </Button>
+              </Button> */}
             {exhibition.published ? (
               <Button
               variant="contained"
@@ -635,13 +660,13 @@ export function ExhibitionCard({
             </Typography>
           </Divider>
         </Box>
-        <Box>
+        {/* <Box>
           <ArtworkHeader
             artworkLoading={artworkLoading}
             addNewArtwork={addNewArtwork}
             // handleBatchUpload={handleBatchUpload}
           />
-        </Box>
+        </Box> */}
         {showArtworks && exhibition?.artworks && (
           <ExhibitionArtworkList
             artworks={exhibition?.artworks}
@@ -651,20 +676,37 @@ export function ExhibitionCard({
             saveSpinner={saveSpinner}
             deleteSpinner={deleteSpinner}
             handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
+            higherLevelSaveArtwork={higherLevelSaveArtwork}
+            exhibitionProps={exhibition}
           />
           )}
 
+          <ArtworkHeader
+            artworkLoading={artworkLoading}
+            addNewArtwork={addNewArtwork}
+            // handleBatchUpload={handleBatchUpload}
+          />
       </Collapse>
       <DartaErrorAlert
         errorAlertOpen={errorAlertOpen}
         setErrorAlertOpen={setErrorAlertOpen}
       />
-      <PreviewQRDialogue 
+      {/* <PreviewQRDialogue 
         exhibitionId={exhibition._id!}
         galleryId={state.galleryProfile._id!}
         open={qrCodeOpen}
         handleClose={() => {setQrCodeOpen(false)}}
-      />
+      /> */}
     </Card>
   );
 }
+
+ExhibitionCard.defaultProps = {
+  higherLevelSaveExhibition: undefined,
+  higherLevelSaveArtwork: undefined,
+  higherLevelCreateArtwork: undefined,
+  higherLevelReOrderArtwork: undefined,
+  higherLevelDeleteArtwork: undefined,
+  higherLevelDeleteExhibition: undefined,
+  higherLevelPublishExhibition: undefined,
+};

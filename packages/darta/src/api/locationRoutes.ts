@@ -19,7 +19,7 @@ export async function listExhibitionPinsByCity({
   }, headers });
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'listExhibitionPinsByCity'})
+    // console.log({error: error, message: error.message, where: 'listExhibitionPinsByCity'})
     return {};
   }
 }
@@ -38,7 +38,7 @@ export async function listExhibitionPinsByListId({
   }, headers });
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'listExhibitionPinsByListId'})
+    // console.log({error: error, message: error.message, where: 'listExhibitionPinsByListId'})
     return {};
   }
 }

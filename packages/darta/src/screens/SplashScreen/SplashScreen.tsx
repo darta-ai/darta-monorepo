@@ -6,7 +6,6 @@ import {
   Animated,
   StyleSheet,
   View,
-  Easing,
 } from "react-native";
 import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
 import { ETypes, StoreContext, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes, ViewStoreContext, ViewETypes} from "../../state";
@@ -18,10 +17,11 @@ import { listArtworksToRateAPI, listGalleryRelationshipsAPI, listUserArtworkAPI 
 import FastImage from "react-native-fast-image";
 import analytics from '@react-native-firebase/analytics';
 import { listUserLists } from "../../api/listRoutes";
-import {  } from "../../state";
 import { UserETypes, UserStoreContext } from "../../state/UserStore";
 import { TextElement } from "../../components/Elements/TextElement";
-import { heightPercentageToDP } from "react-native-responsive-screen";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SAVED_ROUTE_SETTINGS } from "../../utils/constants";
+
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -88,7 +88,8 @@ function AnimatedSplashScreen({ children }) {
         savedArtwork,
         inquiredArtwork,
         artworksToRate, 
-        userListPreviews
+        userListPreviews,
+        savedRoute
       ] = await Promise.all([
         // user
         uid ? getDartaUser({uid}) : null,
@@ -103,7 +104,7 @@ function AnimatedSplashScreen({ children }) {
         // exhibitionMapPins
         listExhibitionPinsByCity({ cityName: MapPinCities.newYork }),
         // likedArtwork
-        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 10 }),
+        listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 1 }),
         // savedArtwork
         listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 40 }),
         // inquiredArtwork
@@ -111,7 +112,9 @@ function AnimatedSplashScreen({ children }) {
         // artworksToRate
         listArtworksToRateAPI({startNumber: 0, endNumber: 20}),
         // userLists
-        listUserLists()
+        listUserLists(),
+        // getUnViewedExhibitionsCountForUser()
+        AsyncStorage.getItem(SAVED_ROUTE_SETTINGS)
       ]);
 
       // User Profile
@@ -154,10 +157,17 @@ function AnimatedSplashScreen({ children }) {
 
       // Map Screen 
       if (exhibitionMapPins) {
+        const userGalleryFollowed = galleryFollows?.reduce((acc, el) => {
+          if (el?._id) {
+            acc[el._id] = true; // Set the value to true, or some other logic if needed
+          }
+          return acc;
+        }, {});
         dispatch({
           type: ETypes.saveExhibitionMapPins,
           mapPins: exhibitionMapPins,
-          mapPinCity: MapPinCities.newYork
+          mapPinCity: MapPinCities.newYork,
+          userGalleryFollowed,
         });
       }
 
@@ -201,29 +211,20 @@ function AnimatedSplashScreen({ children }) {
         });
       }
       
-      // Need to figure out what takes the longest to load and prefetch those images. What takes so long? 
-      // Then try to make that more efficient. 
-      // Cache images is key. 
-      // DO some research - is it cacheing the images by default. 
-      // Preload the ones that they're going to see first. 
-      // FastImage.preload(imageUrlsToPrefetch);
+      if (savedRoute) {
+        const data = JSON.parse(savedRoute)
+        dispatch({
+          type: ETypes.setWalkingRoute,
+          walkingRoute: data?.routeCoordinates,
+          customMapLocationIds: data?.locationIds,
+          setWalkingRouteRender: false
+        })
+      }
 
-      // Colors only when it animates. 
-
-      // Not leaving the app. Directions?
-
-      // Need to make new groups on the screen. 
-
-      // Need to look into pre-rendering components for the view screen to quickly move between all of them. 
-
-      // Need to give the user option to turn off scaling
-
-      // Too minimalist? No title on the image. Need to add the title of the image. 
-      
       await SplashScreen.hideAsync();
       setAppReady(true)
     } catch (e) {
-      console.log(e);
+      console.log('!!!', e);
     } finally {
       setAppReady(true);
     }
@@ -245,6 +246,12 @@ function AnimatedSplashScreen({ children }) {
     a2Anim.addListener(() => {})
   }, [])
 
+  dAnim.removeAllListeners();
+  a1Anim.removeAllListeners();
+  rAnim.removeAllListeners();
+  tAnim.removeAllListeners();
+  a2Anim.removeAllListeners();
+  
   const sineWaveAnimation = (animatedValue, delay) => {
     return Animated.sequence([
       Animated.timing(animatedValue, {

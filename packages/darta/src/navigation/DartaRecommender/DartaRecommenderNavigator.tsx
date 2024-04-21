@@ -6,7 +6,7 @@ import {backButtonStyles, headerOptions} from '../../styles/styles';
 import {RecommenderRoutesEnum} from '../../typing/routes';
 import {View } from 'react-native';
 import { DartaRecommenderTopTab } from './DartaRecommenderTopTab';
-import { CommonActions, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useDeepLinking } from '../../components/LinkingAndNavigation/deepLinking';
 import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
@@ -15,13 +15,12 @@ import { TextElement } from '../../components/Elements/TextElement';
 import { DartaRecommenderViewFlatList } from '../../screens/DartaRecommenderViewFlatList';
 import { ListTopTab } from '../List/ListTopTab';
 import * as SVGs from '../../assets/SVGs';
-import { GenericLoadingScreen } from '../../screens/Loading/GenericLoading';
-import { HeaderBackButton } from '@react-navigation/elements';
 import { DartaRecommenderPreviousTopTab } from './DartaPreviousTopTab';
 import { ArtworkScreen } from '../../screens/Artwork/ArtworkScreen';
 import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
 
 export const RecommenderStack = createStackNavigator();
+
 export function DartaRecommenderNavigator() {
   const {uiState} = React.useContext(UIStoreContext);
 
@@ -66,7 +65,8 @@ export function DartaRecommenderNavigator() {
             options={{...headerOptions, headerTitle: uiState.currentExhibitionHeader ?? ""}}
           />
         </RecommenderStack.Group>
-        <RecommenderStack.Group screenOptions={{
+        <RecommenderStack.Group 
+          screenOptions={{
               presentation: 'transparentModal',
               cardStyle: {backgroundColor: 'transparent'},
               cardStyleInterpolator: CardStyleInterpolators.forModalPresentationIOS,
@@ -110,24 +110,23 @@ export function DartaRecommenderNavigator() {
               options={{...headerOptions, headerTitle: uiState?.galleryHeader ?? ""}}
               />
             <RecommenderStack.Screen
-            name={RecommenderRoutesEnum.recommenderFullList}
-            component={ListTopTab}
-            initialParams= {{
-              navigateToGalleryParams: RecommenderRoutesEnum.recommenderGallery,
-            }}
-            options={{
-              headerTintColor: Colors.PRIMARY_50,
-              headerStyle: {
-                backgroundColor: Colors.PRIMARY_950, 
-                opacity: 0.9,
-              }, 
-              headerBackImage: () => (
-                <View style={backButtonStyles.backButton}>
-                  <SVGs.BackButtonIconWhite />
-                </View>
-            ), 
-            headerTitle: uiState.listHeader ?? ""}}
-        />
+              name={RecommenderRoutesEnum.recommenderFullList}
+              component={ListTopTab}
+              initialParams= {{
+                navigateToGalleryParams: RecommenderRoutesEnum.recommenderGallery,
+              }}
+              options={{
+                headerTintColor: Colors.PRIMARY_950,
+                headerStyle: {
+                  backgroundColor: Colors.PRIMARY_50, 
+                }, 
+                headerBackImage: () => (
+                  <View style={backButtonStyles.backButton}>
+                    <SVGs.BackButtonIcon />
+                  </View>
+              ), 
+              headerTitle: uiState.listHeader ?? ""}}
+            />
           </RecommenderStack.Group>
     </RecommenderStack.Navigator>
   );

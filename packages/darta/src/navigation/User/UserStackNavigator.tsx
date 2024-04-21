@@ -11,7 +11,7 @@ import {UserSettings} from '../../components/User/UserSettings';
 import {backButtonStyles, headerOptions} from '../../styles/styles';
 import {UserRoutesEnum} from '../../typing/routes';
 import { View, StyleSheet } from 'react-native';  
-import Share from 'react-native-share'
+// import Share from 'react-native-share'
 
 
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
@@ -22,7 +22,7 @@ import * as SVGs from '../../assets/SVGs';
 import { ViewListsScreen } from '../../screens/Lists/ViewLists';
 import { UIStoreContext } from '../../state';
 import { ListTopTab } from '../List/ListTopTab';
-import { IconButton } from 'react-native-paper';
+// import { IconButton } from 'react-native-paper';
 import { AddToListScreen } from '../../screens/Lists/AddToList';
 import { TextElement } from '../../components/Elements/TextElement';
 
@@ -36,7 +36,7 @@ export const viewOptionsStyles = StyleSheet.create({
     width: 24,
     marginRight: 24,
     borderRadius: 0,
-    color: Colors.PRIMARY_50,
+    color: Colors.PRIMARY_950,
   },
 });
 
@@ -44,18 +44,18 @@ export const viewOptionsStyles = StyleSheet.create({
 export function UserStackNavigator({route} : {route: any}) {
   const {uiState} = React.useContext(UIStoreContext);
 
-  const shareList = async () => {
-    if (!uiState.listUrl) return;
-    try {
-      await Share.open({
-        url: uiState.listUrl
-        // message: state.exhibitionShareDetails.shareURLMessage ?? "",
-      });
-    } catch (error) {
+  // const shareList = async () => {
+  //   if (!uiState.listUrl) return;
+  //   try {
+  //     await Share.open({
+  //       url: uiState.listUrl
+  //       // message: state.exhibitionShareDetails.shareURLMessage ?? "",
+  //     });
+  //   } catch (error) {
 
-    }
+  //   }
+  // }
 
-  }
   return (
     <UserStack.Navigator screenOptions={{
       headerTintColor: PRIMARY_950,
@@ -129,22 +129,13 @@ export function UserStackNavigator({route} : {route: any}) {
               navigateToGalleryParams: UserRoutesEnum.UserGallery,
             }}
             options={{
-              headerTintColor: Colors.PRIMARY_50,
+              headerTintColor: Colors.PRIMARY_950,
               headerStyle: {
-                backgroundColor: Colors.PRIMARY_950, 
-                opacity: 0.9,
+                backgroundColor: Colors.PRIMARY_50, 
               }, 
-              headerRight: () => (
-                <IconButton 
-                  icon={"export-variant"}
-                  iconColor={Colors.PRIMARY_50}
-                  style={viewOptionsStyles.viewOptionsButtonStyle}
-                  onPress={() => shareList()}
-                />
-              ),
               headerBackImage: () => (
                 <View style={backButtonStyles.backButton}>
-                  <SVGs.BackButtonIconWhite />
+                  <SVGs.BackButtonIcon />
                 </View>
             ), 
             headerTitle: uiState.listHeader ?? ""}}
@@ -161,34 +152,7 @@ export function UserStackNavigator({route} : {route: any}) {
         <UserStack.Screen
           name={UserRoutesEnum.UserListsScreen}
           component={ViewListsScreen}
-          options={{
-            headerMode: 'float', 
-            cardStyle: {opacity: 1, margin:0, backgroundColor: 'transparent', width: '100%'}, 
-            headerTintColor: Colors.PRIMARY_50,
-            headerStyle: {
-              backgroundColor: Colors.PRIMARY_950, 
-              opacity: 0.9,
-            }, 
-            transitionSpec: {
-              open: {
-                animation: 'timing',
-                config: {
-                  duration: 550, // Duration in milliseconds, adjust as needed
-                },
-              },
-              close: {
-                animation: 'timing',
-                config: {
-                  duration: 550, // Duration in milliseconds, adjust as needed
-                },
-              },
-            },
-            headerBackImage: () => (
-              <View style={backButtonStyles.backButton}>
-                <SVGs.BackButtonIconWhite />
-              </View>
-          ), 
-            headerTitle: "Lists"}}
+          options={{...headerOptions, headerTitle: "Your Lists"}}
         />
         <UserStack.Screen
             name={UserRoutesEnum.userAddToList}

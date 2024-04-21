@@ -16,7 +16,8 @@ import {ImageController} from '../controllers/ImageController';
 import { filterOutPrivateRecordsMultiObject } from '../middleware';
 import {City, Gallery} from '../models/GalleryModel';
 import {Node} from '../models/models';
-import {IAdminService,IEdgeService, IGalleryService, INodeService} from './interfaces';
+import {IEdgeService, IGalleryService, INodeService} from './interfaces';
+import { IEmailService } from './interfaces/IEmailService';
 
 
 const BUCKET_NAME = 'logo';
@@ -28,7 +29,7 @@ export class GalleryService implements IGalleryService {
     @inject('Database') private readonly db: Database,
     @inject('IEdgeService') private readonly edgeService: IEdgeService,
     @inject('INodeService') private readonly nodeService: INodeService,
-    @inject('IAdminService') private readonly adminService: IAdminService,
+    @inject('IEmailService') private readonly emailService: IEmailService,
   ) {}
 
   public async createGalleryProfile({
@@ -57,7 +58,7 @@ export class GalleryService implements IGalleryService {
         email: userEmail,
       });
       try{
-        await this.adminService.sgSendEmail({
+        await this.emailService.sgSendEmail({
           to: 'tj@darta.art',
           from: '',
           subject: 'New Gallery Signup',
@@ -147,32 +148,59 @@ export class GalleryService implements IGalleryService {
       ({galleryLogo} = gallery);
     }
 
-    let url;
     let shouldRegenerate;
     if (galleryLogo?.value) {
       shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: galleryLogo.value})
     }
+
+    let galleryLogoValueLarge = galleryLogo?.value ?? null;
+    let galleryLogoValueMedium = galleryLogo?.mediumImage?.value ?? null;
+    let galleryLogoValueSmall = galleryLogo?.smallImage?.value ?? null;
+
     if (shouldRegenerate && ENV === 'production' && galleryLogo?.bucketName && galleryLogo?.fileName) {
       try {
-        url = await this.imageController.processGetFile({
+        galleryLogoValueLarge = await this.imageController.processGetFile({
           bucketName: galleryLogo?.bucketName,
           fileName: galleryLogo?.fileName,
         });
-        await this.refreshGalleryProfileLogo({galleryId, url})
+        if (galleryLogo.mediumImage?.fileName && galleryLogo.mediumImage?.bucketName){
+          galleryLogoValueMedium = await this.imageController.processGetFile({
+            fileName: galleryLogo.mediumImage?.fileName,
+            bucketName: galleryLogo.mediumImage?.bucketName,
+          });
+        }
+        if (galleryLogo.smallImage?.fileName && galleryLogo.smallImage?.bucketName){
+          galleryLogoValueSmall = await this.imageController.processGetFile({
+            fileName: galleryLogo.smallImage?.fileName,
+            bucketName: galleryLogo.smallImage?.bucketName,
+          });
+        }
+        await this.refreshGalleryProfileLogo({
+          galleryId, 
+          mainUrl: galleryLogoValueLarge,
+          mediumUrl: galleryLogoValueMedium,
+          smallUrl: galleryLogoValueSmall
+        })
       } catch (error: any) {
         // eslint-disable-next-line no-console
         console.log(error);
-        url = '';
+        galleryLogoValueLarge = '';
       }
     } else {
-      url = galleryLogo?.value;
+      galleryLogoValueLarge = galleryLogo?.value;
     }
     const results = {
       ...gallery,
       galleryLogo: {
         ...galleryLogo,
-        value: url,
-      },
+          value: galleryLogoValueLarge,
+          mediumImage: {
+            value: galleryLogoValueMedium
+          },
+          smallImage: {
+            value: galleryLogoValueSmall
+        },
+      }
     };
     // await this.reSaveGalleryImageByGalleryId({id: results.galleryId})
     return results
@@ -205,14 +233,20 @@ export class GalleryService implements IGalleryService {
       fileName = currentGalleryLogo.galleryLogo.fileName;
     }
 
-    let galleryLogoResults;
+    let mediumImage = currentGalleryLogo?.galleryLogo
+    let smallImage = currentGalleryLogo?.galleryLogo?.smallImage
+
     if (galleryLogo?.fileData) {
       try {
-        galleryLogoResults = await this.imageController.processUploadImage({
+        const galleryLogoResults = await this.imageController.processUploadImage({
           fileBuffer: galleryLogo?.fileData,
           fileName,
           bucketName: BUCKET_NAME,
         });
+        for (const result of galleryLogoResults) {
+          if (result.size === 'mediumImage') mediumImage = result;
+          else if (result.size === 'smallImage') smallImage = result;
+        }
       } catch (error) {
         // eslint-disable-next-line no-console
         console.log({error});
@@ -228,9 +262,19 @@ export class GalleryService implements IGalleryService {
         data: {
           ...galleryData,
           galleryLogo: {
-            fileName: galleryLogoResults?.fileName,
-            bucketName: galleryLogoResults?.bucketName,
-            value: galleryLogoResults?.value,
+            fileName: mediumImage?.fileName,
+            bucketName: mediumImage?.bucketName,
+            value: mediumImage?.value,
+            mediumImage: {
+              fileName: mediumImage?.fileName,
+              bucketName: mediumImage?.bucketName,
+              value: mediumImage?.value,
+            },
+            smallImage: {
+              fileName: smallImage?.fileName,
+              bucketName: smallImage?.bucketName,
+              value: smallImage?.value,
+            },
           },
         },
       });
@@ -293,10 +337,14 @@ export class GalleryService implements IGalleryService {
 
   public async refreshGalleryProfileLogo({
     galleryId,
-    url,
+    mainUrl,
+    mediumUrl,
+    smallUrl
   }: {
     galleryId: string;
-    url: string;
+    mainUrl: string;
+    mediumUrl: string | null;
+    smallUrl: string | null;
   }): Promise<void> {
     const galId = this.generateGalleryId({galleryId});
 
@@ -306,7 +354,13 @@ export class GalleryService implements IGalleryService {
         id: galId,
         data: {
           galleryLogo: {
-            value: url
+            value: mainUrl,
+            mediumImage: {
+              value: mediumUrl,
+            },
+            smallImage: {
+              value: smallUrl,
+            },
           },
         },
       });
@@ -478,6 +532,25 @@ export class GalleryService implements IGalleryService {
 
     return null
   }
+
+  public async readAllGalleries(): Promise<void>{ 
+    const query = `
+    FOR gallery IN ${CollectionNames.Galleries}
+    RETURN {_id: gallery._id}
+  `;
+  
+    const cursor = await this.db.query(query);
+    const galleries = await cursor.all();
+
+    const promises: Promise<any>[] = []
+
+    galleries.forEach((gallery) => {
+      if (!gallery?._id) return
+      promises.push(this.readGalleryProfileFromGalleryId({galleryId: gallery._id}))
+    })
+
+    await Promise.allSettled(promises)
+    }
 
   // eslint-disable-next-line class-methods-use-this
   public generateGalleryUserId({galleryId}: {galleryId: string}): string {

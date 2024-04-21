@@ -128,6 +128,10 @@ export enum ExploreMapRootEnum {
   explorePastNavigator = 'EXPLORE_PAST_NAVIGATOR', 
   individualArtwork = 'INDIVIDUAL_ARTWORK',
   exploreMapListAdd = 'EXPLORE_MAP_LIST_ADD',
+  bottomSheetOptions = 'BOTTOM_SHEET_OPTIONS',
+  genericLoadingExploreMap = 'GENERIC_LOADING_EXPLORE_MAP',
+  qrRouterExploreMap = 'QR_ROUTER_EXPLORE_MAP',
+  exploreRouterFullList = 'EXPLORE_ROUTE_FULL_LIST',
 }
 
 export type ExploreMapParamList = {

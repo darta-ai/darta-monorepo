@@ -1,5 +1,6 @@
 import React, {createContext} from 'react';
 import {Exhibition, ExhibitionPreview} from '@darta-types'
+import _ from 'lodash';
 
 
 // Define the state type
@@ -19,6 +20,7 @@ export interface ExhibitionState {
   currentExhibitionPreviews?: {
     [key: string]: ExhibitionPreview
   },
+  userViewedExhibition: {[key: string] : boolean}
 }
 
 export enum ExhibitionETypes {
@@ -29,7 +31,9 @@ export enum ExhibitionETypes {
   saveUserFollowsExhibitionPreviews = 'SAVE_USER_FOLLOWS_EXHIBITION_PREVIEWS',
   saveForthcomingExhibitionPreviews = 'SAVE_FORTHCOMING_EXHIBITION_PREVIEWS',
   saveCurrentExhibitionPreviews = 'SAVE_CURRENT_EXHIBITION_PREVIEWS',
+  setUserViewedExhibition = 'SET_USER_VIEWED_EXHIBITION',
 
+  removeUserFollowsExhibitionPreviews = 'REMOVE_USER_FOLLOWS_EXHIBITION_PREVIEWS',
 }
 
 // Define the action type
@@ -38,11 +42,16 @@ interface ExhibitionIAction {
   exhibitionData?: Exhibition;
   exhibitionDataMulti?: {[key: string] : Exhibition}
   exhibitionPreviews?: {[key: string] : ExhibitionPreview}
+  userViewedExhibitionId?: string
+
+  removeUserFollowsExhibitionPreviewsByGalleryId?: string
+  galleryId?: string
 }
 
 // Define the initial state
 const initialExhibitionState: ExhibitionState = {
   exhibitionData : {},
+  userViewedExhibition: {},
 };
 
 // Define the reducer function
@@ -116,6 +125,31 @@ const exhibitionReducer = (state: ExhibitionState, action: ExhibitionIAction): E
               ...action.exhibitionPreviews
             }
           }
+    case ExhibitionETypes.setUserViewedExhibition:
+      if (!action?.userViewedExhibitionId){
+        return state;
+      }
+      return {
+        ...state,
+        userViewedExhibition: {
+          ...state.userViewedExhibition,
+          [action.userViewedExhibitionId]: true,
+        },
+      };
+    case ExhibitionETypes.removeUserFollowsExhibitionPreviews: 
+      if (!action?.removeUserFollowsExhibitionPreviewsByGalleryId){
+        return state;
+      }
+      const deepCloneState = _.cloneDeep(state.userFollowsExhibitionPreviews);
+      for (const keys in deepCloneState){
+        if (deepCloneState[keys].galleryId === action.removeUserFollowsExhibitionPreviewsByGalleryId){
+          delete deepCloneState[keys]
+        }
+      }
+      return {
+        ...state,
+        userFollowsExhibitionPreviews: deepCloneState
+      }
     default:
       return state;
   }

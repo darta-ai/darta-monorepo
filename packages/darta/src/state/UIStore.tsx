@@ -1,7 +1,5 @@
 import _ from 'lodash';
-import React, {createContext, ReactNode, useReducer} from 'react';
-
-import {Artwork, Exhibition, ExhibitionPreview, IGalleryProfileData, MapPinCities, ExhibitionMapPin, MobileUser, GalleryPreview, ListPreview, List, FullList} from '@darta-types'
+import React, {createContext} from 'react';
 
 
 // Define the state type
@@ -54,7 +52,7 @@ const initialUIState: UiState = {
   currentArtworkTombstoneHeader: undefined,
   userExhibitionHeader: undefined,
   listHeader: undefined,
-  listUrl: undefined  
+  listUrl: undefined,
 };
 
 // Define the reducer function

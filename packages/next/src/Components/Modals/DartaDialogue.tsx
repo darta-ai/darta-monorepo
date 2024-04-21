@@ -18,7 +18,7 @@ export function DartaDialogue({
 }: {
   open: boolean;
   handleClose: () => void;
-  handleDelete: (arg0: string) => void;
+  handleDelete: (arg0: string) => Promise<void>;
   identifier: string;
   deleteType: string;
   id: string;
@@ -48,8 +48,8 @@ export function DartaDialogue({
           variant="contained"
           style={{backgroundColor: Colors.PRIMARY_400}}
           data-testid="confirm-delete-artwork-button"
-          onClick={() => {
-            handleDelete(id);
+          onClick={async () => {
+            await handleDelete(id);
             handleClose();
           }}
           autoFocus>

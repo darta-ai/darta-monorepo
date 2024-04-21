@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { Exhibition, GalleryPreview, Images, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
+import { Exhibition, GalleryPreview, Images, MobileUser, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}users`;
-import auth from '@react-native-firebase/auth';
 import { generateHeaders } from './utls';
 
 export async function createUser({
@@ -15,7 +14,7 @@ export async function createUser({
     const {data} = await axios.post(`${URL}/createNewDartaUser`, {uid}, {headers});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'createUser'})
+    // console.log({error: error, message: error.message, where: 'createUser'})
     return {};
   }
 }
@@ -33,7 +32,7 @@ export async function createUserArtworkEdge({
     const {data} = await axios.post(`${URL}/createUserArtworkEdge`, {uid, action}, {headers});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'createUserArtworkEdge'})
+    // console.log({error: error, message: error.message, where: 'createUserArtworkEdge'})
     return error.message;
   }
 }
@@ -77,14 +76,14 @@ export async function createUserVisitedGallery({
   }
 }
 
-export async function getDartaUser({uid} : {uid: string}): Promise<any> {
+export async function getDartaUser({uid} : {uid: string}): Promise<MobileUser | null> {
 try {
   const headers = await generateHeaders();
   const {data} = await axios.get(`${URL}/getDartaUser`, {params: {uid}, headers});
   return data;
 } catch (error:any) {
-  console.log({error})
-  console.log({error: error, message: error.message, where: 'getDartaUser'})
+  // console.log({error})
+  // console.log({error: error, message: error.message, where: 'getDartaUser'})
   return null;
 }
 }
@@ -115,7 +114,7 @@ export async function editDartaUserAccount({
       uid}, {headers});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message})
+    // console.log({error: error, message: error.message})
     return error.message;
   }
 }
@@ -134,7 +133,7 @@ export async function listDartaUserFollowsGallery({
   }, headers});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'listDartaUserFollowsGallery'})
+    // console.log({error: error, message: error.message, where: 'listDartaUserFollowsGallery'})
     return {};
   }
 }
@@ -149,7 +148,7 @@ export async function deleteDartaUser({
     const {data} = await axios.post(`${URL}/deleteDartaUser`, {uid}, {headers});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message})
+    // console.log({error: error, message: error.message})
     return error.message;
   }
 }
@@ -169,7 +168,19 @@ export async function deleteDartaUserFollowGallery({
   }, {headers});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'deleteDartaUserFollowGallery'})
+    // console.log({error: error, message: error.message, where: 'deleteDartaUserFollowGallery'})
     return {};
   }
 }
+
+export async function incrementUserGeneratedRoute(): Promise<Exhibition | any> {
+  try {
+    const headers = await generateHeaders();
+    const {data} = await axios.get(`${URL}/incrementRouteGeneration`, {headers});
+    return data;
+  } catch (error:any) {
+    // console.log({error: error, message: error.message, where: 'deleteDartaUserFollowGallery'})
+    return {};
+  }
+}
+

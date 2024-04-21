@@ -1,9 +1,4 @@
-interface Images {
-    value?: string | null;
-    fileData?: string | null | ArrayBuffer;
-    fileName?: string | null;
-    bucketName?: string | null;
-}
+import { Images } from './galleries';
 export type MobileUser = {
     profilePicture?: Images;
     userName?: string;
@@ -12,6 +7,23 @@ export type MobileUser = {
     email?: string;
     uid?: string;
     localStorageUid?: string;
+    routeGenerationCount?: {
+        routeGeneratedCountWeekly: number;
+    };
+};
+export type FirebaseUser = {
+    provider_id: string;
+    iss: string;
+    aud: string;
+    auth_time: number;
+    user_id: string;
+    sub: string;
+    iat: number;
+    exp: number;
+    firebase: {
+        [key: string]: string;
+    };
+    uid: string;
 };
 type GalleryInquiryStats = 'inquired' | 'gallery_responded' | 'negotiation' | 'accepted' | 'payment_received' | 'artwork_sent' | 'closed' | 'gallery_declined' | 'gallery_archived';
 export type InquiryArtworkData = {

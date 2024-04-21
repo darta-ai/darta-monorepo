@@ -20,7 +20,9 @@ const artworkDetailsStyles = StyleSheet.create({
       backgroundColor: Colors.PRIMARY_50,
       width: wp('100%'),
       height: '100%',
-      padding: 24,
+      paddingLeft: 24,
+      paddingRight: 24,
+      paddingBottom: 24,
   },
   spinnerContainer: {
     display: 'flex',
@@ -59,21 +61,29 @@ export function ArtworkListComponent({
 }) {
   const {uiDispatch} = React.useContext(UIStoreContext);
 
-  const renderItem = React.useCallback((_, data) => {
+  const navigateToTombstone = (artwork: Artwork) => {
+    uiDispatch({
+      type: UiETypes.setTombstoneHeader,
+      currentArtworkHeader: artwork?.artworkTitle?.value ?? "",
+    });
+    navigation.navigate(navigateTo, {
+      artOnDisplay: artwork,
+      navigateToParams
+    });
+  };
+
+
+  const renderItem = React.useCallback((index: any, data: Artwork) => {
     return (
       <ArtworkCard
         artwork={data}
-        navigation={navigation}
-        navigateTo={navigateTo}
-        navigateToParams={navigateToParams}
+        navigateToTombstone={navigateToTombstone}
       />
     );
   }, [navigation, navigateTo, navigateToParams]);
   
 
-  let dataProvider = new DataProvider((r1, r2) => {
-    return r1 !== r2;
-  }).cloneWithRows([...artworkData]);
+  const dataProvider = new DataProvider((r1, r2) => r1 !== r2).cloneWithRows([...artworkData]);
 
 
   useFocusEffect(
@@ -86,17 +96,20 @@ export function ArtworkListComponent({
     }
     }, [route?.params])
   )
-  
+
+
 
   const layoutProvider = new LayoutProvider(
     index => {
-      return 'FULL_WIDTH'; // If you have multiple types of items, you can differentiate here using the index
+      return index; 
     },
     (_, dim) => {
       dim.width = wp('50%') - 24;
-      dim.height = 240 + 36;
+      dim.height = 240 + 24;
     }
   );
+
+  layoutProvider.shouldRefreshWithAnchoring = false;
   
   if (!artworkData){
     return (
@@ -117,13 +130,9 @@ export function ArtworkListComponent({
             layoutProvider={layoutProvider}
             dataProvider={dataProvider}
             rowRenderer={renderItem}
-            onRefresh={onRefresh}
-            refreshing={refreshing}
-            initialNumToRender={5}
-            updateCellsBatchingPeriod={100}
-            maxToRenderPerBatch={5}
-            keyExtractor={item => item._id?.toString() ?? "654321"}
+            // keyExtractor={(item: Artwork) => item._id?.toString() ?? "654321"}
             decelerationRate={0.5}
+            onEndReachedThreshold={0.1}
             scrollViewProps={{
               refreshControl: (
                 <RefreshControl

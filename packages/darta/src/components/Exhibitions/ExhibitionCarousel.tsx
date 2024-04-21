@@ -8,8 +8,6 @@ import {
 import * as Colors from '@darta-styles';
 import { Surface } from 'react-native-paper';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
-
-  const image404 = require('../../assets/image404.png');
   
 
 const carouselStyle = StyleSheet.create({
@@ -52,19 +50,18 @@ const WIDTH = wp('90%');
 
 // Define the CustomItem component
 const CustomItemComponent = ({ item, index }) => {
-  const image = item?.imageUrl ? { uri: item.imageUrl } : image404;
+  const image = item?.imageData
 
   const priority = index === 0 ? FastImage.priority.high : FastImage.priority.normal;
-
   return (
     <View style={{ flex: 1,  width: '100%'}} key={image}>
         <Surface style={{backgroundColor: 'transparent'}} elevation={2}>
           <DartaImageComponent
-            uri = {item?.imageUrl ?? ""} 
-            priority={FastImage.priority.normal}
-            source={{ ...image, priority}}
+            uri = {image ?? null} 
+            priority={priority}
             style={carouselStyle.heroImage} 
             resizeMode={FastImage.resizeMode.contain}
+            size={"mediumImage"}
           />
         </Surface>
     </View>
@@ -98,7 +95,7 @@ function ExhibitionCarouselComponent({ images }) {
 
   const [currentIndex, setCurrentIndex] = React.useState(0);
 
-  const onSnapToItem = (index) => {
+  const onSnapToItem = (index: number) => {
     setCurrentIndex(index);
   };
 

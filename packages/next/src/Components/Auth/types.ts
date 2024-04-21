@@ -3,6 +3,7 @@ export enum AuthEnum {
   artists = 'Artists',
   curators = 'Curators',
   home = 'Home',
+  admin = 'Admin',
 }
 
 export type DartaBenefits = {

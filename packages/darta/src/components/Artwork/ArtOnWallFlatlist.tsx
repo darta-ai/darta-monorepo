@@ -2,7 +2,6 @@ import React from 'react';
 import {
   StyleSheet,
   View,
-  ActivityIndicator,
 } from 'react-native';
 import FastImage from 'react-native-fast-image'
 import {
@@ -11,7 +10,7 @@ import {
 } from 'react-native-responsive-screen';
 import * as Haptics from 'expo-haptics';
 
-import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types'
+import {Artwork, Images, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types'
 import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
 import { Surface } from 'react-native-paper';
 import * as Colors from '@darta-styles'
@@ -37,13 +36,14 @@ export function ArtOnWallFlatList({
   artImage,
   wallHeight = 84,
   navigation,
-}: {
+} : {
   artOnDisplay: Artwork;
-  artImage: string | undefined;
+  artImage: Images;
   artworkDimensions: Artwork['artworkDimensions'] | undefined;
   wallHeight?: number;
-  navigation: any
+  navigation: any,
 }) {
+
   const {uiDispatch} = React.useContext(UIStoreContext);
 
   const [backgroundContainerDimensionsPixels] = React.useState(galleryDimensionsPortrait) 
@@ -77,31 +77,87 @@ export function ArtOnWallFlatList({
       backgroundContainerDimensionsPixels.width /
       backgroundContainerDimensionsPixels.height;
 
-    const backgroundWidthInches = wallHeight * dimensionsMultiplierPortrait;
+    // const backgroundWidthInches = wallHeight * dimensionsMultiplierPortrait;
 
-    let artHeightInches, artWidthInches, artImageSize, artImageLocation, artHeightPixels, artWidthPixels;
+    let artHeightInches: number = 0;
+    let artWidthInches: number = 0;
+    let artHeightPixels: number = 0
+    let artWidthPixels: number = 0; 
+    let artImageSize: {
+      height: number;
+      width: number;
+    } | null = null;
+    let artImageLocation: {
+      top: number;
+      left: number;
+    } | null = null
+
+    // if (artworkDimensions && artworkDimensions.heightIn.value && artworkDimensions.widthIn.value) {
+    //   artHeightInches = parseInt(artworkDimensions.heightIn.value);
+    //   artWidthInches = parseInt(artworkDimensions.widthIn.value);
+
+    //   const pixelsPerInchHeight =
+    //     backgroundContainerDimensionsPixels.height / wallHeight;
+    //   const pixelsPerInchWidth =
+    //     backgroundContainerDimensionsPixels.width / backgroundWidthInches;
+
+    //   artHeightPixels = artHeightInches * pixelsPerInchHeight;
+    //   artWidthPixels = artWidthInches * pixelsPerInchWidth;
+
+    //   // need to adjust proportions if the art is too big for the screen
+
+    //   if (artWidthPixels > backgroundContainerDimensionsPixels.width) {
+    //     artWidthPixels = backgroundContainerDimensionsPixels.width;
+    //     artHeightPixels = artHeightPixels * (artWidthPixels / artWidthInches);
+    //   } else if (artHeightPixels > backgroundContainerDimensionsPixels.height) {
+    //     artHeightPixels = backgroundContainerDimensionsPixels.height;
+    //     artWidthPixels = artWidthPixels * (artHeightPixels / artHeightInches);
+    //   }
+
+    //   artImageSize = {
+    //     height: artHeightPixels,
+    //     width: artWidthPixels,
+    //   };
+
+    //   artImageLocation = {
+    //     top: 0.45 * backgroundContainerDimensionsPixels.height - 0.5 * artHeightPixels,
+    //     left: 0.5 * backgroundContainerDimensionsPixels.width - 0.5 * artWidthPixels,
+    //   };
+    // }
+
 
     if (artworkDimensions && artworkDimensions.heightIn.value && artworkDimensions.widthIn.value) {
       artHeightInches = parseInt(artworkDimensions.heightIn.value);
       artWidthInches = parseInt(artworkDimensions.widthIn.value);
 
-      const pixelsPerInchHeight =
-        backgroundContainerDimensionsPixels.height / wallHeight;
-      const pixelsPerInchWidth =
-        backgroundContainerDimensionsPixels.width / backgroundWidthInches;
+      // now that we have the height and width, we will set the art dimensions by the relative height or width
 
-      artHeightPixels = artHeightInches * pixelsPerInchHeight;
-      artWidthPixels = artWidthInches * pixelsPerInchWidth;
+      if (artHeightInches > artWidthInches) {
+        // make the painting relative to the background height
+        artHeightPixels = backgroundContainerDimensionsPixels.height * 0.6;
+        // make the width relative to the height
+        artWidthPixels = artHeightPixels  * (artWidthInches / artHeightInches)
+      } else {
+        artWidthPixels = backgroundContainerDimensionsPixels.width * 0.8;
+        artHeightPixels = artWidthPixels * ( artHeightInches / artWidthInches);
+        // artHeightPixels = artHeightInches * artWidthPixels;
+      }
+
+      // const pixelsPerInchHeight = backgroundContainerDimensionsPixels.height / wallHeight;
+      // const pixelsPerInchWidth = backgroundContainerDimensionsPixels.width / backgroundWidthInches;
+
+      // artHeightPixels = artHeightInches * pixelsPerInchHeight;
+      // artWidthPixels = artWidthInches * pixelsPerInchWidth;
 
       // need to adjust proportions if the art is too big for the screen
 
-      if (artWidthPixels > backgroundContainerDimensionsPixels.width) {
-        artWidthPixels = backgroundContainerDimensionsPixels.width;
-        artHeightPixels = artHeightPixels * (artWidthPixels / artWidthInches);
-      } else if (artHeightPixels > backgroundContainerDimensionsPixels.height) {
-        artHeightPixels = backgroundContainerDimensionsPixels.height;
-        artWidthPixels = artWidthPixels * (artHeightPixels / artHeightInches);
-      }
+      // if (artWidthPixels > backgroundContainerDimensionsPixels.width) {
+      //   artWidthPixels = backgroundContainerDimensionsPixels.width;
+      //   artHeightPixels = artHeightPixels * (artWidthPixels / artWidthInches);
+      // } else if (artHeightPixels > backgroundContainerDimensionsPixels.height) {
+      //   artHeightPixels = backgroundContainerDimensionsPixels.height;
+      //   artWidthPixels = artWidthPixels * (artHeightPixels / artHeightInches);
+      // }
 
       artImageSize = {
         height: artHeightPixels,
@@ -109,8 +165,8 @@ export function ArtOnWallFlatList({
       };
 
       artImageLocation = {
-        top: 0.45 * backgroundContainerDimensionsPixels.height - 0.5 * artHeightPixels,
-        left: 0.5 * backgroundContainerDimensionsPixels.width - 0.5 * artWidthPixels,
+        top: 0.45 * backgroundContainerDimensionsPixels.height - (0.5 * artHeightPixels),
+        left: 0.5 * backgroundContainerDimensionsPixels.width - (0.5 * artWidthPixels),
       };
     }
 
@@ -143,34 +199,14 @@ export function ArtOnWallFlatList({
       height: hp('70%'),
       width: wp('100%'),
     },
-    artworkDimensions: {
-      height: artDimensions.artImageSize?.height,
-      width: artDimensions.artImageSize?.width,
-    },
     artwork: {
-      height: artDimensions.artImageSize?.height,
-      width: artDimensions.artImageSize?.width,
+      height: artDimensions.artHeightPixels,
+      width: artDimensions.artWidthPixels,
       resizeMode: 'contain',
       shadowColor: Colors.PRIMARY_300, // Shadow color should generally be black for realistic shadows
       shadowOffset: { width: 0, height: 4.29 }, // Adjust the height for the depth of the shadow
       shadowOpacity: 1,
       shadowRadius: 4.29, // A larger shadow
-    },
-    screenContainer: {
-      // width: longestPainting,
-      height: '100%',
-    },
-    container: {
-      backgroundColor: Colors.PRIMARY_50,
-      justifyContent: 'flex-start',
-      alignSelf: 'center',
-      alignItems: 'center',
-      height: '100%',
-      width: '100%',
-    },
-    artOnDisplayContainer: {
-      transform: [{rotate: '0deg'}],
-      backgroundColor: 'black',
     },
   });
 
@@ -184,14 +220,16 @@ export function ArtOnWallFlatList({
   return (
       <View style={galleryStylesPortraitDynamic.artContainer}>
           {artImage && (
-            <GestureDetector gesture={tapGesture}>
-              <Surface style={{backgroundColor:"transparent"}}>
+          <GestureDetector gesture={tapGesture}>
+            <Surface style={{
+              backgroundColor:"transparent", 
+              }} >
                 <DartaImageComponent
                   uri={artImage}
                   priority={FastImage.priority.high}
-                  source={{uri: artImage, priority: FastImage.priority.high}}
                   style={galleryStylesPortraitDynamic.artwork}
                   resizeMode={FastImage.resizeMode.contain}
+                  size={"mediumImage"}
                 />
               </Surface>
             </GestureDetector>

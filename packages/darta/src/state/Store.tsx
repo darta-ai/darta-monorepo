@@ -3,6 +3,28 @@ import React, {createContext, ReactNode} from 'react';
 
 import {Artwork, MapPinCities, ExhibitionMapPin, ListPreview, FullList, PublicFields, PrivateFields, Images, ExhibitionDates, ReceptionDates, MapRegion} from '@darta-types'
 
+// export type CurrentlyViewingMapView = "all" | "savedGalleries" | "newOpenings" | "walkingRoute";
+
+export const currentlyViewingMapView = {
+  all: "all",
+  savedGalleries: "savedGalleries",
+  newOpenings: "newOpenings",
+  newClosing: "newClosing",
+  walkingRoute: "walkingRoute",
+  openingTonight: "openingTonight",
+  customView: "customView"
+}
+
+export interface CurrentlyViewingMapView {
+  all: "all";
+  savedGalleries: "savedGalleries";
+  newOpenings: "newOpenings";
+  newClosing: "newClosing";
+  walkingRoute: "walkingRoute";
+  openingTonight: "openingTonight",
+  customView: "customView"
+}
+
 export interface IUserArtworkRatings {
   [id: string]: {
     like?: boolean;
@@ -56,9 +78,48 @@ export type PatUserSavedArtworkData = {
 export interface IState {
   isPortrait: boolean;
 
+  allMapPins?: {[key: string] : ExhibitionMapPin}
+
   mapPins?: {
-    [city in MapPinCities]: {[key: string] : ExhibitionMapPin}
+    [city in MapPinCities]: {
+      [key in keyof CurrentlyViewingMapView] : Array<ExhibitionMapPin>
+    }
   }
+
+  mapPinStatus?: {
+    [city in MapPinCities]: {
+      [key in keyof CurrentlyViewingMapView] : {[key: string] : boolean}
+    }
+  }
+
+  mapPinIds?: {
+    [city in MapPinCities]: {
+      walkingRoute : Array<string>
+    }
+  }
+
+  walkingRoute? : {
+    [city in MapPinCities]?: {
+      [key in keyof CurrentlyViewingMapView] : Array<ExhibitionMapPin>
+    }
+  }
+
+  customViews? : {
+    [city in MapPinCities]?: {
+      walkingRoute : string,
+      mapPins?: Array<ExhibitionMapPin>,
+    }
+  }
+
+  mapPinCategories?: {
+    [city in MapPinCities]: {
+      [key in keyof CurrentlyViewingMapView] : Array<string>
+    }
+  }
+
+  isViewingWalkingRoute: boolean;
+  currentlyViewingMapView: string;
+  currentlyViewingCity: MapPinCities;
 
   qrCodeExhibitionId?: string;
   qrCodeGalleryId?: string;
@@ -69,6 +130,8 @@ export interface IState {
 
   fullyLoadedGalleries?: {[key: string] : boolean}
   fullyLoadedExhibitions?: {[key: string] : boolean}
+
+  userAgreedToNavigationTerms: boolean;
 
   userListPreviews?: {[key: string]: ListPreview}
   userLists?: {[key: string]: FullList}
@@ -102,41 +165,33 @@ export enum ETypes {
   setUserLists = 'SET_USER_LISTS',
   addArtworkToList = 'ADD_ARTWORK_TO_LIST',
   deleteList = 'DELETE_LIST',
+  setWalkingRoute = 'SET_WALKING_ROUTE',
+  setCurrentViewingMapView = 'SET_CURRENT_VIEWING_MAP_VIEW',
+  setIsViewingWalkingRoute = 'SET_IS_VIEWING_WALKING_ROUTE',
+
+  setUserAgreedToNavigationTerms = 'SET_USER_AGREED_TO_NAVIGATION_TERMS',
+  setPinStatus = 'SET_PIN_STATUS',
+  setAllMapPins = 'SET_ALL_MAP_PINS',
+  addLocationIdToSavedPins = 'ADD_LOCATION_ID_TO_SAVED_PINS',
+  removeLocationIdToSavedPins = 'REMOVE_LOCATION_ID_FROM_MAP_PINS',
 }
 
 // Define the action type
 interface IAction {
   type: ETypes;
 
-  // For RATE
-  rating?: string;
-
-  // for INDEX
-  currentIndex?: number;
-  artworkOnDisplayId?: string;
-
-  // for LOAD
-  loadedDGallery?: Artwork[];
-
   // for title
   galleryTitle?: string;
-
-  // for tombstone
-  tombstoneTitle?: string;
-
-  // for userSettings
-  userSettings?: PatUserData;
-
-  // for saving artwork
-  artOnDisplay?: Artwork;
-  saveWork?: boolean;
-
   
   // see here after
-
-
   mapPins?: {[key: string] : ExhibitionMapPin}
   mapPinCity?: MapPinCities
+  isViewingSaved?: boolean;
+  userGalleryFollowed?: {[key: string] : boolean};
+
+  isViewingWalkingRoute?: boolean;
+  walkingRoute?: string;
+  currentlyViewingMapView?: string;
 
   qRCodeExhibitionId?: string;
   qrCodeGalleryId?: string;
@@ -148,38 +203,245 @@ interface IAction {
   userLists?: {[key: string]: FullList}
   artwork?: Artwork;
   listId?: string;
+
+  userAgreedToNavigationTerms?: boolean;
+  customMapLocationIds?: Array<string>;
+  exhibitionId?: string;
+  locationId?: string;
+  pinStatus?: boolean;
+  setWalkingRouteRender?: boolean;
+  addLocationIdToSavedPins?: string;
 }
 
 // Define the initial state
 const initialState: IState = {
   isPortrait: true,
   mapPins: {} as any,
+  currentlyViewingMapView: currentlyViewingMapView.all,
+  currentlyViewingCity: MapPinCities.newYork,
+  userAgreedToNavigationTerms: false,
+  isViewingWalkingRoute: false,
 };
 
 // Define the reducer function
 const reducer = (state: IState, action: IAction): IState => {
-  const {
-    type,
-    galleryTitle = 'darta',
-  } = action;
+  const { type } = action;
 
   switch (type) {
     case ETypes.setPortrait:
       return {...state, isPortrait: !state.isPortrait};
       // SET_CURRENT_EXHIBITION
     case ETypes.saveExhibitionMapPins:
-        if (!action.mapPins && !action.mapPinCity) {
+        if (!action.mapPins || !action.mapPinCity || !action?.userGalleryFollowed) {
           return state;
         }
+        const allPins : ExhibitionMapPin[] = Object.values(action.mapPins).sort((a, b) => {
+            if (a.exhibitionDates?.exhibitionStartDate?.value && b.exhibitionDates?.exhibitionStartDate?.value) {
+              return new Date(a.exhibitionDates.exhibitionStartDate.value).getTime() - new Date(b.exhibitionDates.exhibitionStartDate.value).getTime();
+            } else {
+              return 0;
+            }
+        }) 
+
+        const userFollowsPins: ExhibitionMapPin[] = allPins.filter((pin: ExhibitionMapPin) => {
+          const galleryId = pin?.galleryId;
+          return action?.userGalleryFollowed?.[galleryId] && pin?.exhibitionLocation?.coordinates?.latitude && pin?.exhibitionLocation?.coordinates?.longitude
+        })
+
+        const today = new Date(); 
+        // Calculate the date 7 days before today
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        
+        const newOpeningsPins: ExhibitionMapPin[] = allPins.filter((pin: ExhibitionMapPin) => {
+          if (!pin?.exhibitionDates?.exhibitionStartDate?.value ){
+            return false;
+          }
+          const startDate = new Date(pin.exhibitionDates.exhibitionStartDate.value);
+        
+          // Check if the start date is on or after tenDaysAgo and ensure the exhibition has valid coordinates
+          return startDate >= sevenDaysAgo && startDate <= today &&
+                 pin?.exhibitionLocation?.coordinates?.latitude && 
+                 pin?.exhibitionLocation?.coordinates?.longitude;
+        });  
+
+        const sevenDaysFromNow = new Date(today);
+        sevenDaysFromNow.setDate(today.getDate() + 7); // Add 7 days to today.
+
+        const newClosingPins = allPins.filter((pin: ExhibitionMapPin) => {
+          if (!pin?.exhibitionDates?.exhibitionEndDate?.value){
+            return false;
+          }
+          const endDate = new Date(pin.exhibitionDates.exhibitionEndDate.value);
+          
+          // Check if the end date is between today and sevenDaysFromNow and ensure the exhibition has valid coordinates
+          return endDate >= today && endDate <= sevenDaysFromNow &&
+                 pin?.exhibitionLocation?.coordinates?.latitude && 
+                 pin?.exhibitionLocation?.coordinates?.longitude;
+        });
+
+        const openingTonightPins: ExhibitionMapPin[] = allPins.filter((pin: ExhibitionMapPin) => {
+          if (!pin.receptionDates?.receptionStartTime?.value) {
+            return false;
+          }
+          const startDate = new Date(pin.receptionDates.receptionStartTime.value);
+          const today = new Date();
+        
+          // Compare only the date part by setting the time to midnight
+          const startDateWithoutTime = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+          const todayWithoutTime = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        
+          return startDateWithoutTime.getTime() === todayWithoutTime.getTime();
+        }); 
+      
         return {
           ...state,
-          mapPins: {
-            ...state.mapPins,
-            [action.mapPinCity as string]: {
-              ...action.mapPins,
-            },
+          allMapPins: {
+            ...state.allMapPins,
+            ...action.mapPins
           },
+          mapPinIds: {
+            ...state.mapPinIds,
+            [action.mapPinCity]: {
+              [currentlyViewingMapView?.all]: allPins.map(pin => pin?.locationId),
+              [currentlyViewingMapView?.savedGalleries]: userFollowsPins.map(pin => pin?.locationId),
+              [currentlyViewingMapView?.newOpenings]: newOpeningsPins.map(pin => pin?.locationId),
+              [currentlyViewingMapView?.walkingRoute]: [],
+              [currentlyViewingMapView?.openingTonight]: openingTonightPins.map(pin => pin?.locationId),
+              [currentlyViewingMapView?.newClosing]: newClosingPins.map(pin => pin?.locationId),
+              [currentlyViewingMapView?.customView]: []
+            } as {
+              all: Array<string>;
+              savedGalleries: Array<string>;
+              newOpenings: Array<string>;
+              newClosing: Array<string>;
+              walkingRoute: Array<string>;
+              openingTonight: Array<string>;
+              customView: Array<string>;
+            }
+          },
+          mapPinStatus: {
+            ...state.mapPinStatus,
+            [action.mapPinCity]: {
+              all: allPins.reduce((acc, el) => ({ ...acc, [el.locationId]: false }), {}),
+              savedGalleries: userFollowsPins.reduce((acc, el) => ({ ...acc, [el.locationId]: false }), {}),
+              newOpenings: newOpeningsPins.reduce((acc, el) => ({ ...acc, [el.locationId]: false }), {}),
+              newClosing: newClosingPins.reduce((acc, el) => ({ ...acc, [el.locationId]: false }), {}),
+              walkingRoute: {} as { [key: string]: boolean },
+              openingTonight: openingTonightPins.reduce((acc, el) => ({ ...acc, [el.locationId]: false }), {}),
+              customView: {}, // Ensure this matches the expected structure
+            } as {
+              all: { [key: string]: boolean };
+              savedGalleries: { [key: string]: boolean };
+              newOpenings: { [key: string]: boolean };
+              newClosing: { [key: string]: boolean };
+              walkingRoute: { [key: string]: boolean };
+              openingTonight: { [key: string]: boolean };
+              customView: {};
+            },
+          }
         };
+    case ETypes.setWalkingRoute:
+      if (!action.walkingRoute || !action.customMapLocationIds || action.setWalkingRouteRender === undefined || !state.currentlyViewingCity) {
+        return state;
+      }
+      
+      return {
+        ...state,
+        customViews: {
+          ...state.customViews,
+          [state.currentlyViewingCity]: {
+            walkingRoute: action.walkingRoute
+          }
+        },
+        mapPinIds: {
+          ...state.mapPinIds,
+          [state.currentlyViewingCity]: {
+            ...state.mapPinIds?.[state.currentlyViewingCity],
+            walkingRoute: action.customMapLocationIds
+          }
+        },
+        currentlyViewingMapView: action.setWalkingRouteRender ? currentlyViewingMapView.walkingRoute : state.currentlyViewingMapView
+      };
+    case ETypes.setPinStatus: {
+      if (!action.locationId || action.pinStatus === undefined){
+        return state;
+      }      
+      return {
+        ...state,
+        mapPinStatus: {
+          ...state.mapPinStatus,
+          [state.currentlyViewingCity]: {
+            ...state.mapPinStatus?.[state.currentlyViewingCity],
+            [state.currentlyViewingMapView]: {
+              ...state.mapPinStatus?.[state.currentlyViewingCity][state.currentlyViewingMapView],
+              [action.locationId]: action.pinStatus
+            },
+            walkingRoute: {
+              ...state.mapPinStatus?.[state.currentlyViewingCity].walkingRoute,
+              [action.locationId]: action.pinStatus
+            }
+          }
+        }
+      }
+    }
+    case ETypes.addLocationIdToSavedPins:{
+      if (!action.locationId){
+        return state;
+      }
+      return {
+        ...state,
+        mapPinIds: {
+          ...state.mapPinIds,
+          [state.currentlyViewingCity]: {
+            ...state.mapPinIds?.[state.currentlyViewingCity],
+            [currentlyViewingMapView?.savedGalleries]: [...state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView?.savedGalleries], action.locationId]
+          } 
+        },
+      }
+    }
+    case ETypes.removeLocationIdToSavedPins:{
+      if (!action.locationId){
+        return state;
+      }
+      return {
+        ...state,
+        mapPinIds: {
+          ...state.mapPinIds,
+          [state.currentlyViewingCity]: {
+            ...state.mapPinIds?.[state.currentlyViewingCity],
+            [currentlyViewingMapView?.savedGalleries]: state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView?.savedGalleries].filter((el) => el !== action.locationId)
+          } 
+        },
+      }
+    }
+    case ETypes.setUserAgreedToNavigationTerms: {
+      if (action.userAgreedToNavigationTerms === undefined) {
+        return state;
+      }
+      return {
+        ...state,
+        userAgreedToNavigationTerms: action.userAgreedToNavigationTerms,
+      };
+    }
+    case ETypes.setCurrentViewingMapView: {
+      if (!action.currentlyViewingMapView) {
+        return state;
+      }
+      return {
+        ...state,
+        currentlyViewingMapView: action.currentlyViewingMapView,
+      };
+    }
+    case ETypes.setIsViewingWalkingRoute: {
+      if (action.isViewingWalkingRoute === undefined) {
+        return state;
+      }
+      return {
+        ...state,
+        isViewingWalkingRoute: action.isViewingWalkingRoute,
+      };
+    }
     case ETypes.setQRCodeExhibitionId:
     if (!action.qRCodeExhibitionId) {
       return state;
@@ -361,16 +623,5 @@ const StoreContext = createContext<{
 interface StoreProviderProps {
   children: ReactNode;
 }
-
-// function StoreProvider({children}: StoreProviderProps) {
-//   const [state, dispatch] = useReducer(reducer, initialState);
-
-//   return (
-//     // eslint-disable-next-line react/jsx-no-constructed-context-values
-//     <StoreContext.Provider value={{state, dispatch}}>
-//       {children}
-//     </StoreContext.Provider>
-//   );
-// }
 
 export {StoreContext, reducer, initialState};

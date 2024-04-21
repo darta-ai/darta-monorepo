@@ -18,7 +18,7 @@ export async function readGallery({
   }, headers});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'readGallery'})
+    // console.log({error: error, message: error.message, where: 'readGallery'})
     throw new Error(error.message);
   }
 }
@@ -38,7 +38,7 @@ export async function listGalleryExhibitionPreviewForUser({
       }, headers });
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'listGalleryExhibitionPreviewForUser'})
+    // console.log({error: error, message: error.message, where: 'listGalleryExhibitionPreviewForUser'})
     return {};
   }
 }
@@ -49,7 +49,6 @@ export async function listDartaUserFollowsGallery({
   uid: string;
 }): Promise<GalleryPreview | any> {
   try {
-    const idToken = await auth().currentUser?.getIdToken();
     const headers = await generateHeaders();
 
     const {data} = await axios.get(`${URL}/listDartaUserFollowsGallery`, {
@@ -58,7 +57,7 @@ export async function listDartaUserFollowsGallery({
   }, headers});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'listDartaUserFollowsGallery'})
+    // console.log({error: error, message: error.message, where: 'listDartaUserFollowsGallery'})
     return {};
   }
 }
@@ -78,7 +77,7 @@ export async function deleteDartaUserFollowGallery({
   }, {headers});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'deleteDartaUserFollowGallery'})
+    // console.log({error: error, message: error.message, where: 'deleteDartaUserFollowGallery'})
     return {};
   }
 }

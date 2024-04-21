@@ -191,6 +191,10 @@ export function TombstonePortrait({
     opacityInquiredButton.addListener(() => {})
   }, [])
 
+  opacityLikedButton.removeAllListeners();
+  opacitySavedButton.removeAllListeners();
+  opacityInquiredButton.removeAllListeners();
+
   const toggleButtons = ({buttonRef, callback} : {buttonRef: any, callback?: () => void}) => {
     // Animate Out
     Animated.parallel([
@@ -271,13 +275,17 @@ export function TombstonePortrait({
             centerContent>
             <View style={SSTombstonePortrait.imageContainer}>
               <DartaImageComponent
-                uri={artwork?.artworkImage?.value!}
+                uri={artwork?.artworkImage}
                 priority={FastImage.priority.normal}
                 style={SSTombstonePortrait.image}
                 resizeMode={FastImage.resizeMode.contain}
+                size={"largeImage"}
               />
             </View>
           </ScrollView>
+          <View style={{marginTop: 10, alignItems: 'flex-end'}}>
+              <TextElement style={{color: Colors.PRIMARY_400, fontSize: 10, fontFamily: 'DMSans_400Regular'}}>Image courtesy of the artist</TextElement>
+          </View>
         </View>
       <ScrollView scrollEventThrottle={7}>
         <View style={SSTombstonePortrait.textContainer}>
@@ -366,6 +374,7 @@ export function TombstonePortrait({
             </Animated.View>
           </View>
       </ScrollView>
+      
     </View>
   );
 }

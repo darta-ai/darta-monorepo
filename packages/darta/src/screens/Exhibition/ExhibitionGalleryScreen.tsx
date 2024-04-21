@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import {View, StyleSheet, Linking, Platform, ScrollView, RefreshControl, Animated, Pressable} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { globalTextStyles } from '../../styles/styles';
@@ -14,17 +14,15 @@ import {
 import { ActivityIndicator } from 'react-native-paper';
 
 import { Text } from 'react-native-paper'
-import { BusinessHours, Exhibition, IBusinessLocationData, IGalleryProfileData } from '@darta-types';
-import { formatUSPhoneNumber, modifyHoursOfOperation, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import { ArtworkPreview, Exhibition, GalleryPreview, IBusinessLocationData, IGalleryProfileData, Images, PublicFields } from '@darta-types';
+import { formatUSPhoneNumber } from '../../utils/functions';
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
 import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
 import {readExhibition} from '../../api/exhibitionRoutes';
-import { mapStylesJson } from '../../utils/mapStylesJson';
 import { DartaIconButtonWithText } from '../../components/Darta/DartaIconButtonWithText';
 import * as SVGs from '../../assets/SVGs';
-import { UIStoreContext, UiETypes, GalleryStoreContext, ETypes, StoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes } from '../../state';
+import { UIStoreContext, UiETypes, GalleryStoreContext,StoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes, ETypes } from '../../state';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
 import { DartaImageComponent } from '../../components/Images/DartaImageComponent';
 import GalleryLocation from '../../components/Gallery/GalleryLocation';
@@ -47,16 +45,29 @@ const galleryDetailsStyles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    gap: 24,
+    gap: 48,
     paddingLeft: 24,
     paddingRight: 24,
   },
   galleryTitleContainer: {
-    width: wp('100%'),
+    width: '100%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
+},
+headerContainer: {
+  width: wp('100%'),
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+},
+followContainer: {
+  width: 200,
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'flex-start',
 },
   galleryLogoContainer: {
     display:'flex', 
@@ -165,15 +176,15 @@ const galleryDetailsStyles = StyleSheet.create({
     marginBottom: 24,
   },
   pressableStyle: {
-    width: 123,
+    width: 130,
     height: 38,
-    backgroundColor: Colors.PRIMARY_100,
-    borderRadius: 19,
+    backgroundColor: Colors.PRIMARY_950,
+    borderRadius: 20,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    gap: 4,
   }, 
   mapContainer: {
     height: hp('30%'), 
@@ -195,13 +206,13 @@ export function ExhibitionGalleryScreen({
   route?: ExhibitionGalleryRouteProp;
   navigation?: any;
 }) {
-  const {state} = React.useContext(StoreContext);
+  const {state, dispatch} = React.useContext(StoreContext);
   const {uiDispatch} = React.useContext(UIStoreContext);
   const {userState,userDispatch} = React.useContext(UserStoreContext);
   const {exhibitionState, exhibitionDispatch} = React.useContext(ExhibitionStoreContext);
   const {galleryState, galleryDispatch} = React.useContext(GalleryStoreContext)
+
   const [galleryId, setGalleryId] = React.useState<string>("")
-  const [errorText, setErrorText] = React.useState<string>("");
   const [isGalleryLoaded, setIsGalleryLoaded] = React.useState<boolean>(false);
   const [gallery, setGallery] = React.useState<IGalleryProfileData>({} as IGalleryProfileData)
 
@@ -307,7 +318,7 @@ export function ExhibitionGalleryScreen({
           const supplementalExhibitions = await listGalleryExhibitionPreviewForUser({galleryId: gal._id!})
           galleryData = {...gal, galleryExhibitions: supplementalExhibitions}
         } catch(error){
-          console.log(error)
+          
           //TO-DO: error
         }
         if (galleryData?._id){
@@ -324,7 +335,7 @@ export function ExhibitionGalleryScreen({
           })
         }
       }else {
-        setErrorText("hey something went wrong, please refresh and try again")
+       
       }
     }
 
@@ -358,13 +369,65 @@ export function ExhibitionGalleryScreen({
         type: UserETypes.setUserFollowGalleries,
         galleryId,
       })
+      
+      if (route?.params?.exhibitionId && exhibitionState.exhibitionData){
+        let exhibitionPreview: any = {}
+        const fullExhibition = exhibitionState.exhibitionData[route.params?.exhibitionId]
+        let artworkPreviews: {[key: string]: ArtworkPreview} = {}
+        if (fullExhibition?.artworks){
+          artworkPreviews = Object.values(fullExhibition?.artworks).slice(0, 4).reduce((acc: any, el: any) => ({...acc, [el._id]: el}), {})
+        }
+        exhibitionPreview = {
+          [route.params?.exhibitionId]: {
+            artworkPreviews: artworkPreviews,
+            exhibitionId: fullExhibition?._id as string,
+            galleryId: galleryId,
+            openingDate: fullExhibition?.exhibitionDates?.exhibitionStartDate,
+            closingDate: fullExhibition?.exhibitionDates?.exhibitionEndDate,
+            exhibitionDuration: fullExhibition?.exhibitionDates?.exhibitionDuration!,
+            galleryLogo: gallery?.galleryLogo as Images,
+            galleryName: gallery?.galleryName,
+            exhibitionArtist: fullExhibition?.exhibitionArtist!,
+            exhibitionTitle: fullExhibition?.exhibitionTitle,
+            exhibitionLocation: {
+              exhibitionLocationString: fullExhibition?.exhibitionLocation?.locationString,
+              coordinates: fullExhibition?.exhibitionLocation?.coordinates 
+            },
+            exhibitionPrimaryImage: fullExhibition.exhibitionPrimaryImage! as Images,
+            exhibitionDates: fullExhibition.exhibitionDates,
+            receptionDates: fullExhibition.receptionDates,
+            userViewed: true
+          }
+        }
+        exhibitionDispatch({
+          type: ExhibitionETypes.saveUserFollowsExhibitionPreviews,
+          exhibitionPreviews: exhibitionPreview,
+        })
+
+        const galleryPreviews: {[key: string] : GalleryPreview} = {
+          [galleryId]: {
+            _id: galleryId,
+            galleryName: gallery?.galleryName as PublicFields,
+            galleryLogo: gallery?.galleryLogo as Images,
+          }
+        }
+        galleryDispatch({
+          type: GalleryETypes.setGalleryPreviewMulti,
+          galleryPreviews
+        });
+        userDispatch({
+          type: UserETypes.setUserFollowGalleriesMulti,
+          galleryFollowIds: {[galleryId]: true}
+        });
+        dispatch({
+          type: ETypes.addLocationIdToSavedPins,
+          locationId: gallery?.galleryLocation0?.googleMapsPlaceId?.value as string,
+        })
+      }
+
       setFollowsGallery(true)
-      userDispatch({
-        type: UserETypes.setUserFollowGalleries,
-        galleryId,
-      })
     } catch(e) {
-      console.log('error', e)
+      // console.log('error', e)
       throw new Error("Something went wrong, please try again")
     }
   }
@@ -375,6 +438,14 @@ export function ExhibitionGalleryScreen({
       userDispatch({
         type: UserETypes.removeUserFollowGalleries,
         galleryId,
+      })
+      exhibitionDispatch({
+        type: ExhibitionETypes.removeUserFollowsExhibitionPreviews,
+        removeUserFollowsExhibitionPreviewsByGalleryId: galleryId
+      })
+      dispatch({
+        type: ETypes.removeLocationIdToSavedPins,
+        locationId: gallery?.galleryLocation0?.googleMapsPlaceId?.value as string,
       })
       setFollowsGallery(false)
     } catch {
@@ -398,6 +469,10 @@ export function ExhibitionGalleryScreen({
     opacitySetTwo.addListener(() => {})
     translateX.addListener(() => {})
   }, [])
+
+  opacitySetOne.removeAllListeners();
+  opacitySetTwo.removeAllListeners();
+  translateX.removeAllListeners();
 
   const toggleButtons = () => {
     Animated.parallel([
@@ -484,7 +559,7 @@ export function ExhibitionGalleryScreen({
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
-          console.log(`Can't handle URL: ${url}`);
+          // console.log(`Can't handle URL: ${url}`);
         } else {
           return Linking.openURL(url);
         }
@@ -501,7 +576,7 @@ export function ExhibitionGalleryScreen({
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
-          console.log(`Can't handle URL: ${url}`);
+          // console.log(`Can't handle URL: ${url}`);
         } else {
           return Linking.openURL(url);
         }
@@ -515,7 +590,7 @@ export function ExhibitionGalleryScreen({
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
-          console.log(`Can't handle URL: ${url}`);
+          // console.log(`Can't handle URL: ${url}`);
         } else {
           return Linking.openURL(url);
         }
@@ -563,34 +638,45 @@ export function ExhibitionGalleryScreen({
           {gallery?.galleryLogo?.value && (
             <View style={galleryDetailsStyles.galleryLogoContainer}>
               <DartaImageComponent 
-              uri={gallery?.galleryLogo?.value ?? ""}
+              uri={gallery?.galleryLogo}
               priority={FastImage.priority.normal}
               style={galleryDetailsStyles.heroImage}
               resizeMode={FastImage.resizeMode.contain}
+              size={"smallImage"}
               />
             </View>
             )}
+            <View style={galleryDetailsStyles.followContainer}>
+            {!followsGallery && (
+            <Animated.View style={{opacity: opacitySetOne, transform: [{ translateX: translateX }] }}>
+                <Pressable style={{...galleryDetailsStyles.pressableStyle, backgroundColor: Colors.PRIMARY_50, borderColor: Colors.PRIMARY_500, borderWidth: 1}} onPress={() => followGallery()}>
+                  <View style={{width: 30}}>
+                    <SVGs.HeartFill />
+                  </View>
+                  <View style={{width: 80}}>
+                    <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_950}}>Follow</TextElement>
+                  </View>
+                </Pressable>
+            </Animated.View>
+              )}
+            {followsGallery && (
+            <Animated.View style={{opacity: opacitySetTwo, transform: [{ translateX: Animated.subtract(100, translateX) }]}}>
+              <Pressable style={galleryDetailsStyles.pressableStyle} onPress={() => unFollowGallery()}>
+                <View style={{width: 30}}>
+                  <SVGs.HeartEmpty />
+                </View>
+                <View style={{width: 80}}>
+                  <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_50}}>Following</TextElement>
+                </View>
+              </Pressable>
+            </Animated.View>
+              )} 
+          </View>
           <View style={galleryDetailsStyles.galleryBioContainer}>
             <Text style={globalTextStyles.paragraphText}>
               {gallery?.galleryBio?.value}
             </Text>
           </View>
-            {!followsGallery && (
-          <Animated.View style={{opacity: opacitySetOne, transform: [{ translateX: translateX }] }}>
-              <Pressable style={{...galleryDetailsStyles.pressableStyle, backgroundColor: Colors.PRIMARY_950}} onPress={() => followGallery()}>
-                <SVGs.PlusIcon />
-                <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_50}}>Follow</TextElement>
-              </Pressable>
-          </Animated.View>
-            )}
-          {followsGallery && (
-          <Animated.View style={{opacity: opacitySetTwo, transform: [{ translateX: Animated.subtract(100, translateX) }]}}>
-            <Pressable style={galleryDetailsStyles.pressableStyle} onPress={() => unFollowGallery()}>
-              <SVGs.MinusIcon />
-              <TextElement style={globalTextStyles.boldTitleText}>Unfollow</TextElement>
-            </Pressable>
-          </Animated.View>
-            )} 
         </View>
       <View style={galleryDetailsStyles.contactContainer}>
         <View>
@@ -651,11 +737,10 @@ export function ExhibitionGalleryScreen({
             <TextElement style={globalTextStyles.sectionHeaderTitle}>Upcoming Exhibitions</TextElement>
           </View>
           <View>
-            {upcomingExhibitions.map((previousExhibition : Exhibition, index : number) => {
-              return (
+            {upcomingExhibitions.map((previousExhibition : Exhibition, index : number) => (
                 <View key={`${index}-${previousExhibition.exhibitionId}`} style={galleryDetailsStyles.exhibitionPreviewContainer}>
                   <ExhibitionPreviewMini 
-                    exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
+                    exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage}
                     exhibitionId={previousExhibition._id!}
                     exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
                     exhibitionGallery={gallery.galleryName?.value as string}
@@ -667,7 +752,7 @@ export function ExhibitionGalleryScreen({
                   />
                 </View>
               )
-            })}
+            )}
             </View>
           </View>
             )}
@@ -677,11 +762,10 @@ export function ExhibitionGalleryScreen({
             <TextElement style={globalTextStyles.sectionHeaderTitle}>Exhibitions</TextElement>
             </View>
           <View>
-            {previousExhibitions.map((previousExhibition : Exhibition, index : number) => {
-                return (
+            {previousExhibitions.map((previousExhibition : Exhibition, index : number) => (
                   <View key={`${index}-${previousExhibition.exhibitionId}`} style={galleryDetailsStyles.exhibitionPreviewContainer}>
                     <ExhibitionPreviewMini 
-                      exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage?.value as string}
+                      exhibitionHeroImage={previousExhibition.exhibitionPrimaryImage}
                       exhibitionId={previousExhibition._id!}
                       exhibitionTitle={previousExhibition.exhibitionTitle?.value as string}
                       exhibitionGallery={gallery.galleryName?.value as string}
@@ -693,7 +777,7 @@ export function ExhibitionGalleryScreen({
                     />
                   </View>
                 )
-              })}
+              )}
             </View>
           </View>
             )}

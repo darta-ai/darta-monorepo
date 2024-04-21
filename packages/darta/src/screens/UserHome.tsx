@@ -10,7 +10,6 @@ import {
   RefreshControl,
 } from 'react-native';
 import {
-  heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
@@ -18,15 +17,16 @@ import * as Colors from '@darta-styles';
 import {GalleriesFollowing} from '../components/Gallery/GalleriesFollowing';
 import {UserSpecificComponent} from '../components/User/UserSpecificComponent';
 import {UserProfile} from '../components/User/UserProfile';
-import { ETypes, StoreContext } from '../state/Store';
 import { listGalleryRelationshipsAPI, listUserArtworkAPI } from '../utils/apiCalls';
-import { GalleryPreview, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
+import { GalleryPreview, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
 import { TextElement } from '../components/Elements/TextElement';
 import { globalTextStyles } from '../styles/styles';
 import { DartaIconButtonWithText } from '../components/Darta/DartaIconButtonWithText';
 import * as SVGs from '../assets/SVGs';
 import { UserETypes, UserStoreContext } from '../state/UserStore';
 import { GalleryETypes, GalleryStoreContext } from '../state';
+import { ArtHapIntro } from '../components/ArtHap/ArtHapIntro';
+import { DropDownToggle } from '../components/Elements/DropDownToggle';
 
 
 const HEADER_MAX_WIDTH = 100;
@@ -54,13 +54,21 @@ export const userHomeStyles = StyleSheet.create({
     gap: 16,
   },
   marginBottom24: {
-    marginBottom: 24
+    marginBottom: 24,
+    display: 'flex',
+    flexDirection: 'row'
+  },
+  dropDownText: {
+    width: '85%',
+  },
+  dropDownIcon: {
+    width: '5%',
   }
 });
 
 
 export function UserHome({navigation}: {navigation: any}) {
-  const {userDispatch} = React.useContext(UserStoreContext)
+  const { userDispatch } = React.useContext(UserStoreContext)
   const {galleryDispatch} = React.useContext(GalleryStoreContext)
 
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -148,7 +156,7 @@ export function UserHome({navigation}: {navigation: any}) {
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
-          console.log(`Can't handle URL: ${url}`);
+          // console.log(`Can't handle URL: ${url}`);
         } else {
           return Linking.openURL(url);
         }
@@ -163,13 +171,14 @@ export function UserHome({navigation}: {navigation: any}) {
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
-          console.log(`Can't handle URL: ${url}`);
+          // console.log(`Can't handle URL: ${url}`);
         } else {
           return Linking.openURL(url);
         }
       })
       .catch((err) => console.error('An error occurred', err));
   };  
+
   return (
     <ScrollView refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />} onScroll={handleScroll} scrollEventThrottle={16} >
       <View style={userHomeStyles.userHomeContainer}>
@@ -181,7 +190,9 @@ export function UserHome({navigation}: {navigation: any}) {
         </View>
           <View> 
             <View style={userHomeStyles.marginBottom24}>
-              <TextElement style={globalTextStyles.sectionHeaderTitle}>You</TextElement>
+              <View style={userHomeStyles.dropDownText}>
+                <TextElement style={globalTextStyles.sectionHeaderTitle}>You</TextElement>
+              </View>
             </View>
             <View>
               <UserSpecificComponent
@@ -190,10 +201,12 @@ export function UserHome({navigation}: {navigation: any}) {
             </View>
           </View>
           <View>
-            <View style={userHomeStyles.marginBottom24}>
-              <TextElement style={globalTextStyles.sectionHeaderTitle}>Following</TextElement>
+          <View style={userHomeStyles.marginBottom24}>
+              <View style={userHomeStyles.dropDownText}>
+                <TextElement style={globalTextStyles.sectionHeaderTitle}>Following</TextElement>
+              </View>
             </View>
-              <View>
+              <View >
                 <GalleriesFollowing
                   navigation={navigation}
                 />
@@ -221,6 +234,14 @@ export function UserHome({navigation}: {navigation: any}) {
                 />
               </View>
           </View>
+          {/* <View>
+            <View style={userHomeStyles.marginBottom24}>
+              <TextElement style={globalTextStyles.sectionHeaderTitle}>Professional Art Advising</TextElement>
+            </View>
+            <View>
+              <ArtHapIntro />
+            </View>
+          </View> */}
       </View>
     </ScrollView>
   );

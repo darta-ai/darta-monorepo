@@ -177,8 +177,8 @@ export class ExhibitionController {
     @response() res: Response,
   ): Promise<void> {
     const {user} = req as any;
-    const {exhibitionId} = req.body;
     try {
+      const {exhibitionId} = req.body;
       const galleryId = await this.galleryService.getGalleryIdFromUID({
         uid: user.user_id,
       });
@@ -209,6 +209,14 @@ export class ExhibitionController {
       const galleryId = await this.galleryService.getGalleryIdFromUID({
         uid: user.user_id,
       });
+      const isVerified =
+        await this.exhibitionService.verifyGalleryOwnsExhibition({
+          exhibitionId,
+          galleryId,
+        });
+      if (!isVerified) {
+        throw new Error('unable to verify exhibition is owned by gallery');
+      }
       const results = await this.exhibitionService.publishExhibition({
         exhibitionId,
         galleryId,
@@ -224,7 +232,6 @@ export class ExhibitionController {
       res.status(500).send(error.message);
     }
   }
-
 
   @httpPost('/deleteExhibitionAndArtwork', verifyToken)
   public async deleteExhibitionAndArtwork(
@@ -298,19 +305,22 @@ export class ExhibitionController {
     }
   }
 
-  @httpGet('/listExhibitionsPreviewsCurrentForUserByLimit')
+  @httpGet('/listExhibitionsPreviewsCurrentForUserByLimit', verifyToken)
   public async listExhibitionsPreviewsCurrentForUserByLimit(
     @request() req: Request,
     @response() res: Response,
   ): Promise<void> {
+
     if (!req.query.limit) {
       res.status(400).send("limit query parameter is required");
       return;
   }
     try {
+      const { user } = req as any;
       const limit = <number>parseInt(req.query.limit.toString(), 10);
       const results = await this.exhibitionService.listExhibitionsPreviewsCurrentForUserByLimit({
-        limit
+        limit,
+        uid: user?.uid
       });
       res.json(results);
     } catch (error: any) {
@@ -319,7 +329,7 @@ export class ExhibitionController {
     }
   }
 
-  @httpGet('/listExhibitionsPreviewsForthcomingForUserByLimit')
+  @httpGet('/listExhibitionsPreviewsForthcomingForUserByLimit', verifyToken)
   public async listExhibitionsPreviewsForthcomingForUserByLimit(
     @request() req: Request,
     @response() res: Response,
@@ -329,9 +339,11 @@ export class ExhibitionController {
       return;
   }
     try {
+      const { user } = req as any;
       const limit = <number>parseInt(req.query.limit.toString(), 10);
       const results = await this.exhibitionService.listExhibitionsPreviewsForthcomingForUserByLimit({
-        limit
+        limit, 
+        uid: user?.uid
       });
       res.json(results);
     } catch (error: any) {
@@ -349,7 +361,7 @@ export class ExhibitionController {
     if (!req.query.limit || !req.query.uid) {
       res.status(400).send("limit and uid query parameter is required");
       return;
-  }
+    }
     try {
       const limit = <number>parseInt(req.query.limit.toString(), 10);
       const results = await this.exhibitionService.listExhibitionsPreviewsUserFollowingForUserByLimit({
@@ -359,6 +371,44 @@ export class ExhibitionController {
       res.json(results);
     } catch (error: any) {
       standardConsoleLog({message: error?.message, data: 'exhibition/listExhibitionsPreviewsUserFollowingForUserByLimit', request: req?.query})
+      res.status(500).send(error.message);
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  @httpPost('/userViewedExhibition', verifyToken)
+  public async userViewedExhibition(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const { user } = req as any;
+      const {exhibitionId} = req.body;
+      const results = await this.exhibitionService.setViewedExhibition({
+        exhibitionId,
+        uid: user?.uid
+      });
+      res.json(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/userViewedExhibition', request: req?.body})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpGet('/getUnViewedExhibitionsForUser', verifyToken)
+  public async getUnViewedExhibitionsForUser(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const { user } = req as any;
+      if (!user.user_id){
+        throw new Error('no user found');
+      }
+      const results = await this.exhibitionService.getUnViewedExhibitionsForUser({uid: user.user_id});
+      res.json(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/userViewedExhibition', request: req?.body})
       res.status(500).send(error.message);
     }
   }

@@ -12,7 +12,7 @@
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "http://localhost:1160/",
-        "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyDToUzSItfm8m8MSAAGmQq8Xt8zNub_phA",
+        "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyCgJAXkO4WoPQXTf7ENx_tejgKbiem9chc",
         "EXPO_PUBLIC_ENVIRONMENT": "dev"
       }
     },
@@ -27,7 +27,7 @@
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "http://localhost:1160/",
-        "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyDToUzSItfm8m8MSAAGmQq8Xt8zNub_phA",
+        "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyCgJAXkO4WoPQXTf7ENx_tejgKbiem9chc",
         "EXPO_PUBLIC_ENVIRONMENT": "dev"
       }
     },
@@ -37,7 +37,7 @@
       "ios": { "simulator": true },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.darta.art/",
-        "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyDToUzSItfm8m8MSAAGmQq8Xt8zNub_phA",
+        "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyCgJAXkO4WoPQXTf7ENx_tejgKbiem9chc",
         "ENVIRONMENT": "prod"
       }
     },
@@ -45,7 +45,7 @@
       "pnpm": "8.6.12",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.darta.art/",
-        "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyDToUzSItfm8m8MSAAGmQq8Xt8zNub_phA",
+        "EXPO_PUBLIC_GOOGLE_MAPS" : "AIzaSyCgJAXkO4WoPQXTf7ENx_tejgKbiem9chc",
         "EXPO_PUBLIC_ENVIRONMENT": "prod"
       }
     }

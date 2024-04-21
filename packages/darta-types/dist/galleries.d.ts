@@ -6,10 +6,15 @@ export interface Images {
     fileData?: string | null | ArrayBuffer;
     fileName?: string | null;
     bucketName?: string | null;
-    compressedImage?: {
-        fileName: string | null;
-        bucketName: string | null;
-        value: string | null;
+    mediumImage?: {
+        fileName?: string | null;
+        bucketName?: string | null;
+        value?: string | null;
+    };
+    smallImage?: {
+        fileName?: string | null;
+        bucketName?: string | null;
+        value?: string | null;
     };
 }
 export interface PrivateFields {
@@ -121,7 +126,7 @@ export type ArtworkPreview = {
         };
     };
 };
-export type ExhibitionPreview = {
+export interface ExhibitionPreview {
     artworkPreviews: ArtworkPreview;
     exhibitionId: string;
     galleryId: string;
@@ -143,6 +148,13 @@ export type ExhibitionPreview = {
     };
     exhibitionDates: ExhibitionDates;
     receptionDates: ReceptionDates;
+    userViewed?: boolean;
+}
+export type ExhibitionPreviewAdmin = Omit<ExhibitionPreview, 'artworkPreviews' | 'exhibitionLogo' | 'exhibitionLogo' | 'exhibitionPrimaryImage' | 'exhibitionDates' | 'exhibitionArtist'> & {
+    galleryWebsite: PublicFields;
+    hasArtwork: boolean;
+    openingDate: PublicFields;
+    closingDate: PublicFields;
 };
 export type Artwork = {
     artworkImage: Images;
@@ -167,6 +179,7 @@ export type Artwork = {
     exhibitionId: string | null;
     galleryId?: string;
     _id?: string;
+    _key?: string;
     artworkStyleTags?: string[];
     artworkVisualTags?: string[];
     editionStatus?: {
@@ -228,6 +241,7 @@ export type Exhibition = {
     artworkCategory: PublicFields;
     videoLink?: PublicFields;
     pressLink?: PublicFields;
+    userViewed?: boolean;
 };
 export type ExhibitionObject = {
     [key: string]: Exhibition;
@@ -253,6 +267,7 @@ type GalleryDisplayValues = {
 export type GalleryDropdownDisplay = GalleryDisplayValues[];
 export type ExhibitionMapPin = {
     exhibitionId: string;
+    locationId: string;
     galleryId: string;
     galleryName: PublicFields;
     galleryLogo: Images;

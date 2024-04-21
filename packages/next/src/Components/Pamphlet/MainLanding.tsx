@@ -8,7 +8,7 @@ import { splashStyles } from './styles'
 
 const data1 = {
     headline: 'Buy for Love',
-    explainer1: 'Leverage machine learning in partnership with leading galleries to grow your art collection',
+    explainer1: 'Let machine learning in partnership with leading galleries help grow your art collection',
     explainer2: 'Download darta and start training your digital art advisor today',
   };
 

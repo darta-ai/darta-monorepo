@@ -1,4 +1,4 @@
-import { PRIMARY_50 } from '@darta-styles/dist/styles';
+import { PRIMARY_50 } from '@darta-styles';
 import React from 'react';
 import Svg, { G, Path } from 'react-native-svg';
 

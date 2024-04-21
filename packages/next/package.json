@@ -49,7 +49,7 @@
     "react-joyride": "^2.5.4",
     "react-number-format": "^5.2.2",
     "reassure": "^0.10.2",
-    "sharp": "^0.32.6",
+    "sharp": "^0.33.3",
     "xlsx": "^0.18.5",
     "yup": "^1.1.1"
   },

@@ -1,5 +1,5 @@
 import * as Colors from '@darta-styles'
-import {Artwork} from '@darta-types';
+import {Artwork, Exhibition} from '@darta-types';
 import {yupResolver} from '@hookform/resolvers/yup';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
@@ -15,7 +15,7 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 
-import {category, stylesAndMovements, visualQualities} from '../../../data/autofillValues';
+import {category} from '../../../data/autofillValues';
 import { mediums } from '../../../data/medium';
 import {
   createArtworkDimensionsToolTip,
@@ -25,7 +25,7 @@ import {
   convertCentimetersToInches,
   convertInchesToCentimeters,
 } from '../../common/utils/unitConverter';
-import { DartaAutoCompleteMulti } from '../FormComponents/DartaAutoCompleteMulti';
+// import { DartaAutoCompleteMulti } from '../FormComponents/DartaAutoCompleteMulti';
 import {
   DartaAutoComplete,
   DartaDropdown,
@@ -159,6 +159,7 @@ const createArtworkSchema = yup
 
 export function CreateArtwork({
   newArtwork,
+  exhibitionProps,
   cancelAction,
   handleSave,
   handleDelete,
@@ -169,12 +170,13 @@ export function CreateArtwork({
   handleDeleteArtworkFromDarta,
 }: {
   newArtwork: Artwork;
+  exhibitionProps?: Exhibition | null;
   cancelAction: (arg0: boolean) => void;
   handleSave: (savedArtwork: Artwork) => void;
   saveSpinner: boolean;
   deleteSpinner: boolean;
   croppingModalOpen?: boolean;
-  handleDelete?: (arg0: string) => void;
+  handleDelete?: (arg0: string) => Promise<void>;
   setCroppingModalOpen?: (arg0: boolean) => void;
   handleDeleteArtworkFromDarta?: ({
     exhibitionId,
@@ -369,7 +371,7 @@ export function CreateArtwork({
 
   React.useEffect(() => {
     if (exhibitionId) {
-      const exhibition = state.galleryExhibitions?.[exhibitionId];
+      const exhibition = state.galleryExhibitions?.[exhibitionId] || exhibitionProps;
       const artworkId = newArtwork?.artworkId;
 
       if (exhibition?.artworks && artworkId) {
@@ -390,6 +392,7 @@ export function CreateArtwork({
     }
   }, []);
   const isInExhibition = isInExhibitionRef.current;
+
   return (
     <Box mb={2} sx={profileStyles.container}>
       <Box sx={createArtworkStyles.backButton}>
@@ -694,6 +697,9 @@ export function CreateArtwork({
             inputOptions={mediums}
           />
         </Box>
+      </Box>
+      <Box sx={createArtworkStyles.keyInformationContainer}>
+        <Typography variant="h6" sx={{alignSelf: 'center'}}>Edition</Typography>
         <Box key="edition" sx={createArtworkStyles.multiLineContainer}>
           <DartaRadioButtonsGroup
             options={['Original', 'Edition']}
@@ -724,10 +730,8 @@ export function CreateArtwork({
             />
           </Box>
         )}
-      </Box>
-      <Box sx={createArtworkStyles.keyInformationContainer}>
-        <Typography variant="h6" sx={{alignSelf: 'center'}}>Tags</Typography>
-        <Box key="tags" sx={createArtworkStyles.multiLineContainer}>
+        
+        {/* <Box key="tags" sx={createArtworkStyles.multiLineContainer}>
           <DartaAutoCompleteMulti
             fieldName="artworkStyleTags"
             data={newArtwork?.artworkStyleTags}
@@ -758,11 +762,11 @@ export function CreateArtwork({
                 inputAdornmentString="Visual"
                 inputOptions={visualQualities as any}
               />
-            </Box>
+            </Box> */}
 
         </Box>
       </Box>
-        <Box key="Description" sx={createArtworkStyles.multiLineContainer}>
+        {/* <Box key="Description" sx={createArtworkStyles.multiLineContainer}>
           <DartaTextInput
             fieldName="artworkDescription"
             data={newArtwork?.artworkDescription?.value}
@@ -776,7 +780,7 @@ export function CreateArtwork({
             allowPrivate={false}
             inputAdornmentValue={null}
           />
-        </Box> 
+        </Box>  */}
 
       <Box key="saveContainer" sx={createArtworkStyles.inputText} />
         <Box sx={createArtworkStyles.saveButtonContainer}>
@@ -852,6 +856,7 @@ export function CreateArtwork({
 
 CreateArtwork.defaultProps = {
   croppingModalOpen: false,
+  exhibitionProps: null,
   setCroppingModalOpen: () => {},
   handleDeleteArtworkFromDarta: () => {},
   handleDelete: () => {},

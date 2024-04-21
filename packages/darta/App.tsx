@@ -1,6 +1,4 @@
-/* eslint-disable react/no-unstable-nested-components */
 import 'react-native-gesture-handler';
-import 'react-native-get-random-values';
 
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -38,9 +36,11 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { DartaRecommenderNavigator } from './src/navigation/DartaRecommender/DartaRecommenderNavigator';
 import * as SVGs from './src/assets/SVGs';
-import { ExhibitionRootEnum, ExploreMapRootEnum, PreviousExhibitionRootEnum, RecommenderRoutesEnum, UserRoutesEnum, ExhibitionPreviewEnum} from './src/typing/routes';
+import { ExhibitionRootEnum, ExploreMapRootEnum, RecommenderRoutesEnum, UserRoutesEnum, ExhibitionPreviewEnum} from './src/typing/routes';
 import ErrorBoundary from './src/components/ErrorBoundary/ErrorBoundary';
 import { UserETypes, UserStoreContext } from './src/state/UserStore';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
+
 export const RecommenderStack = createStackNavigator();
 export const RootStack = createMaterialBottomTabNavigator();
 
@@ -82,7 +82,7 @@ function App() {
     });
   } catch{
     console.log("error loading fonts")
-  }
+  } 
 
   const theme = {
     ...DefaultTheme,
@@ -117,20 +117,6 @@ function App() {
     // Find the current active route
     const route = getActiveRouteName(state);
     // Based on the route, decide whether to show or hide the tab bar
-    const hideTabBarRoutes = [
-      RecommenderRoutesEnum.TopTabExhibition, 
-      RecommenderRoutesEnum.recommenderDetails, 
-      RecommenderRoutesEnum.recommenderExhibition, 
-      RecommenderRoutesEnum.recommenderGallery,
-      ExhibitionRootEnum.individualArtwork,
-      ExploreMapRootEnum.individualArtwork,
-      UserRoutesEnum.SavedArtworkModal,
-      UserRoutesEnum.UserGalleryAndArtwork,
-      UserRoutesEnum.UserPastTopTabNavigator,
-      UserRoutesEnum.UserGallery,
-      PreviousExhibitionRootEnum.artworkList,
-      PreviousExhibitionRootEnum.exhibitionDetails,
-    ];
     const showTabBarRoutes = {
       [RecommenderRoutesEnum.recommenderHome]: true,
       [ExhibitionRootEnum.exhibitionHome]: true,
@@ -142,6 +128,7 @@ function App() {
       [ExhibitionRootEnum.exhibitionGallery]: true,
       [ExhibitionRootEnum.artworkList]: true,
       [ExploreMapRootEnum.exploreMapGallery]: true, 
+      // [ExploreMapRootEnum.bottomSheetOptions]: true,
       [UserRoutesEnum.home]: true,
       [UserRoutesEnum.userSavedArtwork]: true,
       [UserRoutesEnum.userInquiredArtwork]: true,
@@ -149,6 +136,7 @@ function App() {
       [UserRoutesEnum.UserPastTopTabNavigator]: true,
       [UserRoutesEnum.UserGallery]: true,
       [ExhibitionRootEnum.genericLoading]: true,
+      [ExploreMapRootEnum.exploreRouterFullList]: true,
     }
     setIsTabVisible(showTabBarRoutes[route]);
   };
@@ -174,8 +162,8 @@ function App() {
                   activeColor={Colors.PRIMARY_950}
                   inactiveColor={Colors.PRIMARY_300}
                   backBehavior={'order'}
-                  barStyle={{ backgroundColor: Colors.PRIMARY_50, paddingBottom: 0, display: isTabVisible ? 'flex' : 'none'}}
-                  labeled={true} // This ensures labels are shown
+                  barStyle={{ backgroundColor: Colors.PRIMARY_50, paddingBottom: 0, height: isTabVisible ? heightPercentageToDP('12.5%') : heightPercentageToDP('0%'), display: isTabVisible ? 'flex' : 'none'}}
+                  labeled={true} 
                   >
                     <RootStack.Screen
                       name="View"
@@ -198,16 +186,16 @@ function App() {
                         )
                       }}
                     />
-                      <RootStack.Screen
-                        name="Visit"
-                        component={ExploreMapStackNavigator}
-                        options={{
-                          tabBarLabel: "Visit",
-                          tabBarIcon: ({ focused }) => (
-                            focused ? <SVGs.VisitFocusedIcon /> : <SVGs.VisitUnfocusedIcon />
-                          )
-                        }}
-                      />
+                    <RootStack.Screen
+                      name="Visit"
+                      component={ExploreMapStackNavigator}
+                      options={{
+                        tabBarLabel: "Visit",
+                        tabBarIcon: ({ focused }) => (
+                          focused ? <SVGs.VisitFocusedIcon /> : <SVGs.VisitUnfocusedIcon />
+                        )
+                      }}
+                    />
                     <RootStack.Screen
                       name="Profile"
                       component={UserStackNavigator}

@@ -2,14 +2,12 @@
 /* eslint-disable no-return-assign */
 import React from 'react';
 import {
-  Image,
   TouchableOpacity,
   View,
   StyleSheet
 } from 'react-native';
 import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
+  heightPercentageToDP as hp
 } from 'react-native-responsive-screen';
 
 import {TextElement} from '../Elements/_index';
@@ -18,8 +16,9 @@ import * as Colors from '@darta-styles'
 import { globalTextStyles } from '../../styles/styles';
 import { UserRoutesEnum } from '../../typing/routes';
 import FastImage from 'react-native-fast-image';
-import { UIStoreContext, UiETypes } from '../../state';
+import { ExhibitionStoreContext, UIStoreContext, UiETypes } from '../../state';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
+import * as SVGs from '../../assets/SVGs';
 
 
 
@@ -38,7 +37,6 @@ export function GalleryPreviewMini({
 
   const {uiDispatch} = React.useContext(UIStoreContext);
 
-
   const showGallery = () => {
     uiDispatch({
       type: UiETypes.setGalleryHeader,
@@ -54,9 +52,20 @@ export function GalleryPreviewMini({
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: "#B0B0B019",
-      padding: 12,
+      padding: 18,
       borderRadius: 19,
       gap: 19
+    },
+    infoContainer: {
+      width: '90%',
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    badgeContainer: {
+      width: '10%',
+      height: 72,
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
     },
     imageContainer: {
       display: 'flex',
@@ -82,6 +91,7 @@ export function GalleryPreviewMini({
     textContainer: {
       justifyContent: 'flex-start',
       alignItems: 'flex-start',
+      marginLeft: 18,
     }
   }) 
   
@@ -90,16 +100,19 @@ export function GalleryPreviewMini({
     onPress={() => showGallery()}
     >
       <View style={galleryPreviewMiniStyles.container}>
-        <View style={galleryPreviewMiniStyles.imageContainer}> 
-          <DartaImageComponent
-            uri={galleryLogo?.value ?? ""}
-            style={galleryPreviewMiniStyles.image}
-            resizeMode={FastImage.resizeMode.contain}
-            priority={FastImage.priority.normal}
-          />
-        </View>
-        <View style={galleryPreviewMiniStyles.textContainer}>
-          <TextElement style={globalTextStyles.boldTitleText}>{galleryName.value}</TextElement>
+        <View style={galleryPreviewMiniStyles.infoContainer}>
+          <View style={galleryPreviewMiniStyles.imageContainer}> 
+            <DartaImageComponent
+              uri={galleryLogo ?? ""}
+              style={galleryPreviewMiniStyles.image}
+              resizeMode={FastImage.resizeMode.contain}
+              priority={FastImage.priority.normal}
+              size={"smallImage"}
+            />
+          </View>
+          <View style={galleryPreviewMiniStyles.textContainer}>
+            <TextElement style={globalTextStyles.boldTitleText}>{galleryName.value}</TextElement>
+          </View>
         </View>
       </View>
     </TouchableOpacity>

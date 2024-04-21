@@ -26,13 +26,13 @@ export class UserController {
         userEmail: user.email,
       });
       if (!verifyGallery) {
-        const isValidated = await this.galleryService.verifyQualifyingGallery(
-          user.email,
-        );
+        // const isValidated = await this.galleryService.verifyQualifyingGallery(
+        //   user.email,
+        // );
         const {_id, ...gallery} =
           await this.galleryService.createGalleryProfile({
             galleryName,
-            isValidated,
+            isValidated: false,
             signUpWebsite,
             userEmail: user.email,
           });
@@ -43,7 +43,7 @@ export class UserController {
           phoneNumber,
           gallery: galleryName,
           relationship: 'ADMIN',
-          validated: isValidated,
+          validated: false,
         });
         res.status(200).send(gallery);
           
@@ -195,7 +195,7 @@ export class UserController {
     }
   }
 
-  @httpPost('/deleteDartaUserFollowGallery')
+  @httpPost('/deleteDartaUserFollowGallery', verifyToken)
   public async dartaUserUnFollowGallery(
     @request() req: Request,
     @response() res: Response,
@@ -237,6 +237,33 @@ export class UserController {
       });
       res.json(results);
       
+    } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req.query, request: 'users/listDartaUserFollowsGallery'})
+      if (!res.headersSent){
+        res.status(500).send('unable to get user gallery connections');
+      }
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  @httpGet('/incrementRouteGeneration', verifyToken)
+  public async incrementRouteGeneration(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const {user} = req as any;
+      if (!user.uid) {
+        throw new Error('Missing required fields');
+      };
+      if (user.uid === 'GL1yalS1PQQjbOUu9dnpT7nKAEy1') {
+        res.status(200).send(0);
+      } else {
+        const results = await this.userService.incrementRouteGeneratedCount({
+          uid: user.uid as string
+        });
+        res.json(results);
+      }
     } catch (error: any) {
       standardConsoleLog({message: error.message, data: req.query, request: 'users/listDartaUserFollowsGallery'})
       if (!res.headersSent){

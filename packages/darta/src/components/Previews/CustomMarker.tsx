@@ -6,7 +6,7 @@ import FastImage from 'react-native-fast-image'
 import { TextElement } from '../Elements/TextElement';
 import { globalTextStyles } from '../../styles/styles';
 
-import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
+import { customLocalDateStringEnd, customLocalDateStringEndShort, customLocalDateStringStart, customLocalDateStringStartShort, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 
 import * as Colors from '@darta-styles';
 import { ExhibitionMapPin } from '@darta-types';
@@ -62,7 +62,7 @@ const customMarker = StyleSheet.create({
     flexDirection: "column",
     alignContent: "center",
     justifyContent: "center",
-    gap: 12,
+    gap: 4,
   }, 
   buttonStyles: {
     width: 265,
@@ -90,11 +90,13 @@ const customMarker = StyleSheet.create({
 const CustomMarker = React.memo(({ 
   coordinate, 
   mapPin, 
-  navigation
+  navigation,
+  isOpeningUpcoming,
 } : {
   coordinate: any, 
   mapPin: ExhibitionMapPin, 
-  navigation: any
+  navigation: any,
+  isOpeningUpcoming: boolean,
 }) => {
 
   const {exhibitionState} = React.useContext(ExhibitionStoreContext);
@@ -125,7 +127,7 @@ const CustomMarker = React.memo(({
 
   const [startDate, setStartDate] = React.useState<string>()
   const [endDate, setEndDate] = React.useState<string>()
-  const [hasUpcomingOpening, setHasUpcomingOpening] = React.useState<boolean>(false)
+  const [hasUpcomingOpening, setHasUpcomingOpening] = React.useState<boolean>(isOpeningUpcoming)
   const [hasCurrentShow, setHasCurrentOpening] = React.useState<boolean>(false)
 
 
@@ -139,8 +141,8 @@ const CustomMarker = React.memo(({
   React.useEffect(() => {
     let hasOpening = false;
     if (mapPin.exhibitionDates?.exhibitionStartDate.value && mapPin.exhibitionDates?.exhibitionEndDate.value) {
-      setStartDate(customLocalDateStringStart({date : new Date(mapPin.exhibitionDates.exhibitionStartDate.value), isUpperCase: false}))
-      setEndDate(customLocalDateStringEnd({date : new Date(mapPin.exhibitionDates.exhibitionEndDate.value), isUpperCase: false}))
+      setStartDate(customLocalDateStringStartShort({date : new Date(mapPin.exhibitionDates.exhibitionStartDate.value), isUpperCase: false}))
+      setEndDate(customLocalDateStringEndShort({date : new Date(mapPin.exhibitionDates.exhibitionEndDate.value), isUpperCase: false}))
     }
 
 
@@ -183,50 +185,43 @@ const CustomMarker = React.memo(({
     )
   }
 
-
-
   const wiggleAnim = React.useRef(new Animated.Value(0)).current; 
-
-  React.useEffect(() => {
-    wiggleAnim.addListener(() => {})
-  }, [])
-
   
   const handleWiggle = () => {
     const wiggleSequence = Animated.sequence([
       Animated.timing(wiggleAnim, {
-        toValue: 0,  // Rotate slightly right
-        duration: 750,  // Quicker wiggle
+        toValue: 0,  
+        duration: 750,  
         easing: Easing.elastic(4),  // Bouncy effect
         useNativeDriver: true,
       }),
       Animated.timing(wiggleAnim, {
         toValue: 0.25,  // Rotate slightly right
-        duration: 500,  // Quicker wiggle
+        duration: 500,  
         easing: Easing.elastic(4),  // Bouncy effect
         useNativeDriver: true,
       }),
       Animated.timing(wiggleAnim, {
         toValue: 0,  // Rotate slightly left
-        duration: 500,  // Quicker wiggle
+        duration: 500,  
         easing: Easing.elastic(4),  // Bouncy effect
         useNativeDriver: true,
       }),
       Animated.timing(wiggleAnim, {
         toValue: -0.25,  // Rotate slightly left
-        duration: 500,  // Quicker wiggle
+        duration: 500,  
         easing: Easing.elastic(4),  // Bouncy effect
         useNativeDriver: true,
       }),
       Animated.timing(wiggleAnim, {
         toValue: 0,  // Rotate slightly left
-        duration: 500,  // Quicker wiggle
+        duration: 500,  
         easing: Easing.elastic(4),  // Bouncy effect
         useNativeDriver: true,
       }),
       Animated.timing(wiggleAnim, {
         toValue: 0,  // Rotate slightly left
-        duration: 1000,  // Quicker wiggle
+        duration: 1000,  
         easing: Easing.elastic(4),  // Bouncy effect
         useNativeDriver: true,
       }),
@@ -258,21 +253,18 @@ const CustomMarker = React.memo(({
     } 
   })
 
-
   return (
     <Marker
       coordinate={coordinate}
-      key={mapPin.exhibitionId}
       onTouchEnd={() => setShowCallout(true)}
     >
       <Animated.View style={customMarkerDynamic.wiggleFriend}>
       {hasUpcomingOpening ?  <GoogleMapsPinIcon/> : <GoogleMapsPinBlackIcon /> }
-        {/* <GoogleMapsPinIcon/> */}
       </Animated.View>
       {showCallout && (
         <Callout style={customMarkerDynamic.container} 
         onTouchStart={() => setShowCallout(false)} 
-        onPress={() => {chooseRouteAndNavigate()}}>
+        onPress={chooseRouteAndNavigate}>
             <View style={customMarker.galleryContainer} >
                 <View style={customMarker.galleryNameContainer}>
                   <TextElement style={customMarker.subheaderInformation}>{line1}</TextElement>
@@ -283,7 +275,8 @@ const CustomMarker = React.memo(({
             <View style={customMarker.exhibitionContainer}>
                 <View style={customMarker.heroImageContainer} >
                   <DartaImageComponent 
-                  uri={mapPin?.exhibitionPrimaryImage?.value || ""}
+                  uri={mapPin?.exhibitionPrimaryImage || ""}
+                  size={"smallImage"}
                   priority={FastImage.priority.normal}
                   style={customMarker.heroImage} 
                   resizeMode={FastImage.resizeMode.contain}

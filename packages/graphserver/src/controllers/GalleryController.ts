@@ -1,3 +1,4 @@
+import { FirebaseUser } from '@darta-types/dist';
 import {Request, Response} from 'express';
 import {inject} from 'inversify';
 import {
@@ -85,7 +86,7 @@ export class GalleryController {
     }
   }
 
-  @httpGet('/listGalleryExhibitionPreviewForUser')
+  @httpGet('/listGalleryExhibitionPreviewForUser', verifyToken)
   public async listGalleryExhibitionPreviewForUser(
     @request() req: Request,
     @response() res: Response,
@@ -95,8 +96,9 @@ export class GalleryController {
       return;
     }
     try {
+      const {user} : {user: FirebaseUser} = req as any;
       const exhibitions = await this.exhibitionService.listGalleryExhibitionPreviewsForUser(
-        {galleryId: req.query.galleryId as string}
+        {galleryId: req.query.galleryId as string, userId: user.uid}
       );
       if (!exhibitions) {
         res.status(404).send('Cannot find exhibitions');

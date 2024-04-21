@@ -7,7 +7,11 @@ import { ExhibitionPreviewScreen } from '../../screens/Exhibition/ExhibitionsPre
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as StoreReview from 'expo-store-review';
+import * as Colors from '@darta-styles';
 import { ExhibitionStoreContext } from '../../state';
+import { Badge } from 'react-native-paper';
+import { TextElement } from '../../components/Elements/TextElement';
+import { useIsFocused } from '@react-navigation/native';
 
 export const ExhibitionHomeTopTab = createMaterialTopTabNavigator();
 export type ExhibitionStackParamList = {
@@ -79,23 +83,34 @@ export function ExhibitionHomeTopTabNavigator({route} : {route: any}) {
         requestReview();
     }, []);
 
+    
+    const FollowingBadge = () => {
+      const unviewedCount = React.useMemo(() => {
+        const { userFollowsExhibitionPreviews } = exhibitionState;
+        if (!userFollowsExhibitionPreviews) return 0;
+        return Object.values(userFollowsExhibitionPreviews).filter((exhibition) => !exhibition.userViewed && !exhibitionState.userViewedExhibition[exhibition.exhibitionId]).length;
+      }, [exhibitionState?.userFollowsExhibitionPreviews, exhibitionState.userViewedExhibition]);
+    
+      return (
+        <Badge
+          size={12}
+          visible={unviewedCount > 0}
+          style={{backgroundColor: Colors.PRIMARY_600}}        
+          >
+            {unviewedCount}
+        </Badge>
+      );
+    };
 
         
   return (
     <ExhibitionHomeTopTab.Navigator screenOptions={{...tabBarScreenOptions}}>
       <ExhibitionHomeTopTab.Group>
-          <ExhibitionHomeTopTab.Screen
+      <ExhibitionHomeTopTab.Screen
             name={ExhibitionPreviewEnum.onView}
             component={ExhibitionPreviewScreen}
             options={{ title: 'Open now' }}
           />
-          {showFollowingExhibitionPreviews && (
-            <ExhibitionHomeTopTab.Screen
-            name={ExhibitionPreviewEnum.following}
-            component={ExhibitionPreviewScreen}
-            options={{ title: 'Following' }}
-          />
-          )}
           {showUpcomingExhibitionPreviews && (
             <ExhibitionHomeTopTab.Screen
               name={ExhibitionPreviewEnum.forthcoming}
@@ -103,6 +118,13 @@ export function ExhibitionHomeTopTabNavigator({route} : {route: any}) {
               options={{ title: 'Upcoming' }}
               initialParams={{type: "Upcoming"}}
             />
+          )}
+          {showFollowingExhibitionPreviews && (
+            <ExhibitionHomeTopTab.Screen
+            name={ExhibitionPreviewEnum.following}
+            component={ExhibitionPreviewScreen}
+            options={{ title: 'Following',  tabBarBadge: () => <FollowingBadge/> }}
+          />
           )}
         </ExhibitionHomeTopTab.Group>
     </ExhibitionHomeTopTab.Navigator>

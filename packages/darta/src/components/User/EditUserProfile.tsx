@@ -268,7 +268,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
           }
        })
       } catch(error){
-        console.log(error)
+        // console.log(error)
       }
      }
     else if (formData.legalFirstName.isEditing && uid) {
@@ -282,7 +282,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
             }
         })
       } catch(error){
-        console.log(error)
+        // console.log(error)
       }
    }
    else if (formData.legalLastName.isEditing && uid) {
@@ -296,7 +296,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
         }
       })
     } catch(error){
-      console.log(error)
+      // console.log(error)
     }
   }
     else if (formData.profilePicture.isEditing && uid) {
@@ -319,7 +319,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
         setValue('profilePicture', tempImage.uri);
         resetUi();
       } catch(error){
-        console.log(error)
+        // console.log(error)
       }
       }
     else if (formData.email.isEditing && uid && value.email) {
@@ -333,7 +333,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
           }
         })
       } catch(error){
-        console.log(error)
+        // console.log(error)
       }
     }
       resetUi();
@@ -350,7 +350,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
         await createUser({uid})
       }
     } catch (err) {
-      console.log(err)
+      // console.log(err)
     } finally{
       navigation.goBack()
       setLoading(false)
@@ -410,10 +410,11 @@ export function EditUserProfile({navigation} : {navigation: any}) {
           <View style={[SSSignedInUserSettings.textEditContainer]}>
             {formData.profilePicture.isEditing && tempImage.uri ? (
               <DartaImageComponent
-                uri={tempImage.uri}
+                uri={tempImage}
                 style={SSSignedInUserSettings.image}
                 resizeMode={FastImage.resizeMode.contain}
                 priority={FastImage.priority.normal}
+                size={"smallImage"}
               />
             ) : (
               <Image

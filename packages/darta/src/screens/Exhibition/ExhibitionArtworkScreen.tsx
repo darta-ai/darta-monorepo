@@ -20,33 +20,6 @@ import { ExhibitionETypes, ExhibitionStoreContext, UIStoreContext } from '../../
 import { dartaLogo } from '../../components/User/UserInquiredArtwork';
 
 
-const artworkDetailsStyles = StyleSheet.create({
-  container: {
-      flexDirection: 'column',
-      justifyContent: 'flex-start',
-      alignItems: 'center',
-      backgroundColor: Colors.PRIMARY_50,
-      width: '100%',
-      minHeight: '100%',
-  },
-  spinnerContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: hp('10%'),
-    width: '100%',
-    height: '100%',
-    backgroundColor: Colors.PRIMARY_50,
-  },
-  flexContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: wp('3%'),
-  },
-  flex1: {
-    flex: 1,
-  },
-})
-
 type ExhibitionArtworkRouteProp = RouteProp<ExhibitionStackParamList, ExhibitionRootEnum.artworkList>;
 
 

@@ -20,7 +20,7 @@ import ExhibitionPreviewCard from '../../components/Previews/ExhibitionPreviewCa
 import * as Colors from '@darta-styles';
 import { TextElement } from '../../components/Elements/TextElement';
 import { ActivityIndicator } from 'react-native-paper';
-import { RecyclerListView, LayoutProvider, DataProvider, ContextProvider } from 'recyclerlistview';
+import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
 
 
 type ExhibitionHomeScreenNavigationProp = StackNavigationProp<
@@ -43,18 +43,21 @@ export function ExhibitionPreviewScreen({
   const [errorHeader, setErrorHeader] = React.useState<string>("")
   const [errorText, setErrorText] = React.useState<string>("")
   
-  const sortPreviews = (exhibitionPreviews: ExhibitionPreview[]) => {
+  const sortPreviews = (newPreviews: ExhibitionPreview[]) => {
     if(route.params?.type === "Upcoming"){
-      return exhibitionPreviews.sort((a, b) => {
+      return newPreviews.sort((a, b) => {
         if (!a.openingDate?.value || !b.openingDate?.value) return 0
         return b.openingDate?.value >= a.openingDate?.value ? -1 : 1
       })
-    } else {  
-      return exhibitionPreviews.sort((a, b) => {
-        if (!a.openingDate?.value || !b.openingDate?.value) return 0
-        return b.openingDate?.value >= a.openingDate?.value ? 1 : -1
-      })
     }
+    const previous = exhibitionPreviews;
+    const previousIds = previous.reduce((acc, el) => ({...acc, [el?.exhibitionId] : true} ), {});
+    let current: ExhibitionPreview[] = [];
+    current = newPreviews.filter(el => !previousIds[el.exhibitionId]).sort((a, b) => {
+        if (!a.openingDate?.value || !b.openingDate?.value) return 0
+        return new Date(b.openingDate?.value).toISOString() >= new Date(a.openingDate?.value).toISOString() ? -1 : 1
+      })
+    return [...previous, ...current]
   }
 
   const determineExhibitionPreviews = () => {
@@ -219,27 +222,28 @@ export function ExhibitionPreviewScreen({
     } catch(error: any) {
     }
   }, [])
-
+  
   const renderItem = React.useCallback((_, data) => {
     return (
-      <View key={data?.exhibitionId} ref={data?.exhibitionId}>
+      <View key={data?.exhibitionId} >
         <ExhibitionPreviewCard 
         exhibitionPreview={data}
         onPressExhibition={loadExhibition}
         onPressGallery={loadGallery}
+        userViewed={exhibitionState.userViewedExhibition[data?.exhibitionId] || data.userViewed ? true : false}
       />
     </View>
     );
-  }, [loadExhibition, loadGallery, ]);
+  }, [loadExhibition, loadGallery, exhibitionState.userViewedExhibition]);
 
 
   const layoutProvider = new LayoutProvider(
     index => {
-      return 'NORMAL'; // If you have multiple types of items, you can differentiate here using the index
+      return index; // If you have multiple types of items, you can differentiate here using the index
     },
     (_, dim) => {
       dim.width = wp('100%');
-      dim.height = 600;
+      dim.height = 610;
     }
   );
 
@@ -281,10 +285,13 @@ export function ExhibitionPreviewScreen({
       {exhibitionPreviews.length > 0 && (
         <View style={{flex: 1, backgroundColor: Colors.PRIMARY_50}}>
           <RecyclerListView 
-          ref={(ref) => { this.flatListRef = ref }}
           dataProvider={dataProvider}
           layoutProvider={layoutProvider}
           rowRenderer={renderItem}
+          decelerationRate={0.5}
+          onEndReached={onBottomLoad}
+          onEndReachedThreshold={0.1}
+          renderFooter={renderFooter}
           scrollViewProps={{
             refreshControl: (
               <RefreshControl
@@ -294,10 +301,6 @@ export function ExhibitionPreviewScreen({
               />
               )
             }}
-          decelerationRate={0.5}
-          onEndReached={onBottomLoad}
-          onEndReachedThreshold={0.1}
-          renderFooter={renderFooter}
           />
         </View>
     )}

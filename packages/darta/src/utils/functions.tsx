@@ -3,6 +3,7 @@ import {Image} from 'react-native';
 import {buttonSizes} from './constants';
 import {createUser} from '../api/userRoutes'
 import auth from '@react-native-firebase/auth';
+import { BusinessHours, ExhibitionMapPin, IBusinessHours } from '@darta-types/dist';
 
  
 export const getUserUid = async () => {
@@ -40,9 +41,9 @@ export function customLocalDateString(date: Date) {
 }
 
 export function customLocalDateStringStart({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-  const monthName = isUpperCase ? months[date.getMonth()].toUpperCase() : months[date.getMonth()]
+  const monthName = isUpperCase ? months[date.getMonth()] : months[date.getMonth()]
 
   const dayOfMonth = date.getDate();
 
@@ -50,19 +51,38 @@ export function customLocalDateStringStart({date, isUpperCase} : {date: Date, is
 }
 
 export function customLocalDateStringEnd({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-  const monthName = isUpperCase ? months[date.getMonth()].toUpperCase() : months[date.getMonth()]
+  const monthName = isUpperCase ? months[date.getMonth()] : months[date.getMonth()]
   const dayOfMonth = date.getDate();
   const year = date.getFullYear();
 
-  return `${monthName} ${dayOfMonth} ${year}`;
+  return `${monthName} ${dayOfMonth}, ${year}`;
+}
+
+
+export function customLocalDateStringStartShort({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const monthName = isUpperCase ? months[date.getMonth()] : months[date.getMonth()]
+
+  const dayOfMonth = date.getDate();
+
+  return `${monthName} ${dayOfMonth}`;
+}
+
+export function customLocalDateStringEndShort({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const monthName = isUpperCase ? months[date.getMonth()] : months[date.getMonth()]
+  const dayOfMonth = date.getDate();
+  const year = date.getFullYear();
+
+  return `${monthName} ${dayOfMonth}, ${year}`;
 }
 
 export function customDateString(date: Date) {
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   const monthName = months[date.getMonth()];
   const dayOfMonth = date.getDate();
@@ -134,6 +154,24 @@ export function modifyHoursOfOperation(time: string | undefined | null): string 
   return time.toLowerCase().replace('closed', 'Closed').replace('open', 'Open').replace(':00', '').replace(" ", '');
 }
 
+export function getStoreHours(hoursObject: BusinessHours | undefined) {
+  if (!hoursObject) {
+      return;
+  }
+  const currentDayIndex = new Date().getDay();
+  const weekdayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const currentDayName = weekdayNames[currentDayIndex];
+  const closingTime = hoursObject[currentDayName]?.close.value;
+
+  if (closingTime === 'Closed') {
+      return 'Closed today';
+  } else if (closingTime) {
+    return `Open until ${closingTime}`;
+  } else {
+    return 
+  }
+}
+
 
 export const getButtonSizes = (hp: number) => {
   const baseHeight = 926;
@@ -155,3 +193,14 @@ export function formatUSPhoneNumber(number: number | string) {
   }
   return null;
 }
+
+// utils/mapUtils.js
+export const calculateZoomLevel = (minLat, maxLat, minLong, maxLong) => {
+  const latDelta = Math.abs(maxLat - minLat);
+  const longDelta = Math.abs(maxLong - minLong);
+
+  // Simplified zoom level calculation (customize as needed)
+  const zoomLevel = Math.log2(360 / Math.max(latDelta, longDelta));
+  return zoomLevel;
+};
+

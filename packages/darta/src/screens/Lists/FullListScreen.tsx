@@ -188,14 +188,13 @@ export function FullListScreen({
         Linking.canOpenURL(url)
           .then((supported) => {
             if (!supported) {
-              console.log(`Can't handle URL: ${url}`);
+            //   console.log(`Can't handle URL: ${url}`);
             } else {
               return Linking.openURL(url);
             }
           })
-          .catch((err) => console.error('An error occurred', err));
+          .catch(() => {});
     } catch(error){
-        console.log(error)
     } 
     }, [])
 

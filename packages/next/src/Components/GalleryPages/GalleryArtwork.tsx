@@ -21,7 +21,7 @@ import {
 } from '../../dummyData';
 import {ArtworkCard} from '../Artwork/index';
 import {DartaRadioFilter, DartaTextFilter} from '../Filters';
-import {DartaErrorAlert, UploadArtworksXlsModal} from '../Modals';
+import {DartaErrorAlert} from '../Modals';
 import {DartaJoyride} from '../Navigation/DartaJoyride';
 import {GalleryReducerActions, useAppState} from '../State/AppContext';
 
@@ -66,12 +66,12 @@ export function GalleryArtwork() {
   } | null>(null);
   const [errorAlertOpen, setErrorAlertOpen] = React.useState<boolean>(false);
 
-  const handleBatchUpload = (uploadArtworks: {[key: string]: Artwork}) => {
-    dispatch({
-      type: GalleryReducerActions.SAVE_NEW_ARTWORK,
-      payload: {...uploadArtworks},
-    });
-  };
+  // const handleBatchUpload = (uploadArtworks: {[key: string]: Artwork}) => {
+  //   dispatch({
+  //     type: GalleryReducerActions.SAVE_NEW_ARTWORK,
+  //     payload: {...uploadArtworks},
+  //   });
+  // };
 
   const addNewArtwork = async () => {
     let results;
@@ -337,7 +337,7 @@ export function GalleryArtwork() {
                 }}>
                 <Typography sx={{fontWeight: 'bold'}}>Add Artwork</Typography>
               </Button>
-              <UploadArtworksXlsModal handleBatchUpload={handleBatchUpload} />
+              {/* <UploadArtworksXlsModal handleBatchUpload={handleBatchUpload} /> */}
             </Box>
           </Box>
           <Box sx={galleryStyles.pageNavigationContainer}>

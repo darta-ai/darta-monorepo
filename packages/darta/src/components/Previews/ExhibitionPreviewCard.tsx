@@ -11,11 +11,12 @@ import {
 } from 'react-native-responsive-screen';
 
 import {TextElement} from '../Elements/_index';
-import { ExhibitionPreview } from '@darta-types';
+import { ExhibitionPreview, Images } from '@darta-types';
 import * as Colors from '@darta-styles';
 import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 import { ExhibitionCarousel } from '../../components/Exhibitions/ExhibitionCarousel';
 import { Button } from 'react-native-paper';
+import * as SVGs from '../../assets/SVGs';
 // import { NadaLogo } from '../../assets/SVGs';
 
 const exhibitionPreviewStyle = StyleSheet.create({
@@ -29,14 +30,32 @@ const exhibitionPreviewStyle = StyleSheet.create({
     borderColor: Colors.PRIMARY_400,
     backgroundColor: Colors.PRIMARY_50,
     padding: 24,
-    height: 590,
+    height: 580,
     gap: 16,
   },
-  galleryIconContainer: {   
+  topInformationContainer: {
     width: '100%',
+    gap: 2,
+  },
+  headlineContainer: {   
+    width: '100%',
+    // height: 28,
+    display: 'flex',
+    flexDirection: 'row',
+    alignContent: 'flex-start',
+    justifyContent: 'flex-start',
+  },
+  exhibitionTitle: {
+    width: '85%',
+  },
+  notificationContainer: {
+    width: '15%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   imagePreviewContainer: {
-    height: "55%",
+    height: 280,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -44,6 +63,8 @@ const exhibitionPreviewStyle = StyleSheet.create({
   touchableContainer: {
     width: '100%',
     textAlign: 'left',
+    gap: 2,
+    marginTop: 8,
   },
   buttonStyles: {
     width: wp('90%'),
@@ -65,15 +86,15 @@ const exhibitionPreviewStyle = StyleSheet.create({
     color: Colors.PRIMARY_950, 
     fontSize: 24
   },
-  datesText: {
-    fontFamily:"DMSans_700Bold",  
-    marginTop: 2, 
-    color: Colors.PRIMARY_950, 
-    fontSize: 16
-  }, 
   artistText: {
-    marginTop: 8, 
-    color: Colors.PRIMARY_900, 
+    fontFamily:"DMSans_700Bold",  
+    marginTop: 4, 
+    color: Colors.PRIMARY_950, 
+    fontSize: 18
+  }, 
+  datesText: {
+    marginBottom: 8, 
+    color: Colors.PRIMARY_600, 
     fontSize: 16, 
     fontFamily: "DMSans_400Regular"
   },
@@ -89,59 +110,72 @@ const exhibitionPreviewStyle = StyleSheet.create({
   }
 })
 
+// headline big text: artist name
+// headline small text: exhibition titles 
+
+// if a group show, then exhibitionTitle
+// if a solo show, then artist name
+
 const ExhibitionPreviewCard = ({
     exhibitionPreview,
     onPressExhibition,
     onPressGallery,
+    userViewed,
 }: {
     exhibitionPreview: ExhibitionPreview
     onPressExhibition: ({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string}) => void,
     onPressGallery: ({galleryId} : {galleryId: string}) => void,
+    userViewed: boolean
 }) => {
 
-  const [images, setImages] = React.useState<{imageUrl: string, title?: string}[]>([])
+  const [images, setImages] = React.useState<{imageData: Images}[]>([])
 
   React.useEffect(() => {
     if (exhibitionPreview?.artworkPreviews){
       const images = Object.values(exhibitionPreview.artworkPreviews).map((image) => {
-        return {imageUrl: image.artworkImage?.value, title: image.artworkTitle?.value}
+        return {imageData: image.artworkImage}
       })
-      const primaryImage = {imageUrl: exhibitionPreview.exhibitionPrimaryImage?.value}
+      const primaryImage = {imageData: exhibitionPreview.exhibitionPrimaryImage}
       setImages([primaryImage, ...images])
     } 
   }, [exhibitionPreview])
+  
+  const primaryText = exhibitionPreview?.exhibitionArtist?.value ? exhibitionPreview.exhibitionArtist.value : exhibitionPreview?.exhibitionTitle.value
+  const secondaryText = exhibitionPreview?.exhibitionArtist?.value ? exhibitionPreview.exhibitionTitle.value : "Group Show"
 
   return (
     <>
       <View
         style={exhibitionPreviewStyle.container}>
-          <View style={exhibitionPreviewStyle.galleryIconContainer} >
-            <Pressable style={exhibitionPreviewStyle.galleryIconContainer} onPress={() => onPressExhibition({exhibitionId: exhibitionPreview?.exhibitionId, galleryId: exhibitionPreview?.galleryId}) }>
+          <View style={exhibitionPreviewStyle.topInformationContainer} >
+            <Pressable style={exhibitionPreviewStyle.headlineContainer} onPress={() => onPressExhibition({exhibitionId: exhibitionPreview?.exhibitionId, galleryId: exhibitionPreview?.galleryId}) }>
+              <View style={exhibitionPreviewStyle.exhibitionTitle}>
               <TextElement
                 style={ exhibitionPreviewStyle.headerText}>
-                {exhibitionPreview?.exhibitionTitle?.value ? exhibitionPreview.exhibitionTitle.value.trim() : exhibitionPreview?.galleryName}
+                {primaryText?.trim()}
               </TextElement>
+              </View>
+              <View style={exhibitionPreviewStyle.notificationContainer}>
+                {!userViewed && <SVGs.NewBellComponent />}
+              </View>
             </Pressable>
-            {exhibitionPreview?.closingDate?.value &&  
-              exhibitionPreview?.openingDate?.value && 
-              (
-                <TextElement
-                  style={ exhibitionPreviewStyle.datesText }>
-                  {exhibitionPreview.openingDate?.value ? customLocalDateStringStart({date: new Date(exhibitionPreview.openingDate?.value), isUpperCase: true}).trimStart() : "Opening unavailable"}
-                  {" - "}
-                  {exhibitionPreview.closingDate?.value ? customLocalDateStringEnd({date: new Date(exhibitionPreview.closingDate?.value), isUpperCase: true}) : "Closing unavailable"}
-                </TextElement>
-              )}
-              <TextElement
-                style={exhibitionPreviewStyle.artistText}>
-                  {exhibitionPreview?.exhibitionArtist?.value ? exhibitionPreview.exhibitionArtist.value?.trim() : "Group Show"}
-                </TextElement>
-          
+            <TextElement style={exhibitionPreviewStyle.artistText}>
+              {secondaryText?.trim()}
+            </TextElement>
           </View>
           <View style={exhibitionPreviewStyle.imagePreviewContainer}>
             <ExhibitionCarousel images={images} />
           </View>
             <View style={exhibitionPreviewStyle.touchableContainer}>
+            {exhibitionPreview?.closingDate?.value && exhibitionPreview?.openingDate?.value && 
+                (
+                  <TextElement
+                    style={ exhibitionPreviewStyle.datesText }>
+                    {exhibitionPreview.openingDate?.value ? customLocalDateStringStart({date: new Date(exhibitionPreview.openingDate?.value), isUpperCase: true}).trimStart() : "Opening unavailable"}
+                    {" - "}
+                    {exhibitionPreview.closingDate?.value ? customLocalDateStringEnd({date: new Date(exhibitionPreview.closingDate?.value), isUpperCase: true}) : "Closing unavailable"}
+                  </TextElement>
+                )}
               <Pressable onPress={() => onPressGallery({galleryId: exhibitionPreview.galleryId})}>
                   <TextElement style={exhibitionPreviewStyle.galleryText}>{exhibitionPreview?.galleryName?.value?.trim()}</TextElement>
                 </Pressable>
@@ -177,7 +211,8 @@ export default React.memo(ExhibitionPreviewCard, (prevProps, nextProps) => {
   return (
     prevProps.exhibitionPreview === nextProps.exhibitionPreview &&
     prevProps.onPressExhibition === nextProps.onPressExhibition &&
-    prevProps.onPressGallery === nextProps.onPressGallery 
+    prevProps.onPressGallery === nextProps.onPressGallery &&
+    prevProps.userViewed === nextProps.userViewed
   );
 });
 

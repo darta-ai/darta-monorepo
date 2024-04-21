@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { FullList, NewList, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
-import auth from '@react-native-firebase/auth';
 import { generateHeaders } from './utls';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}lists`;
@@ -11,7 +10,7 @@ export async function readListForUser({listId} : {listId: string}) : Promise<{[k
     const {data} = await axios.get(`${URL}/readList`, {params : {listId}, headers});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'readArtworkForUser'})
+    // console.log({error: error, message: error.message, where: 'readArtworkForUser'})
     return error.message;
   }
 }
@@ -28,7 +27,7 @@ export async function createListForUser({
     const {data} = await axios.post(`${URL}/createList`, {newList, artworkId}, {headers});
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'createUserArtworkRelationship'})
+    // console.log({error: error, message: error.message, where: 'createUserArtworkRelationship'})
     return error.message;
   }
 }
@@ -48,7 +47,7 @@ export async function deleteListForUser({
     const {data} = await axios.post(`${URL}/deleteUserArtworkRelationship`, {uid, action, artworkId}, {headers});
     throw new Error('Not implemented')
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'deleteUserArtworkRelationship'})
+    // console.log({error: error, message: error.message, where: 'deleteUserArtworkRelationship'})
     return null
   }
 }
@@ -59,7 +58,7 @@ export async function listUserLists(): Promise<any> {
     const {data} = await axios.get(`${URL}/listLists`, {headers})
     return data
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'listUserLists'})
+    // console.log({error: error, message: error.message, where: 'listUserLists'})
     return null;
   }
 }
@@ -71,7 +70,7 @@ export async function addArtworkToList({listId, artworkId}: {listId : string, ar
     const {data} = await axios.post(`${URL}/addArtworkToList`, {listId, artworkId}, {headers});
     return data
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'addArtworkToList'})
+    // console.log({error: error, message: error.message, where: 'addArtworkToList'})
     return null
   }
 }
@@ -83,7 +82,7 @@ export async function getFullList({listId}: {listId : string}): Promise<{[key: s
     const {data} = await axios.get(`${URL}/readList`, {params: {listId}, headers});
     return data
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'addArtworkToList'})
+    // console.log({error: error, message: error.message, where: 'addArtworkToList'})
     return null
   }
 }
@@ -94,7 +93,7 @@ export async function removeArtworkFromList({listId, artworkId}: {listId : strin
     const {data} = await axios.post(`${URL}/removeArtworkFromList`, {listId, artworkId}, {headers});
     return data
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'removeArtworkFromList'})
+    // console.log({error: error, message: error.message, where: 'removeArtworkFromList'})
     return null
   }
 }
@@ -105,7 +104,7 @@ export async function deleteListAPI({listId}: {listId : string}): Promise<{[key:
     const {data} = await axios.post(`${URL}/deleteList`, {listId}, {headers});
     return data
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'deleteList'})
+    // console.log({error: error, message: error.message, where: 'deleteList'})
     return null
   }
 }

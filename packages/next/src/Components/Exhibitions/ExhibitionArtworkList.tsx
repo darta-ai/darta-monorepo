@@ -1,5 +1,5 @@
 import * as Colors from '@darta-styles'
-import {Artwork} from '@darta-types';
+import {Artwork, Exhibition} from '@darta-types';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import {
@@ -57,9 +57,11 @@ function DartaListArtwork({
   isSwappingLoading,
   saveSpinner,
   deleteSpinner,
+  exhibitionProps,
   swapExhibitionOrder,
   saveArtwork,
   handleDeleteArtworkFromDarta,
+  higherLevelSaveArtwork,
 }: {
   artwork: Artwork;
   arrayLength: number;
@@ -67,6 +69,7 @@ function DartaListArtwork({
   saveSpinner: boolean;
   isSwappingLoading: boolean;
   deleteSpinner: boolean;
+  exhibitionProps?: Exhibition | null;
   swapExhibitionOrder: ({
     artworkId,
     direction,
@@ -82,12 +85,26 @@ function DartaListArtwork({
     exhibitionId: string;
     artworkId: string;
   }) => Promise<boolean>;
+  higherLevelSaveArtwork?: ({ artwork }: { artwork: Artwork; }) => Promise<void>;
 }) {
   const [editArtwork, setEditArtwork] = React.useState<boolean>(false);
 
-  const handleSave = async (newArtwork: Artwork) => {
-    await saveArtwork(newArtwork);
+  const handleDelete = async (artworkId: string): Promise<void> => {
+    await handleDeleteArtworkFromDarta({
+      exhibitionId: exhibitionProps?.exhibitionId as string,
+      artworkId,
+    });
     setEditArtwork(false);
+  }
+
+  const handleSave = async (newArtwork: Artwork): Promise<void> => {
+    if(higherLevelSaveArtwork){
+      await higherLevelSaveArtwork({artwork: newArtwork})
+      
+    } else {
+      await saveArtwork(newArtwork);
+    }
+    return setEditArtwork(false);
   };
 
   return (
@@ -217,10 +234,12 @@ function DartaListArtwork({
           }}>
           <CreateArtwork
             newArtwork={artwork}
+            exhibitionProps={exhibitionProps}
             cancelAction={setEditArtwork}
             handleSave={handleSave}
             saveSpinner={saveSpinner}
             deleteSpinner={deleteSpinner}
+            handleDelete={handleDelete}
             handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
           />
         </Box>
@@ -232,16 +251,24 @@ function DartaListArtwork({
   );
 }
 
+DartaListArtwork.defaultProps = { 
+  higherLevelSaveArtwork: undefined,
+  exhibitionProps: null,
+};
+
 export function ExhibitionArtworkList({
   artworks,
+  exhibitionProps,
   saveSpinner,
   isSwappingLoading,
   deleteSpinner,
   swapExhibitionOrder,
   saveArtwork,
   handleDeleteArtworkFromDarta,
+  higherLevelSaveArtwork,
 }: {
   artworks: any;
+  exhibitionProps?: Exhibition | null;
   saveSpinner: boolean;
   isSwappingLoading: boolean;
   deleteSpinner: boolean;
@@ -260,6 +287,7 @@ export function ExhibitionArtworkList({
     exhibitionId: string;
     artworkId: string;
   }) => Promise<boolean>;
+  higherLevelSaveArtwork?: ({ artwork }: { artwork: Artwork; }) => Promise<void>;
 }) {
   const [mappedArtworks, setMappedArtworks] = React.useState<any>(
     Object.values(artworks).sort(
@@ -288,15 +316,22 @@ export function ExhibitionArtworkList({
             artwork={artwork}
             arrayLength={arrayLength}
             index={index}
+            exhibitionProps={exhibitionProps}
             swapExhibitionOrder={swapExhibitionOrder}
             isSwappingLoading={isSwappingLoading}
             saveArtwork={saveArtwork}
             saveSpinner={saveSpinner}
             deleteSpinner={deleteSpinner}
             handleDeleteArtworkFromDarta={handleDeleteArtworkFromDarta}
+            higherLevelSaveArtwork={higherLevelSaveArtwork}
           />
         </Box>
       ))}
     </List>
   );
 }
+
+ExhibitionArtworkList.defaultProps = {
+  higherLevelSaveArtwork: undefined,
+  exhibitionProps: null,
+};

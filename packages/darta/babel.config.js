@@ -10,8 +10,9 @@ module.exports = function (api) {
         {
           alias: {
             '@/darta-types': './packages/darta-types/src',
-            '@/darta-styles': './packages/darta-styles/src'
-          }
+            '@/darta-styles': './packages/darta-styles/src',
+          },
+          extensions: [".tsx", ".ts", ".js", ".json"], 
         }
       ]
     ]

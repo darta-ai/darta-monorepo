@@ -29,6 +29,17 @@ export interface IArtworkService {
   readAllArtworks(): Promise<Artwork[] | null>;
   editArtwork({artwork}: {artwork: Artwork}): Promise<ArtworkNode | null>;
   editArtworkInquiry({edgeId, status}: {edgeId: string, status: string;}) : Promise<Edge | void>
+  refreshArtworkImage({
+    artworkId,
+    mainUrl,
+    mediumUrl,
+    smallUrl
+  }: {
+    artworkId: string;
+    mainUrl: string;
+    mediumUrl: string | null;
+    smallUrl: string | null;
+  }): Promise<void>
   deleteArtwork({artworkId}: {artworkId: string}): Promise<boolean>;
   deleteUserArtworkRelationship({
     uid,

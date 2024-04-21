@@ -79,3 +79,6 @@ eas.json
 
 /ios/*
 # @end expo-cli
+
+ios/
+android/

@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {Alert, View, Vibration, Linking, StyleSheet} from 'react-native';
 import {TombstonePortrait} from '../../components/Tombstone/_index';
 import {NeedAccountDialog} from '../../components/Dialog/NeedAccountDialog';
-import { USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types/dist';
+import { USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
 import { createArtworkRelationshipAPI } from '../../utils/apiCalls';
 import auth from '@react-native-firebase/auth';
 import { getDartaUser } from '../../api/userRoutes';
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
       })
       
     } catch(error){
-      console.log(error)
+      // console.log(error)
     } finally {
       setLikeLoading(false)
     }
@@ -83,24 +83,7 @@ const styles = StyleSheet.create({
     if (auth().currentUser === null) {
       return setDialogVisible(true)
     }
-    // setSaveLoading(true)
     navigation.navigate(saveRoute, {artwork: artOnDisplay})
-    try {
-      // await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
-      // userDispatch({
-      //   type: UserETypes.setUserSavedArtworkMulti,
-      //   artworkIds: {[artworkId]: true},
-      // })
-      // userDispatch({
-      //   type: UserETypes.saveArtworkMulti,
-      //   artworkDataMulti: {[artworkId]: artOnDisplay},
-      // })
-      // analytics().logEvent('save_artwork_modal', {artworkId})
-    } catch(error){
-      console.log(error)
-    } finally {
-      // setSaveLoading(false)
-    }
   }
 
   const inquireArtwork = async ({artworkId} : {artworkId: string}) => {
@@ -137,7 +120,7 @@ const styles = StyleSheet.create({
       analytics().logEvent('inquire_artwork', {artworkId})
       inquireSuccessAlert()
     } catch(error){
-      console.log(error)
+      // console.log(error)
     } 
   }
 
