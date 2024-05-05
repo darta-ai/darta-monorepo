@@ -6,10 +6,11 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {globalTextStyles} from '../../styles/styles';
 import {TextElement} from '../Elements/_index';
 import * as SVGs from '../../assets/SVGs/index';
-import { ListPreview, PreviewArtwork, PrivateFields, PublicFields } from '@darta-types/dist';
-import FastImage from 'react-native-fast-image'
+import { ListPreview, PublicFields } from '@darta-types/dist';
+// import FastImage from 'react-native-fast-image'
 
 import { widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 
 export const userListComponentStyles = StyleSheet.create({
@@ -65,7 +66,12 @@ const Icon = ({ artworkPreview }: { artworkPreview: PublicFields }) => {
   if (!artworkPreview) return null
 
   return (
-      <FastImage source={{ uri: artworkPreview.value ?? "" }} style={{height: 50, width: 50}} resizeMode={FastImage.resizeMode.contain}/>
+      <DartaImageComponent 
+      uri={{ value: artworkPreview.value ?? "" }} 
+      style={{height: 50, width: 50}} 
+      priority={"normal"}
+      size={"smallImage"}
+      />
   )
 }
 

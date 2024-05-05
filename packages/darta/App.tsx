@@ -3,10 +3,12 @@ import 'react-native-gesture-handler';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { ExploreMapStackNavigator } from './src/navigation/ExploreMap/ExploreMapStackNavigator';
-import { StatusBar } from 'react-native';
+import { StatusBar, Platform, Alert, Linking} from 'react-native';
 import React from 'react';
 import {Provider as PaperProvider} from 'react-native-paper';
 import * as Colors from '@darta-styles';
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
 import analytics from '@react-native-firebase/analytics';
 
 import {
@@ -40,13 +42,128 @@ import { ExhibitionRootEnum, ExploreMapRootEnum, RecommenderRoutesEnum, UserRout
 import ErrorBoundary from './src/components/ErrorBoundary/ErrorBoundary';
 import { UserETypes, UserStoreContext } from './src/state/UserStore';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
+import remoteConfig from '@react-native-firebase/remote-config';
+import Constants  from 'expo-constants';
 
 export const RecommenderStack = createStackNavigator();
 export const RootStack = createMaterialBottomTabNavigator();
 
 
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
+async function sendPushNotification(expoPushToken: string) {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: 'Original Title',
+    body: 'And here is the body!',
+    data: { someData: 'goes here' },
+  };
+
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+}
+
+
+function handleRegistrationError(errorMessage: string) {
+alert(errorMessage);
+throw new Error(errorMessage);
+}
+
+async function registerForPushNotificationsAsync() {
+if (Platform.OS === 'android') {
+  Notifications.setNotificationChannelAsync('default', {
+    name: 'default',
+    importance: Notifications.AndroidImportance.MAX,
+    vibrationPattern: [0, 250, 250, 250],
+    lightColor: '#FF231F7C',
+  });
+}
+
+if (Device.isDevice) {
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+  if (existingStatus !== 'granted') {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+  if (finalStatus !== 'granted') {
+    handleRegistrationError('Permission not granted to get push token for push notification!');
+    return;
+  }
+  const projectId =
+    Constants?.expoConfig?.extra?.eas?.projectId ??
+    Constants?.easConfig?.projectId;
+  if (!projectId) {
+    handleRegistrationError('Project ID not found');
+  }
+  try {
+  const pushTokenString = (
+      await Notifications.getExpoPushTokenAsync({
+        projectId,
+      })
+    ).data;
+    // console.log(pushTokenString);
+    return pushTokenString;
+  } catch (e: unknown) {
+    handleRegistrationError(`${e}`);
+  }
+} else {
+  handleRegistrationError('Must use physical device for push notifications');
+}
+}
+
+
 function App() {
   const {userDispatch} = React.useContext( UserStoreContext );
+
+  // const [expoPushToken, setExpoPushToken] = React.useState('');
+  // const [notification, setNotification] = React.useState<
+  //   Notifications.Notification | undefined
+  // >(undefined);
+  // const notificationListener = React.useRef<Notifications.Subscription>();
+  // const responseListener = React.useRef<Notifications.Subscription>();
+
+  // Uncomment for push notifications
+  // React.useEffect(() => {
+  //   registerForPushNotificationsAsync()
+  //     .then((token) => setExpoPushToken(token ?? ''))
+  //     .catch((error: any) => setExpoPushToken(`${error}`));
+
+  //   notificationListener.current =
+  //     Notifications.addNotificationReceivedListener((notification) => {
+  //       setNotification(notification);
+  //     });
+
+  //   responseListener.current =
+  //     Notifications.addNotificationResponseReceivedListener((response) => {
+  //       console.log(response);
+  //     });
+
+  //     return () => {
+  //       notificationListener.current &&
+  //         Notifications.removeNotificationSubscription(
+  //           notificationListener.current,
+  //         );
+  //       responseListener.current &&
+  //         Notifications.removeNotificationSubscription(responseListener.current);
+  //     };
+  //   }, []);
+
   React.useEffect(() => {
     auth().onAuthStateChanged((userState: FirebaseAuthTypes.User | null) => {
       if (userState?.uid && userState.email) {
@@ -67,6 +184,7 @@ function App() {
         })
       }
       })
+    checkForUpdate()
   }, []);
 
 
@@ -140,6 +258,42 @@ function App() {
     }
     setIsTabVisible(showTabBarRoutes[route]);
   };
+
+  // remote config
+
+  const checkForUpdate = async () => { 
+    let currentVersion = "";
+    const isAndroid = Platform.OS === 'android';
+    const isIOS = Platform.OS === 'ios';
+    const removeVersion = Constants.expoConfig?.version;
+    // use remote config to get the current version
+    await remoteConfig().fetchAndActivate();
+  
+    const promptUpdate = remoteConfig().getValue("promptUpdate").asBoolean();
+    isAndroid && (currentVersion = remoteConfig().getValue("currentAndroidVersion").asString());
+    isIOS && (currentVersion = remoteConfig().getValue("currentIOSVersion").asString());
+  
+    // if the current version is not the same as the app version, show an alert to download the app
+    if (promptUpdate && currentVersion !== removeVersion) {
+      Alert.alert(
+        "Fantastic New Update Available",
+        "A new version of the app is available. Please download the latest version from the app store.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              if (isAndroid) {
+                Linking.openURL("https://play.google.com/store/apps/details?id=com.darta");
+              } else if (isIOS) {
+                Linking.openURL("https://apps.apple.com/us/app/darta-digital-art-advisor/id6469072913");
+              }
+            },
+          },
+        ]
+      );
+    }
+    }
+
    return (
       <PaperProvider theme={theme}>
         <StoreProvider>

@@ -235,7 +235,7 @@ const userReducer = (state: UserState, action: UserIAction): UserState => {
           },
       };
     case UserETypes.saveArtwork:
-    if(!action.artworkData || !action.artworkData.artworkId){
+    if(!action.artworkData || !action.artworkData?.artworkId){
       return state
     }
     return {

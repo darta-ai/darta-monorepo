@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Alert, SafeAreaView } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
 import * as Colors from '@darta-styles';
 import { TextElement } from '../../components/Elements/TextElement';

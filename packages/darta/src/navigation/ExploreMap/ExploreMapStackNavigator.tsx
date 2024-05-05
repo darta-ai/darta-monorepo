@@ -2,27 +2,21 @@ import {PRIMARY_800} from '@darta-styles';
 import React, {useContext} from 'react';
 
 import {backButtonStyles, headerOptions} from '../../styles/styles';
-import { ExhibitionRootEnum, ExploreMapRootEnum, RecommenderRoutesEnum} from '../../typing/routes';
+import { ExploreMapRootEnum } from '../../typing/routes';
 import { ExploreMapHomeScreen } from '../../screens/ExploreMap/ExploreMapHomeScreen';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { ExhibitionTopTabNavigator } from '../Exhibition/ExhibitionTopTabNavigator';
 import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
 import { ArtworkScreen } from '../../screens/Artwork/ArtworkScreen';
 import { Pressable, View} from 'react-native';  
-import { CommonActions, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 import { UIStoreContext } from '../../state';
 import { TextElement } from '../../components/Elements/TextElement';
 import * as Colors from '@darta-styles'
 import { AddToListScreen } from '../../screens/Lists/AddToList';
 import { PlanARoute } from '../../screens/ExploreMap/PlanARoute';
-import { GenericLoadingScreen } from '../../screens/Loading/GenericLoading';
-import { HeaderBackButton } from '@react-navigation/elements';
-import { IconButton } from 'react-native-paper';
-import { viewOptionsStyles } from '../User/UserStackNavigator';
 import Share from 'react-native-share'
-import { ListTopTab } from '../List/ListTopTab';
-import * as SVGs from '../../assets/SVGs';
 
 export const ExploreMapStack = createStackNavigator();
 

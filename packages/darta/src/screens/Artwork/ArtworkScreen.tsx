@@ -12,6 +12,7 @@ import { UserStoreContext } from '../../state/UserStore';
 import { getArtworkEmailAndGalleryAPI } from '../../api/artworkRoutes';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Colors from '@darta-styles'
+import * as Haptics from 'expo-haptics';
 
 export function ArtworkScreen({route, navigation}: {route: any, navigation: any}) {
   const {uiDispatch} = useContext(UIStoreContext);
@@ -59,11 +60,8 @@ const styles = StyleSheet.create({
   const {userDispatch} = useContext(UserStoreContext);
   const {galleryState} = useContext(GalleryStoreContext);
   
-  const [saveLoading, setSaveLoading] = React.useState(false);  
-  const [likeLoading, setLikeLoading] = React.useState(false);
-
   const likeArtwork = async ({artworkId} : {artworkId: string}) => {
-    setLikeLoading(true)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     try {
       await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE})
       userDispatch({
@@ -73,13 +71,12 @@ const styles = StyleSheet.create({
       
     } catch(error){
       // console.log(error)
-    } finally {
-      setLikeLoading(false)
-    }
+    } 
   }
 
 
-  const saveArtwork = async ({artworkId} : {artworkId: string}) => {
+  const saveArtwork = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     if (auth().currentUser === null) {
       return setDialogVisible(true)
     }
@@ -99,26 +96,25 @@ const styles = StyleSheet.create({
 
       const subject = `Inquiry: ${artOnDisplay.artworkTitle?.value} by ${artOnDisplay.artistName?.value}`
       
-      const body = `Hi ${galleryName}, I saw ${artOnDisplay.artworkTitle?.value} by ${artOnDisplay.artistName?.value} on darta and I am interested in learning more.`
+      const body = `${galleryName}, 
+      
+      I am interested in learning more about "${artOnDisplay.artworkTitle?.value}" by ${artOnDisplay.artistName?.value.toLowerCase()}.`
 
       const url = `mailto:${galleryEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     
-      Linking.canOpenURL(url)
-        .then((supported) => {
-          if (!supported) {
-            console.log(`Can't handle URL: ${url}`);
-          } else {
-            return Linking.openURL(url);
-          }
+      const canOpen = await Linking.canOpenURL(url);
+      if (canOpen){
+        await Linking.openURL(url)
+        await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE})
+        userDispatch({
+          type: UserETypes.setUserInquiredArtwork,
+          artworkId,
         })
-        .catch((err) => console.error('An error occurred', err));
-      await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE})
-      userDispatch({
-        type: UserETypes.setUserInquiredArtwork,
-        artworkId,
-      })
-      analytics().logEvent('inquire_artwork', {artworkId})
-      inquireSuccessAlert()
+        analytics().logEvent('inquire_artwork', {artworkId})
+        inquireSuccessAlert()
+      } else {
+        Alert.alert('Something went wrong', `Please try again later, or email the gallery at ${galleryEmail}`)
+      }
     } catch(error){
       // console.log(error)
     } 
@@ -134,7 +130,7 @@ const styles = StyleSheet.create({
     Vibration.vibrate(100)
     const user = await getDartaUser({uid: auth().currentUser?.uid ?? ''})
     const galleryName = galleryState.galleryData?.[artOnDisplay?.galleryId]?.galleryName?.value ?? "the gallery";
-    Alert.alert(`Reach out to ${galleryName}?`, `darta will open your email app`, [
+    Alert.alert(`Reach out to ${galleryName}?`, `we'll autofill an email for you - and you can take it from there`, [
       {
         text: 'Cancel',
         onPress: () => {},
@@ -148,7 +144,7 @@ const styles = StyleSheet.create({
 };
 
   const inquireSuccessAlert = () => {
-    Alert.alert(`We've added ${artOnDisplay?.artworkTitle?.value ?? "the artwork"} to your inquired list`, `If this was a mistake, feel free to remove it`, [
+    Alert.alert(`We've added ${artOnDisplay?.artworkTitle?.value ?? "the artwork"} to your inquired list`, `You can manage this list from the profile tab`, [
       {
         text: `Ok`,
         onPress: () => {},
@@ -163,8 +159,6 @@ const styles = StyleSheet.create({
         inquireAlert={inquireAlert}
         likeArtwork={likeArtwork}
         saveArtwork={saveArtwork}
-        saveLoading={saveLoading}
-        likeLoading={likeLoading}
       />
       <NeedAccountDialog 
         dialogVisible={dialogVisible}

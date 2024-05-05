@@ -1,6 +1,4 @@
-import * as Colors from '@darta-styles'
-
-export const mapStylesJson = [
+export const androidMapStyles = [
   {
     "elementType": "geometry",
     "stylers": [
@@ -21,8 +19,7 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": Colors.PRIMARY_950,
-        "fontName": "DMSans_400Regular" 
+        "color": "#616161"
       }
     ]
   },
@@ -30,8 +27,16 @@ export const mapStylesJson = [
     "elementType": "labels.text.stroke",
     "stylers": [
       {
-        "color": "#f5f5f5",
-        "fontName": "DMSans_400Regular" 
+        "color": "#f5f5f5"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "elementType": "labels",
+    "stylers": [
+      {
+        "visibility": "off"
       }
     ]
   },
@@ -40,8 +45,7 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#bdbdbd",
-        "fontName": "DMSans_400Regular" 
+        "color": "#bdbdbd"
       }
     ]
   },
@@ -56,11 +60,19 @@ export const mapStylesJson = [
   },
   {
     "featureType": "poi",
+    "elementType": "labels.text",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#757575",
-        "fontName": "DMSans_400Regular" 
+        "color": "#757575"
       }
     ]
   },
@@ -78,8 +90,7 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#9e9e9e",
-        "fontName": "DMSans_400Regular" 
+        "color": "#9e9e9e"
       }
     ]
   },
@@ -97,8 +108,7 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": Colors.PRIMARY_900,
-        "fontName": "DMSans_400Regular" 
+        "color": "#757575"
       }
     ]
   },
@@ -107,7 +117,7 @@ export const mapStylesJson = [
     "elementType": "geometry",
     "stylers": [
       {
-        "color": Colors.PRIMARY_200,
+        "color": "#dadada"
       }
     ]
   },
@@ -116,27 +126,63 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": Colors.PRIMARY_900,
-        "fontName": "DMSans_400Regular" 
+        "color": "#616161"
       }
     ]
   },
   {
     "featureType": "road.local",
-    "elementType": "geometry",
     "stylers": [
       {
-        "color": Colors.PRIMARY_100,
+        "weight": 0.5
       }
     ]
   },
   {
     "featureType": "road.local",
-    "elementType": "labels.text.fill",
+    "elementType": "geometry.fill",
     "stylers": [
       {
-        "color": Colors.PRIMARY_900,
-        "fontName": "DMSans_400Regular" 
+        "visibility": "on"
+      }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#bdbdbd"
+      },
+      {
+        "saturation": -5
+      },
+      {
+        "visibility": "simplified"
+      },
+      {
+        "weight": 0.5
+      }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "elementType": "labels",
+    "stylers": [
+      {
+        "visibility": "on"
+      }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "elementType": "labels.text",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
+      },
+      {
+        "visibility": "simplified"
       }
     ]
   },
@@ -172,8 +218,7 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#9e9e9e",
-        "fontName": "DMSans_400Regular" 
+        "color": "#9e9e9e"
       }
     ]
   }

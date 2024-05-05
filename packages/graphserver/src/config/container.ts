@@ -35,6 +35,7 @@ const TYPES = {
   IRecommenderService: 'IRecommenderService',
   IListService: 'IListService',
   IEmailService: 'IEmailService',
+  IScrapeService: 'IScrapeService',
   EdgeService: 'EdgeService',
   NodeService: 'NodeService',
   UserController: 'UserController',
@@ -96,18 +97,19 @@ container
 container
   .bind<Services.IExhibitionService>(TYPES.IExhibitionService)
   .to(Services.ExhibitionService);
-
 container
   .bind<Services.IEmailService>(TYPES.IEmailService)
   .to(Services.EmailService);
-
 container
   .bind<Services.IRecommenderService>(TYPES.IRecommenderService)
   .to(Services.RecommenderService);
-
 container
   .bind<Services.IListService>(TYPES.IListService)
   .to(Services.ListService);
+
+container
+  .bind<Services.IScrapeService>(TYPES.IScrapeService)
+  .to(Services.ScrapeService);
 
 // Bind controllers
 container

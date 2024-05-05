@@ -1,23 +1,22 @@
 import React from 'react';
-import {Image, StyleSheet, View, Animated, Pressable} from 'react-native';
+import {StyleSheet, View, Animated, Pressable} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
-import {Button} from 'react-native-paper';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import FastImage from 'react-native-fast-image'
+// import FastImage from 'react-native-fast-image'
 
 import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
 import * as Colors from '@darta-styles'
 import {TextElement} from '../Elements/_index';
-import {icons} from '../../utils/constants';
 import {globalTextStyles} from '../../styles/styles';
-import { ETypes, StoreContext } from '../../state/Store';
 import { deleteArtworkRelationshipAPI } from '../../utils/apiCalls';
 import * as SVGs from '../../assets/SVGs/index';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
+import * as Haptics from 'expo-haptics';
+
 
 export const currencyConverter = {
   USD: '$',
@@ -62,15 +61,11 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({displayText, iconCompo
 
 export function TombstonePortrait({
   artwork,
-  saveLoading,
-  likeLoading,
   inquireAlert,
   likeArtwork, 
   saveArtwork,
 }: {
   artwork: Artwork,
-  saveLoading: boolean,
-  likeLoading: boolean,
   likeArtwork: ({artworkId} : {artworkId: string}) => void,
   saveArtwork: ({artworkId} : {artworkId: string}) => void,
   inquireAlert: ({artworkId} : {artworkId: string}) => void,
@@ -238,6 +233,7 @@ export function TombstonePortrait({
   }, [artwork, userState.userInquiredArtwork, userState.userSavedArtwork, userState.userLikedArtwork]);
 
   const removeSavedRating = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     userDispatch({
       type: UserETypes.removeUserSavedArtwork,
       artworkId: artwork._id!,
@@ -247,6 +243,7 @@ export function TombstonePortrait({
   }
 
   const removeInquiredRating = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     userDispatch({
       type: UserETypes.removeUserInquiredArtwork,
       artworkId: artwork._id!,
@@ -256,6 +253,7 @@ export function TombstonePortrait({
   }
 
   const removeLikeRating = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     userDispatch({
       type: UserETypes.removeUserLikedArtwork,
       artworkId: artwork._id!,
@@ -276,9 +274,10 @@ export function TombstonePortrait({
             <View style={SSTombstonePortrait.imageContainer}>
               <DartaImageComponent
                 uri={artwork?.artworkImage}
-                priority={FastImage.priority.normal}
+                // priority={FastImage.priority.normal}
                 style={SSTombstonePortrait.image}
-                resizeMode={FastImage.resizeMode.contain}
+                priority={"normal"}
+                // resizeMode={FastImage.resizeMode.contain}
                 size={"largeImage"}
               />
             </View>

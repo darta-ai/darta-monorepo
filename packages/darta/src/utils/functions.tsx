@@ -141,7 +141,7 @@ export function simplifyAddressCity(address: string | undefined | null) {
   const parts = address.split(',');
 
   const city = parts[1]?.trim();
-  const state = parts[2]?.trim()
+  const state = parts[2].split(' ')[1].trim();
 
   const results = `${city}, ${state}`;
   return results;

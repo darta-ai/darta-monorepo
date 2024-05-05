@@ -9,7 +9,7 @@ import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
 import {
   galleryDimensionsPortrait,
 } from '../utils/constants';
-import {ViewETypes, ViewStoreContext, StoreContext } from '../state';
+import {ViewETypes, ViewStoreContext } from '../state';
 import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI, listArtworksToRateStatelessRandomSamplingAPI } from '../utils/apiCalls';
 import { TextElement } from '../components/Elements/TextElement';
 import { ArtOnWallMemo} from '../components/Artwork/ArtOnWallFlatlist';
@@ -233,7 +233,10 @@ export function DartaRecommenderViewFlatList({
             artworkIds
         });
         if (artworksToRate && Object.keys(artworksToRate).length > 0) {
-
+            viewDispatch({
+                type: ViewETypes.setArtworksToRate,
+                artworksToRate: {...viewState.artworksToRate, ...artworksToRate},
+            });
         } else {
             onToggleSnackBar();
         }
@@ -262,11 +265,13 @@ export function DartaRecommenderViewFlatList({
     return artworkIds
   }, [viewState.artworkRatingIndex, viewState.artworksToRate])
 
+
   const onEndReached = React.useCallback(async () => {
   
     const numberOfArtworks = Object.values(viewState?.artworksToRate ?? {}).length > 0 ? Object.values(viewState.artworksToRate!).length : 0
     const artworkIds = findArtworkIds({artworks: Object.values(viewState.artworksToRate ?? {})})
-        try{
+        try {
+          // console.log('triggered', numberOfArtworks, numberOfArtworks + 10, artworkIds)
           const artworksToRate = await listArtworksToRateStatelessRandomSamplingAPI({
             startNumber: numberOfArtworks,
             endNumber: numberOfArtworks + 10,
@@ -613,6 +618,7 @@ const saveWiggle = React.useCallback(async () => {
 
   const handleSavePress = React.useCallback(async () => {
     // Start the first part of the wiggle animation
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     Animated.timing(wiggleAnim, {
       toValue: 1,  // Rotate slightly right
       duration: 50,
@@ -713,7 +719,7 @@ const saveWiggle = React.useCallback(async () => {
       () => {
         return 'FULL_WIDTH'; // Assuming a single type of item
     },
-    (type, dim) => {
+    (_, dim) => {
         dim.width = wp('100%');
         dim.height = hp('80%')
     })
@@ -752,38 +758,38 @@ const panGestureLeft = Gesture.Pan()
             <Onboard />
             <GestureDetector gesture={composed}>
               <LinearGradient style={{flex: 1}} colors={[Colors.PRIMARY_50, Colors.PRIMARY_100, Colors.PRIMARY_200]}>
-                <RecyclerListView
-                    layoutProvider={layoutProvider}
-                    dataProvider={dataProvider}
-                    ref={scrollViewRef}
-                    rowRenderer={(_, item) => renderItem({ item })}
-                    onEndReached={onEndReached}
-                    isHorizontal={true}
-                    scrollThrottle={2}
-                    snapToInterval={wp('100%')} 
-                    snapToAlignment={"center"}
-                    pagingEnabled={true}
-                    zoomableViewProps={{
-                      disabled: true,
-                    }}
-                    renderFooter={() => <View 
-                    style={SSDartaGalleryView.footerContainer}>
-                      <ActivityIndicator size="small" color={Colors.PRIMARY_600} />
-                    </View>}
-                    onScroll={handleScroll}
-                    scrollViewProps={{
-                        decelerationRate: "fast",
-                        disableScrollViewPanResponder: true,
-                        directionalLockEnabled: true,
-                        snapToInterval: wp('100%'),
-                        snapToAlignment: 'center',
-                        scrollEnabled: false,
-                        disableIntervalMomentum: true,
-                        pagingEnabled: true,
-                        onEndReachedThreshold: 0.5,
-                        // Add any other ScrollView props here
-                    }}
-        
+                  <RecyclerListView
+                      layoutProvider={layoutProvider}
+                      dataProvider={dataProvider}
+                      ref={scrollViewRef}
+                      rowRenderer={(_, item) => renderItem({ item })}
+                      onEndReached={onEndReached}
+                      isHorizontal={true}
+                      scrollThrottle={2}
+                      snapToInterval={wp('100%')} 
+                      snapToAlignment={"center"}
+                      pagingEnabled={true}
+                      zoomableViewProps={{
+                        disabled: true,
+                      }}
+                      showsHorizontalScrollIndicator={false}
+                      renderFooter={() => <View 
+                      style={SSDartaGalleryView.footerContainer}>
+                        <ActivityIndicator size="small" color={Colors.PRIMARY_600} />
+                      </View>}
+                      onScroll={handleScroll}
+                      scrollViewProps={{
+                          decelerationRate: "fast",
+                          disableScrollViewPanResponder: true,
+                          directionalLockEnabled: true,
+                          snapToInterval: wp('100%'),
+                          snapToAlignment: 'center',
+                          scrollEnabled: false,
+                          disableIntervalMomentum: true,
+                          pagingEnabled: true,
+                          onEndReachedThreshold: 0.5,
+                          // Add any other ScrollView props here
+                      }}
                   />
                   {/* <FlatList
                     data={Object.values(viewState?.artworksToRate!)}

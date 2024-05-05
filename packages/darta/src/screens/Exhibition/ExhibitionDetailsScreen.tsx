@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, StyleSheet, ScrollView, Platform, Linking, RefreshControl, Text, Alert} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
-import FastImage from 'react-native-fast-image'
+// import FastImage from 'react-native-fast-image'
 
 import * as Colors from '@darta-styles';
 import { UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes} from '../../state';
@@ -493,9 +493,10 @@ export function ExhibitionDetailsScreen({
                         <Surface elevation={2} style={{backgroundColor: 'transparent'}}>
                             <DartaImageComponent 
                             uri={currentExhibition?.exhibitionPrimaryImage ?? null}
-                            priority={FastImage.priority.normal}
+                            // priority={FastImage.priority.normal}
+                            priority="normal"
                             style={exhibitionDetailsStyles.heroImage}
-                            resizeMode={FastImage.resizeMode.contain}
+                            // resizeMode={FastImage.resizeMode.contain}
                             size={"largeImage"}
                             />
                         </Surface>

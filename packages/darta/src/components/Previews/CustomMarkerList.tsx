@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Marker, Callout } from 'react-native-maps';
 import { View, StyleSheet } from 'react-native';
 
-import FastImage from 'react-native-fast-image'
+// import FastImage from 'react-native-fast-image'
 import { TextElement } from '../Elements/TextElement';
 import { globalTextStyles } from '../../styles/styles';
 
@@ -10,12 +10,12 @@ import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCi
 
 import * as Colors from '@darta-styles';
 import { ExhibitionMapPin } from '@darta-types';
-import { ExhibitionStoreContext, StoreContext, UIStoreContext, UiETypes } from '../../state';
+import { ExhibitionStoreContext, UIStoreContext, UiETypes } from '../../state';
 import { ExploreMapRootEnum, UserRoutesEnum } from '../../typing/routes';
 import {Button } from 'react-native-paper';
-import { GoogleMapsPinIcon, MapPinCircleDotIcon} from '../../assets/SVGs';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
-import { GoogleMapsPinBlackIcon } from '../../assets/SVGs/GoogleMapsPinBlack';
+import { NewMapPin } from '../../assets/SVGs';
+import { Image } from 'expo-image';
 
 const customMarker = StyleSheet.create({
   galleryContainer:{
@@ -191,7 +191,7 @@ const CustomMarkerList = React.memo(({
       key={mapPin.exhibitionId}
       onTouchStart={() => setShowCallout(true)}
     >
-      <GoogleMapsPinBlackIcon/>
+      <NewMapPin/>
       {showCallout && (
         <Callout style={customMarkerDynamic.container} 
         onTouchStart={() => setShowCallout(false)} 
@@ -205,12 +205,10 @@ const CustomMarkerList = React.memo(({
             {hasCurrentShow && (
             <View style={customMarker.exhibitionContainer}>
                 <View style={customMarker.heroImageContainer} >
-                  <DartaImageComponent 
-                  uri= {mapPin?.exhibitionPrimaryImage || ""}
-                  priority={FastImage.priority.normal}
+                  <Image 
+                  source={mapPin?.exhibitionPrimaryImage?.mediumImage?.value || mapPin?.exhibitionPrimaryImage?.value }
+                  priority={"normal"}
                   style={customMarker.heroImage} 
-                  resizeMode={FastImage.resizeMode.contain}
-                  size={"smallImage"}
                   />
                 </View>
               <View style={customMarker.textContainer}>

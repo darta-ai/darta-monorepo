@@ -1,15 +1,18 @@
 import React from 'react';
 import * as Colors from '@darta-styles';
-import { TouchableOpacity, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, StyleSheet, View, Platform } from 'react-native';
 import { TextElement } from './TextElement';
 
+
+const isAndroid = Platform.OS === 'android';
+// const isAndroid = false;
 
 // Path: packages/darta/src/components/Previews/CustomMarker.tsx
 // Compare this snippet from packages/darta/src/screens/ExploreMap/ExploreMapHomeScreen.tsx:
 
 const baseStyle = StyleSheet.create({
   switchContainer: {
-    height: 32,
+    height: isAndroid ? 50 : 32,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -17,7 +20,7 @@ const baseStyle = StyleSheet.create({
     alignItems: 'center',
     paddingRight: 12,
     paddingLeft: 8,
-    borderRadius: 24,
+    borderRadius: 30,
     borderWidth: 1,
     borderColor: Colors.PRIMARY_300,
   },
@@ -27,12 +30,12 @@ const baseStyle = StyleSheet.create({
 const styles = StyleSheet.create({
     container: {
         // width: '100%',
-        height: 32,
+        height: isAndroid ? 50 : 32,
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 5,
+        gap: 6,
     },
     switchContainerActive:{
       ...baseStyle.switchContainer,
@@ -56,8 +59,8 @@ export const FilterBannerButton: React.FC<{
   const interactiveStyles = StyleSheet.create({
     textElement: {
       fontFamily: "DMSans_700Bold" ,
-      fontSize: 13,
-      // height: 15,
+      fontSize: 14,
+      // height: 20,
       alignContent: 'center',
       justifyContent: 'center',
       textAlign: 'center',

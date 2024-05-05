@@ -126,6 +126,29 @@ export class ArtworkService implements IArtworkService {
     }
   }
 
+  public async checkForDuplicatesWithImageNameAndArtist({
+    artistName,
+    artworkTitle,
+    galleryId,
+  }: {
+    artistName: string;
+    artworkTitle: string;
+    galleryId: string;
+  }): Promise<boolean>{
+    const query = `
+    WITH ${CollectionNames.Artwork}, ${CollectionNames.ArtworkArtists}
+    FOR artwork IN ${CollectionNames.Artwork}
+    FILTER artwork.artworkTitle.value == @artworkTitle && artwork.galleryId == @galleryId
+    FOR artist IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkTOArtist}
+    FILTER artist.value == @artistName
+    RETURN artwork
+    `
+
+    const cursor = await this.db.query(query, {artworkTitle, galleryId, artistName})
+    const result = await cursor.all()
+    return result.length > 0
+  }
+
   public async readArtworkEmailAndGallery(
     {artworkId} : 
     {artworkId: string}): Promise<{galleryName: string | null, galleryEmail: string | null} | null>{

@@ -3,14 +3,12 @@ import React from 'react';
 import {Artwork, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
 import { ArtworkList } from '../Artwork/ArtworkList';
 import { TextElement } from '../Elements/TextElement';
-import { Image } from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import { listUserArtworkAPI } from '../../utils/apiCalls';
 import { RefreshControl, ScrollView } from 'react-native';
 import * as Colors from '@darta-styles';
 import { UserRoutesEnum } from '../../typing/routes';
 import { dartaLogo } from './UserInquiredArtwork';
-import FastImage from 'react-native-fast-image';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
 
 export function UserSavedArtwork({navigation}: {navigation: any}) {
@@ -24,8 +22,6 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
   React.useEffect(() => {
     const savedArtwork = userState.userSavedArtwork;
     if (savedArtwork){
-      type ImageUrlObject = { uri: string };
-      const imageUrlsToPrefetch: ImageUrlObject[] = [];
       const data: Artwork[] = [];
       Object.keys(savedArtwork as any)
       .filter(key => savedArtwork[key])
@@ -33,12 +29,8 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
       .forEach((artwork: any) => {
         if (!userState.artworkData) return
         const fullArtwork = userState?.artworkData[artwork]
-        if (fullArtwork.artworkImage?.value){
-          imageUrlsToPrefetch.push({uri: fullArtwork.artworkImage.value})
-        }
         data.push(fullArtwork)
       })
-      FastImage.preload(imageUrlsToPrefetch)
       setArtworkData(data)
 
       if (data.length > 0){
@@ -46,7 +38,7 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
       }
     }
 
-  }, [userState.userSavedArtwork]);
+  }, [userState.userSavedArtwork, userState.artworkData]);
 
   const [refreshing, setRefreshing] = React.useState(false);
 

@@ -14,7 +14,7 @@ import { listExhibitionPinsByCity } from "../../api/locationRoutes";
 import { getDartaUser } from "../../api/userRoutes";
 import { getUserUid } from "../../utils/functions";
 import { listArtworksToRateAPI, listGalleryRelationshipsAPI, listUserArtworkAPI } from "../../utils/apiCalls";
-import FastImage from "react-native-fast-image";
+// import FastImage from "react-native-fast-image";
 import analytics from '@react-native-firebase/analytics';
 import { listUserLists } from "../../api/listRoutes";
 import { UserETypes, UserStoreContext } from "../../state/UserStore";
@@ -145,7 +145,7 @@ function AnimatedSplashScreen({ children }) {
             artworksToRateUrls.push({uri: art?.artworkImage?.value})
           }
         }
-        FastImage.preload(artworksToRateUrls)
+        // FastImage.preload(artworksToRateUrls)
       }
 
       // Exhibition Preview Screen 

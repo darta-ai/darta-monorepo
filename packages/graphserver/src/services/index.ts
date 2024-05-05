@@ -17,7 +17,9 @@ export {
   IListService,  
   INodeService,
   IRecommenderService, 
+  IScrapeService,
   IUserService} from './interfaces';
 export {ListService} from './ListService';
 export {RecommenderService} from './RecommenderService';
+export {ScrapeService} from './ScrapeService';
 export {UserService} from './UserService';

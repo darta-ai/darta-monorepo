@@ -1,0 +1,13 @@
+[
+    {
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.darta.darta",
+        "sha256_cert_fingerprints": [
+          "80:53:6C:67:09:83:4C:99:9C:8F:6D:AE:8A:44:B9:77:43:1C:97:5E:13:4E:04:B0:78:E7:D5:4E:30:C7:E5:AA"
+        ]
+      }
+    }
+  ]
+  

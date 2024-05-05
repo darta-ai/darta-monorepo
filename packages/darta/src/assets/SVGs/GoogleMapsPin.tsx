@@ -3,7 +3,7 @@ import Svg, { G, Path } from 'react-native-svg';
 
 export const GoogleMapsPinIcon = () => {
   return (
-    <Svg width="37" height="38" viewBox="0 0 37 38" fill="none">
+    <Svg width="30" height="31" viewBox="0 0 37 38" fill="none">
       <G id="Google_Maps_pin 2">
         <G id="layer1">
           <G id="g3477">

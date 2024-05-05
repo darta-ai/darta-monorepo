@@ -1,11 +1,13 @@
 import React from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, StyleSheet, TouchableOpacity, View} from 'react-native';
 import * as Colors from '@darta-styles';
 import {Artwork} from '@darta-types'
 import {TextElement} from '../Elements/_index';
-import FastImage from 'react-native-fast-image';
+// import FastImage from 'react-native-fast-image';
 import { Surface } from 'react-native-paper';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
+import { DartaCheckListImage } from '../Images/DartaCheckListImage';
+import { Image } from 'expo-image';
 
 const SSArtworkSelectorCard = StyleSheet.create({
   container: {
@@ -50,6 +52,8 @@ const SSArtworkSelectorCard = StyleSheet.create({
     shadowOffset: { width: 0, height: 1.61 }, // Adjust the height for the depth of the shadow
     shadowOpacity: 1,
     shadowRadius: 1.61, // A larger shadow
+    elevation: 3, // This is for Android
+    
   },
   imageArtistText: {
     fontFamily: 'DMSans_700Bold',
@@ -72,6 +76,9 @@ const SSArtworkSelectorCard = StyleSheet.create({
     lineHeight: 20,
     color: Colors.PRIMARY_900,
   },
+  activityIndicator: {
+    position: 'absolute',
+  },
 });
 
 const ArtworkCard = ({
@@ -82,21 +89,37 @@ const ArtworkCard = ({
   navigateToTombstone: (artwork: Artwork) => void
 }) => {
 
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  const handleLoadStart = () => {
+    setIsLoading(true);
+  };
+
+  const handleLoadEnd = () => {
+    setIsLoading(false);
+  };
+
   return (
     <View key={artwork?._id}>
       <View style={SSArtworkSelectorCard.container}>
         <View style={SSArtworkSelectorCard.imageContainer}>
-            <Surface style={{backgroundColor: "transparent"}}>
               <TouchableOpacity style={SSArtworkSelectorCard.loadingImageContainer} onPress={() => navigateToTombstone(artwork)}>
-                <DartaImageComponent
-                  uri = {artwork.artworkImage ?? null}
-                  priority={FastImage.priority.normal}
+                <Image
+                  source={artwork.artworkImage?.smallImage?.value ?? artwork.artworkImage?.value}
+                  priority={"normal"}
                   style={SSArtworkSelectorCard.image}
-                  resizeMode={FastImage.resizeMode.contain}
-                  size={"smallImage"}
+                  contentFit={"contain"}
+                  onLoadStart={handleLoadStart}
+                  onLoadEnd={handleLoadEnd}
                 />
+                {isLoading && (
+                  <ActivityIndicator
+                    style={SSArtworkSelectorCard.activityIndicator}
+                    size="small"
+                    color={Colors.PRIMARY_950}
+                  />
+                )}
                 </TouchableOpacity>
-              </Surface>
           </View>
         <View style={SSArtworkSelectorCard.textContainer}>
           <TextElement style={SSArtworkSelectorCard.imageArtistText}>

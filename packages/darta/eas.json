@@ -51,6 +51,11 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./darta-eas-file.json",
+        "releaseStatus": "draft"
+      }
+    }
   }
 }

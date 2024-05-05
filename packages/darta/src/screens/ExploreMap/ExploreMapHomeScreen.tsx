@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, Alert} from 'react-native';
+import {View, StyleSheet, Alert, Platform} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import * as Location from 'expo-location';
 
@@ -12,6 +12,7 @@ import { IconButtonElement } from '../../components/Elements/IconButtonElement';
 import { ExploreMapRootEnum } from '../../typing/routes';
 import { FilterBanner } from '../../components/Maps/MapFilterBanner';
 import { mapStylesJson } from '../../utils/mapStylesJson';
+import { androidMapStyles } from '../../utils/mapStylesJson.android';
 import { MappedPins } from '../../components/Maps/MapPins';
 
 
@@ -62,7 +63,7 @@ const exploreMapStyles = StyleSheet.create({
   }, 
 mapView: {
   alignSelf: 'stretch', 
-  height: '90%' 
+  height: '100%' 
 },
 bottomSheetContainer: {
   zIndex: 2,
@@ -80,6 +81,9 @@ export function ExploreMapHomeScreen({
 }) {
 
   const {state} = React.useContext(StoreContext);
+
+  const isAndroid = Platform.OS === 'android';
+
   const [mapRegion] = React.useState({
     latitudeDelta: 0.01,
     longitudeDelta: 0.09,
@@ -153,14 +157,14 @@ export function ExploreMapHomeScreen({
             <MapView  
               ref={mapRef}
               provider={PROVIDER_GOOGLE}
-              style={ exploreMapStyles.mapView }
-              region={mapRegion} 
-              customMapStyle={mapStylesJson}
+              style={exploreMapStyles.mapView}
+              initialRegion={mapRegion}
+              customMapStyle={!isAndroid ? mapStylesJson : androidMapStyles}
               onMarkerPress={handleMarkerPress}
               showsUserLocation={true}
               >
                 <MappedPins pins={memoizedMapPins} navigation={navigation} city={state.currentlyViewingCity} view={state.currentlyViewingMapView}/>
-                {state.currentlyViewingMapView === currentlyViewingMapView.walkingRoute &&  (
+                {state.currentlyViewingMapView === currentlyViewingMapView.walkingRoute && state?.customViews?.[state.currentlyViewingCity]?.walkingRoute && state?.customViews?.[state.currentlyViewingCity]?.walkingRoute?.length !== 0 && (
                   <Polyline
                     coordinates={state?.customViews?.[state.currentlyViewingCity]?.walkingRoute as unknown as LatLng[]}
                     strokeWidth={2}

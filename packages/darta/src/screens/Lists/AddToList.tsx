@@ -148,6 +148,7 @@ export function AddToListScreen({
             userDispatch({
                 type: UserETypes.saveArtwork,
                 artworkData: artwork!,
+                artworkId,
             })
         }
     
@@ -165,7 +166,7 @@ export function AddToListScreen({
             navigation.goBack()
         } catch (error) {
             // Handle any errors here
-            console.error('An error occurred:', error);
+            // console.error('An error occurred:', error);
         }
     }
     return (

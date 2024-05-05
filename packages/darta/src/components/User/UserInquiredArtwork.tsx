@@ -12,7 +12,7 @@ import {
 
 import { listUserArtworkAPI } from '../../utils/apiCalls';
 import { UserRoutesEnum } from '../../typing/routes';
-import FastImage from 'react-native-fast-image';
+// import FastImage from 'react-native-fast-image';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
 
 export const dartaLogo = StyleSheet.create({
@@ -64,7 +64,7 @@ export function UserInquiredArtwork({navigation}: {navigation: any}) {
         data.push(fullArtwork)
       })
 
-      FastImage.preload(imageUrlsToPrefetch)
+      // FastImage.preload(imageUrlsToPrefetch)
       setArtworkData(data)
       if (data.length !== 0){
         setHasNoArtwork(false)

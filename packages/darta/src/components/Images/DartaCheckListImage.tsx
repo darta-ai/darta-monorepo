@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   });
 
   
-  export const DartaImageComponent: React.FC<DartaImageComponentProps> = ({
+  export const DartaCheckListImage: React.FC<DartaImageComponentProps> = ({
     style,
     uri,
     size,
@@ -77,18 +77,18 @@ const styles = StyleSheet.create({
     };
   
     const handleError = (error: any) => {
-      console.log('Image load error:', error);
+      // console.log('Image load error in checklistImage:', error);
       setIsLoading(false);
     
-      // if (error.error === 'file is directory') {
-      //   // Handle the specific error case
-      //   console.log('Invalid image URL:', imageUri);
-      //   // You can set a default image URL or show an error message to the user
-      //   setImageUri(imageUri);
-      // } else {
-      //   // Handle other error cases
-      //   setHasError(true);
-      // }
+      if (error.error === 'file is directory') {
+        // Handle the specific error case
+        // console.log('Invalid image URL:', imageUri);
+        // You can set a default image URL or show an error message to the user
+        setImageUri(imageUri);
+      } else {
+        // Handle other error cases
+        setHasError(true);
+      }
     };
   
     if (hasError) {

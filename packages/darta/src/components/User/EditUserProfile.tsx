@@ -7,7 +7,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import FastImage from 'react-native-fast-image'
+// import FastImage from 'react-native-fast-image'
 
 import * as ImagePicker from 'expo-image-picker';
 import auth from '@react-native-firebase/auth';
@@ -21,6 +21,7 @@ import { createUser, deleteDartaUser, editDartaUserAccount, getDartaUser } from 
 import { firebaseDeleteUser } from '../../api/firebase';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
+import { MobileUser } from '@darta-types/dist';
 
 type FieldState = {
   isEditing?: boolean;
@@ -66,7 +67,7 @@ export const SSSignedInUserSettings = StyleSheet.create({
   header: {
     ...globalTextStyles.italicTitleText,
     alignSelf: 'center',
-    marginBottom: hp('0.5%'),
+    marginBottom: 20,
     fontFamily: 'DMSans_500Medium',
   },
   text: {
@@ -85,6 +86,8 @@ export const SSSignedInUserSettings = StyleSheet.create({
     height: hp('3.5%'),
   },
 });
+
+const defaultImage = require('../../assets/darta-android-icon.png');
 
 export function EditUserProfile({navigation} : {navigation: any}) {
   const {userState, userDispatch} = React.useContext(UserStoreContext);
@@ -177,7 +180,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
     handleExpandElements();
   };
 
-  const [tempImage, setTempImage] = useState<any>({uri: '', type: ''});
+  const [tempImage, setTempImage] = useState<any>({uri: defaultImage, type: ''});
   const [tempValue, setTempValue] = useState<string>('');
   const [tempBuffer, setTempBuffer] = useState<any>(null);
 
@@ -383,7 +386,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
           const user = await getDartaUser({uid});
           userDispatch({
             type: UserETypes.setUser,
-            userData: user
+            userData: user as MobileUser
           })
       } catch {
           setRefreshing(false);
@@ -412,8 +415,9 @@ export function EditUserProfile({navigation} : {navigation: any}) {
               <DartaImageComponent
                 uri={tempImage}
                 style={SSSignedInUserSettings.image}
-                resizeMode={FastImage.resizeMode.contain}
-                priority={FastImage.priority.normal}
+                // resizeMode={FastImage.resizeMode.contain}
+                // priority={FastImage.priority.normal}
+                priority={"normal"}
                 size={"smallImage"}
               />
             ) : (
@@ -453,7 +457,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
           style={
             !formData.userName.isEditing && showOnlyOne && {display: 'none'}
           }>
-          <TextElement style={[SSSignedInUserSettings.header, {height: 'auto'}]}>
+          <TextElement style={[SSSignedInUserSettings.header, { height: 'auto', marginBottom: 20 }]}>
             user name
           </TextElement>
           <View style={SSSignedInUserSettings.textEditContainer}>

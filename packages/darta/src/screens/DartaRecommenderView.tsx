@@ -23,7 +23,7 @@ import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI, listArtwork
 import { TextElement } from '../components/Elements/TextElement';
 import * as SVGs from '../assets/SVGs';
 import analytics from '@react-native-firebase/analytics';
-import { UIStoreContext, UiETypes, ETypes, StoreContext, ViewStoreContext, ViewETypes } from '../state';
+import { UIStoreContext, UiETypes, StoreContext, ViewStoreContext, ViewETypes } from '../state';
 import { UserETypes, UserStoreContext } from '../state/UserStore';
 
 

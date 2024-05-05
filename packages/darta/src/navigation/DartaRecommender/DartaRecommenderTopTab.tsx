@@ -39,7 +39,7 @@ export function DartaRecommenderTopTab({route} : {route: any}) {
           name={RecommenderRoutesEnum.recommenderDetails}
           initialParams={{artOnDisplay: route.params.artOnDisplay, saveRoute: RecommenderRoutesEnum.recommenderLists}}
           component={ArtworkScreen}
-          options={{ title: 'Checklist', ...headerOptions}}
+          options={{ title: 'Artwork', ...headerOptions}}
         />
         <RecommenderStackTopTab.Screen
           name={RecommenderRoutesEnum.recommenderExhibition}

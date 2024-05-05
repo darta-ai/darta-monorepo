@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "948875902945",
+    "project_id": "darta-ccfa5",
+    "storage_bucket": "darta-ccfa5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:948875902945:android:f543ffcc7ffbe37744dca0",
+        "android_client_info": {
+          "package_name": "com.android.darta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "948875902945-vsjsp7i9v2lb9liposl3bq1m2rn8ibls.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb_UHoudOjTHvgfWzP8qjwvdnudTYDI-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "948875902945-vsjsp7i9v2lb9liposl3bq1m2rn8ibls.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "948875902945-5njnknfkbp2ldp1vb636tcn8hh3ga74q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.darta.darta"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:948875902945:android:e8ef529ddb14ae3544dca0",
+        "android_client_info": {
+          "package_name": "com.darta.darta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "948875902945-vsjsp7i9v2lb9liposl3bq1m2rn8ibls.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb_UHoudOjTHvgfWzP8qjwvdnudTYDI-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "948875902945-vsjsp7i9v2lb9liposl3bq1m2rn8ibls.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "948875902945-5njnknfkbp2ldp1vb636tcn8hh3ga74q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.darta.darta"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

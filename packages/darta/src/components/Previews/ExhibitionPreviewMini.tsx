@@ -2,6 +2,7 @@
 /* eslint-disable no-return-assign */
 import React from 'react';
 import {
+  ActivityIndicator,
   StyleSheet,
   View,
 } from 'react-native';
@@ -14,9 +15,9 @@ import {TextElement} from '../Elements/_index';
 import {ExhibitionDates, Images} from '@darta-types';
 import * as Colors from '@darta-styles';
 import { customLocalDateStringEnd, customLocalDateStringStart, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
-import FastImage from 'react-native-fast-image';
+// import FastImage from 'react-native-fast-image';
 import { Button, Surface } from 'react-native-paper';
-import { DartaImageComponent } from '../Images/DartaImageComponent';
+import { Image } from 'expo-image';
 
 
 type ExhibitionPreviewMiniProps = {
@@ -59,12 +60,12 @@ const exhibitionPreview = StyleSheet.create({
     resizeMode: 'contain',
     backgroundColor: 'transparent',
     zIndex: 1,
-    shadowOpacity: 1, 
-    shadowRadius: 3.03,
-    shadowOffset: {
-        width: 0,
-        height: 3.03,
-    },
+    // shadowOpacity: 1, 
+    // shadowRadius: 3.03,
+    // shadowOffset: {
+    //     width: 0,
+    //     height: 3.03,
+    // },
     shadowColor: Colors.PRIMARY_300,
   },
   mapContainer: {
@@ -107,7 +108,10 @@ const exhibitionPreview = StyleSheet.create({
   buttonTextColor: {
     color: Colors.PRIMARY_50,
     fontFamily: "DMSans_700Bold",
-  }
+  },
+  activityIndicator: {
+    position: 'absolute',
+  },
 })
 
 const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
@@ -136,6 +140,17 @@ const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
     mailing = simplifyAddressMailing(exhibitionLocation)
   }
 
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  const handleLoadStart = () => {
+    setIsLoading(true);
+  };
+
+  const handleLoadEnd = () => {
+    setIsLoading(false);
+  };
+
+
   return (
       <View
         style={exhibitionPreview.container}>
@@ -147,14 +162,22 @@ const ExhibitionPreviewMini = React.memo<ExhibitionPreviewMiniProps>(({
             style={exhibitionPreview.artistTitle}>
             {exhibitionTitle?.trim()}
           </TextElement>
-          <Surface elevation={1} style={{...exhibitionPreview.heroImageContainer, marginTop: 24}}>
-            <DartaImageComponent 
-                uri= {exhibitionHeroImage} 
+          <Surface elevation={3} style={{...exhibitionPreview.heroImageContainer, marginTop: 24}}>
+            <Image
+                source={exhibitionHeroImage?.mediumImage?.value ?? exhibitionHeroImage?.value}
+                priority={"normal"}
                 style={exhibitionPreview.heroImage} 
-                resizeMode={FastImage.resizeMode.contain}
-                priority={FastImage.priority.high}
-                size={"smallImage"}
-            />
+                contentFit={"contain"}
+                onLoadStart={handleLoadStart}
+                onLoadEnd={handleLoadEnd}
+              />
+              {isLoading && (
+                <ActivityIndicator
+                  size="small"
+                  color={Colors.PRIMARY_950}
+                  style={exhibitionPreview.activityIndicator}
+                />
+              )}
           </Surface>
           <TextElement
             style={{...exhibitionPreview.exhibitionTitle, marginTop: 24}}>

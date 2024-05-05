@@ -25,8 +25,6 @@ import { DartaIconButtonWithText } from '../components/Darta/DartaIconButtonWith
 import * as SVGs from '../assets/SVGs';
 import { UserETypes, UserStoreContext } from '../state/UserStore';
 import { GalleryETypes, GalleryStoreContext } from '../state';
-import { ArtHapIntro } from '../components/ArtHap/ArtHapIntro';
-import { DropDownToggle } from '../components/Elements/DropDownToggle';
 
 
 const HEADER_MAX_WIDTH = 100;
@@ -151,9 +149,9 @@ export function UserHome({navigation}: {navigation: any}) {
   });
   }
 
-  const sendEmail = () => {
+  const sendEmail = async () => {
     const url = `mailto:collaborate@darta.art`;
-    Linking.canOpenURL(url)
+    await Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
           // console.log(`Can't handle URL: ${url}`);

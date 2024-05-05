@@ -3,7 +3,7 @@
     "name": "darta",
     "slug": "darta",
     "scheme": "darta",
-    "version": "1.4.03",
+    "version": "1.4.4",
     "orientation": "portrait",
     "icon": "./src/assets/darta-icon-text.png",
     "userInterfaceStyle": "dark",
@@ -21,22 +21,55 @@
         "usesNonExemptEncryption": false,
         "googleMapsApiKey": "AIzaSyCgJAXkO4WoPQXTf7ENx_tejgKbiem9chc"
       },
-      "googleServicesFile": "./googleService/GoogleService-Info.plist", 
+      "googleServicesFile": "./googleService/GoogleService-Info.plist",
       "infoPlist": {
-        "LSApplicationQueriesSchemes": ["instagram", "instagram-stories", "mailto"]
+        "LSApplicationQueriesSchemes": [
+          "instagram",
+          "instagram-stories",
+          "mailto"
+        ]
       },
       "associatedDomains": [
-        "applinks:darta.art",
-        "applinks:c6de-2603-7000-4001-17cf-7506-479b-a1e9-487a.ngrok-free.app"
+        "applinks:darta.art"
       ]
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/darta-icon-text.png",
+        "foregroundImage": "./src/assets/darta-android-icon.png",
         "backgroundColor": "#F8F8F8"
       },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDyfji3847eMFPI29Hiy7LPY2L6XCo6vLs"
+        }
+      },
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": [
+          "instagram",
+          "instagram-stories",
+          "mailto"
+        ]
+      },
+      "versionCode": 6,
       "package": "com.darta.darta",
-      "googleServicesFile": "./googleService/GoogleService-Info.plist"
+      "googleServicesFile": "./googleService/google-services.json",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "*.darta.art",
+              "pathPrefix": "/records"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "favicon": "./src/assets/darta-icon-text.png",
@@ -81,12 +114,15 @@
         {
           "calendarPermission": "Darta integrates with your calendar for event scheduling. E.g., setting reminders for gallery openings or visits."
         }
-      ],      
+      ],
       [
         "expo-build-properties",
         {
           "ios": {
             "useFrameworks": "static"
+          },
+          "android": {
+            "enableProguardInReleaseBuilds": true
           }
         }
       ]
@@ -101,6 +137,9 @@
       {
         "ios": {
           "useFrameworks": "static"
+        },
+        "android": {
+          "enableProguardInReleaseBuilds": true
         }
       }
     ]

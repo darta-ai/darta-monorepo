@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "darta-dev",
+  "private_key_id": "c4276942ad9b4993eda46690517039a2aa68b4b8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC5VdKsIV5XVbDX\nUgvI1arUSiKbu3IQsqHkPhQCGi+He4aHCvPvA6lMR4NDnqYbmlSR2YFgyaEn9flR\n4+X02T0gwE9OLlDlJVCJUBwuDq7y4riUWsX1weSz53cYcxmx0ee2QfOTwM+z/PTy\naVDL4PDQoOD6n4AZr3iLtUvGwV+G38iMdBOHqbeF8ORrhMdPxuTDU+facPClylwq\nBylrB3x1nQW8c8KSQZerwsMjVyTkTZ/GiHkU2kgrYylfKZn580AcfZFPWvRs6GQj\n4HWOaNxhZWIARUJr5Xv1+02nvmF6HQolfvCnuibPfFhNGIsLWi7rM6AW1ACGQTPf\n6RnZWEKnAgMBAAECggEAD4pfafOPrOm7NF2QLhJMir8p+75R/Y3HqWh91ldKbk/b\nTe412hrdJ/pEdXe+HJ5qQk3nXVhK3Rubq6mHxL+FMqktfTQWWxXalPOqCT/4nNaJ\n/QFHjCiVUXMyjKhKGpur6Z/KGYpCCv5GWR/07cOPgyRE+SmasjdWd6XcvsPENijf\noc/a0JLRPN2qfQK5PV805z2P6sXHhUINOoO8E5EXhkbYxAOf8BPIrNs8+zeCzPEv\n8ONVj2uHztuwP3tB/ith9KUZhnbcENX+5rqHGkpkLMVNxTgNbHhXi1nYFvuTyAss\nlrZc8BrPkWqdPD9EprzXFkK/iHzO6TUxMISHJR38UQKBgQDrmA+76oLUT4exa1oX\nIn9ySlKG5tLFEjHzDxvEJwVfyoxA1V87ufm0wyLI7aRiVQLTrvYTZJaqDFMryAW2\n6KCxwGLD/5EHx1uGQC+h6b1UP+QZrulOoixgCpV/eMCs1OFxEInwK0r/SkViuE1e\n42DmaOHwje75/2lGl6rCfhizWwKBgQDJY1mpHh3EA+7N0U7Tk7bVpZTAL9Hdq0+/\nExxIQp5OowEpRMp9auGU7TmvL84+jD/LCFtYDPLQKqOVF6UDlGEtjg6G1VhzItxq\nQ0dVy2vYDDGA+Ms6umRa0tRMy0icGOfHFQGAwmKvUg5OjKoWGwv8zcNsvIakK2hq\nPJRSX3NLpQKBgFpXbjkmHVMiyCrtupdCgFKoU2stmkc9ye+lrIUUXYg1GIFIEQPL\nNgjuBym7jxyx8qqP3gbjvK6qmT4hrqdMH0rqNjVojAnKlbsuY9WX1yU2dtaubwLb\nR17w0BEYkfH0lBqSOALj5xdsOJ05hVnMoXzZXUKseqZdHdaXFEEOr5QfAoGAHtlI\nJ77EQn1zvDVexMwwyqNVmOb6V+FhEtzjjTIfO95+VAsElZekvIJmPq6tAinLr9c0\n3tUE8NxHOJRpo5W8GRVUplTR+rkRWHm72KmTeIHNp3r07qcUrlDzUlwlYDv0bSuL\nkmS0ZzTDmkaz2zUDbhM651ItscIweW2ULtYOPD0CgYEAm/UMNq41+xtRYr4G76NO\ndmY1HDJEBsX5M2YPR/KwM4sUQGAbWkn/3Xnv3YiF0/d5mNnsfrm5smreLqtGr+Vb\ngrV94YAVnrirQB97Mp45GMYWhweZtQ9pC9Oloq20LNoZN9okyTbV7CFyMCY6QifY\nv9WE2xM4TqgtSm9O3xzSK3c=\n-----END PRIVATE KEY-----\n",
+  "client_email": "eas-submit-service-account@darta-dev.iam.gserviceaccount.com",
+  "client_id": "116869311238502117110",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/eas-submit-service-account%40darta-dev.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

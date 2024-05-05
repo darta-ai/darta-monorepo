@@ -55,12 +55,12 @@ const GallerySwitchComponent = ({
 
     const onToggleSwitch = () => {
       if (activeArrayLength <= 10) {
+        setIsSwitchOn(!isSwitchOn);
         if (isSwitchOn) {
           removeLocationIdFromMapPins(galleryData?.locationId)
         } else {
           addLocationIdToMapPins(galleryData?.locationId);
         }
-        setIsSwitchOn(!isSwitchOn);
         dispatch({
           type: ETypes.setPinStatus,
           locationId: galleryData?.locationId,
@@ -127,6 +127,7 @@ const GallerySwitchComponent = ({
         <Switch
           value={isSwitchOn}
           trackColor={{ true: Colors.PRIMARY_950, false: Colors.PRIMARY_600 }}
+          thumbColor={isSwitchOn ? Colors.PRIMARY_600 : Colors.PRIMARY_950}
           onValueChange={onToggleSwitch}
         />
       </View>

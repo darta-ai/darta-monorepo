@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { View, Image, StyleSheet } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { View, StyleSheet } from 'react-native';
+// import FastImage from 'react-native-fast-image';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 export function GalleryIcon({galleryLogo}: {galleryLogo: string}) {
 const galleryIconStyles = StyleSheet.create({
@@ -19,8 +20,12 @@ const galleryIconStyles = StyleSheet.create({
 })
   return (
     <View style={galleryIconStyles.container}>
-        <FastImage source={{uri: galleryLogo}} style={galleryIconStyles.image} resizeMode={FastImage.resizeMode.contain}
-/>
+        <DartaImageComponent 
+          uri={{value: galleryLogo}} 
+          style={galleryIconStyles.image} 
+          priority={"normal"} 
+          size={"smallImage"}
+        />
     </View>
   );
 }

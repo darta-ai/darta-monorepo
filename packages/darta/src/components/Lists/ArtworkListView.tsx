@@ -7,7 +7,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import FastImage from 'react-native-fast-image'
+// import FastImage from 'react-native-fast-image'
 
 import {Artwork, ExhibitionForList, GalleryForList, USER_ARTWORK_EDGE_RELATIONSHIP} from '@darta-types';
 import * as Colors from '@darta-styles'
@@ -332,9 +332,8 @@ export function ArtworkListView({
                   <DartaImageComponent
                     uri= {artwork?.artworkImage}
                     size={"largeImage"}
-                    priority={FastImage.priority.normal}
+                    priority={"normal"}
                     style={SSTombstonePortrait.image}
-                    resizeMode={FastImage.resizeMode.contain}
                   />
                 </View>
               </ScrollView>

@@ -95,6 +95,7 @@ export const listArtworksToRateStatelessRandomSamplingAPI = async ({startNumber,
         return await listArtworksToRateStatelessRandomSampling({uid, startNumber, endNumber, artworkIds});
         }
     } catch (error){
+        // console.log({error})
         throw new Error(error)
     }
 }
