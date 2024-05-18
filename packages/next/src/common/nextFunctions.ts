@@ -212,7 +212,7 @@ export const parseExcelArtworkData = async ({rows, exhibitionId} : {
       artworkDimensions: parseDimensions(item),
       artworkPrice: {value: item?.Price, isPrivate: false},
       artworkCurrency: {value: item.artworkCurrency},
-      artworkCreatedYear: {value: item?.artworkCreatedYear},
+      artworkCreatedYear: {value: item?.artworkCreatedYear?.toString()},
       artworkCategory: {value: item?.artworkCategory},
       artworkMedium: {value: item?.artworkMedium},
       editionStatus: {value: item?.editionStatus},

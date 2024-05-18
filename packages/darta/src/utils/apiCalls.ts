@@ -73,6 +73,7 @@ export const listGalleryRelationshipsAPI = async (): Promise<GalleryPreview[] | 
         return await listDartaUserFollowsGallery({uid});
         }
     } catch (error){
+        console.log({error})
         throw new Error(error)
     }
 }

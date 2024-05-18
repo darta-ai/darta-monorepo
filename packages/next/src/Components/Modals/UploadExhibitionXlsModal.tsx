@@ -14,7 +14,8 @@ import {
 import React from 'react';
 import * as XLSX from 'xlsx';
 
-import { createExhibitionAPI, editExhibitionAPI } from '../../API/exhibitions/exhibitionRotes';
+import { createExhibitionForAdmin } from '../../API/admin/adminRoutes';
+import { editExhibitionAPI } from '../../API/exhibitions/exhibitionRotes';
 import {handleBatchArtworkUpload, parseExcelArtworkData,parseExcelExhibitionData} from '../../common/nextFunctions';
 
 const uploadArtworkImages = {
@@ -100,7 +101,7 @@ export function UploadExhibitionXlsModal({
           return;
         }
   
-        const rawExhibition = await createExhibitionAPI();
+        const rawExhibition = await createExhibitionForAdmin({galleryId});
   
         if (!rawExhibition || !rawExhibition.exhibitionId) {
           setLoading(false);

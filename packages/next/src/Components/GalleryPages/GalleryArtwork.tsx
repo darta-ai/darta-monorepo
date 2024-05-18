@@ -209,28 +209,30 @@ export function GalleryArtwork() {
       });
   };
 
+  const sortArtworks = (artworks: {[key: string]: Artwork}, criterion: string) => Object.values(artworks)?.sort((a, b) => {
+      if (!a?.[criterion as any] || !b?.[criterion as any]) return 0;
+      return b?.[criterion] - a?.[criterion];
+    });
+
   function filterByInquiry(query: string | unknown): any{
     let results;
     if (!inquiries) return;
-    const artworksWithInquiriesIds = Object?.keys(inquiries);
     switch (query) {
-      case 'All':
+      // 'Date', 'Likes', 'Dislikes', 'Views'
+      case 'Date':
         results = searchByString(searchString);
         if (!results) return;
         setDisplayArtworks(results as Artwork[]);
         break;
-      case 'Has Inquiries':
-        results = Object.values(state.galleryArtworks)?.filter(artwork =>
-          artworksWithInquiriesIds.includes(artwork._id!),
-        );
-        setDisplayArtworks(results);
-        break;
-      case 'None':
-        results = Object.values(state.galleryArtworks)?.filter(
-          artwork => !artworksWithInquiriesIds.includes(artwork._id!),
-        );
-        setDisplayArtworks(results);
-        break;
+        case 'Likes':
+          setDisplayArtworks(sortArtworks(state.galleryArtworks, 'likes'));
+          break;
+        case 'Dislikes':
+          setDisplayArtworks(sortArtworks(state.galleryArtworks, 'dislikes'));
+          break;
+        case 'Views':
+          setDisplayArtworks(sortArtworks(state.galleryArtworks, 'views'));
+          break;
       default:
         break;
     }
@@ -354,25 +356,14 @@ export function GalleryArtwork() {
                 <DartaRadioFilter
                   toolTips={toolTips}
                   fieldName="filterBy"
-                  options={['All', 'Has Inquiries', 'None']}
+                  options={['Date', 'Likes', 'Dislikes', 'Views']}
                   defaultValue="All"
                   handleRadioFilter={setFilterString}
                 />
               </Box>
             </Box>
-            {inquiries && displayArtworks && (
               <Box sx={{display: 'flex', gap: '1vh', flexDirection: 'column'}}>
-                {displayArtworks
-                      ?.sort((a, b) => {
-                        const dateA = a?.createdAt
-                          ? new Date(a.createdAt)
-                          : new Date(0);
-                        const dateB = b?.createdAt
-                          ? new Date(b.createdAt)
-                          : new Date(0);
-                        return (dateB as any) - (dateA as any);
-                      })
-                      .map(artwork => (
+                {displayArtworks && displayArtworks.map(artwork => (
                         <Box key={artwork.artworkId}>
                           <ArtworkCard
                             artwork={artwork as Artwork}
@@ -381,7 +372,6 @@ export function GalleryArtwork() {
                             croppingModalOpen={croppingModalOpen}
                             setCroppingModalOpen={setCroppingModalOpen}
                             inquiries={
-                              inquiries[artwork?._id!] ??
                               ([] as InquiryArtworkData[])
                             }
                             handleDeleteArtworkFromDarta={
@@ -393,7 +383,6 @@ export function GalleryArtwork() {
                           }
                   
               </Box>
-            )}
             {stepIndex >= 5 && run && (
               <Box>
                 <ArtworkCard

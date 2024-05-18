@@ -55,6 +55,11 @@ export interface IExhibitionService {
   }: {
     exhibitionId: string;
   }): Promise<Exhibition | void>;
+  getExhibitionAndLikesById({
+    exhibitionId
+  }: {
+    exhibitionId: string;
+  }): Promise<Exhibition | void>;
   readGalleryExhibitionForUser({
     exhibitionId,
   }: {

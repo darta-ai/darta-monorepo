@@ -750,7 +750,7 @@ export class ArtworkService implements IArtworkService {
       const artworkIds = (await edgeCursor.all()).filter(el => el);
 
       const galleryOwnedArtworkPromises = artworkIds.map(
-        async (artworkId: string) => this.getArtworkById(artworkId),
+        async (artworkId: string) => this.getArtworkByIdPlusRatings(artworkId),
       );
 
       const galleryOwnedArtwork = await Promise.all(
@@ -989,6 +989,193 @@ export class ArtworkService implements IArtworkService {
     };
   }
 
+  public async getArtworkByIdPlusRatings(artworkId: string): Promise<Artwork | null> {
+    const fullArtworkId = artworkId.includes('Artwork/')
+      ? artworkId
+      : `${CollectionNames.Artwork}/${artworkId}`;
+
+    const artworkQuery = `
+    WITH ${CollectionNames.Artwork}, 
+    ${CollectionNames.ArtworkArtists}, 
+    ${CollectionNames.ArtworkMediums}, 
+    ${CollectionNames.ArtworkCategories}, 
+    ${CollectionNames.ArtworkStyleTags}, 
+    ${CollectionNames.ArtworkVisualTags}
+    FOR artwork IN ${CollectionNames.Artwork}
+      FILTER artwork._id == @artworkId
+      LET artist = (
+          FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkTOArtist}
+          RETURN v
+      )[0]
+      LET medium = (
+          FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkToMedium}
+          RETURN v
+      )[0]
+      LET visualTags = (
+        FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkTOVisualTag}
+        RETURN v
+      )
+      LET styleTags = (
+        FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkTOStyleTag}
+        RETURN v
+      )
+      LET category = (
+        FOR v, e IN 1..1 OUTBOUND artwork ${EdgeNames.FROMArtworkTOCategory}
+        RETURN v
+      )[0]
+      // get Likes from EdgeNames.FR  FROMDartaUserTOArtworkLIKE: 
+      LET likes = (
+        FOR v, e IN 1..1 INBOUND artwork ${EdgeNames.FROMDartaUserTOArtworkLIKE}
+        RETURN v
+      )
+      // get Dislikes from EdgeNames.FROMDartaUserTOArtworkDISLIKE:
+      LET dislikes = (
+        FOR v, e IN 1..1 INBOUND artwork ${EdgeNames.FROMDartaUserTOArtworkDISLIKE}
+        RETURN v
+      )
+      // get Inquiries from EdgeNames.FROMDartaUserTOArtworkINQUIRE:
+      LET inquiries = (
+        FOR v, e IN 1..1 INBOUND artwork ${EdgeNames.FROMDartaUserTOArtworkINQUIRE}
+        RETURN v
+      )
+
+      // get Saves from EdgeNames.FROMDartaUserTOArtworkSAVE:
+      LET saves = (
+        FOR v, e IN 1..1 INBOUND artwork ${EdgeNames.FROMDartaUserTOArtworkSAVE}
+        RETURN v
+      )
+      // get Views from EdgeNames.FROMDartaUserTOArtworkVIEWED:
+      LET views = (
+        FOR v, e IN 1..1 INBOUND artwork ${EdgeNames.FROMDartaUserTOArtworkVIEWED}
+        RETURN v
+      )
+    RETURN {
+        art: artwork,
+        artist: artist.value,
+        medium: medium.value,
+        visualTags: visualTags,
+        styleTags: styleTags,
+        category: category.value,
+        likes: LENGTH(likes),
+        dislikes: LENGTH(dislikes),
+        inquiries: LENGTH(inquiries),
+        saves: LENGTH(saves),
+        views: LENGTH(views)
+    }`;
+
+    let artwork: Artwork;
+
+    let result;
+    try {
+      const edgeCursor = await this.db.query(artworkQuery, {
+        artworkId: fullArtworkId,
+      });
+      result = await edgeCursor.next();
+      const {art, artist, medium, visualTags, styleTags, category} = result
+      
+      let artworkVisualTags;
+      if (visualTags.length){
+        artworkVisualTags = visualTags.map((el: any) => el?.value)
+      }
+
+
+      let artworkStyleTags;
+      if (visualTags.length){
+        artworkStyleTags = styleTags.map((el: any) => el?.value)
+      }
+
+      artwork = {
+        ...art,
+        artistName: {value: artist},
+        artworkMedium: {value: medium},
+        artworkVisualTags,
+        artworkStyleTags,
+        artworkCategory: {value: category},
+        likes: result?.likes ?? 0,
+        dislikes: result?.dislikes ?? 0,
+        inquiries: result?.inquiries ?? 0,
+        saves: result?.saves ?? 0,
+        views: result?.views ?? 0
+      }
+
+    } catch (error) {
+      return null;
+    }
+
+    const {artworkImage} = artwork;
+
+    let shouldRegenerate;
+    if (artworkImage?.value) {
+      shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: artworkImage.value})
+      if (shouldRegenerate){
+        standardConsoleLog({request: 'ArtworkService', data: 'getArtworkById', message: 'should regenerate url'})
+      }
+      if (artworkImage.mediumImage?.value) {
+        shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: artworkImage.mediumImage.value})
+        if (shouldRegenerate){
+          standardConsoleLog({request: 'ArtworkService', data: 'getArtworkById', message: 'should regenerate medium url'})
+        }
+      }
+      if (artworkImage.smallImage?.value) {
+        shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: artworkImage.smallImage.value})
+        if (shouldRegenerate){
+          standardConsoleLog({request: 'ArtworkService', data: 'getArtworkById', message: 'should regenerate small url'})
+        }
+      }
+      
+    }
+    let artworkImageValueLarge = artworkImage?.value ?? null
+    let artworkImageValueMedium = artworkImage?.mediumImage?.value ?? null
+    let artworkImageValueSmall = artworkImage?.smallImage?.value ?? null
+
+    if(shouldRegenerate && artworkImage?.bucketName && artworkImage?.fileName){
+      try {
+        artworkImageValueLarge = await this.imageController.processGetFile({
+          fileName: artworkImage.fileName,
+          bucketName: artworkImage.bucketName,
+        });
+        if (artworkImage.mediumImage?.fileName && artworkImage.mediumImage?.bucketName){
+          artworkImageValueMedium = await this.imageController.processGetFile({
+            fileName: artworkImage.mediumImage?.fileName,
+            bucketName: artworkImage.mediumImage?.bucketName,
+          });
+        }
+        if (artworkImage.smallImage?.fileName && artworkImage.smallImage?.bucketName){
+          artworkImageValueSmall = await this.imageController.processGetFile({
+            fileName: artworkImage.smallImage?.fileName,
+            bucketName: artworkImage.smallImage?.bucketName,
+          });
+        }
+        if (ENV === 'production'){
+          await this.refreshArtworkImage({
+            artworkId, 
+            mainUrl: artworkImageValueLarge, 
+            mediumUrl: artworkImageValueMedium, 
+            smallUrl: artworkImageValueSmall
+          })
+        }
+      } catch (error) {
+        throw new Error('error getting artwork image');
+      }
+    }
+
+    return {
+      ...artwork,
+      artworkImage: {
+        ...artworkImage,
+        value: artworkImageValueLarge,
+        mediumImage: {
+          ...artworkImage.mediumImage,
+          value: artworkImageValueMedium
+        },
+        smallImage: {
+          ...artworkImage.smallImage,
+          value: artworkImageValueSmall
+        }
+      },
+    };
+  }
+
   public async confirmGalleryArtworkEdge({
     artworkId,
     galleryId,
@@ -1082,7 +1269,7 @@ export class ArtworkService implements IArtworkService {
     standardConsoleLog({
       request: 'ArtworkService', 
       data: 'sendInquiryEmail', 
-      message: `did not have necessary data for email request ${JSON.stringify({missingData})}`
+      message: `did not have necessary data for email request ${missingData}`
   })
   }
 }

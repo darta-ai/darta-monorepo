@@ -283,7 +283,7 @@ export function TombstonePortrait({
             </View>
           </ScrollView>
           <View style={{marginTop: 10, alignItems: 'flex-end'}}>
-              <TextElement style={{color: Colors.PRIMARY_400, fontSize: 10, fontFamily: 'DMSans_400Regular'}}>Image courtesy of the artist</TextElement>
+              <TextElement style={{color: Colors.PRIMARY_400, fontSize: 10, fontFamily: 'DMSans_400Regular'}}>Image copyright the artist</TextElement>
           </View>
         </View>
       <ScrollView scrollEventThrottle={7}>

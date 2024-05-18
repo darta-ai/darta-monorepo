@@ -4,36 +4,14 @@ import axios from 'axios';
 import { Buffer } from 'buffer';
 import { load } from 'cheerio';
 import {inject, injectable} from 'inversify';
-import fetch from 'node-fetch';
 
+import { standardConsoleLog } from '../config/templates';
 import { IAdminService,IArtworkService,IExhibitionService, IScrapeService } from './interfaces';
-
-type HighLevelData = {
-  artistName: string;
-  showTitle: string;
-  dates: string;
-};
 
 interface GalleryKeys {
   galleryName: string;
-  pressRelease: string;
-  highLevelData: {
-    artistName: string;
-    showTitle: string;
-    dates: string;
-  };
-  pressReleaseFunction: (data: any, key: string) => string;
-  highLevelDataFunction: (data: any, keys: HighLevelData) => any;
-  artworkDataFunction: (baseUrl:string, $: any, url: string) => any;
-  artworkHref: string;
-  artworkData?: {
-    artistName: string;
-    artworkTitle: string;
-    year: string;
-    medium: string;
-    dimensions: string;
-    artworkImageUrl?: string;
-  };
+  artworkDataFunction: ({baseUrl, $}: {baseUrl:string, $: any}) => any;
+  artworkDataFunctionBackup?: ({baseUrl, $}: {baseUrl:string, $: any}) => any;
 }
 
 @injectable()
@@ -117,55 +95,71 @@ export class ScrapeService implements IScrapeService {
 
   public async generateArtworksFromArtLogicUrl({ 
     url, galleryId, exhibitionId }: { url: string; galleryId: string; userId: string, exhibitionId: string }): Promise<Exhibition | void>{
-
       try {
+
+        console.log('galleryId', galleryId)
+
         const baseUrl = this.parseBaseUrl(url);
   
         const response = await axios.get(url);
         const $ = load(response.data);
-        
-        const artworks = await this.getArtworksFromArtLogicVersion1(baseUrl, $);
 
-        for (const [index, artwork] of artworks.entries()) {
-          // eslint-disable-next-line no-await-in-loop
-          await this.saveArtworkForAdminWithDuplicates({
-            galleryId,
-            exhibitionId: exhibitionId!,
-            artistName: artwork.artistName,
-            artworkTitle: artwork.artworkTitle,
-            year: artwork.artworkCreatedYear,
-            medium: artwork.artworkMedium,
-            dimensions: {
-              heightIn: { value: artwork.artworkDimensions.heightIn },
-              widthIn: { value: artwork.artworkDimensions.widthIn },
-              depthIn: { value: artwork.artworkDimensions.depthIn },
-              text: {
-                value: this.createDimensionsString({
-                  heightIn: artwork.artworkDimensions.heightIn,
-                  widthIn: artwork.artworkDimensions.widthIn,
-                  depthIn: artwork.artworkDimensions.depthIn,
-                }),
-              },
-              heightCm: {
-                value: this.convertInchesToCentimeters(artwork.artworkDimensions.heightIn),
-              },
-              widthCm: {
-                value: this.convertInchesToCentimeters(artwork.artworkDimensions.widthIn),
-              },
-              depthCm: {
-                value: this.convertInchesToCentimeters(artwork.artworkDimensions.depthIn),
-              },
-              displayUnit: {
-                value: 'in' as 'in' | 'cm',
-              },
-            },
-            artworkImage: artwork.artworkImage,
-            index,
-          });
-        }
+        const functions = this.getKeysFromGalleryId(galleryId);
         
+        let artworks = await functions?.artworkDataFunction({baseUrl, $});
+        const validArtworks = artworks.filter((artwork: any) => 
+          artwork.artworkTitle && 
+          artwork.artworkCreatedYear && 
+          artwork.artworkMedium && 
+          artwork.artworkDimensions.heightIn && 
+          artwork.artworkDimensions.widthIn && 
+          artwork.artworkImage
+        );
+        if (!validArtworks.length && functions?.artworkDataFunctionBackup){
+          artworks = await functions?.artworkDataFunctionBackup!({baseUrl, $});
+        }
+
+        if (artworks){
+          for (const [index, artwork] of artworks.entries()) {
+            // eslint-disable-next-line no-await-in-loop
+            await this.saveArtworkForAdminWithDuplicates({
+              galleryId,
+              exhibitionId: exhibitionId!,
+              artistName: artwork.artistName,
+              artworkTitle: artwork.artworkTitle,
+              year: artwork.artworkCreatedYear,
+              medium: artwork.artworkMedium,
+              dimensions: {
+                heightIn: { value: artwork.artworkDimensions.heightIn },
+                widthIn: { value: artwork.artworkDimensions.widthIn },
+                depthIn: { value: artwork.artworkDimensions.depthIn },
+                text: {
+                  value: this.createDimensionsString({
+                    heightIn: artwork.artworkDimensions.heightIn,
+                    widthIn: artwork.artworkDimensions.widthIn,
+                    depthIn: artwork.artworkDimensions.depthIn,
+                  }),
+                },
+                heightCm: {
+                  value: this.convertInchesToCentimeters(artwork.artworkDimensions.heightIn),
+                },
+                widthCm: {
+                  value: this.convertInchesToCentimeters(artwork.artworkDimensions.widthIn),
+                },
+                depthCm: {
+                  value: this.convertInchesToCentimeters(artwork.artworkDimensions.depthIn),
+                },
+                displayUnit: {
+                  value: 'in' as 'in' | 'cm',
+                },
+              },
+              artworkImage: artwork.artworkImage,
+              index,
+            });
+          }
+        }
       }catch (e) {
-        // console.log(e);
+        console.log(e);
       } 
 
       return this.adminService.getExhibitionForGallery({exhibitionId});
@@ -205,71 +199,279 @@ export class ScrapeService implements IScrapeService {
     return filteredParagraphs;
   }
 
+  private async getArtworksFromArtLogicVersion1(
+    // baseUrl: string,
+    // $: any,
+    {baseUrl, $}: {baseUrl: string, $: any},
+  ): Promise<Array<{ 
+    artistName: string; 
+    artworkTitle: string; 
+    artworkCreatedYear: string;
+    artworkMedium: string; 
+    artworkDimensions: {
+      heightIn: string;
+      widthIn: string;
+      depthIn: string;
+    } 
+    artworkImage: Images;
+  }>> {
 
-  private getExhibitionHighLevelDataVersion1($: any, { artistName, showTitle, dates }: HighLevelData): {
-    artistName: string;
-    showTitle: string;
-    startDate: string;
-    endDate: string;
-  } {
-    const extractedArtistName = $(artistName).text()?.trim() || '';
-    const extractedShowTitle = $(showTitle).text()?.trim() || '';
-    const extractedDates = $(dates).text()?.trim().split(' - ') || [];
-    const startDate = extractedDates[0]?.trim() || '';
-    const endDate = extractedDates[1]?.trim() || '';
+    const hrefs: string[] = [];
 
-    const [day, month] = startDate.split(' ');
-    const currentYear = new Date().getFullYear();
-    const updatedDateString = `${month} ${day}, ${currentYear}`;
-    let fullStartDate: Date | string = new Date(updatedDateString)
-    if (fullStartDate){
-      fullStartDate = fullStartDate.toISOString();
+    $('.subsection-works .records_list .item a').each((index: number, element: any) => {
+      const href = $(element).attr('href');
+      hrefs.push(href);
+    });
+
+    
+    // eslint-disable-next-line no-script-url
+    const filteredHrefs = hrefs.filter((href) => href !== 'javascript:void(0)');
+
+    const uniqueArray = filteredHrefs.reduce((acc: any, item) => {
+      if (!acc.includes(item)) {
+        acc.push(item);
+      }
+      return acc;
+    }, []);
+
+    const artworkPromises = uniqueArray.map(async (href: any) => {
+      const artworkUrl = `${baseUrl}${href}`;
+      const artworkResponse = await axios.get(artworkUrl);
+      const $artwork = load(artworkResponse.data);
+
+      const artistName = $artwork('.artwork_details_wrapper .artist a').text().trim();
+      const artworkTitle = $artwork('.artwork_details_wrapper .subtitle .title').text().trim();
+      const artworkCreatedYear = $artwork('.artwork_details_wrapper .subtitle .year').text().trim();
+      const artworkMedium = $artwork('.artwork_details_wrapper .detail_view_module_artwork_caption .medium').text().trim();
+      const dimensions = $artwork('.artwork_details_wrapper .detail_view_module_artwork_caption .dimensions').text().trim();
+      
+      const convertToDecimal = (value: string) => {
+        const match = value.trim().match(/^(\d+)(?:\s+(\d+)\/(\d+))?$/);
+        if (match) {
+          const [_, whole, numerator, denominator] = match;
+          const decimal = numerator && denominator
+            ? Number(whole) + Number(numerator) / Number(denominator)
+            : Number(whole);
+          return decimal.toString();
+        }
+        return value;
+      };
+    
+
+      const parseDimension = (dimensionStr: string) => {
+        // eslint-disable-next-line max-len
+        const threeDimensionalMatch = dimensionStr.trim().match(/^(\d+(?:\s+\d+\/\d+)?)\s*(?:x)\s*(\d+(?:\s+\d+\/\d+)?)\s*(?:x)\s*(\d+(?:\s+\d+\/\d+)?)?\s*(?:in|cm)?/i);
+        const twoDimensionalMatch = dimensionStr.trim().match(/^(\d+(?:\s+\d+\/\d+)?)\s*(?:x)\s*(\d+(?:\s+\d+\/\d+)?)\s*(?:in|cm)?/i);
+      
+        if (threeDimensionalMatch) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+          const [_, height, width, depth] = threeDimensionalMatch;
+          return {
+            heightIn: convertToDecimal(height?.trim() || '0'),
+            widthIn: convertToDecimal(width?.trim() || '0'),
+            depthIn: convertToDecimal(depth?.trim() || '0'),
+          };
+        } if (twoDimensionalMatch) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+          const [_, height, width] = twoDimensionalMatch;
+          return {
+            heightIn: convertToDecimal(height?.trim() || '0'),
+            widthIn: convertToDecimal(width?.trim() || '0'),
+            depthIn: '0',
+          };
+        }
+        return {
+          heightIn: '0',
+          widthIn: '0',
+          depthIn: '0',
+        };
+      };
+      
+      const dimensionsStr = dimensions.split('\n')[0];
+      const artworkDimensions = parseDimension(dimensionsStr);
+      
+
+    // Extract the image URL from the HTML
+    let artworkImageUrl = $artwork('#image_gallery .item .image a').attr('href');
+
+    if (!artworkImageUrl) {
+      artworkImageUrl = $artwork('.image img').attr('data-src');
+    }
+
+    const artworkImage = {
+      value: '',
+      fileData: '',
+      fileName: artworkTitle,
+    };
+
+    if (artworkImageUrl) {
+      try {
+        const response = await fetch(artworkImageUrl);
+        const buffer = await response.arrayBuffer();
+        const base64 = Buffer.from(buffer).toString('base64');
+        artworkImage.fileData = `data:image/jpeg;base64,${base64}`;
+      } catch (error: any) {
+        artworkImage.value = '';
+      }
     }
 
     return {
-      artistName: extractedArtistName,
-      showTitle: extractedShowTitle,
-      startDate: fullStartDate,
-      endDate: new Date(endDate).toISOString(),
-    };
+        artistName,
+        artworkTitle,
+        artworkCreatedYear,
+        artworkMedium,
+        artworkDimensions,
+        artworkImage,
+      };
+    });
+
+    const artworks = await Promise.all(artworkPromises);
+
+    return artworks;
   }
 
+  private async getArtworksFromArtLogicVersion2(
+    {baseUrl, $}: {baseUrl: string, $: any},
+  ): Promise<Array<{ 
+    artistName: string; 
+    artworkTitle: string; 
+    artworkCreatedYear: string;
+    artworkMedium: string; 
+    artworkDimensions: {
+      heightIn: string;
+      widthIn: string;
+      depthIn: string;
+    } 
+    artworkImage: Images;
+  }>> {
+    const hrefs: string[] = [];
+  
+    $('.subsection-works .records_list .item a').each((index: number, element: any) => {
+      const href = $(element).attr('href');
+      hrefs.push(href);
+    });
+  
+    // eslint-disable-next-line no-script-url
+    const filteredHrefs = hrefs.filter((href) => href !== 'javascript:void(0)');
+  
+    const uniqueArray = filteredHrefs.reduce((acc: any, item) => {
+      if (!acc.includes(item)) {
+        acc.push(item);
+      }
+      return acc;
+    }, []);
+  
+    const artworkPromises = uniqueArray.map(async (href: any) => {
+      const artworkUrl = `${baseUrl}${href}`;
+      const artworkResponse = await axios.get(artworkUrl);
+      const $artwork = load(artworkResponse.data);
+  
+      const artistName = $artwork('#content_module .artist a').text().trim();
+      const artworkTitle = $artwork('#content_module .title').text().trim();
+      const artworkCreatedYear = artworkTitle.match(/(\d{4})$/)?.[1] || '';
+      const artworkMedium = $artwork('#content_module .medium').text().trim();
+      const dimensions = $artwork('#content_module .dimensions').text().trim();
+  
+      const convertToDecimal = (value: string) => {
+        const match = value.trim().match(/^(\d+)(?:\s+(\d+)\/(\d+))?$/);
+        if (match) {
+          const [_, whole, numerator, denominator] = match;
+          const decimal = numerator && denominator
+            ? Number(whole) + Number(numerator) / Number(denominator)
+            : Number(whole);
+          return decimal.toString();
+        }
+        return value;
+      };
+  
+      const parseDimension = (dimensionStr: string) => {
+        // eslint-disable-next-line max-len
+        const threeDimensionalMatch = dimensionStr.trim().match(/^(\d+(?:\s+\d+\/\d+)?)\s*(?:x)\s*(\d+(?:\s+\d+\/\d+)?)\s*(?:x)\s*(\d+(?:\s+\d+\/\d+)?)?\s*(?:in|cm)?/i);
+        const twoDimensionalMatch = dimensionStr.trim().match(/^(\d+(?:\s+\d+\/\d+)?)\s*(?:x)\s*(\d+(?:\s+\d+\/\d+)?)\s*(?:in|cm)?/i);
+  
+        if (threeDimensionalMatch) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+          const [_, height, width, depth] = threeDimensionalMatch;
+          return {
+            heightIn: convertToDecimal(height?.trim() || '0'),
+            widthIn: convertToDecimal(width?.trim() || '0'),
+            depthIn: convertToDecimal(depth?.trim() || '0'),
+          };
+        } if (twoDimensionalMatch) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+          const [_, height, width] = twoDimensionalMatch;
+          return {
+            heightIn: convertToDecimal(height?.trim() || '0'),
+            widthIn: convertToDecimal(width?.trim() || '0'),
+            depthIn: '0',
+          };
+        }
+  
+        return {
+          heightIn: '0',
+          widthIn: '0',
+          depthIn: '0',
+        };
+      };
+  
+      const dimensionsStr = dimensions.split('\n')[0];
+      const artworkDimensions = parseDimension(dimensionsStr);
+        
+      // Extract the image URL from the HTML
+      // Extract the image URL from the HTML
+      let artworkImageUrl = $('#image_container_wrapper #image_container .item img').attr('src');
 
-  private getExhibitionHighLevelDataVersion2($: any): {
-    artistName: string;
-    showTitle: string;
-    startDate: string;
-    endDate: string;
-  } {
+      // If the 'src' attribute is not present, try getting the URL from 'data-src' attribute
+      if (!artworkImageUrl) {
+        artworkImageUrl = $('#image_container_wrapper #image_container .item img').attr('data-src');
+      }
 
-    const heroHeader = $('#hero_header');
-    const titleElement = heroHeader.find('.title a');
-    const subtitleElement = heroHeader.find('.subtitle');
-
-    const showTitle = titleElement.text().trim();
-    const subtitleText = subtitleElement.text().trim();
-
-    const artistName = subtitleText.split(' ')[0];
-    const datesText = subtitleElement.find('.subtitle_date').text().trim();
-
-    const [startDate, endDate] = datesText.split(' - ');
-
-    const [day, month] = startDate.split(' ');
-    const currentYear = new Date().getFullYear();
-    const updatedDateString = `${month} ${day}, ${currentYear}`;
-    const fullStartDate = new Date(updatedDateString).toISOString();
-
-    return {
-      artistName,
-      showTitle,
-      startDate: fullStartDate,
-      endDate: new Date(endDate)?.toISOString(),
-    };
+      // If the 'data-src' attribute is not present, try getting the URL from 'data-responsive-src' attribute
+      if (!artworkImageUrl) {
+        const $artwork2 = $('#image_container_wrapper #image_container .item img');
+        const responsiveSrcJson = $artwork2.attr('data-responsive-src');
+        if (responsiveSrcJson) {
+          const responsiveSrcObj = JSON.parse(responsiveSrcJson);
+          artworkImageUrl = responsiveSrcObj['1400']; // Change the key to the desired width
+        }
+      }
+  
+      const artworkImage = {
+        value: '',
+        fileData: '',
+        fileName: artworkTitle,
+      };
+  
+      if (artworkImageUrl) {
+        try {
+          const response = await fetch(artworkImageUrl);
+          const buffer = await response.arrayBuffer();
+          const base64 = Buffer.from(buffer).toString('base64');
+          artworkImage.fileData = `data:image/jpeg;base64,${base64}`;
+        } catch (error: any) {
+          artworkImage.value = '';
+        }
+      }
+  
+      return {
+        artistName,
+        artworkTitle,
+        artworkCreatedYear,
+        artworkMedium,
+        artworkDimensions,
+        artworkImage,
+      };
+    });
+  
+    const artworks = await Promise.all(artworkPromises);
+  
+    return artworks;
   }
-
-  private async getArtworksFromArtLogicVersion1(
-    baseUrl: string,
-    $: any,
+  
+  private async getArtworksFromArtLogicVersion3(
+    // baseUrl: string,
+    // $: any,
+    {baseUrl, $}: {baseUrl: string, $: any},
   ): Promise<Array<{ 
     artistName: string; 
     artworkTitle: string; 
@@ -312,7 +514,7 @@ export class ScrapeService implements IScrapeService {
       const dimensions = $artwork('.artwork_details_wrapper .detail_view_module_artwork_caption .dimensions').text().trim();
       
       const parseDimension = (dimensionStr: string) => {
-        const match = dimensionStr.trim().match(/^(\d+)(?:\s+(\d+)\s*\/\s*(\d+))?\s*(\w+)?$/);
+        const match = dimensionStr.trim().match(/^(\d+(?:\.\d+)?)\s*(?:x\s*(\d+(?:\.\d+)?)\s*(?:x\s*(\d+(?:\.\d+)?))?)?/);
         if (match) {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
           const [_, whole, numerator, denominator] = match;
@@ -328,8 +530,8 @@ export class ScrapeService implements IScrapeService {
       
       const parsedDimensions = dimensionsSpilt.map(parseDimension);
       
-      const heightIn = parsedDimensions[0].toString();
-      const widthIn = parsedDimensions[1].toString();
+      const heightIn = parsedDimensions[0]?.toString();
+      const widthIn = parsedDimensions[1]?.toString();
       const depthIn = parsedDimensions?.[2]?.toString() ?? "0";
 
       const artworkDimensions = {
@@ -378,83 +580,112 @@ export class ScrapeService implements IScrapeService {
     return artworks;
   }
 
-
-  private async getArtworksFromArtLogicVersion2(
-    baseUrl: string,
-    $: any,
-    fullUrl?: string,
-  ): Promise<Array<{ 
-    artistName: string; 
-    artworkTitle: string; 
+  private async getArtworksFromKatesFerriProjects({ $ }: { $: any }): Promise<Array<{
+    artistName: string;
+    artworkTitle: string;
     artworkCreatedYear: string;
-    artworkMedium: string; 
+    artworkMedium: string;
     artworkDimensions: {
       heightIn: string;
       widthIn: string;
       depthIn: string;
-    } 
+    };
     artworkImage: Images;
+    artworkPrice: string;
   }>> {
-
-    const worksUrl = fullUrl?.replace('overview', 'works')
-    const request = await axios.get(worksUrl!);
-    const $fullArtwork = load(request.data);
-
-    const hrefs: string[] = [];
-
-    $fullArtwork('ul.clearwithin li.item a').each((index: number, element: any) => {
-      const href = $(element).attr('href');
-      hrefs.push(href);
-    });
-    
-    const artworkPromises = hrefs.map(async (href) => {
-      const artworkUrl = `${baseUrl}${href}`;
-      const artworkResponse = await axios.get(artworkUrl);
-      const $artwork = load(artworkResponse.data);
-
-      const artistName = $artwork('.artwork_details_wrapper .artist a').text().trim();
-      const artworkTitle = $artwork('.artwork_details_wrapper .subtitle .title').text().trim();
-      const artworkCreatedYear = $artwork('.artwork_details_wrapper .subtitle .year').text().trim();
-      const artworkMedium = $artwork('.artwork_details_wrapper .detail_view_module_artwork_caption .medium').text().trim();
-      const dimensions = $artwork('.artwork_details_wrapper .detail_view_module_artwork_caption .dimensions').text().trim();
+    const artworkPromises = $('.sqs-block.image-block').map(async (index: number, element: any) => {
+      const figureElement = $(element).find('figure.sqs-block-image-figure');
+      const imgElement = figureElement.find('img');
+      const captionElement = figureElement.find('figcaption .image-caption p');
+  
+      const captionText = captionElement.text().trim();
+      const colonIndex = captionText.indexOf(':');
+  
+      if (colonIndex === -1) {
+        return null;
+      }
+  
+      const artistName = captionText.substring(0, colonIndex).trim();
+      const artworkInfo = captionText.substring(colonIndex + 1).trim();
+  
+      const openParenIndex = artworkInfo.indexOf('(');
+      const closeParenIndex = artworkInfo.indexOf(')');
+  
+      if (openParenIndex === -1 || closeParenIndex === -1) {
+        return null;
+      }
+  
+      const artworkTitle = artworkInfo.substring(0, openParenIndex).trim();
+      const artworkCreatedYear = artworkInfo.substring(openParenIndex + 1, closeParenIndex);
+  
+      const dimensionsRegex1 = /(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)\s*(?:x\s*(\d+(?:\.\d+)?))?\s*inches/;
+      const dimensionsRegex2 = /(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)\s*inches/;
+      const dimensionsRegex3 = /(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)\s*inches/;
+      const dimensionsRegex4 = /(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)\s*(?:feet|foot|ft)(?:\.)?/;
       
-
-      const parseDimension = (dimensionStr: string) => {
-        const match = dimensionStr.trim().match(/^(\d+)(?:\s+(\d+)\s*\/\s*(\d+))?\s*(\w+)?$/);
-        if (match) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-          const [_, whole, numerator, denominator] = match;
-          const parsedValue = numerator && denominator
-            ? Number(whole) + Number(numerator) / Number(denominator)
-            : Number(whole);
-          return parsedValue;
-        }
-        return 0;
-      };
-      
-      const dimensionsSpilt = dimensions.split('\n')[0].split('x');
-      
-      const parsedDimensions = dimensionsSpilt.map(parseDimension);
-      
-      const widthIn = parsedDimensions[0]?.toString() ?? "0";
-      const heightIn = parsedDimensions[1]?.toString() ?? "0";
-      const depthIn = parsedDimensions[2]?.toString() ?? "0";
-      
+      let artworkMedium = '';
       const artworkDimensions = {
-        heightIn,
-        widthIn,
-        depthIn,
+        heightIn: '',
+        widthIn: '',
+        depthIn: '',
       };
-      
-      // Extract the image URL from the HTML
-      const artworkImageUrl = $artwork('.image img').attr('data-src');
-      
+      let artworkPrice = '';
+  
+      const artworkInfoAfterYear = artworkInfo.substring(closeParenIndex + 1).trim();
+  
+      if (dimensionsRegex1.test(artworkInfoAfterYear)) {
+        const dimensionsMatch = artworkInfoAfterYear.match(dimensionsRegex1);
+        if (dimensionsMatch) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+          const [_, height, width, depth] = dimensionsMatch;
+          artworkMedium = artworkInfoAfterYear.substring(0, dimensionsMatch.index).trim().replace(/,\s*$/, '');
+          artworkDimensions.heightIn = height;
+          artworkDimensions.widthIn = width;
+          artworkDimensions.depthIn = depth || '';
+          artworkPrice = artworkInfoAfterYear.substring(dimensionsMatch.index + dimensionsMatch[0].length).trim();
+        }
+      } else if (dimensionsRegex2.test(artworkInfoAfterYear)) {
+        const dimensionsMatch = artworkInfoAfterYear.match(dimensionsRegex2);
+        if (dimensionsMatch) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+          const [_, height, width] = dimensionsMatch;
+          artworkMedium = artworkInfoAfterYear.substring(0, dimensionsMatch.index).trim().replace(/,\s*$/, '');
+          artworkDimensions.heightIn = height;
+          artworkDimensions.widthIn = width;
+          artworkPrice = artworkInfoAfterYear.substring(dimensionsMatch.index + dimensionsMatch[0].length).trim();
+        }
+      } else if (dimensionsRegex3.test(artworkInfoAfterYear)) {
+        const dimensionsMatch = artworkInfoAfterYear.match(dimensionsRegex3);
+        if (dimensionsMatch) {
+          artworkMedium = artworkInfoAfterYear.substring(0, dimensionsMatch.index).trim().replace(/,\s*$/, '');
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+          const [_, height, width, depth] = dimensionsMatch; // Use array destructuring
+          artworkDimensions.heightIn = height;
+          artworkDimensions.widthIn = width;
+          artworkDimensions.depthIn = depth;
+          artworkPrice = artworkInfoAfterYear.substring(dimensionsMatch.index + dimensionsMatch[0].length).trim();
+        }
+      } else if (dimensionsRegex4.test(artworkInfoAfterYear)) {
+        const dimensionsMatch = artworkInfoAfterYear.match(dimensionsRegex4);
+        if (dimensionsMatch) {
+          artworkMedium = artworkInfoAfterYear.substring(0, dimensionsMatch.index).trim().replace(/,\s*$/, '');
+          artworkDimensions.heightIn = (parseFloat(dimensionsMatch[1]) * 12).toString();
+          artworkDimensions.widthIn = (parseFloat(dimensionsMatch[2]) * 12).toString();
+          artworkPrice = artworkInfoAfterYear.substring(dimensionsMatch.index + dimensionsMatch[0].length).trim();
+        }
+      } else {
+        standardConsoleLog({message: 'Could not parse dimensions', data: artworkInfoAfterYear, request: "parsing kates ferri artwork"});
+        return null;
+      }
+  
+      const artworkImageUrl = imgElement.attr('data-src');
+  
       const artworkImage = {
         value: '',
         fileData: '',
         fileName: artworkTitle,
       };
-      
+  
       if (artworkImageUrl) {
         try {
           const response = await axios.get(artworkImageUrl, { responseType: 'arraybuffer' });
@@ -466,6 +697,7 @@ export class ScrapeService implements IScrapeService {
           artworkImage.value = '';
         }
       }
+  
       return {
         artistName,
         artworkTitle,
@@ -473,51 +705,112 @@ export class ScrapeService implements IScrapeService {
         artworkMedium,
         artworkDimensions,
         artworkImage,
+        artworkPrice,
       };
-    });
-
+    }).get();
+  
     const artworks = await Promise.all(artworkPromises);
-    return artworks;
+    const filteredArtworks = artworks.filter((artwork) => artwork !== null);
+  
+    return filteredArtworks;
   }
 
-  private async saveExhibitionForAdmin({artistName, galleryId, userId, showTitle, pressRelease, startDate, endDate}: {
+  private async getArtworksFroKiSmith({ $ }: { $: any }): Promise<Array<{
     artistName: string;
-    galleryId: string;
-    userId: string;
-    showTitle: string;
-    pressRelease: string;
-    startDate: string;
-    endDate: string;
-  }
-  ){
-
-    const exhibition = await this.adminService.createExhibitionForAdmin({galleryId, userId});
-
-    const modifiedExhibition = {
-      ...exhibition,
-      exhibitionTitle: {value : showTitle},
-      exhibitionPressRelease: {value: pressRelease},
-      exhibitionDates: {
-        // need to update to current year for first part of string
-        exhibitionStartDate: {value: startDate},
-        exhibitionEndDate: {value: endDate},
-        exhibitionDuration: {value: 'Temporary'},
-      },
-      exhibitionPrimaryImage: {fileData: '', fileName: showTitle},
-      exhibitionArtist: {value: artistName},
-      published: false,
-      exhibitionLocation: {
-        isPrivate: false,
-      },
-      receptionDates: {
-        hasReception: {value: 'No'},
-        receptionStartTime: {value: ''},
-        receptionEndTime: {value: ''},
+    artworkTitle: string;
+    artworkCreatedYear: string;
+    artworkMedium: string;
+    artworkDimensions: {
+      heightIn: string;
+      widthIn: string;
+      depthIn: string;
+    };
+    artworkImage: Images;
+  }>> {
+    const artworkPromises = $('ul[data-hook="product-list-wrapper"] li[data-hook="product-list-grid-item"]').map(async (index: number, element: any) => {
+      const artworkUrl = $(element).find('a[data-hook="product-item-container"]').attr('href');
+  
+      if (!artworkUrl) {
+        return null;
       }
-    }
+  
+      const artworkResponse = await axios.get(artworkUrl);
+      const $artwork = load(artworkResponse.data);
+  
+      const titleElement = $artwork('h1[data-hook="product-title"]');
+      const descriptionElement = $artwork('pre[data-hook="description"]');
+  
+      const titleText = titleElement.text().trim();
+      const [artworkTitle, artworkCreatedYear] = titleText.split(', ');
+        
+      const dimensionsText = descriptionElement.children().eq(0).text().trim();
+      const artworkMedium = descriptionElement.children().eq(1).text().trim();
+      const artistName = descriptionElement.children().eq(3).text().trim();  
 
-    const exhibitionResults = await this.adminService.editExhibitionForAdmin({galleryId, exhibition: modifiedExhibition as Exhibition});
-    return exhibitionResults;
+      const convertToDecimal = (value: string) => {
+        const match = value.trim().match(/^(\d+)(?:\s+(\d+)\/(\d+))?$/);
+        if (match) {
+          const [_, whole, numerator, denominator] = match;
+          const decimal = numerator && denominator
+            ? Number(whole) + Number(numerator) / Number(denominator)
+            : Number(whole);
+          return decimal.toString();
+        }
+        return value;
+      };
+  
+      const dimensionsRegex = /([\d.]+(?:\s+\d+\/\d+)?)\s*(?:x|×)\s*([\d.]+(?:\s+\d+\/\d+)?)\s*(?:x|×)\s*([\d.]+(?:\s+\d+\/\d+)?)\s*(?:in|inches)?/i;
+      const dimensionsMatch = dimensionsText.match(dimensionsRegex);
+      const artworkDimensions = {
+        heightIn: '',
+        widthIn: '',
+        depthIn: '',
+      };
+  
+      if (dimensionsMatch) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+        const [_, height, width, depth] = dimensionsMatch;
+        artworkDimensions.heightIn = convertToDecimal(height);
+        artworkDimensions.widthIn = convertToDecimal(width);
+        artworkDimensions.depthIn = convertToDecimal(depth);
+      }
+      const artworkImageElement = $artwork('div[data-hook="ProductImageDataHook.ProductImage"] img');
+      const artworkImageUrl = artworkImageElement.attr('src');
+  
+      const artworkImage = {
+        value: '',
+        fileData: '',
+        fileName: artworkTitle,
+      };
+  
+      if (artworkImageUrl) {
+        try {
+          const response = await axios.get(artworkImageUrl, { responseType: 'arraybuffer' });
+          const buffer = Buffer.from(response.data, 'binary');
+          const base64 = buffer.toString('base64');
+          const fileExtension = artworkImageUrl.split('.').pop()?.toLowerCase() || 'jpg';
+          artworkImage.fileData = `data:image/${fileExtension};base64,${base64}`;
+        } catch (error: any) {
+          artworkImage.value = '';
+        }
+      }  
+
+      console.log({artistName, artworkTitle, artworkCreatedYear, artworkMedium, artworkDimensions})
+  
+      return {  
+        artistName,
+        artworkTitle,
+        artworkCreatedYear,
+        artworkMedium,
+        artworkDimensions,
+        artworkImage,
+      };
+    }).get();
+  
+    const artworks = await Promise.all(artworkPromises);
+    const filteredArtworks = artworks.filter((artwork) => artwork !== null);
+  
+    return filteredArtworks;
   }
 
   // private async saveArtworkForAdmin({galleryId, exhibitionId, artistName, artworkTitle, year, medium, dimensions, artworkImage, index}: {
@@ -605,109 +898,32 @@ export class ScrapeService implements IScrapeService {
     const keys: { [key: string]: GalleryKeys } = {
       'Galleries/183505181': {
         galleryName: 'Massey Klein',
-        pressRelease: '.subsection-press_release .content_module.prose p',
-        highLevelData: {
-          artistName: '.exhibition-header .h1_subtitle',
-          showTitle: '.exhibition-header .h1_heading',
-          dates: '.exhibition-header .subtitle_date',
-        },
-        highLevelDataFunction: this.getExhibitionHighLevelDataVersion1,
-        pressReleaseFunction: this.getExhibitionPressReleaseVersion1,
         artworkDataFunction: this.getArtworksFromArtLogicVersion1,
-        artworkHref: '.subsection-works .records_list .item a',
-        artworkData: {
-          artistName: '.artwork_details_wrapper .artist a',
-          artworkTitle: '.artwork_details_wrapper .subtitle .title',
-          year: '.artwork_details_wrapper .subtitle .year',
-          medium: '.artwork_details_wrapper .detail_view_module_artwork_caption .medium',
-          dimensions: '.artwork_details_wrapper .detail_view_module_artwork_caption .dimensions',
-          artworkImageUrl: '#image_gallery .item .image a',
-        },
-        
       },
       'Galleries/80753011': {
         galleryName: 'Yi Gallery',
-        pressRelease: '.subsection-press_release .content_module.prose p',
-        highLevelData: {
-          artistName: '.exhibition-header .h1_heading',
-          showTitle: '.exhibition-header .h1_subtitle',
-          dates: '.exhibition-header .subtitle_date',
-        },
-        highLevelDataFunction: this.getExhibitionHighLevelDataVersion1,
-        pressReleaseFunction: this.getExhibitionPressReleaseVersion1,
         artworkDataFunction: this.getArtworksFromArtLogicVersion1,
-        artworkHref: '.subsection-works .records_list .item a',
-        artworkData: {
-          artistName: '.artwork_details_wrapper .artist a',
-          artworkTitle: '.artwork_details_wrapper .subtitle .title',
-          year: '.artwork_details_wrapper .subtitle .year',
-          medium: '.artwork_details_wrapper .detail_view_module_artwork_caption .medium',
-          dimensions: '.artwork_details_wrapper .detail_view_module_artwork_caption .dimensions',
-          artworkImageUrl: '#image_gallery .item .image a',
-        }
       },
       'Galleries/185714669': {
         galleryName: 'Trotter&Sholer',
-        pressRelease: '.subsection-press_release .content_module.prose p',
-        highLevelData: {
-          artistName: '.exhibition-header .h1_subtitle',
-          showTitle: '.exhibition-header .h1_heading',
-          dates: '.exhibition-header .subtitle_date',
-        },
-        highLevelDataFunction: this.getExhibitionHighLevelDataVersion2,
-        pressReleaseFunction: this.getExhibitionPressReleaseVersion2,
-        artworkDataFunction: this.getArtworksFromArtLogicVersion2,
-        artworkHref: '.subsection-works .records_list .item a',
-        artworkData: {
-          artistName: '.artwork_details_wrapper .artist a',
-          artworkTitle: '.artwork_details_wrapper .subtitle .title',
-          year: '.artwork_details_wrapper .subtitle .year',
-          medium: '.artwork_details_wrapper .detail_view_module_artwork_caption .medium',
-          dimensions: '.artwork_details_wrapper .detail_view_module_artwork_caption .dimensions',
-          artworkImageUrl: '#image_gallery .item .image a',
-        },
+        artworkDataFunction: this.getArtworksFromArtLogicVersion1,
       },
       'Galleries/184287215': {
         galleryName: 'Thomas Nickles',
-        pressRelease: '.subsection-press_release .content_module.prose p',
-        highLevelData: {
-          artistName: '.exhibition-header .h1_subtitle',
-          showTitle: '.exhibition-header .h1_heading',
-          dates: '.exhibition-header .subtitle_date',
-        },
-        highLevelDataFunction: this.getExhibitionHighLevelDataVersion1,
-        pressReleaseFunction: this.getExhibitionPressReleaseVersion2,
         artworkDataFunction: this.getArtworksFromArtLogicVersion1,
-        artworkHref: '.subsection-works .records_list .item a',
-        artworkData: {
-          artistName: '.artwork_details_wrapper .artist a',
-          artworkTitle: '.artwork_details_wrapper .subtitle .title',
-          year: '.artwork_details_wrapper .subtitle .year',
-          medium: '.artwork_details_wrapper .detail_view_module_artwork_caption .medium',
-          dimensions: '.artwork_details_wrapper .detail_view_module_artwork_caption .dimensions',
-          artworkImageUrl: '#image_gallery .item .image a',
-        },
       },
-      'Galleries/202083685': {
-        galleryName: 'Yi Gallery',
-        pressRelease: '.subsection-press_release .content_module.prose p',
-        highLevelData: {
-          artistName: '.exhibition-header .h1_heading',
-          showTitle: '.exhibition-header .h1_subtitle',
-          dates: '.exhibition-header .subtitle_date',
-        },
-        highLevelDataFunction: this.getExhibitionHighLevelDataVersion1,
-        pressReleaseFunction: this.getExhibitionPressReleaseVersion1,
+      'Galleries/38504882': {
+        galleryName: 'Kates Ferri Projects',
+        artworkDataFunction: this.getArtworksFromKatesFerriProjects,
+      },
+      'Galleries/182933530': {
+        galleryName: 'Natalie Karg',
         artworkDataFunction: this.getArtworksFromArtLogicVersion1,
-        artworkHref: '.subsection-works .records_list .item a',
-        artworkData: {
-          artistName: '.artwork_details_wrapper .artist a',
-          artworkTitle: '.artwork_details_wrapper .subtitle .title',
-          year: '.artwork_details_wrapper .subtitle .year',
-          medium: '.artwork_details_wrapper .detail_view_module_artwork_caption .medium',
-          dimensions: '.artwork_details_wrapper .detail_view_module_artwork_caption .dimensions',
-          artworkImageUrl: '#image_gallery .item .image a',
-        }
+        artworkDataFunctionBackup: this.getArtworksFromArtLogicVersion2,
+      },
+      'Galleries/67002969':{
+        galleryName: 'Ki Smith Gallery',
+        artworkDataFunction: this.getArtworksFroKiSmith,
       }
     };
 
