@@ -7,7 +7,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
+import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming, listExhibitionPreviewUpcomingUserFollowing} from "../../api/exhibitionRoutes";
 import { ETypes, StoreContext, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes, ViewStoreContext, ViewETypes} from "../../state";
 import { Artwork, GalleryPreview, MapPinCities, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types";
 import { listExhibitionPinsByCity } from "../../api/locationRoutes";
@@ -103,7 +103,7 @@ function AnimatedSplashScreen({ children }) {
         listExhibitionPreviewUserFollowing({ limit: 7 }),
         // exhibitionMapPins
         listExhibitionPinsByCity({ cityName: MapPinCities.newYork }),
-        // likedArtwork
+        // likedArtwork TODO: FIX THIS FOR JUST IDS
         listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.LIKE, limit: 1 }),
         // savedArtwork
         listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 40 }),
@@ -154,9 +154,8 @@ function AnimatedSplashScreen({ children }) {
       exhibitionDispatch({type: ExhibitionETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
 
 
-
       // Map Screen 
-      if (exhibitionMapPins) {
+      if (exhibitionMapPins && galleryFollows) {
         const userGalleryFollowed = galleryFollows?.reduce((acc, el) => {
           if (el?._id) {
             acc[el._id] = true; // Set the value to true, or some other logic if needed
@@ -168,21 +167,6 @@ function AnimatedSplashScreen({ children }) {
           mapPins: exhibitionMapPins,
           mapPinCity: MapPinCities.newYork,
           userGalleryFollowed,
-        });
-      }
-
-  
-
-      // Gallery Follows Screen
-      if (galleryFollows?.length) {
-        const galleryPreviews: {[key: string] : GalleryPreview} = galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: el }), {})
-        galleryDispatch({
-          type: GalleryETypes.setGalleryPreviewMulti,
-          galleryPreviews
-        });
-        userDispatch({
-          type: UserETypes.setUserFollowGalleriesMulti,
-          galleryFollowIds: galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: true }), {})
         });
       }
 
@@ -221,10 +205,23 @@ function AnimatedSplashScreen({ children }) {
         })
       }
 
+      // Gallery Follows Screen
+      if (galleryFollows?.length) {
+        const galleryPreviews: {[key: string] : GalleryPreview} = galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: el }), {})
+        galleryDispatch({
+          type: GalleryETypes.setGalleryPreviewMulti,
+          galleryPreviews
+        });
+        userDispatch({
+          type: UserETypes.setUserFollowGalleriesMulti,
+          galleryFollowIds: galleryFollows.reduce((acc, el) => ({ ...acc, [el?._id]: true }), {})
+        });
+      }
+
       await SplashScreen.hideAsync();
       setAppReady(true)
     } catch (e) {
-      console.log('!!!', e);
+      // console.log('!!!', e);
     } finally {
       setAppReady(true);
     }

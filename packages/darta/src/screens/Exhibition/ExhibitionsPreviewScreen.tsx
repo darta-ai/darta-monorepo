@@ -7,7 +7,7 @@ import {
   ExhibitionRootEnum
 } from '../../typing/routes';
 import { UIStoreContext, UiETypes, GalleryStoreContext, ExhibitionStoreContext, ExhibitionETypes} from '../../state';
-import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
+import { listExhibitionPreviewUpcomingUserFollowing, listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
 
 import {
   heightPercentageToDP as hp,
@@ -75,7 +75,7 @@ export function ExhibitionPreviewScreen({
       case ExhibitionPreviewEnum.forthcoming:
         setErrorHeader('No exhibitions to show')
         setErrorText('When upcoming exhibitions are available you will see them here.')
-        return exhibitionState.forthcomingExhibitionPreviews
+        return exhibitionState.forthcomingExhibitionPreviews;
       default:
         return exhibitionState.exhibitionPreviews
     }
@@ -129,12 +129,15 @@ export function ExhibitionPreviewScreen({
       case ExhibitionPreviewEnum.following:
         const userFollowingExhibitionPreviews = await listExhibitionPreviewUserFollowing({ limit: 10 })
         exhibitionDispatch({type: ExhibitionETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
+        break;
       case ExhibitionPreviewEnum.onView:
         const exhibitionPreviewsForthcoming = await listExhibitionPreviewsForthcoming({ limit: 10 })
         exhibitionDispatch({type: ExhibitionETypes.saveForthcomingExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsForthcoming})
+        break;
       case ExhibitionPreviewEnum.forthcoming:
         const exhibitionPreviewsCurrent = await listExhibitionPreviewsCurrent({ limit: 10 })
         exhibitionDispatch({type: ExhibitionETypes.saveCurrentExhibitionPreviews, exhibitionPreviews: exhibitionPreviewsCurrent})
+        break;
       default:
         setTimeout(() => {
           setRefreshing(false);
@@ -203,7 +206,7 @@ export function ExhibitionPreviewScreen({
     }
     
     try{
-        if (!exhibitionId || !galleryId) return
+      if (!exhibitionId || !galleryId) return
         navigation.navigate(ExhibitionRootEnum.TopTab, {exhibitionId, galleryId, internalAppRoute: true});
     } catch(error: any) {
     }

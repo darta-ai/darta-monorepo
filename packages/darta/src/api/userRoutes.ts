@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Exhibition, GalleryPreview, Images, MobileUser, USER_ARTWORK_EDGE_RELATIONSHIP } from '@darta-types';
 
 const URL = `${process.env.EXPO_PUBLIC_API_URL}users`;
-import { generateHeaders } from './utls';
+import { generateHeaders, generateUid } from './utls';
 
 export async function createUser({
     uid,
@@ -95,26 +95,30 @@ export async function editDartaUserAccount({
   legalFirstName,
   legalLastName,
   email,
-  uid,
+  expoPushToken
 }: {
   profilePicture?: Images
   userName?: string;
   legalFirstName?: string;
   legalLastName?: string;
   email?: string;
-  uid?: string;
+  expoPushToken?: string;
 }): Promise<any> {
   try {
     const headers = await generateHeaders();
-    const {data} = await axios.post(`${URL}/editDartaUser`, {profilePicture,
+    const uid = await generateUid();
+    const {data} = await axios.post(`${URL}/editDartaUser`, {
+      profilePicture,
       userName,
       legalFirstName,
       legalLastName,
       email,
-      uid}, {headers});
+      uid, 
+      expoPushToken
+    }, {headers});
     return data;
   } catch (error:any) {
-    // console.log({error: error, message: error.message})
+    console.log({error: error, message: error.message})
     return error.message;
   }
 }

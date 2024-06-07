@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "948875902945-fgnru97hkocgnfnmsfja9mrfc5msf0lc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android.darta",
+            "certificate_hash": "ddb61d2392a56000c36e090b89fdc4c44a4e84aa"
+          }
+        },
+        {
           "client_id": "948875902945-vsjsp7i9v2lb9liposl3bq1m2rn8ibls.apps.googleusercontent.com",
           "client_type": 3
         }

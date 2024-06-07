@@ -1,8 +1,9 @@
 import * as dotenv from 'dotenv';
-// eslint-disable-next-line import/no-unresolved
-import {initializeApp} from 'firebase-admin/app';
+import admin, { ServiceAccount } from 'firebase-admin';
 // eslint-disable-next-line import/no-unresolved
 import {getAuth} from 'firebase-admin/auth';
+
+import serviceAccount from '../serviceAccountKey.json';
 
 dotenv.config();
 
@@ -15,8 +16,11 @@ export const firebaseConfig = {
   messagingSenderId: process.env.FIREBASE_SENDER_ID,
   appId: process.env.FIREBASE_APP_ID,
   measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+  credential: admin.credential.cert(serviceAccount as ServiceAccount),
 };
 
-const app = initializeApp(firebaseConfig);
+const app = admin.initializeApp(firebaseConfig);
+
+export const remoteConfig = app.remoteConfig();
 
 export const auth = getAuth(app);

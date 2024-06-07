@@ -40,9 +40,6 @@ export const dartaLogo = StyleSheet.create({
 
 export function UserInquiredArtwork({navigation}: {navigation: any}) {
   const {userState, userDispatch} = React.useContext(UserStoreContext);
-
-  const errorMessageText = ""
-
   const [artworkData, setArtworkData] = React.useState<Artwork[] | null>(null)
   const [hasNoArtwork, setHasNoArtwork] = React.useState<boolean>(true)
 
@@ -71,14 +68,14 @@ export function UserInquiredArtwork({navigation}: {navigation: any}) {
       }
     } 
 
-  }, [userState.userInquiredArtwork]);
+  }, [userState.userInquiredArtwork, userState.artworkData]);
 
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try{
-      const inquiredArt = await listUserArtworkAPI({action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 10})
+      const inquiredArt = await listUserArtworkAPI({action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 100})
       let inquiredArtworkIds = {}
       if (inquiredArt && Object.values(inquiredArt).length > 0){
         inquiredArtworkIds = Object.values(inquiredArt).reduce((acc, el) => ({...acc, [el?._id as string] : true}), {})

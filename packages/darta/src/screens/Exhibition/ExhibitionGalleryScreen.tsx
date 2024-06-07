@@ -177,7 +177,7 @@ followContainer: {
     marginBottom: 24,
   },
   pressableStyle: {
-    width: 130,
+    width: 140,
     height: 38,
     backgroundColor: Colors.PRIMARY_950,
     borderRadius: 20,
@@ -590,7 +590,7 @@ export function ExhibitionGalleryScreen({
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
-          console.log(`Can't handle URL: ${url}`);
+          // console.log(`Can't handle URL: ${url}`);
         } else {
           return Linking.openURL(url);
         }
@@ -659,17 +659,17 @@ export function ExhibitionGalleryScreen({
             )}
             <View style={galleryDetailsStyles.followContainer}>
             {!followsGallery && (
-            <Animated.View style={{opacity: opacitySetOne, transform: [{ translateX: translateX }] }}>
-                <TouchableOpacity style={{...galleryDetailsStyles.pressableStyle, backgroundColor: Colors.PRIMARY_50, borderColor: Colors.PRIMARY_500, borderWidth: 1}} onPress={() => followGallery()}>
-                  <View style={{width: 30}}>
-                    {loadingFollow && <ActivityIndicator size={20} color={Colors.PRIMARY_950} />}
-                    {!loadingFollow && <SVGs.HeartFill />}
-                  </View>
-                  <View style={{width: 80}}>
-                    <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_950}}>Follow</TextElement>
-                  </View>
-                </TouchableOpacity>
-            </Animated.View>
+              <Animated.View style={{opacity: opacitySetOne, transform: [{ translateX: translateX }] }}>
+                  <TouchableOpacity style={{...galleryDetailsStyles.pressableStyle, backgroundColor: Colors.PRIMARY_50, borderColor: Colors.PRIMARY_500, borderWidth: 1}} onPress={() => followGallery()}>
+                    <View style={{width: 30}}>
+                      {loadingFollow && <ActivityIndicator size={20} color={Colors.PRIMARY_950} />}
+                      {!loadingFollow && <SVGs.HeartFill />}
+                    </View>
+                    <View style={{width: 80}}>
+                      <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_950}}>Follow</TextElement>
+                    </View>
+                  </TouchableOpacity>
+              </Animated.View>
               )}
             {followsGallery && (
             <Animated.View style={{opacity: opacitySetTwo, transform: [{ translateX: Animated.subtract(100, translateX) }]}}>

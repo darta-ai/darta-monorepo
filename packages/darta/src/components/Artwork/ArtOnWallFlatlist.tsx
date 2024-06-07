@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Platform,
   StyleSheet,
   View,
 } from 'react-native';
@@ -163,10 +164,6 @@ export function ArtOnWallFlatList({
     artwork: {
       height: artDimensions.artHeightPixels,
       width: artDimensions.artWidthPixels,
-      // shadowColor: Colors.PRIMARY_300, // Shadow color should generally be black for realistic shadows
-      // shadowOffset: { width: 0, height: 4.29 }, // Adjust the height for the depth of the shadow
-      // shadowOpacity: 1,
-      // shadowRadius: 4.29, // A larger shadow
       elevation: 4,
     },
     surfaceStyles: {
@@ -183,10 +180,15 @@ export function ArtOnWallFlatList({
     },
   });
 
-  const longPressGesture = Gesture.LongPress()
+  const longPressGesture = Platform.OS === 'android' ? Gesture.LongPress()
   .onStart((event) => {
     if (event.numberOfPointers === 1) {
       runOnJS(toggleArtTombstone)();
+    }
+  }) : Gesture.Tap()
+  .onEnd((event) => {
+    if (event.numberOfPointers === 1) {
+      runOnJS(toggleArtTombstone)(); // handle single tap
     }
   });
 

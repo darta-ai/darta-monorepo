@@ -11,11 +11,11 @@ import { PastExhibitionTopTabNavigator } from './PastExhibitionTopTabNavigator';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { useDeepLinking } from '../../components/LinkingAndNavigation/deepLinking';
-import { View, Pressable, StyleSheet} from 'react-native';  
+import { View, Pressable, Share } from 'react-native';  
 import { HeaderBackButton } from '@react-navigation/elements';
 import { CommonActions } from '@react-navigation/native';
 import { IconButton } from 'react-native-paper';
-import Share from 'react-native-share'
+import * as Sharing from 'expo-sharing';
 import { ExhibitionHomeTopTabNavigator } from './ExhibitionHomeTopTabNavigator';
 import { GenericLoadingScreen } from '../../screens/Loading/GenericLoading';
 import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
@@ -35,15 +35,27 @@ export function ExhibitionStackNavigator() {
 
   const shareExhibition = async () => {
     if (!uiState.exhibitionShareDetails) return;
+    const canShare = await Sharing.isAvailableAsync();
     try {
-      await Share.open({
-        url: uiState.exhibitionShareDetails.shareURL ?? "",
-        // message: state.exhibitionShareDetails.shareURLMessage ?? "",
-      });
+      const shareOptions = {
+        mimeType: 'text/plain',
+        dialogTitle: 'Share Exhibition',
+        UTI: 'public.plain-text',
+      };
+  
+      const canShare = await Sharing.isAvailableAsync();
+      if (canShare) {
+        // await Sharing.shareAsync(uiState.exhibitionShareDetails.shareURL ?? '', shareOptions);
+        await Share.share({
+          url: uiState.exhibitionShareDetails.shareURL ?? '',
+          message: uiState.exhibitionShareDetails.shareURL ?? '',
+        });
+      } else {
+        // console.log('Sharing is not available on this device');
+        // Handle the case when sharing is not available
+      }
     } catch (error) {
-
     }
-
   }
 
   return (

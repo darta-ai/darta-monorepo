@@ -1,12 +1,14 @@
 import React from 'react';
-import {View, StyleSheet, ScrollView, Platform, Linking, RefreshControl, Text, Alert} from 'react-native';
+import {View, StyleSheet, ScrollView, Platform, Linking, RefreshControl, Text, Alert } from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
+import { format } from 'date-fns';
 // import FastImage from 'react-native-fast-image'
 
 import * as Colors from '@darta-styles';
 import { UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes} from '../../state';
 import {TextElement} from '../../components/Elements/_index';
-import {customFormatTimeString, customLocalDateStringStart, customLocalDateStringEnd, simplifyAddressCity, simplifyAddressMailing} from '../../utils/functions';
+import {customFormatTimeString, customLocalDateStringStart, customLocalDateStringEnd} from '../../utils/functions';
+import * as Calendar from 'expo-calendar';
 import { ActivityIndicator, Surface } from 'react-native-paper';
 import { listGalleryExhibitionPreviewForUser } from '../../api/galleryRoutes';
 import {
@@ -358,9 +360,7 @@ export function ExhibitionDetailsScreen({
             }
         }
         handleExhibitionData()
-    
     }, []);
-
 
     React.useEffect(() => {
         if (currentExhibition){
@@ -374,7 +374,7 @@ export function ExhibitionDetailsScreen({
 
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const onRefresh = React.useCallback(async () => {
+  const onRefresh = async () => {
     setRefreshing(true);
     try{
         if (!exhibitionId) {
@@ -395,38 +395,108 @@ export function ExhibitionDetailsScreen({
     }
         setTimeout(() => {
             setRefreshing(false);
-        }, 500)  }, []);
+        }, 500)  
+    }
 
 
     // const [isCalendarFailure, setFailure] = React.useState<boolean>(false);
 
-    // const saveExhibitionToCalendar = async () => {
-    //     // add an event to the calendar using the Calendar api from expo
-    //     const { status } = await Calendar.requestCalendarPermissionsAsync();
-    //       if (status === 'granted') {
-    //         const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+    const saveExhibitionToCalendar = async () => {
+        try {
+            // Request calendar permissions
+            const { status } = await Calendar.requestCalendarPermissionsAsync();
+            if (status === 'granted') {
+              // Get all calendars
+              const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+        
+              let targetCalendar: Calendar.Calendar | undefined;
+        
+              if (Platform.OS === 'ios') {
+                // Find the default calendar on iOS
+                targetCalendar = calendars.find(calendar => calendar.source.name === 'Default');
+              } else {
+                // Find the first available calendar on Android
+                targetCalendar = calendars.find(calendar => calendar.allowsModifications);
+              }
+        
+              if (targetCalendar) {
+                // Create a new calendar event
+                const eventId = await Calendar.createEventAsync(targetCalendar.id, {
+                title: `${currentExhibition?.exhibitionTitle?.value} at ${galleryName}`,
+                // startDate: receptionOpenFullDate as Date,
+                // endDate: receptionCloseFullDate as Date,
+                location: currentExhibition?.exhibitionLocation?.locationString?.value!,
+                  alarms: [
+                    {
+                      relativeOffset: -60, // Remind 15 minutes before the event starts
+                    },
+                  ],
+                });
+        
+                // console.log(`Event created with ID: ${eventId}`);
+                // Show a success message to the user or perform any other action
+              } else {
+                // console.log('No suitable calendar found');
+                // Handle the case when no suitable calendar is found
+              }
+            }
+          } catch (error) {
+            // console.log('Error adding event to calendar:', error);
+            // Handle the error appropriately (e.g., show an error message to the user)
+          }
+        console.log('!')
+    }
 
-    //         const defaultCalendars = calendars.filter(
-    //             (each) => each.source.name === 'Default',
-    //           )
-    //         if (defaultCalendars.length === 0 || !defaultCalendars[0].id){
-    //             setFailure(true)
-    //             return
-    //         }
-    //         try{
-    //             await Calendar.createEventAsync(defaultCalendars[0].id, {
-    //                 title: `${currentExhibition?.exhibitionTitle?.value} at ${galleryName}`,
-    //                 startDate: receptionOpenFullDate as Date,
-    //                 endDate: receptionCloseFullDate as Date,
-    //                 location: currentExhibition?.exhibitionLocation?.locationString?.value!,
-    //                 notes: 'Reception added to calendar by darta'
-    //               })
-    //         } catch(error){
-    //             setFailure(true)
-    //         }
-    //     }
-    // }
-
+    const openCalendar = async () => {
+        try {
+          const title = currentExhibition?.exhibitionTitle?.value;
+          const location = currentExhibition?.exhibitionLocation?.locationString?.value;
+          const startDate = new Date(currentExhibition?.exhibitionDates.exhibitionStartDate.value!);
+          const endDate = new Date(currentExhibition?.exhibitionDates.exhibitionEndDate.value!);
+      
+          if (!title || !location || !startDate || !endDate) {
+            // console.log('Error: Missing event details');
+            return;
+          }
+      
+          const eventData = {
+            title,
+            location,
+            startDate,
+            endDate,
+          };
+      
+        //   console.log('Event Data:', eventData);
+      
+          // Request permission to access the calendar
+          const { status } = await Calendar.requestCalendarPermissionsAsync();
+      
+          if (status === 'granted') {
+            // Create a new calendar event
+            const event = {
+              title: eventData.title,
+              startDate: eventData.startDate,
+              endDate: eventData.endDate,
+              location: eventData.location,
+            };
+      
+            // Save the event to the default calendar
+            const eventId = await Calendar.createEventAsync('DEFAULT', event);
+      
+            // console.log('Event created with ID:', eventId);
+      
+            // Open the Calendar app to the newly created event
+            Calendar.openEventInCalendar(eventId);
+          } else {
+            // console.log('Calendar permission not granted');
+            // Handle the case when calendar permission is not granted
+            Alert.alert('Calendar Permission', 'Please grant permission to access the calendar.');
+          }
+        } catch (error) {
+        //   console.log('Error creating calendar event:', error);
+          // Handle the error appropriately (e.g., show an error message to the user)
+        }
+      };
     // const alertCalendar = () => {
     //     if(receptionOpenFullDate <= new Date()) {
     //         Alert.alert(`The ${currentExhibition?.exhibitionTitle.value} is in the past`, ``, [
@@ -493,10 +563,8 @@ export function ExhibitionDetailsScreen({
                         <Surface elevation={2} style={{backgroundColor: 'transparent'}}>
                             <DartaImageComponent 
                             uri={currentExhibition?.exhibitionPrimaryImage ?? null}
-                            // priority={FastImage.priority.normal}
                             priority="normal"
                             style={exhibitionDetailsStyles.heroImage}
-                            // resizeMode={FastImage.resizeMode.contain}
                             size={"largeImage"}
                             />
                         </Surface>
@@ -533,13 +601,13 @@ export function ExhibitionDetailsScreen({
                         </TextElement>
                     </View>
                     {hasReception && receptionOpenFullDate >= new Date() && (
-                    <View style={{marginBottom: 12}}>
-                        <DartaIconButtonWithText 
-                            text={`Reception: ${receptionDateString} ${receptionTimeString}`}
-                            iconComponent={SVGs.CalendarIcon}
-                            onPress={() => () => {}}
-                        />
-                    </View>
+                        <View style={{marginBottom: 12}}>
+                            <DartaIconButtonWithText 
+                                text={`Reception: ${receptionDateString} ${receptionTimeString}`}
+                                iconComponent={SVGs.CalendarIcon}
+                                onPress={() => () => {}}
+                            />
+                        </View>
                     )}
                         <GalleryLocation
                             galleryLocationData={currentExhibition?.exhibitionLocation!}
@@ -574,6 +642,30 @@ export function ExhibitionDetailsScreen({
                         </MapView>
                     </View> */}
                 </View>
+                {/* TO-DO: Fix */}
+                {/* <View style={exhibitionDetailsStyles.informationContainer}>
+                    <TextElement style={globalTextStyles.sectionHeaderTitle}>
+                        Add to Calendar
+                    </TextElement>
+                    <View style={{display: 'flex', flexDirection: 'column', gap: 12, marginTop: 12}}>
+                    {hasReception && receptionOpenFullDate >= new Date() && (
+                        <View style={{marginBottom: 12}}>
+                            <DartaIconButtonWithText 
+                                text={`Add Reception: ${receptionDateString} ${receptionTimeString}`}
+                                iconComponent={SVGs.CalendarIcon}
+                                onPress={() => () => {}}
+                            />
+                        </View>
+                        )}
+                        <View style={{marginBottom: 12, marginTop: 12}}>
+                            <DartaIconButtonWithText 
+                                text={`Create Calendar Event`}
+                                iconComponent={SVGs.CalendarIcon}
+                                onPress={openCalendar}
+                            />
+                        </View>
+                    </View>
+                </View> */}
                 <View style={{...exhibitionDetailsStyles.informationContainer}}>
                     <View style={{marginBottom: 24}}>
                         <TextElement style={globalTextStyles.sectionHeaderTitle}>

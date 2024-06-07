@@ -283,7 +283,7 @@ const CustomMarker = React.memo(({
   };
 
   const handleError = (error: any) => {
-    console.log('Image load error:', error);
+    // console.log('Image load error:', error);
     setIsLoading(false);
   };
 

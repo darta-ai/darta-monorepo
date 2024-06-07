@@ -257,6 +257,7 @@ export type Exhibition = {
   videoLink?: PublicFields;
   pressLink?: PublicFields;
   userViewed?: boolean;
+  galleryId?: string;
 };
 export type ExhibitionObject = {
   [key: string]: Exhibition;

@@ -15,7 +15,6 @@ const carouselStyle = StyleSheet.create({
       width: '95%',
       height: '95%',
       marginTop: 7, 
-      resizeMode: 'contain',
       alignSelf: 'center',
       // shadowOpacity: 1,
       // shadowRadius: 3.03,

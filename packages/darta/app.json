@@ -3,12 +3,12 @@
     "name": "darta",
     "slug": "darta",
     "scheme": "darta",
-    "version": "1.4.4",
+    "version": "1.5.0",
     "orientation": "portrait",
     "icon": "./src/assets/darta-icon-text.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "resizeMode": "contain",
+      "imageContain": "contain",
       "backgroundColor": "#F8F8F8"
     },
     "assetBundlePatterns": [
@@ -27,7 +27,9 @@
           "instagram",
           "instagram-stories",
           "mailto"
-        ]
+        ],
+        "NSUserNotificationsUsageDescription": "We don't spam - enable notifications to receive weekly updates about new exhibitions from galleries you follow.",
+        "NSCalendarsUsageDescription": "Darta integrates with your calendar for event scheduling. E.g., setting reminders for gallery openings or visits."
       },
       "associatedDomains": [
         "applinks:darta.art"
@@ -35,7 +37,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/darta-android-icon.png",
+        "foregroundImage": "./src/assets/darta-icon-text.png",
         "backgroundColor": "#F8F8F8"
       },
       "config": {
@@ -50,7 +52,7 @@
           "mailto"
         ]
       },
-      "versionCode": 6,
+      "versionCode": 9,
       "package": "com.darta.darta",
       "googleServicesFile": "./googleService/google-services.json",
       "intentFilters": [
@@ -60,8 +62,7 @@
           "data": [
             {
               "scheme": "https",
-              "host": "*.darta.art",
-              "pathPrefix": "/records"
+              "host": "*.darta.art"
             }
           ],
           "category": [
@@ -125,23 +126,15 @@
             "enableProguardInReleaseBuilds": true
           }
         }
-      ]
-    ]
-  },
-  "plugins": [
-    "expo-calendar",
-    "expo-location",
-    "./plugins/react-native-maps-plugin",
-    [
-      "expo-build-properties",
-      {
-        "ios": {
-          "useFrameworks": "static"
-        },
-        "android": {
-          "enableProguardInReleaseBuilds": true
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./src/assets/ic_stat_streetview.png",
+          "color": "#f8f8f8"
         }
-      }
+      ],
+      "expo-font"
     ]
-  ]
+  }
 }

@@ -262,6 +262,10 @@ export function DartaRecommenderView({
             type: UserETypes.setUserSavedArtwork,
             artworkId: artOnDisplay?._id!,
           })
+          userDispatch({
+            type: UserETypes.saveArtwork,
+            artworkData: artOnDisplay!,
+          });
           analytics().logEvent('save_artwork')
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
           break;
@@ -270,6 +274,10 @@ export function DartaRecommenderView({
             type: UserETypes.setUserInquiredArtwork,
             artworkId: artOnDisplay?._id!,
           })
+          userDispatch({
+            type: UserETypes.saveArtwork,
+            artworkData: artOnDisplay!,
+          });
           analytics().logEvent('inquire_artwork')
           break;
         }

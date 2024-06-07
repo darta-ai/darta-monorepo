@@ -52,7 +52,6 @@ export async function listAllExhibitionsPreviewsForUser({
 }): Promise<{[key: string] : ExhibitionPreview}> {
   const headers = await generateHeaders();
   try {
-    const idToken = await auth().currentUser?.getIdToken();
     const {data} = await axios.get(`${URL}/listAllExhibitionsPreviewsForUser`, {
       params: {
         limit
@@ -79,7 +78,7 @@ export async function listExhibitionPreviewsCurrent({
     return data;
   } catch (error:any) {
     console.log(error.message)
-    console.log({error: error, message: error.message, where: 'listAllExhibitionsPreviewsForUser'})
+    console.log({error: error, message: error.message, where: 'listExhibitionPreviewsCurrent'})
     return {};
   }
 } 
@@ -97,7 +96,7 @@ export async function listExhibitionPreviewsCurrent({
     });
       return data;
     } catch (error:any) {
-      console.log({error: error, message: error.message, where: 'listAllExhibitionsPreviewsForUser'})
+      console.log({error: error, message: error.message, where: 'listExhibitionPreviewsForthcoming'})
       return {};
     }
 }
@@ -118,10 +117,33 @@ export async function listExhibitionPreviewUserFollowing({
   });
     return data;
   } catch (error:any) {
-    console.log({error: error, message: error.message, where: 'listAllExhibitionsPreviewsForUser'})
+    console.log({error: error, message: error.message, where: 'listExhibitionPreviewUserFollowing'})
     return {};
   }
 }
+
+
+export async function listExhibitionPreviewUpcomingUserFollowing({
+  limit,
+}: {
+  limit: number;
+}): Promise<{[key: string] : ExhibitionPreview}> {
+  try {
+    const headers = await generateHeaders();
+    if(auth().currentUser === null) throw new Error('User is not logged in')
+    const uid = auth().currentUser?.uid
+    const {data} = await axios.get(`${URL}/listExhibitionsPreviewsForthcomingGalleryFollowingForUserByLimit`, {
+      params: {
+        limit, uid
+    }, headers
+  });
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'listExhibitionPreviewUpcomingUserFollowing'})
+    return {};
+  }
+}
+
 
 export const setUserViewedExhibition = async ({exhibitionId}: {exhibitionId: string}): Promise<boolean> => {
   try {

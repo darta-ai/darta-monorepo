@@ -1045,9 +1045,9 @@ export class ExhibitionService implements IExhibitionService {
     }
   }
 
-  public async listExhibitionsPreviewsForthcomingForUserByLimit({limit, uid}: {limit: number, uid: string})
+  public async listExhibitionsPreviewsForthcomingForUserByLimit({limit, uid}: {limit: number, uid: string | null})
   : Promise<{[key: string]: ExhibitionPreview} | void> {
- 
+    
     const getExhibitionPreviewQuery = `
     WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}
     LET exhibitions = (
@@ -1116,7 +1116,7 @@ export class ExhibitionService implements IExhibitionService {
         });
       }
 
-      return exhibitionPreviews.reduce((acc, obj) => 
+      const results = exhibitionPreviews.reduce((acc, obj) => 
       {
         const userViewed = (seenResults?.[obj?.exhibitionId] || new Date(obj?.openingDate.value).toISOString() < SEVEN_DAYS_AGO ) ?? true
         acc[obj.exhibitionId as string] = {
@@ -1126,6 +1126,7 @@ export class ExhibitionService implements IExhibitionService {
         return acc 
       }, {})
 
+      return results;
   
     } catch (error: any) {
       throw new Error(error.message);
@@ -1133,10 +1134,13 @@ export class ExhibitionService implements IExhibitionService {
   }
 
   public async listExhibitionsPreviewsUserFollowingForUserByLimit(
-    {limit, uid} : {limit: number, uid: string}): Promise<{[key: string]: ExhibitionPreview} | void> {
+    {limit, uid} : {limit: number, uid: string | null}): Promise<{[key: string]: ExhibitionPreview} | void> {
+      if (!uid){
+        throw new Error('uid is required')
+      }
       const userId = this.userService.generateDartaUserId({uid})
       const getExhibitionPreviewQuery = `
-       WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}, ${CollectionNames.DartaUsers}
+      WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}, ${CollectionNames.DartaUsers}
       LET followedGalleries = (
         FOR v, e IN 1..1 OUTBOUND @userId ${EdgeNames.FROMDartaUserTOGalleryFOLLOWS}
           RETURN v._id
@@ -1223,6 +1227,101 @@ export class ExhibitionService implements IExhibitionService {
         return acc 
       }, {})
 
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
+
+
+  public async listExhibitionsPreviewsForthcomingGalleryFollowingForUserByLimit({limit, uid}: {limit: number, uid: string | null})
+  : Promise<{[key: string]: ExhibitionPreview} | void> {
+    
+    const getExhibitionPreviewQuery = `
+    WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}, ${CollectionNames.DartaUsers}
+    LET followedGalleries = (
+        FOR v, e IN 1..1 OUTBOUND @uid ${EdgeNames.FROMDartaUserTOGalleryFOLLOWS}
+        RETURN v._id
+    )
+    
+    FOR exhibition IN ${CollectionNames.Exhibitions}
+        FILTER exhibition.published == true AND exhibition.exhibitionDates.exhibitionStartDate.value > DATE_ISO8601(DATE_NOW())
+        
+        LET gallery = (
+            FOR g, edge IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
+            FILTER g._id IN followedGalleries
+            RETURN g
+        )[0]
+        
+        FILTER gallery != null
+        
+        LET artworks = (
+            FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
+            SORT artworkEdge.exhibitionOrder ASC
+            LIMIT 5
+            RETURN {
+                [artwork._id]: {
+                    _id: artwork._id,
+                    artworkImage: artwork.artworkImage,
+                    artworkTitle: artwork.artworkTitle
+                }
+            }
+        )
+        
+        SORT exhibition.exhibitionDates.exhibitionStartDate.value DESC
+        LIMIT 0, @limit
+        
+        RETURN {
+            artworkPreviews: artworks,
+            exhibitionId: exhibition._id,
+            galleryId: gallery._id,
+            exhibitionDuration: exhibition.exhibitionDates,
+            openingDate: {value: exhibition.exhibitionDates.exhibitionStartDate.value},
+            closingDate: {value: exhibition.exhibitionDates.exhibitionEndDate.value},
+            galleryLogo: gallery.galleryLogo,
+            galleryName: gallery.galleryName,
+            exhibitionTitle: exhibition.exhibitionTitle,
+            exhibitionArtist: exhibition.exhibitionArtist,
+            exhibitionLocation: {
+                exhibitionLocationString: exhibition.exhibitionLocation.locationString,
+                coordinates: exhibition.exhibitionLocation.coordinates
+            },
+            exhibitionPrimaryImage: {
+                value: exhibition.exhibitionPrimaryImage.value
+            },
+            receptionDates: exhibition.receptionDates
+        }
+    `
+  
+    try {
+      const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit, uid });
+      const exhibitionPreviews = await edgeCursor.all()
+
+      let seenResults: {[key: string]: boolean} = {}
+      if (uid){
+        const previewsPromises: any = []
+        exhibitionPreviews.forEach((exhibition: any) => {
+          previewsPromises.push(this.getUserViewedExhibition({exhibitionId: exhibition.exhibitionId, uid}))
+        });
+        const results = await Promise.allSettled(previewsPromises);
+        results.forEach((result) => {
+            if (result.status === 'fulfilled') {
+                seenResults = { ...seenResults, ...result.value };
+            }
+        });
+      }
+
+      const results = exhibitionPreviews.reduce((acc, obj) => 
+      {
+        const userViewed = (seenResults?.[obj?.exhibitionId] || new Date(obj?.openingDate.value).toISOString() < SEVEN_DAYS_AGO ) ?? true
+        acc[obj.exhibitionId as string] = {
+          ...obj, 
+          userViewed, 
+          artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2 }), {})}
+        return acc 
+      }, {})
+
+      return results;
+  
     } catch (error: any) {
       throw new Error(error.message);
     }

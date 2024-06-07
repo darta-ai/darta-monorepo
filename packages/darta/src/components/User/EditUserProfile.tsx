@@ -262,7 +262,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
       const value = getValues()
      if (formData.userName.isEditing && uid) {
       try{
-        const results = await editDartaUserAccount({userName: value.userName, uid})
+        const results = await editDartaUserAccount({userName: value.userName})
         userDispatch({
           type: UserETypes.setUser,
           userData: {
@@ -276,7 +276,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
      }
     else if (formData.legalFirstName.isEditing && uid) {
       try{
-        const results = await editDartaUserAccount({legalFirstName: value.legalFirstName, uid})
+        const results = await editDartaUserAccount({legalFirstName: value.legalFirstName})
         userDispatch({
             type: UserETypes.setUser,
             userData: {
@@ -290,7 +290,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
    }
    else if (formData.legalLastName.isEditing && uid) {
     try{
-      const results = await editDartaUserAccount({legalLastName: value.legalLastName, uid})
+      const results = await editDartaUserAccount({legalLastName: value.legalLastName})
       userDispatch({
         type: UserETypes.setUser,
         userData: {
@@ -306,7 +306,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
       try{
         const results = await editDartaUserAccount({profilePicture: {
           fileData: tempBuffer
-        }, uid})
+        }})
         if (results?.profilePicture?.value) {
           userDispatch({
             type: UserETypes.setUser,
@@ -327,7 +327,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
       }
     else if (formData.email.isEditing && uid && value.email) {
       try{
-        const results = await editDartaUserAccount({email: value.email, uid})
+        const results = await editDartaUserAccount({email: value.email})
         userDispatch({
           type: UserETypes.setUser,
           userData: {

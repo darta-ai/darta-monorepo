@@ -102,14 +102,19 @@ const styles = StyleSheet.create({
 
       const url = `mailto:${galleryEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     
+      await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE})
+      userDispatch({
+        type: UserETypes.setUserInquiredArtwork,
+        artworkId,
+      })
+      userDispatch({
+        type: UserETypes.saveArtwork,
+        artworkData: artOnDisplay!,
+      });
+      
       const canOpen = await Linking.canOpenURL(url);
       if (canOpen){
         await Linking.openURL(url)
-        await createArtworkRelationshipAPI({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE})
-        userDispatch({
-          type: UserETypes.setUserInquiredArtwork,
-          artworkId,
-        })
         analytics().logEvent('inquire_artwork', {artworkId})
         inquireSuccessAlert()
       } else {
@@ -122,15 +127,10 @@ const styles = StyleSheet.create({
 
   const inquireAlert = async ({artworkId} : {artworkId: string}) =>
   {
-    // if (auth().currentUser === null) {
-    //   // TO-DO WAIT FOR FIREBASE FIX
-    //   // return setDialogVisible(true)
-    //   // console.log(auth)
-    // }
     Vibration.vibrate(100)
     const user = await getDartaUser({uid: auth().currentUser?.uid ?? ''})
     const galleryName = galleryState.galleryData?.[artOnDisplay?.galleryId]?.galleryName?.value ?? "the gallery";
-    Alert.alert(`Reach out to ${galleryName}?`, `we'll autofill an email for you - and you can take it from there`, [
+    Alert.alert(`Reach out to ${galleryName}?`, `We'll autofill an email for you - and you can take it from there`, [
       {
         text: 'Cancel',
         onPress: () => {},

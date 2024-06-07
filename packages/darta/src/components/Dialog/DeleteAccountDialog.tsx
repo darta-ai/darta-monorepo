@@ -49,7 +49,7 @@ export const DeleteAccountDialog = ({
       if (err.message === 'That email address is already in use!' || err.code === 'That email address is invalid!') {
         setError(err.message); // Assuming you want to handle all errors and set them to `setError`
       } else {
-        console.log(err)
+        // console.log(err)
         setError('Something went wrong, please try again later');
       }
     } finally{

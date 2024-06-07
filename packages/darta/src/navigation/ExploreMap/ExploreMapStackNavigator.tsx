@@ -16,24 +16,12 @@ import { TextElement } from '../../components/Elements/TextElement';
 import * as Colors from '@darta-styles'
 import { AddToListScreen } from '../../screens/Lists/AddToList';
 import { PlanARoute } from '../../screens/ExploreMap/PlanARoute';
-import Share from 'react-native-share'
 
 export const ExploreMapStack = createStackNavigator();
 
 export function ExploreMapStackNavigator({route} : {route: any}) {
   const {uiState} = useContext(UIStoreContext);
   const navigation = useNavigation();
-  const shareExhibition = async () => {
-    if (!uiState.exhibitionShareDetails) return;
-    try {
-      await Share.open({
-        url: uiState.exhibitionShareDetails.shareURL ?? "",
-        // message: state.exhibitionShareDetails.shareURLMessage ?? "",
-      });
-    } catch (error) {
-
-    }
-  }
 
   return (
     <ExploreMapStack.Navigator screenOptions={{

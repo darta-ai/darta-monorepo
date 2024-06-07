@@ -409,6 +409,10 @@ export function DartaRecommenderViewFlatList({
             type: UserETypes.setUserInquiredArtwork,
             artworkId: artOnDisplay?._id!,
           })
+          userDispatch({
+            type: UserETypes.saveArtwork, 
+            artworkData: artOnDisplay
+          })
           analytics().logEvent('inquire_artwork')
           break;
         default: 

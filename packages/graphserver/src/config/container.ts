@@ -31,6 +31,7 @@ const TYPES = {
   IEdgeService: 'IEdgeService',
   INodeService: 'INodeService',
   IUserService: 'IUserService',
+  IPushService: 'IPushService',
   IExhibitionService: 'IExhibitionService',
   IRecommenderService: 'IRecommenderService',
   IListService: 'IListService',
@@ -110,6 +111,9 @@ container
 container
   .bind<Services.IScrapeService>(TYPES.IScrapeService)
   .to(Services.ScrapeService);
+container
+  .bind<Services.PushService>(TYPES.IPushService)
+  .to(Services.PushService);
 
 // Bind controllers
 container

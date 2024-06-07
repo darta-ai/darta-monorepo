@@ -162,10 +162,8 @@ export function TombstonePortrait({
       fontFamily: 'DMSans_400Regular',
       color: Colors.PRIMARY_400,
     },
-    inquireButton: {
+    buttonContainer: {
       flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
       marginTop: 24,
       gap: 8,
     },
@@ -249,7 +247,7 @@ export function TombstonePortrait({
       artworkId: artwork._id!,
     })
     setIsInquired(false)
-    await deleteArtworkRelationshipAPI({artworkId: artwork._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE})
+    await deleteArtworkRelationshipAPI({artworkId: artwork._id!, action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE})
   }
 
   const removeLikeRating = async () => {
@@ -310,7 +308,7 @@ export function TombstonePortrait({
             <TextElement style={SSTombstonePortrait.artPrice}>{displayPrice}</TextElement>
           </View>
         </View>
-          <View style={SSTombstonePortrait.inquireButton}>
+          <ScrollView horizontal style={SSTombstonePortrait.buttonContainer} >
             {canInquire && (
               <Animated.View style={{opacity: opacityInquiredButton, flex: 1}}>
                 {isInquired && ( 
@@ -371,7 +369,7 @@ export function TombstonePortrait({
               />
             )}
             </Animated.View>
-          </View>
+          </ScrollView>
       </ScrollView>
       
     </View>

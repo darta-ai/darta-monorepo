@@ -14,8 +14,6 @@ import { UserETypes, UserStoreContext } from '../../state/UserStore';
 export function UserSavedArtwork({navigation}: {navigation: any}) {
   const {userState, userDispatch} = React.useContext(UserStoreContext);
 
-
-
   const [artworkData, setArtworkData] = React.useState<Artwork[] | null>(null)
   const [hasNoArtwork, setHasNoArtwork] = React.useState<boolean>(true)
 
@@ -32,9 +30,10 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
         data.push(fullArtwork)
       })
       setArtworkData(data)
-
       if (data.length > 0){
         setHasNoArtwork(false)
+      } else {
+        setHasNoArtwork(true)
       }
     }
 
@@ -45,7 +44,7 @@ export function UserSavedArtwork({navigation}: {navigation: any}) {
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try{
-      const savedArtwork = await listUserArtworkAPI({action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 10})
+      const savedArtwork = await listUserArtworkAPI({action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 100})
       let savedArtworkIds = {}
       if (savedArtwork && Object.values(savedArtwork).length > 0){
         savedArtworkIds = Object.values(savedArtwork).reduce((acc, el) => ({...acc, [el?._id as string] : true}), {})

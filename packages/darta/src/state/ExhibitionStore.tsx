@@ -20,6 +20,9 @@ export interface ExhibitionState {
   currentExhibitionPreviews?: {
     [key: string]: ExhibitionPreview
   },
+  forthcomingFollowingExhibitionPreviews?: {
+    [key: string]: ExhibitionPreview
+  },
   userViewedExhibition: {[key: string] : boolean}
 }
 
@@ -31,6 +34,7 @@ export enum ExhibitionETypes {
   saveUserFollowsExhibitionPreviews = 'SAVE_USER_FOLLOWS_EXHIBITION_PREVIEWS',
   saveForthcomingExhibitionPreviews = 'SAVE_FORTHCOMING_EXHIBITION_PREVIEWS',
   saveCurrentExhibitionPreviews = 'SAVE_CURRENT_EXHIBITION_PREVIEWS',
+  saveForthcomingExhibitionPreviewsUserFollowing = 'SAVE_FORTHCOMING_EXHIBITION_PREVIEWS_USER_FOLLOWING',
   setUserViewedExhibition = 'SET_USER_VIEWED_EXHIBITION',
 
   removeUserFollowsExhibitionPreviews = 'REMOVE_USER_FOLLOWS_EXHIBITION_PREVIEWS',
@@ -125,6 +129,21 @@ const exhibitionReducer = (state: ExhibitionState, action: ExhibitionIAction): E
               ...action.exhibitionPreviews
             }
           }
+    case ExhibitionETypes.saveForthcomingExhibitionPreviewsUserFollowing:
+      if(!action.exhibitionPreviews){
+        return state
+      }
+      return {
+        ...state,
+        forthcomingFollowingExhibitionPreviews: {
+          ...state.forthcomingExhibitionPreviews,
+          ...action.exhibitionPreviews
+        },
+        userFollowsExhibitionPreviews: {
+          ...state.userFollowsExhibitionPreviews,
+          ...action.exhibitionPreviews
+        }
+      }
     case ExhibitionETypes.setUserViewedExhibition:
       if (!action?.userViewedExhibitionId){
         return state;

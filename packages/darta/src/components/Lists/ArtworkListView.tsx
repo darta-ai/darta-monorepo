@@ -58,7 +58,6 @@ const SSTombstonePortrait = StyleSheet.create({
   image: {
     height: '100%',
     width: '100%',
-    resizeMode: 'contain',
     alignSelf: 'center',
   },
   textContainer: {

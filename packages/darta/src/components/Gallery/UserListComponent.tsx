@@ -52,15 +52,6 @@ type DartaIconButtonWithTextProps = {
   handlePress: ({listId}: {listId: string}) => void,
 };
 
-const styles = StyleSheet.create({
-  image: {
-    width: '33%', // Adjust width based on the number of columns
-    height: 100,  // Set your desired height
-    // Add any additional styling
-  },
-  // You can add more styles if needed
-});
-
 const Icon = ({ artworkPreview }: { artworkPreview: PublicFields }) => {
 
   if (!artworkPreview) return null
@@ -102,11 +93,11 @@ export const UserListComponent: React.FC<DartaIconButtonWithTextProps> = ({
         </TextElement>
         <TextElement
           style={globalTextStyles.baseText}>
-          List by {listPreview?.creatorName ?? "You"}
+          List by {listPreview?.creatorName !== "undefined undefined" ? listPreview.creatorName :  "You"}
         </TextElement>
       </View>
       <View style={userListComponentStyles.forwardButtonContainer}>
-          {isAdding && isPressed && <SVGs.PlusCircleIcon />}
+          {isAdding && isPressed && <SVGs.CheckmarkCircleFill />}
           {isAdding && !isPressed && <SVGs.EmptyCircle /> }
           {!isAdding && <SVGs.ForwardIcon />}
       </View>

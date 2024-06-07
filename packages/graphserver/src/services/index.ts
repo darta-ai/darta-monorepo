@@ -20,6 +20,7 @@ export {
   IScrapeService,
   IUserService} from './interfaces';
 export {ListService} from './ListService';
+export {PushService} from './PushService';
 export {RecommenderService} from './RecommenderService';
 export {ScrapeService} from './ScrapeService';
 export {UserService} from './UserService';

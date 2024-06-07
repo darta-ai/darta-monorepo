@@ -173,6 +173,12 @@ export function FullListScreen({
             type: UserETypes.setUserInquiredArtwork,
             artworkId,
         })
+
+        userDispatch({
+            type: UserETypes.saveArtwork,
+            artworkData: artwork
+          })
+        
         analytics().logEvent('inquire_artwork', {artworkId})
 
         const emailAddress = gallery.primaryContact?.value 

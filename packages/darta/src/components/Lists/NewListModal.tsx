@@ -126,20 +126,6 @@ export function NewListModal({
                     }}
                     />
                     {errorText && <TextElement>{errorText}</TextElement>}
-                    {/* <View style={addToListStyles.switchContainer}>
-                        <View style={{width: '70%'}}>
-                            <TextElement style={addToListStyles.switchTextHeader}>Private</TextElement>
-                            <TextElementMultiLine style={addToListStyles.switchTextDescription}>When private, you can share this list but other users cannot</TextElementMultiLine>
-                        </View>
-                        <Switch 
-                        theme={{
-                            colors: {
-                                primary: Colors.PRIMARY_950,
-                            },
-                        }}
-                        value={isPrivate} onValueChange={setIsPrivate} />
-                    </View> */}
-
                     <Button 
                         style={addToListStyles.createButton} 
                         buttonColor={Colors.PRIMARY_50} 

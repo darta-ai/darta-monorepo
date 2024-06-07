@@ -73,7 +73,6 @@ export const listGalleryRelationshipsAPI = async (): Promise<GalleryPreview[] | 
         return await listDartaUserFollowsGallery({uid});
         }
     } catch (error){
-        console.log({error})
         throw new Error(error)
     }
 }
@@ -147,7 +146,7 @@ export const editDartaUserAccountAPI = async ({
     try{
         const uid = auth().currentUser?.uid;
         if (uid) {
-        return await editDartaUserAccount({uid, ...data});
+            return await editDartaUserAccount({...data});
         }
     } catch (error){
         throw new Error(error)
