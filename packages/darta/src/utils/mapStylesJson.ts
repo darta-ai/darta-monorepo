@@ -21,7 +21,8 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": Colors.PRIMARY_950
+        "color": Colors.PRIMARY_950,
+        "fontName": "DMSans_400Regular" 
       }
     ]
   },
@@ -29,7 +30,8 @@ export const mapStylesJson = [
     "elementType": "labels.text.stroke",
     "stylers": [
       {
-        "color": "#f5f5f5"
+        "color": "#f5f5f5",
+        "fontName": "DMSans_400Regular" 
       }
     ]
   },
@@ -38,7 +40,8 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#bdbdbd"
+        "color": "#bdbdbd",
+        "fontName": "DMSans_400Regular" 
       }
     ]
   },
@@ -56,7 +59,8 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#757575"
+        "color": "#757575",
+        "fontName": "DMSans_400Regular" 
       }
     ]
   },
@@ -74,7 +78,8 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#9e9e9e"
+        "color": "#9e9e9e",
+        "fontName": "DMSans_400Regular" 
       }
     ]
   },
@@ -92,7 +97,8 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#757575"
+        "color": Colors.PRIMARY_900,
+        "fontName": "DMSans_400Regular" 
       }
     ]
   },
@@ -101,7 +107,7 @@ export const mapStylesJson = [
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#dadada"
+        "color": Colors.PRIMARY_200,
       }
     ]
   },
@@ -110,7 +116,17 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#616161"
+        "color": Colors.PRIMARY_900,
+        "fontName": "DMSans_400Regular" 
+      }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": Colors.PRIMARY_100,
       }
     ]
   },
@@ -119,7 +135,8 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": Colors.PRIMARY_900
+        "color": Colors.PRIMARY_900,
+        "fontName": "DMSans_400Regular" 
       }
     ]
   },
@@ -155,7 +172,8 @@ export const mapStylesJson = [
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#9e9e9e"
+        "color": "#9e9e9e",
+        "fontName": "DMSans_400Regular" 
       }
     ]
   }

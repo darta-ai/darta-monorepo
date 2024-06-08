@@ -342,6 +342,7 @@ export class UserService implements IUserService {
     legalLastName,
     email,
     uid,
+    expoPushToken
   }: {
     profilePicture?: Images
     userName?: string;
@@ -349,6 +350,7 @@ export class UserService implements IUserService {
     legalLastName?: string;
     email?: string;
     uid: string;
+    expoPushToken?: string;
   }): Promise<any> {
     if (!uid) return false;
     // const fullUserId = this.generateDartaUserId({uid});
@@ -408,6 +410,7 @@ export class UserService implements IUserService {
         email,
         legalFirstName,
         legalLastName,
+        expoPushToken,
         profilePicture: {
           fileName: mediumImage?.fileName ?? fileName,
           bucketName: mediumImage?.bucketName ?? bucketName,

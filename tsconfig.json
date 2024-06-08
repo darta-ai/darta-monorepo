@@ -32,6 +32,8 @@
   "composite": true,
   "include": [
     "./packages/darta-types/src/*",
-    "./packages/darta-styles/src/*"
+    "./packages/darta-styles/src/*",
+    "./packages/graphserver/**/*",
+    "./packages/graphserver/serviceAccountKey.json"
   ]
 }

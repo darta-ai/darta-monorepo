@@ -1,12 +1,13 @@
 import 'react-native-gesture-handler';
 
-import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+import { NavigationContainer, useNavigation, useNavigationContainerRef } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { ExploreMapStackNavigator } from './src/navigation/ExploreMap/ExploreMapStackNavigator';
-import { StatusBar } from 'react-native';
+import { StatusBar, Platform, Alert, Linking} from 'react-native';
 import React from 'react';
 import {Provider as PaperProvider} from 'react-native-paper';
 import * as Colors from '@darta-styles';
+import * as Notifications from 'expo-notifications';
 import analytics from '@react-native-firebase/analytics';
 
 import {
@@ -40,13 +41,33 @@ import { ExhibitionRootEnum, ExploreMapRootEnum, RecommenderRoutesEnum, UserRout
 import ErrorBoundary from './src/components/ErrorBoundary/ErrorBoundary';
 import { UserETypes, UserStoreContext } from './src/state/UserStore';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
+import remoteConfig from '@react-native-firebase/remote-config';
+import Constants  from 'expo-constants';
+
 
 export const RecommenderStack = createStackNavigator();
 export const RootStack = createMaterialBottomTabNavigator();
 
 
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: true,
+  }),
+});
+
+
+
+
 function App() {
   const {userDispatch} = React.useContext( UserStoreContext );
+
+  const navigationRef = useNavigationContainerRef();
+  const routeNameRef = React.useRef();
+
+
   React.useEffect(() => {
     auth().onAuthStateChanged((userState: FirebaseAuthTypes.User | null) => {
       if (userState?.uid && userState.email) {
@@ -67,6 +88,7 @@ function App() {
         })
       }
       })
+    checkForUpdate()
   }, []);
 
 
@@ -81,7 +103,7 @@ function App() {
       DMSans_700Bold_Italic,
     });
   } catch{
-    console.log("error loading fonts")
+    // console.log("error loading fonts")
   } 
 
   const theme = {
@@ -109,10 +131,6 @@ function App() {
     return route.name;
   }
   
-
-  const navigationRef = useNavigationContainerRef();
-  const routeNameRef = React.useRef();
-
   const handleNavigationChange = (state) => {
     // Find the current active route
     const route = getActiveRouteName(state);
@@ -123,6 +141,7 @@ function App() {
       [ExhibitionPreviewEnum.onView]: true,
       [ExhibitionPreviewEnum.following]: true,
       [ExhibitionPreviewEnum.forthcoming]: true,
+      [ExhibitionPreviewEnum.forYou]: true,
       [ExploreMapRootEnum.exploreMapHome]: true,
       [ExhibitionRootEnum.exhibitionDetails]: true,
       [ExhibitionRootEnum.exhibitionGallery]: true,
@@ -140,6 +159,42 @@ function App() {
     }
     setIsTabVisible(showTabBarRoutes[route]);
   };
+
+  // remote config
+
+  const checkForUpdate = async () => { 
+    let remoteVersion = "";
+    const isAndroid = Platform.OS === 'android';
+    const isIOS = Platform.OS === 'ios';
+    const currentVersion = Constants.expoConfig?.version;
+    // use remote config to get the current version
+    await remoteConfig().fetchAndActivate();
+  
+    const promptUpdate = remoteConfig().getValue("promptUpdate").asBoolean();
+    isAndroid && (remoteVersion = remoteConfig().getValue("currentAndroidVersion").asString());
+    isIOS && (remoteVersion = remoteConfig().getValue("currentIOSVersion").asString());
+  
+    // if the current version is not the same as the app version, show an alert to download the app
+    if (promptUpdate && remoteVersion && currentVersion !== remoteVersion) {
+      Alert.alert(
+        "New Update Available",
+        "A new version of the app is available. Please download the latest version from the app store.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              if (isAndroid) {
+                Linking.openURL("https://play.google.com/store/apps/details?id=com.darta.darta");
+              } else if (isIOS) {
+                Linking.openURL("https://apps.apple.com/us/app/darta-digital-art-advisor/id6469072913");
+              }
+            },
+          },
+        ]
+      );
+    }
+    }
+
    return (
       <PaperProvider theme={theme}>
         <StoreProvider>
@@ -150,9 +205,7 @@ function App() {
               const currentRouteName = navigationRef?.getCurrentRoute()?.name;
               const isDev = process.env.EXPO_PUBLIC_ENVIRONMENT === "development";
               if (previousRouteName !== currentRouteName && !isDev) {
-                analytics().logEvent(`screen_view`, {
-                  screen_name: currentRouteName,
-                });
+                analytics().logEvent(currentRouteName);
               }
               }}>
               <AnimatedAppLoader>

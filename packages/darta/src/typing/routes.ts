@@ -76,6 +76,7 @@ export enum ExhibitionPreviewEnum {
   onView = 'EXHIBITION_PREVIEW_ON_VIEW',
   forthcoming = 'EXHIBITION_PREVIEW_FORTHCOMING',
   following = 'EXHIBITION_PREVIEW_FOLLOWING',
+  forYou = 'EXHIBITION_PREVIEW_FOR_YOU',
 }
 
 export enum ListEnum {

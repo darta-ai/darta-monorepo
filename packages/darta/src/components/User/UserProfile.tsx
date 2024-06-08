@@ -10,6 +10,7 @@ import {
 } from '../../typing/routes';
 import {globalTextStyles} from '../../styles/styles';
 import { UserStoreContext } from '../../state/UserStore';
+import * as Colors from '@darta-styles';
 
 type UserScreenNavigationProp = StackNavigationProp<
   UserRouteStackParamList,
@@ -30,6 +31,8 @@ export function UserProfile({
       borderRadius: 100,
       alignSelf: 'flex-start',
       resizeMode: 'contain',
+      borderWidth: 2,
+      borderColor: Colors.PRIMARY_950,
     },
   });
 
@@ -37,11 +40,11 @@ export function UserProfile({
 
 
   const [userProfilePic, setUserProfilePic] = React.useState<ImageURISource>('' as any);
-  const [userName, setUserName] = React.useState<string>(userState?.user?.userName ? userState?.user?.userName : "");
+  const [userName] = React.useState<string>(userState?.user?.userName ? userState?.user?.userName : "");
   const [fullName, setFullName] = React.useState<string>('');
 
   React.useEffect(() => {
-    const defaultImage = require('../../assets/dartahousewhite.png');
+    const defaultImage = require('../../assets/darta-android-icon.png');
     const userProfileURL = userState?.user?.profilePicture?.value;
     
     let imageSource: any;
@@ -53,8 +56,8 @@ export function UserProfile({
     
     setUserProfilePic(imageSource);
     
-    const firstName = userState?.user?.legalFirstName ? userState?.user?.legalFirstName : ""
-    const lastName = userState?.user?.legalLastName ? userState?.user?.legalLastName : ""
+    const firstName = userState?.user?.legalFirstName ? userState?.user?.legalFirstName : "Art"
+    const lastName = userState?.user?.legalLastName ? userState?.user?.legalLastName : "Enthusiast"
     setFullName(`${firstName} ${lastName}`)
 
     }, [, userState?.user]);

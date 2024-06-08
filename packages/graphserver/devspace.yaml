@@ -54,6 +54,7 @@ images:
       SENDGRID_INQUIRE_TEMPLATE_ID: ${SENDGRID_INQUIRE_TEMPLATE_ID}
       ADMIN_UUID: ${ADMIN_UUID}
       ENV: ${ENV}
+      EXPO_ACCESS_TOKEN: ${EXPO_ACCESS_TOKEN}
 
 deployments:
   darta-api:

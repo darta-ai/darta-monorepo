@@ -3,7 +3,7 @@ import {View, StyleSheet, RefreshControl} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
 import { useFocusEffect } from '@react-navigation/native';
-
+import { isEqual } from 'lodash';
 
 import * as Colors from '@darta-styles';
 import {Artwork} from '@darta-types'
@@ -80,10 +80,13 @@ export function ArtworkListComponent({
         navigateToTombstone={navigateToTombstone}
       />
     );
-  }, [navigation, navigateTo, navigateToParams]);
+  }, [navigateToTombstone]);
   
 
-  const dataProvider = new DataProvider((r1, r2) => r1 !== r2).cloneWithRows([...artworkData]);
+  const dataProvider = React.useMemo(
+    () => new DataProvider((r1, r2) => r1 !== r2).cloneWithRows([...artworkData]),
+    [artworkData]
+  );
 
 
   useFocusEffect(
@@ -95,8 +98,7 @@ export function ArtworkListComponent({
         })
     }
     }, [route?.params])
-  )
-
+  );
 
 
   const layoutProvider = new LayoutProvider(
@@ -130,7 +132,7 @@ export function ArtworkListComponent({
             layoutProvider={layoutProvider}
             dataProvider={dataProvider}
             rowRenderer={renderItem}
-            // keyExtractor={(item: Artwork) => item._id?.toString() ?? "654321"}
+            keyExtractor={(item: Artwork) => item._id?.toString() ?? "654321"}
             decelerationRate={0.5}
             onEndReachedThreshold={0.1}
             scrollViewProps={{
@@ -150,14 +152,17 @@ export function ArtworkListComponent({
             }
 }
 
+
 export const ArtworkList = React.memo(ArtworkListComponent, (prevProps, nextProps) => {
-  // Implement a comparison function if necessary
+  // Perform a deep comparison of artworkData using Lodash's isEqual
+  const isArtworkDataEqual = isEqual(prevProps.artworkData, nextProps.artworkData);
+
   return (
     prevProps.refreshing === nextProps.refreshing &&
     prevProps.onRefresh === nextProps.onRefresh &&
-    prevProps.artworkData === nextProps.artworkData &&
+    isArtworkDataEqual &&
     prevProps.navigation === nextProps.navigation &&
     prevProps.navigateTo === nextProps.navigateTo &&
     prevProps.navigateToParams === nextProps.navigateToParams
   );
-})
+});

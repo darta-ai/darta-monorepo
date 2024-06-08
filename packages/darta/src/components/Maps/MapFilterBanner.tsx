@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Dimensions, ScrollView, Alert } from 'react-native';
 import * as Colors from '@darta-styles';
 import * as SVGs from '../../assets/SVGs';
+import * as Haptics from 'expo-haptics';
 import { ETypes, StoreContext } from '../../state';
 import { currentlyViewingMapView } from '../../state/Store';
 import { FilterBannerButton } from '../Elements/FilterBannerButton';
@@ -14,7 +15,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     margin: 12,
-    justifyContent: 'flex-end',
+    height: 50,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignContent: 'center',
+    alignItems: 'center',
   },
   blackTab: {
     backgroundColor: Colors.PRIMARY_950,
@@ -36,7 +41,7 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     flexDirection: 'row',
-    gap: 4
+    gap: 8,
   }
 });
 
@@ -44,6 +49,7 @@ export const FilterBanner = ({ navigation } : {navigation : any}) => {
   const { state, dispatch } = React.useContext(StoreContext);
 
   const handleShowRoute = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (state.mapPinIds?.[state.currentlyViewingCity]?.walkingRoute.length === 0){
       navigation.navigate(ExploreMapRootEnum.bottomSheetOptions)
     } else if (state.currentlyViewingMapView === currentlyViewingMapView.walkingRoute) {
@@ -68,8 +74,9 @@ export const FilterBanner = ({ navigation } : {navigation : any}) => {
   } 
 
   const handleShowSaved = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView.savedGalleries].length === 0){
-      Alert.alert("You are not following any galleries yet.", "Follow more galleries by pressing the heart on the gallery's page.")
+      Alert.alert("You are not following any galleries.", "Follow more galleries by pressing the heart on the gallery's page.")
     } else if (state.currentlyViewingMapView === currentlyViewingMapView.savedGalleries) {
       dispatch({
         type: ETypes.setCurrentViewingMapView,
@@ -90,6 +97,7 @@ export const FilterBanner = ({ navigation } : {navigation : any}) => {
   } 
 
   const handleShowNew = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (state.currentlyViewingMapView === currentlyViewingMapView.newOpenings) {
       dispatch({
         type: ETypes.setCurrentViewingMapView,
@@ -110,6 +118,7 @@ export const FilterBanner = ({ navigation } : {navigation : any}) => {
   } 
 
   const handleShowClosing = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (state.currentlyViewingMapView === currentlyViewingMapView.newClosing) {
       dispatch({
         type: ETypes.setCurrentViewingMapView,
@@ -129,6 +138,7 @@ export const FilterBanner = ({ navigation } : {navigation : any}) => {
     }
   } 
   const handleShowOpeningTonight = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (state.currentlyViewingMapView === currentlyViewingMapView.openingTonight) {
       dispatch({
         type: ETypes.setCurrentViewingMapView,
@@ -183,7 +193,7 @@ export const FilterBanner = ({ navigation } : {navigation : any}) => {
           IconInUse={<SVGs.NewBellWhite20 />}
           IconNotInUse={<SVGs.NewBellBlack20 />}
           onPress={handleShowNew}
-          text={"Opened Last Week"}
+          text={"Opened This Week"}
         />
         <FilterBannerButton 
           inUse={(state.currentlyViewingMapView === currentlyViewingMapView.newClosing)}

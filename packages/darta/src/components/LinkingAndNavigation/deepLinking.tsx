@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ETypes, StoreContext, UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes } from '../../state';
 import * as Linking from 'expo-linking';
-import { ExhibitionRootEnum, ExploreMapRootEnum, ListEnum, RecommenderRoutesEnum, UserRoutesEnum } from '../../typing/routes';
+import { ExhibitionRootEnum, ListEnum, RecommenderRoutesEnum } from '../../typing/routes';
 import { readExhibition, readMostRecentGalleryExhibitionForUser } from '../../api/exhibitionRoutes';
 import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
 import { createGalleryRelationshipAPI } from '../../utils/apiCalls';

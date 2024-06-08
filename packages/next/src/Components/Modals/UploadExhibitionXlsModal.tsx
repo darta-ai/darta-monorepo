@@ -14,7 +14,9 @@ import {
 import React from 'react';
 import * as XLSX from 'xlsx';
 
-import {parseExcelExhibitionData} from '../../common/nextFunctions';
+import { createExhibitionForAdmin } from '../../API/admin/adminRoutes';
+import { editExhibitionAPI } from '../../API/exhibitions/exhibitionRotes';
+import {handleBatchArtworkUpload, parseExcelArtworkData,parseExcelExhibitionData} from '../../common/nextFunctions';
 
 const uploadArtworkImages = {
   modal: {
@@ -33,11 +35,13 @@ const uploadArtworkImages = {
 };
 
 interface UploadArtworksXlsModalProps {
-  setExhibition: (exhibition: Exhibition) => void;
+  galleryId: string;
+  updateExhibitions: (exhibition: Exhibition) => void;
 }
 
 export function UploadExhibitionXlsModal({
-  setExhibition,
+  updateExhibitions,
+  galleryId,
 }: UploadArtworksXlsModalProps) {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -55,41 +59,96 @@ export function UploadExhibitionXlsModal({
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    setLoading(true);
-    const file = event.target.files![0];
-    const reader = new FileReader();
-    reader.onload = async evt => {
-      /* Parse data */
-      const bstr = evt.target!.result;
-      const wb: XLSX.WorkBook = XLSX.read(bstr as string, {type: 'binary'});
-
-      /* Get first worksheet */
-      const wsname: string = wb.SheetNames[0];
-      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
-
-      /* Convert array of arrays */
-      const data: any[][] = XLSX.utils.sheet_to_json(ws, {header: 1});
-
-      // First row is headers
-      const headers: string[] = data[0];
-      const rows: any[] = data.slice(1).map(row => {
-        const rowData: any = {};
-        row.forEach((cell, i) => {
-          rowData[headers[i]] = cell;
+    try {
+      setLoading(true);
+      const file = event.target.files![0];
+      const reader = new FileReader();
+      reader.onload = async evt => {
+        /* Parse data */
+        const bstr = evt.target!.result;
+        const wb: XLSX.WorkBook = XLSX.read(bstr as string, {type: 'binary'});
+  
+        /* Get first worksheet */
+        const exhibitionWsName: string = wb.SheetNames[0];
+        const exhibitionWorksheet: XLSX.WorkSheet = wb.Sheets[exhibitionWsName];
+  
+        /* get second worksheet */
+        const artworksWsName: string = wb.SheetNames[1];
+        const artworksWorksheet: XLSX.WorkSheet = wb.Sheets[artworksWsName];
+  
+        /* Convert array of arrays */
+        const exhibitionData: any[][] = XLSX.utils.sheet_to_json(exhibitionWorksheet, {header: 1});
+        const artworksData: any[][] = XLSX.utils.sheet_to_json(artworksWorksheet, {header: 1});
+  
+        // First row is headers
+        const exhibitionHeaders: string[] = exhibitionData[0];
+        const exhibitionRows: any[] = exhibitionData.slice(1).map(row => {
+          const rowData: any = {};
+          row.forEach((cell, i) => {
+            rowData[exhibitionHeaders[i]] = cell;
+          });
+          return rowData;
         });
-        return rowData;
-      });
-      const results = parseExcelExhibitionData(rows);
+  
+        const cleanedRows = exhibitionRows.filter((el) => el?.exhibitionArtist)
+  
+        const parsedExhibition = await parseExcelExhibitionData(cleanedRows);
+  
+        if (!parsedExhibition) {
+          setLoading(false);
+          setSuccess(false);
+          handleClose();
+          return;
+        }
+  
+        const rawExhibition = await createExhibitionForAdmin({galleryId});
+  
+        if (!rawExhibition || !rawExhibition.exhibitionId) {
+          setLoading(false);
+          setSuccess(false);
+          handleClose();
+          return;
+        }
+  
+        const exhibitionResults = await editExhibitionAPI({exhibition: {...rawExhibition, ...parsedExhibition}})
+  
+        // First row is headers
+        const artworksHeaders: string[] = artworksData[0];
+        const artworksRows: any[] = artworksData.slice(1).map(row => {
+          const rowData: any = {};
+          row.forEach((cell, i) => {
+            rowData[artworksHeaders[i]] = cell;
+          });
+          return rowData;
+        });
 
-      if (results) {
-        setExhibition(results);
-      }
-
-      setLoading(false);
-      setSuccess(true);
-      handleClose();
-    };
-    reader.readAsBinaryString(file);
+        const cleanedArtworks = artworksRows.filter((el) => el?.artworkTitle)
+  
+  
+        let artworkResults;
+        if (exhibitionResults && exhibitionResults.exhibitionId) {
+          const artworks = await parseExcelArtworkData({rows: cleanedArtworks, exhibitionId: exhibitionResults?.exhibitionId});
+          if (artworks) {
+            artworkResults = await handleBatchArtworkUpload({
+              artworks, 
+              exhibitionId: exhibitionResults?.exhibitionId, 
+              galleryId, 
+              exhibition: exhibitionResults})
+          }
+        }
+        
+        if (exhibitionResults) {
+          updateExhibitions({...exhibitionResults, artworks: artworkResults });
+        }
+        setLoading(false);
+        setSuccess(true);
+        handleClose();
+      };
+      reader.readAsArrayBuffer(file);
+    } catch(error){
+      // console.log(error)
+    }
+ 
   };
 
   return (

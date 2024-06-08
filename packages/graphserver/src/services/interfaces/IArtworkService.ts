@@ -29,6 +29,15 @@ export interface IArtworkService {
   readAllArtworks(): Promise<Artwork[] | null>;
   editArtwork({artwork}: {artwork: Artwork}): Promise<ArtworkNode | null>;
   editArtworkInquiry({edgeId, status}: {edgeId: string, status: string;}) : Promise<Edge | void>
+  checkForDuplicatesWithImageNameAndArtist({
+    artistName,
+    artworkTitle,
+    galleryId,
+  }: {
+    artistName: string;
+    artworkTitle: string;
+    galleryId: string;
+  }): Promise<boolean>;
   refreshArtworkImage({
     artworkId,
     mainUrl,

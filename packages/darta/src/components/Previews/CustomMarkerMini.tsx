@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { Marker, Callout } from 'react-native-maps';
-import { View, StyleSheet, Animated } from 'react-native';
+import { StyleSheet, Animated } from 'react-native';
 
 import { TextElement, TextElementMultiLine } from '../Elements/TextElement';
 
-import { customLocalDateStringEndShort, customLocalDateStringStartShort, getStoreHours, simplifyAddress, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
+import { getStoreHours, simplifyAddress } from '../../utils/functions';
 
 import { ExhibitionMapPin } from '@darta-types';
 import { ExhibitionStoreContext, UIStoreContext, UiETypes } from '../../state';
 import { ExploreMapRootEnum } from '../../typing/routes';
-import { GoogleMapsPinIcon } from '../../assets/SVGs';
+import { NewMapPin, NewMapPinRed } from '../../assets/SVGs';
 import { Easing } from 'react-native-reanimated';
-import { GoogleMapsPinBlackIcon } from '../../assets/SVGs/GoogleMapsPinBlack';
 
 const customMarker = StyleSheet.create({
   galleryContainer: {
@@ -169,7 +168,7 @@ const CustomMarkerMini = React.memo(({
       onTouchEnd={() => setShowCallout(true)}
     >
       <Animated.View style={customMarkerDynamic.wiggleFriend}>
-        {hasUpcomingOpening ? <GoogleMapsPinIcon /> : <GoogleMapsPinBlackIcon />}
+        {hasUpcomingOpening ? <NewMapPinRed /> : <NewMapPin />}
       </Animated.View>
       {showCallout && (
         <Callout

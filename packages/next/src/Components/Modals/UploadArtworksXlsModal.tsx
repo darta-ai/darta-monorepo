@@ -167,7 +167,7 @@ const uploadArtworkImages = {
 
 interface UploadArtworksXlsModalProps {
   exhibitionId: string;
-  handleBatchUpload: ({artworks, exhibitionId}: {artworks: Artwork[], exhibitionId: string}) => void;
+  handleBatchUpload: ({artworks, exhibitionId}: {artworks: Artwork[], exhibitionId: string}) => Promise<void>;
 }
 
 export function UploadArtworksXlsModal({
@@ -214,10 +214,10 @@ export function UploadArtworksXlsModal({
         });
         return rowData;
       });
-      const results = parseExcelArtworkData({rows, exhibitionId});
+      const results = await parseExcelArtworkData({rows, exhibitionId});
 
       if (results) {
-        handleBatchUpload({artworks: results, exhibitionId});
+        await handleBatchUpload({artworks: results, exhibitionId});
       }
 
       setLoading(false);
@@ -244,7 +244,7 @@ export function UploadArtworksXlsModal({
         }}
         >
         <Typography sx={{fontWeight: 'bold', fontSize: '0.8rem'}}>
-          Upload Artwork From .xls File
+          Upload Artwork From csv File
         </Typography>
       </Button>
       <Modal

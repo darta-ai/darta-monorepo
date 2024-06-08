@@ -7,7 +7,9 @@ import http from 'http';
 import {InversifyExpressServer} from 'inversify-express-utils';
 
 import {container} from './config/container';
-import { ArtworkService, ExhibitionService, GalleryService, UserService } from './services';
+import { ArtworkService, ExhibitionService, GalleryService, 
+  PushService, 
+  UserService } from './services';
 
 const cron = require('node-cron');
 
@@ -15,7 +17,7 @@ const artworkService = container.get('IArtworkService') as ArtworkService
 const exhibitionService = container.get('IExhibitionService') as ExhibitionService
 const userService = container.get('IUserService') as UserService
 const galleryService = container.get('IGalleryService') as GalleryService
-// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+const pushService = container.get('IPushService') as PushService
 
 const bodyParser = require('body-parser');
 
@@ -119,6 +121,34 @@ cron.schedule('0 0 * * 3', async () => {
   try{
     const start = new Date()
     await userService.resetAllUsersRouteGenerationCount()
+    const end = new Date()
+    // eslint-disable-next-line no-console
+    console.log(`reset all user route generation cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('error running cronjob', e)
+  }
+});
+
+// // production schedule
+// cron.schedule('0 17 * * 3', async () => {
+//   try{
+//     const start = new Date()
+//     await pushService.generatePushNotificationsFollowing()
+//     const end = new Date()
+//     // eslint-disable-next-line no-console
+//     console.log(`reset all user route generation cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
+//   } catch (e) {
+//     // eslint-disable-next-line no-console
+//     console.log('error running cronjob', e)
+//   }
+// });
+
+// // development schedule
+cron.schedule('* * * * *', async () => {
+  try{
+    const start = new Date()
+    await pushService.generatePushNotificationsFollowing()
     const end = new Date()
     // eslint-disable-next-line no-console
     console.log(`reset all user route generation cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)

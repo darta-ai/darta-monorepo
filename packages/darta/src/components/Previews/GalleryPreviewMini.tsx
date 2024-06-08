@@ -15,10 +15,11 @@ import { Images, PublicFields } from '@darta-types';
 import * as Colors from '@darta-styles'
 import { globalTextStyles } from '../../styles/styles';
 import { UserRoutesEnum } from '../../typing/routes';
-import FastImage from 'react-native-fast-image';
+// import FastImage from 'react-native-fast-image';
 import { ExhibitionStoreContext, UIStoreContext, UiETypes } from '../../state';
 import { DartaImageComponent } from '../Images/DartaImageComponent';
 import * as SVGs from '../../assets/SVGs';
+import { Image } from 'expo-image';
 
 
 
@@ -76,7 +77,6 @@ export function GalleryPreviewMini({
       borderRadius: 50,
     },
     image: {
-      resizeMode: 'contain',
       height: '100%',
       width: '100%'
     },
@@ -102,12 +102,11 @@ export function GalleryPreviewMini({
       <View style={galleryPreviewMiniStyles.container}>
         <View style={galleryPreviewMiniStyles.infoContainer}>
           <View style={galleryPreviewMiniStyles.imageContainer}> 
-            <DartaImageComponent
-              uri={galleryLogo ?? ""}
+            <Image
+              source={galleryLogo.smallImage?.value ?? galleryLogo?.value ?? ""}
               style={galleryPreviewMiniStyles.image}
-              resizeMode={FastImage.resizeMode.contain}
-              priority={FastImage.priority.normal}
-              size={"smallImage"}
+              contentFit={"contain"}
+              priority={"normal"}
             />
           </View>
           <View style={galleryPreviewMiniStyles.textContainer}>

@@ -1,5 +1,6 @@
 import {Artwork, Dimensions, Exhibition} from '@darta-types';
 
+import { createExhibitionArtworkForAdmin, editExhibitionArtworkForAdmin } from '../API/admin/adminRoutes';
 import { convertInchesToCentimeters } from './utils/unitConverter';
 
 // function fractionToDecimal(str: string) {
@@ -51,9 +52,9 @@ export const createDimensionsString = ({
   const widthCm = convertInchesToCentimeters(widthIn);
   const depthCm = convertInchesToCentimeters(depthIn);
   if (Number(depthIn)) {
-    return `${heightIn} x ${widthIn} x ${depthIn}in; ${heightCm} x ${widthCm} x ${depthCm}cm`;
+    return `${heightIn} x ${widthIn} x ${depthIn} inches; ${heightCm} x ${widthCm} x ${depthCm} centimeters`;
   } 
-    return `${heightIn} x ${widthIn}in; ${heightCm} x ${widthCm}cm`;
+    return `${heightIn} x ${widthIn} inches; ${heightCm} x ${widthCm} centimeters`;
   
 };
 
@@ -172,71 +173,159 @@ const parseDimensions = (item: any): Dimensions => {
   };
 };
 
-export const parseExcelArtworkData = ({rows, exhibitionId} : {
+export const parseExcelArtworkData = async ({rows, exhibitionId} : {
   rows: any[],
   exhibitionId: string,
-}): Artwork[] | null => {
+}): Promise<Artwork[]  | null> => {
   if (!rows) {
     return null;
   }
 
-  return rows.map(item => ({
+  const artworks = await Promise.all(rows.map(async (item) => {
+    let artworkImage = '';
+
+    if (item?.artworkImageUrl) {
+      try {
+        const response = await fetch(item.artworkImageUrl);
+        const blob = await response.blob();
+        const reader = new FileReader();
+
+        const fileData = await new Promise<string>((resolve) => {
+          reader.onloadend = () => {
+            resolve(reader.result as string);
+          };
+          reader.readAsDataURL(blob);
+        });
+
+        artworkImage = fileData;
+      } catch (error: any) {
+        artworkImage = '';
+      }
+    }
+
+    return {
       exhibitionId,
       artworkTitle: {value: item?.artworkTitle},
-      artworkImage: {value: ''},
+      artworkImage: {fileData: artworkImage, isPrivate: false, fileName: item?.artworkTitle},
       artistName: {value: item?.artistName},
       canInquire: {value: item?.canInquire},
       artworkDimensions: parseDimensions(item),
       artworkPrice: {value: item?.Price, isPrivate: false},
       artworkCurrency: {value: item.artworkCurrency},
-      artworkCreatedYear: {value: item?.artworkCreatedYear},
+      artworkCreatedYear: {value: item?.artworkCreatedYear?.toString()},
       artworkCategory: {value: item?.artworkCategory},
       artworkMedium: {value: item?.artworkMedium},
       editionStatus: {value: item?.editionStatus},
       editionNumber: {value: item?.editionNumber},
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    }));
+    };
+  }));
+  return artworks;
 };
 
 
-export const parseExcelExhibitionData = (
-  data: any[],
-): Exhibition | null => {
-  if (!data) {
+export const parseExcelExhibitionData = async (
+  rawData: any,
+): Promise<Exhibition | null> => {
+  if (!rawData) {
     return null;
   }
+
+  const data = rawData[0];
+
   const exhibitionObject: Exhibition = {} as Exhibition;
-  data.forEach(item => {
-    // const newId = crypto.randomUUID();
-    const exhibitionStartDate = new Date(item?.exhibitionStartDate);
-    const exhibitionEndDate = new Date(item?.exhibitionEndDate);
-    const exhibitionStartDateString = exhibitionStartDate ? exhibitionStartDate?.toISOString() : "";
-    const exhibitionEndDateString = exhibitionEndDate ? exhibitionEndDate?.toISOString() : "";
-    const hasReception = item?.receptionStartTime && item?.receptionEndTime ? 'Yes' : 'No';
-    const receptionStart = item?.receptionStartTime !== undefined ? new Date(item?.receptionStartTime).toISOString() : "";
-    const receptionEnd = item?.receptionEndTime !== undefined ? new Date(item?.receptionEndTime).toISOString() : "";
-    exhibitionObject.exhibitionArtist = {value: item?.exhibitionArtist};
-    exhibitionObject.exhibitionDates = {
-      exhibitionStartDate: {
-        value: exhibitionStartDateString,
-        isOngoing: false
-      },
-      exhibitionEndDate: {
-        value: exhibitionEndDateString,
-        isOngoing: false
-      },
-      exhibitionDuration: {value: 'Temporary'},
-    };
-    exhibitionObject.receptionDates = {
-      hasReception: {value: hasReception},
-      receptionStartTime: {value: receptionStart},
-      receptionEndTime: {value: receptionEnd},
+
+  let heroImage = '';
+
+  if (data.heroImageURL) {
+    try {
+      const response = await fetch(data.heroImageURL);
+      const blob = await response.blob();
+      const reader = new FileReader();
+
+      const fileData = await new Promise<string>((resolve) => {
+        reader.onloadend = () => {
+          resolve(reader.result as string);
+        };
+        reader.readAsDataURL(blob);
+      });
+
+      heroImage = fileData;
+    } catch (error: any) {
+      heroImage = '';
     }
-    exhibitionObject.exhibitionType = {value: item?.exhibitionType};
-    exhibitionObject.exhibitionTitle = {value: item?.exhibitionTitle};
-    exhibitionObject.exhibitionPressRelease = {value: item?.exhibitionPressRelease};
-    exhibitionObject.exhibitionArtistStatement = {value: item?.exhibitionArtistStatement};
-  });
+  }
+
+  const exhibitionStartDate = new Date(data?.exhibitionStartDate);
+  const exhibitionEndDate = new Date(data?.exhibitionEndDate);
+
+  const exhibitionStartDateString = exhibitionStartDate ? exhibitionStartDate?.toISOString() : "";
+  const exhibitionEndDateString = exhibitionEndDate ? exhibitionEndDate?.toISOString() : "";
+  const hasReception = data?.receptionStartTime && data?.receptionEndTime ? 'Yes' : 'No';
+  const receptionStart = data?.receptionStartTime !== undefined ? new Date(data?.receptionStartTime).toISOString() : "";
+  const receptionEnd = data?.receptionEndTime !== undefined ? new Date(data?.receptionEndTime).toISOString() : "";
+  exhibitionObject.exhibitionArtist = {value: data?.exhibitionArtist};
+  exhibitionObject.exhibitionDates = {
+    exhibitionStartDate: {
+      value: exhibitionStartDateString,
+      isOngoing: false
+    },
+    exhibitionEndDate: {
+      value: exhibitionEndDateString,
+      isOngoing: false
+    },
+    exhibitionDuration: {value: 'Temporary'},
+  };
+  exhibitionObject.receptionDates = {
+    hasReception: {value: hasReception},
+    receptionStartTime: {value: receptionStart},
+    receptionEndTime: {value: receptionEnd},
+  };
+  exhibitionObject.exhibitionType = {value: data?.exhibitionType};
+  exhibitionObject.exhibitionTitle = {value: data?.exhibitionTitle};
+  exhibitionObject.exhibitionPressRelease = {value: data?.exhibitionPressRelease};
+  exhibitionObject.exhibitionArtistStatement = {value: data?.exhibitionArtistStatement};
+  exhibitionObject.exhibitionPrimaryImage = {fileData: heroImage, fileName: data?.exhibitionTitle};
+  exhibitionObject.artworkCategory = {value: data?.artworkCategory};
   return exhibitionObject;
 };
+
+export const handleBatchArtworkUpload = async ({ 
+  artworks, 
+  exhibitionId, 
+  galleryId
+  }: { 
+  artworks: Artwork[], 
+  exhibitionId: string, 
+  galleryId: string,
+  exhibition: Exhibition,
+  }) => {
+  try{ 
+    const results = [];
+    for (const artwork of artworks) {
+      // eslint-disable-next-line no-await-in-loop
+      const initialArtwork = await createExhibitionArtworkForAdmin({ galleryId, exhibitionId });
+      if (!initialArtwork) {
+        results.push(null); // or continue; if you want to skip this iteration
+      }
+      const art = { ...initialArtwork, ...artwork };
+      // eslint-disable-next-line no-await-in-loop
+      const result = await editExhibitionArtworkForAdmin({ artwork: art });
+      results.push(result);
+    }
+  
+    const newArtworks = results.reduce<{ [key: string]: Artwork }>((obj, artwork) => {
+      // eslint-disable-next-line no-underscore-dangle
+      if (!artwork || !artwork._key) { // Also checks if _id is truthy
+        return obj;
+      }
+      // eslint-disable-next-line no-param-reassign, no-underscore-dangle
+      obj[artwork?._key] = artwork;
+      return obj;
+    }, {});
+    return newArtworks;
+  } catch(error: any) {
+    throw new Error(error.message)
+  }
+}

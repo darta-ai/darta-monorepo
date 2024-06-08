@@ -55,6 +55,11 @@ export interface IExhibitionService {
   }: {
     exhibitionId: string;
   }): Promise<Exhibition | void>;
+  getExhibitionAndLikesById({
+    exhibitionId
+  }: {
+    exhibitionId: string;
+  }): Promise<Exhibition | void>;
   readGalleryExhibitionForUser({
     exhibitionId,
   }: {
@@ -139,10 +144,12 @@ export interface IExhibitionService {
   getUnViewedExhibitionsForUser({uid} : {uid: string}): Promise<{[key: string] : Array<string>} | void>
 
   listExhibitionsPreviewsCurrentForUserByLimit({limit, uid}: {limit: number, uid: string}): Promise<{[key: string]: ExhibitionPreview} | void>
-  listExhibitionsPreviewsForthcomingForUserByLimit({limit, uid}: {limit: number, uid: string}): Promise<{[key: string]: ExhibitionPreview} | void>
-  listExhibitionsPreviewsUserFollowingForUserByLimit({limit, uid}: {limit: number, uid: string}): Promise<{[key: string]: ExhibitionPreview} | void>
+  listExhibitionsPreviewsForthcomingForUserByLimit(
+    {limit, uid}: {limit: number, uid: string | null}): Promise<{[key: string]: ExhibitionPreview} | void>
+  listExhibitionsPreviewsUserFollowingForUserByLimit({limit, uid}: {limit: number, uid: string | null}): Promise<{[key: string]: ExhibitionPreview} | void>
   // To Deprecate
   listExhibitionsPreviewsForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: ExhibitionPreview} | void>
 
-
+  listExhibitionsPreviewsForthcomingGalleryFollowingForUserByLimit({limit, uid}: {limit: number, uid: string | null})
+  : Promise<{[key: string]: ExhibitionPreview} | void>
 }

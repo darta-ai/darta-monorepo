@@ -13,6 +13,7 @@ import { NewListModal } from '../../components/Lists/NewListModal';
 import { addArtworkToList } from '../../api/listRoutes';
 import { createUserArtworkRelationship } from '../../api/artworkRoutes';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
+import analytics from '@react-native-firebase/analytics';
 
 const addToListStyles = StyleSheet.create({
     container: {
@@ -142,13 +143,14 @@ export function AddToListScreen({
         if (saveToSaved && artworkId) {
             await createUserArtworkRelationship({artworkId, action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE});
             userDispatch({
-                type: UserETypes.setUserSavedArtworkMulti,
-                artworkIds: {[artworkId]: true},
+                type: UserETypes.setUserSavedArtwork,
+                artworkId: artworkId,
             })
             userDispatch({
                 type: UserETypes.saveArtwork,
                 artworkData: artwork!,
             })
+            analytics().logEvent('save_artwork')
         }
     
         try {

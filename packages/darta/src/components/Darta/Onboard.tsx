@@ -16,7 +16,7 @@ const onboardStyles = StyleSheet.create({
         position: "absolute",
         top: hp('15%'),
         width: wp('90%'),
-        height: hp('25%'),
+        height: hp('30%'),
         display: "flex",
         flexDirection: "column",
         gap: hp('2%'),
@@ -89,7 +89,7 @@ export const Onboard = () => {
                 <TextElement style={onboardStyles.headerTextElement}>Tap and swipe this screen</TextElement>
                 <SVGs.SwipeIcon />
                 <TextElement style={onboardStyles.bodyTextElement}>Swipe right and left to browse artwork</TextElement>
-                <TextElement style={onboardStyles.bodyTextElement}>Tap artwork for more details</TextElement>
+                <TextElement style={onboardStyles.bodyTextElement}>Long press on the artwork for more details</TextElement>
                 <View style={onboardStyles.buttonContainer}>
                     <Button style={onboardStyles.buttonStyles} onPress={() => setStep(step => step - 1)}><TextElement style={onboardStyles.buttonTextColor}>Back</TextElement></Button>
                     <Button style={onboardStyles.buttonStyles} onPress={() => handleClose()}><TextElement style={onboardStyles.buttonTextColor}>Done</TextElement></Button>

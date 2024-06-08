@@ -146,7 +146,8 @@ export class UserController {
         legalFirstName,
         legalLastName,
         email, 
-        uid
+        uid,
+        expoPushToken
       } = req.body;
       if (!uid) {
         throw new Error('Missing required fields');
@@ -158,7 +159,8 @@ export class UserController {
         legalFirstName: legalFirstName as string,
         legalLastName: legalLastName as string,
         email: email as string, 
-        uid: uid as string
+        uid: uid as string,
+        expoPushToken: expoPushToken as string
       });
       
       res.status(200).send(results);

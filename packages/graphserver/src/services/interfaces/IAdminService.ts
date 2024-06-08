@@ -17,6 +17,7 @@ export interface IAdminService {
   addMinioBucker(bucketName: string): Promise<string>;
   listAllExhibitionsForAdmin(): Promise<ExhibitionPreviewAdmin[]>;
   getGalleryForAdmin({galleryId} : {galleryId: string}): Promise<Gallery | null>
+  getExhibitionForGallery({exhibitionId}: {exhibitionId: string}): Promise<Exhibition | void>
 
   createExhibitionForAdmin({galleryId, userId }: { galleryId: string; userId: string }): Promise<Exhibition | void>
   editExhibitionForAdmin({ exhibition, galleryId }: {exhibition: Exhibition, galleryId: string }): Promise<Exhibition | void>

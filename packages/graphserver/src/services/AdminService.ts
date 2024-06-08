@@ -150,7 +150,6 @@ export class AdminService implements IAdminService {
         ))
       )
 
-
       return filteredResults;
     } catch (error: any) {
       throw new Error(`failed to list all exhibitions: ${error.message}`);
@@ -181,6 +180,11 @@ export class AdminService implements IAdminService {
     // await this.reSaveGalleryImageByGalleryId({id: results.galleryId})
     return results
   }
+
+  public async getExhibitionForGallery({exhibitionId}: {exhibitionId: string}): Promise<Exhibition | void>{
+    return this.exhibitionService.readExhibitionForGallery({exhibitionId});
+  }
+
 
 
   public async createExhibitionForAdmin({galleryId, userId}: { galleryId: string; userId: string }): Promise<Exhibition | void>{

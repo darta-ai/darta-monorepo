@@ -64,6 +64,7 @@ export interface IUserService {
     legalFirstName,
     legalLastName,
     uid,
+    expoPushToken,
   }: {
     profilePicture?: Images;
     userName?: string;
@@ -71,6 +72,7 @@ export interface IUserService {
     legalFirstName?: string;
     legalLastName?: string;
     uid?: string;
+    expoPushToken?: string;
   }): Promise<any>
   checkIfGalleryUserExists({uid}: {uid: string}): Promise<boolean>;
   deleteGalleryUser(): Promise<boolean>;

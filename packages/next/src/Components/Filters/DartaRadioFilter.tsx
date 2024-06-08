@@ -52,7 +52,7 @@ export function DartaRadioFilter({
             </IconButton>
           </Tooltip>
         )}
-        <FormLabel>Has Inquiries</FormLabel>
+        <FormLabel>Sort By</FormLabel>
       </Box>
       <Box
         sx={{

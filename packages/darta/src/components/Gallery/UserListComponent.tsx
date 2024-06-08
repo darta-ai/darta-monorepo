@@ -6,10 +6,11 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {globalTextStyles} from '../../styles/styles';
 import {TextElement} from '../Elements/_index';
 import * as SVGs from '../../assets/SVGs/index';
-import { ListPreview, PreviewArtwork, PrivateFields, PublicFields } from '@darta-types/dist';
-import FastImage from 'react-native-fast-image'
+import { ListPreview, PublicFields } from '@darta-types/dist';
+// import FastImage from 'react-native-fast-image'
 
 import { widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import { DartaImageComponent } from '../Images/DartaImageComponent';
 
 
 export const userListComponentStyles = StyleSheet.create({
@@ -51,21 +52,17 @@ type DartaIconButtonWithTextProps = {
   handlePress: ({listId}: {listId: string}) => void,
 };
 
-const styles = StyleSheet.create({
-  image: {
-    width: '33%', // Adjust width based on the number of columns
-    height: 100,  // Set your desired height
-    // Add any additional styling
-  },
-  // You can add more styles if needed
-});
-
 const Icon = ({ artworkPreview }: { artworkPreview: PublicFields }) => {
 
   if (!artworkPreview) return null
 
   return (
-      <FastImage source={{ uri: artworkPreview.value ?? "" }} style={{height: 50, width: 50}} resizeMode={FastImage.resizeMode.contain}/>
+      <DartaImageComponent 
+      uri={{ value: artworkPreview.value ?? "" }} 
+      style={{height: 50, width: 50}} 
+      priority={"normal"}
+      size={"smallImage"}
+      />
   )
 }
 
@@ -96,11 +93,11 @@ export const UserListComponent: React.FC<DartaIconButtonWithTextProps> = ({
         </TextElement>
         <TextElement
           style={globalTextStyles.baseText}>
-          List by {listPreview?.creatorName ?? "You"}
+          List by {listPreview?.creatorName !== "undefined undefined" ? listPreview.creatorName :  "You"}
         </TextElement>
       </View>
       <View style={userListComponentStyles.forwardButtonContainer}>
-          {isAdding && isPressed && <SVGs.PlusCircleIcon />}
+          {isAdding && isPressed && <SVGs.CheckmarkCircleFill />}
           {isAdding && !isPressed && <SVGs.EmptyCircle /> }
           {!isAdding && <SVGs.ForwardIcon />}
       </View>

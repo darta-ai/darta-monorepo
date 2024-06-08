@@ -23,7 +23,7 @@ import { createArtworkRelationshipAPI, deleteArtworkRelationshipAPI, listArtwork
 import { TextElement } from '../components/Elements/TextElement';
 import * as SVGs from '../assets/SVGs';
 import analytics from '@react-native-firebase/analytics';
-import { UIStoreContext, UiETypes, ETypes, StoreContext, ViewStoreContext, ViewETypes } from '../state';
+import { UIStoreContext, UiETypes, StoreContext, ViewStoreContext, ViewETypes } from '../state';
 import { UserETypes, UserStoreContext } from '../state/UserStore';
 
 
@@ -262,6 +262,10 @@ export function DartaRecommenderView({
             type: UserETypes.setUserSavedArtwork,
             artworkId: artOnDisplay?._id!,
           })
+          userDispatch({
+            type: UserETypes.saveArtwork,
+            artworkData: artOnDisplay!,
+          });
           analytics().logEvent('save_artwork')
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
           break;
@@ -270,6 +274,10 @@ export function DartaRecommenderView({
             type: UserETypes.setUserInquiredArtwork,
             artworkId: artOnDisplay?._id!,
           })
+          userDispatch({
+            type: UserETypes.saveArtwork,
+            artworkData: artOnDisplay!,
+          });
           analytics().logEvent('inquire_artwork')
           break;
         }

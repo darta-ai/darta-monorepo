@@ -15,3 +15,16 @@ export const generateHeaders = async () => {
     throw new Error ('Unable to generate headers')
   }
 }
+
+
+export const generateUid = async () => {
+  try {
+    const user = auth().currentUser;
+    if (!user) {
+      throw new Error('No user found');
+    }
+    return user.uid;
+  } catch(e){
+    throw new Error ('Unable to generate headers')
+  }
+}

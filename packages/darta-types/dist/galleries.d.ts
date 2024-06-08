@@ -188,6 +188,10 @@ export type Artwork = {
     editionSize?: {
         value: number;
     };
+    likes?: number;
+    dislikes?: number;
+    saves?: number;
+    views?: number;
 };
 export type ExhibitionDates = {
     exhibitionStartDate: DateFields;
@@ -242,6 +246,7 @@ export type Exhibition = {
     videoLink?: PublicFields;
     pressLink?: PublicFields;
     userViewed?: boolean;
+    galleryId?: string;
 };
 export type ExhibitionObject = {
     [key: string]: Exhibition;

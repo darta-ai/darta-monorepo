@@ -1,19 +1,15 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet } from 'react-native';
+import {View, StyleSheet, Platform } from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import * as Location from 'expo-location';
 
 import * as Colors from '@darta-styles';
-import {ETypes, StoreContext} from '../../state/Store';
-import { ExhibitionDates, ExhibitionMapPin, FullList, Images, PrivateFields, PublicFields, ReceptionDates } from '@darta-types';
+import { StoreContext} from '../../state/Store';
+import { ExhibitionMapPin } from '@darta-types';
 import { TextElement } from '../../components/Elements/TextElement';
-import { ListMapComponent } from '../../components/Lists/ListMapComponent';
-import { useFocusEffect } from '@react-navigation/native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { mapStylesJson } from '../../utils/mapStylesJson';
 import CustomMarkerList from '../../components/Previews/CustomMarkerList';
-import CustomMarker from '../../components/Previews/CustomMarker';
-import { getFullList } from '../../api/listRoutes';
+import { androidMapStyles } from '../../utils/mapStylesJson.android';
 
 const exploreMapStyles = StyleSheet.create({
     container: {
@@ -129,9 +125,9 @@ export function ListMap({
         <MapView  
           ref={mapListRef}
           provider={PROVIDER_GOOGLE}
-          style={ exploreMapStyles.mapView }
+          style={exploreMapStyles.mapView }
           region={mapRegion} 
-          customMapStyle={mapStylesJson}
+          customMapStyle={ Platform.OS === "ios"  ? mapStylesJson : androidMapStyles}
           onMarkerPress={handleMarkerPress}
           showsUserLocation={true}
           >

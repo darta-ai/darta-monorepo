@@ -1,5 +1,7 @@
 import sgMail from '@sendgrid/mail';
 import * as dotenv from 'dotenv';
+import { Expo } from 'expo-server-sdk';
+
 
 
 dotenv.config();
@@ -19,6 +21,11 @@ export const config = {
     secretKey: process.env.MINIO_SECRET_KEY,
   },
 };
+
+export const expoClient = new Expo({
+  accessToken: process.env.EXPO_ACCESS_TOKEN,
+  useFcmV1: true, // default false
+});
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!)
 

@@ -1,11 +1,11 @@
 import React from 'react';
-import {View, StyleSheet, Linking, Platform, ScrollView, RefreshControl, Animated, Pressable} from 'react-native';
+import {View, StyleSheet, Linking, Platform, ScrollView, RefreshControl, Animated, Pressable, TouchableOpacity} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { globalTextStyles } from '../../styles/styles';
 import {TextElement} from '../../components/Elements/_index';
 import * as Colors from '@darta-styles';
 import  ExhibitionPreviewMini from '../../components/Previews/ExhibitionPreviewMini';
-import FastImage from 'react-native-fast-image'
+// import FastImage from 'react-native-fast-image'
 import { createGalleryRelationshipAPI, deleteGalleryRelationshipAPI } from '../../utils/apiCalls';
 import {
   ExhibitionRootEnum,
@@ -19,13 +19,14 @@ import { formatUSPhoneNumber } from '../../utils/functions';
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
 import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
-import {readExhibition} from '../../api/exhibitionRoutes';
+import {listExhibitionPreviewUserFollowing, readExhibition} from '../../api/exhibitionRoutes';
 import { DartaIconButtonWithText } from '../../components/Darta/DartaIconButtonWithText';
 import * as SVGs from '../../assets/SVGs';
 import { UIStoreContext, UiETypes, GalleryStoreContext,StoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes, ETypes } from '../../state';
 import { UserETypes, UserStoreContext } from '../../state/UserStore';
-import { DartaImageComponent } from '../../components/Images/DartaImageComponent';
 import GalleryLocation from '../../components/Gallery/GalleryLocation';
+import { Image } from 'expo-image';
+import * as Haptics from 'expo-haptics';
 
 
 const galleryDetailsStyles = StyleSheet.create({
@@ -176,7 +177,7 @@ followContainer: {
     marginBottom: 24,
   },
   pressableStyle: {
-    width: 130,
+    width: 140,
     height: 38,
     backgroundColor: Colors.PRIMARY_950,
     borderRadius: 20,
@@ -362,13 +363,19 @@ export function ExhibitionGalleryScreen({
     }, 500)
   }, []);
 
+  const [loadingFollow, setLoadingFollow] = React.useState(false)
+
   const followGallery = async () => {
     try{
+      setLoadingFollow(true)
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       await createGalleryRelationshipAPI({galleryId})
       userDispatch({
         type: UserETypes.setUserFollowGalleries,
         galleryId,
       })
+      setFollowsGallery(true)
+      setLoadingFollow(false)
       
       if (route?.params?.exhibitionId && exhibitionState.exhibitionData){
         let exhibitionPreview: any = {}
@@ -423,18 +430,24 @@ export function ExhibitionGalleryScreen({
           type: ETypes.addLocationIdToSavedPins,
           locationId: gallery?.galleryLocation0?.googleMapsPlaceId?.value as string,
         })
+      } else {
+        const userFollowingExhibitionPreviews = await listExhibitionPreviewUserFollowing({ limit: 7 });
+        exhibitionDispatch({type: ExhibitionETypes.saveUserFollowsExhibitionPreviews, exhibitionPreviews: userFollowingExhibitionPreviews})
       }
-
-      setFollowsGallery(true)
     } catch(e) {
       // console.log('error', e)
-      throw new Error("Something went wrong, please try again")
+      // throw new Error("Something went wrong, please try again")
+      setLoadingFollow(false)
     }
   }
 
   const unFollowGallery = async () => { 
     try{
+      setLoadingFollow(true)
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       await deleteGalleryRelationshipAPI({galleryId})
+      setFollowsGallery(false)
+      setLoadingFollow(false)
       userDispatch({
         type: UserETypes.removeUserFollowGalleries,
         galleryId,
@@ -447,9 +460,10 @@ export function ExhibitionGalleryScreen({
         type: ETypes.removeLocationIdToSavedPins,
         locationId: gallery?.galleryLocation0?.googleMapsPlaceId?.value as string,
       })
-      setFollowsGallery(false)
+
     } catch {
-      throw new Error("Something went wrong, please try again")
+      // throw new Error("Something went wrong, please try again")
+      setLoadingFollow(false)
     }
   }
 
@@ -581,7 +595,7 @@ export function ExhibitionGalleryScreen({
           return Linking.openURL(url);
         }
       })
-      .catch((err) => console.error('An error occurred', err));
+      .catch((err) => console.error('!!!!! An error occurred', err));
   };
 
   const visitWebsite = (url: string) => {
@@ -637,38 +651,37 @@ export function ExhibitionGalleryScreen({
           </View>
           {gallery?.galleryLogo?.value && (
             <View style={galleryDetailsStyles.galleryLogoContainer}>
-              <DartaImageComponent 
-              uri={gallery?.galleryLogo}
-              priority={FastImage.priority.normal}
+              <Image 
               style={galleryDetailsStyles.heroImage}
-              resizeMode={FastImage.resizeMode.contain}
-              size={"smallImage"}
+              source={{uri : gallery.galleryLogo.value}}
               />
             </View>
             )}
             <View style={galleryDetailsStyles.followContainer}>
             {!followsGallery && (
-            <Animated.View style={{opacity: opacitySetOne, transform: [{ translateX: translateX }] }}>
-                <Pressable style={{...galleryDetailsStyles.pressableStyle, backgroundColor: Colors.PRIMARY_50, borderColor: Colors.PRIMARY_500, borderWidth: 1}} onPress={() => followGallery()}>
-                  <View style={{width: 30}}>
-                    <SVGs.HeartFill />
-                  </View>
-                  <View style={{width: 80}}>
-                    <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_950}}>Follow</TextElement>
-                  </View>
-                </Pressable>
-            </Animated.View>
+              <Animated.View style={{opacity: opacitySetOne, transform: [{ translateX: translateX }] }}>
+                  <TouchableOpacity style={{...galleryDetailsStyles.pressableStyle, backgroundColor: Colors.PRIMARY_50, borderColor: Colors.PRIMARY_500, borderWidth: 1}} onPress={() => followGallery()}>
+                    <View style={{width: 30}}>
+                      {loadingFollow && <ActivityIndicator size={20} color={Colors.PRIMARY_950} />}
+                      {!loadingFollow && <SVGs.HeartFill />}
+                    </View>
+                    <View style={{width: 80}}>
+                      <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_950}}>Follow</TextElement>
+                    </View>
+                  </TouchableOpacity>
+              </Animated.View>
               )}
             {followsGallery && (
             <Animated.View style={{opacity: opacitySetTwo, transform: [{ translateX: Animated.subtract(100, translateX) }]}}>
-              <Pressable style={galleryDetailsStyles.pressableStyle} onPress={() => unFollowGallery()}>
+              <TouchableOpacity style={galleryDetailsStyles.pressableStyle} onPress={() => unFollowGallery()}>
                 <View style={{width: 30}}>
-                  <SVGs.HeartEmpty />
+                  {loadingFollow && <ActivityIndicator size={20} color={Colors.PRIMARY_50} />}
+                  {!loadingFollow && <SVGs.HeartEmpty />}
                 </View>
                 <View style={{width: 80}}>
                   <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_50}}>Following</TextElement>
                 </View>
-              </Pressable>
+              </TouchableOpacity>
             </Animated.View>
               )} 
           </View>

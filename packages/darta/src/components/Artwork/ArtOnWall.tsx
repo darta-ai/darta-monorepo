@@ -6,7 +6,7 @@ import {
   View,
   Pressable
 } from 'react-native';
-import FastImage from 'react-native-fast-image'
+// import FastImage from 'react-native-fast-image'
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import {runOnJS} from 'react-native-reanimated';
 import {
@@ -366,14 +366,13 @@ export function ArtOnWall({
     artwork: {
       height: artDimensions.artImageSize?.height,
       width: artDimensions.artImageSize?.width,
-      resizeMode: 'contain',
-      shadowColor: Colors.PRIMARY_300, // Shadow color should generally be black for realistic shadows
-      shadowOffset: { width: 0, height: 4.29 }, // Adjust the height for the depth of the shadow
-      shadowOpacity: 1,
-      shadowRadius: 4.29, // A larger shadow
+      // shadowColor: Colors.PRIMARY_300, // Shadow color should generally be black for realistic shadows
+      // shadowOffset: { width: 0, height: 4.29 }, // Adjust the height for the depth of the shadow
+      // shadowOpacity: 1,
+      // shadowRadius: 4.29, // A larger shadow
     },
     activityIndicator: {
-      top: isPortrait ? hp('35%') : hp('20%'),
+      top: hp('35%'),
       justifyContent: 'center',
     },
     screenContainer: {
@@ -416,13 +415,13 @@ export function ArtOnWall({
                         <Surface style={{backgroundColor:"transparent"}}>
                           <Animated.View style={{opacity: opacityAnimatedValue}}>
                             <Animated.View style={{opacity: imageOpacity}}>
-                              <FastImage
+                              {/* <FastImage
                                 source={{uri: artImage, priority: FastImage.priority.normal}}
                                 style={galleryStylesPortraitDynamic.artwork}
                                 resizeMode={FastImage.resizeMode.contain}
                                 onLoad={handleImageLoad}
                                 
-                              />
+                              /> */}
                             </Animated.View>
                           </Animated.View>
                           </Surface>

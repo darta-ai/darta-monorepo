@@ -202,6 +202,16 @@ export function ArtworkCard({
         </Box>
       )}
       <Box>
+        <CardContent>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            data-testid="artwork-card-description">
+            {`Likes: ${artwork?.likes || 0} Dislikes: ${artwork?.dislikes || 0} Views: ${artwork?.views || 0}`}
+          </Typography>
+        </CardContent>
+      </Box>
+      <Box>
       <Button
           variant="contained"
           onClick={() => handleClickOpen()}

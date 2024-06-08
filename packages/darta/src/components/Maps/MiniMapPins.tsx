@@ -23,6 +23,7 @@ export const MiniMappedPins = ({ pins, navigation, city, view }: { pins?: Exhibi
                   isOpeningUpcoming={isOpeningUpcoming}
                   mapPin={pin}
                   navigation={navigation}
+                  key={`${pin.exhibitionLocation.coordinates.latitude.value}-${pin.exhibitionLocation.coordinates.longitude.value}-${city}-${view}-${pin.locationId}-miniMapped`}
                 />
               </View>
             )

@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import { Artwork, Exhibition, GalleryBase } from '@darta-types';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, TextField, Typography } from '@mui/material';
 import _ from 'lodash';
 import { NextPageContext } from 'next'
 import { useRouter } from 'next/router';
@@ -12,6 +12,7 @@ import {
   deleteExhibitionArtworkForAdmin,
   deleteExhibitionForAdmin,
   editExhibitionArtworkForAdmin, 
+  generateArtworksFromArtLogic, 
   getGalleryForAdmin, 
   listGalleryExhibitionsForAdmin, 
   publishExhibitionForAdmin, 
@@ -86,29 +87,18 @@ export default function AddExhibition({ galleryId }: { galleryId: string }) {
     }
   }, [])
 
-  const handleExhibitionUpload = async (newExhibition: Exhibition) => {
-    const emptyExhibition = await createExhibitionForAdmin({galleryId});
-    if (!emptyExhibition) {
-      return;
-    }
-    const updatedExhibition = await updateExhibitionForAdmin({
-      galleryId,
-      exhibition: { ...emptyExhibition, ...newExhibition },
-    });
-    if (!updatedExhibition) {
-      return;
-    }
-  
+  const updateExhibitions = async (newExhibition: Exhibition) => {
+ 
     // Assuming each exhibition has a unique 'id' you can use to check for duplicates
-    const isDuplicate = exhibitions?.some(exhibition => exhibition._id === updatedExhibition._id);
+    const isDuplicate = exhibitions?.some(exhibition => exhibition._id === newExhibition._id);
   
     if (!isDuplicate) {
-      const newExhibitionList = [updatedExhibition, ...(exhibitions ?? [])];
+      const newExhibitionList = [newExhibition, ...(exhibitions ?? [])];
       setExhibitions(newExhibitionList);
     } else if (exhibitions) {
       // Optionally, handle the duplicate case, such as updating the existing exhibition in your state
       const updatedExhibitions = exhibitions.map(exhibition =>
-        exhibition._id === updatedExhibition._id ? updatedExhibition : exhibition
+        exhibition._id === newExhibition._id ? newExhibition : exhibition
       );
       setExhibitions(updatedExhibitions);
     }
@@ -321,6 +311,47 @@ export default function AddExhibition({ galleryId }: { galleryId: string }) {
     }
   }
 
+  // const [artLogicUrl, setArtLogicUrl] = React.useState<string>('');
+
+  
+  // const [isLoadingArtLogic, setIsLoadingArtLogic] = React.useState<boolean>(false);
+  
+  // const handleArtLogic = async () => {
+  //   setIsLoadingArtLogic(true)
+  //   const res = await fetchAdminArtLogic({artLogicUrl, galleryId})
+  //   if (exhibitions && res){
+  //     const updatedExhibitions = [...exhibitions, res].sort((a, b) => {
+  //       if (a.exhibitionDates.exhibitionStartDate.value && b.exhibitionDates.exhibitionStartDate.value) {
+  //         return new Date(a.exhibitionDates.exhibitionStartDate.value).getTime() - new Date(b.exhibitionDates.exhibitionStartDate.value).getTime();
+  //       }
+  //       return 0;
+  //     })
+  //     setExhibitions(updatedExhibitions);
+  //   }
+  //   setIsLoadingArtLogic(false)
+  // }
+  
+  const [artworksUrl, setArtworksUrl] = React.useState<string>('');
+
+  const [isLoadingArtwork, setIsLoadingArtwork] = React.useState<boolean>(false);
+
+  const handleArtLogicArtwork = async (exhibitionId: string) => {
+    setIsLoadingArtwork(true)
+    const res = await generateArtworksFromArtLogic({artworksUrl, galleryId, exhibitionId})
+    if (exhibitions && res){
+      const updatedExhibitions = [...exhibitions, res].sort((a, b) => {
+        if (a.exhibitionDates.exhibitionStartDate.value && b.exhibitionDates.exhibitionStartDate.value) {
+          return new Date(a.exhibitionDates.exhibitionStartDate.value).getTime() - new Date(b.exhibitionDates.exhibitionStartDate.value).getTime();
+        }
+        return 0;
+      })
+      setExhibitions(updatedExhibitions);
+    }
+    setArtworksUrl('')
+    setIsLoadingArtwork(false)
+
+  }
+  
   return (
     <Box sx={profileStyles.container}>
         <Box>
@@ -328,8 +359,17 @@ export default function AddExhibition({ galleryId }: { galleryId: string }) {
             <Typography variant='h4'>Exhibitions</Typography>
         </Box>
         <Box sx={profileStyles.buttonContainer}>
-            <UploadExhibitionXlsModal setExhibition={handleExhibitionUpload}/>
+            <UploadExhibitionXlsModal updateExhibitions={updateExhibitions} galleryId={galleryId}/>
             <Button variant="contained" onClick={handleExhibitionCreate}>From Scratch</Button>
+        </Box>
+        <Box sx={profileStyles.buttonContainer}>
+          {/* <Box>
+            <TextField sx={{width: 250}} id="standard-basic" label="Enter URL from ArtLogic" variant="standard" value={artLogicUrl} onChange={(e) => setArtLogicUrl(e.target.value)}/>
+              <Button onClick={handleArtLogic} variant="contained" disabled={isLoadingArtLogic}>
+              {isLoadingArtLogic ? <CircularProgress /> : null}
+              Load URL
+              </Button>
+          </Box> */}
         </Box>
         <Box sx={profileStyles.newExhibitionContainer}>
             {exhibitions && 
@@ -349,7 +389,28 @@ export default function AddExhibition({ galleryId }: { galleryId: string }) {
                       higherLevelDeleteExhibition={handleExhibitionDelete}
                       higherLevelPublishExhibition={handleExhibitionPublish}
                       />
-                      <UploadArtworksXlsModal exhibitionId={exhibition._id as string} handleBatchUpload={handleBatchArtworkUpload} />
+                      <Box sx={{width: '80%', 
+                        display: 'flex', 
+                        flexDirection: 'row', 
+                        alignContent:'center', 
+                        margin: 5, 
+                        justifyContent: 'space-between'}}>
+                        <UploadArtworksXlsModal exhibitionId={exhibition._id as string} handleBatchUpload={handleBatchArtworkUpload} />
+                        <Box>
+                          <TextField 
+                            sx={{width: 250}} 
+                            id="standard-basic" 
+                            label="Upload artwork from ArtLogic" 
+                            variant="standard" 
+                            value={artworksUrl} 
+                            onChange={(e) => setArtworksUrl(e.target.value)}/>
+                          <Button onClick={() => handleArtLogicArtwork(exhibition._id!)} 
+                          variant="contained" disabled={isLoadingArtwork}>
+                          {isLoadingArtwork ? <CircularProgress /> : null}
+                          Load URL
+                          </Button>
+                        </Box>
+                      </Box>
                       </ Box>
                     ))
           }

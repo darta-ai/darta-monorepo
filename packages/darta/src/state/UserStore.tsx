@@ -125,16 +125,16 @@ const userReducer = (state: UserState, action: UserIAction): UserState => {
         },
       };
     case UserETypes.removeUserDislikedArtwork:
-          if (!action?.artworkId){
-              return state;
-            }
-            return {
-              ...state,
-              userDislikedArtwork: {
-                ...state.userDislikedArtwork,
-                [action.artworkId]: false,
-              },
-            };
+      if (!action?.artworkId){
+          return state;
+        }
+        return {
+          ...state,
+          userDislikedArtwork: {
+            ...state.userDislikedArtwork,
+            [action.artworkId]: false,
+          },
+        };
     case UserETypes.setUserLikedArtwork:
       if (!action?.artworkId){
         return state;
@@ -235,15 +235,15 @@ const userReducer = (state: UserState, action: UserIAction): UserState => {
           },
       };
     case UserETypes.saveArtwork:
-    if(!action.artworkData || !action.artworkData.artworkId){
-      return state
-    }
-    return {
-      ...state,
-      artworkData: {
-        ...state.artworkData,
-        [action.artworkData.artworkId]: action.artworkData
+      if(!action.artworkData || !action.artworkData?._id){
+        return state
       }
+      return {
+        ...state,
+        artworkData: {
+          ...state.artworkData,
+          [action.artworkData._id]: action.artworkData
+        }
     }
 
   case UserETypes.saveArtworkMulti:

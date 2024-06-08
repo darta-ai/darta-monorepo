@@ -1,9 +1,10 @@
 import React from 'react';
 import {
+  Platform,
   StyleSheet,
   View,
 } from 'react-native';
-import FastImage from 'react-native-fast-image'
+// import FastImage from 'react-native-fast-image'
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -73,12 +74,6 @@ export function ArtOnWallFlatList({
 
 
   const getDimensions = React.useCallback(() => {
-    const dimensionsMultiplierPortrait =
-      backgroundContainerDimensionsPixels.width /
-      backgroundContainerDimensionsPixels.height;
-
-    // const backgroundWidthInches = wallHeight * dimensionsMultiplierPortrait;
-
     let artHeightInches: number = 0;
     let artWidthInches: number = 0;
     let artHeightPixels: number = 0
@@ -90,40 +85,7 @@ export function ArtOnWallFlatList({
     let artImageLocation: {
       top: number;
       left: number;
-    } | null = null
-
-    // if (artworkDimensions && artworkDimensions.heightIn.value && artworkDimensions.widthIn.value) {
-    //   artHeightInches = parseInt(artworkDimensions.heightIn.value);
-    //   artWidthInches = parseInt(artworkDimensions.widthIn.value);
-
-    //   const pixelsPerInchHeight =
-    //     backgroundContainerDimensionsPixels.height / wallHeight;
-    //   const pixelsPerInchWidth =
-    //     backgroundContainerDimensionsPixels.width / backgroundWidthInches;
-
-    //   artHeightPixels = artHeightInches * pixelsPerInchHeight;
-    //   artWidthPixels = artWidthInches * pixelsPerInchWidth;
-
-    //   // need to adjust proportions if the art is too big for the screen
-
-    //   if (artWidthPixels > backgroundContainerDimensionsPixels.width) {
-    //     artWidthPixels = backgroundContainerDimensionsPixels.width;
-    //     artHeightPixels = artHeightPixels * (artWidthPixels / artWidthInches);
-    //   } else if (artHeightPixels > backgroundContainerDimensionsPixels.height) {
-    //     artHeightPixels = backgroundContainerDimensionsPixels.height;
-    //     artWidthPixels = artWidthPixels * (artHeightPixels / artHeightInches);
-    //   }
-
-    //   artImageSize = {
-    //     height: artHeightPixels,
-    //     width: artWidthPixels,
-    //   };
-
-    //   artImageLocation = {
-    //     top: 0.45 * backgroundContainerDimensionsPixels.height - 0.5 * artHeightPixels,
-    //     left: 0.5 * backgroundContainerDimensionsPixels.width - 0.5 * artWidthPixels,
-    //   };
-    // }
+    } | null = null;
 
 
     if (artworkDimensions && artworkDimensions.heightIn.value && artworkDimensions.widthIn.value) {
@@ -134,7 +96,7 @@ export function ArtOnWallFlatList({
 
       if (artHeightInches > artWidthInches) {
         // make the painting relative to the background height
-        artHeightPixels = backgroundContainerDimensionsPixels.height * 0.6;
+        artHeightPixels = backgroundContainerDimensionsPixels.height * 0.65;
         // make the width relative to the height
         artWidthPixels = artHeightPixels  * (artWidthInches / artHeightInches)
       } else {
@@ -202,33 +164,43 @@ export function ArtOnWallFlatList({
     artwork: {
       height: artDimensions.artHeightPixels,
       width: artDimensions.artWidthPixels,
-      resizeMode: 'contain',
-      shadowColor: Colors.PRIMARY_300, // Shadow color should generally be black for realistic shadows
-      shadowOffset: { width: 0, height: 4.29 }, // Adjust the height for the depth of the shadow
-      shadowOpacity: 1,
-      shadowRadius: 4.29, // A larger shadow
+      elevation: 4,
+    },
+    surfaceStyles: {
+      height: artDimensions.artHeightPixels * 1.05,
+      backgroundColor: Colors.PRIMARY_50,
+      width: artDimensions.artWidthPixels * 1.05,
+    },
+    card: {
+      height: artDimensions.artHeightPixels * 1.1, // Adjust the factor as needed
+      width: artDimensions.artWidthPixels * 1.1, // Adjust the factor as needed
+      backgroundColor: Colors.PRIMARY_100,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
   });
 
-  const tapGesture = Gesture.Tap()
-    .onEnd((event) => {
-      if (event.numberOfPointers === 1) {
-        runOnJS(toggleArtTombstone)(); // handle single tap
-      }
-    });
+  const longPressGesture = Platform.OS === 'android' ? Gesture.LongPress()
+  .onStart((event) => {
+    if (event.numberOfPointers === 1) {
+      runOnJS(toggleArtTombstone)();
+    }
+  }) : Gesture.Tap()
+  .onEnd((event) => {
+    if (event.numberOfPointers === 1) {
+      runOnJS(toggleArtTombstone)(); // handle single tap
+    }
+  });
 
   return (
       <View style={galleryStylesPortraitDynamic.artContainer}>
           {artImage && (
-          <GestureDetector gesture={tapGesture}>
-            <Surface style={{
-              backgroundColor:"transparent", 
-              }} >
+          <GestureDetector gesture={longPressGesture}>
+            <Surface elevation={2} mode={"elevated"} style={galleryStylesPortraitDynamic.card}>
                 <DartaImageComponent
                   uri={artImage}
-                  priority={FastImage.priority.high}
+                  priority={"high"}
                   style={galleryStylesPortraitDynamic.artwork}
-                  resizeMode={FastImage.resizeMode.contain}
                   size={"mediumImage"}
                 />
               </Surface>

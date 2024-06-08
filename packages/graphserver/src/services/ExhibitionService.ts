@@ -312,6 +312,98 @@ export class ExhibitionService implements IExhibitionService {
     };
   }
 
+  public async getExhibitionAndLikesById({
+    exhibitionId
+  }: {
+    exhibitionId: string;
+  }): Promise<Exhibition | void> {
+    let exhibition: Exhibition = {} as Exhibition;
+    try {
+      const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+  
+      const exhibitionQuery = `
+        LET exhibition = DOCUMENT(@fullExhibitionId)
+        RETURN exhibition      
+        `;
+  
+      // LOL terrible as
+     
+      const cursor = await this.db.query(exhibitionQuery, {fullExhibitionId});
+      exhibition = await cursor.next();
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+
+    const exhibitionArtworks = await this.listAllExhibitionArtworks({
+      exhibitionId,
+    });
+
+    // REFRESH EXHIBITION PRE-SIGNED IMAGE
+    
+
+    let imageValue;
+
+    let shouldRegenerate;
+    if (exhibition?.exhibitionPrimaryImage?.value) {
+      shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: exhibition?.exhibitionPrimaryImage.value})
+    }
+    let exhibitionImageValueLarge = exhibition.exhibitionPrimaryImage?.value ?? null;
+    let exhibitionImageValueMedium = exhibition.exhibitionPrimaryImage?.mediumImage?.value ?? null
+    let exhibitionImageValueSmall = exhibition.exhibitionPrimaryImage?.smallImage?.value ?? null
+
+    if (shouldRegenerate && ENV === 'production' && exhibition?.exhibitionPrimaryImage?.fileName && exhibition?.exhibitionPrimaryImage?.bucketName) {
+      const {fileName, bucketName} = exhibition.exhibitionPrimaryImage;
+      exhibitionImageValueLarge = await this.imageController.processGetFile({
+        fileName,
+        bucketName,
+      });
+      if (exhibition?.exhibitionPrimaryImage?.mediumImage?.fileName && exhibition?.exhibitionPrimaryImage?.mediumImage?.bucketName) {
+        const {fileName, bucketName} = exhibition.exhibitionPrimaryImage.mediumImage;
+        exhibitionImageValueMedium = await this.imageController.processGetFile({
+          fileName,
+          bucketName,
+        });
+      }
+      if (exhibition?.exhibitionPrimaryImage?.smallImage?.fileName && exhibition?.exhibitionPrimaryImage?.smallImage?.bucketName) {
+        const {fileName, bucketName} = exhibition.exhibitionPrimaryImage.smallImage;
+        exhibitionImageValueSmall = await this.imageController.processGetFile({
+          fileName,
+          bucketName,
+        });
+      }
+      if (ENV === 'production'){
+        await this.refreshExhibitionHeroImage({exhibitionId, 
+          mainUrl: exhibitionImageValueLarge, 
+          mediumUrl: exhibitionImageValueMedium, 
+          smallUrl: exhibitionImageValueSmall
+        })
+        standardConsoleLog({request: 'ExhibitionService', data: 'getExhibitionId', message: 'should regenerate imageUrl'})
+
+      }
+      exhibition.exhibitionPrimaryImage.value = imageValue;
+    } else {
+      imageValue = exhibition?.exhibitionPrimaryImage?.value
+    }
+
+    return {
+      ...exhibition,
+      exhibitionPrimaryImage: {
+        bucketName : exhibition?.exhibitionPrimaryImage?.bucketName,
+        value: exhibitionImageValueLarge,
+        fileName: exhibition?.exhibitionPrimaryImage?.fileName,
+        mediumImage: {
+          value: exhibitionImageValueMedium
+        },
+        smallImage: {
+          value: exhibitionImageValueSmall
+        }
+      },
+      artworks: {
+        ...exhibitionArtworks,
+      },
+    };
+  }
+
   public async getExhibitionPreviewById({
     exhibitionId,
   }: {
@@ -723,7 +815,7 @@ export class ExhibitionService implements IExhibitionService {
       const exhibitionIds = (await edgeCursor.all()).filter(el => el);
 
       const galleryOwnedArtworkPromises = exhibitionIds.map(
-        async (exhibitionId: string) => await this.getExhibitionById({exhibitionId}),
+        async (exhibitionId: string) => this.getExhibitionAndLikesById({exhibitionId}),
       );
 
       const galleryExhibitions = await Promise.all(galleryOwnedArtworkPromises);
@@ -953,9 +1045,9 @@ export class ExhibitionService implements IExhibitionService {
     }
   }
 
-  public async listExhibitionsPreviewsForthcomingForUserByLimit({limit, uid}: {limit: number, uid: string})
+  public async listExhibitionsPreviewsForthcomingForUserByLimit({limit, uid}: {limit: number, uid: string | null})
   : Promise<{[key: string]: ExhibitionPreview} | void> {
- 
+    
     const getExhibitionPreviewQuery = `
     WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}
     LET exhibitions = (
@@ -1024,7 +1116,7 @@ export class ExhibitionService implements IExhibitionService {
         });
       }
 
-      return exhibitionPreviews.reduce((acc, obj) => 
+      const results = exhibitionPreviews.reduce((acc, obj) => 
       {
         const userViewed = (seenResults?.[obj?.exhibitionId] || new Date(obj?.openingDate.value).toISOString() < SEVEN_DAYS_AGO ) ?? true
         acc[obj.exhibitionId as string] = {
@@ -1034,6 +1126,7 @@ export class ExhibitionService implements IExhibitionService {
         return acc 
       }, {})
 
+      return results;
   
     } catch (error: any) {
       throw new Error(error.message);
@@ -1041,10 +1134,13 @@ export class ExhibitionService implements IExhibitionService {
   }
 
   public async listExhibitionsPreviewsUserFollowingForUserByLimit(
-    {limit, uid} : {limit: number, uid: string}): Promise<{[key: string]: ExhibitionPreview} | void> {
+    {limit, uid} : {limit: number, uid: string | null}): Promise<{[key: string]: ExhibitionPreview} | void> {
+      if (!uid){
+        throw new Error('uid is required')
+      }
       const userId = this.userService.generateDartaUserId({uid})
       const getExhibitionPreviewQuery = `
-       WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}, ${CollectionNames.DartaUsers}
+      WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}, ${CollectionNames.DartaUsers}
       LET followedGalleries = (
         FOR v, e IN 1..1 OUTBOUND @userId ${EdgeNames.FROMDartaUserTOGalleryFOLLOWS}
           RETURN v._id
@@ -1135,6 +1231,101 @@ export class ExhibitionService implements IExhibitionService {
       throw new Error(error.message);
     }
   }
+
+
+  public async listExhibitionsPreviewsForthcomingGalleryFollowingForUserByLimit({limit, uid}: {limit: number, uid: string | null})
+  : Promise<{[key: string]: ExhibitionPreview} | void> {
+    
+    const getExhibitionPreviewQuery = `
+    WITH ${CollectionNames.Exhibitions}, ${CollectionNames.Galleries}, ${CollectionNames.Artwork}, ${CollectionNames.DartaUsers}
+    LET followedGalleries = (
+        FOR v, e IN 1..1 OUTBOUND @uid ${EdgeNames.FROMDartaUserTOGalleryFOLLOWS}
+        RETURN v._id
+    )
+    
+    FOR exhibition IN ${CollectionNames.Exhibitions}
+        FILTER exhibition.published == true AND exhibition.exhibitionDates.exhibitionStartDate.value > DATE_ISO8601(DATE_NOW())
+        
+        LET gallery = (
+            FOR g, edge IN 1..1 INBOUND exhibition ${EdgeNames.FROMGalleryTOExhibition}
+            FILTER g._id IN followedGalleries
+            RETURN g
+        )[0]
+        
+        FILTER gallery != null
+        
+        LET artworks = (
+            FOR artwork, artworkEdge IN 1..1 OUTBOUND exhibition ${EdgeNames.FROMCollectionTOArtwork}
+            SORT artworkEdge.exhibitionOrder ASC
+            LIMIT 5
+            RETURN {
+                [artwork._id]: {
+                    _id: artwork._id,
+                    artworkImage: artwork.artworkImage,
+                    artworkTitle: artwork.artworkTitle
+                }
+            }
+        )
+        
+        SORT exhibition.exhibitionDates.exhibitionStartDate.value DESC
+        LIMIT 0, @limit
+        
+        RETURN {
+            artworkPreviews: artworks,
+            exhibitionId: exhibition._id,
+            galleryId: gallery._id,
+            exhibitionDuration: exhibition.exhibitionDates,
+            openingDate: {value: exhibition.exhibitionDates.exhibitionStartDate.value},
+            closingDate: {value: exhibition.exhibitionDates.exhibitionEndDate.value},
+            galleryLogo: gallery.galleryLogo,
+            galleryName: gallery.galleryName,
+            exhibitionTitle: exhibition.exhibitionTitle,
+            exhibitionArtist: exhibition.exhibitionArtist,
+            exhibitionLocation: {
+                exhibitionLocationString: exhibition.exhibitionLocation.locationString,
+                coordinates: exhibition.exhibitionLocation.coordinates
+            },
+            exhibitionPrimaryImage: {
+                value: exhibition.exhibitionPrimaryImage.value
+            },
+            receptionDates: exhibition.receptionDates
+        }
+    `
+  
+    try {
+      const edgeCursor = await this.db.query(getExhibitionPreviewQuery, { limit, uid });
+      const exhibitionPreviews = await edgeCursor.all()
+
+      let seenResults: {[key: string]: boolean} = {}
+      if (uid){
+        const previewsPromises: any = []
+        exhibitionPreviews.forEach((exhibition: any) => {
+          previewsPromises.push(this.getUserViewedExhibition({exhibitionId: exhibition.exhibitionId, uid}))
+        });
+        const results = await Promise.allSettled(previewsPromises);
+        results.forEach((result) => {
+            if (result.status === 'fulfilled') {
+                seenResults = { ...seenResults, ...result.value };
+            }
+        });
+      }
+
+      const results = exhibitionPreviews.reduce((acc, obj) => 
+      {
+        const userViewed = (seenResults?.[obj?.exhibitionId] || new Date(obj?.openingDate.value).toISOString() < SEVEN_DAYS_AGO ) ?? true
+        acc[obj.exhibitionId as string] = {
+          ...obj, 
+          userViewed, 
+          artworkPreviews: obj.artworkPreviews.reduce((acc2 : any, obj2: any) => ({...acc2, ...obj2 }), {})}
+        return acc 
+      }, {})
+
+      return results;
+  
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
   
   public async listActiveExhibitionsByCity({ cityName }: { cityName: MapPinCities; }): Promise<any> {
     if (!cityName) {
@@ -1218,11 +1409,15 @@ export class ExhibitionService implements IExhibitionService {
         return -1
       })
 
+      const today = new Date();
+      
 
       const exhibitionMapPin: {[key: string]: ExhibitionMapPin} = {};
       exhibitionsAndPreviews.forEach((exhibitionAndPreview : ExhibitionMapPin) => {
         const locationId = exhibitionAndPreview.exhibitionLocation.googleMapsPlaceId?.value
         if (!locationId) return  // skip if no location
+        if (!exhibitionAndPreview.exhibitionDates.exhibitionEndDate.value || 
+          today > new Date(exhibitionAndPreview.exhibitionDates.exhibitionEndDate.value)) return // skip if exhibition has ended
         if (!exhibitionMapPin[locationId]){
           exhibitionMapPin[locationId] = exhibitionAndPreview
         } else if (
@@ -1313,6 +1508,90 @@ export class ExhibitionService implements IExhibitionService {
                 // Append the exhibitionOrder from the edge to the artwork
                 artwork.exhibitionOrder = artworkEdge.exhibitionOrder;
               }
+              return artwork;
+            } catch (error) {
+              // throw new Error(`'Error handling artwork:', ${artworkEdge}`);
+            }
+          }
+          return null;
+        },
+      );
+      const results = await Promise.all(artworkPromises);
+      artworkResults = results.filter(
+        (result): result is Artwork =>
+          result !== null && result?.artworkId !== undefined,
+      );
+    }
+
+    return artworkResults.reduce(
+      (acc, artwork) => ({...acc, [artwork.artworkId as string]: artwork}),
+      {},
+    );
+  }
+
+  public async listAllExhibitionArtworksWithLikes({
+    exhibitionId,
+  }: {
+    exhibitionId: string;
+  }): Promise<any> {
+    const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+
+    let exhibitionArtworkIds;
+
+    try {
+      exhibitionArtworkIds = await this.listAllExhibitionArtworkEdges({exhibitionId : fullExhibitionId});
+    } catch (error: any) {
+      throw new Error(`unable to list exhibition artworks: ${error.message}`);
+    }
+
+    let artworkResults: Artwork[] = [];
+    if (exhibitionArtworkIds) {
+      const artworkPromises = exhibitionArtworkIds.map(
+        async (artworkEdge: Edge) => {
+          if (artworkEdge) {
+            try {
+              const artwork = await this.artworkService.readArtwork(
+                artworkEdge._to!,
+              );
+              if (artwork && artwork.artworkId) {
+                // Append the exhibitionOrder from the edge to the artwork
+                artwork.exhibitionOrder = artworkEdge.exhibitionOrder;
+
+                const likes = await this.edgeService.getAllEdgesFromNode({
+                  edgeName: EdgeNames.FROMDartaUserTOArtworkLIKE,
+                  from: artwork.artworkId!,
+                });
+
+
+                artwork.likes = likes.length;
+              
+                // Fetch the number of saves from EdgeNames.FROMDartaUserTOArtworkLIKE
+                const saves = await this.edgeService.getAllEdgesFromNode({
+                  edgeName: EdgeNames.FROMDartaUserTOArtworkSAVE,
+                  from: artwork.artworkId!,
+                });
+                artwork.saves = saves.length;
+
+                // Fetch the number of views from EdgeNames.FROMDartaUserTOArtworkVIEW
+                const views = await this.edgeService.getAllEdgesFromNode({
+                  edgeName: EdgeNames.FROMDartaUserTOArtworkVIEWED,
+                  from: artwork.artworkId!,
+                });
+
+                artwork.views = views.length;
+
+                // Fetch the number of dislikes from EdgeNames.FROMDartaUserTOArtworkDISLIKE
+                const dislikes = await this.edgeService.getAllEdgesFromNode({
+                  edgeName: EdgeNames.FROMDartaUserTOArtworkDISLIKE,
+                  from: artwork.artworkId!,
+                });
+
+                artwork.dislikes = dislikes.length;
+
+              }
+             
+
+
               return artwork;
             } catch (error) {
               // throw new Error(`'Error handling artwork:', ${artworkEdge}`);

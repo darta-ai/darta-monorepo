@@ -173,6 +173,12 @@ export function FullListScreen({
             type: UserETypes.setUserInquiredArtwork,
             artworkId,
         })
+
+        userDispatch({
+            type: UserETypes.saveArtwork,
+            artworkData: artwork
+          })
+        
         analytics().logEvent('inquire_artwork', {artworkId})
 
         const emailAddress = gallery.primaryContact?.value 
@@ -202,7 +208,7 @@ export function FullListScreen({
 
         const galleryName = gallery?.galleryName?.value || "the gallery"
 
-        Alert.alert(`Reach out to ${galleryName}?`, `We'll autofill an email from you and let the gallery tell you all about the work!`, [
+        Alert.alert(`Reach out to ${galleryName}?`, `we'll autofill an email for you - and you can take it from there`, [
             {
               text: 'Cancel',
               onPress: () => {},

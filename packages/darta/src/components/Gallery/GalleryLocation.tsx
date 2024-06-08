@@ -4,26 +4,25 @@ import React from 'react';
 import {
   StyleSheet,
   View,
+  Platform
 } from 'react-native';
 
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 
 import {TextElement} from '../Elements/_index';
-import {ExhibitionDates, IBusinessLocationData} from '@darta-types';
+import {IBusinessLocationData} from '@darta-types';
 import * as Colors from '@darta-styles';
-import { customLocalDateStringEnd, customLocalDateStringStart, modifyHoursOfOperation, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
-import FastImage from 'react-native-fast-image';
-import { Button, Surface } from 'react-native-paper';
-import { DartaImageComponent } from '../Images/DartaImageComponent';
+import { modifyHoursOfOperation, simplifyAddressCity, simplifyAddressMailing } from '../../utils/functions';
 import { DartaIconButtonWithText } from '../Darta/DartaIconButtonWithText';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import * as SVGs from '../../assets/SVGs';
 import { mapStylesJson } from '../../utils/mapStylesJson';
 import { globalTextStyles } from '../../styles/styles';
+import { androidMapStyles } from '../../utils/mapStylesJson.android';
 
 
 
-
+const isAndroid = Platform.OS === 'android';
 
 const galleryDetailsStyles = StyleSheet.create({
   container: {
@@ -174,15 +173,15 @@ const GalleryLocation = React.memo<GalleryLocationProps>(({
             style={galleryDetailsStyles.map}
             region={mapRegion} 
             scrollEnabled={false}
-            customMapStyle={mapStylesJson}
+            customMapStyle={!isAndroid ? mapStylesJson : androidMapStyles}
+            cacheEnabled={true}
             >
               <Marker
                 key={marker.latitude}
                 coordinate={{latitude: marker.latitude, longitude: marker.longitude}}
-                description={galleryLocation ?? "Gallery"}
-                title={galleryName ?? "Gallery"}
+                title={galleryLocation ?? "Gallery"}
                 >
-                  <SVGs.GoogleMapsPinIcon />
+                  <SVGs.NewMapPin />
                 </Marker>
             </MapView>
           </View>

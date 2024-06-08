@@ -95,6 +95,7 @@ export const listArtworksToRateStatelessRandomSamplingAPI = async ({startNumber,
         return await listArtworksToRateStatelessRandomSampling({uid, startNumber, endNumber, artworkIds});
         }
     } catch (error){
+        // console.log({error})
         throw new Error(error)
     }
 }
@@ -145,7 +146,7 @@ export const editDartaUserAccountAPI = async ({
     try{
         const uid = auth().currentUser?.uid;
         if (uid) {
-        return await editDartaUserAccount({uid, ...data});
+            return await editDartaUserAccount({...data});
         }
     } catch (error){
         throw new Error(error)

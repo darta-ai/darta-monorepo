@@ -15,7 +15,7 @@ import { readExhibition } from '../../api/exhibitionRoutes';
 import {Artwork} from '@darta-types'
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
-import FastImage from 'react-native-fast-image';
+// import FastImage from 'react-native-fast-image';
 import { ExhibitionETypes, ExhibitionStoreContext, UIStoreContext } from '../../state';
 import { dartaLogo } from '../../components/User/UserInquiredArtwork';
 
@@ -58,7 +58,7 @@ export function ExhibitionArtworkScreen({
           }
           data.push(artwork)
         })
-        FastImage.preload(imageUrlsToPrefetch)
+        // FastImage.preload(imageUrlsToPrefetch)
         setArtworkData(data)
         if (data.length > 0){
           setHasNoArtwork(false)

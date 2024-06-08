@@ -58,8 +58,7 @@ export async function getGalleryForAdmin({galleryId} : {galleryId: string}): Pro
     });
     return response.data;
   } catch (error: any) {
-    // throw new Error(error.message);  
-    return null
+    throw new Error(error.message);  
   }
 }
 
@@ -190,6 +189,34 @@ export async function publishExhibitionForAdmin(
       {exhibitionId, galleryId, isPublished},
       {headers : {authorization: `Bearer ${idToken}`}},
     );
+    return res.data;
+  }
+  catch (error: any) {
+    throw new Error(error.message);  
+  } 
+}
+
+
+export async function fetchAdminArtLogic(
+  { artLogicUrl, galleryId } : { artLogicUrl: string, galleryId: string }): Promise<Exhibition>{
+  try {
+    const idToken = await auth.currentUser?.getIdToken();
+    const res = await axios.post(
+      `${URL}/scrapeFromArtLogic`, { artLogicUrl, galleryId }, {headers : {authorization: `Bearer ${idToken}`}});
+    return res.data;
+  }
+  catch (error: any) {
+    throw new Error(error.message);  
+  } 
+}
+
+
+export async function generateArtworksFromArtLogic(
+  { artworksUrl, galleryId, exhibitionId } : { artworksUrl: string, galleryId: string, exhibitionId: string }): Promise<Exhibition>{
+  try {
+    const idToken = await auth.currentUser?.getIdToken();
+    const res = await axios.post(
+      `${URL}/generateArtworksFromArtLogicUrl`, { artworksUrl, galleryId, exhibitionId }, {headers : {authorization: `Bearer ${idToken}`}});
     return res.data;
   }
   catch (error: any) {

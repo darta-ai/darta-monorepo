@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, StyleSheet} from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
-import FastImage from 'react-native-fast-image'
+// import FastImage from 'react-native-fast-image'
 import {
     widthPercentageToDP as wp,
   } from 'react-native-responsive-screen';
@@ -15,12 +15,11 @@ const carouselStyle = StyleSheet.create({
       width: '95%',
       height: '95%',
       marginTop: 7, 
-      resizeMode: 'contain',
       alignSelf: 'center',
-      shadowOpacity: 1,
-      shadowRadius: 3.03,
-      shadowColor: Colors.PRIMARY_300,
-      shadowOffset: {height: 3.03, width: 0},
+      // shadowOpacity: 1,
+      // shadowRadius: 3.03,
+      // shadowColor: Colors.PRIMARY_300,
+      // shadowOffset: {height: 3.03, width: 0},
     },
     paginationContainer: {
       position: 'absolute',
@@ -52,7 +51,7 @@ const WIDTH = wp('90%');
 const CustomItemComponent = ({ item, index }) => {
   const image = item?.imageData
 
-  const priority = index === 0 ? FastImage.priority.high : FastImage.priority.normal;
+  const priority = index === 0 ? "high" : "normal";
   return (
     <View style={{ flex: 1,  width: '100%'}} key={image}>
         <Surface style={{backgroundColor: 'transparent'}} elevation={2}>
@@ -60,7 +59,7 @@ const CustomItemComponent = ({ item, index }) => {
             uri = {image ?? null} 
             priority={priority}
             style={carouselStyle.heroImage} 
-            resizeMode={FastImage.resizeMode.contain}
+            // resizeMode={FastImage.resizeMode.contain}
             size={"mediumImage"}
           />
         </Surface>

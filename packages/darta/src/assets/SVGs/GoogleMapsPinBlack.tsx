@@ -4,7 +4,7 @@ import * as Colors from '@darta-styles';
 
 export const GoogleMapsPinBlackIcon = () => {
   return (
-    <Svg width="37" height="38" viewBox="0 0 37 38" fill="none">
+    <Svg width="30" height="31" viewBox="0 0 37 38" fill="none">
       <G id="Google_Maps_pin 2">
         <G id="layer1">
           <G id="g3477">

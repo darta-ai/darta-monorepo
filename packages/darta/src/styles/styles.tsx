@@ -178,10 +178,10 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 1,
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    shadowColor: Colors.LIGHT_GREY,
-    shadowOffset: {height: 10, width: 0},
+    // shadowOpacity: 0.15,
+    // shadowRadius: 20,
+    // shadowColor: Colors.LIGHT_GREY,
+    // shadowOffset: {height: 10, width: 0},
   },
   miniButton: {
     width: 40,
@@ -191,11 +191,11 @@ export default StyleSheet.create({
     marginHorizontal: 7,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 1,
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    shadowColor: Colors.DARK_GRAY,
-    shadowOffset: {height: 10, width: 0},
+    // elevation: 1,
+    // shadowOpacity: 0.15,
+    // shadowRadius: 20,
+    // shadowColor: Colors.DARK_GRAY,
+    // shadowOffset: {height: 10, width: 0},
   },
 
   // COMPONENT - CITY
@@ -205,10 +205,10 @@ export default StyleSheet.create({
     borderRadius: 20,
     width: 100,
     elevation: 1,
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    shadowColor: Colors.BLACK,
-    shadowOffset: {height: 0, width: 0},
+    // shadowOpacity: 0.05,
+    // shadowRadius: 10,
+    // shadowColor: Colors.BLACK,
+    // shadowOffset: {height: 0, width: 0},
   },
   cityText: {
     color: Colors.LIGHT_GREY,
@@ -247,10 +247,10 @@ export default StyleSheet.create({
     borderRadius: 8,
     marginTop: -65,
     elevation: 1,
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    shadowColor: Colors.BLACK,
-    shadowOffset: {height: 0, width: 0},
+    // shadowOpacity: 0.05,
+    // shadowRadius: 10,
+    // shadowColor: Colors.BLACK,
+    // shadowOffset: {height: 0, width: 0},
   },
   matchesProfileItem: {
     width: 135,
@@ -416,15 +416,15 @@ export const galleryStyles = StyleSheet.create({
     width: '100%',
   },
   frameStyle: {
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
     borderColor: 'grey',
     backgroundColor: 'none',
     width: '100%',
     height: '100%',
     // backgroundColor: Colors.PRIMARY_100,
-    shadowColor: Colors.PRIMARY_600,
-    shadowOffset: {width: -1, height: 4},
+    // shadowColor: Colors.PRIMARY_600,
+    // shadowOpacity: 0.5,
+    // shadowRadius: 4,
+    // shadowOffset: {width: -1, height: 4},
     paddingBottom: 0.3,
     paddingLeft: 0.3,
   },
@@ -545,13 +545,13 @@ export const SSDartaHome = StyleSheet.create({
       alignItems: 'center', // To center the text inside the button
       justifyContent: 'center', 
       elevation: 2, // For Android shadow
-      shadowColor: "#000", // For iOS shadow
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
+      // shadowColor: "#000", // For iOS shadow
+      // shadowOffset: {
+      //   width: 0,
+      //   height: 2,
+      // },
+      // shadowOpacity: 0.25,
+      // shadowRadius: 3.84,
     },
   });
   

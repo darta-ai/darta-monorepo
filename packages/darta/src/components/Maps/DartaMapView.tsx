@@ -4,12 +4,14 @@ import { mapStylesJson } from '../../utils/mapStylesJson';
 import { ExhibitionMapPin } from '@darta-types/dist';
 import { StoreContext } from '../../state';
 import * as Colors from '@darta-styles';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import * as Location from 'expo-location';
 import _ from 'lodash';
-import { MappedPins } from './MapPins';
 import { MiniMappedPins } from './MiniMapPins';
+import { androidMapStyles } from '../../utils/mapStylesJson.android';
 
+
+const isAndroid = Platform.OS === 'android';
 
 type MapRegion = {
     latitude: number;
@@ -152,7 +154,7 @@ export const getZoomLevel = (
     React.useEffect(() => {
       if (!_.isEqual(prevMapPinsRef.current, mapPins)) {
         prevMapPinsRef.current = mapPins;
-        calculateMapRegion();
+        // calculateMapRegion();
       }
     }, [mapPins]);
   
@@ -162,18 +164,11 @@ export const getZoomLevel = (
             provider={PROVIDER_GOOGLE}
             style={ exploreMapStyles.mapView }
             region={mapRegion as unknown as MapRegion} 
-            customMapStyle={mapStylesJson}
+            customMapStyle={!isAndroid ? mapStylesJson : androidMapStyles}
             onMarkerPress={() => {}}
             showsUserLocation={true}
         >
             <MiniMappedPins pins={mapPins} navigation={navigation} city={state.currentlyViewingCity} view={state.currentlyViewingMapView}/>
-            {state.isViewingWalkingRoute && (
-                <Polyline
-                coordinates={state.walkingRoute?.[state.currentlyViewingCity]?.[state.currentlyViewingMapView] as unknown as LatLng[]}
-                strokeWidth={2}
-                strokeColor={Colors.PRIMARY_950}
-                />
-            )}
         </MapView>
     )
 }

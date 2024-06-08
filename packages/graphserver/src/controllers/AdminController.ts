@@ -6,12 +6,13 @@ import { standardConsoleLog } from '../config/templates';
 import { verifyToken } from '../middleware';
 import { verifyUserIsAdmin } from '../middleware/adminTokenVerify';
 import {verifyAdmin} from '../middleware/adminVerify';
-import {IAdminService} from '../services/interfaces';
+import { IAdminService, IScrapeService } from '../services/interfaces';
 
 @controller('/admin')
 export class AdminController {
   constructor(
     @inject('IAdminService') private adminService: IAdminService,
+    @inject('IScrapeService') private scrapeService: IScrapeService,
     ) {}
 
   @httpPost('/validateCollections', verifyAdmin)
@@ -276,4 +277,33 @@ export class AdminController {
     }
   }
 
+  // @httpPost('/scrapeFromArtLogic', verifyToken, verifyUserIsAdmin)
+  // public async scrapeFromArtLogic(
+  //   @request() req: Request,
+  //   @response() res: Response,
+  // ): Promise<void> {
+  //   try {
+  //     const {artLogicUrl : url, galleryId} = req.body;
+  //     const {user} = req as any;
+  //     const results = await this.scrapeService.scrapeFromArtLogic({url, galleryId, userId: user.user_id });
+  //     res.status(200).send(results);
+  //   } catch (error: any) {
+  //     res.status(500).send(error.message);
+  //   }
+  // }
+
+  @httpPost('/generateArtworksFromArtLogicUrl', verifyToken, verifyUserIsAdmin)
+  public async generateArtworksFromArtLogicUrl(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const {artworksUrl : url, galleryId, exhibitionId} = req.body;
+      const {user} = req as any;
+      const results = await this.scrapeService.generateArtworksFromArtLogicUrl({url, galleryId, userId: user.user_id, exhibitionId});
+      res.status(200).send(results);
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  }
 }

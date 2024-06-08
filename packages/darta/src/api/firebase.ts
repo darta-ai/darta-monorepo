@@ -4,7 +4,7 @@ import { editDartaUserAccount } from './userRoutes';
 export const firebaseSignUp = async ({email, password}: {email: string, password: string}) => {
 
     try {
-        const res = await editDartaUserAccount({uid: auth().currentUser?.uid, email})
+        const res = await editDartaUserAccount({ email })
         return res;
     } catch(e){
         if (e.code === 'auth/email-already-in-use') {
