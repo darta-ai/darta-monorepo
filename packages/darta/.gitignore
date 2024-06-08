@@ -82,3 +82,6 @@ eas.json
 
 ios/
 android/
+
+./darta-eas-file.json
+/serviceAccountKey.json
