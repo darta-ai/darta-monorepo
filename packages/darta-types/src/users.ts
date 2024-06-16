@@ -11,6 +11,7 @@ export type MobileUser =  {
     routeGenerationCount?: {
       routeGeneratedCountWeekly: number;
     }
+    recommendationArtworkIds?: string[];
 }
 
 

@@ -2097,7 +2097,7 @@ export class ExhibitionService implements IExhibitionService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private generateExhibitionId({exhibitionId}: {exhibitionId: string}): string {
+  public generateExhibitionId({exhibitionId}: {exhibitionId: string}): string {
     return exhibitionId.includes(`${CollectionNames.Exhibitions}`)
       ? exhibitionId
       : `${CollectionNames.Exhibitions}/${exhibitionId}`;

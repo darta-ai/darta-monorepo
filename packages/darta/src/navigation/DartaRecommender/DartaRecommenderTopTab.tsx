@@ -7,7 +7,6 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { ExhibitionArtworkScreen, ExhibitionDetailsScreen, ExhibitionGalleryScreen } from '../../screens/Exhibition';
 import { tabBarScreenOptions } from '../../theme/themeConstants';
 import {headerOptions} from '../../styles/styles';
-import { AddToListScreen } from '../../screens/Lists/AddToList';
 import { ExhibitionStoreContext } from '../../state';
 
 
@@ -22,7 +21,7 @@ export function DartaRecommenderTopTab({route} : {route: any}) {
   React.useEffect(() => {
     const exhibitionId = route.params.exhibitionId;
     const exhibitionData = exhibitionState.exhibitionData;
-  
+
     if (exhibitionData && exhibitionData[exhibitionId]) {
       const artworks = exhibitionData[exhibitionId].artworks;
       if (artworks && Object.keys(artworks).length > 0) {

@@ -59,6 +59,10 @@ export const EdgeNames = {
 
 };
 
+export const GraphNames = {
+  ArtworkGraph: 'ArtworkGraph',
+};
+
 export const RequiredContent = {
   GalleryApprovals: {
     approved: 'approved',

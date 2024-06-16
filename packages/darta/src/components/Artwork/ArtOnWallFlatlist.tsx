@@ -62,6 +62,7 @@ export function ArtOnWallFlatList({
       type: UiETypes.setTombstoneHeader,
       currentArtworkHeader: artOnDisplay?.artworkTitle?.value!,
     });
+    console.log({artOnDisplay})
     if (artOnDisplay){
       navigation.navigate(RecommenderRoutesEnum.TopTabExhibition, {
         artOnDisplay, 
@@ -104,22 +105,6 @@ export function ArtOnWallFlatList({
         artHeightPixels = artWidthPixels * ( artHeightInches / artWidthInches);
         // artHeightPixels = artHeightInches * artWidthPixels;
       }
-
-      // const pixelsPerInchHeight = backgroundContainerDimensionsPixels.height / wallHeight;
-      // const pixelsPerInchWidth = backgroundContainerDimensionsPixels.width / backgroundWidthInches;
-
-      // artHeightPixels = artHeightInches * pixelsPerInchHeight;
-      // artWidthPixels = artWidthInches * pixelsPerInchWidth;
-
-      // need to adjust proportions if the art is too big for the screen
-
-      // if (artWidthPixels > backgroundContainerDimensionsPixels.width) {
-      //   artWidthPixels = backgroundContainerDimensionsPixels.width;
-      //   artHeightPixels = artHeightPixels * (artWidthPixels / artWidthInches);
-      // } else if (artHeightPixels > backgroundContainerDimensionsPixels.height) {
-      //   artHeightPixels = backgroundContainerDimensionsPixels.height;
-      //   artWidthPixels = artWidthPixels * (artHeightPixels / artHeightInches);
-      // }
 
       artImageSize = {
         height: artHeightPixels,
@@ -172,8 +157,8 @@ export function ArtOnWallFlatList({
       width: artDimensions.artWidthPixels * 1.05,
     },
     card: {
-      height: artDimensions.artHeightPixels * 1.1, // Adjust the factor as needed
-      width: artDimensions.artWidthPixels * 1.1, // Adjust the factor as needed
+      height: artDimensions.artHeightPixels * 1.05, // Adjust the factor as needed
+      width: artDimensions.artWidthPixels * 1.05, // Adjust the factor as needed
       backgroundColor: Colors.PRIMARY_100,
       justifyContent: 'center',
       alignItems: 'center',

@@ -8,7 +8,7 @@ import {InversifyExpressServer} from 'inversify-express-utils';
 
 import {container} from './config/container';
 import { ArtworkService, ExhibitionService, GalleryService, 
-  PushService, 
+  // PushService, 
   UserService } from './services';
 
 const cron = require('node-cron');
@@ -17,7 +17,8 @@ const artworkService = container.get('IArtworkService') as ArtworkService
 const exhibitionService = container.get('IExhibitionService') as ExhibitionService
 const userService = container.get('IUserService') as UserService
 const galleryService = container.get('IGalleryService') as GalleryService
-const pushService = container.get('IPushService') as PushService
+// const pushService = container.get('IPushService') as PushService
+// const recommenderService = container.get('IRecommenderService') as RecommenderService
 
 const bodyParser = require('body-parser');
 
@@ -144,19 +145,21 @@ cron.schedule('0 0 * * 3', async () => {
 //   }
 // });
 
-// // development schedule
-cron.schedule('* * * * *', async () => {
-  try{
-    const start = new Date()
-    await pushService.generatePushNotificationsFollowing()
-    const end = new Date()
-    // eslint-disable-next-line no-console
-    console.log(`reset all user route generation cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log('error running cronjob', e)
-  }
-});
+// // // development schedule
+// cron.schedule('* * * * *', async () => {
+//   try{
+//     const start = new Date()
+//     // const res = await userService.readDartaUser({ uid: 'DartaUsers/GL1yalS1PQQjbOUu9dnpT7nKAEy1' })
+//     // console.log('read darta user', res)
+//     await recommenderService.collaborativeFilteringCollectRatings({userId: 'DartaUsers/GL1yalS1PQQjbOUu9dnpT7nKAEy1'})
+//     const end = new Date()
+//     // eslint-disable-next-line no-console
+//     console.log(`reset all user route generation cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
+//   } catch (e) {
+//     // eslint-disable-next-line no-console
+//     console.log('error running cronjob', e)
+//   }
+// });
 
 httpServer.listen(port, () => {
   // eslint-disable-next-line no-console

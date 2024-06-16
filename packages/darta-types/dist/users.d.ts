@@ -10,6 +10,7 @@ export type MobileUser = {
     routeGenerationCount?: {
         routeGeneratedCountWeekly: number;
     };
+    recommendationArtworkIds?: string[];
 };
 export type FirebaseUser = {
     provider_id: string;

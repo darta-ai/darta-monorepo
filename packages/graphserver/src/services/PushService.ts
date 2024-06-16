@@ -115,7 +115,7 @@ export class PushService implements IPushService {
   // }
   
   public async generatePushNotificationsFollowing(): Promise<void> {
-    const usersWithPushTokens = await this.getExpoPushTokens();
+    // const usersWithPushTokens = await this.getExpoPushTokens();
   
     const headerParameterKey = 'FOLLOWING_HEADER';
     const sendPushNotification = 'sendPushNotification';
@@ -132,8 +132,6 @@ export class PushService implements IPushService {
     }
     const newHeader = parameter.parameters[headerParameterKey].defaultValue as unknown as { [key: string]: string };
     const title = newHeader.value;
-
-    console.log({usersWithPushTokens})
 
     const tempArr = [{expoPushToken: 'ExponentPushToken[ebqY1jFWieVWr2YG8NIGjX]', _id: 'DartaUsers/GL1yalS1PQQjbOUu9dnpT7nKAEy1'}]
 
@@ -192,8 +190,7 @@ export class PushService implements IPushService {
       );
   
       const { body, data } = this.formatExhibitionsMessage(exhibitionsOnSameDate);
-      console.log({body, data})
-  
+      
       return {
         to: pushToken.expoPushToken,
         sound: null,

@@ -152,4 +152,6 @@ export interface IExhibitionService {
 
   listExhibitionsPreviewsForthcomingGalleryFollowingForUserByLimit({limit, uid}: {limit: number, uid: string | null})
   : Promise<{[key: string]: ExhibitionPreview} | void>
+
+  generateExhibitionId({exhibitionId}: {exhibitionId: string}): string 
 }

@@ -21,13 +21,25 @@ export class RecommenderController {
       if (!startNumber || !endNumber || !uid) {
         throw new Error('Missing required fields');
       }
-      const results = await this.recommenderService.generateArtworkToRecommend({
+
+      const savedArtworks = await this.recommenderService.readArtworksToRecommend({uid: uid as string, startNumber: Number(startNumber)});
+      
+      if(Object.values(savedArtworks)?.length > 0){
+        res.status(200).send(savedArtworks);
+        await this.recommenderService.generateAndSaveArtworkToRecommend(
+          {uid: uid as string, startNumber: Number(startNumber), endNumber: Number(endNumber)}
+        );
+        return;
+      } 
+
+      const results = await this.recommenderService.executeRecommendationQuery({
         uid: uid as string,
         startNumber: Number(startNumber), 
         endNumber: Number(endNumber),
       });
-      
       res.status(200).send(results);
+      await this.recommenderService.generateNewArtworksToRecommendBackfill({uid: uid as string, generatedArtworks: results})
+    
     } catch (error: any) {
       standardConsoleLog({message: error.message, data: req.query, request: 'getDartaUserRecommendations/getDartaUser'});
       res.status(500).send(error.message);
@@ -44,14 +56,30 @@ export class RecommenderController {
       if (!startNumber || !endNumber || !uid) {
         throw new Error('Missing required fields');
       }
+
+      const {artworkIds} = req.query;
+
+      const savedArtworks = await this.recommenderService.readArtworksToRecommend({uid: uid as string, startNumber: Number(startNumber)});
+
+      if(Object.values(savedArtworks)?.length > 0){
+        res.status(200).send(savedArtworks);
+        await this.recommenderService.generateAndSaveArtworkToRecommend(
+          {uid: uid as string, startNumber: Number(startNumber), endNumber: Number(endNumber)}
+        );
+        return;
+      }
+
       const results = await this.recommenderService.getRecommendationsRandomSampling({
         uid: uid as string,
         startNumber: Number(startNumber), 
         endNumber: Number(endNumber),
-        artworkIds: req.query.artworkIds as string[],
+        artworkIds: artworkIds as string[]
       });
       
       res.status(200).send(results);
+
+      await this.recommenderService.generateNewArtworksToRecommendBackfill({uid: uid as string, generatedArtworks: results})
+
     } catch (error: any) {
       standardConsoleLog({message: error.message, data: req.query, request: 'getDartaUserRecommendations/getRecommendationsRandomSampling'});
       res.status(500).send(error.message);
