@@ -253,7 +253,12 @@ export class ExhibitionService implements IExhibitionService {
 
     let shouldRegenerate;
     if (exhibition?.exhibitionPrimaryImage?.value) {
-      shouldRegenerate = await this.imageController.shouldRegenerateUrl({url: exhibition?.exhibitionPrimaryImage.value})
+      const shouldRegeneratePrimary = await this.imageController.shouldRegenerateUrl({url: exhibition?.exhibitionPrimaryImage.value})
+      const shouldRegenerateMedium = exhibition?.exhibitionPrimaryImage?.mediumImage?.value 
+        ? await this.imageController.shouldRegenerateUrl({url: exhibition?.exhibitionPrimaryImage?.mediumImage?.value}) : false;
+      const shouldRegenerateSmall = exhibition?.exhibitionPrimaryImage?.smallImage?.value
+        ? await this.imageController.shouldRegenerateUrl({url: exhibition?.exhibitionPrimaryImage?.smallImage?.value}) : false;
+      shouldRegenerate = shouldRegeneratePrimary || shouldRegenerateMedium || shouldRegenerateSmall
     }
     let exhibitionImageValueLarge = exhibition.exhibitionPrimaryImage?.value ?? null;
     let exhibitionImageValueMedium = exhibition.exhibitionPrimaryImage?.mediumImage?.value ?? null
@@ -279,7 +284,7 @@ export class ExhibitionService implements IExhibitionService {
           bucketName,
         });
       }
-      if (ENV === 'production'){
+      if (shouldRegenerate && ENV === 'production'){
         await this.refreshExhibitionHeroImage({exhibitionId, 
           mainUrl: exhibitionImageValueLarge, 
           mediumUrl: exhibitionImageValueMedium, 
@@ -1359,7 +1364,7 @@ export class ExhibitionService implements IExhibitionService {
     FOR city IN ${CollectionNames.Cities}
         FILTER city.value == @locality
         FOR exhibition IN 1..1 INBOUND city ${EdgeNames.FROMExhibitionTOCity}
-            FILTER exhibition.published == true AND exhibition.exhibitionDates.exhibitionStartDate.value <= @currentDate
+            FILTER exhibition.published == true AND exhibition.exhibitionDates.exhibitionStartDate.value <= @currentDatePlusSeven AND exhibition.exhibitionDates.exhibitionEndDate.value >= @todayMinusOne
             LET googleMapsPlaceId = (
                 FOR e IN [exhibition]
                 LET placeId = e.exhibitionLocation ? e.exhibitionLocation.googleMapsPlaceId : null
@@ -1386,22 +1391,22 @@ export class ExhibitionService implements IExhibitionService {
                 exhibitionDates: mostRecentExhibition.exhibition.exhibitionDates,
                 receptionDates: mostRecentExhibition.exhibition.receptionDates,
                 _id: mostRecentExhibition.exhibition._id,
-                currentDate: @currentDate, 
+                currentDate: @currentDatePlusSeven, 
                 start: mostRecentExhibition.exhibition.exhibitionDates.exhibitionEndDate.value
             }    
     `;
     try{
       const currentDate = new Date();
+      const currentDatePlusSeven = currentDate.setDate(currentDate.getDate() + 7)
+      const todayMinusOne = currentDate.setDate(currentDate.getDate() - 1)
 
-      // Add 7 days
-      currentDate.setDate(currentDate.getDate() + 7);
-
-      // Convert to ISO string format
-      const isoString = currentDate.toISOString();
-
-      const edgeCursor = await this.db.query(findCollections, { locality, currentDate: isoString });
+      const edgeCursor = await this.db.query(findCollections, { 
+        locality, 
+        currentDatePlusSeven: new Date(currentDatePlusSeven).toISOString(), 
+        todayMinusOne: new Date(todayMinusOne).toISOString()
+      });
       const exhibitionsAndPreviews: ExhibitionMapPin[] = await edgeCursor.all()
-      
+
       // remove duplicate galleries
       exhibitionsAndPreviews.sort((a, b) => {
         if (!a.exhibitionDates.exhibitionEndDate.value || !b.exhibitionDates.exhibitionEndDate.value) return 0
@@ -2093,6 +2098,76 @@ export class ExhibitionService implements IExhibitionService {
       return results
     } catch (error: any) {
       throw new Error(error.message);
+    }
+  }
+
+  public async addExhibitionToUserSaved({exhibitionId, uid}: {exhibitionId: string, uid: string}): Promise<boolean>{
+    const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+    const fullUserId = this.userService.generateDartaUserId({uid});
+
+    try {
+      await this.edgeService.upsertEdge({
+        edgeName: EdgeNames.FROMDartaUserTOExhibitionSAVE,
+        from: fullUserId,
+        to: fullExhibitionId,
+        data: {
+          createdAt: new Date().toISOString(),
+        },
+      });
+      return true
+    } catch (error: any) {
+      throw new Error(
+        `error user following exhibition: ${error.message}`,
+      );
+    }
+  }
+
+  public async removeExhibitionFromUserSaved({exhibitionId, uid}: {exhibitionId: string, uid: string}): Promise<boolean>{
+    const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+    const fullUserId = this.userService.generateDartaUserId({uid});
+
+    try {
+      await this.edgeService.deleteEdge({
+        edgeName: EdgeNames.FROMDartaUserTOExhibitionSAVE,
+        from: fullUserId,
+        to: fullExhibitionId,
+      });
+      return true;
+    } catch (error: any) {
+      throw new Error(
+        `error user following exhibition: ${error.message}`,
+      );
+    }
+  }
+
+  public async listExhibitionForUserSavedCurrent({uid}: {uid: string}): Promise<Array<string>>{
+    try{
+      const fullUserId = this.userService.generateDartaUserId({uid});
+      const results = await this.edgeService.getAllEdgesFromNode({
+        edgeName: EdgeNames.FROMDartaUserTOExhibitionSAVE,
+        from: fullUserId
+      })
+      return results.map((edge: Edge) => edge._to!);
+    }catch(error: any){
+      throw new Error(error.message)
+    }
+  }
+  
+  public async dartaUserExhibitionRating({uid, exhibitionId, rating} : { uid: string, exhibitionId: string, rating: string,}): Promise<boolean>{
+    try {
+      const fullExhibitionId = this.generateExhibitionId({exhibitionId});
+     await this.edgeService.upsertEdge({
+        edgeName: EdgeNames.FROMDartaUserTOExhibitionRATING,
+        from: this.userService.generateDartaUserId({uid}),
+        to: fullExhibitionId,
+        data: {
+          rating,
+          date: new Date().toISOString()
+        }
+      })
+      return true
+    } catch(error : any){
+      throw new Error(error.message)
     }
   }
 

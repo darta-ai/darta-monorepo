@@ -4,7 +4,7 @@ import { Artwork } from '@darta-types';
 import {Database} from 'arangojs';
 import {inject, injectable} from 'inversify';
 
-import {CollectionNames, EdgeNames } from '../config/collections';
+import { CollectionNames, EdgeNames } from '../config/collections';
 import { filterOutPrivateRecordsSingleObject } from '../middleware';
 import {
   IArtworkService,
@@ -359,6 +359,7 @@ export class RecommenderService implements IRecommenderService {
               FOR userB, edge2 IN 1..1 INBOUND artwork GRAPH 'ArtworkGraph'
                   FILTER userB._id != @userA
                   FILTER artwork._id NOT IN @excludedArtworks
+                  FILTER artwork.artworkDimensions.depthIn.value == '' OR artwork.artworkDimensions.depthIn.value == null // HERE
                   LET userB_ratings = edge2.value
                   
                   COLLECT userids = userB._id INTO g
@@ -468,6 +469,7 @@ export class RecommenderService implements IRecommenderService {
                 FILTER interactionCount < 20 // Adjust the threshold as needed
                 FILTER artwork._id NOT IN @userAInteractedArtworks
                 FILTER artwork._id NOT IN @recommendedArtworks
+                FILTER artwork.artworkDimensions.depthIn.value == '' OR artwork.artworkDimensions.depthIn.value == null
                 
                 SORT RAND()
                 LIMIT @limit
@@ -494,6 +496,7 @@ export class RecommenderService implements IRecommenderService {
             FOR artwork IN Artwork
                 FILTER artwork._id NOT IN @recommendedArtworks
                 FILTER artwork.createdAt >= DATE_SUBTRACT(DATE_NOW(), 2, "month")
+                FILTER artwork.artworkDimensions.depthIn.value == '' OR artwork.artworkDimensions.depthIn.value == null
                 SORT RAND()
                 LIMIT @limit
                 
@@ -513,6 +516,7 @@ export class RecommenderService implements IRecommenderService {
   }
 
   private async turnArtworkIdsIntoArtworks(artworkIds: string[]): Promise<Artwork[]> {
+    if (!artworkIds || artworkIds.length === 0) return [];
     const res = await Promise.all(
       artworkIds.map(async (artworkId: string) => {
         const artwork = await this.artworkService.readArtwork(artworkId);

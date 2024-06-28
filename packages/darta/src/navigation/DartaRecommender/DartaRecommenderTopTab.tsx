@@ -33,7 +33,7 @@ export function DartaRecommenderTopTab({route} : {route: any}) {
   
 
   return (
-    <RecommenderStackTopTab.Navigator  screenOptions={{...tabBarScreenOptions}}>
+    <RecommenderStackTopTab.Navigator  screenOptions={{...tabBarScreenOptions}} initialRouteName={RecommenderRoutesEnum.recommenderDetails}>
         <RecommenderStackTopTab.Screen
           name={RecommenderRoutesEnum.recommenderDetails}
           initialParams={{artOnDisplay: route.params.artOnDisplay, saveRoute: RecommenderRoutesEnum.recommenderLists}}

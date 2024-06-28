@@ -123,6 +123,23 @@ export async function editDartaUserAccount({
   }
 }
 
+export async function saveExpoPushTokenAPI({
+  expoPushToken,
+}: {
+  expoPushToken: string;
+}): Promise<any> {
+  try {
+    const headers = await generateHeaders();
+    const {data} = await axios.post(`${URL}/saveExpoPushToken`, {
+      expoPushToken
+    }, {headers});
+    return data;
+  } catch (error:any) {
+    // console.log({error: error, message: error.message})
+    return error.message;
+  }
+}
+
 
 export async function listDartaUserFollowsGallery({
   uid,

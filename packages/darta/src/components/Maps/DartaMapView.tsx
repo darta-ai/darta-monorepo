@@ -167,6 +167,7 @@ export const getZoomLevel = (
             customMapStyle={!isAndroid ? mapStylesJson : androidMapStyles}
             onMarkerPress={() => {}}
             showsUserLocation={true}
+            key={"mapView"}
         >
             <MiniMappedPins pins={mapPins} navigation={navigation} city={state.currentlyViewingCity} view={state.currentlyViewingMapView}/>
         </MapView>

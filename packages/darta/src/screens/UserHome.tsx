@@ -72,7 +72,7 @@ export function UserHome({navigation}: {navigation: any}) {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
-    scrollY.addListener(() => {})
+    scrollY.addListener(() => {return})
   },[])
 
   const imageWidthInterpolate = scrollY.interpolate({

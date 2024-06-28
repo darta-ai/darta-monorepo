@@ -87,4 +87,5 @@ export interface IUserService {
   readAllUsers(): Promise<void>
   resetAllUsersRouteGenerationCount(): Promise<void>
   incrementRouteGeneratedCount({uid}: {uid: string}): Promise<number>
+  saveExpoPushToken({uid, expoPushToken}: {uid: string, expoPushToken: string}): Promise<void>
 }

@@ -445,13 +445,13 @@ export function DartaRecommenderView({
     if (viewState.artworksToRate && viewState.artworksToRate[0]){
       setArtOnDisplay(viewState.artworksToRate[0])
     }
-    fadeAnimNav.addListener(() => {})
-    fadeAnimRating.addListener(() => {})
-    fadeAnimOptions.addListener(() => {})
+    fadeAnimNav.addListener(() => {return})
+    fadeAnimRating.addListener(() => {return})
+    fadeAnimOptions.addListener(() => {return})
 
-    wiggleAnim.addListener(() => {})
-    thumbsUpAnim.addListener(() => {})
-    thumbsDownAnim.addListener(() => {})
+    wiggleAnim.addListener(() => {return})
+    thumbsUpAnim.addListener(() => {return})
+    thumbsDownAnim.addListener(() => {return})
   }, [])
 
   

@@ -179,9 +179,9 @@ export function TombstonePortrait({
   const opacityInquiredButton = React.useRef(new Animated.Value(1)).current; 
 
   React.useEffect(() => {
-    opacityLikedButton.addListener(() => {})
-    opacitySavedButton.addListener(() => {})
-    opacityInquiredButton.addListener(() => {})
+    opacityLikedButton.addListener(() => {return})
+    opacitySavedButton.addListener(() => {return})
+    opacityInquiredButton.addListener(() => {return})
   }, [])
 
   opacityLikedButton.removeAllListeners();

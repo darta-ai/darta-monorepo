@@ -166,3 +166,49 @@ export const getUnViewedExhibitionsForUser = async (): Promise<{[key: string] : 
     return;
   }
 }
+
+
+export const addExhibitionToUserSaved = async ({exhibitionId}: {exhibitionId: string}): Promise<boolean> => {  
+  try {
+    const headers = await generateHeaders();
+    const {data} = await axios.post(`${URL}/addExhibitionToUserSaved`, { exhibitionId }, {headers});
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'addExhibitionToUserSaved'})
+    return false;
+  }
+}
+
+export const removeExhibitionFromUserSaved = async ({exhibitionId}: {exhibitionId: string}): Promise<boolean> => {
+  try {
+    const headers = await generateHeaders();
+    const {data} = await axios.post(`${URL}/removeExhibitionFromUserSaved`, { exhibitionId }, {headers});
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'removeExhibitionFromUserSaved'})
+    return false;
+  }
+}
+
+export const listExhibitionForUserSavedCurrent = async (): Promise<Array<string>> => {
+  try {
+    const headers = await generateHeaders();
+    const {data} = await axios.get(`${URL}/listExhibitionForUserSavedCurrent`, {headers});
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'getUnViewedExhibitionsForUser'})
+    return [];
+  }
+}
+
+export const dartaUserExhibitionRating = async ({exhibitionId, rating}: {exhibitionId: string, rating: string}): Promise<boolean> => {
+  try {
+    const headers = await generateHeaders();
+    console.log({exhibitionId, rating})
+    const {data} = await axios.post(`${URL}/dartaUserExhibitionRating`, { exhibitionId, rating }, {headers});
+    return data;
+  } catch (error:any) {
+    console.log({error: error, message: error.message, where: 'dartaUserExhibitionRating'})
+    return false;
+  }
+}

@@ -33,7 +33,9 @@ export function ExploreMapStackNavigator({route} : {route: any}) {
         </View>
         ),
         headerBackTitleVisible: false,
-      }}>
+      }}
+      initialRouteName={ExploreMapRootEnum.exploreMapHome}
+      >
         <ExploreMapStack.Screen
           name={ExploreMapRootEnum.exploreMapHome}
           component={ExploreMapHomeScreen}

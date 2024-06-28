@@ -479,9 +479,9 @@ export function ExhibitionGalleryScreen({
   const translateX = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
-    opacitySetOne.addListener(() => {})
-    opacitySetTwo.addListener(() => {})
-    translateX.addListener(() => {})
+    opacitySetOne.addListener(() => {return})
+    opacitySetTwo.addListener(() => {return})
+    translateX.addListener(() => {return})
   }, [])
 
   opacitySetOne.removeAllListeners();
@@ -636,7 +636,7 @@ export function ExhibitionGalleryScreen({
     <>
     {!isGalleryLoaded ? ( 
     <View style={galleryDetailsStyles.spinnerContainer}>
-        <ActivityIndicator animating={true} size={35} color={Colors.PRIMARY_800} />
+        <ActivityIndicator size={35} color={Colors.PRIMARY_800} />
     </View>
     )
     : (

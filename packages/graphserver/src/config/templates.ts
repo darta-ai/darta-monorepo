@@ -103,5 +103,5 @@ export const currencyConverter: CurrencyConverterType = {
 
 export function standardConsoleLog({message, data, request}: {message: string, data: any, request: any}): void {
   // eslint-disable-next-line no-console
-  console.log(new Date().toLocaleDateString(),{message, data, request});
+  console.log(`${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,{message, data, request});
 }

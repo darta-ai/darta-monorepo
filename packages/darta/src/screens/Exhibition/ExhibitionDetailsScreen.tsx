@@ -1,11 +1,11 @@
 import React from 'react';
-import {View, StyleSheet, ScrollView, Platform, Linking, RefreshControl, Text, Alert } from 'react-native';
+import {View, StyleSheet, ScrollView, Platform, Linking, RefreshControl, Text, Alert, Animated, TouchableOpacity } from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import { format } from 'date-fns';
 // import FastImage from 'react-native-fast-image'
 
 import * as Colors from '@darta-styles';
-import { UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes} from '../../state';
+import { UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes, StoreContext, ETypes} from '../../state';
 import {TextElement} from '../../components/Elements/_index';
 import {customFormatTimeString, customLocalDateStringStart, customLocalDateStringEnd} from '../../utils/functions';
 import * as Calendar from 'expo-calendar';
@@ -14,17 +14,19 @@ import { listGalleryExhibitionPreviewForUser } from '../../api/galleryRoutes';
 import {
   ExhibitionRootEnum
 } from '../../typing/routes';
-import {Exhibition, IGalleryProfileData} from '@darta-types'
+import {Exhibition, IGalleryProfileData, USER_EXHIBITION_RATINGS} from '@darta-types'
 import {globalTextStyles} from '../../styles/styles'
 import { RouteProp } from '@react-navigation/native';
 import { ExhibitionStackParamList } from '../../navigation/Exhibition/ExhibitionTopTabNavigator';
-import { readExhibition, setUserViewedExhibition } from '../../api/exhibitionRoutes';
+import { readExhibition, setUserViewedExhibition, addExhibitionToUserSaved, removeExhibitionFromUserSaved, dartaUserExhibitionRating } from '../../api/exhibitionRoutes';
 import { readGallery } from '../../api/galleryRoutes';
 import { TextElementMultiLine } from '../../components/Elements/TextElement';
 import { DartaIconButtonWithText } from '../../components/Darta/DartaIconButtonWithText';
 import * as SVGs from '../../assets/SVGs';
 import { DartaImageComponent } from '../../components/Images/DartaImageComponent';
 import GalleryLocation from '../../components/Gallery/GalleryLocation';
+import * as Haptics from 'expo-haptics';
+
 
 const exhibitionDetailsStyles = StyleSheet.create({
     container: {
@@ -129,6 +131,18 @@ const exhibitionDetailsStyles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    pressableStyle: {
+        width: 250,
+        height: 38,
+        backgroundColor: Colors.PRIMARY_950,
+        borderRadius: 20,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 4,
+      }, 
+
 })
 
 type ExhibitionDetailsRouteProp = RouteProp<ExhibitionStackParamList, ExhibitionRootEnum.exhibitionDetails>;
@@ -145,6 +159,7 @@ export function ExhibitionDetailsScreen({
 
   const {uiDispatch} = React.useContext(UIStoreContext);
   const {galleryState, galleryDispatch} = React.useContext(GalleryStoreContext);
+  const {dispatch} = React.useContext(StoreContext);
   const [exhibitionId, setExhibitionId] = React.useState<string>("")
   const [galleryId, setGalleryId] = React.useState<string | undefined>("")
   const [errorText, setErrorText] = React.useState<string>("");
@@ -542,11 +557,183 @@ export function ExhibitionDetailsScreen({
       };  
 
     
+    const [addedExhibition, setAddedExhibition] = React.useState<boolean>(false);
+    const isOpenExhibition = currentExhibition?.exhibitionDates?.exhibitionEndDate.value && new Date(currentExhibition?.exhibitionDates?.exhibitionEndDate.value) >= new Date();
+    const [isSetOneVisible, setIsSetOneVisible] = React.useState(true);
+    const [loadingFollow, setLoadingFollow] = React.useState(false);
+
+
+    const opacitySetOne = React.useRef(new Animated.Value(1)).current; 
+    const opacitySetTwo = React.useRef(new Animated.Value(0)).current;
+    const translateX = React.useRef(new Animated.Value(0)).current;
+
+    React.useEffect(() => {
+        opacitySetOne.addListener(() => {return})
+        opacitySetTwo.addListener(() => {return})
+        translateX.addListener(() => {return})
+        setAddedExhibition(exhibitionState.userSavedExhibitions[exhibitionId])
+    }, [])
+
+    React.useEffect(() =>{
+        if (exhibitionState.userSavedExhibitions && exhibitionState.userSavedExhibitions[exhibitionId]){
+            setAddedExhibition(true)
+        } else {
+            setAddedExhibition(false)
+        }
+      }, [exhibitionId, exhibitionState.userSavedExhibitions])
+
+    React.useEffect(() => {
+        toggleButtons()
+      }, [addedExhibition])
+
+    opacitySetOne.removeAllListeners();
+    opacitySetTwo.removeAllListeners();
+    translateX.removeAllListeners();
+
+    const toggleButtons = () => {
+        Animated.parallel([
+        Animated.timing(opacitySetOne, {
+            toValue: addedExhibition ? 0 : 1,
+            duration: 400,
+            useNativeDriver: true,
+        }),
+        Animated.timing(opacitySetTwo, {
+            toValue: addedExhibition ? 1 : 0,
+            duration: 400,
+            useNativeDriver: true,
+        }),
+        Animated.timing(translateX, {
+            toValue: addedExhibition ? 100 : 0,
+            duration: 400,
+            useNativeDriver: true,
+        }),
+        ]).start(() => {
+        setIsSetOneVisible(!isSetOneVisible);
+        });
+    };
+
+    const addExhibitionToList = async () => {
+        try{
+            setLoadingFollow(true)
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            await addExhibitionToUserSaved({exhibitionId})
+            exhibitionDispatch({
+                type: ExhibitionETypes.saveUserSavedExhibitions,
+                exhibitionIds: [exhibitionId],
+            })
+            dispatch({
+                type: ETypes.addExhibitionToSavedExhibitions,
+                locationId: currentExhibition?.exhibitionLocation.googleMapsPlaceId?.value!,
+            })
+            toggleButtons();
+            setAddedExhibition(true)
+            setLoadingFollow(false)
+          
+        } catch(e) {
+          // console.log('error', e)
+          // throw new Error("Something went wrong, please try again")
+          setLoadingFollow(false)
+        }
+    }
+
+    const userViewedExhibitionAlert = () => {
+        if (currentExhibition?.exhibitionTitle?.value){
+            Alert.alert(`Did you go to ${currentExhibition?.exhibitionTitle?.value}?`, `Letting us know will improve your recommended exhibitions`, [
+                {
+                    text: 'Yes',
+                    onPress: () => {rateExhibitionAlert()},
+                    style: 'default',
+                },
+                {
+                    text: 'No',
+                    onPress: () => {removeExhibitionFromList()},
+                    style: 'default',
+                },
+            ])
+        }
+    } 
+
+
+    const rateExhibitionAlert = () => {
+        if (currentExhibition?.exhibitionTitle?.value){
+            Alert.alert(`How would you rate this exhibition?`, `Letting us know will improve your recommended exhibitions`, [
+                {
+                    text: 'Loved It',
+                    onPress: () => {removeExhibitionFromList(USER_EXHIBITION_RATINGS.LOVED)},
+                    style: 'default',
+                },
+                {
+                    text: 'Liked It',
+                    onPress: () => {removeExhibitionFromList(USER_EXHIBITION_RATINGS.LIKE)},
+                    style: 'default',
+                },
+                {
+                    text: 'Disliked It',
+                    onPress: () => {removeExhibitionFromList(USER_EXHIBITION_RATINGS.DISLIKE)},
+                    style: 'default',
+                },
+                {
+                    text: 'Hated It',
+                    onPress: () => {removeExhibitionFromList(USER_EXHIBITION_RATINGS.HATED)},
+                    style: 'default',
+                },
+                {
+                    text: 'No Opinion',
+                    onPress: () => {removeExhibitionFromList(USER_EXHIBITION_RATINGS.UNRATED)},
+                    style: 'destructive',
+                },
+            ])
+        }
+    } 
+    
+    const removeExhibitionFromList = async (rating?: string) => { 
+        try{
+            setLoadingFollow(true)
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            await removeExhibitionFromUserSaved({exhibitionId})
+            if (rating){
+                await dartaUserExhibitionRating({exhibitionId, rating})
+                exhibitionDispatch({
+                    type: ExhibitionETypes.setUserViewedExhibition,
+                    userViewedExhibitionId: exhibitionId,
+                    galleryId,
+                })
+            }
+            exhibitionDispatch({
+                type: ExhibitionETypes.removeUserSavedExhibitions,
+                exhibitionIds: [exhibitionId],
+            })
+            dispatch({
+                type: ETypes.removeExhibitionFromSavedExhibitions,
+                locationId: currentExhibition?.exhibitionLocation.googleMapsPlaceId?.value!,
+            })
+            toggleButtons();
+            setAddedExhibition(false)
+            setLoadingFollow(false)
+        } catch {
+            // throw new Error("Something went wrong, please try again")
+            setLoadingFollow(false)
+        }
+    }
+
+
+    const dynamicStyles = StyleSheet.create({
+        followContainer: {
+            height: isOpenExhibition? 38 : 0 ,
+            marginBottom: 24,
+            width: 160,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+          },
+    });
+
+
   return (
     <>
         {!isGalleryLoaded ? ( 
         <View style={exhibitionDetailsStyles.spinnerContainer}>
-            <ActivityIndicator animating={true} size={35} color={Colors.PRIMARY_800} />
+            <ActivityIndicator size={35} color={Colors.PRIMARY_800} />
             {errorText && (<TextElement>{errorText}</TextElement>)}
         </View>
         )
@@ -554,6 +741,34 @@ export function ExhibitionDetailsScreen({
         <ScrollView  refreshControl={<RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_600} onRefresh={onRefresh} />}>
             <View style={exhibitionDetailsStyles.container}>
                 <View style={exhibitionDetailsStyles.informationContainer}>
+                    <View style={dynamicStyles.followContainer}>
+                        {!addedExhibition && isOpenExhibition && (
+                            <Animated.View style={{opacity: opacitySetOne, transform: [{ translateX: translateX }] }}>
+                                <TouchableOpacity style={{...exhibitionDetailsStyles.pressableStyle, backgroundColor: Colors.PRIMARY_50, borderColor: Colors.PRIMARY_500, borderWidth: 1}} onPress={() => addExhibitionToList()}>
+                                    <View style={{width: 30}}>
+                                    {loadingFollow && <ActivityIndicator size={20} color={Colors.PRIMARY_950} />}
+                                    {!loadingFollow && <SVGs.NewMapPinSmall />}
+                                    </View>
+                                    <View style={{width: 170}}>
+                                    <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_950}}>Add To My List</TextElement>
+                                    </View>
+                                </TouchableOpacity>
+                            </Animated.View>
+                            )}
+                        {addedExhibition && isOpenExhibition && (
+                            <Animated.View style={{opacity: opacitySetTwo, transform: [{ translateX: Animated.subtract(100, translateX) }]}}>
+                                <TouchableOpacity style={exhibitionDetailsStyles.pressableStyle} onPress={() => userViewedExhibitionAlert()}>
+                                    <View style={{width: 30}}>
+                                    {loadingFollow && <ActivityIndicator size={20} color={Colors.PRIMARY_50} />}
+                                    {!loadingFollow && <SVGs.NewMapPinSmallWhite />}
+                                    </View>
+                                    <View style={{width: 170}}>
+                                    <TextElement style={{...globalTextStyles.boldTitleText, color: Colors.PRIMARY_50}}>Remove From My List</TextElement>
+                                    </View>
+                                </TouchableOpacity>
+                            </Animated.View>
+                        )} 
+                    </View>
                     <View style={exhibitionDetailsStyles.informationTitleContainer}>
                         <TextElement style={globalTextStyles.sectionHeaderTitle}>
                             {currentExhibition?.exhibitionTitle?.value}

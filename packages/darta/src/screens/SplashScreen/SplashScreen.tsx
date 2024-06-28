@@ -7,7 +7,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming, listExhibitionPreviewUpcomingUserFollowing} from "../../api/exhibitionRoutes";
+import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming, listExhibitionForUserSavedCurrent} from "../../api/exhibitionRoutes";
 import { ETypes, StoreContext, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes, ViewStoreContext, ViewETypes} from "../../state";
 import { Artwork, GalleryPreview, MapPinCities, USER_ARTWORK_EDGE_RELATIONSHIP } from "@darta-types";
 import { listExhibitionPinsByCity } from "../../api/locationRoutes";
@@ -89,7 +89,8 @@ function AnimatedSplashScreen({ children }) {
         inquiredArtwork,
         artworksToRate, 
         userListPreviews,
-        savedRoute
+        savedRoute,
+        userSavedExhibitions
       ] = await Promise.all([
         // user
         uid ? getDartaUser({uid}) : null,
@@ -114,7 +115,9 @@ function AnimatedSplashScreen({ children }) {
         // userLists
         listUserLists(),
         // getUnViewedExhibitionsCountForUser()
-        AsyncStorage.getItem(SAVED_ROUTE_SETTINGS)
+        AsyncStorage.getItem(SAVED_ROUTE_SETTINGS),
+        // userSavedExhibitions
+        listExhibitionForUserSavedCurrent()
       ]);
 
       // User Profile
@@ -131,6 +134,14 @@ function AnimatedSplashScreen({ children }) {
           type: ETypes.setUserListPreviews,
           userListPreviews
         });
+      }
+
+      // Exhibitions Following 
+      if (userSavedExhibitions){
+        exhibitionDispatch({
+          type: ExhibitionETypes.saveUserSavedExhibitions,
+          exhibitionIds: userSavedExhibitions
+        })
       }
 
       let artworksToRateUrls: {uri : string}[] =  []
@@ -167,6 +178,7 @@ function AnimatedSplashScreen({ children }) {
           mapPins: exhibitionMapPins,
           mapPinCity: MapPinCities.newYork,
           userGalleryFollowed,
+          userSavedExhibitions
         });
       }
 
@@ -236,11 +248,11 @@ function AnimatedSplashScreen({ children }) {
 
 
   React.useEffect(() => {
-    dAnim.addListener(() => {})
-    a1Anim.addListener(() => {})
-    rAnim.addListener(() => {})
-    tAnim.addListener(() => {})
-    a2Anim.addListener(() => {})
+    dAnim.addListener(() => {return})
+    a1Anim.addListener(() => {return})
+    rAnim.addListener(() => {return})
+    tAnim.addListener(() => {return})
+    a2Anim.addListener(() => {return})
   }, [])
 
   dAnim.removeAllListeners();

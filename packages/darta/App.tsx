@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 
-import { NavigationContainer, useNavigation, useNavigationContainerRef } from '@react-navigation/native';
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { ExploreMapStackNavigator } from './src/navigation/ExploreMap/ExploreMapStackNavigator';
 import { StatusBar, Platform, Alert, Linking} from 'react-native';
@@ -175,7 +175,7 @@ function App() {
     isIOS && (remoteVersion = remoteConfig().getValue("currentIOSVersion").asString());
   
     // if the current version is not the same as the app version, show an alert to download the app
-    if (promptUpdate && remoteVersion && currentVersion !== remoteVersion) {
+    if (promptUpdate && remoteVersion && currentVersion && currentVersion <= remoteVersion) {
       Alert.alert(
         "New Update Available",
         "A new version of the app is available. Please download the latest version from the app store.",

@@ -1,12 +1,12 @@
 import * as Colors from '@darta-styles';
 import React from 'react';
 
-import { UIStoreContext} from '../../state';
+import { UIStoreContext } from '../../state';
 import {backButtonStyles, headerOptions} from '../../styles/styles';
-import {ExhibitionRootEnum, RecommenderRoutesEnum} from '../../typing/routes';
-import { View, Platform} from 'react-native';
+import {RecommenderRoutesEnum} from '../../typing/routes';
+import { View } from 'react-native';
 import { DartaRecommenderTopTab } from './DartaRecommenderTopTab';
-import { useNavigation, useNavigationContainerRef } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useDeepLinking } from '../../components/LinkingAndNavigation/deepLinking';
 import { BackButtonIcon } from '../../assets/SVGs/BackButtonIcon';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
@@ -18,13 +18,7 @@ import * as SVGs from '../../assets/SVGs';
 import { DartaRecommenderPreviousTopTab } from './DartaPreviousTopTab';
 import { ArtworkScreen } from '../../screens/Artwork/ArtworkScreen';
 import { ExhibitionGalleryScreen } from '../../screens/Exhibition';
-import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import Constants  from 'expo-constants';
-
-
-
-import { editDartaUserAccount } from '../../api/userRoutes';
 
 export const RecommenderStack = createStackNavigator();
 
@@ -44,92 +38,6 @@ export function DartaRecommenderNavigator() {
   const navigation: any = useNavigation();
   useDeepLinking(navigation);
 
-  const notificationListener = React.useRef<Notifications.Subscription>();
-  const responseListener = React.useRef<Notifications.Subscription>();
-
-  async function registerForPushNotificationsAsync() {
-    if (Platform.OS === 'android') {
-      Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
-      });
-    }
-    
-    if (Device.isDevice) {
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== 'granted') {
-        // handleRegistrationError('Permission not granted to get push token for push notification!');
-        return;
-      }
-      const projectId =
-        Constants?.expoConfig?.extra?.eas?.projectId ??
-        Constants?.easConfig?.projectId;
-      if (!projectId) {
-        // handleRegistrationError('Project ID not found');
-      }
-      try {
-      const pushTokenString = (
-          await Notifications.getExpoPushTokenAsync({
-            projectId,
-          })
-        ).data;
-        return pushTokenString;
-      } catch (e: unknown) {
-        return;
-        // handleRegistrationError(`${e}`);
-      }
-    } else {
-      return;
-      // handleRegistrationError('Must use physical device for push notifications');
-    }
-    }
-
-  React.useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then(async (token) => {
-        if (token){
-          editDartaUserAccount({expoPushToken: token})
-        }
-      })
-
-      responseListener.current =
-        Notifications.addNotificationResponseReceivedListener((response) => {
-          const { data } = response.notification.request.content;
-          if (!data?.showUpcomingScreen) {
-            navigation.navigate('exhibitions', {
-              screen: ExhibitionRootEnum.qrRouter,
-              params: {
-                screen: ExhibitionRootEnum.exhibitionDetails,
-                params: {
-                  exhibitionId: data?.exhibitionId,
-                  galleryId: data?.galleryId,
-                },
-              },
-            });
-          } else {
-            navigation.navigate('exhibitions', {
-              screen: ExhibitionRootEnum.TopTab,
-            });
-          }
-        });
-
-      return () => {
-        notificationListener.current &&
-          Notifications.removeNotificationSubscription(
-            notificationListener.current,
-          );
-        responseListener.current &&
-          Notifications.removeNotificationSubscription(responseListener.current);
-      };
-    }, []);
-
   return (
     <RecommenderStack.Navigator 
       screenOptions={{
@@ -142,6 +50,7 @@ export function DartaRecommenderNavigator() {
         ), 
         headerBackTitleVisible: false,
       }}
+      initialRouteName={RecommenderRoutesEnum.recommenderHome}
       >
         <RecommenderStack.Group>
           <RecommenderStack.Screen

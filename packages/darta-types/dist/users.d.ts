@@ -7,6 +7,7 @@ export type MobileUser = {
     email?: string;
     uid?: string;
     localStorageUid?: string;
+    expoPushToken?: string;
     routeGenerationCount?: {
         routeGeneratedCountWeekly: number;
     };

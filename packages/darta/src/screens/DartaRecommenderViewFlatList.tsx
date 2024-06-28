@@ -165,9 +165,9 @@ export function DartaRecommenderViewFlatList({
   const [currentArtRating, setCurrentArtRating] = React.useState<IUserArtworkRated>({});
 
   React.useEffect(() => {
-    wiggleAnim.addListener(() => {})
-    thumbsUpAnim.addListener(() => {})
-    thumbsDownAnim.addListener(() => {})
+    wiggleAnim.addListener(() => {return})
+    thumbsUpAnim.addListener(() => {return})
+    thumbsDownAnim.addListener(() => {return})
   }, [])
 
   wiggleAnim.removeAllListeners();
@@ -214,7 +214,6 @@ export function DartaRecommenderViewFlatList({
 
   React.useEffect(() => {
     if (viewState.artworksToRate && (currentIndex / Object.values(viewState.artworksToRate).length) > 0.75){
-      console.log('fetchin/')
       onEndReached()
     }
   }, [currentIndex])
@@ -824,8 +823,7 @@ const panGestureLeft = Gesture.Pan()
               <Animated.View 
               style={{ transform: [{ rotate }], opacity: 1 }}
               >
-                {!isEndReached && (currentArtRating[RatingEnum.save] ?  <SVGs.SavedActiveIconLarge /> : <SVGs.SavedInactiveIcon />)}
-                {isEndReached && <ActivityIndicator size="small" color={Colors.PRIMARY_950} />}
+                {currentArtRating[RatingEnum.save] ?  <SVGs.SavedActiveIconLarge /> : <SVGs.SavedInactiveIcon />}
               </Animated.View>
             </TouchableOpacity>
           </Surface>

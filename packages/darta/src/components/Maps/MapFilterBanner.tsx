@@ -3,7 +3,7 @@ import { View, StyleSheet, Dimensions, ScrollView, Alert } from 'react-native';
 import * as Colors from '@darta-styles';
 import * as SVGs from '../../assets/SVGs';
 import * as Haptics from 'expo-haptics';
-import { ETypes, StoreContext } from '../../state';
+import { ETypes, ExhibitionStoreContext, StoreContext } from '../../state';
 import { currentlyViewingMapView } from '../../state/Store';
 import { FilterBannerButton } from '../Elements/FilterBannerButton';
 import { ExploreMapRootEnum } from '../../typing/routes';
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
 
 export const FilterBanner = ({ navigation } : {navigation : any}) => {
   const { state, dispatch } = React.useContext(StoreContext);
+  const { exhibitionState } = React.useContext(ExhibitionStoreContext);
 
   const handleShowRoute = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -73,10 +74,36 @@ export const FilterBanner = ({ navigation } : {navigation : any}) => {
     }
   } 
 
+  const handleShowYourList = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView.userSavedExhibitions].length === 0){
+      Alert.alert("No open exhibitions on your list.")
+    } else if (state.currentlyViewingMapView === currentlyViewingMapView.userSavedExhibitions) {
+      dispatch({
+        type: ETypes.setIsViewingWalkingRoute,
+        isViewingWalkingRoute: false,
+      })
+      dispatch({
+        type: ETypes.setCurrentViewingMapView,
+        currentlyViewingMapView: currentlyViewingMapView.all
+      })
+    } else {
+      dispatch({
+        type: ETypes.setIsViewingWalkingRoute,
+        isViewingWalkingRoute: false,
+      })
+      dispatch({
+        type: ETypes.setCurrentViewingMapView,
+        currentlyViewingMapView: currentlyViewingMapView.userSavedExhibitions
+      })
+    }
+  } 
+
+
   const handleShowSaved = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView.savedGalleries].length === 0){
-      Alert.alert("You are not following any galleries.", "Follow more galleries by pressing the heart on the gallery's page.")
+      Alert.alert("You are not following any galleries with shows open.", "Follow more galleries by pressing the heart on the gallery's page.")
     } else if (state.currentlyViewingMapView === currentlyViewingMapView.savedGalleries) {
       dispatch({
         type: ETypes.setCurrentViewingMapView,
@@ -172,6 +199,15 @@ export const FilterBanner = ({ navigation } : {navigation : any}) => {
             onPress={handleShowRoute}
             text={"Your Route"}
           />
+          {exhibitionState.userSavedExhibitions && Object.keys(exhibitionState.userSavedExhibitions).length > 0 && ( 
+            <FilterBannerButton 
+                inUse={state.currentlyViewingMapView === currentlyViewingMapView.userSavedExhibitions}
+                IconInUse={<SVGs.NewMapPinSmallWhite />}
+                IconNotInUse={<SVGs.NewMapPinSmall />}
+                onPress={handleShowYourList}
+                text={"Your List"}
+            />
+          )}
             <FilterBannerButton 
               inUse={(state.currentlyViewingMapView === currentlyViewingMapView.savedGalleries)}
               IconInUse={<SVGs.HeartEmpty20 />}
@@ -180,28 +216,28 @@ export const FilterBanner = ({ navigation } : {navigation : any}) => {
               text={"Following"}
             />
          {state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView.openingTonight]?.length > 0 && ( 
-        <FilterBannerButton 
-            inUse={(state.currentlyViewingMapView === currentlyViewingMapView.openingTonight)}
-            IconInUse={<SVGs.DoorsOpenWhite />}
-            IconNotInUse={<SVGs.DoorsOpenBlack />}
-            onPress={handleShowOpeningTonight}
-            text={"Reception Tonight"}
+          <FilterBannerButton 
+              inUse={(state.currentlyViewingMapView === currentlyViewingMapView.openingTonight)}
+              IconInUse={<SVGs.DoorsOpenWhite />}
+              IconNotInUse={<SVGs.DoorsOpenBlack />}
+              onPress={handleShowOpeningTonight}
+              text={"Reception Tonight"}
+            />
+          )}
+          <FilterBannerButton 
+            inUse={(state.currentlyViewingMapView === currentlyViewingMapView.newOpenings)}
+            IconInUse={<SVGs.NewBellWhite20 />}
+            IconNotInUse={<SVGs.NewBellBlack20 />}
+            onPress={handleShowNew}
+            text={"Opened This Week"}
           />
-         )}
-        <FilterBannerButton 
-          inUse={(state.currentlyViewingMapView === currentlyViewingMapView.newOpenings)}
-          IconInUse={<SVGs.NewBellWhite20 />}
-          IconNotInUse={<SVGs.NewBellBlack20 />}
-          onPress={handleShowNew}
-          text={"Opened This Week"}
-        />
-        <FilterBannerButton 
-          inUse={(state.currentlyViewingMapView === currentlyViewingMapView.newClosing)}
-          IconInUse={<SVGs.EyeClosedWhite20 />}
-          IconNotInUse={<SVGs.EyeClosedBlack20 />}
-          onPress={handleShowClosing}
-          text={"Closing This Week"}
-        />
+          <FilterBannerButton 
+            inUse={(state.currentlyViewingMapView === currentlyViewingMapView.newClosing)}
+            IconInUse={<SVGs.EyeClosedWhite20 />}
+            IconNotInUse={<SVGs.EyeClosedBlack20 />}
+            onPress={handleShowClosing}
+            text={"Closing This Week"}
+          />
       </ScrollView>
     </View>
   );

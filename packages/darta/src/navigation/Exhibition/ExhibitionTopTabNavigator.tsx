@@ -28,6 +28,7 @@ export type ExhibitionStackParamList = {
 };
 
 export function ExhibitionTopTabNavigator({route} : {route: any}) {  
+  console.log({params: route.params})
   return (
     <ExhibitionStackTopTab.Navigator screenOptions={{...tabBarScreenOptions}}>
       <ExhibitionStackTopTab.Group>

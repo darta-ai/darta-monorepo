@@ -40,7 +40,7 @@ export function UserProfile({
 
 
   const [userProfilePic, setUserProfilePic] = React.useState<ImageURISource>('' as any);
-  const [userName] = React.useState<string>(userState?.user?.userName ? userState?.user?.userName : "");
+  const [userName, setUsername] = React.useState<string>(userState?.user?.userName ? userState?.user?.userName : "");
   const [fullName, setFullName] = React.useState<string>('');
 
   React.useEffect(() => {
@@ -58,6 +58,8 @@ export function UserProfile({
     
     const firstName = userState?.user?.legalFirstName ? userState?.user?.legalFirstName : "Art"
     const lastName = userState?.user?.legalLastName ? userState?.user?.legalLastName : "Enthusiast"
+    const userName = userState?.user?.userName ? userState?.user?.userName : "Art Enthusiast"
+    setUsername(userName)
     setFullName(`${firstName} ${lastName}`)
 
     }, [, userState?.user]);

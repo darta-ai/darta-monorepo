@@ -297,6 +297,7 @@ export class UserService implements IUserService {
           legalLastName: results.legalLastName,
           email: results.email,
           uid: results._id,
+          expoPushToken: results.expoPushToken,
           routeGenerationCount: results?.routeGenerationCount,
         }
       }
@@ -305,6 +306,33 @@ export class UserService implements IUserService {
       throw new Error(`Unable to read darta user ${error?.message}`);
     }
     return null;
+  }
+
+  public async saveExpoPushToken({uid, expoPushToken}: {uid: string, expoPushToken: string}): Promise<void> {
+    const fullUserId = this.generateDartaUserId({uid});
+    try {
+
+      const user = await this.nodeService.getNodeById({
+        collectionName: CollectionNames.DartaUsers,
+        id: fullUserId,
+      });
+      if (!user) {
+        throw new Error('user not found');
+      }
+      if (user.expoPushToken === expoPushToken) {
+        return;
+      }
+
+      await this.nodeService.upsertNodeById({
+        collectionName: CollectionNames.DartaUsers,
+        id: fullUserId,
+        data: {
+          expoPushToken,
+        },
+      });
+    } catch (error: any) {
+      throw new Error(`Unable to save expo push token ${error?.message}`);
+    }
   }
 
   public async editGalleryToUserEdge({

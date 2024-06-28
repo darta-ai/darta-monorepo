@@ -260,7 +260,7 @@ export const PlanARoute = ({navigation}) => {
                 />
             </View>
           </View>
-          <View style={{marginBottom: 12}}>
+          <View style={{marginBottom: 14}}>
             <Button 
               onPress={handleShowAgreement}
               labelStyle={{color: Colors.PRIMARY_50}}
@@ -269,11 +269,12 @@ export const PlanARoute = ({navigation}) => {
               loading={loadingRoute}
               disabled={loadingRoute}
               >
-              <TextElement style={styles.buttonTextColor}>Generate Route</TextElement>
+                {!loadingRoute && <TextElement style={styles.buttonTextColor}>Generate Route</TextElement>}
+                {loadingRoute && <TextElement style={styles.buttonTextColor}>can take up to 10 seconds</TextElement>}
             </Button>
             <View style={{margin: 10}}>
               <TextElement style={{fontSize: 10}}>Limit 6 routes a week per account, resetting on Wednesdays</TextElement>
-              <TextElement style={{fontSize: 10}}>You have generated {userState.user?.routeGenerationCount?.routeGeneratedCountWeekly} this week</TextElement>
+              <TextElement style={{fontSize: 10}}>You have generated {userState.user?.routeGenerationCount?.routeGeneratedCountWeekly ?? 0} this week</TextElement>
             </View>
           </View>
         </View>

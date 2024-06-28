@@ -25,3 +25,10 @@ export declare enum USER_EXHIBITION_EDGE_RELATIONSHIP {
     VIEWED = "VIEWED",
     VIEW_TIME = "VIEW_TIME"
 }
+export declare enum USER_EXHIBITION_RATINGS {
+    LOVED = "LOVED",
+    LIKE = "LIKE",
+    DISLIKE = "DISLIKE",
+    HATED = "HATED",
+    UNRATED = "UNRATED"
+}

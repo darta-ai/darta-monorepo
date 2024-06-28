@@ -8,7 +8,7 @@ import {InversifyExpressServer} from 'inversify-express-utils';
 
 import {container} from './config/container';
 import { ArtworkService, ExhibitionService, GalleryService, 
-  // PushService, 
+  PushService, 
   UserService } from './services';
 
 const cron = require('node-cron');
@@ -17,7 +17,7 @@ const artworkService = container.get('IArtworkService') as ArtworkService
 const exhibitionService = container.get('IExhibitionService') as ExhibitionService
 const userService = container.get('IUserService') as UserService
 const galleryService = container.get('IGalleryService') as GalleryService
-// const pushService = container.get('IPushService') as PushService
+const pushService = container.get('IPushService') as PushService
 // const recommenderService = container.get('IRecommenderService') as RecommenderService
 
 const bodyParser = require('body-parser');
@@ -131,30 +131,43 @@ cron.schedule('0 0 * * 3', async () => {
   }
 });
 
-// // production schedule
-// cron.schedule('0 17 * * 3', async () => {
-//   try{
-//     const start = new Date()
-//     await pushService.generatePushNotificationsFollowing()
-//     const end = new Date()
-//     // eslint-disable-next-line no-console
-//     console.log(`reset all user route generation cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
-//   } catch (e) {
-//     // eslint-disable-next-line no-console
-//     console.log('error running cronjob', e)
-//   }
-// });
+// production schedule
+cron.schedule('0 11 * * 3', async () => {
+  try{
+    const start = new Date()
+    const totalSent = await pushService.runWeeklyPushNotifications();
+    const end = new Date()
+    // eslint-disable-next-line no-console
+    console.log(`weekly push cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms. Sent ${totalSent} notifications`)
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('error running cronjob', e)
+  }
+});
 
-// // // development schedule
+cron.schedule('0 11 * * 1,2,4,5,6', async () => {
+  try{
+    const start = new Date()
+    const totalSent = await pushService.runDailyPushNotifications()
+    const end = new Date()
+    // eslint-disable-next-line no-console
+    console.log(`daily push weekly cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms. Sent ${totalSent} notifications`)
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('error running cronjob', e)
+  }
+})
+
+// // development schedule
 // cron.schedule('* * * * *', async () => {
 //   try{
 //     const start = new Date()
 //     // const res = await userService.readDartaUser({ uid: 'DartaUsers/GL1yalS1PQQjbOUu9dnpT7nKAEy1' })
 //     // console.log('read darta user', res)
-//     await recommenderService.collaborativeFilteringCollectRatings({userId: 'DartaUsers/GL1yalS1PQQjbOUu9dnpT7nKAEy1'})
+//     const numberSent = await pushService.runWeeklyPushNotifications()
 //     const end = new Date()
 //     // eslint-disable-next-line no-console
-//     console.log(`reset all user route generation cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
+//     console.log(`push notification cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms. Sent ${totalSent} notifications`)
 //   } catch (e) {
 //     // eslint-disable-next-line no-console
 //     console.log('error running cronjob', e)

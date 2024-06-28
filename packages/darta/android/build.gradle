@@ -1,4 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+import com.google.gms.googleservices.GoogleServicesTask
 
 buildscript {
     ext {
@@ -7,7 +8,6 @@ buildscript {
         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
         kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
-
         ndkVersion = "25.1.8937393"
     }
     repositories {
@@ -15,15 +15,14 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.google.firebase:perf-plugin:1.4.2'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
-        classpath 'com.google.gms:google-services:4.3.3'
-        classpath('com.android.tools.build:gradle')
-        classpath('com.facebook.react:react-native-gradle-plugin')
+        classpath("com.android.tools.build:gradle:8.2.1")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath('com.google.gms:google-services:4.4.2')
+        classpath('com.google.firebase:firebase-crashlytics-gradle:3.0.2')
+        classpath('com.google.firebase:perf-plugin:1.4.2')
     }
 }
-
-apply plugin: "com.facebook.react.rootproject"
 
 allprojects {
     repositories {
@@ -35,9 +34,14 @@ allprojects {
             // Android JSC is installed from npm
             url(new File(['node', '--print', "require.resolve('jsc-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), '../dist'))
         }
-
         google()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
+    }
+}
+
+project.afterEvaluate {
+    tasks.withType(GoogleServicesTask).configureEach {
+        gmpAppId.set(project.layout.buildDirectory.file("$name-gmpAppId.txt"))
     }
 }

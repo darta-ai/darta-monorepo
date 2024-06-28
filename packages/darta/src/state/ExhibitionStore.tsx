@@ -23,7 +23,8 @@ export interface ExhibitionState {
   forthcomingFollowingExhibitionPreviews?: {
     [key: string]: ExhibitionPreview
   },
-  userViewedExhibition: {[key: string] : boolean}
+  userViewedExhibition: {[key: string] : boolean},
+  userSavedExhibitions: {[key: string] : boolean},
 }
 
 export enum ExhibitionETypes {
@@ -38,6 +39,9 @@ export enum ExhibitionETypes {
   setUserViewedExhibition = 'SET_USER_VIEWED_EXHIBITION',
 
   removeUserFollowsExhibitionPreviews = 'REMOVE_USER_FOLLOWS_EXHIBITION_PREVIEWS',
+
+  saveUserSavedExhibitions = 'SAVE_USER_SAVED_EXHIBITIONS',
+  removeUserSavedExhibitions = 'REMOVE_USER_SAVED_EXHIBITIONS',
 }
 
 // Define the action type
@@ -50,12 +54,14 @@ interface ExhibitionIAction {
 
   removeUserFollowsExhibitionPreviewsByGalleryId?: string
   galleryId?: string
+  exhibitionIds?: Array<string>
 }
 
 // Define the initial state
 const initialExhibitionState: ExhibitionState = {
   exhibitionData : {},
   userViewedExhibition: {},
+  userSavedExhibitions: {},
 };
 
 // Define the reducer function
@@ -168,6 +174,33 @@ const exhibitionReducer = (state: ExhibitionState, action: ExhibitionIAction): E
       return {
         ...state,
         userFollowsExhibitionPreviews: deepCloneState
+      }
+
+      case ExhibitionETypes.saveUserSavedExhibitions: 
+      if (!action?.exhibitionIds){
+        return state;
+      }
+      const formattedExhibitions = Object.assign({}, ...action.exhibitionIds.map((exhibitionId) => ({[exhibitionId]: true})));
+
+      return {
+        ...state,
+        userSavedExhibitions: {
+          ...state.userSavedExhibitions || {},
+          ...formattedExhibitions
+        }
+      }
+
+      case ExhibitionETypes.removeUserSavedExhibitions: 
+      if (!action?.exhibitionIds){
+        return state;
+      }
+      const tempExhibitions = state?.userSavedExhibitions ? state?.userSavedExhibitions : {};
+      action.exhibitionIds.forEach((exhibitionId) => {
+        delete tempExhibitions[exhibitionId]
+      })
+      return {
+        ...state,
+        userSavedExhibitions: tempExhibitions
       }
     default:
       return state;
