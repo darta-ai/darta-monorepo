@@ -274,7 +274,7 @@ export class UserController {
     }
   }
 
-  @httpPost('saveExpoPushToken', verifyToken)
+  @httpPost('/saveExpoPushToken', verifyToken)
   public async saveExpoPushToken(
     @request() req: Request,
     @response() res: Response,

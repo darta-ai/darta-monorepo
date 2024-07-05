@@ -65,7 +65,7 @@ app.get('/version', (req: Request, res: Response) => {
 });
 
 // cron job to update artwork every 24 hours 
-cron.schedule('0 3 * * *', async () => {
+cron.schedule('0 8 * * *', async () => {
   try{
     const start = new Date()
     await artworkService.readAllArtworks()
@@ -78,7 +78,7 @@ cron.schedule('0 3 * * *', async () => {
   }
 });
 
-cron.schedule('15 3 * * *', async () => {
+cron.schedule('15 8 * * *', async () => {
   try{
     const start = new Date()
     await exhibitionService.readAllExhibitions()
@@ -91,7 +91,7 @@ cron.schedule('15 3 * * *', async () => {
   }
 });
 
-cron.schedule('30 3 * * *', async () => {
+cron.schedule('30 8 * * *', async () => {
   try{
     const start = new Date()
     await userService.readAllUsers()
@@ -104,7 +104,7 @@ cron.schedule('30 3 * * *', async () => {
   }
 })
 
-cron.schedule('45 3 * * *', async () => {
+cron.schedule('45 8 * * *', async () => {
   try{
     const start = new Date()
     await galleryService.readAllGalleries()
@@ -118,7 +118,7 @@ cron.schedule('45 3 * * *', async () => {
 });
 
 
-cron.schedule('0 0 * * 3', async () => {
+cron.schedule('0 5 * * 3', async () => {
   try{
     const start = new Date()
     await userService.resetAllUsersRouteGenerationCount()
@@ -132,7 +132,7 @@ cron.schedule('0 0 * * 3', async () => {
 });
 
 // production schedule
-cron.schedule('0 11 * * 3', async () => {
+cron.schedule('0 20 * * 3', async () => {
   try{
     const start = new Date()
     const totalSent = await pushService.runWeeklyPushNotifications();
@@ -145,7 +145,7 @@ cron.schedule('0 11 * * 3', async () => {
   }
 });
 
-cron.schedule('0 11 * * 1,2,4,5,6', async () => {
+cron.schedule('0 20 * * 1,2,4,5,6', async () => {
   try{
     const start = new Date()
     const totalSent = await pushService.runDailyPushNotifications()

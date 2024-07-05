@@ -96,9 +96,6 @@ export class ScrapeService implements IScrapeService {
   public async generateArtworksFromArtLogicUrl({ 
     url, galleryId, exhibitionId }: { url: string; galleryId: string; userId: string, exhibitionId: string }): Promise<Exhibition | void>{
       try {
-
-        console.log('galleryId', galleryId)
-
         const baseUrl = this.parseBaseUrl(url);
   
         const response = await axios.get(url);
@@ -107,6 +104,7 @@ export class ScrapeService implements IScrapeService {
         const functions = this.getKeysFromGalleryId(galleryId);
         
         let artworks = await functions?.artworkDataFunction({baseUrl, $});
+
         const validArtworks = artworks.filter((artwork: any) => 
           artwork.artworkTitle && 
           artwork.artworkCreatedYear && 
@@ -118,7 +116,6 @@ export class ScrapeService implements IScrapeService {
         if (!validArtworks.length && functions?.artworkDataFunctionBackup){
           artworks = await functions?.artworkDataFunctionBackup!({baseUrl, $});
         }
-
         if (artworks){
           for (const [index, artwork] of artworks.entries()) {
             // eslint-disable-next-line no-await-in-loop
@@ -159,7 +156,7 @@ export class ScrapeService implements IScrapeService {
           }
         }
       }catch (e) {
-        console.log(e);
+        throw new Error(`Failed to generate artworks from ${url}, error: ${e}`);
       } 
 
       return this.adminService.getExhibitionForGallery({exhibitionId});
@@ -248,6 +245,7 @@ export class ScrapeService implements IScrapeService {
       const convertToDecimal = (value: string) => {
         const match = value.trim().match(/^(\d+)(?:\s+(\d+)\/(\d+))?$/);
         if (match) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
           const [_, whole, numerator, denominator] = match;
           const decimal = numerator && denominator
             ? Number(whole) + Number(numerator) / Number(denominator)
@@ -375,6 +373,7 @@ export class ScrapeService implements IScrapeService {
       const convertToDecimal = (value: string) => {
         const match = value.trim().match(/^(\d+)(?:\s+(\d+)\/(\d+))?$/);
         if (match) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
           const [_, whole, numerator, denominator] = match;
           const decimal = numerator && denominator
             ? Number(whole) + Number(numerator) / Number(denominator)
@@ -750,6 +749,7 @@ export class ScrapeService implements IScrapeService {
       const convertToDecimal = (value: string) => {
         const match = value.trim().match(/^(\d+)(?:\s+(\d+)\/(\d+))?$/);
         if (match) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
           const [_, whole, numerator, denominator] = match;
           const decimal = numerator && denominator
             ? Number(whole) + Number(numerator) / Number(denominator)
@@ -794,8 +794,6 @@ export class ScrapeService implements IScrapeService {
           artworkImage.value = '';
         }
       }  
-
-      console.log({artistName, artworkTitle, artworkCreatedYear, artworkMedium, artworkDimensions})
   
       return {  
         artistName,
@@ -811,6 +809,384 @@ export class ScrapeService implements IScrapeService {
     const filteredArtworks = artworks.filter((artwork) => artwork !== null);
   
     return filteredArtworks;
+  }
+
+  private async getArtworksForFierman({ $ }: { $: any }): Promise<Array<{
+    artistName: string;
+    artworkTitle: string;
+    artworkCreatedYear: string;
+    artworkMedium: string;
+    artworkDimensions: {
+      heightIn: string;
+      widthIn: string;
+      depthIn: string;
+    };
+    artworkImage: Images;
+  }> | void> {
+    try {
+      const gallery = $('.sqs-gallery');
+      if (gallery.length === 0) {
+        return [];
+      }
+  
+      const artworks = await Promise.all(gallery.children().map(async (index: any, element: any) => {
+        const $element = $(element);
+        const $anchor = $element.find('a.image-slide-anchor');
+        
+        if ($anchor.length === 0) {
+          return null;
+        }
+  
+        const description = $anchor.attr('data-description');
+        if (!description) {
+          return null;
+        }
+  
+        const descriptionText = $('<div>').html(description).text().trim();
+        
+        // Split the description into parts
+        const parts = descriptionText.split(',');
+        
+        // Extract artist name and title
+        const artistNameAndTitle = parts[0].trim().split(' ');
+        const artistName = artistNameAndTitle.slice(0, 2).join(' '); // Assume first two words are the artist name
+        const artworkTitle = artistNameAndTitle.slice(2).join(' ');
+  
+        // Extract year and rest of the information
+        const yearAndRest = parts.slice(1).join(',').trim();
+        const yearMatch = yearAndRest.match(/^\d{4}/);
+        const artworkCreatedYear = yearMatch ? yearMatch[0] : '';
+  
+        // Extract medium and dimensions
+        const mediumAndDimensions = yearAndRest.replace(artworkCreatedYear, '').trim();
+        const dimensionsIndex = mediumAndDimensions.search(/\d+h\s*x\s*\d+w/);
+        
+        let artworkMedium = '';
+        let dimensions = '';
+        
+        if (dimensionsIndex !== -1) {
+          artworkMedium = mediumAndDimensions.slice(0, dimensionsIndex).trim();
+          dimensions = mediumAndDimensions.slice(dimensionsIndex).trim();
+        } else {
+          artworkMedium = mediumAndDimensions;
+        }
+  
+        // Parse dimensions
+        const dimensionsMatch = dimensions.match(/(\d+(?:\s+\d+\/\d+)?)h\s*x\s*(\d+(?:\s+\d+\/\d+)?)w(?:\s*x\s*(\d+(?:\s+\d+\/\d+)?)d)?\s*in/);
+        const artworkDimensions = {
+          heightIn: dimensionsMatch?.[1] || '',
+          widthIn: dimensionsMatch?.[2] || '',
+          depthIn: dimensionsMatch?.[3] || '',
+        };
+  
+        const artworkImageUrl = $anchor.attr('href');
+        const artworkImage: Images = {
+          value: artworkImageUrl || '',
+          fileData: '',
+          fileName: artworkTitle,
+        };
+  
+        // Fetch and process the image
+        if (artworkImageUrl) {
+          try {
+            const response = await axios.get(artworkImageUrl, { responseType: 'arraybuffer' });
+            const buffer = Buffer.from(response.data, 'binary');
+            const base64 = buffer.toString('base64');
+            const fileExtension = artworkImageUrl.split('.').pop()?.toLowerCase() || 'jpg';
+            artworkImage.fileData = `data:image/${fileExtension};base64,${base64}`;
+          } catch (error: any) {
+            artworkImage.value = '';
+          }
+        }
+  
+        return {
+          artistName,
+          artworkTitle,
+          artworkCreatedYear,
+          artworkMedium,
+          artworkDimensions,
+          artworkImage,
+        };
+      }).get());
+  
+      const validArtworks = artworks.filter((artwork: any) => artwork !== null);
+      return validArtworks;
+    } catch (error) {
+      throw new Error('Error fetching artworks from Fierman gallery');
+    }
+  }
+  
+  private async getArtworksForLubov({ $ }: { $: any }): Promise<Array<{
+    artistName: string;
+    artworkTitle: string;
+    artworkCreatedYear: string;
+    artworkMedium: string;
+    artworkDimensions: {
+      heightIn: string;
+      widthIn: string;
+      depthIn: string;
+    };
+    artworkImage: Images;
+  }> | void> {
+    try {
+      const gallery = $('.sqs-gallery');
+      if (gallery.length === 0) {
+        return [];
+      }
+  
+      const artworks = await Promise.all(gallery.children('.image-wrapper').map(async (index: any, element: any) => {
+        const $element = $(element);
+        const $img = $element.find('img');
+        const $meta = $element.next('.meta');
+        
+        if ($img.length === 0 || $meta.length === 0) {
+          return null;
+        }
+  
+        const description = $meta.find('.meta-description p').text().trim();
+        if (!description || description.toLowerCase().includes('installation') || description.toLowerCase().includes('(detail)')){
+          return null;
+        }
+  
+        // Extract artist name and title
+        const titleMatch = description.match(/^(?:([^,]+),\s*)?(.+?),/);
+        const artistName = titleMatch?.[1]?.trim() || 'Unknown Artist';
+        const artworkTitle = titleMatch?.[2]?.trim().replace(/^[^A-Za-z]+/, '') || '';
+  
+        // Extract year, medium, and dimensions
+        const remainingDesc = description.substring(description.indexOf(',') + 1).trim();
+        const parts = remainingDesc.split('.').map((part: string) => part.trim());
+  
+        const yearMatch = parts[0].match(/\d{4}/);
+        const artworkCreatedYear = yearMatch ? yearMatch[0] : '';
+  
+        const artworkMedium = parts[1] || '';
+  
+        const dimensionsMatch = description.match(/(\d+(?:\s+\d+\/\d+)?)(?:\s*x\s*(\d+(?:\s+\d+\/\d+)?))?(?:\s*x\s*(\d+(?:\s+\d+\/\d+)?))?\s*inches?/);
+        const artworkDimensions = {
+          heightIn: dimensionsMatch?.[1] || '',
+          widthIn: dimensionsMatch?.[2] || '',
+          depthIn: dimensionsMatch?.[3] || '',
+        };
+  
+        const artworkImageUrl = $img.attr('data-src');
+        const artworkImage: Images = {
+          value: artworkImageUrl || '',
+          fileData: '',
+          fileName: artworkTitle,
+        };
+  
+        // Fetch and process the image
+        if (artworkImageUrl) {
+          try {
+            const response = await axios.get(artworkImageUrl, { responseType: 'arraybuffer' });
+            const buffer = Buffer.from(response.data, 'binary');
+            const base64 = buffer.toString('base64');
+            const fileExtension = artworkImageUrl.split('.').pop()?.toLowerCase() || 'jpg';
+            artworkImage.fileData = `data:image/${fileExtension};base64,${base64}`;
+          } catch (error: any) {
+            artworkImage.value = '';
+          }
+        }
+  
+        return {
+          artistName,
+          artworkTitle,
+          artworkCreatedYear,
+          artworkMedium,
+          artworkDimensions,
+          artworkImage,
+        };
+      }).get());
+  
+      const validArtworks = artworks.filter((artwork: any) => artwork !== null);
+      return validArtworks;
+    } catch (error) {
+      return [];
+    }
+  }
+
+
+  private async getArtworksForFrancoisGhebaly({ $ }: { $: any }): Promise<Array<{
+    artistName: string;
+    artworkTitle: string;
+    artworkCreatedYear: string;
+    artworkMedium: string;
+    artworkDimensions: {
+      heightIn: string;
+      widthIn: string;
+      depthIn: string;
+    };
+    artworkImage: Images;
+  }> | void> {
+    try {
+      const artworks: any[] = [];
+  
+      $('.column-image').each((index: number, element: any) => {
+        const $element = $(element);
+        const $img = $element.find('img');
+        const $description = $element.closest('.masonry-item').find('.wysiwyg-ce p[data-font-size="11px"], .wysiwyg-ce p[data-font-size="12px"]');
+        
+        if ($img.length === 0 || $description.length === 0) {
+          return;
+        }
+  
+        const imageUrl = $img.attr('src') || '';
+        const description = $description.text().trim();
+
+        if (!description || description.toLowerCase().includes('installation') || description.toLowerCase().includes('(detail)')){
+          return;
+        }
+
+      const parts = description.split(', ');
+      if (parts.length < 4) {
+        standardConsoleLog({
+          message: `Unexpected description format: ${description}`, data: description, request: "parsing francois ghebaly artwork"
+        });
+        return;
+      }
+
+      const artistName = parts[0];
+      const artworkTitle = parts[1];
+      const artworkCreatedYear = parts[2].split('.')[0];
+      const artworkMedium = parts[2].split('.')[1];
+
+      // Extract dimensions
+      const dimensionsPart = description.split(', ').slice(-1)[0];
+      const dimensionsMatch = dimensionsPart.match(/(\d+(?:\.\d+)?)(?:\s*x\s*(\d+(?:\.\d+)?))?(?:\s*x\s*(\d+(?:\.\d+)?))?\s*inches/);
+      const artworkDimensions = {
+        heightIn: dimensionsMatch?.[1] || '',
+        widthIn: dimensionsMatch?.[2] || '',
+        depthIn: dimensionsMatch?.[3] || '',
+      };
+
+        const artworkImage: Images = {
+          value: imageUrl,
+          fileData: '',
+          fileName: artworkTitle,
+        };
+  
+        artworks.push({
+          artistName,
+          artworkTitle,
+          artworkCreatedYear,
+          artworkMedium,
+          artworkDimensions,
+          artworkImage,
+        });
+      });
+    
+      // Fetch images
+      const artworksWithImages = await Promise.all(artworks.map(async (artwork) => {
+        if (artwork.artworkImage.value) {
+          try {
+            const response = await axios.get(artwork.artworkImage.value, { responseType: 'arraybuffer' });
+            const buffer = Buffer.from(response.data, 'binary');
+            const base64 = buffer.toString('base64');
+            const fileExtension = artwork.artworkImage.value.split('.').pop()?.toLowerCase() || 'jpg';
+            // eslint-disable-next-line no-param-reassign
+            artwork.artworkImage.fileData = `data:image/${fileExtension};base64,${base64}`;
+          } catch (error: any) {
+            // eslint-disable-next-line no-param-reassign
+            artwork.artworkImage.value = '';
+          }
+        }
+        return artwork;
+      }));
+  
+      return artworksWithImages;
+    } catch (error) {
+      return [];
+    }
+  }
+    
+  private async getArtworksForSusanEleyFineArt({ $ }: { $: any }): Promise<Array<{
+    artistName: string;
+    artworkTitle: string;
+    artworkCreatedYear: string;
+    artworkMedium: string;
+    artworkDimensions: {
+      heightIn: string;
+      widthIn: string;
+    };
+    artworkImage: Images;
+  }> | void> {
+    try {
+      const artworks: any[] = [];
+      $('.jcarousel li').each((index: number, element: any) => {
+        const $element = $(element);
+        const $caption = $element.find('.caption');
+        const $img = $element.find('img');
+
+        if ($caption.length === 0 || $img.length === 0) {
+          return;
+        }
+
+        const captionText = $caption.text().trim();
+        const imageUrl = $img.attr('src') || '';
+
+        const description = captionText.replace(/^\(\d+\/\d+\)/, '').replace(/\s*Inquire$/, '').trim();
+
+        const parts = description.split(', ');
+        if (parts.length < 4) {
+          return;
+        }
+      
+        const artistName = parts[0];
+        const artworkTitle = parts[1].replace(/\s*\(\d{4}\)$/, '');
+        const artworkCreatedYear = parts[1].match(/\((\d{4})\)$/)?.[1] || '';
+        const artworkMedium = parts[2];
+      
+        // Extract dimensions
+        const dimensionsPart = parts[parts.length - 1];
+        const dimensionsMatch = dimensionsPart.match(/(\d+(?:\.\d+)?)(?:\s*x\s*(\d+(?:\.\d+)?))?(?:\s*x\s*(\d+(?:\.\d+)?))?\s*(in|inches)/i);
+                
+        const artworkDimensions = {
+          heightIn: dimensionsMatch?.[1] || '',
+          widthIn: dimensionsMatch?.[2] || '',
+          depthIn: dimensionsMatch?.[3] || '',
+        };
+
+        const artworkImage: Images = {
+          value: imageUrl,
+          fileData: '',
+          fileName: artworkTitle,
+        };
+  
+        artworks.push({
+          artistName,
+          artworkTitle,
+          artworkCreatedYear,
+          artworkMedium,
+          artworkDimensions,
+          artworkImage,
+        });
+      });
+
+
+      // Fetch images
+      const artworksWithImages = await Promise.all(artworks.map(async (artwork) => {
+        if (artwork.artworkImage.value) {
+          try {
+            const response = await axios.get(artwork.artworkImage.value, { responseType: 'arraybuffer' });
+            const buffer = Buffer.from(response.data, 'binary');
+            const base64 = buffer.toString('base64');
+            const fileExtension = artwork.artworkImage.value.split('.').pop()?.toLowerCase() || 'jpg';
+            // eslint-disable-next-line no-param-reassign
+            artwork.artworkImage.fileData = `data:image/${fileExtension};base64,${base64}`;
+          } catch (error: any) {
+            // eslint-disable-next-line no-param-reassign
+            artwork.artworkImage.value = '';
+          }
+        }
+        return artwork;
+      }));
+
+  
+      return artworksWithImages;
+    } catch (error) {
+      return [];
+    }
   }
 
   // private async saveArtworkForAdmin({galleryId, exhibitionId, artistName, artworkTitle, year, medium, dimensions, artworkImage, index}: {
@@ -895,45 +1271,69 @@ export class ScrapeService implements IScrapeService {
 
 
   private getKeysFromGalleryId(galleryId: string): GalleryKeys | null {
-    const keys: { [key: string]: GalleryKeys } = {
-      'Galleries/183505181': {
-        galleryName: 'Massey Klein',
-        artworkDataFunction: this.getArtworksFromArtLogicVersion1,
-      },
-      'Galleries/80753011': {
-        galleryName: 'Yi Gallery',
-        artworkDataFunction: this.getArtworksFromArtLogicVersion1,
-      },
-      'Galleries/185714669': {
-        galleryName: 'Trotter&Sholer',
-        artworkDataFunction: this.getArtworksFromArtLogicVersion1,
-      },
-      'Galleries/184287215': {
-        galleryName: 'Thomas Nickles',
-        artworkDataFunction: this.getArtworksFromArtLogicVersion1,
-      },
-      'Galleries/38504882': {
-        galleryName: 'Kates Ferri Projects',
-        artworkDataFunction: this.getArtworksFromKatesFerriProjects,
-      },
-      'Galleries/182933530': {
-        galleryName: 'Natalie Karg',
-        artworkDataFunction: this.getArtworksFromArtLogicVersion1,
-        artworkDataFunctionBackup: this.getArtworksFromArtLogicVersion2,
-      },
-      'Galleries/67002969':{
-        galleryName: 'Ki Smith Gallery',
-        artworkDataFunction: this.getArtworksFroKiSmith,
-      }
-    };
-
-    // const artistName = $artwork('.artwork_details_wrapper .artist a').text().trim();
-    // const artworkTitle = $artwork('.artwork_details_wrapper .subtitle .title').text().trim();
-    // const year = $artwork('.artwork_details_wrapper .subtitle .year').text().trim();
-    // const medium = $artwork('.artwork_details_wrapper .detail_view_module_artwork_caption .medium').text().trim();
-    // const dimensions = $artwork('.artwork_details_wrapper .detail_view_module_artwork_caption .dimensions').text().trim();
-
-    return keys[galleryId] || null;
+    switch (galleryId) {
+      case 'Galleries/183505181':
+        return {
+          galleryName: 'Massey Klein',
+          artworkDataFunction: this.getArtworksFromArtLogicVersion1,
+        };
+      case 'Galleries/80753011':
+        return {
+          galleryName: 'Yi Gallery',
+          artworkDataFunction: this.getArtworksFromArtLogicVersion1,
+        };
+      case 'Galleries/185714669':
+        return {
+          galleryName: 'Trotter&Sholer',
+          artworkDataFunction: this.getArtworksFromArtLogicVersion1,
+        };
+      case 'Galleries/184287215':
+        return {
+          galleryName: 'Thomas Nickles',
+          artworkDataFunction: this.getArtworksFromArtLogicVersion1,
+        };
+      case 'Galleries/38504882':
+        return {
+          galleryName: 'Kates Ferri Projects',
+          artworkDataFunction: this.getArtworksFromKatesFerriProjects,
+        };
+      case 'Galleries/182933530':
+        return {
+          galleryName: 'Natalie Karg',
+          artworkDataFunction: this.getArtworksFromArtLogicVersion1,
+          artworkDataFunctionBackup: this.getArtworksFromArtLogicVersion2,
+        };
+      case 'Galleries/67002969':
+        return {
+          galleryName: 'Ki Smith Gallery',
+          artworkDataFunction: this.getArtworksFroKiSmith,
+        };
+      case 'Galleries/48836334':
+        return {
+          galleryName: 'Fierman',
+          artworkDataFunction: this.getArtworksForFierman,
+        };
+      case 'Galleries/199209101':
+        return {
+          galleryName: 'Lubov',
+          artworkDataFunction: this.getArtworksForLubov,
+        };
+      case 'Galleries/48715540':
+        return {
+          galleryName: 'Francois Ghebaly',
+          artworkDataFunction: this.getArtworksForFrancoisGhebaly,
+        };
+      case 'Galleries/66737890':
+        return {
+          galleryName: 'Susan Eley Fine Art',
+          artworkDataFunction: this.getArtworksForSusanEleyFineArt,
+        };
+      default:
+        return {
+          galleryName: 'Default',
+          artworkDataFunction: this.getArtworksFromArtLogicVersion1,
+        };
+    }
   }
 
   private updateDateToCurrentYear(dateString: string) {

@@ -204,7 +204,6 @@ export const listExhibitionForUserSavedCurrent = async (): Promise<Array<string>
 export const dartaUserExhibitionRating = async ({exhibitionId, rating}: {exhibitionId: string, rating: string}): Promise<boolean> => {
   try {
     const headers = await generateHeaders();
-    console.log({exhibitionId, rating})
     const {data} = await axios.post(`${URL}/dartaUserExhibitionRating`, { exhibitionId, rating }, {headers});
     return data;
   } catch (error:any) {

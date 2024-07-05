@@ -253,9 +253,7 @@ const reducer = (state: IState, action: IAction): IState => {
           const exhibitionId = `Exhibitions/${pin?.exhibitionId}`;
           return action?.userSavedExhibitions?.includes(exhibitionId) && pin?.exhibitionLocation?.coordinates?.latitude && pin?.exhibitionLocation?.coordinates?.longitude
         })
-
-        console.log({userSavedExhibitions: action.userSavedExhibitions})
-
+        
         const userFollowsPins: ExhibitionMapPin[] = allPins.filter((pin: ExhibitionMapPin) => {
           const galleryId = pin?.galleryId;
           return action?.userGalleryFollowed?.[galleryId] && pin?.exhibitionLocation?.coordinates?.latitude && pin?.exhibitionLocation?.coordinates?.longitude

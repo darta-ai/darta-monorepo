@@ -144,6 +144,12 @@ importers:
       expo-device:
         specifier: ~6.0.2
         version: 6.0.2(expo@51.0.14)
+      expo-firebase-core:
+        specifier: ^6.0.0
+        version: 6.0.0(expo@51.0.14)
+      expo-firebase-crashlytics:
+        specifier: ^2.0.0
+        version: 2.0.0(expo-react-native-adapter@2.0.0)
       expo-font:
         specifier: ~12.0.7
         version: 12.0.7(expo@51.0.14)
@@ -2656,6 +2662,28 @@ packages:
       - supports-color
     dev: true
 
+  /@expo/config-plugins@5.0.4:
+    resolution: {integrity: sha512-vzUcVpqOMs3h+hyRdhGwk+eGIOhXa5xYdd92yO17RMNHav3v/+ekMbs7XA2c3lepMO8Yd4/5hqmRw9ZTL6jGzg==}
+    dependencies:
+      '@expo/config-types': 47.0.0
+      '@expo/json-file': 8.2.36
+      '@expo/plist': 0.0.18
+      '@expo/sdk-runtime-versions': 1.0.0
+      '@react-native/normalize-color': 2.1.0
+      chalk: 4.1.2
+      debug: 4.3.5(supports-color@8.1.1)
+      find-up: 5.0.0
+      getenv: 1.0.0
+      glob: 7.1.6
+      resolve-from: 5.0.0
+      semver: 7.6.2
+      slash: 3.0.0
+      xcode: 3.0.1
+      xml2js: 0.6.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /@expo/config-plugins@8.0.5:
     resolution: {integrity: sha512-VGseKX1dYvaf2qHUDGzIQwSOJrO5fomH0gE5cKSQyi6wn+Q6rcV2Dj2E5aga+9aKNPL6FxZ0dqRFC3t2sbhaSA==}
     dependencies:
@@ -2682,6 +2710,10 @@ packages:
     resolution: {integrity: sha512-/QGhhLWyaGautgEyU50UJr5YqKJix5t77ePTwreOVAhmZH+ff3nrrtYTTnccx+qF08ZNQmfAyYMCD3rQfzpiJA==}
     dev: true
 
+  /@expo/config-types@47.0.0:
+    resolution: {integrity: sha512-r0pWfuhkv7KIcXMUiNACJmJKKwlTBGMw9VZHNdppS8/0Nve8HZMTkNRFQzTHW1uH3pBj8jEXpyw/2vSWDHex9g==}
+    dev: false
+
   /@expo/config-types@51.0.1:
     resolution: {integrity: sha512-5JuzUFobFImrUgnq93LeucP44ZMxq8WMXmCtIUf3ZC3mJSwjvvHJBMO2fS/sIlmgvvQk9eq4VnX06/7tgDFMSg==}
     dev: false
@@ -2703,6 +2735,24 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@expo/config@7.0.3:
+    resolution: {integrity: sha512-joVtB5o+NF40Tmsdp65UzryRtbnCuMbXkVO4wJnNJO4aaK0EYLdHCYSewORVqNcDfGN0LphQr8VTG2npbd9CJA==}
+    dependencies:
+      '@babel/code-frame': 7.10.4
+      '@expo/config-plugins': 5.0.4
+      '@expo/config-types': 47.0.0
+      '@expo/json-file': 8.2.36
+      getenv: 1.0.0
+      glob: 7.1.6
+      require-from-string: 2.0.2
+      resolve-from: 5.0.0
+      semver: 7.6.2
+      slugify: 1.6.6
+      sucrase: 3.35.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /@expo/config@9.0.1:
     resolution: {integrity: sha512-0tjaXBstTbXmD4z+UMFBkh2SZFwilizSQhW6DlaTMnPG5ezuw93zSFEWAuEC3YzkpVtNQTmYzxAYjxwh6seOGg==}
@@ -2873,7 +2923,6 @@ packages:
       '@babel/code-frame': 7.10.4
       json5: 1.0.2
       write-file-atomic: 2.4.3
-    dev: true
 
   /@expo/json-file@8.3.3:
     resolution: {integrity: sha512-eZ5dld9AD0PrVRiIWpRkm5aIoWBw3kAyd8VkuWEy92sEthBKDDDHAnK2a0dw0Eil6j7rK7lS/Qaq/Zzngv2h5A==}
@@ -2977,7 +3026,6 @@ packages:
       '@xmldom/xmldom': 0.7.13
       base64-js: 1.5.1
       xmlbuilder: 14.0.0
-    dev: true
 
   /@expo/plist@0.1.3:
     resolution: {integrity: sha512-GW/7hVlAylYg1tUrEASclw1MMk9FP4ZwyFAY/SUTJIhPDQHtfOlXREyWV3hhrHdX/K+pS73GNgdfT6E/e+kBbg==}
@@ -7566,7 +7614,7 @@ packages:
       bluebird: 3.7.2
       chownr: 1.1.4
       figgy-pudding: 3.5.2
-      glob: 7.1.6
+      glob: 7.2.3
       graceful-fs: 4.2.11
       infer-owner: 1.0.4
       lru-cache: 5.1.1
@@ -10642,6 +10690,18 @@ packages:
       - webpack-command
     dev: true
 
+  /expo-constants@14.0.2(expo@51.0.14):
+    resolution: {integrity: sha512-wzV3nrzTXTI8yG0tfas3fnqCfKV6YE+1GphEREyVDAShEB6mBInX1b6HgtpHFy2wOtnml+lPVmTCeGtjjLnZhA==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      '@expo/config': 7.0.3
+      expo: 51.0.14(@babel/core@7.24.4)(@babel/preset-env@7.24.7)
+      uuid: 3.4.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /expo-constants@16.0.2(expo@51.0.14):
     resolution: {integrity: sha512-9tNY3OVO0jfiMzl7ngb6IOyR5VFzNoN5OOazUWoeGfmMqVB5kltTemRvKraK9JRbBKIw+SOYLEmF0sEqgFZ6OQ==}
     peerDependencies:
@@ -10652,6 +10712,14 @@ packages:
       expo: 51.0.14(@babel/core@7.24.4)(@babel/preset-env@7.24.7)
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /expo-core@2.0.2(expo-react-native-adapter@2.0.0):
+    resolution: {integrity: sha512-QKkICJ06m/J1PxTJqtVu03+fUXwjLqb2YPF5J9DT7W4EknPq1sHY3ZKJgAr1PhK24fzvVoxWOKqiIstliZdBOA==}
+    peerDependencies:
+      expo-react-native-adapter: ~2.0.0
+    dependencies:
+      expo-react-native-adapter: 2.0.0(expo-font-interface@2.0.0)(react-native@0.74.2)
     dev: false
 
   /expo-dev-client@4.0.18(expo@51.0.14):
@@ -10719,6 +10787,44 @@ packages:
       expo: 51.0.14(@babel/core@7.24.4)(@babel/preset-env@7.24.7)
     dev: false
 
+  /expo-firebase-app@2.0.0(expo-react-native-adapter@2.0.0):
+    resolution: {integrity: sha512-rhKErhQybgL5Vbv8HndYVzwoXikL62iCd5e8k5cZZhs6S0TiWEx0anKhALvI2eCGBzQmYHM2sIzbi8DeUemuCw==}
+    deprecated: 'Read more: https://gist.github.com/brentvatne/9038b16b4f42a21cea40ad5c35fdb74c'
+    dependencies:
+      expo-core: 2.0.2(expo-react-native-adapter@2.0.0)
+    transitivePeerDependencies:
+      - expo-react-native-adapter
+    dev: false
+
+  /expo-firebase-core@6.0.0(expo@51.0.14):
+    resolution: {integrity: sha512-ZMcvRxKuAjZ0V4+VCuYKQ9P3Br8nGUORCbG41ewyLnLXBwov85AdBx4/5lA7T5cX1oOmv2fKMnU3gqCR+s6Veg==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 51.0.14(@babel/core@7.24.4)(@babel/preset-env@7.24.7)
+      expo-constants: 14.0.2(expo@51.0.14)
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /expo-firebase-crashlytics@2.0.0(expo-react-native-adapter@2.0.0):
+    resolution: {integrity: sha512-nw27i8al7DrGm+ECi+yFeZE1txc7rql0X/xfLzYrkx7AIaaqDzKU2sEyjkhorcVyF0X7Sf2A48SBfy4+6YtNMw==}
+    deprecated: 'Read more: https://gist.github.com/brentvatne/9038b16b4f42a21cea40ad5c35fdb74c'
+    dependencies:
+      expo-core: 2.0.2(expo-react-native-adapter@2.0.0)
+      expo-firebase-app: 2.0.0(expo-react-native-adapter@2.0.0)
+    transitivePeerDependencies:
+      - expo-react-native-adapter
+    dev: false
+
+  /expo-font-interface@2.0.0(expo-react-native-adapter@2.0.0):
+    resolution: {integrity: sha512-5tEGjUwOLd5h6vTR3xfNc6jXTRKzLVnGpIjns+L2aArIIktmlZU3Y/gzueY8AkB6J6SB5DYSLlybp5kQrUOImw==}
+    dependencies:
+      expo-core: 2.0.2(expo-react-native-adapter@2.0.0)
+    transitivePeerDependencies:
+      - expo-react-native-adapter
+    dev: false
+
   /expo-font@12.0.7(expo@51.0.14):
     resolution: {integrity: sha512-rbSdpjtT/A3M+u9xchR9tdD+5VGSxptUis7ngX5zfAVp3O5atOcPNSA82Jeo15HkrQE+w/upfFBOvi56lsGdsQ==}
     peerDependencies:
@@ -10734,6 +10840,14 @@ packages:
       expo: '*'
     dependencies:
       expo: 51.0.14(@babel/core@7.24.4)(@babel/preset-env@7.24.7)
+    dev: false
+
+  /expo-image-loader-interface@2.0.0(expo-react-native-adapter@2.0.0):
+    resolution: {integrity: sha512-aOHa37N/8gEyzDGO5df6PST8uce1L94OxNTfD5JtWVH3tWmkaN760S33T9ecWmydcUv9zFCOcCC4gZTwEWUJiQ==}
+    dependencies:
+      expo-core: 2.0.2(expo-react-native-adapter@2.0.0)
+    transitivePeerDependencies:
+      - expo-react-native-adapter
     dev: false
 
   /expo-image-loader@4.7.0(expo@51.0.14):
@@ -10867,6 +10981,14 @@ packages:
       - supports-color
     dev: false
 
+  /expo-permissions-interface@2.0.0(expo-react-native-adapter@2.0.0):
+    resolution: {integrity: sha512-hk9oR6CtV2MLONdtPkKvOfpfmbJ48BDbYjvW/Na31znVvUAPHs7owckqSgh5BVoIAz8tMgp7fptaifEhPOayvg==}
+    dependencies:
+      expo-core: 2.0.2(expo-react-native-adapter@2.0.0)
+    transitivePeerDependencies:
+      - expo-react-native-adapter
+    dev: false
+
   /expo-pwa@0.0.122:
     resolution: {integrity: sha512-E2DVR/1SWFXqLLT9XNKnSVoHbZLGhpkx7PigaqfcI/t1hF+A6zAopwDfKmpFGymuSVqlwEJMTr/PYRdhUY55/g==}
     hasBin: true
@@ -10894,6 +11016,22 @@ packages:
       update-check: 1.5.3
     transitivePeerDependencies:
       - encoding
+    dev: false
+
+  /expo-react-native-adapter@2.0.0(expo-font-interface@2.0.0)(react-native@0.74.2):
+    resolution: {integrity: sha512-pRlmqqb9mPr1abgzEGnzeEWa7VI8WWqMWRnU/ySJTcOWRyX63oUobTKX/Bw1HuwGyB6+rVRqEF+IObOeo8va4w==}
+    peerDependencies:
+      expo-font-interface: ~2.0.0
+      react-native: ^0.57.1
+    dependencies:
+      expo-font-interface: 2.0.0(expo-react-native-adapter@2.0.0)
+      expo-image-loader-interface: 2.0.0(expo-react-native-adapter@2.0.0)
+      expo-permissions-interface: 2.0.0(expo-react-native-adapter@2.0.0)
+      invariant: 2.2.4
+      lodash.omit: 4.5.0
+      lodash.pick: 4.4.0
+      prop-types: 15.8.1
+      react-native: 0.74.2(@babel/core@7.24.4)(@babel/preset-env@7.24.7)(@types/react@18.2.79)(react@18.2.0)
     dev: false
 
   /expo-server-sdk@3.10.0:
@@ -11580,7 +11718,7 @@ packages:
       vue-template-compiler:
         optional: true
     dependencies:
-      '@babel/code-frame': 7.10.4
+      '@babel/code-frame': 7.24.7
       chalk: 2.4.2
       eslint: 6.8.0
       micromatch: 3.1.10(supports-color@6.1.0)
@@ -14128,8 +14266,16 @@ packages:
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
+  /lodash.omit@4.5.0:
+    resolution: {integrity: sha512-XeqSp49hNGmlkj2EJlfrQFIzQ6lXdNro9sddtQzcJY8QaoC2GO0DT7xaIokHeyM+mIT0mPMlPvkYzg2xCuHdZg==}
+    dev: false
+
   /lodash.once@4.1.1:
     resolution: {integrity: sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg==}
+
+  /lodash.pick@4.4.0:
+    resolution: {integrity: sha512-hXt6Ul/5yWjfklSGvLQl8vM//l3FtyHZeuelpzK6mm99pNvN9yTDruNZPEJZD1oWrqo+izBmB7oUfWgcCX7s4Q==}
+    dev: false
 
   /lodash.throttle@4.1.1:
     resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
@@ -19473,7 +19619,6 @@ packages:
       mz: 2.7.0
       pirates: 4.0.6
       ts-interface-checker: 0.1.13
-    dev: true
 
   /sudo-prompt@8.2.5:
     resolution: {integrity: sha512-rlBo3HU/1zAJUrkY6jNxDOC9eVYliG6nS4JA8u8KAshITd07tafMc/Br7xQwCSseXwJ2iCcHCE8SNWX3q8Z+kw==}
@@ -21275,7 +21420,6 @@ packages:
     dependencies:
       sax: 1.4.1
       xmlbuilder: 11.0.1
-    dev: true
 
   /xml@1.0.1:
     resolution: {integrity: sha512-huCv9IH9Tcf95zuYCsQraZtWnJvBtLVE0QHMOs8bWyZAFZNDcYjsPq1nEx8jKA9y+Beo9v+7OBPRisQTjinQMw==}
