@@ -3,7 +3,7 @@
     "name": "darta",
     "slug": "darta",
     "scheme": "darta",
-    "version": "1.6.4",
+    "version": "1.6.6",
     "orientation": "portrait",
     "icon": "./src/assets/darta-icon-text.png",
     "userInterfaceStyle": "dark",
@@ -150,7 +150,8 @@
           "color": "#f8f8f8"
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-asset"
     ]
   }
 }

@@ -119,40 +119,46 @@ export class ScrapeService implements IScrapeService {
         if (artworks){
           for (const [index, artwork] of artworks.entries()) {
             // eslint-disable-next-line no-await-in-loop
-            await this.saveArtworkForAdminWithDuplicates({
-              galleryId,
-              exhibitionId: exhibitionId!,
-              artistName: artwork.artistName,
-              artworkTitle: artwork.artworkTitle,
-              year: artwork.artworkCreatedYear,
-              medium: artwork.artworkMedium,
-              dimensions: {
-                heightIn: { value: artwork.artworkDimensions.heightIn },
-                widthIn: { value: artwork.artworkDimensions.widthIn },
-                depthIn: { value: artwork.artworkDimensions.depthIn },
-                text: {
-                  value: this.createDimensionsString({
-                    heightIn: artwork.artworkDimensions.heightIn,
-                    widthIn: artwork.artworkDimensions.widthIn,
-                    depthIn: artwork.artworkDimensions.depthIn,
-                  }),
+            try{
+              // eslint-disable-next-line no-await-in-loop
+              await this.saveArtworkForAdminWithDuplicates({
+                galleryId,
+                exhibitionId: exhibitionId!,
+                artistName: artwork.artistName,
+                artworkTitle: artwork.artworkTitle,
+                year: artwork.artworkCreatedYear,
+                medium: artwork.artworkMedium,
+                dimensions: {
+                  heightIn: { value: artwork.artworkDimensions.heightIn },
+                  widthIn: { value: artwork.artworkDimensions.widthIn },
+                  depthIn: { value: artwork.artworkDimensions.depthIn },
+                  text: {
+                    value: this.createDimensionsString({
+                      heightIn: artwork.artworkDimensions.heightIn,
+                      widthIn: artwork.artworkDimensions.widthIn,
+                      depthIn: artwork.artworkDimensions.depthIn,
+                    }),
+                  },
+                  heightCm: {
+                    value: this.convertInchesToCentimeters(artwork.artworkDimensions.heightIn),
+                  },
+                  widthCm: {
+                    value: this.convertInchesToCentimeters(artwork.artworkDimensions.widthIn),
+                  },
+                  depthCm: {
+                    value: this.convertInchesToCentimeters(artwork.artworkDimensions.depthIn),
+                  },
+                  displayUnit: {
+                    value: 'in' as 'in' | 'cm',
+                  },
                 },
-                heightCm: {
-                  value: this.convertInchesToCentimeters(artwork.artworkDimensions.heightIn),
-                },
-                widthCm: {
-                  value: this.convertInchesToCentimeters(artwork.artworkDimensions.widthIn),
-                },
-                depthCm: {
-                  value: this.convertInchesToCentimeters(artwork.artworkDimensions.depthIn),
-                },
-                displayUnit: {
-                  value: 'in' as 'in' | 'cm',
-                },
-              },
-              artworkImage: artwork.artworkImage,
-              index,
-            });
+                artworkImage: artwork.artworkImage,
+                index,
+              });
+            } catch (error){
+              // eslint-disable-next-line no-console
+              console.log(error)
+            }
           }
         }
       }catch (e) {
@@ -1189,6 +1195,243 @@ export class ScrapeService implements IScrapeService {
     }
   }
 
+  private async getArtworksForBladeStudy({ $ }: { $: any }): Promise<Array<{
+    artistName: string;
+    artworkTitle: string;
+    artworkCreatedYear: string;
+    artworkMedium: string;
+    artworkDimensions: {
+      heightIn: string;
+      widthIn: string;
+      depthIn: string;
+    };
+    artworkImage: Images;
+  }> | void> {
+    try {
+      const artworks: any[] = [];
+      $('li.work-preview_work__Jq0OT').each((index: number, element: any) => {
+        const $element = $(element);
+        const $info = $element.find('.work-preview_work-information__ZHOel');
+        const $img = $element.find('img.featured-image');
+  
+        if ($info.length === 0 || $img.length === 0) {
+          return;
+        }
+  
+        const infoTexts = $info.find('p.paragraph_paragraph__U0_sX').map((i: number, el: any) => $(el).text().trim()).get();
+        const imageUrl = $img.attr('src') || '';
+    
+        if (infoTexts.length < 3) {
+          return;
+        }
+        const artistName = infoTexts[0];
+        const artworkMedium = infoTexts[2];
+    
+        // Parse title, year, and dimensions
+        const titleYearDimensions = infoTexts[1];
+        const yearMatch = titleYearDimensions.match(/,?\s*(202\d)/);
+        const artworkCreatedYear = yearMatch ? yearMatch[1] : '';
+    
+        // Extract title
+        const artworkTitle = titleYearDimensions.split(/,\s*202\d/)[0].trim();
+    
+        // Extract dimensions
+        let dimensionsStr = titleYearDimensions.split(/202\d/)[1] || '';
+        dimensionsStr = dimensionsStr.replace(/^[,\s]+/, '').trim();
+    
+        let artworkDimensions = {
+          heightIn: '',
+          widthIn: '',
+          depthIn: '',
+        };
+    
+        if (dimensionsStr) {
+          const dimensionsMatch = dimensionsStr.match(/(\d+(?:\.\d+)?)"?\s*(?:by|x)\s*(\d+(?:\.\d+)?)"?\s*(?:by|x)?\s*(\d+(?:\.\d+)?)?/);
+          if (dimensionsMatch) {
+            artworkDimensions = {
+              heightIn: dimensionsMatch[1] || '',
+              widthIn: dimensionsMatch[2] || '',
+              depthIn: dimensionsMatch[3] || '',
+            };
+          } else if (dimensionsStr.includes('Variable')) {
+            artworkDimensions = {
+              heightIn: 'Variable',
+              widthIn: '',
+              depthIn: '',
+            };
+          } else if (dimensionsStr.includes('Minutes') || dimensionsStr.includes(':')) {
+            const durationMatch = dimensionsStr.match(/(\d+:\d+|\d+\s*Minutes)/);
+            if (durationMatch) {
+              // eslint-disable-next-line prefer-destructuring
+              artworkDimensions.heightIn = durationMatch[1];
+            }
+          }
+        }
+        
+        const urlParams = new URL(`https://www.bladestudy.net${imageUrl}`).searchParams;
+
+        const actualImageUrl = urlParams.get('url');
+
+        if (!actualImageUrl) {
+          throw new Error('No valid image URL found');
+        }
+  
+        const artworkImage: Images = {
+          value: actualImageUrl,
+          fileData: '',
+          fileName: artworkTitle,
+        };
+  
+        artworks.push({
+          artistName,
+          artworkTitle,
+          artworkCreatedYear,
+          artworkMedium,
+          artworkDimensions,
+          artworkImage,
+        });
+      });
+  
+      // Fetch images (same as in the original function)
+      const artworksWithImages = await Promise.all(artworks.map(async (artwork) => {
+        if (artwork.artworkImage.value) {
+          try {
+            const response = await axios.get(artwork.artworkImage.value, { 
+              responseType: 'arraybuffer', 
+              timeout: 30000,
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+              }
+            });
+
+            const buffer = Buffer.from(response.data, 'binary');
+            const base64 = buffer.toString('base64');
+            const fileExtension = artwork.artworkImage.value.split('.').pop()?.toLowerCase() || 'jpg';
+            // Determine MIME type
+            const mimeType = fileExtension.includes('png') ? 'image/png' : 'image/jpeg';
+            
+            // eslint-disable-next-line no-param-reassign
+            artwork.artworkImage.fileData = `data:${mimeType};base64,${base64}`;
+
+          } catch (error: any) {
+            // eslint-disable-next-line no-param-reassign
+            artwork.artworkImage.value = '';
+          }
+        }
+        return artwork;
+      }));
+  
+      return artworksWithImages;
+    } catch (error) {
+      return [];
+    }
+  }
+
+
+
+  private async getArtworksForMyPetRam({ $ }: { $: any }): Promise<Array<{
+    artistName: string;
+    artworkTitle: string;
+    artworkCreatedYear: string;
+    artworkMedium: string;
+    artworkDimensions: {
+      heightIn: string;
+      widthIn: string;
+      depthIn: string;
+    };
+    artworkImage: Images;
+  }> | void> {
+    const artworks: any[] = [];
+
+    const stripHtml = (html: string) => html.replace(/<[^>]*>/g, '').trim();
+    
+  
+    $('.image-block-outer-wrapper').each((index : number, element : any) => {
+      const $element = $(element);
+      const $caption = $element.find('.image-caption');
+      const $img = $element.find('img');
+  
+      if ($caption.length === 0 || $img.length === 0) {
+        return;
+      }
+      const imageUrl = $img.attr('src') || '';
+      // Get all text nodes and <br> tags
+      
+      // Get caption text, replacing <br> with newlines
+      const captionText = $caption.html()?.replace(/<br\s*\/?>/gi, '\n') || '';
+      const captionParts = captionText.split('\n').map((part : any) => part.trim()).filter((part: any) => part !== '');
+
+      if (captionParts.length < 3) return; // Skip if we don't have enough information
+
+        
+      const artistName = stripHtml(captionParts[0]);
+      const artworkTitleAndYear = stripHtml(captionParts[1]);
+
+      // Split title and year
+      const titleYearMatch = artworkTitleAndYear.match(/^(.+?)(?:,\s*|\s+)(\d{4})$/);
+      if (!titleYearMatch) {
+        return; // Skip if we can't parse title and year
+      }
+
+      const [, artworkTitle, artworkCreatedYear] = titleYearMatch;
+
+      const artworkMedium = captionParts[2];
+
+      const artworkDimensions = {
+        heightIn: '',
+        widthIn: '',
+        depthIn: '',
+      };
+
+      if (captionParts[3]) {
+        const dimensionsMatch = captionParts[3].match(/(\d+(?:\.\d+)?)\s*[×x]\s*(\d+(?:\.\d+)?)\s*(?:[×x]\s*(\d+(?:\.\d+)?))?/);
+        if (dimensionsMatch) {
+          [, artworkDimensions.heightIn, artworkDimensions.widthIn, artworkDimensions.depthIn = ''] = dimensionsMatch;
+        }
+      }
+
+      artworks.push({
+        artistName: stripHtml(artistName),
+        artworkTitle: stripHtml(artworkTitle),
+        artworkCreatedYear,
+        artworkMedium,
+        artworkDimensions,
+        artworkImage: {
+          value: imageUrl,
+          fileData: '',
+          fileName: artworkTitle,
+        },
+      });
+    });
+  
+    const artworksWithImages = await Promise.all(artworks.map(async (artwork) => {
+      if (artwork.artworkImage.value) {
+        try {
+          const response = await axios.get(artwork.artworkImage.value, { 
+            responseType: 'arraybuffer',
+            timeout: 30000,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+          });
+          const buffer = Buffer.from(response.data, 'binary');
+          const base64 = buffer.toString('base64');
+          const fileExtension = artwork.artworkImage.value.split('.').pop()?.toLowerCase() || 'jpg';
+          const mimeType = fileExtension.includes('png') ? 'image/png' : 'image/jpeg';
+          // eslint-disable-next-line no-param-reassign
+          artwork.artworkImage.fileData = `data:${mimeType};base64,${base64}`;
+        } catch (error) {
+          // eslint-disable-next-line no-param-reassign
+          artwork.artworkImage.value = '';
+        }
+      }
+      return artwork;
+    }));
+  
+    // return []
+    return artworksWithImages;
+  }
+
   // private async saveArtworkForAdmin({galleryId, exhibitionId, artistName, artworkTitle, year, medium, dimensions, artworkImage, index}: {
   //   galleryId: string;
   //   exhibitionId: string;
@@ -1225,7 +1468,8 @@ export class ScrapeService implements IScrapeService {
   //   return edited;
   // }
 
-  private async saveArtworkForAdminWithDuplicates({galleryId, exhibitionId, artistName, artworkTitle, year, medium, dimensions, artworkImage, index}: {
+  private async saveArtworkForAdminWithDuplicates(
+    {galleryId, exhibitionId, artistName, artworkTitle, year, medium, dimensions, artworkImage, index}: {
     galleryId: string;
     exhibitionId: string;
     artistName: string;
@@ -1328,6 +1572,17 @@ export class ScrapeService implements IScrapeService {
           galleryName: 'Susan Eley Fine Art',
           artworkDataFunction: this.getArtworksForSusanEleyFineArt,
         };
+      case 'Galleries/58736505':
+        return {
+          galleryName: 'Blade Study',
+          artworkDataFunction: this.getArtworksForBladeStudy,
+        };
+      case 'Galleries/188352029': {
+        return {
+          galleryName: 'My Pet Ram',
+          artworkDataFunction: this.getArtworksForMyPetRam,
+        };
+      }
       default:
         return {
           galleryName: 'Default',

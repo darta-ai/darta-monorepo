@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Marker, Callout } from 'react-native-maps';
-import { View, StyleSheet, Animated, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 
 import { TextElement } from '../Elements/TextElement';
 import { globalTextStyles } from '../../styles/styles';
@@ -13,7 +13,6 @@ import { ExhibitionStoreContext, UIStoreContext, UiETypes } from '../../state';
 import { ExploreMapRootEnum } from '../../typing/routes';
 import {Button } from 'react-native-paper';
 import { NewMapPin, NewMapPinRed } from '../../assets/SVGs';
-import { Easing } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 
 const customMarker = StyleSheet.create({

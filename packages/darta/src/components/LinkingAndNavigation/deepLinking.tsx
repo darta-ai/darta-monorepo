@@ -268,7 +268,6 @@ const handlePushNotification = async (response) => {
 
     // register for push notifications
     registerForPushNotificationsAsync().then(async (token) => {
-      console.log({token})
       if (token) {
         saveExpoPushTokenAPI({expoPushToken: token})
       }

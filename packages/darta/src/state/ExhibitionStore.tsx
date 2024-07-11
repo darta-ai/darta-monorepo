@@ -42,6 +42,7 @@ export enum ExhibitionETypes {
 
   saveUserSavedExhibitions = 'SAVE_USER_SAVED_EXHIBITIONS',
   removeUserSavedExhibitions = 'REMOVE_USER_SAVED_EXHIBITIONS',
+  refreshExhibition = 'REFRESH_EXHIBITION'
 }
 
 // Define the action type
@@ -73,6 +74,9 @@ const exhibitionReducer = (state: ExhibitionState, action: ExhibitionIAction): E
       if(!action.exhibitionData || !action.exhibitionData._id){
         return state
       }
+      if(state.exhibitionData && state.exhibitionData.hasOwnProperty(action.exhibitionData._id)){
+        return state
+      }
       return {
         ...state,
         exhibitionData: {
@@ -80,6 +84,18 @@ const exhibitionReducer = (state: ExhibitionState, action: ExhibitionIAction): E
           [action.exhibitionData._id]: action.exhibitionData
         }
       }
+    case ExhibitionETypes.refreshExhibition:
+      if(!action.exhibitionData || !action.exhibitionData._id){
+        return state
+      }
+      return {
+        ...state,
+        exhibitionData: {
+          ...state.exhibitionData,
+          [action.exhibitionData._id]: action.exhibitionData
+        }
+      }
+
       case ExhibitionETypes.saveExhibitionMulti:
         if(!action.exhibitionDataMulti){
           return state

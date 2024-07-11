@@ -79,6 +79,44 @@ function AnimatedSplashScreen({ children }) {
   
       const [
         user,
+        artworksToRate, 
+      ] = await Promise.all([
+        // user
+        uid ? getDartaUser({uid}) : null,
+        // artworksToRate
+        listArtworksToRateAPI({startNumber: 0, endNumber: 20}),
+      ]);
+
+      // User Profile
+      if (user) {
+        userDispatch({
+          type: UserETypes.setUser,
+          userData: user
+        });
+      }
+
+      // Artworks To Rate Screen
+      if(artworksToRate){
+        viewDispatch({
+          type: ViewETypes.setArtworksToRate,
+          artworksToRate
+        })
+      }
+
+      await SplashScreen.hideAsync();
+      setAppReady(true)
+      getAuxiliaryData();
+    } catch (e) {
+      // console.log('!!!', e);
+    } finally {
+      setAppReady(true);
+    }
+  }, []);
+
+
+  const getAuxiliaryData = useCallback(async () => {
+    try {  
+      const [
         galleryFollows,
         exhibitionPreviewsCurrent,
         exhibitionPreviewsForthcoming,
@@ -87,13 +125,10 @@ function AnimatedSplashScreen({ children }) {
         likedArtwork,
         savedArtwork,
         inquiredArtwork,
-        artworksToRate, 
         userListPreviews,
         savedRoute,
         userSavedExhibitions
       ] = await Promise.all([
-        // user
-        uid ? getDartaUser({uid}) : null,
         //galleryFollows
         listGalleryRelationshipsAPI(),
         //exhibitionPreviewsCurrent
@@ -110,8 +145,6 @@ function AnimatedSplashScreen({ children }) {
         listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.SAVE, limit: 40 }),
         // inquiredArtwork
         listUserArtworkAPI({ action: USER_ARTWORK_EDGE_RELATIONSHIP.INQUIRE, limit: 40 }),
-        // artworksToRate
-        listArtworksToRateAPI({startNumber: 0, endNumber: 20}),
         // userLists
         listUserLists(),
         // getUnViewedExhibitionsCountForUser()
@@ -119,14 +152,6 @@ function AnimatedSplashScreen({ children }) {
         // userSavedExhibitions
         listExhibitionForUserSavedCurrent()
       ]);
-
-      // User Profile
-      if (user) {
-        userDispatch({
-          type: UserETypes.setUser,
-          userData: user
-        });
-      }
 
       // User Lists
       if (userListPreviews) {
@@ -142,21 +167,6 @@ function AnimatedSplashScreen({ children }) {
           type: ExhibitionETypes.saveUserSavedExhibitions,
           exhibitionIds: userSavedExhibitions
         })
-      }
-
-      let artworksToRateUrls: {uri : string}[] =  []
-      // Artworks To Rate Screen
-      if(artworksToRate){
-        viewDispatch({
-          type: ViewETypes.setArtworksToRate,
-          artworksToRate
-        })
-        for(let art of Object.values(artworksToRate)){
-          if(art?.artworkImage?.value){
-            artworksToRateUrls.push({uri: art?.artworkImage?.value})
-          }
-        }
-        // FastImage.preload(artworksToRateUrls)
       }
 
       // Exhibition Preview Screen 

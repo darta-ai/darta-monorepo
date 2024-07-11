@@ -56,9 +56,9 @@ export function UserProfile({
     
     setUserProfilePic(imageSource);
     
-    const firstName = userState?.user?.legalFirstName ? userState?.user?.legalFirstName : "Art"
-    const lastName = userState?.user?.legalLastName ? userState?.user?.legalLastName : "Enthusiast"
-    const userName = userState?.user?.userName ? userState?.user?.userName : "Art Enthusiast"
+    const firstName = userState?.user?.legalFirstName ? userState?.user?.legalFirstName : "Darta"
+    const lastName = userState?.user?.legalLastName ? userState?.user?.legalLastName : ""
+    const userName = userState?.user?.userName ? userState?.user?.userName : "the digital art advisor"
     setUsername(userName)
     setFullName(`${firstName} ${lastName}`)
 

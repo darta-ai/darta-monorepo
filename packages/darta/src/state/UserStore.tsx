@@ -84,6 +84,9 @@ const userReducer = (state: UserState, action: UserIAction): UserState => {
       if (!action?.artworkId){
         return state;
       }
+      if (state.userInquiredArtwork && state.userInquiredArtwork[action.artworkId] === true){
+        return state;
+      }
       return {
         ...state,
         userInquiredArtwork: {
@@ -104,6 +107,9 @@ const userReducer = (state: UserState, action: UserIAction): UserState => {
         };
     case UserETypes.removeUserInquiredArtwork:
       if (!action?.artworkId){
+          return state;
+        }
+        if (state.userInquiredArtwork && state.userInquiredArtwork[action.artworkId] === false){
           return state;
         }
         return {

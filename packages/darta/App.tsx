@@ -1,3 +1,5 @@
+/// <reference types="@welldone-software/why-did-you-render" />
+import './wdyr';
 import 'react-native-gesture-handler';
 
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
@@ -123,7 +125,7 @@ function App() {
   const [isTabVisible, setIsTabVisible] = React.useState(true);
 
   function getActiveRouteName(state) {
-    const route = state.routes[state.index];
+    const route = state.routes?.[state.index];
     if (route?.state) {
       // Dive into nested navigators
       return getActiveRouteName(route.state);
