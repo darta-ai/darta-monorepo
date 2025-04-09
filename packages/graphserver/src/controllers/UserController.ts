@@ -273,4 +273,28 @@ export class UserController {
       }
     }
   }
+
+  @httpPost('/saveExpoPushToken', verifyToken)
+  public async saveExpoPushToken(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const {user} = req as any;
+      const {expoPushToken} = req.body;
+      if (!user.uid || !expoPushToken) {
+        throw new Error('Missing required fields');
+      };
+      await this.userService.saveExpoPushToken({
+        uid: user.uid,
+        expoPushToken
+      });
+      res.status(200).send('expo push token saved');
+    } catch (error: any) {
+      standardConsoleLog({message: error.message, data: req.body, request: 'users/saveExpoPushToken'})
+      if (!res.headersSent){
+        res.status(500).send('unable to save expo push token');
+      }
+    }
+  }
 }

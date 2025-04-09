@@ -164,7 +164,7 @@ const ExhibitionPreviewCard = ({
             </TextElement>
           </View>
           <View style={exhibitionPreviewStyle.imagePreviewContainer}>
-            <ExhibitionCarousel images={images} />
+            <ExhibitionCarousel images={images as any} />
           </View>
             <View style={exhibitionPreviewStyle.touchableContainer}>
             {exhibitionPreview?.closingDate?.value && exhibitionPreview?.openingDate?.value && 

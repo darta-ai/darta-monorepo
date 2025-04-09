@@ -3,13 +3,16 @@
     "name": "darta",
     "slug": "darta",
     "scheme": "darta",
-    "version": "1.5.0",
+    "version": "1.7.1",
     "orientation": "portrait",
     "icon": "./src/assets/darta-icon-text.png",
     "userInterfaceStyle": "dark",
     "splash": {
       "imageContain": "contain",
       "backgroundColor": "#F8F8F8"
+    },
+    "updates": {
+      "enabled": true
     },
     "assetBundlePatterns": [
       "**/*"
@@ -19,7 +22,7 @@
       "bundleIdentifier": "com.darta.darta",
       "config": {
         "usesNonExemptEncryption": false,
-        "googleMapsApiKey": "AIzaSyCgJAXkO4WoPQXTf7ENx_tejgKbiem9chc"
+        "googleMapsApiKey": "********"
       },
       "googleServicesFile": "./googleService/GoogleService-Info.plist",
       "infoPlist": {
@@ -40,9 +43,19 @@
         "foregroundImage": "./src/assets/darta-icon-text.png",
         "backgroundColor": "#F8F8F8"
       },
+      "buildProperties": {
+        "kotlinVersion": "1.8.10",
+        "compileSdkVersion": 34,
+        "targetSdkVersion": 34,
+        "buildToolsVersion": "34.0.0"
+      },
+      "plugins": [
+        "@react-native-firebase/app",
+        "@react-native-firebase/crashlytics"
+      ],
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyDyfji3847eMFPI29Hiy7LPY2L6XCo6vLs"
+          "apiKey": "*******"
         }
       },
       "infoPlist": {
@@ -52,7 +65,7 @@
           "mailto"
         ]
       },
-      "versionCode": 9,
+      "versionCode": 13,
       "package": "com.darta.darta",
       "googleServicesFile": "./googleService/google-services.json",
       "intentFilters": [
@@ -76,13 +89,13 @@
       "favicon": "./src/assets/darta-icon-text.png",
       "config": {
         "firebase": {
-          "apiKey": "AIzaSyAdp-GRcbfIrkqxwGC2pvW-bVTNX0PU5m8",
-          "authDomain": "darta-ccfa5.firebaseapp.com",
+          "apiKey": "****",
+          "authDomain": "******",
           "projectId": "darta-ccfa5",
-          "storageBucket": "darta-ccfa5.appspot.com",
-          "messagingSenderId": "948875902945",
-          "appId": "1:948875902945:web:55ab525e744bcebf44dca0",
-          "measurementId": "G-C5X6JKSDGW"
+          "storageBucket": "*******",
+          "messagingSenderId": "*******",
+          "appId": "******",
+          "measurementId": "*****"
         }
       }
     },
@@ -123,7 +136,10 @@
             "useFrameworks": "static"
           },
           "android": {
-            "enableProguardInReleaseBuilds": true
+            "enableProguardInReleaseBuilds": true,
+            "googleServicesVersion": "4.4.1",
+            "crashlyticsCoreVersion": "18.4.3",
+            "crashlyticsNdkVersion": "18.4.3"
           }
         }
       ],
@@ -134,7 +150,8 @@
           "color": "#f8f8f8"
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-asset"
     ]
   }
 }

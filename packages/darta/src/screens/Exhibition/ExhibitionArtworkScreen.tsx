@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
-import {StyleSheet, ScrollView, RefreshControl} from 'react-native';
-import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
+import {ScrollView, RefreshControl} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { ActivityIndicator } from 'react-native-paper';
 import { ArtworkList } from '../../components/Artwork/ArtworkList';
 
@@ -119,7 +119,7 @@ export function ExhibitionArtworkScreen({
         refreshControl={
           <RefreshControl refreshing={refreshing} tintColor={Colors.PRIMARY_950} onRefresh={onRefresh} />}>  
             <TextElement style={dartaLogo.textHeader}>Loading...</TextElement>
-            <ActivityIndicator animating={true} color={Colors.PRIMARY_950} />
+            <ActivityIndicator color={Colors.PRIMARY_950} />
         </ScrollView>
       )
     }

@@ -337,3 +337,7 @@ export const traceNames = {
   SPLASH_SCREEN_LOAD: 'SplashScreenLoad',
   FETCH_NEW_GALLERY: 'FetchNewGallery',
 }
+
+export const EST_TIMEZONE = 'America/New_York';
+
+export const DATE_FORMAT = 'yyyy-MM-dd HH:mm:ssXXX';

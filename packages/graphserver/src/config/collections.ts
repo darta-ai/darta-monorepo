@@ -54,9 +54,17 @@ export const EdgeNames = {
   FROMDartaUserTOExhibitionVIEWED: 'FROMDartaUserTOExhibitionVIEWED',
   FROMDartaUserTOExhibitionVIEW_TIME: 'FROMDartaUserTOExhibitionVIEW_TIME',
 
+  FROMDartaUserTOExhibitionSAVE: 'FROMDartaUserTOExhibitionSAVE',
+
   FROMDartaUserTOList: 'FROMDartaUserTOList',
   FROMListTOArtwork: 'FROMListTOArtwork',
 
+  FROMDartaUserTOExhibitionRATING: 'FROMDartaUserTOExhibitionRATING',
+
+};
+
+export const GraphNames = {
+  ArtworkGraph: 'ArtworkGraph',
 };
 
 export const RequiredContent = {

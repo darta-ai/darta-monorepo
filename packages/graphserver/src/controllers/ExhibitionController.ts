@@ -434,4 +434,82 @@ export class ExhibitionController {
       res.status(500).send(error.message);
     }
   }
+
+  @httpPost('/addExhibitionToUserSaved', verifyToken)
+  public async addExhibitionToUserSaved(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const { user } = req as any;
+      const { exhibitionId } = req.body;
+      const results = await this.exhibitionService.addExhibitionToUserSaved({
+        exhibitionId,
+        uid: user?.uid
+      });
+      res.json(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/addExhibitionToUserSaved', request: req?.body})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpPost('/removeExhibitionFromUserSaved', verifyToken)
+  public async removeExhibitionFromUserSaved(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const { user } = req as any;
+      const { exhibitionId } = req.body;
+      const results = await this.exhibitionService.removeExhibitionFromUserSaved({
+        exhibitionId,
+        uid: user?.uid
+      });
+      res.json(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/removeExhibitionFromUserSaved', request: req?.body})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpGet('/listExhibitionForUserSavedCurrent', verifyToken)
+  public async listExhibitionForUserSavedCurrent(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      const { user } = req as any;
+      const results = await this.exhibitionService.listExhibitionForUserSavedCurrent({
+        uid: user?.uid
+      });
+      res.json(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/listExhibitionForUserSavedCurrent', request: req?.body})
+      res.status(500).send(error.message);
+    }
+  }
+
+  @httpPost('/dartaUserExhibitionRating', verifyToken)
+  public async dartaUserExhibitionRating(
+    @request() req: Request,
+    @response() res: Response,
+  ): Promise<void> {
+    try {
+      if (!req.body.rating || !req.body.exhibitionId) {
+        res.status(400).send("rating query parameter is required");
+        return;
+      }
+      const { user } = req as any;
+      const results = await this.exhibitionService.dartaUserExhibitionRating({
+        uid: user?.uid,
+        exhibitionId: req.body.exhibitionId as string,
+        rating: req.body.rating as string,
+      });
+      res.json(results);
+    } catch (error: any) {
+      standardConsoleLog({message: error?.message, data: 'exhibition/listExhibitionForUserSavedCurrent', request: req?.body})
+      res.status(500).send(error.message);
+    }
+  }
 }

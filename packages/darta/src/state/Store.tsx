@@ -12,7 +12,8 @@ export const currentlyViewingMapView = {
   newClosing: "newClosing",
   walkingRoute: "walkingRoute",
   openingTonight: "openingTonight",
-  customView: "customView"
+  customView: "customView",
+  userSavedExhibitions: "userSavedExhibitions"
 }
 
 export interface CurrentlyViewingMapView {
@@ -22,7 +23,8 @@ export interface CurrentlyViewingMapView {
   newClosing: "newClosing";
   walkingRoute: "walkingRoute";
   openingTonight: "openingTonight",
-  customView: "customView"
+  customView: "customView",
+  userSavedExhibitions: "userSavedExhibitions"
 }
 
 export interface IUserArtworkRatings {
@@ -174,6 +176,9 @@ export enum ETypes {
   setAllMapPins = 'SET_ALL_MAP_PINS',
   addLocationIdToSavedPins = 'ADD_LOCATION_ID_TO_SAVED_PINS',
   removeLocationIdToSavedPins = 'REMOVE_LOCATION_ID_FROM_MAP_PINS',
+
+  addExhibitionToSavedExhibitions = 'ADD_EXHIBITION_TO_SAVED_EXHIBITIONS',
+  removeExhibitionFromSavedExhibitions = 'REMOVE_EXHIBITION_FROM_SAVED_EXHIBITIONS',
 }
 
 // Define the action type
@@ -211,6 +216,7 @@ interface IAction {
   pinStatus?: boolean;
   setWalkingRouteRender?: boolean;
   addLocationIdToSavedPins?: string;
+  userSavedExhibitions?: Array<string>;
 }
 
 // Define the initial state
@@ -232,7 +238,7 @@ const reducer = (state: IState, action: IAction): IState => {
       return {...state, isPortrait: !state.isPortrait};
       // SET_CURRENT_EXHIBITION
     case ETypes.saveExhibitionMapPins:
-        if (!action.mapPins || !action.mapPinCity || !action?.userGalleryFollowed) {
+        if (!action.mapPins || !action.mapPinCity || !action?.userGalleryFollowed || !action.userSavedExhibitions) {
           return state;
         }
         const allPins : ExhibitionMapPin[] = Object.values(action.mapPins).sort((a, b) => {
@@ -243,6 +249,11 @@ const reducer = (state: IState, action: IAction): IState => {
             }
         }) 
 
+        const userSavedExhibitions: ExhibitionMapPin[]  = allPins.filter((pin: ExhibitionMapPin) => {
+          const exhibitionId = `Exhibitions/${pin?.exhibitionId}`;
+          return action?.userSavedExhibitions?.includes(exhibitionId) && pin?.exhibitionLocation?.coordinates?.latitude && pin?.exhibitionLocation?.coordinates?.longitude
+        })
+        
         const userFollowsPins: ExhibitionMapPin[] = allPins.filter((pin: ExhibitionMapPin) => {
           const galleryId = pin?.galleryId;
           return action?.userGalleryFollowed?.[galleryId] && pin?.exhibitionLocation?.coordinates?.latitude && pin?.exhibitionLocation?.coordinates?.longitude
@@ -309,7 +320,8 @@ const reducer = (state: IState, action: IAction): IState => {
               [currentlyViewingMapView?.walkingRoute]: [],
               [currentlyViewingMapView?.openingTonight]: openingTonightPins.map(pin => pin?.locationId),
               [currentlyViewingMapView?.newClosing]: newClosingPins.map(pin => pin?.locationId),
-              [currentlyViewingMapView?.customView]: []
+              [currentlyViewingMapView?.customView]: [],
+              [currentlyViewingMapView?.userSavedExhibitions]: userSavedExhibitions.map(pin => pin?.locationId)
             } as {
               all: Array<string>;
               savedGalleries: Array<string>;
@@ -330,6 +342,7 @@ const reducer = (state: IState, action: IAction): IState => {
               walkingRoute: {} as { [key: string]: boolean },
               openingTonight: openingTonightPins.reduce((acc, el) => ({ ...acc, [el.locationId]: false }), {}),
               customView: {}, // Ensure this matches the expected structure
+              userSavedExhibitions: userSavedExhibitions.reduce((acc, el) => ({ ...acc, [el.locationId]: false }), {}),
             } as {
               all: { [key: string]: boolean };
               savedGalleries: { [key: string]: boolean };
@@ -338,6 +351,7 @@ const reducer = (state: IState, action: IAction): IState => {
               walkingRoute: { [key: string]: boolean };
               openingTonight: { [key: string]: boolean };
               customView: {};
+              userSavedExhibitions: { [key: string]: boolean };
             },
           }
         };
@@ -372,7 +386,7 @@ const reducer = (state: IState, action: IAction): IState => {
         mapPinStatus: {
           ...state.mapPinStatus,
           [state.currentlyViewingCity]: {
-            ...state.mapPinStatus?.[state.currentlyViewingCity],
+            ...state.mapPinStatus?.[state.currentlyViewingCity]!,
             [state.currentlyViewingMapView]: {
               ...state.mapPinStatus?.[state.currentlyViewingCity][state.currentlyViewingMapView],
               [action.locationId]: action.pinStatus
@@ -394,7 +408,7 @@ const reducer = (state: IState, action: IAction): IState => {
         mapPinIds: {
           ...state.mapPinIds,
           [state.currentlyViewingCity]: {
-            ...state.mapPinIds?.[state.currentlyViewingCity],
+            ...state.mapPinIds?.[state.currentlyViewingCity]!,
             [currentlyViewingMapView?.savedGalleries]: [...state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView?.savedGalleries], action.locationId]
           } 
         },
@@ -409,12 +423,45 @@ const reducer = (state: IState, action: IAction): IState => {
         mapPinIds: {
           ...state.mapPinIds,
           [state.currentlyViewingCity]: {
-            ...state.mapPinIds?.[state.currentlyViewingCity],
+            ...state.mapPinIds?.[state.currentlyViewingCity]!,
             [currentlyViewingMapView?.savedGalleries]: state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView?.savedGalleries].filter((el) => el !== action.locationId)
           } 
         },
       }
     }
+
+    case ETypes.addExhibitionToSavedExhibitions:{
+      if (!action.locationId){
+        return state;
+      }
+      return {
+        ...state,
+        mapPinIds: {
+          ...state.mapPinIds,
+          [state.currentlyViewingCity]: {
+            ...state.mapPinIds?.[state.currentlyViewingCity]!,
+            [currentlyViewingMapView?.userSavedExhibitions]: [...state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView?.userSavedExhibitions], action.locationId]
+          } 
+        },
+      }
+    }
+
+    case ETypes.removeExhibitionFromSavedExhibitions:{
+      if (!action.locationId){
+        return state;
+      }
+      return {
+        ...state,
+        mapPinIds: {
+          ...state.mapPinIds,
+          [state.currentlyViewingCity]: {
+            ...state.mapPinIds?.[state.currentlyViewingCity]!,
+            [currentlyViewingMapView?.userSavedExhibitions]: state.mapPinIds?.[state.currentlyViewingCity]?.[currentlyViewingMapView?.userSavedExhibitions].filter((el) => el !== action.locationId)
+          } 
+        },
+      }
+    }
+
     case ETypes.setUserAgreedToNavigationTerms: {
       if (action.userAgreedToNavigationTerms === undefined) {
         return state;

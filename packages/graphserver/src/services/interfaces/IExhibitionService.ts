@@ -1,4 +1,4 @@
-import {Artwork, Exhibition, ExhibitionForList, ExhibitionObject, ExhibitionPreview, IBusinessLocationData, IGalleryProfileData,MapPinCities} from '@darta-types';
+import {Artwork, Exhibition, ExhibitionForList, ExhibitionObject, ExhibitionPreview, IBusinessLocationData, IGalleryProfileData, MapPinCities} from '@darta-types';
 
 export interface IExhibitionService {
   createExhibition({
@@ -146,10 +146,22 @@ export interface IExhibitionService {
   listExhibitionsPreviewsCurrentForUserByLimit({limit, uid}: {limit: number, uid: string}): Promise<{[key: string]: ExhibitionPreview} | void>
   listExhibitionsPreviewsForthcomingForUserByLimit(
     {limit, uid}: {limit: number, uid: string | null}): Promise<{[key: string]: ExhibitionPreview} | void>
-  listExhibitionsPreviewsUserFollowingForUserByLimit({limit, uid}: {limit: number, uid: string | null}): Promise<{[key: string]: ExhibitionPreview} | void>
+  listExhibitionsPreviewsUserFollowingForUserByLimit(
+    {limit, uid}: {limit: number, uid: string | null}): Promise<{[key: string]: ExhibitionPreview} | void>
+  
   // To Deprecate
   listExhibitionsPreviewsForUserByLimit({limit}: {limit: number}): Promise<{[key: string]: ExhibitionPreview} | void>
 
   listExhibitionsPreviewsForthcomingGalleryFollowingForUserByLimit({limit, uid}: {limit: number, uid: string | null})
   : Promise<{[key: string]: ExhibitionPreview} | void>
+
+  generateExhibitionId({exhibitionId}: {exhibitionId: string}): string 
+
+  addExhibitionToUserSaved({exhibitionId, uid}: {exhibitionId: string, uid: string}): Promise<boolean>
+
+  removeExhibitionFromUserSaved({exhibitionId, uid}: {exhibitionId: string, uid: string}): Promise<boolean>
+
+  listExhibitionForUserSavedCurrent({uid}: {uid: string}): Promise<Array<string>>
+
+  dartaUserExhibitionRating({uid, exhibitionId, rating} : { uid: string, exhibitionId: string, rating: string,}): Promise<boolean>
 }

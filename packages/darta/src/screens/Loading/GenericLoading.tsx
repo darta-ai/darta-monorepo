@@ -46,11 +46,11 @@ export function GenericLoadingScreen() {
 
 
   React.useEffect(() => {
-    dAnim.addListener(() => {})
-    a1Anim.addListener(() => {})
-    rAnim.addListener(() => {})
-    tAnim.addListener(() => {})
-    a2Anim.addListener(() => {})
+    dAnim.addListener(() => {return})
+    a1Anim.addListener(() => {return})
+    rAnim.addListener(() => {return})
+    tAnim.addListener(() => {return})
+    a2Anim.addListener(() => {return})
   }, [])
 
   dAnim.removeAllListeners();

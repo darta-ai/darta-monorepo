@@ -97,7 +97,7 @@ export function EditUserProfile({navigation} : {navigation: any}) {
   const [heightAnim] = useState(new Animated.Value(Math.floor(hp('15%'))));
 
   React.useEffect(() => {
-    heightAnim.addListener(() => {});
+    heightAnim.addListener(() => {return});
   }, [])
 
   const handleShrinkElements = useCallback(() => {

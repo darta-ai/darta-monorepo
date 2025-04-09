@@ -173,7 +173,7 @@ export function ArtworkListView({
   const opacityInquiredButton = React.useRef(new Animated.Value(1)).current; 
 
   React.useEffect(() => {
-    opacityInquiredButton.addListener(() => {})
+    opacityInquiredButton.addListener(() => {return})
   }, [])
 
   const [loadingDelete, setLoadingDelete] = React.useState<boolean>(false);

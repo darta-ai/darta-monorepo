@@ -18,6 +18,7 @@ const exhibitionService = container.get('IExhibitionService') as ExhibitionServi
 const userService = container.get('IUserService') as UserService
 const galleryService = container.get('IGalleryService') as GalleryService
 const pushService = container.get('IPushService') as PushService
+// const recommenderService = container.get('IRecommenderService') as RecommenderService
 
 const bodyParser = require('body-parser');
 
@@ -64,7 +65,7 @@ app.get('/version', (req: Request, res: Response) => {
 });
 
 // cron job to update artwork every 24 hours 
-cron.schedule('0 3 * * *', async () => {
+cron.schedule('0 8 * * *', async () => {
   try{
     const start = new Date()
     await artworkService.readAllArtworks()
@@ -77,7 +78,7 @@ cron.schedule('0 3 * * *', async () => {
   }
 });
 
-cron.schedule('15 3 * * *', async () => {
+cron.schedule('15 8 * * *', async () => {
   try{
     const start = new Date()
     await exhibitionService.readAllExhibitions()
@@ -90,7 +91,7 @@ cron.schedule('15 3 * * *', async () => {
   }
 });
 
-cron.schedule('30 3 * * *', async () => {
+cron.schedule('30 8 * * *', async () => {
   try{
     const start = new Date()
     await userService.readAllUsers()
@@ -103,13 +104,13 @@ cron.schedule('30 3 * * *', async () => {
   }
 })
 
-cron.schedule('45 3 * * *', async () => {
+cron.schedule('45 8 * * *', async () => {
   try{
     const start = new Date()
     await galleryService.readAllGalleries()
     const end = new Date()
     // eslint-disable-next-line no-console
-    console.log(`user cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
+    console.log(`gallery cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log('error running cronjob', e)
@@ -117,7 +118,7 @@ cron.schedule('45 3 * * *', async () => {
 });
 
 
-cron.schedule('0 0 * * 3', async () => {
+cron.schedule('0 5 * * 3', async () => {
   try{
     const start = new Date()
     await userService.resetAllUsersRouteGenerationCount()
@@ -130,33 +131,47 @@ cron.schedule('0 0 * * 3', async () => {
   }
 });
 
-// // production schedule
-// cron.schedule('0 17 * * 3', async () => {
-//   try{
-//     const start = new Date()
-//     await pushService.generatePushNotificationsFollowing()
-//     const end = new Date()
-//     // eslint-disable-next-line no-console
-//     console.log(`reset all user route generation cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
-//   } catch (e) {
-//     // eslint-disable-next-line no-console
-//     console.log('error running cronjob', e)
-//   }
-// });
-
-// // development schedule
-cron.schedule('* * * * *', async () => {
+// production schedule
+cron.schedule('0 20 * * 3', async () => {
   try{
     const start = new Date()
-    await pushService.generatePushNotificationsFollowing()
+    const totalSent = await pushService.runWeeklyPushNotifications();
     const end = new Date()
     // eslint-disable-next-line no-console
-    console.log(`reset all user route generation cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
+    console.log(`weekly push cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms. Sent ${totalSent} notifications`)
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log('error running cronjob', e)
   }
 });
+
+cron.schedule('0 20 * * 2,4,6', async () => {
+  try{
+    const start = new Date()
+    const totalSent = await pushService.runDailyPushNotifications()
+    const end = new Date()
+    // eslint-disable-next-line no-console
+    console.log(`daily push weekly cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms. Sent ${totalSent} notifications`)
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('error running cronjob', e)
+  }
+})
+
+// // development schedule
+// cron.schedule('* * * * *', async () => {
+//   try{
+//     console.log('started')
+//     const start = new Date()
+//     const numberSent = await pushService.runWeeklyPushNotifications();
+//     const end = new Date()
+//     // eslint-disable-next-line no-console
+//     console.log(`push notification cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms. Sent ${numberSent} notifications`)
+//   } catch (e) {
+//     // eslint-disable-next-line no-console
+//     console.log('error running cronjob', e)
+//   }
+// });
 
 httpServer.listen(port, () => {
   // eslint-disable-next-line no-console

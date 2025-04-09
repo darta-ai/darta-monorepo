@@ -64,6 +64,9 @@ const uiReducer = (state: UiState, action: UiIAction): UiState => {
       if (action.currentExhibitionHeader === undefined) {
         return state;
       }
+      if (state.currentExhibitionHeader === action.currentExhibitionHeader){
+        return state;
+      }
       return {
           ...state,
           currentExhibitionHeader: action.currentExhibitionHeader,
@@ -94,6 +97,9 @@ const uiReducer = (state: UiState, action: UiIAction): UiState => {
         };
       case UiETypes.setGalleryHeader:
           if (action.galleryHeader !== undefined) {
+            return state;
+          }
+          if (state.galleryHeader === action.galleryHeader){
             return state;
           }
           return {

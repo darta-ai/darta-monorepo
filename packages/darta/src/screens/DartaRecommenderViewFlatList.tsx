@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, Animated, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import { GestureHandlerRootView, PinchGestureHandler } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Colors from '@darta-styles'
 import * as Haptics from 'expo-haptics';
 import { Snackbar, Surface } from 'react-native-paper';
@@ -165,9 +165,9 @@ export function DartaRecommenderViewFlatList({
   const [currentArtRating, setCurrentArtRating] = React.useState<IUserArtworkRated>({});
 
   React.useEffect(() => {
-    wiggleAnim.addListener(() => {})
-    thumbsUpAnim.addListener(() => {})
-    thumbsDownAnim.addListener(() => {})
+    wiggleAnim.addListener(() => {return})
+    thumbsUpAnim.addListener(() => {return})
+    thumbsDownAnim.addListener(() => {return})
   }, [])
 
   wiggleAnim.removeAllListeners();
@@ -211,6 +211,13 @@ export function DartaRecommenderViewFlatList({
     modifyDisplayRating({})
   }, [userState?.userLikedArtwork, userState?.userDislikedArtwork, userState?.userSavedArtwork])
 
+
+  React.useEffect(() => {
+    if (viewState.artworksToRate && (currentIndex / Object.values(viewState.artworksToRate).length) > 0.75){
+      onEndReached()
+    }
+  }, [currentIndex])
+
   const toggleArtForward = React.useCallback(async () => {
     const index = currentIndex ?? 0;
 
@@ -223,27 +230,7 @@ export function DartaRecommenderViewFlatList({
           scrollViewRef.current?.scrollToIndex(index + 2, true)
           Haptics.NotificationFeedbackType.Error
         }
-    } else if (viewState.artworksToRate) {
-        const numberOfArtworks = Object.values(viewState.artworksToRate).length;
-        const artworkIds = findArtworkIds({artworks: Object.values(viewState.artworksToRate)})
-        try{
-          const artworksToRate = await listArtworksToRateStatelessRandomSamplingAPI({
-            startNumber: numberOfArtworks,
-            endNumber: numberOfArtworks + 10,
-            artworkIds
-        });
-        if (artworksToRate && Object.keys(artworksToRate).length > 0) {
-            viewDispatch({
-                type: ViewETypes.setArtworksToRate,
-                artworksToRate: {...viewState.artworksToRate, ...artworksToRate},
-            });
-        } else {
-            onToggleSnackBar();
-        }
-        } catch(error: any) {
-          onToggleSnackBarError();
-        }
-    }
+    } 
   }, [viewState.artworksToRate, currentIndex])
 
 
@@ -266,15 +253,19 @@ export function DartaRecommenderViewFlatList({
   }, [viewState.artworkRatingIndex, viewState.artworksToRate])
 
 
-  const onEndReached = React.useCallback(async () => {
+  const [isEndReached, setIsEndReached] = React.useState(false);
+
+  const onEndReached = async () => {
+    if (isEndReached) return;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    setIsEndReached(true);
   
     const numberOfArtworks = Object.values(viewState?.artworksToRate ?? {}).length > 0 ? Object.values(viewState.artworksToRate!).length : 0
     const artworkIds = findArtworkIds({artworks: Object.values(viewState.artworksToRate ?? {})})
         try {
-          // console.log('triggered', numberOfArtworks, numberOfArtworks + 10, artworkIds)
           const artworksToRate = await listArtworksToRateStatelessRandomSamplingAPI({
             startNumber: numberOfArtworks,
-            endNumber: numberOfArtworks + 10,
+            endNumber: numberOfArtworks + 20,
             artworkIds
         });
         if (artworksToRate) {
@@ -283,10 +274,12 @@ export function DartaRecommenderViewFlatList({
                 artworksToRate,
             });
       }
+      setIsEndReached(false);
+
     } catch (error){
       // console.log('####', error)
     }
-  }, [viewState.artworksToRate])
+  };
 
 
   const renderItem = React.useCallback(({ item }) => {
@@ -762,39 +755,35 @@ const panGestureLeft = Gesture.Pan()
             <Onboard />
             <GestureDetector gesture={composed}>
               <LinearGradient style={{flex: 1}} colors={[Colors.PRIMARY_50, Colors.PRIMARY_100, Colors.PRIMARY_200]}>
-                  <RecyclerListView
-                      layoutProvider={layoutProvider}
-                      dataProvider={dataProvider}
-                      ref={scrollViewRef}
-                      rowRenderer={(_, item) => renderItem({ item })}
-                      onEndReached={onEndReached}
-                      isHorizontal={true}
-                      scrollThrottle={2}
-                      snapToInterval={wp('100%')} 
-                      snapToAlignment={"center"}
-                      pagingEnabled={true}
-                      zoomableViewProps={{
-                        disabled: true,
-                      }}
-                      showsHorizontalScrollIndicator={false}
-                      renderFooter={() => <View 
-                      style={SSDartaGalleryView.footerContainer}>
-                        <ActivityIndicator size="small" color={Colors.PRIMARY_600} />
-                      </View>}
-                      onScroll={handleScroll}
-                      scrollViewProps={{
-                          decelerationRate: "fast",
-                          disableScrollViewPanResponder: true,
-                          directionalLockEnabled: true,
-                          snapToInterval: wp('100%'),
-                          snapToAlignment: 'center',
-                          scrollEnabled: false,
-                          disableIntervalMomentum: true,
-                          pagingEnabled: true,
-                          onEndReachedThreshold: 0.5,
-                          // Add any other ScrollView props here
-                      }}
-                  />
+              <RecyclerListView
+                layoutProvider={layoutProvider}
+                dataProvider={dataProvider}
+                ref={scrollViewRef}
+                rowRenderer={(_, item) => renderItem({ item })}
+                onEndReached={onEndReached}
+                isHorizontal={true}
+                scrollThrottle={2}
+                snapToInterval={wp('100%')}
+                snapToAlignment={"center"}
+                pagingEnabled={true}
+                zoomableViewProps={{
+                  disabled: true,
+                }}
+                showsHorizontalScrollIndicator={false}
+                onScroll={handleScroll}
+                scrollViewProps={{
+                  decelerationRate: "fast",
+                  disableScrollViewPanResponder: true,
+                  directionalLockEnabled: true,
+                  snapToInterval: wp('100%'),
+                  snapToAlignment: 'center',
+                  scrollEnabled: false,
+                  disableIntervalMomentum: true,
+                  pagingEnabled: true,
+                  // onEndReachedThreshold: 0.5,
+                  // Add any other ScrollView props here
+                }}
+              />
                   {/* <FlatList
                     data={Object.values(viewState?.artworksToRate!)}
                     ref={scrollViewRef}
@@ -834,7 +823,7 @@ const panGestureLeft = Gesture.Pan()
               <Animated.View 
               style={{ transform: [{ rotate }], opacity: 1 }}
               >
-                {currentArtRating[RatingEnum.save]  ?  <SVGs.SavedActiveIconLarge /> : <SVGs.SavedInactiveIcon />}
+                {currentArtRating[RatingEnum.save] ?  <SVGs.SavedActiveIconLarge /> : <SVGs.SavedInactiveIcon />}
               </Animated.View>
             </TouchableOpacity>
           </Surface>

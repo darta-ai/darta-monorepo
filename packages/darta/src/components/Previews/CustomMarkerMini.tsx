@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Marker, Callout } from 'react-native-maps';
-import { StyleSheet, Animated } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { TextElement, TextElementMultiLine } from '../Elements/TextElement';
 
@@ -10,7 +10,6 @@ import { ExhibitionMapPin } from '@darta-types';
 import { ExhibitionStoreContext, UIStoreContext, UiETypes } from '../../state';
 import { ExploreMapRootEnum } from '../../typing/routes';
 import { NewMapPin, NewMapPinRed } from '../../assets/SVGs';
-import { Easing } from 'react-native-reanimated';
 
 const customMarker = StyleSheet.create({
   galleryContainer: {
@@ -85,19 +84,12 @@ const CustomMarkerMini = React.memo(({
   );
 
   React.useEffect(() => {
-    let hasOpening = false;
     if (mapPin.receptionDates?.receptionStartTime?.value && mapPin.receptionDates?.receptionEndTime.value) {
       const receptionEndDate = new Date(mapPin.receptionDates?.receptionEndTime?.value);
       const isOpeningUpcoming = (receptionEndDate >= new Date());
       setHasUpcomingOpening(isOpeningUpcoming);
     }
   }, []);
-
-  React.useEffect(() => {
-    if (hasUpcomingOpening) {
-      handleWiggle();
-    }
-  }, [hasUpcomingOpening]);
 
   const chooseRouteAndNavigate = () => {
     if (hasCurrentShow) {
@@ -106,45 +98,6 @@ const CustomMarkerMini = React.memo(({
       navigateToGalleryScreen();
     }
   };
-
-  const wiggleAnim = React.useRef(new Animated.Value(0)).current;
-
-  const handleWiggle = () => {
-    const wiggleSequence = Animated.sequence([
-      Animated.timing(wiggleAnim, {
-        toValue: 0.25,
-        duration: 500,
-        easing: Easing.elastic(4),
-        useNativeDriver: true,
-      }),
-      Animated.timing(wiggleAnim, {
-        toValue: 0,
-        duration: 500,
-        easing: Easing.elastic(4),
-        useNativeDriver: true,
-      }),
-      Animated.timing(wiggleAnim, {
-        toValue: -0.25,
-        duration: 500,
-        easing: Easing.elastic(4),
-        useNativeDriver: true,
-      }),
-      Animated.timing(wiggleAnim, {
-        toValue: 0,
-        duration: 500,
-        easing: Easing.elastic(4),
-        useNativeDriver: true,
-      }),
-    ]);
-
-    // Start the animation sequence
-    wiggleSequence.start();
-  };
-
-  const rotate = wiggleAnim.interpolate({
-    inputRange: [-1, 1],
-    outputRange: ['-15deg', '15deg'],
-  });
 
   const customMarkerDynamic = StyleSheet.create({
     container: {
@@ -156,9 +109,6 @@ const CustomMarkerMini = React.memo(({
       alignItems: 'flex-start',
       padding: 6,
       gap: 6,
-    },
-    wiggleFriend: {
-      transform: [{ rotate }]
     }
   });
 
@@ -167,9 +117,9 @@ const CustomMarkerMini = React.memo(({
       coordinate={coordinate}
       onTouchEnd={() => setShowCallout(true)}
     >
-      <Animated.View style={customMarkerDynamic.wiggleFriend}>
+      <View>
         {hasUpcomingOpening ? <NewMapPinRed /> : <NewMapPin />}
-      </Animated.View>
+      </View>
       {showCallout && (
         <Callout
           style={customMarkerDynamic.container}

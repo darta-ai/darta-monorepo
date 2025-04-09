@@ -7,9 +7,11 @@ export type MobileUser = {
     email?: string;
     uid?: string;
     localStorageUid?: string;
+    expoPushToken?: string;
     routeGenerationCount?: {
         routeGeneratedCountWeekly: number;
     };
+    recommendationArtworkIds?: string[];
 };
 export type FirebaseUser = {
     provider_id: string;

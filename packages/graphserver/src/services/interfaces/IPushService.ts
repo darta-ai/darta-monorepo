@@ -1,3 +1,4 @@
 export interface IPushService {
-  generatePushNotificationsFollowing() : Promise<void>
+  runWeeklyPushNotifications() : Promise<number>
+  runDailyPushNotifications() : Promise<number>
 }

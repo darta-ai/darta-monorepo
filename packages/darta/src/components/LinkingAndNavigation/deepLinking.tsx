@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { ETypes, StoreContext, UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes } from '../../state';
+import { ETypes, StoreContext, UIStoreContext, UiETypes, GalleryStoreContext, GalleryETypes, ExhibitionStoreContext, ExhibitionETypes, UserStoreContext } from '../../state';
 import * as Linking from 'expo-linking';
-import { ExhibitionRootEnum, ListEnum, RecommenderRoutesEnum } from '../../typing/routes';
+import { ExhibitionPreviewEnum, ExhibitionRootEnum, ListEnum, RecommenderRoutesEnum } from '../../typing/routes';
 import { readExhibition, readMostRecentGalleryExhibitionForUser } from '../../api/exhibitionRoutes';
 import { listGalleryExhibitionPreviewForUser, readGallery } from '../../api/galleryRoutes';
 import { createGalleryRelationshipAPI } from '../../utils/apiCalls';
 import { readListForUser } from '../../api/listRoutes';
 import { FullList } from '@darta-types/dist';
+import { Platform } from 'react-native';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import Constants  from 'expo-constants';
+import { editDartaUserAccount, saveExpoPushTokenAPI } from '../../api/userRoutes';
+
 
 
 export function useDeepLinking(navigation) {
@@ -15,9 +21,11 @@ export function useDeepLinking(navigation) {
   const {galleryDispatch} = React.useContext(GalleryStoreContext);
   const {exhibitionDispatch} = React.useContext(ExhibitionStoreContext);
 
+  const notificationListener = React.useRef<Notifications.Subscription>();
+  const responseListener = React.useRef<Notifications.Subscription>();
 
 
-  async function fetchMostRecentExhibitionData({locationId} : {locationId: string}): Promise<{exhibitionId: string, galleryId: string} | void> {
+  async function fetchMostRecentExhibitionData({locationId} : {locationId: string}): Promise<{exhibitionId: string, galleryId: string, hasArtwork: boolean} | void> {
     try {
         const {exhibition, gallery} = await readMostRecentGalleryExhibitionForUser({locationId})
         const supplementalExhibitions = await listGalleryExhibitionPreviewForUser({galleryId: gallery._id})
@@ -44,7 +52,8 @@ export function useDeepLinking(navigation) {
         })
         return {
             exhibitionId: exhibition._id,
-            galleryId: gallery._id
+            galleryId: gallery._id,
+            hasArtwork: Object.keys(exhibition.artworks).length > 0
         }
     } catch (error: any){
         // console.log(error)
@@ -52,7 +61,7 @@ export function useDeepLinking(navigation) {
 }
 
 
-async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string} ): Promise<{exhibitionId: string, galleryId: string} | void> {
+async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string} ): Promise<{exhibitionId: string, galleryId: string, hasArtwork: boolean} | void> {
   try {
       const [gallery, supplementalExhibitions, exhibition] = await Promise.all([
         readGallery({ galleryId }),
@@ -82,7 +91,8 @@ async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: st
       })
       return {
           exhibitionId: exhibition._id,
-          galleryId: gallery._id
+          galleryId: gallery._id,
+          hasArtwork: Object.keys(exhibition.artworks).length > 0
       }
   } catch (error: any){
       // console.log(error)
@@ -110,14 +120,15 @@ const handleDeepLink = async (event) => {
     try {
       const res = await fetchMostRecentExhibitionData({locationId: params.locationId.toString()});
       if (res) {
-        const {exhibitionId, galleryId} = res;
+        const {exhibitionId, galleryId, hasArtwork} = res;
         navigation.navigate('exhibitions', {
           screen: ExhibitionRootEnum.qrRouter,
           params: {
             screen: ExhibitionRootEnum.exhibitionDetails,  
             params: {
               exhibitionId,
-              galleryId
+              galleryId,
+              hasArtwork,
             }
           }
         });
@@ -132,7 +143,7 @@ const handleDeepLink = async (event) => {
     try {
       const res = await fetchExhibitionById({exhibitionId: params.exhibitionId.toString(), galleryId: params.galleryId.toString()});
       if (res) {
-        const {exhibitionId, galleryId} = res;
+        const {exhibitionId, galleryId, hasArtwork} = res;
         navigation.navigate('exhibitions', {
           screen: ExhibitionRootEnum.qrRouter,
           params: {
@@ -140,6 +151,7 @@ const handleDeepLink = async (event) => {
             params: {
               exhibitionId,
               galleryId,
+              hasArtwork,
             }
           }
         });
@@ -171,9 +183,34 @@ const handleDeepLink = async (event) => {
     // Handle invalid deep link
   }
 };
+
+const handlePushNotification = async (response) => {
+  const { data } = response.notification.request.content;
+  if (!data?.showUpcomingScreen) {
+    const res = await fetchExhibitionById({
+      exhibitionId: data.exhibitionId.toString(),
+      galleryId: data.galleryId.toString(),
+    });
+    if (res) {
+      const { exhibitionId, galleryId, hasArtwork } = res;
+      navigation.navigate('exhibitions', {
+        screen: ExhibitionRootEnum.qrRouter,
+        params: {
+          screen: ExhibitionRootEnum.exhibitionDetails,
+          exhibitionId,
+          galleryId,
+          hasArtwork,
+        },
+      });
+    }
+  } else {
+    navigation.navigate('exhibitions', {
+      screen: ExhibitionPreviewEnum.forthcoming,
+    });
+  }
+};
   // state to track if initialURL has been processed
   const [urlsProcessed, setUrlsProcessed] = useState<string[]>([]);
-
   useEffect(() => {
     const checkInitialURL = async () => {
       const initialUrl = await Linking.getInitialURL();
@@ -183,15 +220,81 @@ const handleDeepLink = async (event) => {
       }
     }
 
+
+  async function registerForPushNotificationsAsync() {
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+    
+    if (Device.isDevice) {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        // handleRegistrationError('Permission not granted to get push token for push notification!');
+        return;
+      }
+      const projectId =
+        Constants?.expoConfig?.extra?.eas?.projectId ??
+        Constants?.easConfig?.projectId;
+      if (!projectId) {
+        // handleRegistrationError('Project ID not found');
+      }
+      try {
+      const pushTokenString = (
+          await Notifications.getExpoPushTokenAsync({
+            projectId,
+          })
+        ).data;
+        return pushTokenString;
+      } catch (e: unknown) {
+        return;
+        // handleRegistrationError(`${e}`);
+      }
+    } else {
+      return;
+      // handleRegistrationError('Must use physical device for push notifications');
+    }
+    }
+
     // check the initial URL
     checkInitialURL();
 
-    // set up the event listener for deep linking
-    const subscription = Linking.addEventListener('url', handleDeepLink);
+    // register for push notifications
+    registerForPushNotificationsAsync().then(async (token) => {
+      if (token) {
+        saveExpoPushTokenAPI({expoPushToken: token})
+      }
+    })
 
-    // cleanup the event listener on component unmount
+    // set up the event listener for deep linking
+    const deepLinkSubscription = Linking.addEventListener('url', handleDeepLink);
+
+    // set up the event listener for push notifications
+    const pushNotificationSubscription = Notifications.addNotificationResponseReceivedListener(handlePushNotification);
+
+    // cleanup the event listeners on component unmount
     return () => {
-      subscription.remove();
-    };
+      deepLinkSubscription.remove();
+      Notifications.removeNotificationSubscription(pushNotificationSubscription);
+
+      notificationListener.current &&
+      Notifications.removeNotificationSubscription(
+        notificationListener.current,
+      );
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
+      
+      responseListener.current && 
+        Notifications.dismissAllNotificationsAsync()
+      };
   }, [navigation, handleDeepLink, urlsProcessed]);
 }

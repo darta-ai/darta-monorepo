@@ -74,7 +74,7 @@ bottomSheetContentContainer: {
 },
 });
 
-export function ExploreMapHomeScreen({
+function ExploreMapHomeScreen({
     navigation,
 }: {
     navigation?: any;
@@ -103,7 +103,7 @@ export function ExploreMapHomeScreen({
 
   }, [state.mapPins])
   
-  const handleMarkerPress = React.useCallback((event) => {
+  const handleMarkerPress = React.useCallback((event : any) => {
     let { latitude, longitude } = event.nativeEvent.coordinate;
     const newRegion = {
       ...mapRegion,
@@ -180,3 +180,5 @@ export function ExploreMapHomeScreen({
     </>
   );
 }
+
+export { ExploreMapHomeScreen }

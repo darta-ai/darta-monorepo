@@ -16,6 +16,7 @@ export enum GalleryETypes {
   saveGallery = 'SAVE_GALLERY',
   saveGalleries= 'SAVE_GALLERIES',
   setGalleryPreviewMulti = 'SET_GALLERY_PREVIEW_MULTI',
+  refreshGallery = 'REFRESH_GALLERY'
 }
 
 // Define the action type
@@ -40,6 +41,9 @@ const galleryReducer = (state: GalleryState, action: GalleryIAction): GallerySta
       if(!action.galleryData || !action.galleryData._id){
         return state
       }
+      if (state?.galleryData && state?.galleryData.hasOwnProperty(action.galleryData._id)){
+        return state
+      }
       return {
         ...state,
         galleryData: {
@@ -47,6 +51,18 @@ const galleryReducer = (state: GalleryState, action: GalleryIAction): GallerySta
           [action.galleryData._id]: action.galleryData
         }
       }
+      case GalleryETypes.refreshGallery: 
+        if(!action.galleryData || !action.galleryData._id){
+          return state
+        }
+        return {
+          ...state,
+          galleryData: {
+            ...state.galleryData,
+            [action.galleryData._id]: action.galleryData
+          }
+        };
+      
       case GalleryETypes.saveGalleries:
         if(!action.galleryDataMulti){
           return state

@@ -1,9 +1,11 @@
-import {Image} from 'react-native';
-
-import {buttonSizes} from './constants';
+import {buttonSizes, EST_TIMEZONE} from './constants';
 import {createUser} from '../api/userRoutes'
 import auth from '@react-native-firebase/auth';
-import { BusinessHours, ExhibitionMapPin, IBusinessHours } from '@darta-types/dist';
+import { BusinessHours } from '@darta-types/dist';
+import { toZonedTime } from 'date-fns-tz'
+import { Linking, Platform } from 'react-native';
+
+
 
  
 export const getUserUid = async () => {
@@ -29,6 +31,7 @@ export const getUserUid = async () => {
  * @deprecated This function should be substituted with the below
  */
 export function customLocalDateString(date: Date) {
+  date = toZonedTime(new Date(date), EST_TIMEZONE);
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
 
@@ -41,6 +44,7 @@ export function customLocalDateString(date: Date) {
 }
 
 export function customLocalDateStringStart({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
+  date = toZonedTime(new Date(date), EST_TIMEZONE);
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   const monthName = isUpperCase ? months[date.getMonth()] : months[date.getMonth()]
@@ -51,6 +55,7 @@ export function customLocalDateStringStart({date, isUpperCase} : {date: Date, is
 }
 
 export function customLocalDateStringEnd({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
+  date = toZonedTime(new Date(date), EST_TIMEZONE);
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   const monthName = isUpperCase ? months[date.getMonth()] : months[date.getMonth()]
@@ -62,6 +67,7 @@ export function customLocalDateStringEnd({date, isUpperCase} : {date: Date, isUp
 
 
 export function customLocalDateStringStartShort({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
+  date = toZonedTime(new Date(date), EST_TIMEZONE);
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   const monthName = isUpperCase ? months[date.getMonth()] : months[date.getMonth()]
@@ -72,6 +78,8 @@ export function customLocalDateStringStartShort({date, isUpperCase} : {date: Dat
 }
 
 export function customLocalDateStringEndShort({date, isUpperCase} : {date: Date, isUpperCase: boolean}) {
+  date = toZonedTime(new Date(date), EST_TIMEZONE);
+
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   const monthName = isUpperCase ? months[date.getMonth()] : months[date.getMonth()]
@@ -82,6 +90,7 @@ export function customLocalDateStringEndShort({date, isUpperCase} : {date: Date,
 }
 
 export function customDateString(date: Date) {
+  date = toZonedTime(new Date(date), EST_TIMEZONE);
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   const monthName = months[date.getMonth()];
@@ -92,7 +101,8 @@ export function customDateString(date: Date) {
 }
 
 export function customFormatTimeString(date: Date): string {
-  
+  date = toZonedTime(new Date(date), EST_TIMEZONE);
+
   let hours: number | string = date.getHours();
   const minutes: string = ('0' + date.getMinutes()).slice(-2);
   const amPm: string = hours >= 12 ? 'PM' : 'AM';
@@ -204,3 +214,23 @@ export const calculateZoomLevel = (minLat, maxLat, minLong, maxLong) => {
   return zoomLevel;
 };
 
+
+export const openInMaps = (address: string) => {
+  if (!address) return;
+
+  const formattedAddress = encodeURIComponent(address);
+  const scheme = Platform.OS === 'ios' ? 'maps:0,0?q=' : 'geo:0,0?q=';
+  const url = scheme + formattedAddress;
+
+
+  Linking.canOpenURL(url)
+  .then((supported) => {
+    if (supported) {
+      return Linking.openURL(url);
+    } else {
+      const browserUrl = 'https://www.google.com/maps/search/?api=1&query=' + formattedAddress;
+      return Linking.openURL(browserUrl);
+    }
+  })
+  .catch((err) => console.error('Error opening maps app:', err));
+};  

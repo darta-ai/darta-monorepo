@@ -10,8 +10,6 @@ import * as StoreReview from 'expo-store-review';
 import * as Colors from '@darta-styles';
 import { ExhibitionStoreContext } from '../../state';
 import { Badge } from 'react-native-paper';
-import { TextElement } from '../../components/Elements/TextElement';
-import { useIsFocused } from '@react-navigation/native';
 
 export const ExhibitionHomeTopTab = createMaterialTopTabNavigator();
 export type ExhibitionStackParamList = {

@@ -1,9 +1,11 @@
+/// <reference types="@welldone-software/why-did-you-render" />
+import './wdyr';
 import 'react-native-gesture-handler';
 
-import { NavigationContainer, useNavigation, useNavigationContainerRef } from '@react-navigation/native';
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { ExploreMapStackNavigator } from './src/navigation/ExploreMap/ExploreMapStackNavigator';
-import { StatusBar, Platform, Alert, Linking} from 'react-native';
+import { StatusBar, Platform, Alert, Linking } from 'react-native';
 import React from 'react';
 import {Provider as PaperProvider} from 'react-native-paper';
 import * as Colors from '@darta-styles';
@@ -58,7 +60,13 @@ Notifications.setNotificationHandler({
   }),
 });
 
-
+const clearNotifications = async () => {
+  try {
+    await Notifications.setBadgeCountAsync(0); 
+  } catch (error) {
+    // console.error('Failed to clear notifications:', error);
+  }
+};
 
 
 function App() {
@@ -87,12 +95,11 @@ function App() {
           }
         })
       }
-      })
-    checkForUpdate()
+    })
+    checkForUpdate();
+    clearNotifications();
   }, []);
-
-
-
+  
   try{
     useFonts({
       DMSans_400Regular,
@@ -123,7 +130,7 @@ function App() {
   const [isTabVisible, setIsTabVisible] = React.useState(true);
 
   function getActiveRouteName(state) {
-    const route = state.routes[state.index];
+    const route = state.routes?.[state.index];
     if (route?.state) {
       // Dive into nested navigators
       return getActiveRouteName(route.state);
@@ -175,7 +182,7 @@ function App() {
     isIOS && (remoteVersion = remoteConfig().getValue("currentIOSVersion").asString());
   
     // if the current version is not the same as the app version, show an alert to download the app
-    if (promptUpdate && remoteVersion && currentVersion !== remoteVersion) {
+    if (promptUpdate && remoteVersion && currentVersion && currentVersion <= remoteVersion) {
       Alert.alert(
         "New Update Available",
         "A new version of the app is available. Please download the latest version from the app store.",

@@ -117,10 +117,10 @@ export const PlanARoute = ({navigation}) => {
       return;
     }
     const startTime = Date.now();
-    if (userState.user?.routeGenerationCount?.routeGeneratedCountWeekly && userState.user.routeGenerationCount.routeGeneratedCountWeekly >= 6) {
-      Alert.alert('Route Limit Reached', 'You have reached your weekly limit of 6 routes. Please try again after next Wednesday.')
-      return;
-    }
+    // if (userState.user?.routeGenerationCount?.routeGeneratedCountWeekly && userState.user.routeGenerationCount.routeGeneratedCountWeekly >= 6) {
+    //   Alert.alert('Route Limit Reached', 'You have reached your weekly limit of 6 routes. Please try again after next Wednesday.')
+    //   return;
+    // }
     setLoadingRoute(true);
     const locationIds = pins.map((waypoint) => waypoint?.locationId);
     if (_.isEqual(locationIds, state.mapPinIds?.[state.currentlyViewingCity]?.walkingRoute)){
@@ -162,9 +162,6 @@ export const PlanARoute = ({navigation}) => {
 
         const endTime = Date.now();
         const duration = endTime - startTime; 
-        analytics().logEvent('route_generation_success', {
-          duration,
-        });
         
         dispatch({
           type: ETypes.setWalkingRoute,
@@ -179,16 +176,24 @@ export const PlanARoute = ({navigation}) => {
 
         navigation.goBack()
 
-
+        analytics().logEvent('route_generation_success', {
+          duration,
+        });
 
         AsyncStorage.setItem(SAVED_ROUTE_SETTINGS, JSON.stringify({routeCoordinates, locationIds, generatedDate: new Date().toISOString()}));
 
         const artworkGeneratedCount = await incrementUserGeneratedRoute();
-
-        userDispatch({
-          type: UserETypes.setRoutesGenerated,
-          artworkGeneratedCount
-        })
+        if (Number.isInteger(Number(artworkGeneratedCount))) {
+          userDispatch({
+            type: UserETypes.setRoutesGenerated,
+            artworkGeneratedCount
+          })
+        } else {
+          userDispatch({
+            type: UserETypes.setRoutesGenerated,
+            artworkGeneratedCount: userState.user?.routeGenerationCount?.routeGeneratedCountWeekly ?  userState.user?.routeGenerationCount?.routeGeneratedCountWeekly + 1 : 1
+          })
+        }
       } else {
         throw new Error('Failed to fetch optimized route');
       }
@@ -260,7 +265,7 @@ export const PlanARoute = ({navigation}) => {
                 />
             </View>
           </View>
-          <View style={{marginBottom: 12}}>
+          <View style={{marginBottom: 14}}>
             <Button 
               onPress={handleShowAgreement}
               labelStyle={{color: Colors.PRIMARY_50}}
@@ -269,11 +274,12 @@ export const PlanARoute = ({navigation}) => {
               loading={loadingRoute}
               disabled={loadingRoute}
               >
-              <TextElement style={styles.buttonTextColor}>Generate Route</TextElement>
+                {!loadingRoute && <TextElement style={styles.buttonTextColor}>Generate Route</TextElement>}
+                {loadingRoute && <TextElement style={styles.buttonTextColor}>can take up to 10 seconds</TextElement>}
             </Button>
             <View style={{margin: 10}}>
               <TextElement style={{fontSize: 10}}>Limit 6 routes a week per account, resetting on Wednesdays</TextElement>
-              <TextElement style={{fontSize: 10}}>You have generated {userState.user?.routeGenerationCount?.routeGeneratedCountWeekly} this week</TextElement>
+              <TextElement style={{fontSize: 10}}>You have generated {userState.user?.routeGenerationCount?.routeGeneratedCountWeekly ?? 0} this week</TextElement>
             </View>
           </View>
         </View>

@@ -14,7 +14,7 @@ export const firebaseSignUp = async ({email, password}: {email: string, password
           if (e.code === 'auth/invalid-email') {
             throw new Error('That email address is invalid!');
           }
-        console.log({e})
+        // console.log({e})
     }
 }
 
@@ -24,7 +24,7 @@ export const firebaseSignIn = async ({email, password}: {email: string, password
       const res = await auth().signInWithEmailAndPassword(email, password);
       return res;
   } catch(e){
-    console.log({e})
+    // console.log({e})
       if (e.code === 'auth/email-already-in-use') {
           throw new Error('That email address is already in use!');
         }

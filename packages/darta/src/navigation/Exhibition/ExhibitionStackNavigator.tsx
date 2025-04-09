@@ -35,13 +35,12 @@ export function ExhibitionStackNavigator() {
 
   const shareExhibition = async () => {
     if (!uiState.exhibitionShareDetails) return;
-    const canShare = await Sharing.isAvailableAsync();
     try {
-      const shareOptions = {
-        mimeType: 'text/plain',
-        dialogTitle: 'Share Exhibition',
-        UTI: 'public.plain-text',
-      };
+      // const shareOptions = {
+      //   mimeType: 'text/plain',
+      //   dialogTitle: 'Share Exhibition',
+      //   UTI: 'public.plain-text',
+      // };
   
       const canShare = await Sharing.isAvailableAsync();
       if (canShare) {
@@ -69,6 +68,7 @@ export function ExhibitionStackNavigator() {
         ),
         headerBackTitleVisible: false,
       }}
+      initialRouteName={ExhibitionRootEnum.exhibitionHome}
       >
         <ExhibitionStack.Screen
           name={ExhibitionRootEnum.exhibitionHome}

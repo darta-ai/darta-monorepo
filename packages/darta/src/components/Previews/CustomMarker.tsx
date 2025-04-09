@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Marker, Callout } from 'react-native-maps';
-import { View, StyleSheet, Animated, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 
 import { TextElement } from '../Elements/TextElement';
 import { globalTextStyles } from '../../styles/styles';
@@ -13,7 +13,6 @@ import { ExhibitionStoreContext, UIStoreContext, UiETypes } from '../../state';
 import { ExploreMapRootEnum } from '../../typing/routes';
 import {Button } from 'react-native-paper';
 import { NewMapPin, NewMapPinRed } from '../../assets/SVGs';
-import { Easing } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 
 const customMarker = StyleSheet.create({
@@ -207,58 +206,6 @@ const CustomMarker = React.memo(({
     )
   }
 
-  // const wiggleAnim = React.useRef(new Animated.Value(0)).current; 
-  
-  // const handleWiggle = () => {
-  //   const wiggleSequence = Animated.sequence([
-  //     Animated.timing(wiggleAnim, {
-  //       toValue: 0,  
-  //       duration: 750,  
-  //       easing: Easing.elastic(4),  // Bouncy effect
-  //       useNativeDriver: true,
-  //     }),
-  //     Animated.timing(wiggleAnim, {
-  //       toValue: 0.25,  // Rotate slightly right
-  //       duration: 500,  
-  //       easing: Easing.elastic(4),  // Bouncy effect
-  //       useNativeDriver: true,
-  //     }),
-  //     Animated.timing(wiggleAnim, {
-  //       toValue: 0,  // Rotate slightly left
-  //       duration: 500,  
-  //       easing: Easing.elastic(4),  // Bouncy effect
-  //       useNativeDriver: true,
-  //     }),
-  //     Animated.timing(wiggleAnim, {
-  //       toValue: -0.25,  // Rotate slightly left
-  //       duration: 500,  
-  //       easing: Easing.elastic(4),  // Bouncy effect
-  //       useNativeDriver: true,
-  //     }),
-  //     Animated.timing(wiggleAnim, {
-  //       toValue: 0,  // Rotate slightly left
-  //       duration: 500,  
-  //       easing: Easing.elastic(4),  // Bouncy effect
-  //       useNativeDriver: true,
-  //     }),
-  //     Animated.timing(wiggleAnim, {
-  //       toValue: 0,  // Rotate slightly left
-  //       duration: 1000,  
-  //       easing: Easing.elastic(4),  // Bouncy effect
-  //       useNativeDriver: true,
-  //     }),
-  //   ]);
-  
-  //   // Continuous loop of wiggle
-  //   Animated.loop(wiggleSequence).start();
-  // };
-
-  // const rotate = wiggleAnim.interpolate({
-  //   inputRange: [-1, 1],
-  //   outputRange: ['-15deg', '15deg'], // Reduced angle for subtler effect
-  // });
-
-
   const customMarkerDynamic = StyleSheet.create({
     container: {
       display: 'flex',
@@ -294,8 +241,6 @@ const CustomMarker = React.memo(({
       tracksViewChanges={false}
     >
       {markerData.hasUpcomingOpening ?  <NewMapPinRed/> : <NewMapPin /> }
-      {/* <Animated.View style={customMarkerDynamic.wiggleFriend}>
-      </Animated.View> */}
       {showCallout && (
         <Callout style={customMarkerDynamic.container} 
         onTouchStart={() => setShowCallout(false)} 
@@ -329,13 +274,13 @@ const CustomMarker = React.memo(({
               <View style={customMarker.textContainer}>
                 <TextElement
                   style={globalTextStyles.subHeaderInformationSize14}>
-                  {markerData.exhibitionTitle}
+                  {markerData.exhibitionTitle?.trim()}
                 </TextElement>
                 <TextElement
                   style={globalTextStyles.paragraphTextSize14}>
                   {markerData.startDate} {' - '} {markerData.endDate}
                 </TextElement>
-                <TextElement style={globalTextStyles.paragraphTextSize14}>{markerData.artistName}</TextElement>
+                <TextElement style={globalTextStyles.paragraphTextSize14}>{markerData.artistName?.trim()}</TextElement>
               </View>
             </View>
             )}

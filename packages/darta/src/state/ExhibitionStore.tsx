@@ -23,7 +23,8 @@ export interface ExhibitionState {
   forthcomingFollowingExhibitionPreviews?: {
     [key: string]: ExhibitionPreview
   },
-  userViewedExhibition: {[key: string] : boolean}
+  userViewedExhibition: {[key: string] : boolean},
+  userSavedExhibitions: {[key: string] : boolean},
 }
 
 export enum ExhibitionETypes {
@@ -38,6 +39,10 @@ export enum ExhibitionETypes {
   setUserViewedExhibition = 'SET_USER_VIEWED_EXHIBITION',
 
   removeUserFollowsExhibitionPreviews = 'REMOVE_USER_FOLLOWS_EXHIBITION_PREVIEWS',
+
+  saveUserSavedExhibitions = 'SAVE_USER_SAVED_EXHIBITIONS',
+  removeUserSavedExhibitions = 'REMOVE_USER_SAVED_EXHIBITIONS',
+  refreshExhibition = 'REFRESH_EXHIBITION'
 }
 
 // Define the action type
@@ -50,12 +55,14 @@ interface ExhibitionIAction {
 
   removeUserFollowsExhibitionPreviewsByGalleryId?: string
   galleryId?: string
+  exhibitionIds?: Array<string>
 }
 
 // Define the initial state
 const initialExhibitionState: ExhibitionState = {
   exhibitionData : {},
   userViewedExhibition: {},
+  userSavedExhibitions: {},
 };
 
 // Define the reducer function
@@ -67,6 +74,9 @@ const exhibitionReducer = (state: ExhibitionState, action: ExhibitionIAction): E
       if(!action.exhibitionData || !action.exhibitionData._id){
         return state
       }
+      if(state.exhibitionData && state.exhibitionData.hasOwnProperty(action.exhibitionData._id)){
+        return state
+      }
       return {
         ...state,
         exhibitionData: {
@@ -74,6 +84,18 @@ const exhibitionReducer = (state: ExhibitionState, action: ExhibitionIAction): E
           [action.exhibitionData._id]: action.exhibitionData
         }
       }
+    case ExhibitionETypes.refreshExhibition:
+      if(!action.exhibitionData || !action.exhibitionData._id){
+        return state
+      }
+      return {
+        ...state,
+        exhibitionData: {
+          ...state.exhibitionData,
+          [action.exhibitionData._id]: action.exhibitionData
+        }
+      }
+
       case ExhibitionETypes.saveExhibitionMulti:
         if(!action.exhibitionDataMulti){
           return state
@@ -148,6 +170,9 @@ const exhibitionReducer = (state: ExhibitionState, action: ExhibitionIAction): E
       if (!action?.userViewedExhibitionId){
         return state;
       }
+      if (state.userViewedExhibition && state.userViewedExhibition[action.userViewedExhibitionId] && state.userViewedExhibition[action.userViewedExhibitionId] === true){
+        return state;
+      }
       return {
         ...state,
         userViewedExhibition: {
@@ -168,6 +193,33 @@ const exhibitionReducer = (state: ExhibitionState, action: ExhibitionIAction): E
       return {
         ...state,
         userFollowsExhibitionPreviews: deepCloneState
+      }
+
+      case ExhibitionETypes.saveUserSavedExhibitions: 
+      if (!action?.exhibitionIds){
+        return state;
+      }
+      const formattedExhibitions = Object.assign({}, ...action.exhibitionIds.map((exhibitionId) => ({[exhibitionId]: true})));
+
+      return {
+        ...state,
+        userSavedExhibitions: {
+          ...state.userSavedExhibitions || {},
+          ...formattedExhibitions
+        }
+      }
+
+      case ExhibitionETypes.removeUserSavedExhibitions: 
+      if (!action?.exhibitionIds){
+        return state;
+      }
+      const tempExhibitions = state?.userSavedExhibitions ? state?.userSavedExhibitions : {};
+      action.exhibitionIds.forEach((exhibitionId) => {
+        delete tempExhibitions[exhibitionId]
+      })
+      return {
+        ...state,
+        userSavedExhibitions: tempExhibitions
       }
     default:
       return state;

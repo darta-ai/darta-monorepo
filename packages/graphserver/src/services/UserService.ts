@@ -297,6 +297,7 @@ export class UserService implements IUserService {
           legalLastName: results.legalLastName,
           email: results.email,
           uid: results._id,
+          expoPushToken: results.expoPushToken,
           routeGenerationCount: results?.routeGenerationCount,
         }
       }
@@ -305,6 +306,33 @@ export class UserService implements IUserService {
       throw new Error(`Unable to read darta user ${error?.message}`);
     }
     return null;
+  }
+
+  public async saveExpoPushToken({uid, expoPushToken}: {uid: string, expoPushToken: string}): Promise<void> {
+    const fullUserId = this.generateDartaUserId({uid});
+    try {
+
+      const user = await this.nodeService.getNodeById({
+        collectionName: CollectionNames.DartaUsers,
+        id: fullUserId,
+      });
+      if (!user) {
+        throw new Error('user not found');
+      }
+      if (user.expoPushToken === expoPushToken) {
+        return;
+      }
+
+      await this.nodeService.upsertNodeById({
+        collectionName: CollectionNames.DartaUsers,
+        id: fullUserId,
+        data: {
+          expoPushToken,
+        },
+      });
+    } catch (error: any) {
+      throw new Error(`Unable to save expo push token ${error?.message}`);
+    }
   }
 
   public async editGalleryToUserEdge({
@@ -342,7 +370,8 @@ export class UserService implements IUserService {
     legalLastName,
     email,
     uid,
-    expoPushToken
+    expoPushToken,
+    recommendationArtworkIds
   }: {
     profilePicture?: Images
     userName?: string;
@@ -351,6 +380,7 @@ export class UserService implements IUserService {
     email?: string;
     uid: string;
     expoPushToken?: string;
+    recommendationArtworkIds?: string[];
   }): Promise<any> {
     if (!uid) return false;
     // const fullUserId = this.generateDartaUserId({uid});
@@ -411,6 +441,7 @@ export class UserService implements IUserService {
         legalFirstName,
         legalLastName,
         expoPushToken,
+        recommendationArtworkIds,
         profilePicture: {
           fileName: mediumImage?.fileName ?? fileName,
           bucketName: mediumImage?.bucketName ?? bucketName,

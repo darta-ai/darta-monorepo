@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, ActivityIndicator, Animated} from 'react-native';
+import { View, StyleSheet, Animated} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Colors from '@darta-styles';
-import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
 
 
 export const SkeletonLoader = ({height, width}: {height: number | undefined, width: number | undefined}) => {

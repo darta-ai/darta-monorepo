@@ -7,7 +7,7 @@ import {
   ExhibitionRootEnum
 } from '../../typing/routes';
 import { UIStoreContext, UiETypes, GalleryStoreContext, ExhibitionStoreContext, ExhibitionETypes} from '../../state';
-import { listExhibitionPreviewUpcomingUserFollowing, listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
+import { listExhibitionPreviewUserFollowing, listExhibitionPreviewsCurrent, listExhibitionPreviewsForthcoming} from "../../api/exhibitionRoutes";
 
 import {
   heightPercentageToDP as hp,
