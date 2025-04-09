@@ -110,7 +110,7 @@ cron.schedule('45 8 * * *', async () => {
     await galleryService.readAllGalleries()
     const end = new Date()
     // eslint-disable-next-line no-console
-    console.log(`user cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
+    console.log(`gallery cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms`)
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log('error running cronjob', e)
@@ -145,7 +145,7 @@ cron.schedule('0 20 * * 3', async () => {
   }
 });
 
-cron.schedule('0 20 * * 1,2,4,5,6', async () => {
+cron.schedule('0 20 * * 2,4,6', async () => {
   try{
     const start = new Date()
     const totalSent = await pushService.runDailyPushNotifications()
@@ -161,13 +161,12 @@ cron.schedule('0 20 * * 1,2,4,5,6', async () => {
 // // development schedule
 // cron.schedule('* * * * *', async () => {
 //   try{
+//     console.log('started')
 //     const start = new Date()
-//     // const res = await userService.readDartaUser({ uid: 'DartaUsers/GL1yalS1PQQjbOUu9dnpT7nKAEy1' })
-//     // console.log('read darta user', res)
-//     const numberSent = await pushService.runWeeklyPushNotifications()
+//     const numberSent = await pushService.runWeeklyPushNotifications();
 //     const end = new Date()
 //     // eslint-disable-next-line no-console
-//     console.log(`push notification cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms. Sent ${totalSent} notifications`)
+//     console.log(`push notification cron job ran at${  new Date()}, and took ${end.getTime() - start.getTime()}ms. Sent ${numberSent} notifications`)
 //   } catch (e) {
 //     // eslint-disable-next-line no-console
 //     console.log('error running cronjob', e)

@@ -34,7 +34,6 @@ export function ExhibitionStackNavigator() {
   useDeepLinking(navigation);
 
   const shareExhibition = async () => {
-    console.log('triggered')
     if (!uiState.exhibitionShareDetails) return;
     try {
       // const shareOptions = {
@@ -45,7 +44,6 @@ export function ExhibitionStackNavigator() {
   
       const canShare = await Sharing.isAvailableAsync();
       if (canShare) {
-        console.log(canShare)
         // await Sharing.shareAsync(uiState.exhibitionShareDetails.shareURL ?? '', shareOptions);
         await Share.share({
           url: uiState.exhibitionShareDetails.shareURL ?? '',

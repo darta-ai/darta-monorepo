@@ -17,7 +17,6 @@ import { editDartaUserAccount, saveExpoPushTokenAPI } from '../../api/userRoutes
 
 export function useDeepLinking(navigation) {
   const {dispatch} = React.useContext(StoreContext);
-  const { userState } = React.useContext(UserStoreContext);
   const {uiDispatch} = React.useContext(UIStoreContext);
   const {galleryDispatch} = React.useContext(GalleryStoreContext);
   const {exhibitionDispatch} = React.useContext(ExhibitionStoreContext);
@@ -26,7 +25,7 @@ export function useDeepLinking(navigation) {
   const responseListener = React.useRef<Notifications.Subscription>();
 
 
-  async function fetchMostRecentExhibitionData({locationId} : {locationId: string}): Promise<{exhibitionId: string, galleryId: string} | void> {
+  async function fetchMostRecentExhibitionData({locationId} : {locationId: string}): Promise<{exhibitionId: string, galleryId: string, hasArtwork: boolean} | void> {
     try {
         const {exhibition, gallery} = await readMostRecentGalleryExhibitionForUser({locationId})
         const supplementalExhibitions = await listGalleryExhibitionPreviewForUser({galleryId: gallery._id})
@@ -53,7 +52,8 @@ export function useDeepLinking(navigation) {
         })
         return {
             exhibitionId: exhibition._id,
-            galleryId: gallery._id
+            galleryId: gallery._id,
+            hasArtwork: Object.keys(exhibition.artworks).length > 0
         }
     } catch (error: any){
         // console.log(error)
@@ -61,7 +61,7 @@ export function useDeepLinking(navigation) {
 }
 
 
-async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string} ): Promise<{exhibitionId: string, galleryId: string} | void> {
+async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: string, galleryId: string} ): Promise<{exhibitionId: string, galleryId: string, hasArtwork: boolean} | void> {
   try {
       const [gallery, supplementalExhibitions, exhibition] = await Promise.all([
         readGallery({ galleryId }),
@@ -91,7 +91,8 @@ async function fetchExhibitionById({exhibitionId, galleryId} : {exhibitionId: st
       })
       return {
           exhibitionId: exhibition._id,
-          galleryId: gallery._id
+          galleryId: gallery._id,
+          hasArtwork: Object.keys(exhibition.artworks).length > 0
       }
   } catch (error: any){
       // console.log(error)
@@ -119,14 +120,15 @@ const handleDeepLink = async (event) => {
     try {
       const res = await fetchMostRecentExhibitionData({locationId: params.locationId.toString()});
       if (res) {
-        const {exhibitionId, galleryId} = res;
+        const {exhibitionId, galleryId, hasArtwork} = res;
         navigation.navigate('exhibitions', {
           screen: ExhibitionRootEnum.qrRouter,
           params: {
             screen: ExhibitionRootEnum.exhibitionDetails,  
             params: {
               exhibitionId,
-              galleryId
+              galleryId,
+              hasArtwork,
             }
           }
         });
@@ -141,7 +143,7 @@ const handleDeepLink = async (event) => {
     try {
       const res = await fetchExhibitionById({exhibitionId: params.exhibitionId.toString(), galleryId: params.galleryId.toString()});
       if (res) {
-        const {exhibitionId, galleryId} = res;
+        const {exhibitionId, galleryId, hasArtwork} = res;
         navigation.navigate('exhibitions', {
           screen: ExhibitionRootEnum.qrRouter,
           params: {
@@ -149,6 +151,7 @@ const handleDeepLink = async (event) => {
             params: {
               exhibitionId,
               galleryId,
+              hasArtwork,
             }
           }
         });
@@ -189,15 +192,14 @@ const handlePushNotification = async (response) => {
       galleryId: data.galleryId.toString(),
     });
     if (res) {
-      const { exhibitionId, galleryId } = res;
+      const { exhibitionId, galleryId, hasArtwork } = res;
       navigation.navigate('exhibitions', {
         screen: ExhibitionRootEnum.qrRouter,
         params: {
           screen: ExhibitionRootEnum.exhibitionDetails,
-          params: {
-            exhibitionId,
-            galleryId,
-          },
+          exhibitionId,
+          galleryId,
+          hasArtwork,
         },
       });
     }
@@ -288,8 +290,11 @@ const handlePushNotification = async (response) => {
       Notifications.removeNotificationSubscription(
         notificationListener.current,
       );
-    responseListener.current &&
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
+      
+      responseListener.current && 
+        Notifications.dismissAllNotificationsAsync()
+      };
   }, [navigation, handleDeepLink, urlsProcessed]);
 }

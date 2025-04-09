@@ -170,6 +170,9 @@ const exhibitionReducer = (state: ExhibitionState, action: ExhibitionIAction): E
       if (!action?.userViewedExhibitionId){
         return state;
       }
+      if (state.userViewedExhibition && state.userViewedExhibition[action.userViewedExhibitionId] && state.userViewedExhibition[action.userViewedExhibitionId] === true){
+        return state;
+      }
       return {
         ...state,
         userViewedExhibition: {

@@ -22,7 +22,7 @@ export function DartaRecommenderTopTab({route} : {route: any}) {
     const exhibitionId = route.params.exhibitionId;
     const exhibitionData = exhibitionState.exhibitionData;
 
-    if (exhibitionData && exhibitionData[exhibitionId]) {
+    if (!showArtwork && exhibitionData && exhibitionData[exhibitionId]) {
       const artworks = exhibitionData[exhibitionId].artworks;
       if (artworks && Object.keys(artworks).length > 0) {
         setShowArtwork(true);

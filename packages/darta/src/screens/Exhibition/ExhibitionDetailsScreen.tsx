@@ -167,6 +167,21 @@ function ExhibitionDetailsScreen({
 
     const { exhibitionId, galleryId } = route ? route.params as { exhibitionId: string, galleryId: string } : { exhibitionId: '', galleryId: ''};
 
+    const setViewedInDB = async ({exhibitionId} : {exhibitionId: string}): Promise<void> => {
+        if (exhibitionId){
+                if (exhibitionState?.userViewedExhibition && !exhibitionState.userViewedExhibition[exhibitionId]){         
+                    const setSuccessfully = await setUserViewedExhibition({exhibitionId})
+                    if (setSuccessfully){
+                        exhibitionDispatch({
+                            type: ExhibitionETypes.setUserViewedExhibition,
+                            userViewedExhibitionId: exhibitionId,
+                            galleryId,
+                        })
+                    }
+                }
+            }
+        }
+
     const isOpenExhibition = React.useMemo(() => {
         const endDate = exhibitionData?.exhibitionDates?.exhibitionEndDate?.value;
         return endDate && new Date(endDate) >= new Date();
@@ -197,14 +212,13 @@ function ExhibitionDetailsScreen({
         uiDispatch({ type: UiETypes.setCurrentHeader, currentExhibitionHeader: exhibition.exhibitionTitle.value });
 
         const shareURL = `https://darta.art/exhibition?exhibitionId=${exhibition._id}&galleryId=${gallery._id}`;
-        console.log(shareURL)
         uiDispatch({
             type: UiETypes.setExhibitionShareURL,
             exhibitionShareDetails: {shareURL, shareURLMessage: ''},
         });
       
 
-        await setUserViewedExhibition({ exhibitionId });
+        await setViewedInDB({ exhibitionId });
         } catch (error) {
         setErrorText('Failed to load exhibition data');
         } finally {
@@ -306,6 +320,7 @@ function ExhibitionDetailsScreen({
         ]
         );
     }, [handleRemoveFromList]);
+
 
     if (!exhibitionData) {
         return (

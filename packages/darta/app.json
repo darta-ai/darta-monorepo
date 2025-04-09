@@ -3,7 +3,7 @@
     "name": "darta",
     "slug": "darta",
     "scheme": "darta",
-    "version": "1.6.6",
+    "version": "1.7.1",
     "orientation": "portrait",
     "icon": "./src/assets/darta-icon-text.png",
     "userInterfaceStyle": "dark",
@@ -22,7 +22,7 @@
       "bundleIdentifier": "com.darta.darta",
       "config": {
         "usesNonExemptEncryption": false,
-        "googleMapsApiKey": "AIzaSyCgJAXkO4WoPQXTf7ENx_tejgKbiem9chc"
+        "googleMapsApiKey": "********"
       },
       "googleServicesFile": "./googleService/GoogleService-Info.plist",
       "infoPlist": {
@@ -55,7 +55,7 @@
       ],
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyDyfji3847eMFPI29Hiy7LPY2L6XCo6vLs"
+          "apiKey": "*******"
         }
       },
       "infoPlist": {
@@ -65,7 +65,7 @@
           "mailto"
         ]
       },
-      "versionCode": 10,
+      "versionCode": 13,
       "package": "com.darta.darta",
       "googleServicesFile": "./googleService/google-services.json",
       "intentFilters": [
@@ -89,13 +89,13 @@
       "favicon": "./src/assets/darta-icon-text.png",
       "config": {
         "firebase": {
-          "apiKey": "AIzaSyAdp-GRcbfIrkqxwGC2pvW-bVTNX0PU5m8",
-          "authDomain": "darta-ccfa5.firebaseapp.com",
+          "apiKey": "****",
+          "authDomain": "******",
           "projectId": "darta-ccfa5",
-          "storageBucket": "darta-ccfa5.appspot.com",
-          "messagingSenderId": "948875902945",
-          "appId": "1:948875902945:web:55ab525e744bcebf44dca0",
-          "measurementId": "G-C5X6JKSDGW"
+          "storageBucket": "*******",
+          "messagingSenderId": "*******",
+          "appId": "******",
+          "measurementId": "*****"
         }
       }
     },

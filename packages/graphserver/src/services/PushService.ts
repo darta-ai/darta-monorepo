@@ -58,6 +58,7 @@ export class PushService implements IPushService {
     const newHeader = parameter.parameters[headerParameterKey].defaultValue as unknown as { [key: string]: string };
     const title = newHeader.value;
 
+    // const usersWithPushTokens = [{expoPushToken: 'ExponentPushToken[ebqY1jFWieVWr2YG8NIGjX]', _id: 'DartaUsers/GL1yalS1PQQjbOUu9dnpT7nKAEy1'}]
     const messagesPromises = usersWithPushTokens.map(async (pushToken) => {
       if (!Expo.isExpoPushToken(pushToken.expoPushToken)) {
         standardConsoleLog({ message: `Push token ${pushToken} is not a valid Expo push token`, data: 'error', request: null });
@@ -75,7 +76,7 @@ export class PushService implements IPushService {
         const exhibitionStartDate = new Date(exhibition.openingDate.value!);
         const twoDaysFromNow = new Date();
         twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
-        return exhibitionStartDate.getTime() >= twoDaysFromNow.getTime();
+        return exhibitionStartDate.getTime() <= twoDaysFromNow.getTime();
       });
 
       const populatedExhibitions = await Promise.all(
@@ -193,7 +194,7 @@ export class PushService implements IPushService {
     const newHeader = parameter.parameters[headerParameterKey].defaultValue as unknown as { [key: string]: string };
     const title = newHeader.value;
 
-    // const tempArr = [{expoPushToken: 'ExponentPushToken[x0682HC0BbtBDXYihAi6CZ]', _id: 'DartaUsers/W8R8F92xrLZSD5rqhSgR5ZCCzhy2'}]
+    // const usersWithPushTokens = [{expoPushToken: 'ExponentPushToken[ebqY1jFWieVWr2YG8NIGjX]', _id: 'DartaUsers/GL1yalS1PQQjbOUu9dnpT7nKAEy1'}]
 
     const messagesPromises = usersWithPushTokens.map(async (pushToken) => {
       if (!Expo.isExpoPushToken(pushToken.expoPushToken)) {

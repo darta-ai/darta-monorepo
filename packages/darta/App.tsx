@@ -5,7 +5,7 @@ import 'react-native-gesture-handler';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { ExploreMapStackNavigator } from './src/navigation/ExploreMap/ExploreMapStackNavigator';
-import { StatusBar, Platform, Alert, Linking} from 'react-native';
+import { StatusBar, Platform, Alert, Linking } from 'react-native';
 import React from 'react';
 import {Provider as PaperProvider} from 'react-native-paper';
 import * as Colors from '@darta-styles';
@@ -60,7 +60,13 @@ Notifications.setNotificationHandler({
   }),
 });
 
-
+const clearNotifications = async () => {
+  try {
+    await Notifications.setBadgeCountAsync(0); 
+  } catch (error) {
+    // console.error('Failed to clear notifications:', error);
+  }
+};
 
 
 function App() {
@@ -89,12 +95,11 @@ function App() {
           }
         })
       }
-      })
-    checkForUpdate()
+    })
+    checkForUpdate();
+    clearNotifications();
   }, []);
-
-
-
+  
   try{
     useFonts({
       DMSans_400Regular,

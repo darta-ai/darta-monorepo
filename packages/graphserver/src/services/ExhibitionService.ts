@@ -1342,6 +1342,7 @@ export class ExhibitionService implements IExhibitionService {
         const exhibitionMapPin: {[key: string]: ExhibitionMapPin} = {};
         const promises: Promise<any>[] = []
         newYorkLocalities.forEach((locality) => {
+          console.log('locality', locality)
           promises.push(this.listActiveExhibitionsByLocality({locality}))
         })
         const results = await Promise.all(promises)
@@ -1405,7 +1406,7 @@ export class ExhibitionService implements IExhibitionService {
         currentDatePlusSeven: new Date(currentDatePlusSeven).toISOString(), 
         todayMinusOne: new Date(todayMinusOne).toISOString()
       });
-      const exhibitionsAndPreviews: ExhibitionMapPin[] = await edgeCursor.all()
+      const exhibitionsAndPreviews: ExhibitionMapPin[] = await edgeCursor.all();
 
       // remove duplicate galleries
       exhibitionsAndPreviews.sort((a, b) => {
