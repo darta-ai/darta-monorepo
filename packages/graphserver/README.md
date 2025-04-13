@@ -1,38 +1,111 @@
-Designing a basic Express.js server that connects to an ArangoDB database can be done following best practices and design patterns that promote maintainability and scalability. Here's how you might approach it:
+# Darta: Contemporary Art Discovery Platform
 
-1. Separation of Concerns:
-To maintain a clean architecture, it's essential to separate different parts of the application into well-defined layers:
+Darta is a full-stack application that revolutionizes how people discover and engage with contemporary art. By combining a Tinder-style mobile interface with a powerful gallery management system, Darta bridges the gap between art galleries and potential buyers.
 
-Routes: Define the API endpoints or URL patterns and map them to the corresponding controllers.
+## 🚀 Portfolio Project
 
-Controllers: Implement the business logic that handles user input, invokes the appropriate services, and returns responses.
+This portfolio project demonstrates my full-stack development capabilities, with particular focus on:
+- Modern **React Native** and **Next.js** front-end development
+- **GraphQL API** design and implementation
+- **TypeScript** for type safety across the entire application
+- **ArangoDB** graph database management 
+- Monorepo management with **pnpm**
 
-Services: Encapsulate interactions with the ArangoDB database, including CRUD operations and any complex queries.
+## 🎨 Overview
 
-Models: Represent the data structure and validation for the documents stored in ArangoDB.
+Darta consists of two main interfaces:
+- **Mobile App**: A React Native application where users swipe through artwork to indicate preferences, building a personalized taste profile
+- **Gallery Portal**: A Next.js web application where galleries can manage their inventory and view analytics on user engagement
 
-2. Use Middleware:
-Express.js is built on middleware functions that have access to the request object, response object, and the next function in the application’s request-response cycle. You can utilize middleware for various purposes such as logging, authentication, validation, etc.
+The system uses machine learning to continuously improve recommendations based on user interactions and preferences.
 
-3. Connection Management:
-Create a separate module for managing the connection to ArangoDB. You might use an ODM (Object Document Mapper) like arangojs that provides a higher-level API to interact with ArangoDB. This module will handle connection pooling, reconnecting, etc.
+## 🏗️ Architecture
 
-4. Error Handling:
-Implement a robust error-handling mechanism to catch and respond to different types of errors appropriately. This includes database errors, validation errors, authentication errors, and more.
+This monorepo is organized into the following packages:
 
-5. Environment Configuration:
-Use environment variables to manage different configurations for development, testing, and production environments. It allows for more secure and flexible configuration management.
+```
+darta/
+├── packages/
+│   ├── darta/              # React Native mobile application
+│   ├── darta-types/        # Shared TypeScript interfaces and types
+│   ├── darta-styles/       # Shared styling and theming
+│   ├── next/               # Next.js web application for galleries
+│   └── graphserver/        # GraphQL API server with ArangoDB
+```
 
-6. Testing:
-Write unit tests for controllers and services to ensure that they behave correctly. Integration tests might be employed to test the full flow of particular routes.
+## ✨ Features
 
-Example Structure:
-/routes: All the route definitions.
-/controllers: The logic for handling route requests.
-/services: Interaction with ArangoDB.
-/models: Data models and validation.
-/middlewares: Custom middleware functions.
-/config: Configuration files, like database connection settings.
-/tests: Unit and integration tests.
-Conclusion:
-This design pattern is aligned with the common practices in developing Express.js applications, and it promotes clean and maintainable code. By separating concerns into different layers and adhering to the principles of modular design, it becomes easier to develop, test, and scale the application. Additionally, integrating best practices in error handling, configuration management, and testing will lead to a more robust and reliable system.
+### Mobile App
+- Tinder-style swipe interface for artwork discovery
+- Personalized recommendations based on user preferences
+- Gallery and exhibition locator with maps integration
+- Artist and artwork details with rich media support
+- Favorite collection and sharing capabilities
+
+### Gallery Portal
+- Inventory management system
+- Artwork upload and management
+- Analytics dashboard showing user engagement
+- Exhibition planning and promotion tools
+- Integration with gallery CRM systems
+
+### Server
+- GraphQL API for efficient data fetching
+- ArangoDB for flexible graph data storage
+- Authentication and authorization system
+- Analytics processing and recommendation engine
+- Real-time data synchronization
+
+## 🚀 Technology Stack
+
+- **Frontend**:
+  - React Native for mobile
+  - Next.js for web
+  - Apollo Client for GraphQL
+  - Styled Components with shared design system
+
+- **Backend**:
+  - Node.js with Express
+  - GraphQL for API
+  - ArangoDB for database
+  - JWT for authentication
+
+- **DevOps**:
+  - Docker for containerization
+  - GitHub Actions for CI/CD
+  - AWS for hosting
+
+## 🛠️ Development Environment
+
+This project uses **pnpm** as the package manager for efficient dependency management across the monorepo architecture. The monorepo structure enables code sharing and consistent development practices across all components of the application.
+
+Key development considerations:
+- Typescript ensures type safety across the entire application
+- Shared types and styles maintain consistency between web and mobile interfaces
+- GraphQL schema is the single source of truth for data structures
+- Containerized development environment for consistent testing
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🔮 Future Plans
+
+- Art marketplace functionality
+- Artist-specific portfolios and direct messaging
+- Gallery event ticketing and RSVP system
+- International expansion and localization
+
+---
+
+Built with ❤️ by [TJ Wetmore]
