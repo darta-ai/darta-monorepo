@@ -1,24 +1,111 @@
-# Darta Development
+# Darta: Contemporary Art Discovery Platform
 
-## Dev Setup
+Darta is a full-stack application that revolutionizes how people discover and engage with contemporary art. By combining a Tinder-style mobile interface with a powerful gallery management system, Darta bridges the gap between art galleries and potential buyers.
 
-1. Install [kind](https://kind.sigs.k8s.io/docs/user/quick-start/) (ArangoDB does not seem to work with minikube—YMMV).
-    1a. run `kind create cluster`
-2. Install [devspace](https://devspace.sh/cli/docs/getting-started/installation).
-3. In your cluster, create the correct namespace if it does not already exist: `kubectl create namespace arango`.
-4. Run `./install_arango.sh`, which will install the ArangoDB Kubernetes operators and create a database cluster.
+## 🚀 Portfolio Project
 
-A [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport) service called `arango-dev-cluster-ea` will have been created. You must find the port that it is exposed on. You can do this by running `kubectl get service arango-dev-cluster-ea -o yaml -n arango-cluster | grep nodePort`, or by examining it in [(Open)](https://github.com/MuhammedKalkan/OpenLens)[Lens](https://docs.k8slens.dev/getting-started/install-lens/). It will be 5 digits like `31420`, not ArangoDB's usual `8529`, which is only used internally within the cluster.
-    1a. If you are using Lens, you can also find the node cluster IP by clicking on the service and looking at the `Endpoints` tab.
-    2a. If you are using Lens, you can also find the service external port by clicking on the service and looking at the `Ports` tab.
+This portfolio project demonstrates my full-stack development capabilities, with particular focus on:
+- Modern **React Native** and **Next.js** front-end development
+- **GraphQL API** design and implementation
+- **TypeScript** for type safety across the entire application
+- **ArangoDB** graph database management 
+- Monorepo management with **pnpm**
 
-Visit `https://[[node cluster ip]]:[[service external port]]` in your browser (*note the `https`*) to see the ArangoDB web interface. The default credentials are `root` with no password. You can then set up user `darta` and database `darta` (be sure to specify the correct user, NOT `root`).
+## 🎨 Overview
 
-[Using the ArangoDB Kubernetes Operator](https://www.arangodb.com/docs/stable/deployment-kubernetes-usage.html)
+Darta consists of two main interfaces:
+- **Mobile App**: A React Native application where users swipe through artwork to indicate preferences, building a personalized taste profile
+- **Gallery Portal**: A Next.js web application where galleries can manage their inventory and view analytics on user engagement
 
-## Development
+The system uses machine learning to continuously improve recommendations based on user interactions and preferences.
 
-Run `devspace dev` (remember to create a namespace like `darta` first and run `devspace use namespace`). It will print further instructions once you enter your development session.
+## 🏗️ Architecture
 
-## Deployment
-Each individual, deployable, package has its own docker file and .devspace file. In Lens or OpenLens, navigate to the file and run `devspace deploy`. In the future, we will have github actions trigger a build. 
+This monorepo is organized into the following packages:
+
+```
+darta/
+├── packages/
+│   ├── darta/              # React Native mobile application
+│   ├── darta-types/        # Shared TypeScript interfaces and types
+│   ├── darta-styles/       # Shared styling and theming
+│   ├── next/               # Next.js web application for galleries
+│   └── graphserver/        # GraphQL API server with ArangoDB
+```
+
+## ✨ Features
+
+### Mobile App
+- Tinder-style swipe interface for artwork discovery
+- Personalized recommendations based on user preferences
+- Gallery and exhibition locator with maps integration
+- Artist and artwork details with rich media support
+- Favorite collection and sharing capabilities
+
+### Gallery Portal
+- Inventory management system
+- Artwork upload and management
+- Analytics dashboard showing user engagement
+- Exhibition planning and promotion tools
+- Integration with gallery CRM systems
+
+### Server
+- GraphQL API for efficient data fetching
+- ArangoDB for flexible graph data storage
+- Authentication and authorization system
+- Analytics processing and recommendation engine
+- Real-time data synchronization
+
+## 🚀 Technology Stack
+
+- **Frontend**:
+  - React Native for mobile
+  - Next.js for web
+  - Apollo Client for GraphQL
+  - Styled Components with shared design system
+
+- **Backend**:
+  - Node.js with Express
+  - GraphQL for API
+  - ArangoDB for database
+  - JWT for authentication
+
+- **DevOps**:
+  - Docker for containerization
+  - GitHub Actions for CI/CD
+  - AWS for hosting
+
+## 🛠️ Development Environment
+
+This project uses **pnpm** as the package manager for efficient dependency management across the monorepo architecture. The monorepo structure enables code sharing and consistent development practices across all components of the application.
+
+Key development considerations:
+- Typescript ensures type safety across the entire application
+- Shared types and styles maintain consistency between web and mobile interfaces
+- GraphQL schema is the single source of truth for data structures
+- Containerized development environment for consistent testing
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🔮 Future Plans
+
+- Art marketplace functionality
+- Artist-specific portfolios and direct messaging
+- Gallery event ticketing and RSVP system
+- International expansion and localization
+
+---
+
+Built with ❤️ by [TJ Wetmore]
