@@ -6,7 +6,6 @@ Darta is a full-stack application that revolutionizes how people discover and en
 
 This portfolio project demonstrates my full-stack development capabilities, with particular focus on:
 - Modern **React Native** and **Next.js** front-end development
-- **GraphQL API** design and implementation
 - **TypeScript** for type safety across the entire application
 - **ArangoDB** graph database management 
 - Monorepo management with **pnpm**
@@ -61,19 +60,18 @@ darta/
 - **Frontend**:
   - React Native for mobile
   - Next.js for web
-  - Apollo Client for GraphQL
   - Styled Components with shared design system
 
 - **Backend**:
   - Node.js with Express
   - GraphQL for API
   - ArangoDB for database
-  - JWT for authentication
+  - firebase for authentication
 
 - **DevOps**:
   - Docker for containerization
   - GitHub Actions for CI/CD
-  - AWS for hosting
+  - GCP for hosting
 
 ## 🛠️ Development Environment
 
@@ -85,15 +83,6 @@ Key development considerations:
 - GraphQL schema is the single source of truth for data structures
 - Containerized development environment for consistent testing
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## 📝 License
 
